@@ -1193,7 +1193,7 @@
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         GetOwnerListForFilter(PlanIds,false);
         GetTacticTypelist(PlanIds, false);
-        LoadPlanData(null);
+        
     }
 
     function BulkCustomFieldOperation(selection,ulCutomFieldId) {
@@ -2385,6 +2385,7 @@ $("#BtnShareReport").click(function () {
             BulkTTOperation(false);
             //Added by kausha for ticket no #1836
             BulkOwnerOperation(false);
+            LoadPlanData(null);
             //Commented by kausha for ticket no #1836
             //BulkStatusOperation(false);
             $('#divCustomFieldsFilter').find("li").each(function (i) {

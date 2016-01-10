@@ -191,7 +191,10 @@
                         $("#errorMsg").css("display", "none");
                         $("#SuccessMsg").css("display", "block");
                         $("#spanMsgSuccess").empty();
-                        $("#spanMsgSuccess").text(result.msg);
+                        $("#spanMsgSuccess").text(result.msg).css('font-weight', 'bold');
+                        var html = $("#spanMsgSuccess").html();
+                        $('#spanMsgSuccess').html(html.replace(/has been linked to/gi, '<span class="lickSuccessMsg">$&</span>'));
+                        $('#spanMsgSuccess').html(html.replace(/Tactic/gi, '<span class="lickSuccessMsg">$&</span>'));
                         $("#errorMessage1").css("display", "none");
                         $("#successMessage1").css("display", "none");
                         isDataModified = true;

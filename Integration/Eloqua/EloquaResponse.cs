@@ -32,7 +32,7 @@ namespace Integration.Eloqua
         private static string eloquaResponseDateTimeColumn = "ResponseDateTime";
         private static string responsedateformat = "yyyy-MM-dd";
         private MRPEntities db = new MRPEntities();
-
+        private string PeriodChar = "Y";
         #endregion
 
         #region Functions
@@ -514,10 +514,39 @@ namespace Integration.Eloqua
                                         db.Entry(actualTactic).State = EntityState.Added;
                                     }
 
+                                    #region "Convert linked Tactic Period"
+                                    string orgPeriod = string.Empty,numPeriod = string.Empty,lnkePeriod = string.Empty;
+                                    int NumPeriod = 0, yearDiff = 1;
+                                    Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
+                                    if (linkedTacticId > 0)
+                                    {
+                                        orgPeriod = item.Key;
+                                        numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
+                                        NumPeriod = int.Parse(numPeriod);
+                                        linkedTactic = tblTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                        yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+                                        
+                                        if (yearDiff > 0) //Is linked tactic Multiyear
+                                            lnkePeriod = PeriodChar + ((12 * yearDiff) + NumPeriod).ToString();   // (12*1)+3 = 15 => For March(Y15) month. 
+                                        else
+                                        {
+                                            if (NumPeriod > 12)
+                                            {
+                                                int rem = NumPeriod % 12;    // For March, Y3(i.e 15%12 = 3)  
+                                                int div = NumPeriod / 12;    // In case of 24, Y12.
+                                                if (rem > 0 || div > 1)
+                                                {
+                                                    lnkePeriod = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
+                                                }
+                                            }
+                                        }
+                                    }
+                                    #endregion
+
                                     #region "Create/Update linked Tactic MQL value"
                                     if (linkedTacticId > 0)
                                     {
-                                        var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == linkedTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.MQLStageValue);
+                                        var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == linkedTacticId && tacticActual.Period == lnkePeriod && tacticActual.StageTitle == Common.MQLStageValue);
                                         if (objLinkedTacticActual != null)
                                         {
                                             objLinkedTacticActual.Actualvalue = objTacticActual.Actualvalue + item.Value;
@@ -530,7 +559,7 @@ namespace Integration.Eloqua
                                             Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
                                             actualTactic.Actualvalue = item.Value;
                                             actualTactic.PlanTacticId = linkedTacticId;
-                                            actualTactic.Period = item.Key;
+                                            actualTactic.Period = lnkePeriod;
                                             actualTactic.StageTitle = Common.MQLStageValue;
                                             actualTactic.CreatedDate = DateTime.Now;
                                             actualTactic.CreatedBy = _userId;
@@ -563,11 +592,10 @@ namespace Integration.Eloqua
                                             actualTactic.CreatedBy = _userId;
                                             db.Entry(actualTactic).State = EntityState.Added;
                                         }
-
                                         #region "Create/Update linked Tactic Projected Stage value"
                                         if (linkedTacticId > 0)
                                         {
-                                            var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == linkedTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.StageProjectedStageValue);
+                                            var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == linkedTacticId && tacticActual.Period == lnkePeriod && tacticActual.StageTitle == Common.StageProjectedStageValue);
                                             if (objLinkedTacticActual != null)
                                             {
                                                 objLinkedTacticActual.Actualvalue = innerTacticActual.Actualvalue + item.Value;
@@ -580,7 +608,7 @@ namespace Integration.Eloqua
                                                 Plan_Campaign_Program_Tactic_Actual lnkdactualTactic = new Plan_Campaign_Program_Tactic_Actual();
                                                 lnkdactualTactic.Actualvalue = item.Value;
                                                 lnkdactualTactic.PlanTacticId = linkedTacticId;
-                                                lnkdactualTactic.Period = item.Key;
+                                                lnkdactualTactic.Period = lnkePeriod;
                                                 lnkdactualTactic.StageTitle = Common.StageProjectedStageValue;
                                                 lnkdactualTactic.CreatedDate = DateTime.Now;
                                                 lnkdactualTactic.CreatedBy = _userId;
@@ -1016,10 +1044,39 @@ namespace Integration.Eloqua
                                         db.Entry(actualTactic).State = EntityState.Added;
                                     }
 
+                                    #region "Convert linked Tactic Period"
+                                    string orgPeriod = string.Empty, numPeriod = string.Empty, lnkePeriod = string.Empty;
+                                    int NumPeriod = 0, yearDiff = 1;
+                                    Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
+                                    if (linkedTacticId > 0)
+                                    {
+                                        orgPeriod = actualPeriod;
+                                        numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
+                                        NumPeriod = int.Parse(numPeriod);
+                                        linkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                        yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+
+                                        if (yearDiff > 0) //Is linked tactic Multiyear
+                                            lnkePeriod = PeriodChar + ((12 * yearDiff) + NumPeriod).ToString();   // (12*1)+3 = 15 => For March(Y15) month. 
+                                        else
+                                        {
+                                            if (NumPeriod > 12)
+                                            {
+                                                int rem = NumPeriod % 12;    // For March, Y3(i.e 15%12 = 3)  
+                                                int div = NumPeriod / 12;    // In case of 24, Y12.
+                                                if (rem > 0 || div > 1)
+                                                {
+                                                    lnkePeriod = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
+                                                }
+                                            }
+                                        }
+                                    }
+                                    #endregion
+
                                     #region "Create/Update linked Tactic Actuals value"
                                     if (linkedTacticId > 0)
                                     {
-                                        var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(a => a.PlanTacticId == linkedTacticId && a.Period == actualPeriod && a.StageTitle == Common.StageProjectedStageValue);
+                                        var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(a => a.PlanTacticId == linkedTacticId && a.Period == lnkePeriod && a.StageTitle == Common.StageProjectedStageValue);
                                         if (objLinkedTacticActual != null)
                                         {
                                             objLinkedTacticActual.Actualvalue = objTacticActual.Actualvalue + item.responseCount;
@@ -1032,7 +1089,7 @@ namespace Integration.Eloqua
                                             Plan_Campaign_Program_Tactic_Actual linkedActualTactic = new Plan_Campaign_Program_Tactic_Actual();
                                             linkedActualTactic.Actualvalue = item.responseCount;
                                             linkedActualTactic.PlanTacticId = linkedTacticId;
-                                            linkedActualTactic.Period = actualPeriod;//"Y" + item.peroid.Month;
+                                            linkedActualTactic.Period = lnkePeriod;//"Y" + item.peroid.Month;
                                             linkedActualTactic.StageTitle = Common.StageProjectedStageValue;
                                             linkedActualTactic.CreatedDate = DateTime.Now;
                                             linkedActualTactic.CreatedBy = _userId;
@@ -1040,7 +1097,6 @@ namespace Integration.Eloqua
                                         } 
                                     }
                                     #endregion
-
                                     db.SaveChanges();
                                     lstResponse.Remove(item);
                                 }
@@ -1168,6 +1224,35 @@ namespace Integration.Eloqua
                                         actualTactic.CreatedBy = _userId;
                                         db.Entry(actualTactic).State = EntityState.Added;
                                     }
+
+                                    #region "Convert linked Tactic Period"
+                                    string orgPeriod = string.Empty, numPeriod = string.Empty, lnkePeriod = string.Empty;
+                                    int NumPeriod = 0, yearDiff = 1;
+                                    Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
+                                    if (linkedTacticId > 0)
+                                    {
+                                        orgPeriod = actualPeriod;
+                                        numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
+                                        NumPeriod = int.Parse(numPeriod);
+                                        linkedTactic = tblUnProcessedPlanTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                        yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+
+                                        if (yearDiff > 0) //Is linked tactic Multiyear
+                                            lnkePeriod = PeriodChar + ((12 * yearDiff) + NumPeriod).ToString();   // (12*1)+3 = 15 => For March(Y15) month. 
+                                        else
+                                        {
+                                            if (NumPeriod > 12)
+                                            {
+                                                int rem = NumPeriod % 12;    // For March, Y3(i.e 15%12 = 3)  
+                                                int div = NumPeriod / 12;    // In case of 24, Y12.
+                                                if (rem > 0 || div > 1)
+                                                {
+                                                    lnkePeriod = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
+                                                }
+                                            }
+                                        }
+                                    }
+                                    #endregion
 
                                     #region "Create/Update linked Tactic Actuals value"
                                     if (linkedTacticId > 0)

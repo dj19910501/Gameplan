@@ -791,12 +791,12 @@
                     <div id="AttachChartCanvasmultiyear" style="width: 135px; height: 85px; position: absolute; margin-left: 155px; margin-top: -10px;">
                     </div>
 
-                    <div id="legendchart">
+                   <div id="legendchart" style="display: block; position: absolute; margin-top: -228px;margin-left: 495px;">
                         <div style="position: absolute; right: 42px; font-size: 10px; top:231px">
-                            <span id="firstyear"></span><div style="display: inline-block; margin-left: -2px; height: 10px; width: 20px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #C633C9; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
+                            <span id="firstyear" ></span><div style="display: inline-block; margin-left: -2px;margin-top:4px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #C633C9; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
                         </div>
                         <div style="position: absolute; right: 42px; font-size: 10px; top: 260px;">
-                            <span id="secondyear"></span><div style="display: inline-block; margin-left: -2px; height: 10px; width: 20px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #407B22; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
+                            <span id="secondyear"></span><div style="display: inline-block; margin-left: -2px;margin-top:6px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #407B22; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
                         </div>
                     </div>
                 </div>
@@ -1221,7 +1221,7 @@
                 </div>
                 <div class="shadow-scroll-gantt"></div>
                 <div class="table-row">
-                    <table id="table_activities" class="table table-striped table-hover bold">
+                    <table id="table_activities" class="table table-striped table-hover bold" style="display:none">
                         <thead>
                             <tr>
                                 <th class="border-r show-modal">Title</th>
@@ -1580,6 +1580,7 @@
     var SavePresetValue = false;
     function UpdateResult() {
         IsUpdate = true;
+        isRequest = false;
         // added by devanshi for #1431
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
@@ -2222,7 +2223,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Home/BindUpcomingActivitesValues/")',
-            //async: false,// Comment by bhavesh
+            async: false,// Comment by bhavesh // Uncomment By Nishant Sheth Desc :: Due to selected min year records display
             data: {
                 planids: SelectedPlanIds,
                 CurrentTime: Currenttime
@@ -2247,6 +2248,7 @@
             });
         }
         $dropdown.append($html);
+        Currenttime = $("#ddlUpComingActivites").val();
         $("#ddlUpComingActivites").selectbox('detach');
         $("#ddlUpComingActivites").selectbox("attach");
     }
@@ -2360,6 +2362,11 @@
 
     function CallPDF() {
         //  $("#gantt_here").css("Width", $("#testdiv").width());
+      
+        if ($("#NodatawithfilterCalendar").css('display') == "block")
+        {
+            return false;
+        }
 
         $.each(GanttTaskData.data, function () {
             this.color = '#' + this.colorcode;
@@ -2809,10 +2816,10 @@
                 datestart = "01-01-" + isQuater.split("-")[0];
                 dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
                 // $('#AttachChartCanvas').css('margin-left', '160px');
-                if (PdfFilters.customFieldIds.toString().trim().length > 0) {
-                    $("#legendchart").children().first().css('top', '275px');
-                    $("#legendchart").children().last().css('top', '299px');
-                }
+                //if (PdfFilters.customFieldIds.toString().trim().length > 0) {
+                //    $("#legendchart").children().first().css('top', '275px');
+                //    $("#legendchart").children().last().css('top', '299px');
+                //}
                 $('#mainpdfdiv').css('width', '');
                 var headerhtml = $("#testdiv").html();
             }
@@ -4142,7 +4149,7 @@
                     else {
                         // Add By Nishant sheth
                         // #1818 :: Display message if no any data with filters
-                        if (data.taskData.length > 0) {
+                        if (data.taskData.length > 0 || isRequest) {
                             $("#gantt_here").show();
                             $(".pull-right.toggle-status.source-sans-proregular").show();
                             $("#improvements").show();

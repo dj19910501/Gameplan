@@ -76,6 +76,7 @@ namespace Integration.Salesforce
         private List<string> statusList { get; set; }
         private List<SyncError> _lstSyncError = new List<SyncError>();
         private List<SalesForceObjectFieldDetails> lstSalesforceFieldDetail = new List<SalesForceObjectFieldDetails>();
+        private string PeriodChar = "Y";
 
         public bool IsAuthenticated
         {
@@ -1231,7 +1232,6 @@ namespace Integration.Salesforce
                                             _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: Error occurred while getting Campaign from Salesforce. Exception - " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                                             _isResultError = true;
                                         }
-
                                     }
                                     pagecount++;
                                 }
@@ -1302,10 +1302,48 @@ namespace Integration.Salesforce
                                     OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
                                     
                                     // Remove linked Tactic's Actuals.
+                                    List<int> lstMultiLinkedTactic = new List<int>();
                                     if (linkedTactics.Count > 0)
                                     {
-                                        List<Plan_Campaign_Program_Tactic_Actual> linkedactualTacticList = tblActuals.Where(actual => linkedTactics.Contains(actual.PlanTacticId)).ToList();
-                                        linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+
+                                        #region "Get list of linked Tactics that multiyear or not"
+                                        Plan_Campaign_Program_Tactic objLnkTac = null;
+                                        int yeardiff = 0, cntr = 0, perdNum=12; bool isMultilinkedTactic = false;
+                                        List<Plan_Campaign_Program_Tactic_Actual> linkedactualTacticList = null;
+                                        List<string> lstLinkedPeriods = new List<string>();
+                                        foreach (int linkdTacId in linkedTactics)
+                                        {
+                                            objLnkTac = new Plan_Campaign_Program_Tactic();
+                                            objLnkTac = tblPlanTactic.Where(tac => tac.PlanTacticId == linkdTacId).FirstOrDefault();
+
+                                            yeardiff = objLnkTac.EndDate.Year - objLnkTac.StartDate.Year;
+                                            isMultilinkedTactic = yeardiff > 0 ? true : false;
+                                            linkedactualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                                            if (isMultilinkedTactic)
+                                            {
+                                                // remove linked tactic respective months actuals data.
+                                                lstLinkedPeriods = new List<string>();
+                                                cntr = 12 * yeardiff;
+                                                for (int i = 1; i <= cntr; i++)
+                                                {
+                                                    lstLinkedPeriods.Add(PeriodChar + (perdNum + i).ToString());
+                                                }
+                                                lstMultiLinkedTactic.Add(linkdTacId);
+                                                linkedactualTacticList = tblActuals.Where(actual => linkedTactics.Contains(actual.PlanTacticId) && lstLinkedPeriods.Contains(actual.Period)).ToList();
+                                                if (linkedactualTacticList != null && linkedactualTacticList.Count >0)
+                                                    linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                            }
+                                            else
+                                            {
+                                                linkedactualTacticList = tblActuals.Where(actual => linkedTactics.Contains(actual.PlanTacticId)).ToList();
+                                                if (linkedactualTacticList != null && linkedactualTacticList.Count > 0)
+                                                    linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                            }
+                                        }
+                                        #endregion
+
+                                        //List<Plan_Campaign_Program_Tactic_Actual> linkedactualTacticList = tblActuals.Where(actual => linkedTactics.Contains(actual.PlanTacticId)).ToList();
+                                        //linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
                                     }
 
                                     db.SaveChanges();
@@ -1332,6 +1370,9 @@ namespace Integration.Salesforce
 
                                     int linkedTacId = 0;
                                     Plan_Campaign_Program_Tactic objLinkedTactic = null;
+                                    bool isMultiYearlinkedTactic = false;
+                                    int yearDiff = 0;
+
                                     foreach (var tactic in lstMergedTactics)
                                     {
                                         var innerCampaignMember = CampaignMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
@@ -1353,14 +1394,45 @@ namespace Integration.Salesforce
                                             // Add linked Tacitc Actual Values.
                                             if (linkedTacId > 0) // check whether linkedTactics exist or not.
                                             {
-                                                Plan_Campaign_Program_Tactic_Actual objLinkedTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                                objLinkedTacticActual.PlanTacticId = linkedTacId;           // LinkedTactic Id.
-                                                objLinkedTacticActual.Period = objCampaignMember.Period;
-                                                objLinkedTacticActual.StageTitle = Common.StageProjectedStageValue;
-                                                objLinkedTacticActual.Actualvalue = objCampaignMember.Count;
-                                                objLinkedTacticActual.CreatedBy = _userId;
-                                                objLinkedTacticActual.CreatedDate = DateTime.Now;
-                                                db.Entry(objLinkedTacticActual).State = EntityState.Added;
+                                                objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                                objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == linkedTacId).FirstOrDefault();
+
+                                                yearDiff = objLinkedTactic.EndDate.Year - objLinkedTactic.StartDate.Year;
+                                                isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
+
+                                                string orgPeriod = objCampaignMember.Period;
+                                                string numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
+                                                int NumPeriod = int.Parse(numPeriod);
+                                                if (isMultiYearlinkedTactic)
+                                                {
+                                                    Plan_Campaign_Program_Tactic_Actual objLinkedTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                                    objLinkedTacticActual.PlanTacticId = linkedTacId;           // LinkedTactic Id.
+                                                    objLinkedTacticActual.Period = PeriodChar + ((12 * yearDiff) + NumPeriod).ToString();   // (12*1)+3 = 15 => For March(Y15) month.
+                                                    objLinkedTacticActual.StageTitle = Common.StageProjectedStageValue;
+                                                    objLinkedTacticActual.Actualvalue = objCampaignMember.Count;
+                                                    objLinkedTacticActual.CreatedBy = _userId;
+                                                    objLinkedTacticActual.CreatedDate = DateTime.Now;
+                                                    db.Entry(objLinkedTacticActual).State = EntityState.Added;
+                                                }
+                                                else
+                                                {
+                                                    if (NumPeriod > 12)
+                                                    {
+                                                        int rem = NumPeriod % 12;    // For March, Y3(i.e 15%12 = 3)  
+                                                        int div = NumPeriod / 12;    // In case of 24, Y12.
+                                                        if (rem > 0 || div > 1)
+                                                        {
+                                                            Plan_Campaign_Program_Tactic_Actual objLinkedTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                                            objLinkedTacticActual.PlanTacticId = linkedTacId;           // LinkedTactic Id.
+                                                            objLinkedTacticActual.Period = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
+                                                            objLinkedTacticActual.StageTitle = Common.StageProjectedStageValue;
+                                                            objLinkedTacticActual.Actualvalue = objCampaignMember.Count;
+                                                            objLinkedTacticActual.CreatedBy = _userId;
+                                                            objLinkedTacticActual.CreatedDate = DateTime.Now;
+                                                            db.Entry(objLinkedTacticActual).State = EntityState.Added;
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
 
@@ -1371,8 +1443,7 @@ namespace Integration.Salesforce
                                         // Update linked Tactic lastSync Date,ModifiedDate & ModifiedBy.
                                         if (linkedTacId > 0) // check whether linkedTactics exist or not.
                                         {
-                                            objLinkedTactic = new Plan_Campaign_Program_Tactic();
-                                            objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == linkedTacId).FirstOrDefault();
+                                            
                                             objLinkedTactic.LastSyncDate = DateTime.Now;
                                             objLinkedTactic.ModifiedDate = DateTime.Now;
                                             objLinkedTactic.ModifiedBy = _userId;
@@ -2166,6 +2237,7 @@ namespace Integration.Salesforce
 
                                             List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = tblPlanActual.Where(actual => tacticidactual.Contains(actual.PlanTacticId)).ToList();
                                             List<Plan_Campaign_Program_Tactic_Actual> LinkedActualTacticList = null;
+                                            List<int> lstMultiLinkedTactic = new List<int>();
                                             if (!isDoneFirstPullCW)
                                             {
                                                 OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
@@ -2174,7 +2246,49 @@ namespace Integration.Salesforce
                                                     LinkedActualTacticList = tblPlanActual.Where(actual => LinkedTacticActualsId.Contains(actual.PlanTacticId)).ToList();
                                                     if (LinkedActualTacticList != null && LinkedActualTacticList.Count > 0)
                                                     {
-                                                        LinkedActualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                        //LinkedActualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+
+                                                        // Remove linked Tactic's Actuals.
+                                                        List<int> linkedTactics = new List<int>();
+                                                        linkedTactics = LinkedActualTacticList.Select(actl => actl.PlanTacticId).ToList();
+                                                        #region "Get list of linked Tactics that multiyear or not"
+                                                        Plan_Campaign_Program_Tactic objLnkTac = null;
+                                                        int yeardiff = 0, cntr = 0, perdNum = 12; bool isMultilinkedTactic = false;
+                                                        List<Plan_Campaign_Program_Tactic_Actual> linkedactualTacticList = null;
+                                                        List<string> lstLinkedPeriods = new List<string>();
+                                                        foreach (int linkdTacId in linkedTactics)
+                                                        {
+                                                            objLnkTac = new Plan_Campaign_Program_Tactic();
+                                                            objLnkTac = tblPlanTactic.Where(tac => tac.PlanTacticId == linkdTacId).FirstOrDefault();
+
+                                                            yeardiff = objLnkTac.EndDate.Year - objLnkTac.StartDate.Year;
+                                                            isMultilinkedTactic = yeardiff > 0 ? true : false;
+                                                            linkedactualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                                                            if (isMultilinkedTactic)
+                                                            {
+                                                                // remove linked tactic respective months actuals data.
+                                                                lstLinkedPeriods = new List<string>();
+                                                                cntr = 12 * yeardiff;
+                                                                for (int i = 1; i <= cntr; i++)
+                                                                {
+                                                                    lstLinkedPeriods.Add(PeriodChar + (perdNum + i).ToString());
+                                                                }
+                                                                lstMultiLinkedTactic.Add(linkdTacId);
+                                                                linkedactualTacticList = LinkedActualTacticList.Where(actual => linkedTactics.Contains(actual.PlanTacticId) && lstLinkedPeriods.Contains(actual.Period)).ToList();
+                                                                if (linkedactualTacticList != null && linkedactualTacticList.Count > 0)
+                                                                    linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                            }
+                                                            else
+                                                            {
+                                                                linkedactualTacticList = LinkedActualTacticList.Where(actual => linkedTactics.Contains(actual.PlanTacticId)).ToList();
+                                                                if (linkedactualTacticList != null && linkedactualTacticList.Count > 0)
+                                                                    linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                            }
+                                                        }
+                                                        #endregion
+
+                                                        //List<Plan_Campaign_Program_Tactic_Actual> linkedactualTacticList = tblActuals.Where(actual => linkedTactics.Contains(actual.PlanTacticId)).ToList();
+                                                        //linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
                                                     }
                                                 }
                                                 db.SaveChanges();
@@ -2234,48 +2348,71 @@ namespace Integration.Salesforce
                                                     #region "Add/Update  Linked Tactic Actuals"
                                                     if (lnkdTacId > 0)
                                                     {
-                                                        var lnkdActualCW = LinkedActualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == lnkdTacId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageCW);
-                                                        if (lnkdActualCW != null && isDoneFirstPullCW)
-                                                        {
-                                                            lnkdActualCW.Actualvalue = innertacticactualcw.Actualvalue + objOpportunityMember.Count;
-                                                            lnkdActualCW.ModifiedDate = DateTime.Now;
-                                                            lnkdActualCW.ModifiedBy = _userId;
-                                                            db.Entry(lnkdActualCW).State = EntityState.Modified;
-                                                        }
+                                                        string orgPeriod = objOpportunityMember.Period;
+                                                        string numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
+                                                        int NumPeriod = int.Parse(numPeriod), yearDiff=1;
+                                                        string lnkePeriod = string.Empty;
+                                                        //int yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+                                                        if (lstMultiLinkedTactic.ToList().Any(tacId => tacId == lnkdTacId)) //Is linked tactic Multiyear
+                                                            lnkePeriod = PeriodChar + ((12 * yearDiff) + NumPeriod).ToString();   // (12*1)+3 = 15 => For March(Y15) month. 
                                                         else
                                                         {
-                                                            Plan_Campaign_Program_Tactic_Actual objlnkdTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                                            objlnkdTacticActual.PlanTacticId = lnkdTacId;
-                                                            objlnkdTacticActual.Period = objOpportunityMember.Period;
-                                                            objlnkdTacticActual.StageTitle = Common.StageCW;
-                                                            objlnkdTacticActual.Actualvalue = objOpportunityMember.Count;
-                                                            objlnkdTacticActual.CreatedBy = _userId;
-                                                            objlnkdTacticActual.CreatedDate = DateTime.Now;
-                                                            db.Entry(objlnkdTacticActual).State = EntityState.Added;
+                                                            if (NumPeriod > 12)
+                                                            {
+                                                                int rem = NumPeriod % 12;    // For March, Y3(i.e 15%12 = 3)  
+                                                                int div = NumPeriod / 12;    // In case of 24, Y12.
+                                                                if (rem > 0 || div > 1)
+                                                                {
+                                                                    lnkePeriod = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
+                                                                }
+                                                            }
+                                                            //lnkePeriod = 
                                                         }
 
-                                                        var lnkdActualRevenue = LinkedActualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == lnkdTacId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageRevenue);
-                                                        if (lnkdActualRevenue != null && isDoneFirstPullCW)
+                                                        if (!string.IsNullOrEmpty(lnkePeriod))
                                                         {
-                                                            lnkdActualRevenue.Actualvalue = innertacticactualrevenue.Actualvalue + objOpportunityMember.Revenue;
-                                                            lnkdActualRevenue.ModifiedDate = DateTime.Now;
-                                                            lnkdActualRevenue.ModifiedBy = _userId;
-                                                            db.Entry(lnkdActualRevenue).State = EntityState.Modified;
-                                                        }
-                                                        else
-                                                        {
-                                                            Plan_Campaign_Program_Tactic_Actual objlnkdTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
-                                                            objlnkdTacticActualRevenue.PlanTacticId = lnkdTacId;
-                                                            objlnkdTacticActualRevenue.Period = objOpportunityMember.Period;
-                                                            objlnkdTacticActualRevenue.StageTitle = Common.StageRevenue;
-                                                            objlnkdTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
-                                                            objlnkdTacticActualRevenue.CreatedBy = _userId;
-                                                            objlnkdTacticActualRevenue.CreatedDate = DateTime.Now;
-                                                            db.Entry(objlnkdTacticActualRevenue).State = EntityState.Added;
+                                                            var lnkdActualCW = LinkedActualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == lnkdTacId && tacticActual.Period == lnkePeriod && tacticActual.StageTitle == Common.StageCW);
+                                                            if (lnkdActualCW != null && isDoneFirstPullCW)
+                                                            {
+                                                                lnkdActualCW.Actualvalue = innertacticactualcw.Actualvalue + objOpportunityMember.Count;
+                                                                lnkdActualCW.ModifiedDate = DateTime.Now;
+                                                                lnkdActualCW.ModifiedBy = _userId;
+                                                                db.Entry(lnkdActualCW).State = EntityState.Modified;
+                                                            }
+                                                            else
+                                                            {
+                                                                Plan_Campaign_Program_Tactic_Actual objlnkdTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                                                objlnkdTacticActual.PlanTacticId = lnkdTacId;
+                                                                objlnkdTacticActual.Period = lnkePeriod;
+                                                                objlnkdTacticActual.StageTitle = Common.StageCW;
+                                                                objlnkdTacticActual.Actualvalue = objOpportunityMember.Count;
+                                                                objlnkdTacticActual.CreatedBy = _userId;
+                                                                objlnkdTacticActual.CreatedDate = DateTime.Now;
+                                                                db.Entry(objlnkdTacticActual).State = EntityState.Added;
+                                                            }
+
+                                                            var lnkdActualRevenue = LinkedActualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == lnkdTacId && tacticActual.Period == lnkePeriod && tacticActual.StageTitle == Common.StageRevenue);
+                                                            if (lnkdActualRevenue != null && isDoneFirstPullCW)
+                                                            {
+                                                                lnkdActualRevenue.Actualvalue = innertacticactualrevenue.Actualvalue + objOpportunityMember.Revenue;
+                                                                lnkdActualRevenue.ModifiedDate = DateTime.Now;
+                                                                lnkdActualRevenue.ModifiedBy = _userId;
+                                                                db.Entry(lnkdActualRevenue).State = EntityState.Modified;
+                                                            }
+                                                            else
+                                                            {
+                                                                Plan_Campaign_Program_Tactic_Actual objlnkdTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
+                                                                objlnkdTacticActualRevenue.PlanTacticId = lnkdTacId;
+                                                                objlnkdTacticActualRevenue.Period = lnkePeriod;
+                                                                objlnkdTacticActualRevenue.StageTitle = Common.StageRevenue;
+                                                                objlnkdTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
+                                                                objlnkdTacticActualRevenue.CreatedBy = _userId;
+                                                                objlnkdTacticActualRevenue.CreatedDate = DateTime.Now;
+                                                                db.Entry(objlnkdTacticActualRevenue).State = EntityState.Added;
+                                                            } 
                                                         }
                                                     } 
                                                     #endregion
-
                                                 }
 
                                                 tactic.LastSyncDate = DateTime.Now;
@@ -2995,11 +3132,27 @@ namespace Integration.Salesforce
             Enums.Mode currentMode = Common.GetMode(planTactic.IntegrationInstanceTacticId);
             if (currentMode.Equals(Enums.Mode.Create))
             {
-                Plan_Campaign_Program planProgram = planTactic.Plan_Campaign_Program;
+                Plan_Campaign_Program planProgram = new Plan_Campaign_Program();
+
+                // If Tactic is linked then sync latest year Program & Campaign to Salesforce.
+                if (lnkdTactic != null && lnkdTactic.PlanTacticId >0)
+                {
+                    string orgnPlanYear = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+                    string lnkdPlanYear = lnkdTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+                    if (!string.IsNullOrEmpty(orgnPlanYear) && !string.IsNullOrEmpty(lnkdPlanYear))
+                    {
+                        if(int.Parse(orgnPlanYear) > int.Parse(lnkdPlanYear))
+                            planProgram = planTactic.Plan_Campaign_Program;
+                        else
+                            planProgram = lnkdTactic.Plan_Campaign_Program;
+                    }
+                }
+
+                //Plan_Campaign_Program planProgram = planTactic.Plan_Campaign_Program;
                 _parentId = planProgram.IntegrationInstanceProgramId;
                 if (string.IsNullOrWhiteSpace(_parentId))
                 {
-                    Plan_Campaign planCampaign = planTactic.Plan_Campaign_Program.Plan_Campaign;
+                    Plan_Campaign planCampaign = planProgram.Plan_Campaign;
                     _parentId = planCampaign.IntegrationInstanceCampaignId;
                     if (string.IsNullOrWhiteSpace(_parentId))
                     {
@@ -4597,4 +4750,9 @@ namespace Integration.Salesforce
             }
         }
     }
+}
+public class linkedTacticMultipleList
+{
+    public int LinkedTacticId { get; set; }
+    public List<string> lstLinkedPeriods { get; set; }
 }

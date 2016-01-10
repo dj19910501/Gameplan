@@ -1492,8 +1492,8 @@ namespace RevenuePlanner.Helpers
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
                     objPlanTactic.Tactic_Share = objPlanTactic.Tactic_Share.ToList();
                     objPlanTactic.PlanProgramId = parentEntityId;
-                    objPlanTactic.StartDate = (objPlanTactic.StartDate.Year != startDate.Year) ? GetResultDateforLink(objPlanTactic.StartDate, startDate, true) : objPlanTactic.StartDate;
-                    objPlanTactic.EndDate = (objPlanTactic.EndDate.Year != endDate.Year) ? GetResultDateforLink(objPlanTactic.EndDate, endDate, false) : objPlanTactic.EndDate;
+                    objPlanTactic.StartDate = GetResultDateforLink(objPlanTactic.StartDate, startDate, true);
+                    objPlanTactic.EndDate = objPlanTactic.EndDate;
                     //objPlanTactic.StartDate = objPlanTactic.StartDate;
                     //objPlanTactic.EndDate = objPlanTactic.EndDate;
                     objPlanTactic.LinkedPlanId = planid;

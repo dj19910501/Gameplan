@@ -2510,6 +2510,33 @@ namespace RevenuePlanner.Helpers
         }
         ////End - Added by Rahul Shah for PL ticket #1846
 
+        ////Start - Added by Rahul Shah for PL ticket #1846
+        private string _DifferentModel;
+        public string DifferentModel
+        {
+            get
+            {
+                return _DifferentModel;
+            }
+            set
+            {
+                _DifferentModel = value;
+            }
+        }
+        ////End - Added by Rahul Shah for PL ticket #1846
+
+        private string _ExtendedProgram;
+        public string ExtendedProgram
+        {
+            get
+            {
+                return _ExtendedProgram;
+            }
+            set
+            {
+                _ExtendedProgram = value;
+            }
+        }
         private string _LinkedTacticExtendedYear;
         public string LinkedTacticExtendedYear
         {
@@ -3382,7 +3409,13 @@ namespace RevenuePlanner.Helpers
                                             _ModelTypeConflict = strMsgValue;
                                             break;
                                         ////End - Added by Rahul Shah for PL ticket #1846
-                                            ////Start - Added by Rahul Shah for PL ticket #1846
+                                        ////Start - Added by Rahul Shah for PL ticket #1846
+                                        case "DifferentModel":
+                                            _DifferentModel = strMsgValue;
+                                            break;
+                                        ////End - Added by Rahul Shah for PL ticket #1846
+                                            
+                                        ////Start - Added by Rahul Shah for PL ticket #1846
                                         case "LinkedTacticExtendedYear":
                                             _LinkedTacticExtendedYear = strMsgValue;
                                             break;
@@ -3411,6 +3444,9 @@ namespace RevenuePlanner.Helpers
                                             _LinkedPlanEntityDuplicated = strMsgValue;
                                             break;
                                         ////End - Added by Viral Kadiya for PL ticket #1849
+                                        case "ExtendedProgram":
+                                            _ExtendedProgram = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;
