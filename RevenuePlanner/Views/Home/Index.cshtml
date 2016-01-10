@@ -2222,7 +2222,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Home/BindUpcomingActivitesValues/")',
-            //async: false,// Comment by bhavesh
+            async: false,// Comment by bhavesh // Uncomment By Nishant Sheth Desc :: Due to selected min year records display
             data: {
                 planids: SelectedPlanIds,
                 CurrentTime: Currenttime
@@ -2247,6 +2247,7 @@
             });
         }
         $dropdown.append($html);
+        Currenttime = $("#ddlUpComingActivites").val();
         $("#ddlUpComingActivites").selectbox('detach');
         $("#ddlUpComingActivites").selectbox("attach");
     }
