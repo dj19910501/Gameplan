@@ -5201,7 +5201,7 @@ namespace RevenuePlanner.Controllers
                                 #region "Update Linked Tactic Budget data"
 
                                 // Remove old linked tactic budget data.
-                                List<Plan_Campaign_Program_Tactic_Budget> lstBudgetData = tblTacticBudget.Where(tac => tac.PlanTacticId == form.PlanTacticId).ToList();
+                                List<Plan_Campaign_Program_Tactic_Budget> lstBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == form.PlanTacticId).ToList();
                                 if (lstBudgetData != null && lstBudgetData.Count > 0)
                                 {
                                     List<Plan_Campaign_Program_Tactic_Budget> linkedBudgetData = new List<Plan_Campaign_Program_Tactic_Budget>();
