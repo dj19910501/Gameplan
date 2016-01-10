@@ -1595,7 +1595,7 @@
                                 if (UpdateColumn == "Start Date") {
                                   
                                     if(states.IsExtended){
-                                        alert("Start date must be current Plan year");
+                                        alert("Since the Tactic is link to another Plan, it cannot be extended");
                                         return false;
                                     }
 
@@ -1646,7 +1646,7 @@
                                 if (UpdateColumn == "End Date") {
                                    
                                     if(states.IsExtended){
-                                        alert("End date must be current Plan year");
+                                        alert("Since the Tactic is link to another Plan, it cannot be extended");
                                         return false;
                                     }
                                     //Modified By Komal Rawal for #1848 Link To tactic feature
