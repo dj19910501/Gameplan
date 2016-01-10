@@ -1593,6 +1593,7 @@
                                     return false;
                                 }
                                 if (UpdateColumn == "Start Date") {
+                                  
                                     if(states.IsExtended){
                                         alert("Start date must be current Plan year");
                                         return false;
@@ -1604,9 +1605,12 @@
                                     var StartYear = nValue.split('/')[2];
                                     var YearDiff = EndYear - StartYear;
 
+                                    var oldvalueofEndYear = oValue.split('/')[2];
+                                    var _yrDiff=oldvalueofEndYear-StartYear;
+
                                     if(YearDiff > 0)
                                     {
-
+                                       
                                         var getvalue = HomeGrid.cells(rowId, 1).getValue();
                                         var Index = getvalue.indexOf("</div>");
                                         if(Index <= -1)
@@ -1620,10 +1624,17 @@
                                     }
                                     else
                                     {
+                                      
+                                        if(_yrDiff == 0)
+                                        {
+                                            return false;
+                                        }
+
                                         var getvalue = HomeGrid.cells(rowId, 1).getValue();
                                         var Index = getvalue.indexOf("</div>");
                                         if(Index > -1)
                                         {
+                                           
                                             HomeGrid.cells(rowId, 1).setValue(getvalue.split("</div>")[1]);
                                             $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "False")
                                         }
@@ -1633,6 +1644,7 @@
                                 }
 
                                 if (UpdateColumn == "End Date") {
+                                   
                                     if(states.IsExtended){
                                         alert("End date must be current Plan year");
                                         return false;
@@ -1642,9 +1654,14 @@
                                     var StartYear = StartDate.split('/')[2];
                                     var EndYear = nValue.split('/')[2];
                                     var YearDiff = EndYear - StartYear;
+                                    //
+                                    var oldvalueofEndYear = oValue.split('/')[2];
+                                    var _yrDiff=oldvalueofEndYear-StartYear;
+                                   //
 
                                     if(YearDiff > 0)
                                     {
+                                       
                                         var getvalue = HomeGrid.cells(rowId, 1).getValue();
                                         var Index = getvalue.indexOf("</div>");
                                         if(Index <= -1)
@@ -1653,12 +1670,16 @@
                                             HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
                                             $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
                                         }
-
-
-
                                     }
                                     else
                                     {
+                                       
+                                       // return false;
+                                        if(_yrDiff == 0)
+                                        {
+                                            return false;
+                                        }
+
                                         var getvalue = HomeGrid.cells(rowId, 1).getValue();
                                         var Index = getvalue.indexOf("</div>");
                                         if(Index > -1)
