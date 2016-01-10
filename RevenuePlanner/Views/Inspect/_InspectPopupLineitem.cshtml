@@ -373,7 +373,11 @@
          $("#liSetup,#liReview,#liBudget,#liActuals").on("click", function () {
              var activeTab = $("#InspectTab li.active a").text();
              tabtext = ($(this).children('a').text());
-             var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal 
+             // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
+             var returnpara = true;
+             if (tabtext != activeTab) {
+                 var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal 
+             }
              if (returnpara) {
                  $("#successMessageViewCampaign").slideUp(50);
                  $("#errorMessageEditCampaign").slideUp(50);
