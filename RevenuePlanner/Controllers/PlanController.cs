@@ -8730,11 +8730,28 @@ namespace RevenuePlanner.Controllers
 
                     var yearDiff = ObjLinkedTactic.EndDate.Year - ObjLinkedTactic.StartDate.Year;
                     var isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
-
+                    int cntr = 0, perdNum=12;
+                    List<string> lstLinkedPeriods = new List<string>();
                     if (lstLineItemData != null && lstLineItemData.Count > 0)
                     {
-                        List<Plan_Campaign_Program_Tactic_LineItem_Actual> linkedLineItemData = tblLineItemData.Where(id => id.PlanLineItemId == LinkedLineitemId).ToList();
-                        linkedLineItemData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
+                        if (isMultiYearlinkedTactic)
+                        {
+                            cntr = 12 * yearDiff;
+                            for (int i = 1; i <= cntr; i++)
+                            {
+                                lstLinkedPeriods.Add(PeriodChar + (perdNum + i).ToString());
+                            }
+                            List<Plan_Campaign_Program_Tactic_LineItem_Actual> linkedLineItemData = tblLineItemData.Where(id => id.PlanLineItemId == LinkedLineitemId && lstLinkedPeriods.Contains(id.Period)).ToList();
+                            if (linkedLineItemData != null && linkedLineItemData.Count >0)
+                                linkedLineItemData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
+                        }
+                        else
+                        {
+                            List<Plan_Campaign_Program_Tactic_LineItem_Actual> linkedLineItemData = tblLineItemData.Where(id => id.PlanLineItemId == LinkedLineitemId).ToList();
+                            if (linkedLineItemData != null && linkedLineItemData.Count > 0)
+                                linkedLineItemData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
+                        }
+
                         Plan_Campaign_Program_Tactic_LineItem_Actual objlinkedActual = null;
                         foreach (Plan_Campaign_Program_Tactic_LineItem_Actual item in lstLineItemData)
                         {
