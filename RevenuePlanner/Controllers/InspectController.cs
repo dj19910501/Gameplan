@@ -4195,8 +4195,8 @@ namespace RevenuePlanner.Controllers
                                     linkedTactic.CreatedBy = pcpobj.CreatedBy;
                                     //linkedTactic.ProjectedStageValue = pcpobj.ProjectedStageValue;
                                     linkedTactic.Status = pcpobj.Status;
-                                    linkedTactic.StartDate = pcpobj.StartDate;
-                                    linkedTactic.EndDate = pcpobj.EndDate;
+                                    //linkedTactic.StartDate = pcpobj.StartDate;
+                                    //linkedTactic.EndDate = pcpobj.EndDate;
                                     if (linkedTactic.Plan_Campaign_Program.StartDate > linkedTactic.StartDate)
                                     {
                                         linkedTactic.Plan_Campaign_Program.StartDate = form.StartDate;
@@ -8060,8 +8060,8 @@ namespace RevenuePlanner.Controllers
                     int Tacticid = Convert.ToInt32(Id);
                     int linkedTacticId = 0;
 
-                    List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Select(tac => tac).ToList();
-                    var objpcpt = tblPlanTactic.Where(_tactic => _tactic.PlanTacticId == Tacticid).FirstOrDefault();
+                 //   List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Select(tac => tac).ToList();
+                    var objpcpt = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == Tacticid).FirstOrDefault();
                     int pid = objpcpt.PlanProgramId;
                     int cid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == pid).Select(program => program.PlanCampaignId).FirstOrDefault();
 
@@ -8074,7 +8074,7 @@ namespace RevenuePlanner.Controllers
                     //}
                     #endregion
                     //// Get Tactic duplicate record.
-                    var pcpvar = (from pcpt in tblPlanTactic
+                    var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
                                   join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                   join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
                                   where pcpt.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(Tacticid) && pcpt.IsDeleted.Equals(false)
@@ -8086,9 +8086,9 @@ namespace RevenuePlanner.Controllers
                     Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
                     if (linkedTacticId > 0)
                     {
-                        linkedTactic = tblPlanTactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
+                        linkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
 
-                        dupLinkedTactic = (from pcpt in tblPlanTactic
+                        dupLinkedTactic = (from pcpt in db.Plan_Campaign_Program_Tactic
                                            join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                            join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
                                            where pcpt.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(linkedTacticId) && pcpt.IsDeleted.Equals(false)
@@ -8110,14 +8110,14 @@ namespace RevenuePlanner.Controllers
                     else
                     {
 
-                        Plan_Campaign_Program_Tactic pcpobj = tblPlanTactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(Tacticid)).FirstOrDefault();
+                        Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(Tacticid)).FirstOrDefault();
                         pcpobj.Title = title;
                         db.Entry(pcpobj).State = EntityState.Modified;
 
                         #region "update linked Tactic"
                         if (linkedTacticId > 0)
                         {
-                            Plan_Campaign_Program_Tactic lnkPCPT = tblPlanTactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
+                            Plan_Campaign_Program_Tactic lnkPCPT = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
                             lnkPCPT.Title = title;
                             db.Entry(lnkPCPT).State = EntityState.Modified;
                         }
@@ -8135,9 +8135,9 @@ namespace RevenuePlanner.Controllers
                     int cid = 0;
                     int pid = 0;
                     //int linkedTacticId = 0;
-                    List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Select(tac => tac).ToList();
+                  //  List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Select(tac => tac).ToList();
 
-                    var objTactic = tblPlanTactic.FirstOrDefault(t => t.PlanTacticId == tid);
+                    var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == tid);
                     if (objTactic != null)
                     {
                         cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
@@ -8146,29 +8146,29 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        objTactic = tblPlanTactic.FirstOrDefault(t => t.PlanTacticId == PlanLineItemId);
+                        objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == PlanLineItemId);
 
                         cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
                         pid = objTactic.PlanProgramId;
                     }
-                    List<Plan_Campaign_Program_Tactic_LineItem> tblPlanLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(line => line.IsDeleted == false).ToList();
+                 //   List<Plan_Campaign_Program_Tactic_LineItem> tblPlanLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(line => line.IsDeleted == false).ToList();
                     //// Get Duplicate record to check duplication.
-                    var pcptvar = (from pcptl in tblPlanLineItem
-                                   join pcpt in tblPlanTactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
+                    var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
+                                   join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
                                    join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                    join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
                                    where pcptl.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(PlanLineItemId) && pcptl.IsDeleted.Equals(false)
                                                    && pcpt.PlanTacticId == tid
                                    select pcpt).FirstOrDefault();
 
-                    Plan_Campaign_Program_Tactic_LineItem objLineitem = tblPlanLineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(PlanLineItemId));
+                    Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(PlanLineItemId));
 
                     #region "Retrieve Linked Plan Line Item"
                     int linkedLineItemId = 0;
                     linkedLineItemId = (objLineitem != null && objLineitem.LinkedLineItemId.HasValue) ? objLineitem.LinkedLineItemId.Value : 0;
                     if (linkedLineItemId <= 0)
                     {
-                        var lnkPlanLineItem = tblPlanLineItem.Where(tac => tac.LinkedLineItemId == objLineitem.PlanLineItemId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                        var lnkPlanLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(tac => tac.LinkedLineItemId == objLineitem.PlanLineItemId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
                         linkedLineItemId = lnkPlanLineItem != null ? lnkPlanLineItem.PlanLineItemId : 0;
                     }
                     #endregion
@@ -8188,8 +8188,8 @@ namespace RevenuePlanner.Controllers
                     //// Get Duplicate record to check duplication.
                     if (linkedLineItemId > 0)
                     {
-                        duplTactic = (from pcptl in tblPlanLineItem
-                                      join pcpt in tblPlanTactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
+                        duplTactic = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
+                                      join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
                                       join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                       join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
                                       where pcptl.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(linkedLineItemId) && pcptl.IsDeleted.Equals(false)
@@ -8218,7 +8218,7 @@ namespace RevenuePlanner.Controllers
                         // Update linked LineItem Title.
                         if (linkedLineItemId > 0)
                         {
-                            Plan_Campaign_Program_Tactic_LineItem objLinkedLineitem = tblPlanLineItem.FirstOrDefault(line => line.PlanLineItemId.Equals(linkedLineItemId));
+                            Plan_Campaign_Program_Tactic_LineItem objLinkedLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(line => line.PlanLineItemId.Equals(linkedLineItemId));
                             objLinkedLineitem.Title = title;
                             objLinkedLineitem.ModifiedBy = Sessions.User.UserId;
                             objLinkedLineitem.ModifiedDate = objLineitem.ModifiedDate;
