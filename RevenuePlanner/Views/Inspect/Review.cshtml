@@ -246,7 +246,7 @@
                        }
                        else if (item.Key == Enums.IntegrationType.WorkFront.ToString()) 
                        {
-                        <div class="pull-left margin-left20 integration-review-imglink gray-input">
+                        <div class="pull-left margin-left20 integration-review-imglink">
                             <a href=@item.Value onclick="window.open(this.href); return false;" label="WorkFront">
                                 <div class="link_popup pull-right margin-bottom10"></div>
                                 <div class="workfront-img margin-top23"></div>
@@ -261,68 +261,66 @@
 
         </div>
         <!--End PL#1462 07 Brad Gray, Aug 2015-->
+        @if ((bool)ViewBag.IsModelDeploy && (bool)ViewBag.IsModelIntegratedWorkFront)
+        {
+            <div class="row gray-input" style="padding-top:20px">
+                <div class="span2 float-left margin-left20" style="padding-bottom: 8px; margin-bottom: 8px">
+                    <label id="workfrontTacticType">Tactic Type</label>
+                    <label id="tacticTypeTitle" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.TacticTypeTitle)">@Html.Raw(tacticReview.TacticTypeTitle)</label>
+                    <label id="workfrontTemplate">WorkFront Template</label>
+                    <label id="workfront_template" class="blue-text bold font-size12" title="@Html.Raw(ViewBag.WorkFront_Template) ">@Html.Raw(ViewBag.WorkFront_Template)</label>
+                </div>
 
-        <div class="row gray-input" style="margin-top:-5px">
 
-            <div style="padding-bottom: 8px; margin-bottom: 8px;" class="span2">
-                <div style="float: left; width: 98%; border-right: 1px solid #b2afaf">
-                    <div class="source-sans-prosemibold">Tactic Type</div>
-                    <div>
-                        <div id="campaign-title1" class="sub-head" title="@Html.Raw(tacticReview.TacticTypeTitle) ">@Html.Raw(tacticReview.TacticTypeTitle)</div>
+
+                <div class="span3" style="padding-left:40px">
+                    <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
+                    <div class="radio " style="width:100%; float:left;margin-left:20px">
+                        <label class="font-size12">
+                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
+                            Create a Project
+                        </label>
                     </div>
-                    <div class="source-sans-prosemibold">WorkFront Template</div>
-                    <div>
-                        <div id="program-title1" class="sub-head" title="@Html.Raw(ViewBag.WorkFront_Template) ">@Html.Raw(ViewBag.WorkFront_Template)</div>
+                    <div class="radio" style="width:100%; float:left; margin-left:20px">
+                        <label class="font-size12">
+                            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                            Create a Request
+                        </label>
                     </div>
                 </div>
-            </div>
 
 
 
-            <div class="span3" style="padding-left:40px">
-                <h5>Tactic Approval Behavior</h5>
-                <div class="radio" style="width:100%; float:left;margin-left:20px">
-                    <label>
-                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
-                        Create a project in WorkFront
-                    </label>
+                <div class="span2" style="padding-left: 20px;">
+                    <div class="cf form-group">
+                        @Html.Label("Request Queue")
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Dropdown
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="cf form-group">
+                        @Html.Label("Assigned To")
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Dropdown
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    
                 </div>
-                <div class="radio" style="width:100%; float:left; margin-left:20px">
-                    <label>
-                        <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                        Create a request in WorkFront
-                    </label>
-                </div>
-            </div>
 
-            <div class="span2" style="padding-left: 20px; border-right:1px solid #b2afaf">
-                <div class="cf form-group">
-                    @Html.Label("Request Queue")
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        Dropdown
-                        <span class="caret"></span>
-                    </button>
+                <div class="span2" style="padding-left: 20px;">
+                    <div class="cf form-group">
+                        @Html.Label("Custom Form")
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Dropdown
+                            <span class="caret"></span>
+                        </button>
+                    </div>
                 </div>
-                <div class="cf form-group">
-                    @Html.Label("Assigned To")
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        Dropdown
-                        <span class="caret"></span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="span3" style="padding-left:40px">
-                <h5>Organization Behavior</h5>
-                <div class="checkbox" style="width:100%; float:left;margin-left:20px">
-                    <label>
-                        <input type="checkbox" value="" id="organizationSelection">
-                        Organize WorkFront projects
-                    </label>
-                </div>
-            </div>
-
-        </div>
+           </div>
+        }
+      
     </div>
    
 
