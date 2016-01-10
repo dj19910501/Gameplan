@@ -2360,6 +2360,11 @@
 
     function CallPDF() {
         //  $("#gantt_here").css("Width", $("#testdiv").width());
+      
+        if ($("#NodatawithfilterCalendar").css('display') == "block")
+        {
+            return false;
+        }
 
         $.each(GanttTaskData.data, function () {
             this.color = '#' + this.colorcode;
