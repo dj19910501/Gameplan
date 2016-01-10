@@ -978,7 +978,10 @@
     <value>Linking process cannot proceed due to source and destination Models are different.</value>
   </Field>
   <!--end Added by Rahul Shah for PL ticket #1846-->
-  
+  <Field>
+    <Name>ExtendedProgram</Name>
+    <value>Linking process cannot proceed due to destination program is already extended to next year.</value>
+  </Field>
 	<!--start Added by Rahul Shah for PL ticket #1846-->
 	<Field>
 		<Name>LinkEntitySuccessMessage</Name>

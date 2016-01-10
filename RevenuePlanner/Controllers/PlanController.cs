@@ -12822,6 +12822,12 @@ namespace RevenuePlanner.Controllers
                         isValid = false;
 
                 }
+                var startDate = db.Plan_Campaign.Where(st => st.PlanId == destPlanId).Select(st => st.StartDate).Min();
+                var endDate = db.Plan_Campaign.Where(st => st.PlanId == destPlanId).Select(st => st.EndDate).Max();
+                if ((endDate.Year) - (startDate.Year) > 0)
+                {
+                    return Json(new { msg = Common.objCached.ExtendedProgram, isSuccess = false }, JsonRequestBehavior.AllowGet);
+                }
                 if (!isValid)
                     return Json(new { msg = Common.objCached.TacticTypeConflictMessageforLinking, isSuccess = false }, JsonRequestBehavior.AllowGet);
                 //Return:- quiet code execution process and give warning message like "Source and Destination plan refer to different Model this may cause invalid data".

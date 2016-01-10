@@ -2525,6 +2525,18 @@ namespace RevenuePlanner.Helpers
         }
         ////End - Added by Rahul Shah for PL ticket #1846
 
+        private string _ExtendedProgram;
+        public string ExtendedProgram
+        {
+            get
+            {
+                return _ExtendedProgram;
+            }
+            set
+            {
+                _ExtendedProgram = value;
+            }
+        }
         private string _LinkedTacticExtendedYear;
         public string LinkedTacticExtendedYear
         {
