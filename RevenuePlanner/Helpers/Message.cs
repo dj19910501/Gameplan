@@ -3444,6 +3444,9 @@ namespace RevenuePlanner.Helpers
                                             _LinkedPlanEntityDuplicated = strMsgValue;
                                             break;
                                         ////End - Added by Viral Kadiya for PL ticket #1849
+                                        case "ExtendedProgram":
+                                            _ExtendedProgram = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;
