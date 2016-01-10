@@ -545,7 +545,11 @@ namespace Integration.WorkFront
             //update WorkFront request queues for the instance
             try
             {
-                JToken qFromWorkFront = client.Search(ObjCode.QUEUE, new { fields = "ID,allowedOpTaskTypes,projectID" }); 
+                string searchFields = "allowedOpTaskTypes,projectID,project,templateID,isPublic&allowedOpTaskTypes";
+                string allowedOpTaskTypeString = "ISU&allowedOpTaskTypes=REQ"; //need to combine both here. Request queues have both ISU and REQ as the OpTaskType
+
+                //request queues can be created against templates. search only for request queues created against a project
+                JToken qFromWorkFront = client.Search(ObjCode.QUEUE, new { fields = searchFields, allowedOpTaskTypes = allowedOpTaskTypeString, projectID_Mod = "notnull" }); 
                 //Get the list of request queus in the database
                 List<IntegrationWorkFrontRequestQueue> queuesFromDB = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId  == _integrationInstanceId && q.IsDeleted==false).ToList();
                 List<string> qIdsFromDB = queuesFromDB.Select(q => q.RequestQueueId).ToList();
@@ -556,34 +560,30 @@ namespace Integration.WorkFront
                 {
                     string qID = queue["ID"].ToString().Trim(); 
                     queueIdsFromWorkFront.Add(qID);
-                    if ( !qIdsFromDB.Contains(qID)) //found a queue in WorkFront that isn't in the database. add it to database
+
+                    if ( !qIdsFromDB.Contains(qID) ) //found a queue in WorkFront that isn't in the database. add it to database
                     {
                         IntegrationWorkFrontRequestQueue newQueue = new IntegrationWorkFrontRequestQueue();
                         newQueue.IntegrationInstanceId = _integrationInstanceId;
                         newQueue.RequestQueueId = qID;
-                        newQueue.RequestQueueName = queue["name"].ToString();
+                        newQueue.RequestQueueName = queue["project"]["name"].ToString();
                         newQueue.IsDeleted = false;
                         db.Entry(newQueue).State = EntityState.Added;
                     }
                     else {
                         IntegrationWorkFrontRequestQueue queueToEdit = db.IntegrationWorkFrontRequestQueues.Where(q => q.RequestQueueId == qID && q.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
-                        queueToEdit.RequestQueueName = queue["name"].ToString();
+                        queueToEdit.RequestQueueName = queue["project"]["name"].ToString(); //update the name in the database
                         db.Entry(queueToEdit).State = EntityState.Modified;
                     }
                 }
 
-               //templates in the database that are not in WorkFront need to be set to deleted in database 
+               //queues in the database that are not in WorkFront need to be set to deleted in database 
                List<string> inDatabaseButNotInWorkFront = qIdsFromDB.Except(queueIdsFromWorkFront).ToList();
                List<IntegrationWorkFrontRequestQueue> queuesToDelete = db.IntegrationWorkFrontRequestQueues.Where(t => inDatabaseButNotInWorkFront.Contains(t.RequestQueueId)).ToList();
                if (queuesToDelete.Count > 0)
                {
                    queuesToDelete.Select(c => { c.IsDeleted = true; return c; }).ToList();
                    db.Entry(queuesToDelete).State = EntityState.Modified;
-                 //  foreach (IntegrationWorkFrontRequestQueue rq in queuesToDelete)
-                  // {
-                   //    rq.IsDeleted = true;
-                    //   db.Entry(rq).State = EntityState.Modified;
-                  // }
                }
               
             }
