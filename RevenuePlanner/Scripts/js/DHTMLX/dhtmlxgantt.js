@@ -9970,8 +9970,8 @@ gantt._init_templates = function(){
         grid_blank:function(item) {
             if (item.type == "Tactic")
             {
-
-                if (item.Permission == true && item.LinkTacticPermission == true) {
+               
+                if ((item.Permission == true && item.LinkTacticPermission == true) || (item.LinkedTacticId != null)) {
                     //"<div class='gantt_tree_icon gantt_blank'></div>";
                     //Added By Komal Rawal for PL 1845 link tactic feature.
                     var Class = 'fa fa-chain-broken';
