@@ -4229,21 +4229,29 @@ namespace RevenuePlanner.Controllers
                                     }
 
                                     //Add linked Tactic TacticCost data
+                                    int yearDiff = 0, perdNum = 12, cntr = 0;
+                                    bool isMultiYearlinkedTactic = false;
                                     if (linkedTacticId > 0)
                                     {
-                                        if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
+                                        yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+                                        isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
+                                        if (isMultiYearlinkedTactic)
                                         {
-                                            linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
+                                            string linkedstartmonth = ((12 * yearDiff) + startmonth).ToString();
+                                            if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedstartmonth).Any())
+                                            {
+                                                linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedstartmonth).FirstOrDefault().Value += diffcost;
                                         }
-                                        else
-                                        {
-                                            Plan_Campaign_Program_Tactic_Cost lnkTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                            lnkTacticCost.PlanTacticId = linkedTacticId;
-                                            lnkTacticCost.Period = PeriodChar + startmonth;
-                                            lnkTacticCost.Value = diffcost;
-                                            lnkTacticCost.CreatedBy = Sessions.User.UserId;
-                                            lnkTacticCost.CreatedDate = DateTime.Now;
-                                            db.Entry(lnkTacticCost).State = EntityState.Added;
+                                            //else
+                                            //{
+                                            //    Plan_Campaign_Program_Tactic_Cost lnkTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                            //    lnkTacticCost.PlanTacticId = linkedTacticId;
+                                            //    lnkTacticCost.Period = PeriodChar + linkedstartmonth;
+                                            //    lnkTacticCost.Value = diffcost;
+                                            //    lnkTacticCost.CreatedBy = Sessions.User.UserId;
+                                            //    lnkTacticCost.CreatedDate = DateTime.Now;
+                                            //    db.Entry(lnkTacticCost).State = EntityState.Added;
+                                            //}
                                         }
                                     }
                                 }
@@ -4276,27 +4284,35 @@ namespace RevenuePlanner.Controllers
                                             //END
                                         }
 
+                                        int yearDiff = 0, perdNum = 12, cntr = 0;
+                                        bool isMultiYearlinkedTactic = false;
                                         if (linkedTacticId > 0)
                                         {
-                                            if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
+                                            yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+                                            isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
+                                            string linkedendmonth = ((12 * yearDiff) + endmonth).ToString();
+                                            if (isMultiYearlinkedTactic)
                                             {
-                                                double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
-                                                double objtacticcost = linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
+                                                if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).Any())
+                                                {
+                                                    double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + linkedendmonth).Sum(lineitem => lineitem.Value);
+                                                    double objtacticcost = linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value;
                                                 var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
                                                 if (DiffMonthCost > 0)
                                                 {
                                                     if (DiffMonthCost > diffLinkCost)
                                                     {
-                                                        linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffLinkCost;
+                                                            linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value = objtacticcost - diffLinkCost;
                                                         diffLinkCost = 0;
                                                     }
                                                     else
                                                     {
-                                                        linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
+                                                            linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
                                                         diffLinkCost = diffLinkCost - DiffMonthCost;
                                                     }
                                                 }
                                             }
+                                        }
                                         }
 
                                         if (endmonth > 0)
