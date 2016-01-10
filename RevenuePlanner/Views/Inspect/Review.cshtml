@@ -106,9 +106,17 @@
 
         <!--Begin PL#1872 Brad Gray, 09 Jan 2016-->
         <div class="cf margin-top60 width96 textalign-mozcenter" style="padding-bottom: 5px;">
-            <div class="span5 review_no_padding">
-                <p style="width: 110%; text-align: left">Deployed to Integration</p>
-                @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
+            <div class="span6 review_no_padding">
+                <p class="margin-top-10 text_align_left">Deployed to Integration</p>
+                   @{ if (tacticReview.IsDeployedToIntegration)
+                    {
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important; width:100%"  readonly />
+                    }
+                    else
+                    {
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Don't sync to integration" style="margin-top: 0px ! important; width:100%" readonly />
+                    }
+                }
             </div>
         </div>
     </div>
@@ -158,9 +166,8 @@
 
     </div>
 </div>
-   @if (tacticReview.IsDeployedToIntegration && (bool)ViewBag.IsModelDeploy && (bool)ViewBag.IsModelIntegratedWorkFront)
-   {
-    <div class="row">
+  
+    <div id="integrationInfo" class="row border-bottom-div">
 
         <!--Begin PL#1462 07 Brad Gray, Aug 2015, moved 09 Jan 2016 by Brad Gray PL#1872-->
         <div class="cf margin-top20 width96 textalign-mozcenter" style="padding-bottom: 5px;">
@@ -173,105 +180,115 @@
                     <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
                 </div>
             </div>
+
+            <!--Modified 09 Jan 2016 by Brad Gray PL#1872 to allow changes per integration-->
             <div class="span9" style="border-left: 1px solid #b2afaf">
-             @{
-               foreach (var item in ViewBag.IntegrationTypeLinks)
-               {
-                <div class="pull-left margin-left20 integration-review-imglink">
-                    <a href=@item.Value onclick="window.open(this.href); return false;">
-                        <div class="link_popup pull-right margin-bottom10"></div>
-                        @{
-                           if (item.Key == Enums.IntegrationType.Eloqua.ToString())
-                           {
-                            <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
-                           }
-                           else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
-                           {
-                            <div class="margin-left20 salesforce-img margin-top10"></div>
-                           }
-                           else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
-                           {
-                            <div class="workfront-img margin-top23"></div>
-                           }
-                        }
-                  </a>
-                </div>
-               }
-              }
+                @{foreach (var item in ViewBag.IntegrationTypeLinks)
+                   {
+                    <div>
+                     @{if (item.Key == Enums.IntegrationType.Eloqua.ToString())
+                       {
+                        <div class="pull-left margin-left20 integration-review-imglink">
+                            <a href=@item.Value onclick="window.open(this.href); return false;">
+                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
+                            </a>
+                        </div>
+                       }
+                       else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
+                       {
+                        <div class="pull-left margin-left20 integration-review-imglink">
+                            <a href=@item.Value onclick="window.open(this.href); return false;">
+                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="margin-left20 salesforce-img margin-top10"></div>
+                            </a>
+                        </div>
+
+                       }
+                       else if (item.Key == Enums.IntegrationType.WorkFront.ToString()) 
+                       {
+                        <div class="pull-left margin-left20 integration-review-imglink gray-input">
+                            <a href=@item.Value onclick="window.open(this.href); return false;" label="WorkFront">
+                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="workfront-img margin-top23"></div>
+                            </a>
+                        </div>
+                       }
+                      }
+                    </div>
+                   }
+                }
             </div>
+
         </div>
         <!--End PL#1462 07 Brad Gray, Aug 2015-->
 
-        <ul class="nav nav-tabs new-margin clear remove-bottom-border" style="padding-bottom:10px;padding-top:10px">
-            <li>
-                <h4 class="source-sans-proregular">WorkFront Setup and Options</h4>
-            </li>
-        </ul>
+        <div class="row gray-input">
 
-        <div style="padding-bottom: 8px; margin-bottom: 8px;" class="span2">
-            <div style="float: left; width: 98%; border-right: 1px solid #b2afaf">
-                <div class="source-sans-prosemibold">Tactic Type</div>
-                <div>
-                    <div id="campaign-title1" class="sub-head" title="@Html.Raw(tacticReview.TacticTypeTitle) ">@Html.Raw(tacticReview.TacticTypeTitle)</div>
-                </div>
-                <div class="source-sans-prosemibold">WorkFront Template</div>
-                <div>
-                    <div id="program-title1" class="sub-head" title="@Html.Raw(ViewBag.WorkFront_Template) ">@Html.Raw(ViewBag.WorkFront_Template)</div>
+            <div style="padding-bottom: 8px; margin-bottom: 8px;" class="span2">
+                <div style="float: left; width: 98%; border-right: 1px solid #b2afaf">
+                    <div class="source-sans-prosemibold">Tactic Type</div>
+                    <div>
+                        <div id="campaign-title1" class="sub-head" title="@Html.Raw(tacticReview.TacticTypeTitle) ">@Html.Raw(tacticReview.TacticTypeTitle)</div>
+                    </div>
+                    <div class="source-sans-prosemibold">WorkFront Template</div>
+                    <div>
+                        <div id="program-title1" class="sub-head" title="@Html.Raw(ViewBag.WorkFront_Template) ">@Html.Raw(ViewBag.WorkFront_Template)</div>
+                    </div>
                 </div>
             </div>
+
+
+
+            <div class="span3" style="padding-left:40px">
+                <h5>Tactic Approval Behavior</h5>
+                <div class="radio" style="width:100%; float:left;margin-left:20px">
+                    <label>
+                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
+                        Create a project in WorkFront
+                    </label>
+                </div>
+                <div class="radio" style="width:100%; float:left; margin-left:20px">
+                    <label>
+                        <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                        Create a request in WorkFront
+                    </label>
+                </div>
+            </div>
+
+            <div class="span2" style="padding-left: 20px; border-right:1px solid #b2afaf">
+                <div class="cf form-group">
+                    @Html.Label("Request Queue")
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Dropdown
+                        <span class="caret"></span>
+                    </button>
+                </div>
+                <div class="cf form-group">
+                    @Html.Label("Assigned To")
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Dropdown
+                        <span class="caret"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="span3" style="padding-left:40px">
+                <h5>Organization Behavior</h5>
+                <div class="checkbox" style="width:100%; float:left;margin-left:20px">
+                    <label>
+                        <input type="checkbox" value="" id="organizationSelection">
+                        Organize WorkFront projects
+                    </label>
+                </div>
+            </div>
+
         </div>
-
-
-
-        <div class="span3" style="padding-left:40px">
-            <h5>Tactic Approval Behavior</h5>
-            <div class="radio" style="width:100%; float:left;margin-left:20px">
-                <label>
-                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
-                    Create a project in WorkFront
-                </label>
-            </div>
-            <div class="radio" style="width:100%; float:left; margin-left:20px">
-                <label>
-                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                    Create a request in WorkFront
-                </label>
-            </div>
-        </div>
-
-        <div class="span2" style="padding-left: 20px; border-right:1px solid #b2afaf">
-            <div class="cf form-group">
-                @Html.Label("Request Queue")
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    Dropdown
-                    <span class="caret"></span>
-                </button>
-            </div>
-            <div class="cf form-group">
-                @Html.Label("Assigned To")
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    Dropdown
-                    <span class="caret"></span>
-                </button>
-            </div>
-        </div>
-
-        <div class="span3" style="padding-left:40px">
-            <h5>Organization Behavior</h5>
-            <div class="checkbox" style="width:100%; float:left;margin-left:20px">
-                <label>
-                    <input type="checkbox" value="" id="organizationSelection">
-                    Organize WorkFront projects
-                </label>
-            </div>
-        </div>
-
     </div>
+   
 
-   }
 
-
-<div class="border-top-div cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
+<div class="cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
 
 
 
@@ -471,6 +488,29 @@
 <script type="text/javascript">
     var strViewMode = 'View';
     $(document).ready(function () {
+        if ($('#t_integration_status').hasClass("icon-check-blue")) {
+            $('#integrationInfo').addClass("show");
+        }
+        else {
+            $('#integrationInfo').addClass("hidden");
+        }
+
+
+        $("#t_integration_status").click(function () {
+            $(integrationInfo).toggleClass('hidden show');
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Don't sync to integration");
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+                $("#hdnIsDeployedToIntegration").val(false);
+            }
+            else {
+                $(this).val("Sync to integration");
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+                $("#hdnIsDeployedToIntegration").val(true);
+            }
+        });
 
         /*Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model */
         ImageTipsy('#diffrentStageIcon');
