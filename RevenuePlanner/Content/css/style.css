@@ -15761,3 +15761,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
   height: 23px !important;
   line-height: 23px !important;
 }
+
+ .lickSuccessMsg{
+    font-weight:normal;
+    }
