@@ -1580,6 +1580,7 @@
     var SavePresetValue = false;
     function UpdateResult() {
         IsUpdate = true;
+        isRequest = false;
         // added by devanshi for #1431
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
@@ -4148,7 +4149,7 @@
                     else {
                         // Add By Nishant sheth
                         // #1818 :: Display message if no any data with filters
-                        if (data.taskData.length > 0) {
+                        if (data.taskData.length > 0 || isRequest) {
                             $("#gantt_here").show();
                             $(".pull-right.toggle-status.source-sans-proregular").show();
                             $("#improvements").show();
