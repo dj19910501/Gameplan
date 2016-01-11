@@ -683,6 +683,48 @@ namespace RevenuePlanner.Helpers
                 db.Configuration.AutoDetectChangesEnabled = false;
 
                 Plan_Campaign_Program_Tactic_LineItem objPlanCampaignProgramTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.AsNoTracking().FirstOrDefault(p => p.PlanLineItemId == ID && p.IsDeleted == false);
+                int? LinkedLineItemID = objPlanCampaignProgramTacticLineItem.LinkedLineItemId;
+                Plan_Campaign_Program_Tactic_LineItem objLinkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem.AsNoTracking().FirstOrDefault(p => p.PlanLineItemId == LinkedLineItemID && p.IsDeleted == false);
+                if (LinkedLineItemID != null && LinkedLineItemID > 0)
+                {
+                    planid = objLinkedLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+                    int TacticId = objLinkedLineItem.PlanTacticId;
+                    HttpContext.Current.Session["ProgramID"] = objLinkedLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId;
+                    HttpContext.Current.Session["CampaignID"] = objLinkedLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
+                    HttpContext.Current.Session["TacticID"] = TacticId;
+                    objLinkedLineItem.CreatedBy = UserId;
+                    objLinkedLineItem.CreatedDate = DateTime.Now;
+                    var Title = objLinkedLineItem.Title;
+                    if (objLinkedLineItem.Title.Length > 234)
+                    {
+                        Title = objLinkedLineItem.Title.Substring(0, 234);
+                    }
+                    objLinkedLineItem.Title = (Title + Suffix);
+                    objLinkedLineItem.LineItemType = null;
+                    objLinkedLineItem.Plan_Campaign_Program_Tactic = null;
+                    //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                    objLinkedLineItem.ModifiedDate = null;
+                    objLinkedLineItem.ModifiedBy = null;
+                    //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
+                    objLinkedLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost = objLinkedLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
+                    db.Plan_Campaign_Program_Tactic_LineItem.Add(objLinkedLineItem);
+                    db.SaveChanges();
+                    returnFlag = objLinkedLineItem.PlanLineItemId;
+                    // Add By Nishant Sheth
+                    // Desc : Copy Line Item Budget
+                    CloneLineItemBudget(ID, returnFlag);
+
+                    string entityTypeLineItem = Enums.EntityType.Lineitem.ToString();
+                    var CustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == ID && a.CustomField.EntityType == entityTypeLineItem).ToList();
+                    CustomFieldsList.ForEach(a => { a.EntityId = objLinkedLineItem.PlanLineItemId; db.Entry(a).State = EntityState.Added; });
+                    db.SaveChanges();
+                  
+                    CostCalculacation(TacticId);
+
+                }
+                int CopyLinkedID = objLinkedLineItem.PlanLineItemId;
+                //int ObjTacticId = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic.PlanTacticId;
+                //Plan_Campaign_Program_Tactic LinkedTacticObj = db.Plan_Campaign_Program_Tactic.Where(id => id.LinkedTacticId == ObjTacticId).FirstOrDefault();                
                 if (objPlanCampaignProgramTacticLineItem != null)
                 {
                     planid = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
@@ -703,6 +745,7 @@ namespace RevenuePlanner.Helpers
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignProgramTacticLineItem.ModifiedDate = null;
                     objPlanCampaignProgramTacticLineItem.ModifiedBy = null;
+                    objPlanCampaignProgramTacticLineItem.LinkedLineItemId = CopyLinkedID;
                     //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                     db.Plan_Campaign_Program_Tactic_LineItem.Add(objPlanCampaignProgramTacticLineItem);
@@ -716,10 +759,20 @@ namespace RevenuePlanner.Helpers
                     var CustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == ID && a.CustomField.EntityType == entityTypeLineItem).ToList();
                     CustomFieldsList.ForEach(a => { a.EntityId = objPlanCampaignProgramTacticLineItem.PlanLineItemId; db.Entry(a).State = EntityState.Added; });
                     db.SaveChanges();
+                    int LineItemID = objPlanCampaignProgramTacticLineItem.PlanLineItemId;
 
+                if(LinkedLineItemID != null)
+                {
+                    Plan_Campaign_Program_Tactic_LineItem CopiedLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.PlanLineItemId == CopyLinkedID).FirstOrDefault();
+                    CopiedLineItem.LinkedLineItemId = LineItemID;
+                    db.Entry(CopiedLineItem).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                }
                     CostCalculacation(TacticId);
                     Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTacticLineItem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                 }
+             
                 return returnFlag;
             }
             catch (AmbiguousMatchException)
@@ -1491,6 +1544,7 @@ namespace RevenuePlanner.Helpers
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
                     objPlanTactic.Tactic_Share = objPlanTactic.Tactic_Share.ToList();
+                    objPlanTactic.TacticBudget = 0;
                     objPlanTactic.PlanProgramId = parentEntityId;
                     objPlanTactic.StartDate = GetResultDateforLink(objPlanTactic.StartDate, startDate, true);
                     objPlanTactic.EndDate = objPlanTactic.EndDate;
@@ -1555,11 +1609,14 @@ namespace RevenuePlanner.Helpers
                             }
                         }
                         );
+                    objPlanTactic.TacticBudget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.Select(bud => bud.Value).Sum();
                     objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
                             pcptl.LineItemType = null;
+                            pcptl.Cost = 0;
                             pcptl.LinkedLineItemId = pcptl.PlanLineItemId;
+                            pcptl.LineItem_Budget = pcptl.LineItem_Budget;
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList().ForEach(
                                  cost =>
@@ -1579,6 +1636,7 @@ namespace RevenuePlanner.Helpers
                                      }
                                  }
                                 );
+                            pcptl.Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(cost => cost.Value).Sum();
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual = pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().ForEach(
                                  actual =>

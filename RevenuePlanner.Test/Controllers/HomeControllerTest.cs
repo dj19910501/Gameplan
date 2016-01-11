@@ -53,7 +53,7 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region Home page with plan id  
+        #region Home page with plan id
         /// <summary>
         /// To check to retrieve Home view with plan id
         /// </summary>
@@ -68,7 +68,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             HomeController objHomeController = new HomeController();
             int planId = DataHelper.GetPlanId();
-         
+
             var result = objHomeController.Index(Enums.ActiveMenu.Home, planId) as ViewResult;
 
             if (result != null)
@@ -140,7 +140,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call index method
             string ViewBy = PlanGanttTypes.Tactic.ToString();
-          
+
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
 
             if (result != null)
@@ -804,7 +804,7 @@ namespace RevenuePlanner.Test.Controllers
             List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
 
-            var result = LoadFunction(ViewBy,Ownerids, Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
+            var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
@@ -1039,7 +1039,7 @@ namespace RevenuePlanner.Test.Controllers
             }
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
 
-            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, Year, CommaSeparatedCustomFields, OwnerIds, Activemenu, getViewByList, Tactictypeids, Statusids,true) as Task<JsonResult>;
+            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, Year, CommaSeparatedCustomFields, OwnerIds, Activemenu, getViewByList, Tactictypeids, Statusids, true) as Task<JsonResult>;
             return new JsonResult();
         }
 
@@ -1069,17 +1069,17 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.AreEqual("AddActual", result.ViewName);
-                
+
                 Assert.IsNotNull(result.Model);
                 HomePlanModel objModel = (HomePlanModel)result.Model;
                 Assert.IsNotNull(objModel.objIndividuals);
-                
+
                 Assert.IsNotNull(result.ViewBag.IsPlanEditable);
             }
         }
         #endregion
 
-        #region Add actual tactics with no filter paramater for OpenTactic tab 
+        #region Add actual tactics with no filter paramater for OpenTactic tab
         /// <summary>
         /// To check to retrieve add actual tactics with no filter paramters for open tactic tab
         /// </summary>
@@ -1095,7 +1095,7 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             Sessions.PlanId = DataHelper.GetPlanId();
             int Status = 0; // Open tactic
-            var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty,string.Empty,Convert.ToInt32(Sessions.PlanId)) as JsonResult;
+            var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty, string.Empty, Convert.ToInt32(Sessions.PlanId)) as JsonResult;
 
             if (result != null)
             {
@@ -1121,7 +1121,7 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             Sessions.PlanId = DataHelper.GetPlanId();
             int Status = 1; // All tactic
-            var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty, string.Empty,Convert.ToInt32(Sessions.PlanId)) as JsonResult;
+            var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty, string.Empty, Convert.ToInt32(Sessions.PlanId)) as JsonResult;
 
             if (result != null)
             {
@@ -1148,7 +1148,7 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = DataHelper.GetPlanId();
             int Status = 0; // Open tactic
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
-            var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty,Convert.ToInt32(Sessions.PlanId)) as JsonResult;
+            var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty, Convert.ToInt32(Sessions.PlanId)) as JsonResult;
 
             if (result != null)
             {
@@ -1218,7 +1218,7 @@ namespace RevenuePlanner.Test.Controllers
             PlanController objPlanController = new PlanController();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             string Year = DataHelper.GetYear();
-             var result = objPlanController.GetPlanByMultiplePlanIDs(CommaSeparatedPlanId, Enums.ActiveMenu.Home.ToString(), Year) as JsonResult;
+            var result = objPlanController.GetPlanByMultiplePlanIDs(CommaSeparatedPlanId, Enums.ActiveMenu.Home.ToString(), Year) as JsonResult;
 
             if (result != null)
             {
@@ -1239,12 +1239,12 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             int planId = DataHelper.GetPlanId();
             string Year = DataHelper.GetYear();
-            var result = objHomeController.GetNumberOfActivityPerMonth(planId.ToString(),Year, false) as Task<JsonResult>;
+            var result = objHomeController.GetNumberOfActivityPerMonth(planId.ToString(), Year, false) as Task<JsonResult>;
 
             if (result != null)
             {
                 //// Json result data should not be null
-              //  Assert.IsNotNull(result.Data);
+                //  Assert.IsNotNull(result.Data);
             }
         }
 
@@ -1263,7 +1263,7 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// Json result data should not be null
-               // Assert.IsNotNull(result.Data);
+                // Assert.IsNotNull(result.Data);
             }
         }
         #endregion
@@ -1308,7 +1308,7 @@ namespace RevenuePlanner.Test.Controllers
 
             string Status = string.Join(",", lststatus);
 
-            var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status,"") as JsonResult;
+            var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status, "") as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
@@ -1317,10 +1317,53 @@ namespace RevenuePlanner.Test.Controllers
         }
 
         /// <summary>
+        /// To Save last set data with empty planid
+        /// </summary>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>08Jan2015</createddate>
+        [TestMethod]
+        public void SaveLastSetOfViews_With_EmptyValues()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+
+            var result = objHomeController.SaveLastSetofViews("", "", "", "", "", "") as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName                
+                Assert.AreEqual(true, result.GetValue("isSuccess"));
+                Assert.AreEqual("", result.GetValue("ViewName"));
+            }
+        }
+
+        /// <summary>
+        /// To Save last set data with null CustomFields and tactictypeid
+        /// </summary>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>08Jan2015</createddate>
+        [TestMethod]
+        public void SaveLastSetOfViews_With_Null_CustomFields_Tactictypeid()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+
+            var result = objHomeController.SaveLastSetofViews(null, null, null, null, null, null) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.AreEqual(null, result.GetValue("ViewName"));
+            }
+        }
+
+        /// <summary>
         /// To Render last set of view
         /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>25Nov2015</createddate>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>08Jan2016</createddate>
         [TestMethod]
         public void Render_LastSetofViews()
         {
@@ -1329,14 +1372,205 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
 
             var result = objHomeController.LastSetOfViews() as JsonResult;
+            //// ViewResult shoud not be null and should match with viewName
+            Assert.IsNotNull(result);
+        }
+        
+        /// <summary>
+        /// To Render last set of view
+        /// </summary>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>09Jan2016</createddate>
+        [TestMethod]
+        public void SaveDefaultPreset()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
 
+            var SavedPresetNames = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
+            List<Preset> PresetList = (from item in SavedPresetNames
+                                       where item.ViewName != null
+                                       select new Preset
+                                       {
+                                           Id = Convert.ToString(item.Id),
+                                           Name = item.ViewName,
+                                           IsDefaultPreset = item.IsDefaultPreset
+                                       }).ToList();
+            string presetName = string.Empty;
+            if (PresetList.Count() == 0)
+                presetName = "TestPreset";
+            else
+                presetName = PresetList.FirstOrDefault().Name.ToString();
+            var result = objHomeController.SaveDefaultPreset(presetName) as JsonResult;
             if (result != null)
             {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.GetValue("taskData"));
+                Assert.AreEqual(true,result.GetValue("isSuccess"));
             }
+        }        
 
+        /// <summary>
+        /// To Set Filter Preset Name
+        /// </summary>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>09Jan2016</createddate>
+        [TestMethod]
+        public void SetFilterPresetName()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
 
+            var SavedPresetNames = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
+            List<Preset> PresetList = (from item in SavedPresetNames
+                                       where item.ViewName != null
+                                       select new Preset
+                                       {
+                                           Id = Convert.ToString(item.Id),
+                                           Name = item.ViewName,
+                                           IsDefaultPreset = item.IsDefaultPreset
+                                       }).ToList();
+            string presetName = string.Empty;
+            if (PresetList.Count() == 0)
+                presetName = "TestPreset";
+            else
+                presetName = PresetList.FirstOrDefault().Name.ToString();
+            var result = objHomeController.SetFilterPresetName(presetName) as JsonResult;
+            if (result != null)
+            {
+                Assert.AreEqual(true, result.GetValue("isSuccess"));
+            }
+        }
+
+       
+        #region --Delete Preset Data---
+        /// <summary>
+        /// To delete Preset data
+        /// </summary>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>09Jan2016</createddate>
+        [TestMethod]
+        public void DeletePreset()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            var result = objHomeController.DeletePreset("Test") as JsonResult;
+            if (result != null)
+            {
+                Assert.AreEqual(true,result.GetValue("isSuccess"));
+                Assert.AreEqual("Preset Test deleted successfuly", result.GetValue("msg"));
+            }
+        }
+
+        /// <summary>
+        /// To delete Preset data with empty PrestName
+        /// </summary>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>09Jan2016</createddate>
+        [TestMethod]
+        public void DeletePreset_empty_PrestName()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            var result = objHomeController.DeletePreset("") as JsonResult;
+            if (result != null)
+            {
+                Assert.AreEqual(false, result.GetValue("isSuccess"));
+            }
+        }
+
+        /// <summary>
+        /// To delete Preset data with null PrestName
+        /// </summary>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>09Jan2016</createddate>
+        [TestMethod]
+        public void DeletePreset_null_PrestName()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            var result = objHomeController.DeletePreset(null) as JsonResult;
+            if (result != null)
+            {
+                Assert.AreEqual(false, result.GetValue("isSuccess"));
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region --Get Header Data for HoneyComb Pdf---
+        /// <summary>
+        /// To Get Header Data for HoneyComb Pdf
+        /// </summary>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>09Jan2016</createddate>
+        [TestMethod]
+        public void GetHeaderDataforHoneycombPDF()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            
+            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tactic);
+
+            var result = objHomeController.GetHeaderDataforHoneycombPDF(tactictypeids, "2016");
+            if (result != null)
+            {
+                Assert.AreEqual(0,result.GetValue("TotalCount"));
+            }
+        }
+
+        /// <summary>
+        /// To Get Header Data for HoneyComb Pdf with empty Tactic Id
+        /// </summary>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>09Jan2016</createddate>
+        [TestMethod]
+        public void GetHeaderDataforHoneycombPDF_With_Empty_TacticId()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+
+            var result = objHomeController.GetHeaderDataforHoneycombPDF("", "2016");
+            if (result != null)
+            {
+                Assert.AreEqual(0, result.GetValue("TotalCount"));
+            }
+        }
+
+        /// <summary>
+        /// To Get Header Data for HoneyComb Pdf with null Tactic Id
+        /// </summary>
+        /// <auther>Maitri Gandhi</auther>
+        /// <createddate>09Jan2016</createddate>
+        [TestMethod]
+        public void GetHeaderDataforHoneycombPDF_With_Null_TacticId()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+
+            var result = objHomeController.GetHeaderDataforHoneycombPDF(null, "2016");
+            if (result != null)
+            {
+                Assert.AreEqual(0, result.GetValue("TotalCount"));
+            }
         }
 
         #endregion

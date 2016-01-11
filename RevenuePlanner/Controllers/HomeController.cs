@@ -470,7 +470,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                planYear = DateTime.Now.Year.ToString();
+                    planYear = DateTime.Now.Year.ToString();
                 }
                 // End By Nishant Sheth
             }
@@ -3561,7 +3561,7 @@ namespace RevenuePlanner.Controllers
             //                                        campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
 
             var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic =>
-                                                   campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete=tactic.IsDeleted }).ToList();
+                                                   campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted }).ToList();
 
             objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
@@ -3876,8 +3876,8 @@ namespace RevenuePlanner.Controllers
                     //var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
                     //                              campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
 
-                    var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => 
-                                                 campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate,isdelete=tactic.IsDeleted }).ToList();
+                    var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic =>
+                                                 campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted }).ToList();
 
                     objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
@@ -5272,10 +5272,10 @@ namespace RevenuePlanner.Controllers
                             var checkFromTo = UpcomingActivityList.Where(a => a.Text == campStYear + "-" + campEdYear).Select(a => a.Text).FirstOrDefault();
                             if (checkFromTo == null)
                             {
-                            UpcomingActivityList.Add(new SelectListItem { Text = campStYear + "-" + campEdYear, Value = campStYear + "-" + campEdYear, Selected = false });
+                                UpcomingActivityList.Add(new SelectListItem { Text = campStYear + "-" + campEdYear, Value = campStYear + "-" + campEdYear, Selected = false });
+                            }
                         }
                     }
-                }
                 }
                 // UpcomingActivityList.Add(new SelectListItem { Text = currentYear, Value = currentYear, Selected = true });
             }
@@ -6120,6 +6120,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetHeaderDataforHoneycombPDF(string TactIds, string strParam)
         {
             //For MQL Value.
+            string[] ListYear = strParam.Split('-');// Add By Nishant Sheth
             List<int> TacticIds = string.IsNullOrWhiteSpace(TactIds) ? new List<int>() : TactIds.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
 
             var objPlan_Campaign_Program_Tactic1 = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
@@ -6135,28 +6136,28 @@ namespace RevenuePlanner.Controllers
             //For Activity Distribution
             CalendarStartDate = DateTime.Now;
             CalendarEndDate = DateTime.Now;
+            List<ActivityChart> lstActivityChart = new List<ActivityChart>();
             if (strParam.Contains("-"))
             {
-                List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
-                lstActivityChartyears = getmultipleyearActivityChartHoneyComb(strParam, TactIds);
-                return Json(new { lstchart = lstActivityChartyears.ToList() }, JsonRequestBehavior.AllowGet);
+                //List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
+                lstActivityChart = getmultipleyearActivityChartHoneyComb(strParam, TactIds, objPlan_Campaign_Program_Tactic1);// Modified By Nishant Sheth #1876
+                //return Json(new { lstchart = lstActivityChartyears.ToList() }, JsonRequestBehavior.AllowGet);
+            }
+            // else
+
+            isNumeric = int.TryParse(ListYear[0], out Planyear);
+            if (isNumeric)
+            {
+                planYear = Convert.ToString(Planyear);
             }
             else
             {
-                isNumeric = int.TryParse(strParam, out Planyear);
-                if (isNumeric)
-                {
-                    planYear = Convert.ToString(Planyear);
-                }
-                else
-                {
-                    planYear = DateTime.Now.Year.ToString();
-                }
+                planYear = DateTime.Now.Year.ToString();
             }
 
             Common.GetPlanGanttStartEndDate(planYear, strParam, ref CalendarStartDate, ref CalendarEndDate);
             var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic =>
-                                      TacticIds.Contains(tactic.PlanTacticId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete=tactic.IsDeleted }).ToList();
+                                      TacticIds.Contains(tactic.PlanTacticId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted }).ToList();
 
             objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
@@ -6294,41 +6295,43 @@ namespace RevenuePlanner.Controllers
             }
 
             //// Prepare Activity Chart list
-            List<ActivityChart> lstActivityChart = new List<ActivityChart>();
-            for (int month = 0; month < monthArray.Count(); month++)
+            if (!strParam.Contains("-"))
             {
-                ActivityChart objActivityChart = new ActivityChart();
-                string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month + 1);
+                for (int month = 0; month < monthArray.Count(); month++)
+                {
+                    ActivityChart objActivityChart = new ActivityChart();
+                    string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month + 1);
 
-                if (month == 0)
-                {
-                    objActivityChart.Month = strMonthName[0].ToString();
-                }
-                else
-                {
-                    if (month % 3 == 0)
+                    if (month == 0)
                     {
                         objActivityChart.Month = strMonthName[0].ToString();
                     }
                     else
                     {
-                        objActivityChart.Month = string.Empty;
+                        if (month % 3 == 0)
+                        {
+                            objActivityChart.Month = strMonthName[0].ToString();
+                        }
+                        else
+                        {
+                            objActivityChart.Month = string.Empty;
+                        }
+                        if (month == 11)
+                        {
+                            objActivityChart.Month = strMonthName[0].ToString();
+                        }
                     }
-                    if (month == 11)
+                    if (monthArray[month] == 0)
                     {
-                        objActivityChart.Month = strMonthName[0].ToString();
+                        objActivityChart.NoOfActivity = string.Empty;
                     }
+                    else
+                    {
+                        objActivityChart.NoOfActivity = monthArray[month].ToString();
+                    }
+                    objActivityChart.Color = Common.ActivityChartColor;
+                    lstActivityChart.Add(objActivityChart);
                 }
-                if (monthArray[month] == 0)
-                {
-                    objActivityChart.NoOfActivity = string.Empty;
-                }
-                else
-                {
-                    objActivityChart.NoOfActivity = monthArray[month].ToString();
-                }
-                objActivityChart.Color = Common.ActivityChartColor;
-                lstActivityChart.Add(objActivityChart);
             }
             // await Task.Delay(1);
 
@@ -6337,7 +6340,7 @@ namespace RevenuePlanner.Controllers
 
         }
 
-        private List<ActivityChart> getmultipleyearActivityChartHoneyComb(string strParam, string TactIds)
+        private List<ActivityChart> getmultipleyearActivityChartHoneyComb(string strParam, string TactIds, List<Plan_Campaign_Program_Tactic> objPlan_Campaign_Program_Tactic) // Modified By Nishant Sheth #1876 to avoid db trips
         {
             List<int> TacticIds = string.IsNullOrWhiteSpace(TactIds) ? new List<int>() : TactIds.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
 
@@ -6364,10 +6367,10 @@ namespace RevenuePlanner.Controllers
                 Common.GetPlanGanttStartEndDate(planYear, multipleyear[i], ref CalendarStartDate, ref CalendarEndDate);
 
                 //// Selecte tactic(s) from selected programs
-                var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => 
-                                    TacticIds.Contains(tactic.PlanTacticId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate,isdelete=tactic.IsDeleted }).ToList();
+                //var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => 
+                //  TacticIds.Contains(tactic.PlanTacticId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate,isdelete=tactic.IsDeleted }).ToList();
 
-                objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
+                //objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
                 //// Prepare an array of month as per selected dropdown paramter
                 int[] monthArray = new int[12];

@@ -77,6 +77,7 @@ namespace Integration.Salesforce
         private List<SyncError> _lstSyncError = new List<SyncError>();
         private List<SalesForceObjectFieldDetails> lstSalesforceFieldDetail = new List<SalesForceObjectFieldDetails>();
         private string PeriodChar = "Y";
+        private string PlanName = string.Empty;
 
         public bool IsAuthenticated
         {
@@ -1378,6 +1379,11 @@ namespace Integration.Salesforce
                                         var innerCampaignMember = CampaignMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
                                         if (linkedTactics != null && linkedTactics.Count > 0) // check whether linkedTactics exist or not.
                                             linkedTacId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == tactic.PlanTacticId).Value;
+                                        if (linkedTacId > 0) // check whether linkedTactics exist or not.
+                                        {
+                                            objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                            objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == linkedTacId).FirstOrDefault();
+                                        }
                                         foreach (var objCampaignMember in innerCampaignMember)
                                         {
                                             Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
@@ -1394,9 +1400,6 @@ namespace Integration.Salesforce
                                             // Add linked Tacitc Actual Values.
                                             if (linkedTacId > 0) // check whether linkedTactics exist or not.
                                             {
-                                                objLinkedTactic = new Plan_Campaign_Program_Tactic();
-                                                objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == linkedTacId).FirstOrDefault();
-
                                                 yearDiff = objLinkedTactic.EndDate.Year - objLinkedTactic.StartDate.Year;
                                                 isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
 
@@ -2761,6 +2764,7 @@ namespace Integration.Salesforce
         {
             StringBuilder sb = new StringBuilder();
             Enums.Mode currentMode = Common.GetMode(planCampaign.IntegrationInstanceCampaignId);
+            PlanName = planCampaign.Plan.Title;
             if (currentMode.Equals(Enums.Mode.Create))
             {
                 IntegrationInstancePlanEntityLog instanceLogCampaign = new IntegrationInstancePlanEntityLog();
@@ -2912,6 +2916,7 @@ namespace Integration.Salesforce
             StringBuilder sb = new StringBuilder();
             //// Get program based on _id property.
             Enums.Mode currentMode = Common.GetMode(planProgram.IntegrationInstanceProgramId);
+            PlanName = planProgram.Plan_Campaign.Plan.Title;
             if (currentMode.Equals(Enums.Mode.Create))
             {
                 Plan_Campaign planCampaign = planProgram.Plan_Campaign;
@@ -3129,23 +3134,39 @@ namespace Integration.Salesforce
         private Plan_Campaign_Program_Tactic SyncTacticData(Plan_Campaign_Program_Tactic planTactic, ref StringBuilder sbMessage, Plan_Campaign_Program_Tactic lnkdTactic)
         {
             StringBuilder sb = new StringBuilder();
+            bool islinktacticdata = false;
             Enums.Mode currentMode = Common.GetMode(planTactic.IntegrationInstanceTacticId);
+            // If Tactic is linked then sync latest year Program & Campaign to Salesforce.
+            if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
+            {
+                string orgnPlanYear = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+                string lnkdPlanYear = lnkdTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+                if (!string.IsNullOrEmpty(orgnPlanYear) && !string.IsNullOrEmpty(lnkdPlanYear))
+                {
+                    if (int.Parse(orgnPlanYear) > int.Parse(lnkdPlanYear))
+                        islinktacticdata = false;
+                    else
+                        islinktacticdata = true;
+                }
+            }
+            if (islinktacticdata)
+            {
+                PlanName = lnkdTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title;
+            }
+            else
+            {
+                PlanName = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title;
+            }
             if (currentMode.Equals(Enums.Mode.Create))
             {
                 Plan_Campaign_Program planProgram = new Plan_Campaign_Program();
-
-                // If Tactic is linked then sync latest year Program & Campaign to Salesforce.
-                if (lnkdTactic != null && lnkdTactic.PlanTacticId >0)
+                if (islinktacticdata)
                 {
-                    string orgnPlanYear = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
-                    string lnkdPlanYear = lnkdTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
-                    if (!string.IsNullOrEmpty(orgnPlanYear) && !string.IsNullOrEmpty(lnkdPlanYear))
-                    {
-                        if(int.Parse(orgnPlanYear) > int.Parse(lnkdPlanYear))
-                            planProgram = planTactic.Plan_Campaign_Program;
-                        else
-                            planProgram = lnkdTactic.Plan_Campaign_Program;
-                    }
+                    planProgram = lnkdTactic.Plan_Campaign_Program;
+                }
+                else
+                {
+                    planProgram = planTactic.Plan_Campaign_Program;
                 }
 
                 //Plan_Campaign_Program planProgram = planTactic.Plan_Campaign_Program;
@@ -3327,6 +3348,7 @@ namespace Integration.Salesforce
                         if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
                         {
                             lnkdTactic.IntegrationInstanceTacticId = planTactic.IntegrationInstanceTacticId;
+                            lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
                             lnkdTactic.LastSyncDate = DateTime.Now;
                             lnkdTactic.ModifiedDate = DateTime.Now;
                             lnkdTactic.ModifiedBy = _userId;
@@ -3412,6 +3434,7 @@ namespace Integration.Salesforce
                         #region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
                         if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
                         {
+                            lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
                             lnkdTactic.LastSyncDate = DateTime.Now;
                             lnkdTactic.ModifiedDate = DateTime.Now;
                             lnkdTactic.ModifiedBy = _userId;
@@ -3578,6 +3601,7 @@ namespace Integration.Salesforce
         {
             StringBuilder sb = new StringBuilder();
             Enums.Mode currentMode = Common.GetMode(planIMPTactic.IntegrationInstanceTacticId);
+            PlanName = planIMPTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Title;
             if (currentMode.Equals(Enums.Mode.Create))
             {
                 Plan_Improvement_Campaign_Program planIMPProgram = planIMPTactic.Plan_Improvement_Campaign_Program;
@@ -4397,18 +4421,15 @@ namespace Integration.Salesforce
         private Dictionary<string, object> GetCampaign(Plan_Campaign planCampaign)
         {
             string PlanName = string.Empty;
-            if (planCampaign != null)
-                PlanName = planCampaign.Plan.Title;
-            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Campaign>(planCampaign, _mappingCampaign, PlanName);
+            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Campaign>(planCampaign, _mappingCampaign);
             return campaign;
         }
 
         private Dictionary<string, object> GetProgram(Plan_Campaign_Program planProgram, Enums.Mode mode)
         {
             string PlanName = string.Empty;
-            if (planProgram != null)
-                PlanName = planProgram.Plan_Campaign.Plan.Title;
-            Dictionary<string, object> program = GetTargetKeyValue<Plan_Campaign_Program>(planProgram, _mappingProgram, PlanName);
+            
+            Dictionary<string, object> program = GetTargetKeyValue<Plan_Campaign_Program>(planProgram, _mappingProgram);
 
             if (mode.Equals(Enums.Mode.Create))
             {
@@ -4420,9 +4441,7 @@ namespace Integration.Salesforce
         private Dictionary<string, object> GetTactic(Plan_Campaign_Program_Tactic planTactic, Enums.Mode mode)
         {
             string PlanName = string.Empty;
-            if (planTactic != null)
-                PlanName = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title;
-            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Campaign_Program_Tactic>(planTactic, _mappingTactic, PlanName);
+            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Campaign_Program_Tactic>(planTactic, _mappingTactic);
             if (mode.Equals(Enums.Mode.Create))
             {
                 tactic.Add(ColumnParentId, _parentId);
@@ -4434,18 +4453,14 @@ namespace Integration.Salesforce
         private Dictionary<string, object> GetImprovementCampaign(Plan_Improvement_Campaign planIMPCampaign)
         {
             string PlanName = string.Empty;
-            if (planIMPCampaign != null)
-                PlanName = planIMPCampaign.Plan.Title;
-            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Improvement_Campaign>(planIMPCampaign, _mappingImprovementCampaign, PlanName);
+            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Improvement_Campaign>(planIMPCampaign, _mappingImprovementCampaign);
             return campaign;
         }
 
         private Dictionary<string, object> GetImprovementProgram(Plan_Improvement_Campaign_Program planIMPProgram, Enums.Mode mode)
         {
             string PlanName = string.Empty;
-            if (planIMPProgram != null)
-                PlanName = planIMPProgram.Plan_Improvement_Campaign.Plan.Title;
-            Dictionary<string, object> program = GetTargetKeyValue<Plan_Improvement_Campaign_Program>(planIMPProgram, _mappingImprovementProgram, PlanName);
+            Dictionary<string, object> program = GetTargetKeyValue<Plan_Improvement_Campaign_Program>(planIMPProgram, _mappingImprovementProgram);
 
             if (mode.Equals(Enums.Mode.Create))
             {
@@ -4456,10 +4471,7 @@ namespace Integration.Salesforce
 
         private Dictionary<string, object> GetImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic, Enums.Mode mode)
         {
-            string PlanName = string.Empty;
-            if (planIMPTactic != null)
-                PlanName = planIMPTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Title;
-            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic, PlanName);
+            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic);
             if (mode.Equals(Enums.Mode.Create))
             {
                 tactic.Add(ColumnParentId, _parentId);
@@ -4469,7 +4481,7 @@ namespace Integration.Salesforce
         }
 
 
-        private Dictionary<string, object> GetTargetKeyValue<T>(object obj, Dictionary<string, string> mappingDataType,string planname)
+        private Dictionary<string, object> GetTargetKeyValue<T>(object obj, Dictionary<string, string> mappingDataType)
         {
             string status = "Status";
             string createdBy = "CreatedBy";
@@ -4533,7 +4545,7 @@ namespace Integration.Salesforce
                     }
                     else if (mapping.Key == Enums.SFDCGlobalFields.PlanName.ToString())
                     {
-                        value = !string.IsNullOrEmpty(planname)?planname:string.Empty;
+                        value = !string.IsNullOrEmpty(PlanName) ? PlanName : string.Empty;
                         int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
                         value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
                         keyvaluepair.Add(mapping.Value, value);

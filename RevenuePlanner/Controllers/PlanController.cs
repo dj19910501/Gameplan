@@ -12913,8 +12913,8 @@ namespace RevenuePlanner.Controllers
                 if (CloneType == Enums.DuplicationModule.Tactic.ToString())
                 {
                     //var srcTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(tac => tac.PlanTacticId == srcPlanEntityId);
-                    var destProgram = db.Plan_Campaign_Program.FirstOrDefault(prg => prg.PlanProgramId == destPlanEntityId);
-                    var destTact = db.Plan_Campaign_Program_Tactic.Where(tact => tact.PlanProgramId == destPlanEntityId).ToList();
+                    var destProgram = db.Plan_Campaign_Program.FirstOrDefault(prg => prg.PlanProgramId == destPlanEntityId && prg.IsDeleted == false);
+                    var destTact = db.Plan_Campaign_Program_Tactic.Where(tact => tact.PlanProgramId == destPlanEntityId && tact.IsDeleted == false).ToList();
 
                     StartDate = destTact.Select(tact => tact.StartDate).Min();
                     EndDate = destTact.Select(tact => tact.EndDate).Max();

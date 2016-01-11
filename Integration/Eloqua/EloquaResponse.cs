@@ -456,10 +456,14 @@ namespace Integration.Eloqua
                             #endregion
 
                             string contactIds = string.Empty;
-
+                            List<int> processlinkedplantacticids = new List<int>();
                             // Insert or Update tactic actual.
                             foreach (var objTactic in lstTactic)
                             {
+                                if (processlinkedplantacticids.Contains(objTactic.PlanTacticId))
+                                {
+                                    continue;
+                                }
                                 DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
                                 DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
 
@@ -490,7 +494,10 @@ namespace Integration.Eloqua
                                 // Get linked TacticId from mapping list.
                                 if (lstlinkedTacticMapping != null && lstlinkedTacticMapping.Count > 0) // check whether linkedTactics exist or not.
                                     linkedTacticId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == objTactic.PlanTacticId).Value;
-
+                                if (linkedTacticId > 0)
+                                {
+                                    processlinkedplantacticids.Add(linkedTacticId);
+                                }
                                 foreach (var item in tempYearMonthDictionary)
                                 {
                                     var objTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.MQLStageValue);
@@ -544,7 +551,7 @@ namespace Integration.Eloqua
                                     #endregion
 
                                     #region "Create/Update linked Tactic MQL value"
-                                    if (linkedTacticId > 0)
+                                    if (linkedTacticId > 0 && !string.IsNullOrEmpty(lnkePeriod))
                                     {
                                         var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == linkedTacticId && tacticActual.Period == lnkePeriod && tacticActual.StageTitle == Common.MQLStageValue);
                                         if (objLinkedTacticActual != null)
@@ -593,7 +600,7 @@ namespace Integration.Eloqua
                                             db.Entry(actualTactic).State = EntityState.Added;
                                         }
                                         #region "Create/Update linked Tactic Projected Stage value"
-                                        if (linkedTacticId > 0)
+                                        if (linkedTacticId > 0 && !string.IsNullOrEmpty(lnkePeriod))
                                         {
                                             var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == linkedTacticId && tacticActual.Period == lnkePeriod && tacticActual.StageTitle == Common.StageProjectedStageValue);
                                             if (objLinkedTacticActual != null)
@@ -1008,10 +1015,14 @@ namespace Integration.Eloqua
                             else
                                 tblPlanTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => TacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList(); 
                             #endregion
-
+                            List<int> processlinkedplantacticids = new List<int>();
                             // Insert or Update tactic actuals.
                             foreach (var objTactic in lstTactic)
                             {
+                                if (processlinkedplantacticids.Contains(objTactic.PlanTacticId))
+                                {
+                                    continue;
+                                }
                                 DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
                                 DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
                                     List<EloquaResponseModel> lstTacticResponse = lstResponse.Where(r => (r.eloquaTacticId == objTactic.IntegrationInstanceEloquaId) &&
@@ -1020,7 +1031,10 @@ namespace Integration.Eloqua
                                 // Get linked TacticId from mapping list.
                                 if (lstlinkedTacticMapping != null && lstlinkedTacticMapping.Count > 0) // check whether linkedTactics exist or not.
                                     linkedTacticId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == objTactic.PlanTacticId).Value;
-
+                                if (linkedTacticId > 0)
+                                {
+                                    processlinkedplantacticids.Add(linkedTacticId);
+                                }
                                 foreach (EloquaResponseModel item in lstTacticResponse)
                                 {
                                     string actualPeriod = (tacticStartDate.Year < item.peroid.Year) ? ("Y" + (((item.peroid.Year - tacticStartDate.Year) * 12) + item.peroid.Month )) : ("Y" + item.peroid.Month.ToString());
@@ -1074,7 +1088,7 @@ namespace Integration.Eloqua
                                     #endregion
 
                                     #region "Create/Update linked Tactic Actuals value"
-                                    if (linkedTacticId > 0)
+                                    if (linkedTacticId > 0 && !string.IsNullOrEmpty(lnkePeriod))
                                     {
                                         var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(a => a.PlanTacticId == linkedTacticId && a.Period == lnkePeriod && a.StageTitle == Common.StageProjectedStageValue);
                                         if (objLinkedTacticActual != null)
@@ -1188,10 +1202,14 @@ namespace Integration.Eloqua
                             else
                                 tblPlanTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => TacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
                             #endregion
-
+                            List<int> processlinkedplantacticids = new List<int>();
                             // Insert or Update tactic actuals.
                             foreach (var objTactic in lstTactic)
                             {
+                                if (processlinkedplantacticids.Contains(objTactic.PlanTacticId))
+                                {
+                                    continue;
+                                }
                                 DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
                                 DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
                                     var lstTacticResponse = unproceessdatalist.Where(r => (r.EloquaCampaignID == objTactic.IntegrationInstanceEloquaId) &&
@@ -1201,7 +1219,10 @@ namespace Integration.Eloqua
                                 // Get linked TacticId from mapping list.
                                 if (lstlinkedTacticMapping != null && lstlinkedTacticMapping.Count > 0) // check whether linkedTactics exist or not.
                                     linkedTacticId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == objTactic.PlanTacticId).Value;
-
+                                if (linkedTacticId > 0)
+                                {
+                                    processlinkedplantacticids.Add(linkedTacticId);
+                                }
                                 foreach (var item in lstTacticResponse)
                                 {
                                     string actualPeriod = (tacticStartDate.Year < item.ResponseDateTime.Year) ? ("Y" + (((item.ResponseDateTime.Year - tacticStartDate.Year) * 12) + item.ResponseDateTime.Month)) : ("Y" + item.ResponseDateTime.Month.ToString());
@@ -1255,7 +1276,7 @@ namespace Integration.Eloqua
                                     #endregion
 
                                     #region "Create/Update linked Tactic Actuals value"
-                                    if (linkedTacticId > 0)
+                                    if (linkedTacticId > 0 && !string.IsNullOrEmpty(lnkePeriod))
                                     {
                                         var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(a => a.PlanTacticId == linkedTacticId && a.Period == actualPeriod);
                                         if (objLinkedTacticActual != null)
