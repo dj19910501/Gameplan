@@ -170,7 +170,7 @@ namespace RevenuePlanner.Helpers
                     sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Nov.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Nov) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
                     sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Dec.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Dec) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
 
-                   
+
 
                 }
             }
@@ -179,9 +179,14 @@ namespace RevenuePlanner.Helpers
                 int quarterCounter = 1;
                 // Change by Nishant Sheth
                 // Desc ::#1765- to create month/quarter view as per year diffrence
+                int Quarteryear = StartYear;
                 for (int i = 0; i < (4 * (YearDiffrence + 1)); i++)
                 {
-                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Convert.ToString(QuarterPrefix + (i + 1)) + "</span><span class=\"light-blue-background\"><input id=\"Y" + quarterCounter + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\" /></span></div>";
+                    if (i % 4 == 0 && i != 0)
+                    {
+                        Quarteryear += 1;
+                    }
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Convert.ToString(QuarterPrefix + (i + 1)) + "-" + Quarteryear + "</span><span class=\"light-blue-background\"><input id=\"Y" + quarterCounter + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\" /></span></div>";
                     quarterCounter = quarterCounter + 3;
                 }
             }
@@ -4280,8 +4285,8 @@ namespace RevenuePlanner.Helpers
             //list of custom fields for particular campaign or Program or Tactic
             List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
             StringBuilder sb = new StringBuilder(string.Empty);
-           
-           
+
+
 
             //fieldCounter variable for defining raw style
             if (customFieldList.Count != 0)
@@ -4292,9 +4297,9 @@ namespace RevenuePlanner.Helpers
                 MRPEntities db = new MRPEntities();
                 string TacticType = "";
                 if (section == Enums.EntityType.Tactic.ToString().ToLower() && id != 0)
-                { 
-                Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
-                TacticType = pcpt.TacticTypeId.ToString();
+                {
+                    Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
+                    TacticType = pcpt.TacticTypeId.ToString();
                 }
 
                 List<int> customFieldIds = customFieldList.Select(cs => cs.customFieldId).ToList();
@@ -4321,37 +4326,37 @@ namespace RevenuePlanner.Helpers
 
                     DisplayStyle = " style=\"";
                     var IsSelected = false;
-                    var ParentOptionID = item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault()!= null ?item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault().ParentOptionId: new List<int>();
+                    var ParentOptionID = item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault() != null ? item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault().ParentOptionId : new List<int>();
                     var ParentCustomFieldID = item.ParentId;
                     //List<string> SelectedTacticIds = item.option.Where(a => TacticType.Contains(a.ParentOptionId.ToString())) != null ? item.option.Where(a => TacticType.Contains(a.ParentOptionId.ToString())).Select(a => a.ParentOptionId.ToString()).ToList() : new List<string>();
                     //bool IsDefaultTacticType = SelectedTacticIds.Contains(TacticType);
                     List<string> val = new List<string>();
-                    if (item.isChild && item.ParentId == 0 )
+                    if (item.isChild && item.ParentId == 0)
                     {
                         val.Add(TacticType.ToString());
                         entityvalues.Add(TacticType.ToString());
                         ParentField = "TacticType";
-                      
+
                     }
                     else
                     {
                         ParentField = "CustomField";
-                     val=   customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
+                        val = customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
                     }
-                 //   List<string> Childoptionstring = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? new List<string>() : objOption.ParentOptionId.Select(l => l.ToString()).ToList());
-                    var IsSelectedParentsChild =  item.option.Where(op => val.Intersect(op.ParentOptionId.Select(l => l.ToString()).ToList()).Any()).Any();
-                    if (item.customFieldType == "TextBox" && item.isChild )
+                    //   List<string> Childoptionstring = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? new List<string>() : objOption.ParentOptionId.Select(l => l.ToString()).ToList());
+                    var IsSelectedParentsChild = item.option.Where(op => val.Intersect(op.ParentOptionId.Select(l => l.ToString()).ToList()).Any()).Any();
+                    if (item.customFieldType == "TextBox" && item.isChild)
                     {
                         IsSelectedParentsChild = val.Intersect(item.ParentOptionId.Select(l => l.ToString()).ToList()).Any();
                     }
                     else
                     {
-                         IsSelected = val.Intersect(ParentOptionID.Select(l => l.ToString()).ToList()).Any();
+                        IsSelected = val.Intersect(ParentOptionID.Select(l => l.ToString()).ToList()).Any();
                     }
-                   
-                    if (item.isChild == true  && !IsSelectedParentsChild)
+
+                    if (item.isChild == true && !IsSelectedParentsChild)
                     {
-                        
+
                         DisplayStyle += "display:none;";
                     }
                     else
@@ -4454,7 +4459,7 @@ namespace RevenuePlanner.Helpers
                                 singlehover = "single-p";
                                 trhover = "trdropdownhover";
                                 footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:none;\"><span class=\"swap-text\">X close</span></a>";
-                                
+
                             }
                             else
                             {
@@ -4487,10 +4492,10 @@ namespace RevenuePlanner.Helpers
 
 
                                     DisplayStyle = " style=\"";
-                                    List<string> optionstring =  (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0  ? new List<string>() : objOption.ParentOptionId.Select(l => l.ToString()).ToList());
+                                    List<string> optionstring = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? new List<string>() : objOption.ParentOptionId.Select(l => l.ToString()).ToList());
                                     if (item.isChild == true)
                                     {
-                                        if ((objOption.ChildOptionId == true && entityvalues.Intersect(optionstring).Any() || objOption.value.ToString()=="Please Select"))
+                                        if ((objOption.ChildOptionId == true && entityvalues.Intersect(optionstring).Any() || objOption.value.ToString() == "Please Select"))
                                         {
                                             DisplayStyle += "display:block;";
                                         }
@@ -4535,26 +4540,26 @@ namespace RevenuePlanner.Helpers
                                             // List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
                                             // var IsSelected = val.Contains(ParentOptionID.ToString());
 
-                                              if (item.isChild && !IsSelected)
-                                              {
-                                                  name += "Please Select" + ", ";
-                                                  inputcolorcss = string.Empty;
-                                                  item.value.Clear();
+                                            if (item.isChild && !IsSelected)
+                                            {
+                                                name += "Please Select" + ", ";
+                                                inputcolorcss = string.Empty;
+                                                item.value.Clear();
                                                 selectionMode = "Single";
                                                 footerText = "> Multi-selection";
                                                 singlehover = "single-p";
                                                 trhover = "trdropdownhover";
                                                 footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:none;\"><span class=\"swap-text\">X close</span></a>";
-                                             
-                                              }
-                                              else
-                                              {
 
-                                            name += objOption.value + ", ";
-                                            enableCheck = "checked=\"checked\"";
-                                            inputcolorcss = string.Empty;
+                                            }
+                                            else
+                                            {
 
-                                             }
+                                                name += objOption.value + ", ";
+                                                enableCheck = "checked=\"checked\"";
+                                                inputcolorcss = string.Empty;
+
+                                            }
                                         }
                                         //Modified By Komal Rawal for #1864
                                         var ParentOption = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? "0" : string.Join(",", objOption.ParentOptionId));
@@ -4598,7 +4603,7 @@ namespace RevenuePlanner.Helpers
                                     List<string> optionstring = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? new List<string>() : objOption.ParentOptionId.Select(l => l.ToString()).ToList());
                                     if (item.isChild == true)
                                     {
-                                        if ((objOption.ChildOptionId == true &&  entityvalues.Intersect(optionstring).Any() || objOption.value.ToString() == "Please Select"))
+                                        if ((objOption.ChildOptionId == true && entityvalues.Intersect(optionstring).Any() || objOption.value.ToString() == "Please Select"))
                                         {
                                             DisplayStyle += "display:block;";
                                         }
@@ -4619,21 +4624,21 @@ namespace RevenuePlanner.Helpers
                                     {
                                         //List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
                                         //var IsSelected = item.value.Where(v => ListIDs.Contains(v)).Any();
-                                           if (item.isChild && !IsSelected)
-                                              {
-                                                  name += "Please Select" + ", ";
-                                                  item.value.Clear();
-                                              }
-                                              else
-                                              {
+                                        if (item.isChild && !IsSelected)
+                                        {
+                                            name += "Please Select" + ", ";
+                                            item.value.Clear();
+                                        }
+                                        else
+                                        {
                                             name += objOption.value + ", ";
                                             enableCheck = "checked=\"checked\"";
 
-                                           }
+                                        }
 
                                     }
                                     //Modified By Komal Rawal for #1864
-                                      var ParentOption = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? "0" : string.Join(",", objOption.ParentOptionId));
+                                    var ParentOption = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? "0" : string.Join(",", objOption.ParentOptionId));
                                     sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + ParentOption + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200-program\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
                                 }
                                 sb.Append("</tbody><tfoot class=\"programcampaignborder\"><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"" + selectionMode + "\"><span class=\"swap-text\">" + footerText + "</span></a></td></tr></tfoot></table></div></div></div>");
@@ -6169,10 +6174,10 @@ namespace RevenuePlanner.Helpers
         //Added By Komal Rawal for #1617.
         public static MvcHtmlString GenerateMappingFieldsForInspectPopup(int Id, string mode = "ReadOnly")
         {
-            
+
             MRPEntities db = new MRPEntities();
             List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
-            List<Budget_Detail> BudgetDetails = db.Budget_Detail.Where(a=>BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
+            List<Budget_Detail> BudgetDetails = db.Budget_Detail.Where(a => BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
             List<int> SelectedOptionIDs = db.LineItem_Budget.Where(list => list.PlanLineItemId == Id).Select(list => list.BudgetDetailId).ToList();
             List<string> SelectedOptionValues = BudgetDetails.Where(Detaillist => SelectedOptionIDs.Contains(Detaillist.Id)).Select(Detaillist => Detaillist.Name).ToList();
 
