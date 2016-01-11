@@ -179,14 +179,27 @@ namespace RevenuePlanner.Helpers
                 int quarterCounter = 1;
                 // Change by Nishant Sheth
                 // Desc ::#1765- to create month/quarter view as per year diffrence
+                  bool nextyearflag=false;
+                  int y = 0;
                 int Quarteryear = StartYear;
                 for (int i = 0; i < (4 * (YearDiffrence + 1)); i++)
                 {
                     if (i % 4 == 0 && i != 0)
                     {
                         Quarteryear += 1;
+                        nextyearflag=true;
                     }
-                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Convert.ToString(QuarterPrefix + (i + 1)) + "-" + Quarteryear + "</span><span class=\"light-blue-background\"><input id=\"Y" + quarterCounter + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\" /></span></div>";
+                    if (nextyearflag)
+                    {
+                        sb += "<div class=\"budget-month\"><span class=\"month\">" + Convert.ToString(QuarterPrefix + (y + 1)) + "-" + Quarteryear + "</span><span class=\"light-blue-background\"><input id=\"Y" + quarterCounter + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\" /></span></div>";
+                        y++;
+                    }
+                    else
+                    {
+                        sb += "<div class=\"budget-month\"><span class=\"month\">" + Convert.ToString(QuarterPrefix + (i + 1)) + "-" + Quarteryear + "</span><span class=\"light-blue-background\"><input id=\"Y" + quarterCounter + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\" /></span></div>";
+                   
+                    }
+
                     quarterCounter = quarterCounter + 3;
                 }
             }
