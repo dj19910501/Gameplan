@@ -11332,6 +11332,8 @@ namespace RevenuePlanner.Controllers
                                     if (LinkedTacticId != null)
                                     {
                                         var objLinkedOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId == null && l.IsDeleted == false);
+                                        if (objLinkedOtherLineItem != null)
+                                        {
                                         objLinkedOtherLineItem.IsDeleted = false;
                                         if (objLinkedOtherLineItem.Cost > LinkedtotalLineitemCost)
                                         {
@@ -11342,6 +11344,8 @@ namespace RevenuePlanner.Controllers
                                             objLinkedOtherLineItem.Cost = 0;
                                         }
                                         db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
+                                        }
+                                       
                                     }
                                     objOtherLineItem.IsDeleted = false;
                                     if (pcptl.Plan_Campaign_Program_Tactic.Cost > totalLoneitemCost)
