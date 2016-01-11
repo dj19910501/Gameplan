@@ -2303,8 +2303,9 @@ namespace Integration.Salesforce
                                             {
                                                 var innerOpportunityMember = OpportunityMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
                                                 int lnkdTacId = 0;
-                                                if (LinkedActualTacticList != null && LinkedActualTacticList.Count > 0)
+                                                if (lstlinkedTacticMapping != null && lstlinkedTacticMapping.Count > 0)
                                                     lnkdTacId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == tactic.PlanTacticId).Value;
+                                                
                                                 foreach (var objOpportunityMember in innerOpportunityMember)
                                                 {
                                                     var innertacticactualcw = OuteractualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageCW);
@@ -2351,6 +2352,7 @@ namespace Integration.Salesforce
                                                     #region "Add/Update  Linked Tactic Actuals"
                                                     if (lnkdTacId > 0)
                                                     {
+                                                        LinkedActualTacticList = tblPlanActual.Where(actual => actual.PlanTacticId == lnkdTacId).ToList();
                                                         string orgPeriod = objOpportunityMember.Period;
                                                         string numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
                                                         int NumPeriod = int.Parse(numPeriod), yearDiff=1;
