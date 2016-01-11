@@ -1333,7 +1333,7 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName                
-                Assert.AreEqual(false, result.GetValue("isSuccess"));
+                Assert.AreEqual(true, result.GetValue("isSuccess"));
                 Assert.AreEqual("", result.GetValue("ViewName"));
             }
         }
@@ -1398,7 +1398,12 @@ namespace RevenuePlanner.Test.Controllers
                                            Name = item.ViewName,
                                            IsDefaultPreset = item.IsDefaultPreset
                                        }).ToList();
-            var result = objHomeController.SaveDefaultPreset(PresetList.FirstOrDefault().Name) as JsonResult;
+            string presetName = string.Empty;
+            if (PresetList.Count() == 0)
+                presetName = "TestPreset";
+            else
+                presetName = PresetList.FirstOrDefault().Name.ToString();
+            var result = objHomeController.SaveDefaultPreset(presetName) as JsonResult;
             if (result != null)
             {
                 Assert.AreEqual(true,result.GetValue("isSuccess"));
@@ -1427,7 +1432,12 @@ namespace RevenuePlanner.Test.Controllers
                                            Name = item.ViewName,
                                            IsDefaultPreset = item.IsDefaultPreset
                                        }).ToList();
-            var result = objHomeController.SetFilterPresetName(PresetList.FirstOrDefault().Name) as JsonResult;
+            string presetName = string.Empty;
+            if (PresetList.Count() == 0)
+                presetName = "TestPreset";
+            else
+                presetName = PresetList.FirstOrDefault().Name.ToString();
+            var result = objHomeController.SetFilterPresetName(presetName) as JsonResult;
             if (result != null)
             {
                 Assert.AreEqual(true, result.GetValue("isSuccess"));
