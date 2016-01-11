@@ -1195,6 +1195,7 @@ namespace Integration.Eloqua
                     if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
                     {
                         lnkdTactic.IntegrationInstanceEloquaId = planTactic.IntegrationInstanceEloquaId;
+                        lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
                         lnkdTactic.LastSyncDate = DateTime.Now;
                         lnkdTactic.ModifiedDate = DateTime.Now;
                         lnkdTactic.ModifiedBy = _userId;
@@ -1271,6 +1272,7 @@ namespace Integration.Eloqua
                         #region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
                         if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
                         {
+                            lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
                             lnkdTactic.LastSyncDate = DateTime.Now;
                             lnkdTactic.ModifiedDate = DateTime.Now;
                             lnkdTactic.ModifiedBy = _userId;

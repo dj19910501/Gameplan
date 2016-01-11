@@ -2749,7 +2749,14 @@ namespace RevenuePlanner.Controllers
             string pullClosedWon = Operation.Pull_ClosedWon.ToString();
             string pullQualifiedLeads = Operation.Pull_QualifiedLeads.ToString();
             string planEntityType = Enums.Section.Tactic.ToString();
-            var planEntityLogList = db.IntegrationInstancePlanEntityLogs.Where(ipt => ipt.EntityId == _inspectmodel.PlanTacticId && ipt.EntityType == planEntityType).ToList();
+            List<int> linktacticids = new List<int>();
+            linktacticids.Add(_inspectmodel.PlanTacticId);
+            if (pcpt.LinkedTacticId.HasValue && pcpt.LinkedTacticId.Value > 0)
+            {
+                linktacticids.Add(pcpt.LinkedTacticId.Value);
+            }
+
+            var planEntityLogList = db.IntegrationInstancePlanEntityLogs.Where(ipt => linktacticids.Contains(ipt.EntityId) && ipt.EntityType == planEntityType).ToList();
             if (planEntityLogList.Where(planLog => planLog.Operation == pullResponses).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).FirstOrDefault() != null)
             {
                 // viewbag which display last synced datetime of tactic for pull responses
