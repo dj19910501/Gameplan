@@ -1,4 +1,5 @@
 ﻿@using RevenuePlanner.Helpers
+@model RevenuePlanner.Models.IntegrationWorkFrontRequestQueue
 @{
     var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     var deployStatus = tacticReview.IsDeployedToIntegration == true ? "Sync To Integration" : "Don't Sync To Integration";
@@ -20,6 +21,52 @@
     var tacticIntegrationProjMgmtInstance = ViewBag.TacticIntegrationProjMgmtInstance;
     List<RevenuePlanner.Models.CustomFieldReviewTab> topThreeCustomFields = ViewBag.TopThreeCustomFields;
 }
+
+
+<style type="text/css">
+     @@media screen and (-webkit-min-device-pixel-ratio:0) {
+    #dp_start .datepicker{
+        top: 32px !important;
+        left:auto !important;
+        min-width:220px;
+    }
+    #dp_end .datepicker{
+        top: 32px !important;
+        left:auto !important;
+        min-width:220px;
+    }
+   }
+    #btnCancel
+    {
+        color: gray;
+    }
+     .stage-title {
+         width: auto;
+         float: left;
+     }
+    #divTab .simpleSelectBox .sbHolder {
+            background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
+            box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
+            margin-bottom: 0;
+            z-index: auto;
+    }
+    #divTab .ui-multiselect {
+         background: none repeat scroll 0 0 #dff0f8 !important;
+     }
+    #divTab .sbToggle {
+        border-top: 4px solid #6d6d6d !important;
+    }
+    #divTab .sbHolder {
+        background-color: #dff0f8 !important;
+        background-image:none;
+     }
+    #multipleselect_WorkFrontRequestQueue {
+     left: -3px !important;
+    top: 29px !important;
+     min-width:205px;
+    }
+</style>
+
  <div class="row border-bottom-div">
     <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
         <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
@@ -155,12 +202,6 @@
         </div>
     </div>
 
-
-
-
-
-
-
     <div class="span2 right-col-tab no_margin_top" id="inspect-modal-left-column2">
         <div class="inspect-bolder-label">Notes</div>
         <div id="divComment" class="chat-div" style="overflow: auto;height: 350px !important;">
@@ -294,10 +335,9 @@
                 <div class="span2" style="padding-left: 20px;">
                     <div class="cf form-group">
                         @Html.Label("Request Queue")
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Dropdown
-                            <span class="caret"></span>
-                        </button>
+                        <span style="min-width: 100%; position: relative; display: block;">
+                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
+                        </span>
                     </div>
                     <div class="cf form-group">
                         @Html.Label("Assigned To")
@@ -522,6 +562,11 @@
 </div>
 <div id="DivPartialShareTactic">
 </div>
+
+
+
+
+
 <script type="text/javascript">
     var strViewMode = 'View';
     $(document).ready(function () {
