@@ -6120,6 +6120,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetHeaderDataforHoneycombPDF(string TactIds, string strParam)
         {
             //For MQL Value.
+            string[] ListYear = strParam.Split('-');// Add By Nishant Sheth
             List<int> TacticIds = string.IsNullOrWhiteSpace(TactIds) ? new List<int>() : TactIds.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
 
             var objPlan_Campaign_Program_Tactic1 = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
@@ -6138,12 +6139,12 @@ namespace RevenuePlanner.Controllers
             if (strParam.Contains("-"))
             {
                 List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
-                lstActivityChartyears = getmultipleyearActivityChartHoneyComb(strParam, TactIds);
-                return Json(new { lstchart = lstActivityChartyears.ToList() }, JsonRequestBehavior.AllowGet);
+                lstActivityChartyears = getmultipleyearActivityChartHoneyComb(strParam, TactIds, objPlan_Campaign_Program_Tactic1);// Modified By Nishant Sheth #1876
+                //return Json(new { lstchart = lstActivityChartyears.ToList() }, JsonRequestBehavior.AllowGet);
             }
-            else
-            {
-                isNumeric = int.TryParse(strParam, out Planyear);
+            // else
+
+            isNumeric = int.TryParse(ListYear[0], out Planyear);
                 if (isNumeric)
                 {
                     planYear = Convert.ToString(Planyear);
@@ -6151,7 +6152,6 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     planYear = DateTime.Now.Year.ToString();
-                }
             }
 
             Common.GetPlanGanttStartEndDate(planYear, strParam, ref CalendarStartDate, ref CalendarEndDate);
@@ -6337,7 +6337,7 @@ namespace RevenuePlanner.Controllers
 
         }
 
-        private List<ActivityChart> getmultipleyearActivityChartHoneyComb(string strParam, string TactIds)
+        private List<ActivityChart> getmultipleyearActivityChartHoneyComb(string strParam, string TactIds, List<Plan_Campaign_Program_Tactic> objPlan_Campaign_Program_Tactic) // Modified By Nishant Sheth #1876 to avoid db trips
         {
             List<int> TacticIds = string.IsNullOrWhiteSpace(TactIds) ? new List<int>() : TactIds.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
 
@@ -6364,10 +6364,10 @@ namespace RevenuePlanner.Controllers
                 Common.GetPlanGanttStartEndDate(planYear, multipleyear[i], ref CalendarStartDate, ref CalendarEndDate);
 
                 //// Selecte tactic(s) from selected programs
-                var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => 
-                                    TacticIds.Contains(tactic.PlanTacticId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate,isdelete=tactic.IsDeleted }).ToList();
+                //var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => 
+                //  TacticIds.Contains(tactic.PlanTacticId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate,isdelete=tactic.IsDeleted }).ToList();
 
-                objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
+                //objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
                 //// Prepare an array of month as per selected dropdown paramter
                 int[] monthArray = new int[12];
