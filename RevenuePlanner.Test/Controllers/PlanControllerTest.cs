@@ -45,10 +45,10 @@ namespace RevenuePlanner.Test.Controllers
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             var result = controller.SavePlan(plan) as JsonResult;
-            
+
             // data object should not be null in json result
             Assert.IsNotNull(result.Data);
-            
+
             int planId = result.GetValue<int>("id");
 
             Assert.IsTrue(Convert.ToBoolean(planId));
@@ -127,7 +127,7 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsTrue(Convert.ToBoolean(planId));
 
         }
-       
+
         #endregion
 
         #region Save plan Defination with some goal value other than zero
@@ -171,7 +171,7 @@ namespace RevenuePlanner.Test.Controllers
         /// <author>Komal Rawal</author>
         /// <createdDate>11thAugust2015</createdDate>
         /// </summary>
-         [TestMethod]
+        [TestMethod]
         public void PublishPlan()
         {
 
@@ -180,11 +180,11 @@ namespace RevenuePlanner.Test.Controllers
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             Sessions.PlanId = DataHelper.GetPlanId();
             var result = controller.PublishPlan(Sessions.User.UserId.ToString()) as JsonResult;
-              if(result != null)
-              { 
-               // data object should not be null in json result
-               Assert.IsNotNull(result.Data);
-              }
+            if (result != null)
+            {
+                // data object should not be null in json result
+                Assert.IsNotNull(result.Data);
+            }
 
 
         }
@@ -192,145 +192,232 @@ namespace RevenuePlanner.Test.Controllers
 
         #region Bugeting
 
-         /// <summary>
-         /// <author>Komal Rawal</author>
-         /// <createdDate>11thAugust2015</createdDate>
-         /// </summary>
-         [TestMethod]
-         public void Bugeting()
-         {
+        /// <summary>
+        /// <author>Komal Rawal</author>
+        /// <createdDate>11thAugust2015</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void Bugeting()
+        {
 
-             HttpContext.Current = DataHelper.SetUserAndPermission();
-             PlanController controller = new PlanController();
-             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-             Sessions.PlanId = DataHelper.GetPlanId();
-             var result = controller.Budgeting(Sessions.PlanId) as JsonResult;
-             if (result != null)
-             {
-                 // data object should not be null in json result
-                 Assert.IsNotNull(result.Data);
-             }
-
-
-         }
-
-         /// <summary>
-         /// To Save Budget Cell for plan for the budget year
-         /// <author>Komal Rawal</author>
-         /// <createdDate>11thAugust2015</createdDate>
-         /// </summary>
-         [TestMethod]
-         public void SaveBudgetCell()
-         {
-             HttpContext.Current = DataHelper.SetUserAndPermission();
-             PlanController controller = new PlanController();
-             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-             int id = DataHelper.GetPlanId();
-             List<string> lstinputs = new List<string>();
-             {
-                 lstinputs.Add("[{\"Key\":\"BudgetYear\"");
-                 lstinputs.Add("\"Value\":\"10000\"}]");
-             }
-             string Inputs = string.Join(",", lstinputs);
-             var result = controller.SaveBudgetCell(id.ToString(), "Plan", "", Inputs, false) as JsonResult;
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            Sessions.PlanId = DataHelper.GetPlanId();
+            var result = controller.Budgeting(Sessions.PlanId) as JsonResult;
             if (result != null)
-             {
-                 // data object should not be null in json result
-                 Assert.IsNotNull(result.Data);
-             }
+            {
+                // data object should not be null in json result
+                Assert.IsNotNull(result.Data);
+            }
 
-         }
 
-         /// <summary>
-         /// To Save Budget Cell for plan for the budget year and a month
-         /// <author>Komal Rawal</author>
-         /// <createdDate>11thAugust2015</createdDate>
-         /// </summary>
-         [TestMethod]
-         public void SaveBudgetCell_Month()
-         {
-             HttpContext.Current = DataHelper.SetUserAndPermission();
-             PlanController controller = new PlanController();
-             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-             int id = DataHelper.GetPlanId();
-             List<string> lstinputs = new List<string>();
-             {
-                 lstinputs.Add("[{\"Key\":\"BudgetMonth\"");
-                 lstinputs.Add("\"Value\":\"6000\"");
-                 lstinputs.Add("\"Key\":\"BudgetYear\"");
-                 lstinputs.Add("\"Value\":\"10000\"}]");
-             }
-             string Inputs = string.Join(",", lstinputs);
-             var result = controller.SaveBudgetCell(id.ToString(), "Plan", "March", Inputs, false) as JsonResult;
-             if (result != null)
-             {
-                 // data object should not be null in json result
-                 Assert.IsNotNull(result.Data);
-             }
+        }
 
-         }
+        /// <summary>
+        /// To Save Budget Cell for plan for the budget year
+        /// <author>Komal Rawal</author>
+        /// <createdDate>11thAugust2015</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void SaveBudgetCell()
+        {
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int id = DataHelper.GetPlanId();
+            List<string> lstinputs = new List<string>();
+            {
+                lstinputs.Add("[{\"Key\":\"BudgetYear\"");
+                lstinputs.Add("\"Value\":\"10000\"}]");
+            }
+            string Inputs = string.Join(",", lstinputs);
+            var result = controller.SaveBudgetCell(id.ToString(), "Plan", "", Inputs, false) as JsonResult;
+            if (result != null)
+            {
+                // data object should not be null in json result
+                Assert.IsNotNull(result.Data);
+            }
+
+        }
+
+        /// <summary>
+        /// To Save Budget Cell for plan for the budget year and a month
+        /// <author>Komal Rawal</author>
+        /// <createdDate>11thAugust2015</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void SaveBudgetCell_Month()
+        {
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int id = DataHelper.GetPlanId();
+            List<string> lstinputs = new List<string>();
+            {
+                lstinputs.Add("[{\"Key\":\"BudgetMonth\"");
+                lstinputs.Add("\"Value\":\"6000\"");
+                lstinputs.Add("\"Key\":\"BudgetYear\"");
+                lstinputs.Add("\"Value\":\"10000\"}]");
+            }
+            string Inputs = string.Join(",", lstinputs);
+            var result = controller.SaveBudgetCell(id.ToString(), "Plan", "March", Inputs, false) as JsonResult;
+            if (result != null)
+            {
+                // data object should not be null in json result
+                Assert.IsNotNull(result.Data);
+            }
+
+        }
 
 
         #endregion
 
         #region Grid View
 
-         [TestMethod]
-         public void LoadGrid()
-         {
-             MRPEntities db = new MRPEntities();
-             HttpContext.Current = DataHelper.SetUserAndPermission();
-             PlanController controller = new PlanController();
-             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-             int PlanId = DataHelper.GetPlanId();
-             Sessions.PlanId = PlanId;
-             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-             List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-             string Ownerids = string.Join(",", Owner);
-             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-             string tactictypeids = string.Join(",", tactic);
-             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
+        [TestMethod]
+        public void LoadGrid()
+        {
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tactic);
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
 
-             List<string> lststatus = new List<string>();
-             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
 
-             string Status = string.Join(",", lststatus);
+            string Status = string.Join(",", lststatus);
 
-             var result = controller.LoadHomeGrid(PlanId.ToString(), Ownerids, tactictypeids, Status, CommaSeparatedCustomFields) as Task<ActionResult>;
-             if (result != null)
-             {
-                 // data object should not be null in json result
-               //  Assert.IsNotNull(result.Data);
-             }
+            var result = controller.LoadHomeGrid(PlanId.ToString(), Ownerids, tactictypeids, Status, CommaSeparatedCustomFields) as Task<ActionResult>;
+            if (result != null)
+            {
+                // data object should not be null in json result
+                //  Assert.IsNotNull(result.Data);
+            }
 
-         }
+        }
 
-         /// To Get Improvement Tactic for the grid
-         /// <author>Komal Rawal</author>
-         /// <createdDate>11thAugust2015</createdDate>
-         /// </summary>
-         [TestMethod]
-         public void GetImprovementTactic()
-         {
-             HttpContext.Current = DataHelper.SetUserAndPermission();
-             PlanController controller = new PlanController();
-             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-             int PlanId = DataHelper.GetPlanId();
-             var result = controller.GetImprovementTactic(PlanId) as JsonResult;
-             if (result != null)
-             {
-                 // data object should not be null in json result
-                 Assert.IsNotNull(result.Data);
-             }
+        /// To Get Improvement Tactic for the grid
+        /// <author>Komal Rawal</author>
+        /// <createdDate>11thAugust2015</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void GetImprovementTactic()
+        {
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int PlanId = DataHelper.GetPlanId();
+            var result = controller.GetImprovementTactic(PlanId) as JsonResult;
+            if (result != null)
+            {
+                // data object should not be null in json result
+                Assert.IsNotNull(result.Data);
+            }
 
 
-         }
+        }
+
+        #endregion
+
+        #region "Feature: Copy or Link Tactic/Program/Campaign between Plan"
+
+        #region "Bind Planlist & Tree list"
+        /// To Load Copy Entity Popup
+        /// <author>Maitri Gandhi</author>
+        /// <createdDate>09Jan2016</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void LoadCopyEntityPopup()
+        {
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+
+            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
+            string Section = Enums.Section.Tactic.ToString();
+            string Popuptype = Enums.ModelTypeText.Copying.ToString();
+            var result = controller.LoadCopyEntityPopup(entityId, Section, Popuptype) as PartialViewResult;
+            if (result != null)
+            {
+                Assert.AreEqual("~/Views/Plan/_CopyEntity.cshtml", result.ViewName);
+            }
+        }
+
+        /// To Refresh Parent Entity Selection List
+        /// <author>Maitri Gandhi</author>
+        /// <createdDate>09Jan2016</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void RefreshParentEntitySelectionList()
+        {
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+
+            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+            int Planid = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList()[0];
+
+            var result = controller.RefreshParentEntitySelectionList(Planid.ToString()) as JsonResult;
+            if (result != null)
+            {
+                Assert.IsNotNull(result.Data);
+            }
+        }
+
+        #endregion
+
+        #region "Copy Entities from One Plan to Another"
+        /// To Clone to Other Plan
+        /// <author>Maitri Gandhi</author>
+        /// <createdDate>11Jan2016</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void ClonetoOtherPlan()
+        {
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+
+            //string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+            //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            //var tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(t =>
+            //    new  { 
+            //        TacticId = t.PlanTacticId,
+            //        PlanProgramId = t.Plan_Campaign_Program.PlanProgramId,
+            //        PlanId = t.Plan_Campaign_Program.Plan_Campaign.PlanId,
+            //        Title = t.Title
+            //    }).ToList();
+
+            //var result = controller.ClonetoOtherPlan(Enums.Section.Tactic.ToString(), tactic[0].TacticId.ToString(), tactic[1].TacticId.ToString(), tactic[0].PlanId.ToString(), tactic[1].PlanId.ToString(), tactic[0].Title);
+            //if (result != null)
+            //{
+
+            //}
+        }
+
+        #endregion
+
+        #region "Link Entities from One Plan to Another"
+        
+        #endregion
 
         #endregion
 
@@ -343,3 +430,13 @@ namespace RevenuePlanner.Test.Controllers
 ////This will create the dummy session for Unit test project
 //HttpContext.Current = MockHelpers.FakeHttpContext();
 //HttpContext.Current.Session["User"] = user;
+
+
+
+////// Maitri Notes
+
+//public ActionResult LoadCopyEntityPopup(string entityId(PlanID_tactic ids), string section(enums.section.tactic), string PopupType(Enums.ModelTypeText.Copying))
+
+//private DhtmlxGridRowDataModel CreateSubItem(ParentChildEntityMapping row, int parentId(parent of tactic=Program id(tactic.planprogram)), Enums.Section section, int destPlanId(planid), bool isAjaxCall)
+
+//public JsonResult ClonetoOtherPlan(string CloneType, string srcEntityId (tacticId), string destEntityID(ProgramId), string srcPlanID, string destPlanID, string sourceEntityTitle(tacticTitle))
