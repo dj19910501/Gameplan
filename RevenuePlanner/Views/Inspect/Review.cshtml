@@ -314,7 +314,7 @@
 
 
 
-                <div class="span3" style="padding-left:40px">
+                <div class="span2" style="padding-left:40px">
                     <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
                     <div class="radio " style="width:100%; float:left;margin-left:20px">
                         <label class="font-size12">
@@ -332,7 +332,7 @@
 
 
 
-                <div class="span2" style="padding-left: 20px;">
+                <div class="span3" style="padding-left: 20px;">
                     <div class="cf form-group">
                         @Html.Label("Request Queue")
                         <span style="min-width: 100%; position: relative; display: block;">
@@ -341,10 +341,9 @@
                     </div>
                     <div class="cf form-group">
                         @Html.Label("Assigned To")
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Dropdown
-                            <span class="caret"></span>
-                        </button>
+                        <span style="min-width: 100%; position: relative; display: block;">
+                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
+                        </span>
                     </div>
                     
                 </div>
@@ -352,10 +351,9 @@
                 <div class="span2" style="padding-left: 20px;">
                     <div class="cf form-group">
                         @Html.Label("Custom Form")
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Dropdown
-                            <span class="caret"></span>
-                        </button>
+                        <span style="min-width: 100%; position: relative; display: block;">
+                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestCustomForm", require = "true" })
+                        </span>
                     </div>
                 </div>
            </div>
