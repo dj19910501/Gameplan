@@ -11709,11 +11709,10 @@ namespace RevenuePlanner.Controllers
                 List<int> PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == item.Id).Select(a => a.PlanLineItemId).ToList();
                 dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name });
             }
-
+            List<LineItem_Budget> SelectedLineItemBudgetNew = db.LineItem_Budget.Select(a => a).ToList();
             var items = GetTopLevelRows(dataTableMain, MinParentid)
-                        .Select(row => CreateItem(dataTableMain, row, PlanLineItemID))
+                        .Select(row => CreateItem_New(dataTableMain, row, PlanLineItemID,SelectedLineItemBudgetNew))
                         .ToList();
-
             budgetMain.rows = items;
 
 
@@ -11770,7 +11769,42 @@ namespace RevenuePlanner.Controllers
             return new DhtmlxGridRowDataModel { id = Convert.ToString(id), data = datalist, rows = children };
 
         }
+        DhtmlxGridRowDataModel CreateItem_New(DataTable dataTable, DataRow row, int PlanLineItemID, List<LineItem_Budget> SelectedLineItemBudget)
+        {
+            var enableCheck = string.Empty;
+            var value = string.Empty;
+            var id = row.Field<Int32>("Id");
+            var name = row.Field<String>("Name");
+            var weightage = row.Field<String>("Weightage");
+            SelectedLineItemBudget = SelectedLineItemBudget.Where(a => a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a).ToList();
+            int SelectedID = SelectedLineItemBudget.Select(a => a.BudgetDetailId).FirstOrDefault();
+            var SelectedWeightage = SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
+            if (id == SelectedID)
+            {
+                enableCheck = "checked=\"checked\"";
+                value = SelectedWeightage.ToString();
+            }
+            else
+            {
+                enableCheck = string.Empty;
+                value = string.Empty;
+            }
+            var temp = "<input id=" + id + " title='" + name + "' " + enableCheck + "  type=checkbox  />" + name;
+            var AddWeightage = " <input value='" + value + "' type='text'  id= wt_" + id + " align='center' style='margin-top:9px; padding-right:4px;'>";
 
+            List<string> datalist = new List<string>();
+
+            var children = GetChildren(dataTable, id)
+              .Select(r => CreateItem_New(dataTable, r, PlanLineItemID,SelectedLineItemBudget))
+              .ToList();
+
+            var item = children.Count > 0 ? name : temp;
+            weightage = children.Count > 0 ? "" : AddWeightage;
+            datalist.Add("<input  type=checkbox /><span>" + item != null ? Convert.ToString(item) : "No" + "</span>" + name);
+            datalist.Add(weightage);
+            return new DhtmlxGridRowDataModel { id = Convert.ToString(id), data = datalist, rows = children };
+
+        }
         #endregion
     }
 }
