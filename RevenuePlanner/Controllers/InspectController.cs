@@ -3147,13 +3147,13 @@ namespace RevenuePlanner.Controllers
                                     {
                                         var prevlinkedlineItemActual = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => linkedLineItemIds.Contains(al.PlanLineItemId) && lstLinkedPeriods.Contains(al.Period)).ToList();
                                         if (prevlinkedlineItemActual != null && prevlinkedlineItemActual.Count >0)
-                                            prevlineItemActual.ForEach(al => db.Entry(al).State = EntityState.Deleted);
+                                            prevlinkedlineItemActual.ForEach(al => db.Entry(al).State = EntityState.Deleted);
                                     }
                                     else
                                     {
                                     var prevlinkedlineItemActual = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => linkedLineItemIds.Contains(al.PlanLineItemId)).ToList();
                                         if (prevlinkedlineItemActual != null && prevlinkedlineItemActual.Count > 0)
-                                        prevlineItemActual.ForEach(al => db.Entry(al).State = EntityState.Deleted);
+                                            prevlinkedlineItemActual.ForEach(al => db.Entry(al).State = EntityState.Deleted);
                                 }
                                 }
                                 List<Plan_Campaign_Program_Tactic_LineItem_Actual> linkedLineItemActuals = lineItemActual.ToList();
@@ -4330,6 +4330,145 @@ namespace RevenuePlanner.Controllers
                                     }
 
                                 }
+                                // Calculate Tactic Cost.
+                                #region "Calculate LineItem cost for Linked Tactic"
+                                //if (linkedTacticId > 0)
+                                //{
+                                //    List<Plan_Campaign_Program_Tactic_LineItem> tbllinkedTacLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                                //    double totalLinkedLineitemCost = 0;
+                                //    tbllinkedTacLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == linkedTacticId).ToList();
+                                //    List<Plan_Campaign_Program_Tactic_LineItem> objtotalLinkedLineitemCost = tbllinkedTacLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
+                                //    //Modified By komal rawal
+                                //    var linkedlineitemidlist = objtotalLinkedLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
+                                //    List<Plan_Campaign_Program_Tactic_LineItem_Cost> LinkedLineitemCostlist = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lic => linkedlineitemidlist.Contains(lic.PlanLineItemId)).ToList();
+                                //    //End
+
+                                //    if (objtotalLinkedLineitemCost != null && objtotalLinkedLineitemCost.Count() > 0)
+                                //        totalLinkedLineitemCost = objtotalLinkedLineitemCost.Sum(l => l.Cost);
+                                //    if (totalLinkedLineitemCost > linkedTactic.Cost)
+                                //    {
+                                //        form.Cost = totalLinkedLineitemCost;
+                                //    }
+                                //    //Added By komal Rawal for #1249
+                                //    if (form.Cost > pcpobj.Cost)
+                                //    {
+                                //        var diffcost = form.Cost - pcpobj.Cost;
+                                //        int startmonth = pcpobj.StartDate.Month;
+
+                                //        if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
+                                //        {
+                                //            pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
+
+                                //        }
+                                //        else
+                                //        {
+                                //            Plan_Campaign_Program_Tactic_Cost objTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                //            objTacticCost.PlanTacticId = pcpobj.PlanTacticId;
+                                //            objTacticCost.Period = PeriodChar + startmonth;
+                                //            objTacticCost.Value = diffcost;
+                                //            objTacticCost.CreatedBy = Sessions.User.UserId;
+                                //            objTacticCost.CreatedDate = DateTime.Now;
+                                //            db.Entry(objTacticCost).State = EntityState.Added;
+                                //        }
+
+                                //        //Add linked Tactic TacticCost data
+                                //        int yearDiff = 0, perdNum = 12, cntr = 0;
+                                //        bool isMultiYearlinkedTactic = false;
+                                //        if (linkedTacticId > 0)
+                                //        {
+                                //            yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+                                //            isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
+                                //            if (isMultiYearlinkedTactic)
+                                //            {
+                                //                string linkedstartmonth = ((12 * yearDiff) + startmonth).ToString();
+                                //                if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedstartmonth).Any())
+                                //                {
+                                //                    linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedstartmonth).FirstOrDefault().Value += diffcost;
+                                //                }
+                                //                //else
+                                //                //{
+                                //                //    Plan_Campaign_Program_Tactic_Cost lnkTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                //                //    lnkTacticCost.PlanTacticId = linkedTacticId;
+                                //                //    lnkTacticCost.Period = PeriodChar + linkedstartmonth;
+                                //                //    lnkTacticCost.Value = diffcost;
+                                //                //    lnkTacticCost.CreatedBy = Sessions.User.UserId;
+                                //                //    lnkTacticCost.CreatedDate = DateTime.Now;
+                                //                //    db.Entry(lnkTacticCost).State = EntityState.Added;
+                                //                //}
+                                //            }
+                                //        }
+                                //    }
+                                //    else if (form.Cost < pcpobj.Cost)
+                                //    {
+                                //        var diffcost = pcpobj.Cost - form.Cost;
+                                //        double diffLinkCost = diffcost;
+                                //        int endmonth = 12;
+                                //        while (diffcost > 0 && endmonth != 0)
+                                //        {
+                                //            if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
+                                //            {
+                                //                //Modified by komal Rawal
+                                //                double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
+                                //                double objtacticcost = pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
+                                //                var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
+                                //                if (DiffMonthCost > 0)
+                                //                {
+                                //                    if (DiffMonthCost > diffcost)
+                                //                    {
+                                //                        pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
+                                //                        diffcost = 0;
+                                //                    }
+                                //                    else
+                                //                    {
+                                //                        pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
+                                //                        diffcost = diffcost - DiffMonthCost;
+                                //                    }
+                                //                }
+                                //                //END
+                                //            }
+
+                                //            int yearDiff = 0, perdNum = 12, cntr = 0;
+                                //            bool isMultiYearlinkedTactic = false;
+                                //            if (linkedTacticId > 0)
+                                //            {
+                                //                yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+                                //                isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
+                                //                string linkedendmonth = ((12 * yearDiff) + endmonth).ToString();
+                                //                if (isMultiYearlinkedTactic)
+                                //                {
+                                //                    if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).Any())
+                                //                    {
+                                //                        double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + linkedendmonth).Sum(lineitem => lineitem.Value);
+                                //                        double objtacticcost = linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value;
+                                //                        var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
+                                //                        if (DiffMonthCost > 0)
+                                //                        {
+                                //                            if (DiffMonthCost > diffLinkCost)
+                                //                            {
+                                //                                linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value = objtacticcost - diffLinkCost;
+                                //                                diffLinkCost = 0;
+                                //                            }
+                                //                            else
+                                //                            {
+                                //                                linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
+                                //                                diffLinkCost = diffLinkCost - DiffMonthCost;
+                                //                            }
+                                //                        }
+                                //                    }
+                                //                }
+                                //            }
+
+                                //            if (endmonth > 0)
+                                //            {
+                                //                endmonth -= 1;
+                                //            }
+
+                                //        }
+
+                                //    }
+                                //} 
+                                #endregion
+
 
                                 pcpobj.Cost = form.Cost;
 
@@ -4994,14 +5133,14 @@ namespace RevenuePlanner.Controllers
                             pcpobj.ModifiedBy = Sessions.User.UserId;
                             pcpobj.ModifiedDate = DateTime.Now;
 
-                            if (linkedTacticId > 0)
-                            {
-                                Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(linkedTacticId)).FirstOrDefault();
-                                objLinkedTactic.Title = title;
-                                objLinkedTactic.TacticBudget = form.TacticBudget; // modified for 1229
-                                objLinkedTactic.ModifiedBy = Sessions.User.UserId;
-                                objLinkedTactic.ModifiedDate = pcpobj.ModifiedDate;
-                            }
+                            //if (linkedTacticId > 0)
+                            //{
+                            //    Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(linkedTacticId)).FirstOrDefault();
+                            //    objLinkedTactic.Title = title;
+                            //    objLinkedTactic.TacticBudget = form.TacticBudget; // modified for 1229
+                            //    objLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                            //    objLinkedTactic.ModifiedDate = pcpobj.ModifiedDate;
+                            //}
 
                             int startmonth = pcpobj.StartDate.Month;
                             if (linkedTacticId > 0)
@@ -5196,6 +5335,13 @@ namespace RevenuePlanner.Controllers
                             int result;
                             result = db.SaveChanges();
 
+                            List<Plan_Campaign_Program_Tactic_Budget> lstsrcBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => (tac.PlanTacticId == form.PlanTacticId)).ToList();
+                            //List<Plan_Campaign_Program_Tactic_Budget> lstSrcBudgetData = lstAllBudgetData.Where(tac => tac.PlanTacticId == form.PlanTacticId).ToList();
+                            double totalSrcBudget = 0;  // Reset value.
+                            if (lstsrcBudgetData != null && lstsrcBudgetData.Count > 0)
+                                totalSrcBudget = lstsrcBudgetData.Sum(bdgt => bdgt.Value);
+                            pcpobj.TacticBudget = totalSrcBudget; 
+
                             if (linkedTacticId > 0)
                             {
                                 #region "Update Linked Tactic Budget data"
@@ -5204,6 +5350,8 @@ namespace RevenuePlanner.Controllers
                                 List<Plan_Campaign_Program_Tactic_Budget> lstBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == form.PlanTacticId).ToList();
                                 if (lstBudgetData != null && lstBudgetData.Count > 0)
                                 {
+                                    double totalLinkedBudget = 0;
+                                    bool islinkedBudgetModified = false;
                                     List<Plan_Campaign_Program_Tactic_Budget> linkedBudgetData = new List<Plan_Campaign_Program_Tactic_Budget>();
                                     Plan_Campaign_Program_Tactic_Budget objlinkedBudget = null;
                                     if (isMultiYearlinkedTactic)
@@ -5211,7 +5359,7 @@ namespace RevenuePlanner.Controllers
                                         // Delete old budget data.
                                         linkedBudgetData = tblTacticBudget.Where(tac => tac.PlanTacticId == linkedTacticId && lstLinkedPeriods.Contains(tac.Period)).ToList();
                                         if (linkedBudgetData != null && linkedBudgetData.Count > 0)
-                                    linkedBudgetData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
+                                            linkedBudgetData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
 
                                         foreach (Plan_Campaign_Program_Tactic_Budget budget in lstBudgetData)
                                         {
@@ -5226,6 +5374,8 @@ namespace RevenuePlanner.Controllers
                                             objlinkedBudget.CreatedDate = budget.CreatedDate;
                                             objlinkedBudget.CreatedBy = budget.CreatedBy;
                                             db.Entry(objlinkedBudget).State = EntityState.Added;
+                                            //islinkedBudgetModified = true;
+                                            //totalLinkedBudget += budget.Value;
                                         }
                                     }
                                     else
@@ -5252,12 +5402,53 @@ namespace RevenuePlanner.Controllers
                                                     objlinkedBudget.CreatedDate = budget.CreatedDate;
                                                     objlinkedBudget.CreatedBy = budget.CreatedBy;
                                                     db.Entry(objlinkedBudget).State = EntityState.Added;
+                                                    //islinkedBudgetModified = true;
+                                                    //totalLinkedBudget += budget.Value;
                                                 }
                                             }
                                         }
                                     }
                                     //lstBudgetData.ForEach(bdgt => { bdgt.PlanTacticId = linkedTacticId; db.Entry(bdgt).State = EntityState.Added; db.Plan_Campaign_Program_Tactic_Budget.Add(bdgt); });
                                     db.SaveChanges();
+                                }
+                                else
+                                { 
+                                    // if linked tactic Multiyear tactic then remove all common year values.
+                                    if (isMultiYearlinkedTactic)
+                                    {
+                                        List<Plan_Campaign_Program_Tactic_Budget> linkedBudgetData = new List<Plan_Campaign_Program_Tactic_Budget>();
+                                        // Delete old budget data.
+                                        linkedBudgetData = tblTacticBudget.Where(tac => tac.PlanTacticId == linkedTacticId && lstLinkedPeriods.Contains(tac.Period)).ToList();
+                                        if (linkedBudgetData != null && linkedBudgetData.Count > 0)
+                                        {
+                                            linkedBudgetData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
+                                            db.SaveChanges();
+                                        }
+                                    }
+                                        //if (linkedTacticId > 0)
+                                        //{
+                                        //    double totalLinkedBudget = 0;
+                                        //    List<Plan_Campaign_Program_Tactic_Budget> lstNewLinkedBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == linkedTacticId).ToList();
+                                        //    if (lstNewLinkedBudgetData != null && lstNewLinkedBudgetData.Count > 0)
+                                        //        totalLinkedBudget = lstNewLinkedBudgetData.Sum(bdgt => bdgt.Value);
+                                        //    //Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(linkedTacticId)).FirstOrDefault();
+                                        //    linkedTactic.Title = title;
+                                        //    linkedTactic.TacticBudget = totalLinkedBudget; // modified for 1229
+                                        //    linkedTactic.ModifiedBy = Sessions.User.UserId;
+                                        //    linkedTactic.ModifiedDate = pcpobj.ModifiedDate;
+                                        //}
+                                }
+                                if (linkedTacticId > 0)
+                                {
+                                    double totalLinkedBudget = 0;
+                                    List<Plan_Campaign_Program_Tactic_Budget> lstNewLinkedBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == linkedTacticId).ToList();
+                                    if (lstNewLinkedBudgetData != null && lstNewLinkedBudgetData.Count > 0)
+                                        totalLinkedBudget = lstNewLinkedBudgetData.Sum(bdgt => bdgt.Value);
+                                    //Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(linkedTacticId)).FirstOrDefault();
+                                    linkedTactic.Title = title;
+                                    linkedTactic.TacticBudget = totalLinkedBudget; // modified for 1229
+                                    linkedTactic.ModifiedBy = Sessions.User.UserId;
+                                    linkedTactic.ModifiedDate = pcpobj.ModifiedDate;
                                 }
                                 #endregion
                             }
@@ -5280,6 +5471,18 @@ namespace RevenuePlanner.Controllers
                             {
                                 totalLoneitemCost = objtotalLoneitemCost.Sum(l => l.Cost);
                             }
+
+                            double totalLinkedLineitemCost = 0;
+                            if (linkedTacticId > 0)
+                            {
+                                Plan_Campaign_Program_Tactic_LineItem objOtherLinkedLineItem = tblTacticLineItem.Where(line => line.PlanTacticId == linkedTacticId).FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
+                                var objtotalLinkedLineitemCost = tblTacticLineItem.Where(line => line.PlanTacticId == pcpobj.PlanTacticId).Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false);
+                                if (objtotalLinkedLineitemCost != null && objtotalLinkedLineitemCost.Count() > 0)
+                                {
+                                    totalLinkedLineitemCost = objtotalLinkedLineitemCost.Sum(l => l.Cost);
+                                }
+                            }
+
                             if (objOtherLineItem == null)
                             {
                                 Plan_Campaign_Program_Tactic_LineItem objLinkedLineitem = null;
@@ -5288,9 +5491,9 @@ namespace RevenuePlanner.Controllers
                                     objLinkedLineitem = new Plan_Campaign_Program_Tactic_LineItem();
                                     objLinkedLineitem.PlanTacticId = linkedTacticId;
                                     objLinkedLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
-                                    if (pcpobj.Cost > totalLoneitemCost)
+                                    if (linkedTactic.Cost > totalLinkedLineitemCost)
                                     {
-                                        objLinkedLineitem.Cost = pcpobj.Cost - totalLoneitemCost;
+                                        objLinkedLineitem.Cost = linkedTactic.Cost - totalLinkedLineitemCost;
                                     }
                                     else
                                     {
@@ -5352,7 +5555,14 @@ namespace RevenuePlanner.Controllers
                                         if (lnkLineItem != null)
                                         {
                                             lnkLineItem.IsDeleted = false;
-                                            lnkLineItem.Cost = objOtherLineItem.Cost;
+                                            if (linkedTactic.Cost > totalLoneitemCost)
+                                            {
+                                                lnkLineItem.Cost = pcpobj.Cost - totalLinkedLineitemCost;
+                                            }
+                                            else
+                                            {
+                                                lnkLineItem.Cost = 0;
+                                            }
                                             db.Entry(lnkLineItem).State = EntityState.Modified;
                                         }
                                     }
