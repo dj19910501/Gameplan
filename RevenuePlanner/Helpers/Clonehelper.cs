@@ -1491,6 +1491,7 @@ namespace RevenuePlanner.Helpers
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
                     objPlanTactic.Tactic_Share = objPlanTactic.Tactic_Share.ToList();
+                    objPlanTactic.TacticBudget = 0;
                     objPlanTactic.PlanProgramId = parentEntityId;
                     objPlanTactic.StartDate = GetResultDateforLink(objPlanTactic.StartDate, startDate, true);
                     objPlanTactic.EndDate = objPlanTactic.EndDate;
@@ -1555,11 +1556,14 @@ namespace RevenuePlanner.Helpers
                             }
                         }
                         );
+                    objPlanTactic.TacticBudget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.Select(bud => bud.Value).Sum();
                     objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
                             pcptl.LineItemType = null;
+                            pcptl.Cost = 0;
                             pcptl.LinkedLineItemId = pcptl.PlanLineItemId;
+                            pcptl.LineItem_Budget = pcptl.LineItem_Budget;
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList().ForEach(
                                  cost =>
@@ -1579,6 +1583,7 @@ namespace RevenuePlanner.Helpers
                                      }
                                  }
                                 );
+                            pcptl.Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(cost => cost.Value).Sum();
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual = pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().ForEach(
                                  actual =>
