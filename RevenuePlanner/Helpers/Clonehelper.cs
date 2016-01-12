@@ -1568,6 +1568,7 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.PlanProgramId = parentEntityId;
                     objPlanTactic.StartDate = GetResultDateforLink(objPlanTactic.StartDate, startDate, true);
                     objPlanTactic.EndDate = objPlanTactic.EndDate;
+                    objPlanTactic.Cost = 0;
                     //objPlanTactic.StartDate = objPlanTactic.StartDate;
                     //objPlanTactic.EndDate = objPlanTactic.EndDate;
                     objPlanTactic.LinkedPlanId = planid;
@@ -1610,6 +1611,7 @@ namespace RevenuePlanner.Helpers
                             }
                         }
                         );
+                    objPlanTactic.Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).Sum(tac => tac.Value);
                     objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
                     objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList().ForEach(
                         budget =>
