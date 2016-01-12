@@ -166,36 +166,7 @@
                 }
             </div>
 
-            @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
-            <div class ="span6" style="margin-bottom: 0px; width: 93%;margin-top:10px;">
-                @if (tacticIntegrationInstance != null || tacticIntegrationProjMgmtInstance != null || tacticEloquaInstance != null)
-                {
-                    if (INQLastSync != null)
-                    {
-                        <span class ="pull-left" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 11px;">@Html.LabelForINQ("INQ") synced on @INQLastSync.ToString("MMM dd, yyyy") at @INQLastSync.ToString("hh:mm tt").ToLower() </span>
-                        <br />
-                    }
-                    if (MQLLastSync != null)
-                    {
-                        <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForMQL("MQL") synced on @MQLLastSync.ToString("MMM dd, yyyy") at @MQLLastSync.ToString("hh:mm tt").ToLower()</span>
-                        <br />
-                    }
-                    if (CWLastSync != null)
-                    {
-                        <span class="pull-left"  style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForCW("CW") synced on @CWLastSync.ToString("MMM dd, yyyy ") at  @CWLastSync.ToString("hh:mm tt").ToLower()</span>
-                        <br />
-                    }
-                    if (TacticLastSync != null)
-                    {
-                        <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Tactic last synced on @TacticLastSync.ToString("MMM dd, yyyy ") at  @TacticLastSync.ToString("hh:mm tt").ToLower()</span>
-                    }
-                }
-                else
-                {
-                    <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Tactic not synced</span>
-                }
-                @*End -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
-            </div>
+          
 
 
 
@@ -242,9 +213,8 @@
     </div>
 </div>
   
+    <!--Begin PL#1462 07 Brad Gray, Aug 2015, moved & modified 09 Jan 2016 by Brad Gray PL#1872-->
     <div id="integrationInfo" class="row width100 border-bottom-div margin-top10" style="display:table">
-
-        <!--Begin PL#1462 07 Brad Gray, Aug 2015, moved & modified 09 Jan 2016 by Brad Gray PL#1872-->
            
         <div class="width10 border-cf-right margin-top20 textalign-mozcenter vertical-aligntop" style="display:table-cell">
             <div class="size65x38 margin-top20">
@@ -255,7 +225,36 @@
                 <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
             </div>
 
-
+            @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration - Moved and updated Jan 2016 by Brad Gray PL#1872*@
+            <div class="span6 blue-text bold" style="margin-bottom: 0px; width: 93%;margin-top:10px;">
+                @if (tacticIntegrationInstance != null || tacticIntegrationProjMgmtInstance != null || tacticEloquaInstance != null)
+                {
+                    if (INQLastSync != null)
+                    {
+                        <span class="pull-left" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 11px;">@Html.LabelForINQ("INQ") synced on @INQLastSync.ToString("MM/dd/yyyy ") at @INQLastSync.ToString("hh:mm tt").ToLower() </span>
+                        <br />
+                    }
+                    if (MQLLastSync != null)
+                    {
+                        <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForMQL("MQL") synced on @MQLLastSync.ToString("MM/dd/yyyy ") at @MQLLastSync.ToString("hh:mm tt").ToLower()</span>
+                        <br />
+                    }
+                    if (CWLastSync != null)
+                    {
+                        <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForCW("CW") synced on @CWLastSync.ToString("MM/dd/yyyy ") at  @CWLastSync.ToString("hh:mm tt").ToLower()</span>
+                        <br />
+                    }
+                    if (TacticLastSync != null)
+                    {
+                        <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Last synced on @TacticLastSync.ToString("MM/dd/yyyy ") at  @TacticLastSync.ToString("hh:mm tt").ToLower()</span>
+                    }
+                }
+                else
+                {
+                    <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Tactic not synced</span>
+                }
+                @*End -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
+            </div>
 
         </div>
 
@@ -265,94 +264,91 @@
             @{
                 foreach (var item in ViewBag.IntegrationTypeLinks)
                 {
-                    <div class="span12 border-bottom-div margin-left20 margin-top20" style="width:98%">
+                 <div class="span12 border-bottom-div margin-left20 margin-top20" style="width:98%">
+
+                 @{
+                    if (item.Key == Enums.IntegrationType.Eloqua.ToString())
+                    {
                         <div class="pull-left integration-review-imglink">
                             <a href=@item.Value onclick="window.open(this.href); return false;">
                                 <div class="link_popup pull-right margin-bottom10"></div>
-                                @{
-                    if (item.Key == Enums.IntegrationType.Eloqua.ToString())
-                    {
-                        <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
+                                <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
+                            </a>
+                        </div>
                     }
                     else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
                     {
-                        <div class="salesforce-img margin-top10"></div>
+                        <div class="pull-left integration-review-imglink">
+                            <a href=@item.Value onclick="window.open(this.href); return false;">
+                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="salesforce-img margin-top10"></div>
+                            </a>
+                        </div>
+
                     }
                     else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
                     {
-                        <div class="workfront-img margin-top23"></div>
-                    }
-                                }
+                        <div class="pull-left integration-review-imglink">
+                            <a href=@item.Value onclick="window.open(this.href); return false;">
+                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="workfront-img margin-top23"></div>
                             </a>
                         </div>
-                    </div>
-                }
+                        
+                        <!--Begin PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
+                        <div class="row" style="padding-top:20px">
+                           <div class="span2 float-left margin-left20" style="padding-bottom: 8px; margin-bottom: 8px">
+                               <label id="workfrontTacticType">Tactic Type</label>
+                               <label id="tacticTypeTitle" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.TacticTypeTitle)">@Html.Raw(tacticReview.TacticTypeTitle)</label>
+                               <label id="workfrontTemplate">WorkFront Template</label>
+                               <label id="workfront_template" class="blue-text bold font-size12" title="@Html.Raw(ViewBag.WorkFront_Template) ">@Html.Raw(ViewBag.WorkFront_Template)</label>
+                           </div>
+                           <div class="span2" style="padding-left:40px">
+                              <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
+                               <div class="radio " style="width:100%; float:left;margin-left:20px">
+                                   <label class="font-size12">
+                                       <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">Create a Project
+                                    </label>
+                                </div>
+                                <div class="radio" style="width:100%; float:left; margin-left:20px">
+                                     <label class="font-size12">
+                                        <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">Create a Request
+                                     </label>
+                                </div>
+                           </div>
+                            <div class="span3" style="padding-left: 20px;">
+                                 <div class="cf form-group">
+                                     @Html.Label("Request Queue")
+                                     <span style="min-width: 100%; position: relative; display: block;">
+                                         @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
+                                      </span>
+                                  </div>
+                                  <div class="cf form-group">
+                                      @Html.Label("Assigned To")
+                                      <span style="min-width: 100%; position: relative; display: block;">
+                                          @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
+                                       </span>
+                                   </div>
+                            </div>
+                            <div class="span2" style="padding-left: 20px;">
+                                 <div class="cf form-group">
+                                      @Html.Label("Custom Form")
+                                      <span style="min-width: 100%; position: relative; display: block;">
+                                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestCustomForm", require = "true" })
+                                      </span>
+                                  </div>
+                             </div>
+                        </div>
+                        <!--End PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
+                    }
+                 }
+                </div>
+               }
             }
         </div>
-        </div>
-        <!--End PL#1462 07 Brad Gray, Aug 2015-->
 
-        <!--Begin PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
-        @if ((bool)ViewBag.IsModelDeploy && (bool)ViewBag.IsModelIntegratedWorkFront)
-        {
-            <div class="row" style="padding-top:20px">
-                <div class="span2 float-left margin-left20" style="padding-bottom: 8px; margin-bottom: 8px">
-                    <label id="workfrontTacticType">Tactic Type</label>
-                    <label id="tacticTypeTitle" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.TacticTypeTitle)">@Html.Raw(tacticReview.TacticTypeTitle)</label>
-                    <label id="workfrontTemplate">WorkFront Template</label>
-                    <label id="workfront_template" class="blue-text bold font-size12" title="@Html.Raw(ViewBag.WorkFront_Template) ">@Html.Raw(ViewBag.WorkFront_Template)</label>
-                </div>
-
-
-
-                <div class="span2" style="padding-left:40px">
-                    <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
-                    <div class="radio " style="width:100%; float:left;margin-left:20px">
-                        <label class="font-size12">
-                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
-                            Create a Project
-                        </label>
-                    </div>
-                    <div class="radio" style="width:100%; float:left; margin-left:20px">
-                        <label class="font-size12">
-                            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                            Create a Request
-                        </label>
-                    </div>
-                </div>
-
-
-
-                <div class="span3" style="padding-left: 20px;">
-                    <div class="cf form-group">
-                        @Html.Label("Request Queue")
-                        <span style="min-width: 100%; position: relative; display: block;">
-                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
-                        </span>
-                    </div>
-                    <div class="cf form-group">
-                        @Html.Label("Assigned To")
-                        <span style="min-width: 100%; position: relative; display: block;">
-                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
-                        </span>
-                    </div>
-                    
-                </div>
-
-                <div class="span2" style="padding-left: 20px;">
-                    <div class="cf form-group">
-                        @Html.Label("Custom Form")
-                        <span style="min-width: 100%; position: relative; display: block;">
-                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestCustomForm", require = "true" })
-                        </span>
-                    </div>
-                </div>
-           </div>
-        }
-        <!--End PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
     </div>
-   
-
+    <!--End PL#1462 07 Brad Gray, Aug 2015-->
 
 <div class="cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
 
