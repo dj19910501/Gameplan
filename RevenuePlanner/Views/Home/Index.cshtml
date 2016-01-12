@@ -2393,7 +2393,7 @@
         if (PdfFilters.SelectedPlans.length > 0) {
             $.each(PdfFilters.SelectedPlans, function () {
                 if (activeMenu == "plan") {
-                    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
+                    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
                 }
                 else {
                     innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
@@ -2413,7 +2413,9 @@
             }
             if (DropDownPlan == true) {
                 //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
-                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
+                if (activeMenu == 'plan') {
+                    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
+                }
             }
 
             //if (isselectedplan) {
@@ -3061,12 +3063,18 @@
                 isselectedplan = true;
             }
         });
-        if (PdfFilters.SelectedPlans.length > 0) {
-            $.each(PdfFilters.SelectedPlans, function () {
-                innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+        if (activeMenu == "home") {
+            if (PdfFilters.SelectedPlans.length > 0) {
+                $.each(PdfFilters.SelectedPlans, function () {
+                    innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
 
-            });
+                });
+            }
         }
+        else {
+            innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+        }
+
 
         var isAvailablerecord = false;
         var _noplandivMsg = $("#Notabcontent").css("display");
@@ -3078,8 +3086,9 @@
                 DropDownPlan = false;
             }
             if (DropDownPlan == true) {
-                //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
-                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
+                if (activeMenu == 'plan') {
+                    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                }
             }
 
 
@@ -3131,7 +3140,7 @@
 
             var innerfiltervalueOwner = "";
             var isselectedOwner = true;
-            if (PdfFilters.OwnerIds.length > 0) {
+            if (PdfFilters.OwnerIds.toString().trim().length > 0) {
                 $.each(PdfFilters.OwnerIds, function () {
                     innerfiltervalueOwner += " " + $("#ulSelectedOwner").find('#liOwner' + this).attr("title") + ",";
 
