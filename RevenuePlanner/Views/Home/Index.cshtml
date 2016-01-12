@@ -2391,6 +2391,8 @@
             }
         });
       
+      
+
         if (activeMenu == 'home') {
             if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
                 $.each(PdfFilters.SelectedPlans, function () {
@@ -2405,7 +2407,13 @@
             }
         }
         else {
-            innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+           
+            $(".nl-field.nl-dd").find('li').each(function () {
+                if ($(this).hasClass('nl-dd-checked')) {
+
+                    innerfiltervalueplan +=" " +  $(this).attr('originalvalue');
+                }
+            })
         }
 
         var isAvailablerecord = false;
@@ -2420,7 +2428,12 @@
             if (DropDownPlan == true) {
                 //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
                 if (activeMenu == 'plan') {
-                    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                    $(".nl-field.nl-dd").find('li').each(function () {
+                        if ($(this).hasClass('nl-dd-checked')) {
+
+                            innerfiltervalueplan += " " + $(this).attr('originalvalue');
+                        }
+                    })
                 }
             }
 
@@ -3078,7 +3091,12 @@
             }
         }
         else {
-            innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+            $(".nl-field.nl-dd").find('li').each(function () {
+                if ($(this).hasClass('nl-dd-checked')) {
+
+                    innerfiltervalueplan += " " + $(this).attr('originalvalue');
+                }
+            })
         }
 
 
@@ -3093,7 +3111,12 @@
             }
             if (DropDownPlan == true) {
                 if (activeMenu == 'plan') {
-                    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                    $(".nl-field.nl-dd").find('li').each(function () {
+                        if ($(this).hasClass('nl-dd-checked')) {
+
+                            innerfiltervalueplan += " " + $(this).attr('originalvalue');
+                        }
+                    })
                 }
             }
 
