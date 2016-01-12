@@ -12884,7 +12884,7 @@ namespace RevenuePlanner.Controllers
                 return Json(new { msg = Common.objCached.ExceptionErrorMessageforLinking, isSuccess = false }, JsonRequestBehavior.AllowGet);
                 // throw ex;
             }
-            return Json(new { msg = Common.objCached.LinkEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), isSuccess = true }, JsonRequestBehavior.AllowGet);
+            return Json(new { msg = Common.objCached.LinkEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), isSuccess = true, clonetype = CloneType, sourceEntityHtmlDecodedTitle = sourceEntityHtmlDecodedTitle, destPlanTitle = destPlanTitle }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
