@@ -7079,16 +7079,20 @@ namespace RevenuePlanner.Controllers
                                     if (LinkedTacticId != null)
                                     {
                                         var objLinkedOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId == null && l.IsDeleted == false);
-                                        objLinkedOtherLineItem.IsDeleted = false;
-                                        if (objLinkedOtherLineItem.Cost > LinkedtotalLineitemCost)
+                                        if(objLinkedOtherLineItem != null)
                                         {
-                                            objLinkedOtherLineItem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
+                                            objLinkedOtherLineItem.IsDeleted = false;
+                                            if (objLinkedOtherLineItem.Cost > LinkedtotalLineitemCost)
+                                            {
+                                                objLinkedOtherLineItem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
+                                            }
+                                            else
+                                            {
+                                                objLinkedOtherLineItem.Cost = 0;
+                                            }
+                                            db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                         }
-                                        else
-                                        {
-                                            objLinkedOtherLineItem.Cost = 0;
-                                        }
-                                        db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
+                                       
                                     }
                                     objOtherLineItem.IsDeleted = false;
                                     if (objTactic.Cost > totalLoneitemCost)
@@ -7612,16 +7616,19 @@ namespace RevenuePlanner.Controllers
                                         if (LinkedLineitemId != null)
                                         {
                                             var objLinkedOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId == null && l.IsDeleted == false);
-                                            objLinkedOtherLineItem.IsDeleted = false;
-                                            if (objLinkedOtherLineItem.Cost > LinkedtotalLineitemCost)
+                                            if (objLinkedOtherLineItem != null)
                                             {
-                                                objLinkedOtherLineItem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
+                                                objLinkedOtherLineItem.IsDeleted = false;
+                                                if (objLinkedOtherLineItem.Cost > LinkedtotalLineitemCost)
+                                                {
+                                                    objLinkedOtherLineItem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
+                                                }
+                                                else
+                                                {
+                                                    objLinkedOtherLineItem.Cost = 0;
+                                                }
+                                                db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                             }
-                                            else
-                                            {
-                                                objLinkedOtherLineItem.Cost = 0;
-                                            }
-                                            db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                         }
 
                                         objOtherLineItem.IsDeleted = false;
@@ -8818,16 +8825,20 @@ namespace RevenuePlanner.Controllers
                                             if (LinkedTacticId != null)
                                             {
                                                 var objLinkedOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId == null);
-                                                objLinkedOtherLineItem.IsDeleted = false;
-                                                if (objLinkedOtherLineItem.Cost > LinkedtotalLineitemCost)
+                                                if (objLinkedOtherLineItem != null)
                                                 {
-                                                    objLinkedOtherLineItem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
+                                                    objLinkedOtherLineItem.IsDeleted = false;
+                                                    if (objLinkedOtherLineItem.Cost > LinkedtotalLineitemCost)
+                                                    {
+                                                        objLinkedOtherLineItem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
+                                                    }
+                                                    else
+                                                    {
+                                                        objLinkedOtherLineItem.Cost = 0;
+                                                    }
+
+                                                    db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                                 }
-                                                else
-                                                {
-                                                    objLinkedOtherLineItem.Cost = 0;
-                                                }
-                                                db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                             }
 
 
