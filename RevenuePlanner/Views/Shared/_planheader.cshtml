@@ -154,7 +154,11 @@
                         newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
                     }
             selectedPlanIds = parseInt(CurrentPlanId);
-        }
+                }
+                if(selectedPlanIds == '')
+                {
+                    return;
+                }
     $.ajax(
     {
         type: "GET",
@@ -286,6 +290,9 @@ function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam,Cid, OId,Ta
         if (CurrentPlanId > 0) {
             selectedPlanIds = CurrentPlanId.toString();
         }
+    }
+    if (selectedPlanIds == '') {
+        return;
     }
     $.ajax(
     {

@@ -153,6 +153,8 @@ namespace RevenuePlanner.Helpers
                                     pcpt.IntegrationInstanceTacticId = null;
                                     pcpt.IntegrationInstanceEloquaId = null;
                                     pcpt.LastSyncDate = null;
+                                    pcpt.LinkedTacticId = null;
+                                    pcpt.LinkedPlanId = null;
                                     ////End- Added by Mitesh Vaishnav for PL ticket #1129
                                     //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                     pcpt.StartDate = pcpt.StartDate.AddYears(DateTime.Now.Year - pcpt.StartDate.Year);
@@ -167,6 +169,7 @@ namespace RevenuePlanner.Helpers
                                         pcptl.CreatedDate = DateTime.Now;
                                         pcptl.ModifiedDate = null;
                                         pcptl.ModifiedBy = null;
+                                        pcptl.LinkedLineItemId = null;
                                         //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                         //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                         pcptl.StartDate = pcptl.StartDate.HasValue ? pcptl.StartDate.Value.AddYears(DateTime.Now.Year - pcptl.StartDate.Value.Year) : pcptl.StartDate;
@@ -332,6 +335,8 @@ namespace RevenuePlanner.Helpers
                                 pcpt.IntegrationInstanceTacticId = null;
                                 pcpt.IntegrationInstanceEloquaId = null;
                                 pcpt.LastSyncDate = null;
+                                pcpt.LinkedTacticId = null;
+                                pcpt.LinkedPlanId = null;
                                 ////End- Added by Mitesh Vaishnav for PL ticket #1129
                                 pcpt.Status = TacticStatus;
                                 pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
@@ -339,6 +344,7 @@ namespace RevenuePlanner.Helpers
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                                 {
+                                    pcptl.LinkedLineItemId = null;
                                     pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                                     pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();// Add  By Nishant Sheth
                                 });
@@ -481,12 +487,15 @@ namespace RevenuePlanner.Helpers
                             t.IntegrationInstanceTacticId = null;
                             t.IntegrationInstanceEloquaId = null;
                             t.LastSyncDate = null;
+                            t.LinkedTacticId = null;
+                            t.LinkedPlanId = null;
                             ////End- Added by Mitesh Vaishnav for PL ticket #1129
                             t.Plan_Campaign_Program_Tactic_Cost = t.Plan_Campaign_Program_Tactic_Cost.ToList();
                             t.Plan_Campaign_Program_Tactic_Budget = t.Plan_Campaign_Program_Tactic_Budget.ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                             {
+                                pcptl.LinkedLineItemId = null;
                                 pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                                 pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();// Add  By Nishant Sheth
                             });
@@ -599,7 +608,8 @@ namespace RevenuePlanner.Helpers
                     ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                     objPlanCampaignProgramTactic.LastSyncDate = null;
                     ////End- Added by Mitesh Vaishnav for PL ticket #1129
-
+                    objPlanCampaignProgramTactic.LinkedTacticId = null;
+                    objPlanCampaignProgramTactic.LinkedPlanId = null;
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignProgramTactic.ModifiedDate = null;
                     objPlanCampaignProgramTactic.ModifiedBy = null;
@@ -608,6 +618,7 @@ namespace RevenuePlanner.Helpers
                         pcptl =>
                         {
                             pcptl.LineItemType = null;
+                            pcptl.LinkedLineItemId = null;
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                             pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();// Add  By Nishant Sheth
                         });
@@ -944,6 +955,8 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.IntegrationWorkFrontProjectID = null;
                     objPlanTactic.PlanProgramId = parentEntityId;
                     objPlanTactic.LastSyncDate = null;
+                    objPlanTactic.LinkedPlanId = null;
+                    objPlanTactic.LinkedTacticId = null;
                     objPlanTactic.ModifiedDate = null;
                     objPlanTactic.ModifiedBy = null;
                     objPlanTactic.LinkedTacticId = null;
@@ -954,6 +967,7 @@ namespace RevenuePlanner.Helpers
                         pcptl =>
                         {
                             pcptl.LineItemType = null;
+                            pcptl.LinkedLineItemId = null;
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                             pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();
                         });
@@ -1093,6 +1107,8 @@ namespace RevenuePlanner.Helpers
                                 pcpt.IntegrationInstanceEloquaId = null;
                                 pcpt.IntegrationWorkFrontProjectID = null;
                                 pcpt.LastSyncDate = null;
+                                pcpt.LinkedPlanId = null;
+                                pcpt.LinkedTacticId = null;
                                 pcpt.Status = TacticStatus;
                                 pcpt.StartDate = (pcpt.StartDate.Year != planyear) ? GetCampaignResultDate(pcpt.StartDate, planyear) : pcpt.StartDate;
                                 pcpt.EndDate = (pcpt.EndDate.Year != planyear) ? GetCampaignResultDate(pcpt.EndDate, planyear) : pcpt.EndDate;
@@ -1101,6 +1117,7 @@ namespace RevenuePlanner.Helpers
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                                 {
+                                    pcptl.LinkedLineItemId = null;
                                     pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                                     pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();
                                 });
@@ -1255,6 +1272,8 @@ namespace RevenuePlanner.Helpers
                             t.IntegrationInstanceEloquaId = null;
                             t.IntegrationWorkFrontProjectID = null;
                             t.LastSyncDate = null;
+                            t.LinkedPlanId = null;
+                            t.LinkedTacticId = null;
                             t.Plan_Campaign_Program_Tactic_Cost = null;//t.Plan_Campaign_Program_Tactic_Cost.ToList();
                             t.Plan_Campaign_Program_Tactic_Budget = null; //t.Plan_Campaign_Program_Tactic_Budget.ToList();
                             t.StartDate = (t.StartDate.Year != startDate.Year) ? GetResultDate(t.StartDate, startDate, true) : t.StartDate;
@@ -1262,6 +1281,7 @@ namespace RevenuePlanner.Helpers
                             t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                             {
+                                pcptl.LinkedLineItemId = null;
                                 pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                                 pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();
                             });
