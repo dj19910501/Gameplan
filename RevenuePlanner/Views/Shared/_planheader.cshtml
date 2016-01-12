@@ -145,14 +145,7 @@
             }
                 else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
                     var ligridclass=$("#liGrid").attr("class");
-                    if(ligridclass=="active pull-left")
-                    {
-                        newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
-                    }
-                    else
-                    {
-                        newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
-                    }
+                    newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
             selectedPlanIds = parseInt(CurrentPlanId);
                 }
                 if(selectedPlanIds == '')
