@@ -242,69 +242,60 @@
     </div>
 </div>
   
-    <div id="integrationInfo" class="row border-bottom-div">
+    <div id="integrationInfo" class="row width100 border-bottom-div margin-top10" style="display:table">
 
-        <!--Begin PL#1462 07 Brad Gray, Aug 2015, moved 09 Jan 2016 by Brad Gray PL#1872-->
-        <div class="cf margin-top20 width96 textalign-mozcenter" style="padding-bottom: 5px;">
-            <div class="span2" style="width: 80px">
-                <div class="pull-left size65x38">
-                    <div class="integration-review"></div>
-                    <div>
-                        <label class="integrration_label_align" id="integration">Integration</label>
-                    </div>
-                    <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
-                </div>
-
-               
-
-            </div>
-
+        <!--Begin PL#1462 07 Brad Gray, Aug 2015, moved & modified 09 Jan 2016 by Brad Gray PL#1872-->
            
-
-            <!--Modified 09 Jan 2016 by Brad Gray PL#1872 to allow changes per integration-->
-            <div class="span9" style="border-left: 1px solid #b2afaf">
-                @{foreach (var item in ViewBag.IntegrationTypeLinks)
-                   {
-                    <div>
-                     @{if (item.Key == Enums.IntegrationType.Eloqua.ToString())
-                       {
-                        <div class="pull-left margin-left20 integration-review-imglink">
-                            <a href=@item.Value onclick="window.open(this.href); return false;">
-                                <div class="link_popup pull-right margin-bottom10"></div>
-                                <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
-                            </a>
-                        </div>
-                       }
-                       else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
-                       {
-                        <div class="pull-left margin-left20 integration-review-imglink">
-                            <a href=@item.Value onclick="window.open(this.href); return false;">
-                                <div class="link_popup pull-right margin-bottom10"></div>
-                                <div class="margin-left20 salesforce-img margin-top10"></div>
-                            </a>
-                        </div>
-
-                       }
-                       else if (item.Key == Enums.IntegrationType.WorkFront.ToString()) 
-                       {
-                        <div class="pull-left margin-left20 integration-review-imglink">
-                            <a href=@item.Value onclick="window.open(this.href); return false;" label="WorkFront">
-                                <div class="link_popup pull-right margin-bottom10"></div>
-                                <div class="workfront-img margin-top23"></div>
-                            </a>
-                        </div>
-                       }
-                      }
-                    </div>
-                   }
-                }
+        <div class="width10 border-cf-right margin-top20 textalign-mozcenter vertical-aligntop" style="display:table-cell">
+            <div class="size65x38 margin-top20">
+                <div class="integration-review"></div>
+                <div>
+                    <label class="integrration_label_align" id="integration">Integration</label>
+                </div>
+                <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
             </div>
+
+
 
         </div>
+
+
+        <div class="width100">
+            <!--Modified 09 Jan 2016 by Brad Gray PL#1872 to allow changes per integration-->
+            @{
+                foreach (var item in ViewBag.IntegrationTypeLinks)
+                {
+                    <div class="span12 border-bottom-div margin-left20 margin-top20" style="width:98%">
+                        <div class="pull-left integration-review-imglink">
+                            <a href=@item.Value onclick="window.open(this.href); return false;">
+                                <div class="link_popup pull-right margin-bottom10"></div>
+                                @{
+                    if (item.Key == Enums.IntegrationType.Eloqua.ToString())
+                    {
+                        <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
+                    }
+                    else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
+                    {
+                        <div class="salesforce-img margin-top10"></div>
+                    }
+                    else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
+                    {
+                        <div class="workfront-img margin-top23"></div>
+                    }
+                                }
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        </div>
         <!--End PL#1462 07 Brad Gray, Aug 2015-->
+
+        <!--Begin PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
         @if ((bool)ViewBag.IsModelDeploy && (bool)ViewBag.IsModelIntegratedWorkFront)
         {
-            <div class="row gray-input" style="padding-top:20px">
+            <div class="row" style="padding-top:20px">
                 <div class="span2 float-left margin-left20" style="padding-bottom: 8px; margin-bottom: 8px">
                     <label id="workfrontTacticType">Tactic Type</label>
                     <label id="tacticTypeTitle" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.TacticTypeTitle)">@Html.Raw(tacticReview.TacticTypeTitle)</label>
@@ -358,7 +349,7 @@
                 </div>
            </div>
         }
-      
+        <!--End PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
     </div>
    
 
