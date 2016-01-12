@@ -45,6 +45,7 @@
                 </div>
                 <button type="button" class="btn btn-blue text-shadow-blue source-sans-proregular pull-left" data-dismiss="modal" onclick="CopyEntity()">Confirm</button>
                 <button type="button" class="btn btn-grey without-text-shadow source-sans-proregular btnEdit pull-left closeCopyEntity">Cancel</button>
+                <button class="close-x-big-icon hide" data-dismiss="modal" aria-hidden="true"></button>
             </div>
         </div>
     </div>
@@ -77,6 +78,7 @@
         var GridData = (mainGridData.toString().replace(/&amp;/g, "&"));
         BindParentEntitySelectionList(GridData);
         $("#SuccessMsg").css("display", "none");
+        CloseIconClick();
     });
     function RefreshParentEntitySelectionList(planId) {
         
@@ -182,7 +184,7 @@
             },
             datatype: 'json',
             type: 'GET',
-            async: false,
+            async: true,
             success: function (result) {
                 if (result != null && result != undefined) {
                     var issuccess = result.isSuccess;
@@ -191,10 +193,9 @@
                         $("#errorMsg").css("display", "none");
                         $("#SuccessMsg").css("display", "block");
                         $("#spanMsgSuccess").empty();
-                        $("#spanMsgSuccess").text(result.msg).css('font-weight', 'bold');
-                        var html = $("#spanMsgSuccess").html();
-                        $('#spanMsgSuccess').html(html.replace(/has been linked to/gi, '<span class="lickSuccessMsg">$&</span>'));
-                        $('#spanMsgSuccess').html(html.replace(/Tactic/gi, '<span class="lickSuccessMsg">$&</span>'));
+                        $("#spanMsgSuccess").text(result.msg).css('font-weight', 'normal');
+                        var str = result.clonetype + " " + '<span class="lickSuccessMsg">' + result.sourceEntityHtmlDecodedTitle + '</span>' + " " + 'has been linked to' + " " + '<span class="lickSuccessMsg">' + result.destPlanTitle + '</span>';
+                        $('#spanMsgSuccess').html(str);
                         $("#errorMessage1").css("display", "none");
                         $("#successMessage1").css("display", "none");
                         isDataModified = true;

@@ -145,16 +145,13 @@
             }
                 else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
                     var ligridclass=$("#liGrid").attr("class");
-                    if(ligridclass=="active pull-left")
-                    {
-                        newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
-                    }
-                    else
-                    {
-                        newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
-                    }
+                    newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
             selectedPlanIds = parseInt(CurrentPlanId);
-        }
+                }
+                if(selectedPlanIds == '')
+                {
+                    return;
+                }
     $.ajax(
     {
         type: "GET",
@@ -286,6 +283,9 @@ function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam,Cid, OId,Ta
         if (CurrentPlanId > 0) {
             selectedPlanIds = CurrentPlanId.toString();
         }
+    }
+    if (selectedPlanIds == '') {
+        return;
     }
     $.ajax(
     {

@@ -2362,7 +2362,7 @@
 
     function CallPDF() {
         //  $("#gantt_here").css("Width", $("#testdiv").width());
-      
+       
         if ($("#NodatawithfilterCalendar").css('display') == "block")
         {
             return false;
@@ -2390,16 +2390,25 @@
                 isselectedplan = true;
             }
         });
-        if (PdfFilters.SelectedPlans.length > 0) {
-            $.each(PdfFilters.SelectedPlans, function () {
-                if (activeMenu == "plan") {
-                    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
-                }
-                else {
-                    innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
-                }
-                //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
-            });
+      
+      
+
+        if (activeMenu == 'home') {
+            if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
+                $.each(PdfFilters.SelectedPlans, function () {
+                    //if (activeMenu == "plan") {
+                    //    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                    //}
+                    //else {
+                        innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                    //}
+                    //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+                });
+            }
+        }
+        else {
+           
+            innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text();
         }
 
         var isAvailablerecord = false;
@@ -2408,13 +2417,15 @@
             isAvailablerecord = true;
         }
         if (isAvailablerecord) {
-            if (PdfFilters.SelectedPlans.length > 0) {
+            if (PdfFilters.SelectedPlans.toLocaleString().trim().length > 0) {
                 DropDownPlan = false;
             }
-            if (DropDownPlan == true) {
-                //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
-                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
-            }
+            //if (DropDownPlan == true) {
+            //    //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+            //    if (activeMenu == 'plan') {
+            //        innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text();
+            //    }
+            //}
 
             //if (isselectedplan) {
 
@@ -3061,12 +3072,18 @@
                 isselectedplan = true;
             }
         });
-        if (PdfFilters.SelectedPlans.length > 0) {
-            $.each(PdfFilters.SelectedPlans, function () {
-                innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+        if (activeMenu == "home") {
+            if (PdfFilters.SelectedPlans.length > 0) {
+                $.each(PdfFilters.SelectedPlans, function () {
+                    innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
 
-            });
+                });
+            }
         }
+        else {
+            innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text()
+        }
+
 
         var isAvailablerecord = false;
         var _noplandivMsg = $("#Notabcontent").css("display");
@@ -3074,13 +3091,14 @@
             isAvailablerecord = true;
         }
         if (isAvailablerecord) {
-            if (PdfFilters.SelectedPlans.length > 0) {
+            if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
                 DropDownPlan = false;
             }
-            if (DropDownPlan == true) {
-                //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
-                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
-            }
+            //if (DropDownPlan == true) {
+            //    if (activeMenu == 'plan') {
+            //        innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text()
+            //    }
+            //}
 
 
             if (innerfiltervalueplan != undefined && innerfiltervalueplan != 'undefined' && innerfiltervalueplan != '') {
@@ -3131,7 +3149,7 @@
 
             var innerfiltervalueOwner = "";
             var isselectedOwner = true;
-            if (PdfFilters.OwnerIds.length > 0) {
+            if (PdfFilters.OwnerIds.toString().trim().length > 0) {
                 $.each(PdfFilters.OwnerIds, function () {
                     innerfiltervalueOwner += " " + $("#ulSelectedOwner").find('#liOwner' + this).attr("title") + ",";
 
@@ -5179,6 +5197,10 @@
                 });
             }
 
+            $("div[id^='LinkIcon']").each(function () {
+
+                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+            });
         });
     }
 
