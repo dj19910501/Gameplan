@@ -2408,12 +2408,7 @@
         }
         else {
            
-            $(".nl-field.nl-dd").find('li').each(function () {
-                if ($(this).hasClass('nl-dd-checked')) {
-
-                    innerfiltervalueplan +=" " +  $(this).attr('originalvalue');
-                }
-            })
+            innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text();
         }
 
         var isAvailablerecord = false;
@@ -2425,17 +2420,12 @@
             if (PdfFilters.SelectedPlans.toLocaleString().trim().length > 0) {
                 DropDownPlan = false;
             }
-            if (DropDownPlan == true) {
-                //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
-                if (activeMenu == 'plan') {
-                    $(".nl-field.nl-dd").find('li').each(function () {
-                        if ($(this).hasClass('nl-dd-checked')) {
-
-                            innerfiltervalueplan += " " + $(this).attr('originalvalue');
-                        }
-                    })
-                }
-            }
+            //if (DropDownPlan == true) {
+            //    //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+            //    if (activeMenu == 'plan') {
+            //        innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text();
+            //    }
+            //}
 
             //if (isselectedplan) {
 
@@ -3091,12 +3081,7 @@
             }
         }
         else {
-            $(".nl-field.nl-dd").find('li').each(function () {
-                if ($(this).hasClass('nl-dd-checked')) {
-
-                    innerfiltervalueplan += " " + $(this).attr('originalvalue');
-                }
-            })
+            innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text()
         }
 
 
@@ -3109,16 +3094,11 @@
             if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
                 DropDownPlan = false;
             }
-            if (DropDownPlan == true) {
-                if (activeMenu == 'plan') {
-                    $(".nl-field.nl-dd").find('li').each(function () {
-                        if ($(this).hasClass('nl-dd-checked')) {
-
-                            innerfiltervalueplan += " " + $(this).attr('originalvalue');
-                        }
-                    })
-                }
-            }
+            //if (DropDownPlan == true) {
+            //    if (activeMenu == 'plan') {
+            //        innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text()
+            //    }
+            //}
 
 
             if (innerfiltervalueplan != undefined && innerfiltervalueplan != 'undefined' && innerfiltervalueplan != '') {
