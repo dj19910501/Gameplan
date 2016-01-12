@@ -10580,9 +10580,43 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["startdate"])
                     {
-                        //  var pstartdate = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(pcpobj.PlanProgramId)).FirstOrDefault().StartDate;
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
+                            if (pcpobj.LinkedTacticId != null)
+                            {
+                                if (Convert.ToInt32(pcpobj.EndDate.Year) - Convert.ToInt32(pcpobj.StartDate.Year) > 0)
+                                {
+
+                                    if (Convert.ToInt32(pcpobj.EndDate.Year) - Convert.ToInt32(Convert.ToDateTime(UpdateVal).Year) == 0)
+                                    {
+                                        pcpobj.LinkedTacticId = null;
+                                        pcpobj.LinkedPlanId = null;
+                                        linkedTactic.LinkedPlanId = null;
+                                        linkedTactic.LinkedTacticId = null;
+
+                                        pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
+                                            pcptl =>
+                                            {
+                                                pcptl.LinkedLineItemId = null;
+
+                                            });
+                                        linkedTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
+                                            pcpt2 =>
+                                            {
+                                                pcpt2.LinkedLineItemId = null;
+                                            });
+                                    }
+                                }
+                                else
+                                {
+                                    if (Convert.ToInt32(pcpobj.EndDate.Year) - Convert.ToInt32(Convert.ToDateTime(UpdateVal).Year) > 0)
+                                    {
+                                        //string linkedYear = string.Format(Common.objCached.LinkedTacticExtendedYear, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                        return Json(new { IsExtended = true }, JsonRequestBehavior.AllowGet);
+                                    }
+
+                                }
+                            }
                             pcpobj.StartDate = Convert.ToDateTime(UpdateVal);
                             var PStartDate = pcpobj.Plan_Campaign_Program.StartDate;
                             if (PStartDate > Convert.ToDateTime(UpdateVal))
@@ -10605,6 +10639,42 @@ namespace RevenuePlanner.Controllers
                         //  var pstartdate = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(pcpobj.PlanProgramId)).FirstOrDefault().StartDate;
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
+                            if (pcpobj.LinkedTacticId != null)
+                            {
+                                if (Convert.ToInt32(pcpobj.EndDate.Year) - Convert.ToInt32(pcpobj.StartDate.Year) > 0)
+                                {
+
+                                    if (Convert.ToInt32(Convert.ToDateTime(UpdateVal).Year) - Convert.ToInt32(pcpobj.StartDate.Year) == 0)
+                                    {
+                                        pcpobj.LinkedTacticId = null;
+                                        pcpobj.LinkedPlanId = null;
+                                        linkedTactic.LinkedPlanId = null;
+                                        linkedTactic.LinkedTacticId = null;
+
+                                        pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
+                                            pcptl =>
+                                            {
+                                                pcptl.LinkedLineItemId = null;
+
+                                            });
+                                        linkedTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
+                                            pcpt2 =>
+                                            {
+                                                pcpt2.LinkedLineItemId = null;
+                                            });
+                                    }
+                                }
+                                else
+                                {
+                                    if (Convert.ToInt32(Convert.ToDateTime(UpdateVal).Year) - Convert.ToInt32(pcpobj.StartDate.Year) > 0)
+                                    {
+                                        
+                                        return Json(new { IsExtended = true }, JsonRequestBehavior.AllowGet);
+                                    }
+
+                                }
+                            }
+                        
                             pcpobj.EndDate = Convert.ToDateTime(UpdateVal);
                             var PEndDate = pcpobj.Plan_Campaign_Program.EndDate.ToString("MM/dd/yyyy");
                             if (Convert.ToDateTime(PEndDate) < Convert.ToDateTime(UpdateVal))
