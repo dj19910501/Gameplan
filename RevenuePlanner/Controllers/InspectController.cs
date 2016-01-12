@@ -4491,6 +4491,7 @@ namespace RevenuePlanner.Controllers
 
                                 if (linkedTacticId > 0)
                                 {
+                                    int yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
                                     linkedTactic.Title = pcpobj.Title;
                                     linkedTactic.Description = pcpobj.Description;
                                     //linkedTactic.TacticTypeId = pcpobj.TacticTypeId;
@@ -4532,8 +4533,17 @@ namespace RevenuePlanner.Controllers
                                     {
                                         linkedTactic.Plan_Campaign_Program.Plan_Campaign.EndDate = linkedTactic.EndDate;
                                     }
-
-                                    linkedTactic.Cost = form.Cost;
+                                    List<Plan_Campaign_Program_Tactic_Cost> lstLinkeTac = new List<Plan_Campaign_Program_Tactic_Cost>();
+                                    if (yearDiff > 0) // is MultiYear Tactic
+                                    {
+                                        lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId && int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
+                                    }
+                                    else
+                                        lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId).ToList();
+                                    if (lstLinkeTac != null && lstLinkeTac.Count >0)
+                                    {
+                                        linkedTactic.Cost = lstLinkeTac.Sum(tac => tac.Value);
+                                    }
                                     linkedTactic.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                     //linkedTactic.StageId = form.StageId;
                                     linkedTactic.ProjectedStageValue = form.ProjectedStageValue;
@@ -7435,9 +7445,7 @@ namespace RevenuePlanner.Controllers
                                     else if (form.Cost < objLineitem.Cost)
                                     {
                                         var diffcost = objLineitem.Cost - form.Cost;
-                                        int YearDiffrence = objTactic.EndDate.Year - objTactic.StartDate.Year;
-                                        int endmonth = (12 * (YearDiffrence + 1));
-
+                                        int endmonth = 12;
                                         while (diffcost > 0 && endmonth != 0)
                                         {
                                             if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
@@ -7557,24 +7565,6 @@ namespace RevenuePlanner.Controllers
                                         var TotalCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(id => (id.PlanLineItemId == LinkedLineitemId) && lstLinkedPeriods.Contains(id.Period)).ToList().Sum(l => l.Value);
                                         Lineitemobj.Cost = TotalCost;
 
-
-                                    }
-                                    else
-                                    {
-
-                                        cntr = 12 * (yearDiff + 1);
-                                        lstLinkedPeriods = new List<string>();
-                                        for (int i = 1; i <= cntr; i++)
-                                        {
-
-                                            lstLinkedPeriods.Add(PeriodChar + (perdNum + i).ToString());
-
-                                        }
-
-                                       var TotalCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(id => (id.PlanLineItemId ==  form.PlanLineItemId) && lstLinkedPeriods.Contains(id.Period)).ToList().Sum(l => l.Value);
-                                
-                                        Lineitemobj.Cost = TotalCost;
-                                     
                                     }
 
 
