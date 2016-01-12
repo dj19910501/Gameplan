@@ -1271,6 +1271,7 @@
 
         UpdateColumn = HomeGrid.getColLabel(Colind, 0);
         if (stage == 0) {
+         
             //   value = HomeGrid.cells(rowId, cellInd).getValue();
             //  value =   divvalue.split("</div>")[0];
 
@@ -1310,6 +1311,7 @@
                 return false;
         }
         if (stage == 1) {
+          
             if (updatetype == "line") {
                 var oldval = HomeGrid.cells(rowId, cellInd).getValue();
                 var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
@@ -1352,6 +1354,7 @@
         }
         if (stage == 2) // start edit Shipping column
         {
+         
             if (nValue != null && nValue != "") {
 
                 //Added By Komal Rawal to Change the value in array if grid updated
@@ -1596,6 +1599,7 @@
                                   
                                     if(states.IsExtended){
                                         alert("Since the Tactic is link to another Plan, it cannot be extended");
+                                        HomeGrid.cells(rowId, cellInd).setValue(oValue);
                                         return false;
                                     }
 
@@ -1644,9 +1648,10 @@
                                 }
 
                                 if (UpdateColumn == "End Date") {
-                                   
+                                 
                                     if(states.IsExtended){
                                         alert("Since the Tactic is link to another Plan, it cannot be extended");
+                                        HomeGrid.cells(rowId, cellInd).setValue(oValue);
                                         return false;
                                     }
                                     //Modified By Komal Rawal for #1848 Link To tactic feature
@@ -1734,6 +1739,7 @@
                             }
                         });
                     }
+                 
                     //Modified By Komal Rawal for #1848 Link To tactic feature
                     if(cellInd == 1)
                     {
@@ -1757,6 +1763,7 @@
                     return true;
                 }
 
+                
                 //Modified By Komal Rawal for #1848 Link To tactic feature
                 if(cellInd == 1)
                 {
