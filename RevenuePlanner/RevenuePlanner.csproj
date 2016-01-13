@@ -310,6 +310,8 @@
     <Content Include="Content\css\bootstrap-responsive.min.css" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\css\bootstrap2-toggle.css" />
+    <Content Include="Content\css\bootstrap2-toggle.min.css" />
     <Content Include="Content\css\style_min_Jan6.css" />
     <Content Include="Content\css\style_extended_min_Oct1.css" />
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_desc.gif" />
@@ -338,6 +340,7 @@
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\summernote.css" />
+    <Content Include="Content\css\ToggleSwitch.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
     <Content Include="Content\fonts\NaturalLanguageForm\codropsicons\codropsicons.svg" />
@@ -625,10 +628,13 @@
     <Content Include="RevenuePlanner.wpp.targets" />
     <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Scripts\js\bootstrap-notify.min.js" />
+    <Content Include="Scripts\js\bootstrap2-toggle.js" />
+    <Content Include="Scripts\js\bootstrap2-toggle.min.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid_min.js" />
     <Content Include="Scripts\js\DHTMLX\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\js\errorhandler.js" />
     <Content Include="Scripts\js\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\js\ToggleSwitch.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
