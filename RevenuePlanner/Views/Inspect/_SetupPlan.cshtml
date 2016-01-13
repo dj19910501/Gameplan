@@ -216,6 +216,7 @@
                                 if (data.redirect != "") {
                                 }
                                 else {
+                                    isDataModified = true;
                                     $("#successMessage").css("display", "block");
                                     $("#spanMessageSuccess").empty();
                                     $("#spanMessageSuccess").text(data.succmsg);

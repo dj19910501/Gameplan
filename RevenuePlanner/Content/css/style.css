@@ -10880,12 +10880,22 @@ font-size: 20px;
 .inspect-column-parent  div.gridbox.gridbox_dhx_skyblue table.row20px.obj tr td{
     height:36px;
 }
-.inspect-column-parent .fieldmapping-dropdown{
+/*.inspect-column-parent .fieldmapping-dropdown{
     top:-455px;
     position:relative;
     background-color:#fff;
     height:400px !important;
+}*/
+.inspect-column-parent .fieldmapping-dropdown {
+  background-color: #fff;
+  bottom: 100%;
+  height: auto !important;
+  position: absolute;
+  /*overflow:visible !important;*/
+  width:auto !important;
+  margin-bottom: 5px;
 }
+
 .drop-down_header {
     border: 1px solid #dfdfdf;
     border-radius: 6px;
