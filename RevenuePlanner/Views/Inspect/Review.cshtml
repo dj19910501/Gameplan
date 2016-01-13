@@ -65,6 +65,9 @@
     top: 29px !important;
      min-width:205px;
     }
+
+  .toggle.integrationToggle, .toggle-on.integrationToggle, .toggle-off.integrationToggle { border-radius: 20px; }
+  .toggle.integrationToggle .toggle-handle { border-radius: 20px; }
 </style>
 
 <script src="~/Scripts/js/bootstrap2-toggle.min.js"></script>
@@ -160,13 +163,13 @@
                 <p class="margin-top-10 text_align_left">Deployed to Integration</p>
                    @{ if (tacticReview.IsDeployedToIntegration)
                     {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important; width:100%"  readonly />
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important; width:100%" readonly" />
                     }
-                    else
-                    {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Don't sync to integration" style="margin-top: 0px ! important; width:100%" readonly />
-                    }
-                }
+                      else
+                      {
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Don't sync to integration" style="margin-top: 0px ! important; width:100%" readonly" />
+                      }
+}
             </div>
 
           
@@ -276,7 +279,7 @@
                                 </a>
                             </div>
                             <div class="span1 margin-top16">
-                                <input id ="salesforceIntegrationToggle" type="checkbox" checked data-toggle="toggle">
+                                <input id="eloquaIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle">
                             </div>
                           </div>
                     }
@@ -290,7 +293,7 @@
                                 </a>
                             </div>
                             <div class="span1 margin-top16">
-                                <input id="eloquaIntegrationToggle"  type="checkbox" checked data-toggle="toggle">
+                                <input id="salesforceIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle">
                             </div>
                           </div>
                     }
@@ -305,7 +308,7 @@
                             </div>
 
                             <div class="span1 margin-top16">
-                                <input id="workfrontIntegrationToggle" type="checkbox" checked data-toggle="toggle">
+                                <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle">
                             </div>
 
                             <!--Begin PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
@@ -319,16 +322,17 @@
                                 <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
                                 <div class="radio " style="width:100%; float:left;margin-left:20px">
                                     <label class="font-size12">
-                                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">Create a Project
+                                        <input type="radio" name="optionsRadios" id="workFrontProjectOnApproval" value="Create a Project" checked="" onclick="toggleRequestOptions()">Create a Project
                                     </label>
                                 </div>
                                 <div class="radio" style="width:100%; float:left; margin-left:20px">
                                     <label class="font-size12">
-                                        <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">Create a Request
+                                        <input id="workFrontRequestOnApproval" type="radio" name="optionsRadios" value="Create a Requeust" onclick="toggleRequestOptions()">Create a Request
+                                        <span class="fa fa-angle-double-right" style="margin-left:5px"></span>
                                     </label>
                                 </div>
                             </div>
-                            <div class="span3 margin-bottom20" style="padding-left: 20px;">
+                            <div id="workFrontRequestOptions" class="span3 margin-bottom20" style="padding-left: 20px;">
                                 <div class="cf form-group">
                                     @Html.Label("Request Queue")
                                     <span style="min-width: 100%; position: relative; display: block;">
@@ -563,15 +567,17 @@
 <script type="text/javascript">
     var strViewMode = 'View';
     $(document).ready(function () {
+        var el = document.getElementById('integrationInfo');
         if ($('#t_integration_status').hasClass("icon-check-blue")) {
-            $('#integrationInfo').addClass("show");
+            el.style.display = 'table';
         }
         else {
-            $('#integrationInfo').addClass("hidden");
+            el.style.display = 'none';
         }
 
+
         $("#t_integration_status").click(function () {
-            $(integrationInfo).toggleClass('hidden show');
+            showHide('integrationInfo');
             if ($(this).hasClass("icon-check-blue")) {
                 $(this).val("Don't sync to integration");
                 $(this).addClass("icon-check-gray");
@@ -585,6 +591,16 @@
                 $("#hdnIsDeployedToIntegration").val(true);
             }
         });
+      
+
+        
+        if ($('#workFrontRequestOnApproval').checked == true) {
+            $('#workFrontRequestOptions').addClass("show");
+        }
+        else {
+            $('#workFrontRequestOptions').addClass("hidden");
+        }
+        
 
         /*Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model */
         ImageTipsy('#diffrentStageIcon');
@@ -841,6 +857,20 @@
 
     });
 
+
+
+    function showHide(id) {
+        var el = document.getElementById(id);
+        if (el && el.style.display == 'table')
+            el.style.display = 'none';
+        else
+            el.style.display = 'table';
+    }
+
+    function toggleRequestOptions() {
+        console.log("scooby");
+        $('#workFrontRequestOptions').toggleClass('hidden show');
+    }
 </script>
 
 <script>
