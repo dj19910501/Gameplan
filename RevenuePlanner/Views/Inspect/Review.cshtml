@@ -299,7 +299,7 @@
                     }
                     else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
                     {
-                        <div class="span12 margin-left20 margin-top20" style="width:98%">
+                        <div id="workFrontSection" class="span12 margin-left20 margin-top20" style="width:98%">
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -308,51 +308,53 @@
                             </div>
 
                             <div class="span1 margin-top16">
-                                <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle">
+                                <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" onchange=showHideBlock('workFrontSettings')>
                             </div>
 
+                            <div id="workFrontSettings">
                             <!--Begin PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
-                            <div class="span2 float-left margin-left20" style="padding-bottom: 8px; margin-bottom: 8px">
-                                <label id="workfrontTacticType">Tactic Type</label>
-                                <label id="tacticTypeTitle" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.TacticTypeTitle)">@Html.Raw(tacticReview.TacticTypeTitle)</label>
-                                <label id="workfrontTemplate" class="margin-top20">WorkFront Template</label>
-                                <label id="workfront_template" class="blue-text bold font-size12" title="@Html.Raw(ViewBag.WorkFront_Template) ">@Html.Raw(ViewBag.WorkFront_Template)</label>
-                            </div>
-                            <div class="span2" style="padding-left:40px">
-                                <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
-                                <div class="radio " style="width:100%; float:left;margin-left:20px">
-                                    <label class="font-size12">
-                                        <input type="radio" name="optionsRadios" id="workFrontProjectOnApproval" value="Create a Project" checked="" onclick="toggleRequestOptions()">Create a Project
-                                    </label>
+                                <div class="span2 float-left margin-left20" style="padding-bottom: 8px; margin-bottom: 8px">
+                                    <label id="workfrontTacticType">Tactic Type</label>
+                                    <label id="tacticTypeTitle" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.TacticTypeTitle)">@Html.Raw(tacticReview.TacticTypeTitle)</label>
+                                    <label id="workfrontTemplate" class="margin-top20">WorkFront Template</label>
+                                    <label id="workfront_template" class="blue-text bold font-size12" title="@Html.Raw(ViewBag.WorkFront_Template) ">@Html.Raw(ViewBag.WorkFront_Template)</label>
                                 </div>
-                                <div class="radio" style="width:100%; float:left; margin-left:20px">
-                                    <label class="font-size12">
-                                        <input id="workFrontRequestOnApproval" type="radio" name="optionsRadios" value="Create a Requeust" onclick="toggleRequestOptions()">Create a Request
-                                        <span class="fa fa-angle-double-right" style="margin-left:5px"></span>
-                                    </label>
+                                <div class="span2" style="padding-left:40px">
+                                    <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
+                                    <div class="radio " style="width:100%; float:left;margin-left:20px">
+                                        <label class="font-size12">
+                                            <input type="radio" name="optionsRadios" id="workFrontProjectOnApproval" value="Create a Project" checked="" onclick="toggleRequestOptions()">Create a Project
+                                        </label>
+                                    </div>
+                                    <div class="radio" style="width:100%; float:left; margin-left:20px">
+                                        <label class="font-size12">
+                                            <input id="workFrontRequestOnApproval" type="radio" name="optionsRadios" value="Create a Requeust" onclick="toggleRequestOptions()">Create a Request
+                                            <span class="fa fa-angle-double-right" style="margin-left:5px"></span>
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div id="workFrontRequestOptions" class="span3 margin-bottom20" style="padding-left: 20px;">
-                                <div class="cf form-group">
-                                    @Html.Label("Request Queue")
-                                    <span style="min-width: 100%; position: relative; display: block;">
-                                        @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
-                                    </span>
-                                </div>
-                                <div class="cf form-group">
-                                    @Html.Label("Assigned To")
-                                    <span style="min-width: 100%; position: relative; display: block;">
-                                        @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
-                                    </span>
-                                </div>
-                                <div class="cf form-group">
-                                    @Html.Label("Custom Form")
-                                    <span style="min-width: 100%; position: relative; display: block;">
-                                        @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestCustomForm", require = "true" })
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                                <div id="workFrontRequestOptions" class="span3 margin-bottom20" style="padding-left: 20px;">
+                                    <div class="cf form-group">
+                                        @Html.Label("Request Queue")
+                                        <span style="min-width: 100%; position: relative; display: block;">
+                                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
+                                        </span>
+                                    </div>
+                                    <div class="cf form-group">
+                                        @Html.Label("Assigned To")
+                                        <span style="min-width: 100%; position: relative; display: block;">
+                                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
+                                        </span>
+                                    </div>
+                                    <div class="cf form-group">
+                                        @Html.Label("Custom Form")
+                                        <span style="min-width: 100%; position: relative; display: block;">
+                                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestCustomForm", require = "true" })
+                                        </span>
+                                    </div><!--end workFrontRequestOptions div-->
+                                </div><!--end workFrontSettings div-->
+                            </div><!--end workFrontSettings div-->
+                        </div><!--end workFrontDispaly div-->
                             <!--End PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
                     }
                  }
@@ -599,6 +601,14 @@
         }
         else {
             $('#workFrontRequestOptions').addClass("hidden");
+        }
+
+        var workFrontSettingsSection = document.getElementById('workFrontSettings');
+        if (document.getElementById('workfrontIntegrationToggle').checked) {
+            workFrontSettingsSection.style.display = 'block';
+        }
+        else {
+            workFrontSettingsSection.style.display = 'none';
         }
         
 
@@ -867,8 +877,15 @@
             el.style.display = 'table';
     }
 
+    function showHideBlock(id) {
+        var el = document.getElementById(id);
+        if (el && el.style.display == 'block')
+            el.style.display = 'none';
+        else
+            el.style.display = 'block';
+    }
+
     function toggleRequestOptions() {
-        console.log("scooby");
         $('#workFrontRequestOptions').toggleClass('hidden show');
     }
 </script>
