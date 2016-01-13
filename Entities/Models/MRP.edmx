@@ -552,6 +552,16 @@
           <Property Name="Template Name" Type="nvarchar" MaxLength="250" Nullable="false" />
           <Property Name="IsDeleted" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="IntegrationWorkFrontUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="WorkFrontUserId" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="WorkFrontUserName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="LineItem_Budget">
           <Key>
             <PropertyRef Name="Id" />
@@ -1037,7 +1047,6 @@
           <Property Name="ProjectedStageValue" Type="float" />
           <Property Name="IsDeployedToModel" Type="bit" Nullable="false" />
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
-          <Property Name="WorkFront Template" Type="nvarchar" MaxLength="255" />
           <Property Name="WorkFrontTemplateId" Type="int" />
         </EntityType>
         <EntityType Name="User_Filter">
@@ -1625,6 +1634,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_IntegrationWorkFrontUsers_IntegrationInstanceId">
+          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
+          <End Role="IntegrationWorkFrontUsers" Type="Self.IntegrationWorkFrontUsers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontUsers">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_LineItem_Budget_Budget_Detail">
           <End Role="Budget_Detail" Type="Self.Budget_Detail" Multiplicity="1" />
           <End Role="LineItem_Budget" Type="Self.LineItem_Budget" Multiplicity="*" />
@@ -2163,6 +2184,7 @@
           <EntitySet Name="IntegrationWorkFrontRequests" EntityType="Self.IntegrationWorkFrontRequests" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationWorkFrontTacticSettings" EntityType="Self.IntegrationWorkFrontTacticSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationWorkFrontTemplates" EntityType="Self.IntegrationWorkFrontTemplates" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IntegrationWorkFrontUsers" EntityType="Self.IntegrationWorkFrontUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineItem_Budget" EntityType="Self.LineItem_Budget" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineItemType" EntityType="Self.LineItemType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MasterTacticType" EntityType="Self.MasterTacticType" Schema="dbo" store:Type="Tables" />
@@ -2384,6 +2406,10 @@
           <AssociationSet Name="FK_IntegrationWorkFrontTacticSettings_TacticId" Association="Self.FK_IntegrationWorkFrontTacticSettings_TacticId">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="IntegrationWorkFrontTacticSettings" EntitySet="IntegrationWorkFrontTacticSettings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationWorkFrontUsers_IntegrationInstanceId" Association="Self.FK_IntegrationWorkFrontUsers_IntegrationInstanceId">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="IntegrationWorkFrontUsers" EntitySet="IntegrationWorkFrontUsers" />
           </AssociationSet>
           <AssociationSet Name="FK_LineItem_Budget_Budget_Detail" Association="Self.FK_LineItem_Budget_Budget_Detail">
             <End Role="Budget_Detail" EntitySet="Budget_Detail" />
@@ -3026,6 +3052,11 @@
             <End Role="IntegrationWorkFrontRequestQueue" EntitySet="IntegrationWorkFrontRequestQueues" />
             <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
           </AssociationSet>
+          <EntitySet Name="IntegrationWorkFrontUsers" EntityType="MRPModel.IntegrationWorkFrontUser" />
+          <AssociationSet Name="FK_IntegrationWorkFrontUsers_IntegrationInstanceId" Association="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="IntegrationWorkFrontUser" EntitySet="IntegrationWorkFrontUsers" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -3288,6 +3319,7 @@
           <NavigationProperty Name="Models11" Relationship="MRPModel.FK_Model_IntegrationInstance1" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequest" />
           <NavigationProperty Name="IntegrationWorkFrontRequestQueues" Relationship="MRPModel.FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequestQueue" />
+          <NavigationProperty Name="IntegrationWorkFrontUsers" Relationship="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontUser" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -5398,6 +5430,29 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="IntegrationWorkFrontUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WorkFrontUserId" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="WorkFrontUserName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IntegrationInstanceId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId" FromRole="IntegrationWorkFrontUser" ToRole="IntegrationInstance" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_IntegrationWorkFrontUsers_IntegrationInstanceId">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontUser" Role="IntegrationWorkFrontUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontUser">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6527,6 +6582,17 @@
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="RequestQueueName" ColumnName="RequestQueueName" />
                 <ScalarProperty Name="RequestQueueId" ColumnName="RequestQueueId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationWorkFrontUsers">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontUser">
+              <MappingFragment StoreEntitySet="IntegrationWorkFrontUsers">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
+                <ScalarProperty Name="WorkFrontUserName" ColumnName="WorkFrontUserName" />
+                <ScalarProperty Name="WorkFrontUserId" ColumnName="WorkFrontUserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

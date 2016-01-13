@@ -280,6 +280,7 @@ namespace Integration.WorkFront
                 SyncInstanceTemplates(ref SyncErrors);
                 SyncRequestQueues(ref SyncErrors);
                 SyncInstanceRequests(ref SyncErrors);
+                SyncInstanceUsers(ref SyncErrors);
                 //Retrieves list of all tactics tied to the integrated programs and deployed to integrationtic
                 List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.IsDeployedToIntegration == true &&
                     tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt == _integrationInstanceId && statusList.Contains(tactic.Status)).ToList();
@@ -594,6 +595,76 @@ namespace Integration.WorkFront
                 error.EntityId = _integrationInstanceId;
                 error.EntityType = Enums.EntityType.IntegrationInstance;
                 error.SectionName = "Sync Integration Requests";
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
+            }
+            return syncError;
+        }
+
+        ///Retrieve Users from WorkFront and store in Plan. Any users deactivated in WorkFront are marked as deleted in Plan db
+        ///Currently retrieves only user name and WorkFront ID.
+        ///Users from WorkFront are tied to the integration instance. Users do not have to exist in Plan, nor is a user currently tied to any Plan user
+        ///Added 1/13/2016 by Brad Gray for PL#1895
+        ///<param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
+        /// <returns>
+        /// Bool: true if sync error, false otherwise
+        /// </returns>
+        private bool SyncInstanceUsers(ref List<SyncError> SyncErrors)
+        {
+            bool syncError = false;
+            //update WorkFront users for the instance
+            try
+            {
+                JToken usersFromWorkFront = client.Search(ObjCode.USER, new { fields = "name,ID,isActive", isActive="true" });
+                //Get the list of WorkFront users in the database
+                List<IntegrationWorkFrontUser> usersFromDB = db.IntegrationWorkFrontUsers.Where(user => user.IntegrationInstanceId == _integrationInstanceId && user.IsDeleted == false).ToList();
+                List<string> userIdsFromDB = usersFromDB.Select(q => q.WorkFrontUserId).ToList();
+                //For comparison purposes, create a list of users from WorkFront
+                List<string> usersInWorkFront = new List<string>();
+
+                foreach (var user in usersFromWorkFront["data"])
+                {
+                    string userID = user["ID"].ToString().Trim();
+                    usersInWorkFront.Add(userID);
+
+                    if (!userIdsFromDB.Contains(userID)) //found a user in WorkFront that isn't in the database. add it to database
+                    {
+                        IntegrationWorkFrontUser newUser = new IntegrationWorkFrontUser();
+                        newUser.WorkFrontUserId = userID;
+                        newUser.WorkFrontUserName = user["name"].ToString();
+                        newUser.IsDeleted = false;
+                        newUser.IntegrationInstanceId = _integrationInstanceId;
+                        db.Entry(newUser).State = EntityState.Added;
+                    }
+                    else
+                    {
+                        IntegrationWorkFrontUser userToEdit = db.IntegrationWorkFrontUsers.Where(u => u.WorkFrontUserId  == userID && u.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
+                        userToEdit.WorkFrontUserName = user["name"].ToString(); //update the name in the database
+                        db.Entry(userToEdit).State = EntityState.Modified;
+                    }
+                }
+
+                //users in the database that are not in WorkFront or are set to deactivated in Workfront need to be set to deleted in database 
+                List<string> inDatabaseButNotInWorkFront = userIdsFromDB.Except(usersInWorkFront).ToList();
+                List<IntegrationWorkFrontUser> userToDelete = db.IntegrationWorkFrontUsers.Where(user => inDatabaseButNotInWorkFront.Contains(user.WorkFrontUserId)).ToList(); //userID could be duplicated in Plan - set all of them to deleted
+                if (userToDelete.Count > 0)
+                {
+                    userToDelete.Select(c => { c.IsDeleted = true; return c; }).ToList();
+                    db.Entry(userToDelete).State = EntityState.Modified;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                syncError = true;
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.SectionName = "Sync WorkFront Users";
                 error.Message = ex.Message;
                 error.SyncStatus = Enums.SyncStatus.Error;
                 error.TimeStamp = DateTime.Now;

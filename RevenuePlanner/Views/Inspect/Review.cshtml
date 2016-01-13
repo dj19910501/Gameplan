@@ -343,7 +343,7 @@
                                     <div class="cf form-group">
                                         @Html.Label("Assigned To")
                                         <span style="min-width: 100%; position: relative; display: block;">
-                                            @Html.DropDownListFor(m => m.RequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
+                                            @Html.DropDownList("IntegrationWorkFrontUser", new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontUserList, "Id", "WorkFrontUserName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
                                         </span>
                                     </div>
                                     <div class="cf form-group">

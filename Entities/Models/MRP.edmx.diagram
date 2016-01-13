@@ -175,6 +175,8 @@
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontRequestQueue" Width="1.5" PointX="7.25" PointY="45.75" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontUser" Width="1.5" PointX="7.5" PointY="0.75" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

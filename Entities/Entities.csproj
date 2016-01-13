@@ -172,6 +172,9 @@
     <Compile Include="Models\IntegrationWorkFrontTemplate.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\IntegrationWorkFrontUser.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\LineItemType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
