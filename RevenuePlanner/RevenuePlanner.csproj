@@ -340,7 +340,6 @@
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\summernote.css" />
-    <Content Include="Content\css\ToggleSwitch.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
     <Content Include="Content\fonts\NaturalLanguageForm\codropsicons\codropsicons.svg" />
@@ -634,7 +633,6 @@
     <Content Include="Scripts\js\DHTMLX\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\js\errorhandler.js" />
     <Content Include="Scripts\js\jquery-ui-1.11.4.min.js" />
-    <Content Include="Scripts\js\ToggleSwitch.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
