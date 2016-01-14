@@ -171,13 +171,29 @@ namespace RevenuePlanner.Controllers
                 //Added by Ashish Mistry on 23/11/2015 for PL ticket #1772
                 IsPlanEditable = true;
                 ViewBag.IsPlanEditable = IsPlanEditable;
-
+                if (activeMenu.Equals(Enums.ActiveMenu.Plan))
+                {
                 latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                }
+                else
+                {
+                    latestPlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                }
+              
                 List<Plan> fiterActivePlan = new List<Plan>();
                 fiterActivePlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).ToList();
                 if (fiterActivePlan != null && fiterActivePlan.Any())
                 {
+                    if (activeMenu.Equals(Enums.ActiveMenu.Plan))
+                    {
                     latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+                    }
+                    else
+                    {
+                        latestPlan = fiterActivePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+                     
+                    }
+                  //  latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
                 }
                 if (currentPlanId != 0)
                 {

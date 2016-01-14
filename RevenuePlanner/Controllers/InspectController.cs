@@ -435,14 +435,14 @@ namespace RevenuePlanner.Controllers
         {
             InspectModel _inspectmodel;
             // Load Inspect Model data.
-            if (TempData["CampaignModel"] != null)
-            {
-                _inspectmodel = (InspectModel)TempData["CampaignModel"];
-            }
-            else
-            {
+            //if (TempData["CampaignModel"] != null)
+            //{
+            //    _inspectmodel = (InspectModel)TempData["CampaignModel"];
+            //}
+            //else
+            //{
                 _inspectmodel = GetInspectModel(id, "campaign", false);
-            }
+          //  }
 
             try
             {
@@ -496,14 +496,14 @@ namespace RevenuePlanner.Controllers
         {
             InspectModel _inspectmodel;
             // Load Inspect Model data.
-            if (TempData["CampaignModel"] != null)
-            {
-                _inspectmodel = (InspectModel)TempData["CampaignModel"];
-            }
-            else
-            {
+            //if (TempData["CampaignModel"] != null)
+            //{
+            //    _inspectmodel = (InspectModel)TempData["CampaignModel"];
+            //}
+            //else
+            //{
                 _inspectmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Campaign).ToLower(), false);
-            }
+          //  }
 
             //// Get Tactic comment by PlanCampaignId from Plan_Campaign_Program_Tactic_Comment table.
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
@@ -1431,14 +1431,14 @@ namespace RevenuePlanner.Controllers
         {
             InspectModel _inspectmodel;
             //// Load Inspect Model data.
-            if (TempData["ProgramModel"] != null)
-            {
-                _inspectmodel = (InspectModel)TempData["ProgramModel"];
-            }
-            else
-            {
+            //if (TempData["ProgramModel"] != null)
+            //{
+            //    _inspectmodel = (InspectModel)TempData["ProgramModel"];
+            //}
+            //else
+            //{
                 _inspectmodel = GetInspectModel(id, "program", false);
-            }
+          //  }
 
             try
             {
@@ -1917,14 +1917,14 @@ namespace RevenuePlanner.Controllers
         {
             InspectModel im;
             //// Load Inspect Model data.
-            if (TempData["ProgramModel"] != null)
-            {
-                im = (InspectModel)TempData["ProgramModel"];
-            }
-            else
-            {
+            //if (TempData["ProgramModel"] != null)
+            //{
+            //    im = (InspectModel)TempData["ProgramModel"];
+            //}
+            //else
+            //{
                 im = GetInspectModel(id, Convert.ToString(Enums.Section.Program).ToLower(), false);
-            }
+          //  }
 
             //// Get Tactic comments list by PlanProgramId.
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
@@ -3273,10 +3273,10 @@ namespace RevenuePlanner.Controllers
 
                                             #region "Commented line Item delete"
                                             // Remove Tactic LineItems.
-                                            List<int> tacticlinkedLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem.Where(ta => (ta.PlanTacticId == linkedTacticId)).ToList().Select(a => a.PlanLineItemId).ToList();
-                                            var deletelinkedMarkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => tacticlinkedLineItemActualList.Contains(c.PlanLineItemId) && lstLinkedPeriods.Contains(c.Period)).ToList();
-                                            if (deletelinkedMarkedLineItem != null && deletelinkedMarkedLineItem.Count > 0)
-                                                deletelinkedMarkedLineItem.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
+                                            //List<int> tacticlinkedLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem.Where(ta => (ta.PlanTacticId == linkedTacticId)).ToList().Select(a => a.PlanLineItemId).ToList();
+                                            //var deletelinkedMarkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => tacticlinkedLineItemActualList.Contains(c.PlanLineItemId) && lstLinkedPeriods.Contains(c.Period)).ToList();
+                                            //if (deletelinkedMarkedLineItem != null && deletelinkedMarkedLineItem.Count > 0)
+                                            //    deletelinkedMarkedLineItem.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
                                             #endregion
                                         }
                                         else
@@ -4558,12 +4558,12 @@ namespace RevenuePlanner.Controllers
                                         linkedTactic.Plan_Campaign_Program.Plan_Campaign.EndDate = linkedTactic.EndDate;
                                     }
                                     List<Plan_Campaign_Program_Tactic_Cost> lstLinkeTac = new List<Plan_Campaign_Program_Tactic_Cost>();
-                                    if (yearDiff > 0) // is MultiYear Tactic
-                                    {
-                                        lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId && int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
-                                    }
-                                    else
                                         lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId).ToList();
+                                    if (yearDiff > 0 && lstLinkeTac != null && lstLinkeTac.Count >0) // is MultiYear Tactic
+                                    {
+                                        lstLinkeTac = lstLinkeTac.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
+                                    }
+                                        
                                     if (lstLinkeTac != null && lstLinkeTac.Count >0)
                                     {
                                         linkedTactic.Cost = lstLinkeTac.Sum(tac => tac.Value);
@@ -7538,6 +7538,7 @@ namespace RevenuePlanner.Controllers
                                     LineitemBudgetMapping.CreatedDate = DateTime.Now;
                                     LineitemBudgetMapping.Weightage = 100;
                                     db.Entry(LineitemBudgetMapping).State = EntityState.Added;
+
                                 }
 
                                 db.SaveChanges();
@@ -7681,7 +7682,7 @@ namespace RevenuePlanner.Controllers
 
                                 }
                                 //Modified By Komal Rawal for #1853
-                                if (LinkedLineitemId != null)
+                                if (LinkedLineitemId != null && LinkedLineitemId.HasValue)
                                 {
                                     #region "Update record to Plan_Campaign_Program_Tactic_LineItem table."
 
@@ -7923,7 +7924,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             LinkedLineitemBudgetMapping = new LineItem_Budget();
                                             LinkedLineitemBudgetMapping.BudgetDetailId = item.Id;
-                                            LinkedLineitemBudgetMapping.PlanLineItemId = Lineitemobj.PlanLineItemId;
+                                            LinkedLineitemBudgetMapping.PlanLineItemId = LinkedLineitemId.Value;
                                             LinkedLineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
                                             LinkedLineitemBudgetMapping.CreatedDate = DateTime.Now;
                                             LinkedLineitemBudgetMapping.Weightage = (byte)item.Weightage;
@@ -7936,7 +7937,7 @@ namespace RevenuePlanner.Controllers
                                         // Desc : #1672 if any Budget line item not selected then assoicated with other line item.
                                         int OtherId = Common.GetOtherBudgetId();
                                         LinkedLineitemBudgetMapping.BudgetDetailId = OtherId;
-                                        LinkedLineitemBudgetMapping.PlanLineItemId = form.PlanLineItemId; ;
+                                        LinkedLineitemBudgetMapping.PlanLineItemId = LinkedLineitemId.Value;
                                         LinkedLineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
                                         LinkedLineitemBudgetMapping.CreatedDate = DateTime.Now;
                                         LinkedLineitemBudgetMapping.Weightage = 100;

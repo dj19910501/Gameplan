@@ -669,10 +669,13 @@
             data: $("form").serialize() + '&customFieldInputs=' + escape(_customFieldValues) + '&UserId=' + uId + '&title=' + escape(title),
             success: function (data) {
                 if (data.IsSaved) {
+                    isDataModified = true;
                     var activeTab = $("#InspectTab li.active a").text()
                     var planProgramId = $("#hdnPlanProgramId").val();
                     if (planProgramId == '0') {
                         planProgramId = data.programID;
+                        $("#hdnPlanProgramId").val(planProgramId);
+
                     }
                     var campaignId = data.campaignID;
                     var requestedModule = $("#hdnRedirectType").val();

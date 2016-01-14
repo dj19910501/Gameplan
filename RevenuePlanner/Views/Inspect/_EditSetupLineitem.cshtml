@@ -60,9 +60,9 @@
      background: #fff !important;
     }
    
-   .finance_mapping div.gridbox {
+   @*.finance_mapping div.gridbox {
         height : 100% ! important;
-    }
+    }*@
 
 
     #CustomHtmlHelperfieldforMapping table {
@@ -927,6 +927,7 @@
                 }
                 else {
                     if (data.isSaved) {
+                        isDataModified = true;
                         var activeTab = $("#InspectTab li.active a").text()
                         var planLineItemId = $("#PlanLineItemId").val();
                         $("#successMessage").css("display", "block");

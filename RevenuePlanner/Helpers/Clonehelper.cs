@@ -692,12 +692,13 @@ namespace RevenuePlanner.Helpers
             try
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
-
+                int? CopyLinkedID = null;
                 Plan_Campaign_Program_Tactic_LineItem objPlanCampaignProgramTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.AsNoTracking().FirstOrDefault(p => p.PlanLineItemId == ID && p.IsDeleted == false);
                 int? LinkedLineItemID = objPlanCampaignProgramTacticLineItem.LinkedLineItemId;
-                Plan_Campaign_Program_Tactic_LineItem objLinkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem.AsNoTracking().FirstOrDefault(p => p.PlanLineItemId == LinkedLineItemID && p.IsDeleted == false);
+                
                 if (LinkedLineItemID != null && LinkedLineItemID > 0)
                 {
+                    Plan_Campaign_Program_Tactic_LineItem objLinkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem.AsNoTracking().FirstOrDefault(p => p.PlanLineItemId == LinkedLineItemID && p.IsDeleted == false);
                     planid = objLinkedLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                     int TacticId = objLinkedLineItem.PlanTacticId;
                     HttpContext.Current.Session["ProgramID"] = objLinkedLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId;
@@ -731,9 +732,9 @@ namespace RevenuePlanner.Helpers
                     db.SaveChanges();
                   
                     CostCalculacation(TacticId);
-
+                    CopyLinkedID = objLinkedLineItem.PlanLineItemId;
                 }
-                int CopyLinkedID = objLinkedLineItem.PlanLineItemId;
+                
                 //int ObjTacticId = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic.PlanTacticId;
                 //Plan_Campaign_Program_Tactic LinkedTacticObj = db.Plan_Campaign_Program_Tactic.Where(id => id.LinkedTacticId == ObjTacticId).FirstOrDefault();                
                 if (objPlanCampaignProgramTacticLineItem != null)
@@ -860,10 +861,10 @@ namespace RevenuePlanner.Helpers
             if (objtacticLineItemOthers != null)
             {
                 objtacticLineItemOthers.Cost = (ObjTactic.Cost > CostSum) ? (ObjTactic.Cost - CostSum) : 0;
-                if (objtacticLineItemOthers.Cost == 0)
-                {
-                    objtacticLineItemOthers.IsDeleted = true;
-                }
+                //if (objtacticLineItemOthers.Cost == 0)
+                //{
+                //    objtacticLineItemOthers.IsDeleted = true;
+                //}
                 db.Entry(objtacticLineItemOthers).State = EntityState.Modified;
                 int result = db.SaveChanges();
             }
