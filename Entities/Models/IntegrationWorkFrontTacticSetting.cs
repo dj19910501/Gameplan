@@ -16,9 +16,8 @@ namespace RevenuePlanner.Models
     {
         public int Id { get; set; }
         public int TacticId { get; set; }
-        public bool TacticApprovalBehavior { get; set; }
-        public bool OrganizationBehavior { get; set; }
         public bool IsDeleted { get; set; }
+        public string TacticApprovalObject { get; set; }
     
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
     }

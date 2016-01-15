@@ -22,8 +22,8 @@ namespace RevenuePlanner.Models
             this.Plan_Campaign_Program_Tactic_Comment = new HashSet<Plan_Campaign_Program_Tactic_Comment>();
             this.Plan_Campaign_Program_Tactic_LineItem = new HashSet<Plan_Campaign_Program_Tactic_LineItem>();
             this.Tactic_Share = new HashSet<Tactic_Share>();
-            this.IntegrationWorkFrontTacticSettings = new HashSet<IntegrationWorkFrontTacticSetting>();
             this.IntegrationWorkFrontRequests = new HashSet<IntegrationWorkFrontRequest>();
+            this.IntegrationWorkFrontTacticSettings = new HashSet<IntegrationWorkFrontTacticSetting>();
         }
     
         public int PlanTacticId { get; set; }
@@ -63,7 +63,7 @@ namespace RevenuePlanner.Models
         public virtual Stage Stage { get; set; }
         public virtual TacticType TacticType { get; set; }
         public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }
-        public virtual ICollection<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
         public virtual ICollection<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
+        public virtual ICollection<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
     }
 }

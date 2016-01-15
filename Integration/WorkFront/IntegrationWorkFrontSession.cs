@@ -751,14 +751,12 @@ namespace Integration.WorkFront
 
         /// <summary>
         /// Tactic Level sync method 
-        /// sets up tactic integration logs, create new tactic or updates existing tactic
-        /// Creates project with attached template.
-        /// All in one api command not yet found, so method is completed with a few api calls.
-        /// First: create the project with projectName. Second: attach the template (currently hard coded).
-        /// Third: Edit the scheduling mode to schedule from the completion date, and edit the completion date itself.
-        /// Workfront scheduling is based off the completion date by starting the project earlier based off the template
-        /// timeline.
-        /// Both creation and update sync comments are created for display in tactic review comment log.
+        /// sets up tactic integration logs
+        /// Syncing a tactic will require either syncing with a WorkFront project or syncing with a WorkFront Request
+        /// Calls the appropriate method depending on the sync type
+        /// Create / Sync the project or request, then sync the portfolio to organize the project or request 
+        /// Commenting should be delegated to the sync type methods as they should only be created on object creation
+        /// catches the exceptions thrown by both sync type methods
         /// </summary>
         ///  <param name="tactic">
         /// the tactic to by synced
@@ -772,37 +770,67 @@ namespace Integration.WorkFront
         private bool SyncTactic(Plan_Campaign_Program_Tactic tactic, ref List<SyncError> SyncErrors)  
         {
             bool tacticError = false;
-            TacticType tacticType = db.TacticTypes.Where(type =>  type.TacticTypeId == tactic.TacticTypeId).FirstOrDefault();
+
+            //Split this up into two methods now that there are two distinct use cases.... 
             
+
+            //determine which sync method is appropriate
+            //if creating the tactic, then we can just look at the tactic approval behavior settings
+            //how do we now we're creating a tactic??
+
+            //if we're syncing a tactic and not creating it, we need to know whether to look for a project or a request
+            //if there is a project id attached to the tactic, sync with a project as it is now
+            //if there is no project id attached to the tactic, do we need to create a project, or are we supposed to sync with a request
+
+            //if there is no project id attached to the tactic, look at the tactic approval behavior settings. If setting is set to 'Create a Project',
+            //we need to create the project.
+
+            //if there is no project id and the settings are set to create a request, we need to sync a request.
+            //look for a request id for the tactic. if there isn't one there, need to create a request against the selected request queue and assign it to the 
+            //selected individual
+
+
+
             IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
+           
             try
             {
-                Enums.Mode currentMode = Common.GetMode(tactic.IntegrationWorkFrontProjectID);
-                //if IntegrationWorkFrontProjectID doesn't exist in WorkFront, create a new one
-                if (currentMode == Enums.Mode.Update)
-                {
-                    JToken checkExists = client.Search(ObjCode.PROJECT, new { ID = tactic.IntegrationWorkFrontProjectID, map = true });
-                    if (checkExists == null || checkExists["data"].HasValues == false)
-                    { currentMode = Enums.Mode.Create; }
-                }
+
                 //logging begin
                 instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
                 instanceLogTactic.EntityId = tactic.PlanTacticId;
                 instanceLogTactic.EntityType = EntityType.Tactic.ToString();
                 instanceLogTactic.SyncTimeStamp = DateTime.Now;
-                instanceLogTactic.Status = StatusResult.Success.ToString();
                 instanceLogTactic.CreatedBy = this._userId;
                 instanceLogTactic.CreatedDate = DateTime.Now;
-                
-                //logging end
+                //instanceLogTactic.Operation == ??
+
+                if (tactic.IntegrationWorkFrontProjectID != null) // if there's a project ID, we need to sync the tactic
+                {
+                    tacticError = SyncTacticProject(tactic, ref SyncErrors, ref instanceLogTactic);
+                }
+                else//no project ID, so check the tactic approval behavior options
+                {
+                    IntegrationWorkFrontTacticSetting approvalSettings = db.IntegrationWorkFrontTacticSettings.Single(t => t.TacticId == tactic.PlanTacticId && t.IsDeleted == false);
+                    if (approvalSettings.TacticApprovalObject == Enums.WorkFrontTacticApprovalObject.Project.ToString())
+                    {
+                        //we need to sync the project, so send to SyncTacticProject
+                        tacticError = SyncTacticProject(tactic, ref SyncErrors ,ref instanceLogTactic);
+                    }
+                    else
+                    {
+                        tacticError = SyncTacticRequest(tactic, ref SyncErrors, ref instanceLogTactic);
+                    }
+
+                }
 
                 tactic.LastSyncDate = DateTime.Now;
                 tactic.ModifiedDate = DateTime.Now;
                 tactic.ModifiedBy = _userId;
                 db.Entry(tactic).State = EntityState.Modified;
 
-                //program portfolio information -- all programs should be linked to a portfolio in WorkFront
+                //program portfolio information -- all programs should be linked to a portfolio in WorkFront - regardless of sync type
                 IntegrationWorkFrontPortfolio portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
                     port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault();
                 JToken existingInWorkFront = null;
@@ -811,6 +839,116 @@ namespace Integration.WorkFront
                     existingInWorkFront = client.Search(ObjCode.PORTFOLIO, new { ID = portfolioInfo.PortfolioId }); 
                 }
                                    
+                if (portfolioInfo == null || existingInWorkFront == null || !existingInWorkFront["data"].HasValues || portfolioInfo.PortfolioId != existingInWorkFront["data"][0]["ID"].ToString())
+                {
+                    bool programError = syncProgram(tactic.Plan_Campaign_Program, ref SyncErrors); //force program sync to create a portfolio if none found
+                    if (programError) { throw new ClientException("Cannot Sync the Program associated with Tactic. Tactic: " + tactic.Title + "; Program: " + tactic.Plan_Campaign_Program.Title); }
+                    portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
+                    port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault(); //try again to get info
+
+                    if (portfolioInfo == null) //check again to ensure we got information
+                    {
+                        throw new ClientException("Cannot determine portfolio for tactic " + tactic.Title); //it didn't work - throw excecption
+                    }
+                }
+
+              
+                if (!tacticError) 
+                {
+                    instanceLogTactic.Status = StatusResult.Success.ToString();
+                    //add success message to IntegrationInstanceLogDetails
+                    Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, null, Enums.MessageOperation.Start, "Sync Tactic", Enums.MessageLabel.Success, "Sync success on Tactic " + tactic.Title);
+                }
+                else
+                {
+                    instanceLogTactic.Status = StatusResult.Error.ToString();
+                }
+            }
+            catch(Exception ex)
+            {
+                tacticError = true;
+                instanceLogTactic.Status = StatusResult.Error.ToString();
+                instanceLogTactic.ErrorDescription = ex.Message;
+                SyncError error = new SyncError();
+                error.EntityId = tactic.PlanTacticId;
+                error.EntityType = Enums.EntityType.Tactic;
+                error.SectionName = "Sync Tactic Data";
+                error.Message = "In tactic " + tactic.Title + " : " + ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
+            }
+            finally
+            {
+                db.Entry(instanceLogTactic).State = EntityState.Added;
+            }
+            return tacticError;
+        }
+
+        /// <summary>
+        /// Tactic Level sync method when syncing a tactic with a WorkFront project
+        /// tactic integration logs should already be set up by the calling method
+        /// Create new project or update tactic with existing project
+        /// Creates project with attached template.
+        /// All in one api command not yet found, so method is completed with a few api calls.
+        /// First: create the project with projectName. Second: attach the template (currently hard coded).
+        /// Third: Edit the scheduling mode to schedule from the completion date, and edit the completion date itself.
+        /// Workfront scheduling is based off the completion date by starting the project earlier based off the template
+        /// timeline.
+        /// Both creation and update sync comments are created for display in tactic review comment log.
+        /// Does not catch exceptions - let main SyncTactic method handle these
+        /// </summary>
+        ///  <param name="tactic">
+        /// the tactic to by synced
+        /// </param>
+        ///<param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
+        /// <returns>
+        /// Bool: true if sync error, false otherwise
+        /// </returns>
+        private bool SyncTacticProject(Plan_Campaign_Program_Tactic tactic, ref List<SyncError> SyncErrors, ref IntegrationInstancePlanEntityLog instanceLogTactic) 
+        {
+            bool tacticError = false;
+
+            //Split this up into two methods now that there are two distinct use cases.... 
+            //Syncing a tactic will require either syncing with a WorkFront project or syncing with a WorkFront Request
+
+            //determine which sync method is appropriate
+            //if creating the tactic, then we can just look at the tactic approval behavior settings
+            //how do we now we're creating a tactic??
+
+            //if we're syncing a tactic and not creating it, we need to know whether to look for a project or a request
+            //if there is a project id attached to the tactic, sync with a project as it is now
+            //if there is no project id attached to the tactic, do we need to create a project, or are we supposed to sync with a request
+
+            //if there is no project id attached to the tactic, look at the tactic approval behavior settings. If setting is set to 'Create a Project',
+            //we need to create the project.
+
+            //if there is no project id and the settings are set to create a request, we need to sync a request.
+            //look for a request id for the tactic. if there isn't one there, need to create a request against the selected request queue and assign it to the 
+            //selected individual
+
+                TacticType tacticType = db.TacticTypes.Where(type => type.TacticTypeId == tactic.TacticTypeId).FirstOrDefault();
+                Enums.Mode currentMode = Common.GetMode(tactic.IntegrationWorkFrontProjectID);
+
+                //if IntegrationWorkFrontProjectID doesn't exist in WorkFront, create a new one
+                if (currentMode == Enums.Mode.Update)
+                {
+                    JToken checkExists = client.Search(ObjCode.PROJECT, new { ID = tactic.IntegrationWorkFrontProjectID, map = true });
+                    if (checkExists == null || checkExists["data"].HasValues == false)
+                    { currentMode = Enums.Mode.Create; }
+                }
+
+                //program portfolio information -- all programs should be linked to a portfolio in WorkFront
+                IntegrationWorkFrontPortfolio portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
+                    port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault();
+                JToken existingInWorkFront = null;
+                if (portfolioInfo != null) // If Gameplan doesn't have an ID - can't search for a portfolio.
+                {
+                    existingInWorkFront = client.Search(ObjCode.PORTFOLIO, new { ID = portfolioInfo.PortfolioId });
+                }
+
                 if (portfolioInfo == null || existingInWorkFront == null || !existingInWorkFront["data"].HasValues || portfolioInfo.PortfolioId != existingInWorkFront["data"][0]["ID"].ToString())
                 {
                     bool programError = syncProgram(tactic.Plan_Campaign_Program, ref SyncErrors); //force program sync to create a portfolio if none found
@@ -840,11 +978,18 @@ namespace Integration.WorkFront
                     string templateID = (string)templateInfo["data"][0]["ID"];
 
                     //consolidated creation : create project with appropriate template, timeline & place in correct portfolio
-                    JToken project = client.Create(ObjCode.PROJECT, new { name = tactic.Title, templateID = templateID, scheduleMode = 'C', 
-                        plannedCompletionDate = tactic.StartDate, portfolioID = portfolioInfo.PortfolioId, groupID = _userGroupID });
-                    if (project == null || !project["data"].HasValues) 
-                    { 
-                        throw new ClientException("Project Not Created for Tactic " + tactic.Title + "."); 
+                    JToken project = client.Create(ObjCode.PROJECT, new
+                    {
+                        name = tactic.Title,
+                        templateID = templateID,
+                        scheduleMode = 'C',
+                        plannedCompletionDate = tactic.StartDate,
+                        portfolioID = portfolioInfo.PortfolioId,
+                        groupID = _userGroupID
+                    });
+                    if (project == null || !project["data"].HasValues)
+                    {
+                        throw new ClientException("Project Not Created for Tactic " + tactic.Title + ".");
                     }
 
                     //Enter information into WorkFront portfolio to project mapping table in database
@@ -856,7 +1001,7 @@ namespace Integration.WorkFront
                     tactic.IntegrationWorkFrontProjectID = (string)project["data"]["ID"];
                     tacticError = UpdateTacticInfo(tactic, portfolioInfo, ref SyncErrors);
 
-                   //moved comment section to only leave a comment on successful project creation, PL#1871 : Brad Gray 01/07/2016
+                    //moved comment section to only leave a comment on successful project creation, PL#1871 : Brad Gray 01/07/2016
                     if (!tacticError) //don't leave a sync comment if it didn't sync
                     {
                         //Add tactic review comment when sync tactic
@@ -882,32 +1027,46 @@ namespace Integration.WorkFront
                     tacticError = UpdateTacticInfo(tactic, portfolioInfo, ref SyncErrors);
                 }
 
-                if (!tacticError) 
-                {
-                    //add success message to IntegrationInstanceLogDetails
-                    Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, null, Enums.MessageOperation.Start, "Sync Tactic", Enums.MessageLabel.Success, "Sync success on Tactic " + tactic.Title);
-                }
-            }
-            catch(Exception ex)
-            {
-                tacticError = true;
-                instanceLogTactic.Status = StatusResult.Error.ToString();
-                instanceLogTactic.ErrorDescription = ex.Message;
-                SyncError error = new SyncError();
-                error.EntityId = tactic.PlanTacticId;
-                error.EntityType = Enums.EntityType.Tactic;
-                error.SectionName = "Sync Tactic Data";
-                error.Message = "In tactic " + tactic.Title + " : " + ex.Message;
-                error.SyncStatus = Enums.SyncStatus.Error;
-                error.TimeStamp = DateTime.Now;
-                SyncErrors.Add(error);
-            }
-            finally
-            {
-                db.Entry(instanceLogTactic).State = EntityState.Added;
-            }
             return tacticError;
         }
+
+             /// <summary>
+        /// Tactic Level sync method when syncing a tactic with a WorkFront request
+        /// tactic integration logs should already be set up by the calling method
+        /// need to update the log operation to either 'update' or 'create'
+        /// Create new request or update tactic with existing request
+        /// Creates request against selected request queue and assigns request to selected workfront user
+        /// Need to check request to see if it has been converted to a project. If it has, capture the project ID, store it, and resync the tactic
+        /// Only create comment on object creation
+        /// </summary>
+        ///  <param name="tactic">
+        /// the tactic to by synced
+        /// </param>
+        ///<param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
+        /// <returns>
+        /// Bool: true if sync error, false otherwise
+        /// </returns>
+        private bool SyncTacticRequest(Plan_Campaign_Program_Tactic tactic, ref List<SyncError> SyncErrors, ref IntegrationInstancePlanEntityLog instanceLogTactic )
+        {
+            bool tacticError = false;
+
+            IntegrationWorkFrontRequest request= db.IntegrationWorkFrontRequests.Single(r => r.PlanTacticId == tactic.PlanTacticId && r.IsDeleted == false);
+            if(request==null)
+            {
+                //create a request
+            }
+            else
+            {
+                //update the request
+                //check to see if there is a resolving obj id (PROJ)
+                //if converted, capture the proj id, store it in the tactic, and resync the tactic to sync the project
+            }
+
+            return tacticError;
+        }
+
 
         /// <summary>
         /// Tactic Level update method 

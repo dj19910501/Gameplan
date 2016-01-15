@@ -19,6 +19,13 @@ namespace Integration.Helper
             WorkFront
         }
 
+        public enum WorkFrontTacticApprovalObject
+        {
+            Project,
+            Request
+        }
+
+
         public enum PullCWActualField
         {
             Stage,

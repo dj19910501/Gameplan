@@ -101,10 +101,10 @@ namespace RevenuePlanner.Models
         public DbSet<Budget_ColumnSet> Budget_ColumnSet { get; set; }
         public DbSet<Budget_Permission> Budget_Permission { get; set; }
         public DbSet<Plan_UserSavedViews> Plan_UserSavedViews { get; set; }
-        public DbSet<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
         public DbSet<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
         public DbSet<IntegrationWorkFrontRequestQueue> IntegrationWorkFrontRequestQueues { get; set; }
         public DbSet<IntegrationWorkFrontUser> IntegrationWorkFrontUsers { get; set; }
+        public DbSet<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

@@ -538,9 +538,8 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TacticId" Type="int" Nullable="false" />
-          <Property Name="TacticApprovalBehavior" Type="bit" Nullable="false" />
-          <Property Name="OrganizationBehavior" Type="bit" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="TacticApprovalObject" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationWorkFrontTemplates">
           <Key>
@@ -3025,11 +3024,6 @@
             <End Role="Budget_Permission" EntitySet="Budget_Permission" />
           </AssociationSet>
           <EntitySet Name="Plan_UserSavedViews" EntityType="MRPModel.Plan_UserSavedViews" />
-          <EntitySet Name="IntegrationWorkFrontTacticSettings" EntityType="MRPModel.IntegrationWorkFrontTacticSetting" />
-          <AssociationSet Name="FK_IntegrationWorkFrontTacticSettings_TacticId" Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId">
-            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
-            <End Role="IntegrationWorkFrontTacticSetting" EntitySet="IntegrationWorkFrontTacticSettings" />
-          </AssociationSet>
           <AssociationSet Name="FK_TacticType_TacticType_WorkFrontTemplateId" Association="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId">
             <End Role="IntegrationWorkFrontTemplate" EntitySet="IntegrationWorkFrontTemplates" />
             <End Role="TacticType" EntitySet="TacticTypes" />
@@ -3056,6 +3050,11 @@
           <AssociationSet Name="FK_IntegrationWorkFrontUsers_IntegrationInstanceId" Association="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="IntegrationWorkFrontUser" EntitySet="IntegrationWorkFrontUsers" />
+          </AssociationSet>
+          <EntitySet Name="IntegrationWorkFrontTacticSettings" EntityType="MRPModel.IntegrationWorkFrontTacticSetting" />
+          <AssociationSet Name="FK_IntegrationWorkFrontTacticSettings_TacticId" Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="IntegrationWorkFrontTacticSetting" EntitySet="IntegrationWorkFrontTacticSettings" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
@@ -3723,8 +3722,8 @@
           <Property Type="String" Name="IntegrationInstanceEloquaId" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="LinkedTacticId" Type="Int32" />
           <Property Name="LinkedPlanId" Type="Int32" />
-          <NavigationProperty Name="IntegrationWorkFrontTacticSettings" Relationship="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" FromRole="Plan_Campaign_Program_Tactic" ToRole="IntegrationWorkFrontTacticSetting" />
           <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" FromRole="Plan_Campaign_Program_Tactic" ToRole="IntegrationWorkFrontRequest" />
+          <NavigationProperty Name="IntegrationWorkFrontTacticSettings" Relationship="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" FromRole="Plan_Campaign_Program_Tactic" ToRole="IntegrationWorkFrontTacticSetting" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -5316,29 +5315,6 @@
           <Property Name="LastModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IsDefaultPreset" Type="Boolean" />
         </EntityType>
-        <EntityType Name="IntegrationWorkFrontTacticSetting">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TacticId" Type="Int32" Nullable="false" />
-          <Property Name="TacticApprovalBehavior" Type="Boolean" Nullable="false" />
-          <Property Name="OrganizationBehavior" Type="Boolean" Nullable="false" />
-          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" FromRole="IntegrationWorkFrontTacticSetting" ToRole="Plan_Campaign_Program_Tactic" />
-        </EntityType>
-        <Association Name="FK_IntegrationWorkFrontTacticSettings_TacticId">
-          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
-          <End Type="MRPModel.IntegrationWorkFrontTacticSetting" Role="IntegrationWorkFrontTacticSetting" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Campaign_Program_Tactic">
-              <PropertyRef Name="PlanTacticId" />
-            </Principal>
-            <Dependent Role="IntegrationWorkFrontTacticSetting">
-              <PropertyRef Name="TacticId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_TacticType_TacticType_WorkFrontTemplateId">
           <End Type="MRPModel.IntegrationWorkFrontTemplate" Role="IntegrationWorkFrontTemplate" Multiplicity="0..1" />
           <End Type="MRPModel.TacticType" Role="TacticType" Multiplicity="*" />
@@ -5450,6 +5426,28 @@
             </Principal>
             <Dependent Role="IntegrationWorkFrontUser">
               <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="IntegrationWorkFrontTacticSetting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TacticId" Type="Int32" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="TacticApprovalObject" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" FromRole="IntegrationWorkFrontTacticSetting" ToRole="Plan_Campaign_Program_Tactic" />
+        </EntityType>
+        <Association Name="FK_IntegrationWorkFrontTacticSettings_TacticId">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontTacticSetting" Role="IntegrationWorkFrontTacticSetting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontTacticSetting">
+              <PropertyRef Name="TacticId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6547,17 +6545,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="IntegrationWorkFrontTacticSettings">
-            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontTacticSetting">
-              <MappingFragment StoreEntitySet="IntegrationWorkFrontTacticSettings">
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="OrganizationBehavior" ColumnName="OrganizationBehavior" />
-                <ScalarProperty Name="TacticApprovalBehavior" ColumnName="TacticApprovalBehavior" />
-                <ScalarProperty Name="TacticId" ColumnName="TacticId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="IntegrationWorkFrontRequests">
             <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontRequest">
               <MappingFragment StoreEntitySet="IntegrationWorkFrontRequests">
@@ -6593,6 +6580,16 @@
                 <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
                 <ScalarProperty Name="WorkFrontUserName" ColumnName="WorkFrontUserName" />
                 <ScalarProperty Name="WorkFrontUserId" ColumnName="WorkFrontUserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationWorkFrontTacticSettings">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontTacticSetting">
+              <MappingFragment StoreEntitySet="IntegrationWorkFrontTacticSettings">
+                <ScalarProperty Name="TacticApprovalObject" ColumnName="TacticApprovalObject" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="TacticId" ColumnName="TacticId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
