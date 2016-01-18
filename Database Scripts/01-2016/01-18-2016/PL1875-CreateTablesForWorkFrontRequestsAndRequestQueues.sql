@@ -1,5 +1,5 @@
 
-/* --------- Start Script of PL ticket #1851 --------- */
+/* --------- Start Script of PL ticket #1875,1897 --------- */
 -- Created by : Brad Gray
 -- Created On : 12/29/2015
 -- Description : Create IntegrationWorkFrontRequestQueues and IntegrationWorkFrontRequests tables
