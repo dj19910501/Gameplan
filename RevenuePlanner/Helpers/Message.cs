@@ -2573,6 +2573,20 @@ namespace RevenuePlanner.Helpers
             }
         }
         ////End - Added by Dashrath Prajapati for PL ticket #1776
+        ////Start - Added by Rahul Shah for PL ticket #1899
+        private string _LinkEntityInformationMessage;
+        public string LinkEntityInformationMessage
+        {
+            get
+            {
+                return _LinkEntityInformationMessage;
+            }
+            set
+            {
+                _LinkEntityInformationMessage = value;
+            }
+        }
+        ////End - Added by Rahul Shah for PL ticket #1899
         //Added By Komal Rawal for #1749
         private string _SavePresetSuccess;
         public string SavePresetSuccess
@@ -3426,6 +3440,11 @@ namespace RevenuePlanner.Helpers
                                             _CloneEntityNonSelctionErrorMessage = strMsgValue;
                                             break;
                                         ////End - Added by Dashrath Prajapati for PL ticket #1776
+                                        ////Start -  Added by Rahul Shah for PL ticket #1899
+                                        case "LinkEntityInformationMessage":
+                                            _LinkEntityInformationMessage = strMsgValue;
+                                            break;
+                                        ////End - Added by Rahul Shah for PL ticket #1899
                                         ////Start - Added by Dashrath Prajapati for PL ticket #1776
                                         case "CloneEntityMetaDataMessage":
                                             _CloneEntityMetaDataErrorMessage = strMsgValue;

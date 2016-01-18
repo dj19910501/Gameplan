@@ -53,7 +53,7 @@
 <script type="text/javascript">
     var myTreeGrid;
     $(document).ready(function () {
-        
+
         nlformUserChildFinance = new NLForm(document.getElementById('nl-formCopyTacticPlan'));
         showWarningMessage();   // show "METADETA" lost warning message when popup load first time.
         $('#nl-formCopyTacticPlan > div[class="nl-field nl-dd"]').find('li').click(function (e) {
@@ -81,23 +81,23 @@
         CloseIconClick();
     });
     function RefreshParentEntitySelectionList(planId) {
-        
+
         var url = '@Url.Content("~/Plan/RefreshParentEntitySelectionList/")';
         $.ajax({
             url: url,
             data: {
-                    planId: planId
-                  },
+                planId: planId
+            },
             datatype: 'json',
             type: 'POST',
-            async:false,
+            async: false,
             success: function (griddata) {
                 BindParentEntitySelectionList(griddata);
             }
         });
     }
     function BindParentEntitySelectionList(GridData) {
-        
+
         //GridData = $('<div/>').html(GridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         //GridData = (GridData.toString().replace(/&amp;/g, "&"));
         myTreeGrid = new dhtmlXGridObject('dvParentEntitySelection');
@@ -148,21 +148,21 @@
         else {
             errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityNonSelctionErrorMessage.ToString()';
         }
-            if (errorMsg != '') {
-                ShowError(false, errorMsg);
+        if (errorMsg != '') {
+            ShowError(false, errorMsg);
+        }
+        else {
+            if (poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") {
+                var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
+                var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
+                LinkEntityToOtherPlan(destEntityId, destPlanId);
+            } else {
+                var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
+                var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
+                CloneEntityToOtherPlan(destEntityId, destPlanId);
             }
-            else {
-                if (poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") {
-                    var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
-                    var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
-                    LinkEntityToOtherPlan(destEntityId, destPlanId);
-                } else {
-                    var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
-                    var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
-                    CloneEntityToOtherPlan(destEntityId, destPlanId);
-                }
-            }
-        
+        }
+
         //alert(selectedRowId);
     }
     //Added by Rahul Shah on 30/12/2015 for PL #1847
@@ -210,7 +210,7 @@
             }
         });
     }
-    function CloneEntityToOtherPlan(destEntityId,destPlanId) {
+    function CloneEntityToOtherPlan(destEntityId, destPlanId) {
         var srcEntityID = '@srcEntityId';
         var srcPlanID = '@srcPlanId';
         var cloneType = '@srcSectionType';
@@ -251,7 +251,7 @@
     }
 
     function ShowError(isSuccess, value) {
-       
+
         if (isSuccess != null && isSuccess != 'undefined' && isSuccess) {
             //$("#modal-container-1864701").scrollTop(0);
             $("#errorMsg").css("display", "none");
@@ -278,11 +278,17 @@
         }
     }
     function showWarningMessage() {
+        var poptype = '@PopupType.ToString().ToUpper()';    
         $("#warningMessage1").css("display", "block");
         $("#spanMessageWarning1").empty();
-        $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.CloneEntityMetaDataErrorMessage.ToString()');
-            $("#SuccessMsg").css("display", "none");
-            $("#errorMessage1").css("display", "none");
+        if (poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") {
+            $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.LinkEntityInformationMessage.ToString()');
+        }
+        else {
+            $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.CloneEntityMetaDataErrorMessage.ToString()');
+        }
+        $("#SuccessMsg").css("display", "none");
+        $("#errorMessage1").css("display", "none");
     }
     $(".closemessage").click(function () {
         //$("#divBackground").css("display", "none");
@@ -290,6 +296,6 @@
         //$('#dvCopyEntity').empty();
         //$(".modal-backdrop").css('display', 'none');
 
-        
+
     });
 </script>

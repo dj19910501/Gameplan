@@ -1012,6 +1012,12 @@
 		<value>Some META Data will be lost if this plan uses a different model.</value>
 	</Field>
 	<!--End Added by Dashrath Prajapati for PL ticket #1776-->
+  <!--start Added by Rahul Shah for PL ticket #1899-->
+  <Field>
+    <Name>LinkEntityInformationMessage</Name>
+    <value>Some information will be lost if this plan has a different model.</value>
+  </Field>
+  <!--End Added by Rahul Shah for PL ticket #1899-->
 	<!--start Added by Komal Rawal for PL ticket #1779-->
 	<Field>
 		<Name>SavePresetSuccess</Name>
