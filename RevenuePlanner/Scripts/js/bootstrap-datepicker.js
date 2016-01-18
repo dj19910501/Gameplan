@@ -282,7 +282,8 @@
 							var month = target.parent().find('span').index(target);
 							this.viewDate.setMonth(month);
 						} else {
-							var year = parseInt(target.text(), 10)||0;
+						   // var year = parseInt(target.text(), 10) || 0;
+						    var year = parseInt(target.text(), 10) || this.viewDate.getFullYear(); // Added by Dashrath Prajapati for PL#1784
 							this.viewDate.setFullYear(year);
 						}
 						if (this.viewMode !== 0) {
