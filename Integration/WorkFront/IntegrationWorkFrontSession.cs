@@ -753,7 +753,7 @@ namespace Integration.WorkFront
         /// Tactic Level sync method 
         /// sets up tactic integration logs
         /// Syncing a tactic will require either syncing with a WorkFront project or syncing with a WorkFront Request
-        /// Calls the appropriate method depending on the sync type
+        /// Calls the appropriate method depending on the sync type 
         /// Create / Sync the project or request, then sync the portfolio to organize the project or request 
         /// Commenting should be delegated to the sync type methods as they should only be created on object creation
         /// catches the exceptions thrown by both sync type methods
@@ -770,32 +770,10 @@ namespace Integration.WorkFront
         private bool SyncTactic(Plan_Campaign_Program_Tactic tactic, ref List<SyncError> SyncErrors)  
         {
             bool tacticError = false;
-
-            //Split this up into two methods now that there are two distinct use cases.... 
-            
-
-            //determine which sync method is appropriate
-            //if creating the tactic, then we can just look at the tactic approval behavior settings
-            //how do we now we're creating a tactic??
-
-            //if we're syncing a tactic and not creating it, we need to know whether to look for a project or a request
-            //if there is a project id attached to the tactic, sync with a project as it is now
-            //if there is no project id attached to the tactic, do we need to create a project, or are we supposed to sync with a request
-
-            //if there is no project id attached to the tactic, look at the tactic approval behavior settings. If setting is set to 'Create a Project',
-            //we need to create the project.
-
-            //if there is no project id and the settings are set to create a request, we need to sync a request.
-            //look for a request id for the tactic. if there isn't one there, need to create a request against the selected request queue and assign it to the 
-            //selected individual
-
-
-
             IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
            
             try
             {
-
                 //logging begin
                 instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
@@ -804,8 +782,8 @@ namespace Integration.WorkFront
                 instanceLogTactic.SyncTimeStamp = DateTime.Now;
                 instanceLogTactic.CreatedBy = this._userId;
                 instanceLogTactic.CreatedDate = DateTime.Now;
-                //instanceLogTactic.Operation == ??
 
+                //Updates made Jan 2016 by Brad Gray PL#1851 & PL#1897 - separate tactic sync types to acommodate different use cases
                 if (tactic.IntegrationWorkFrontProjectID != null) // if there's a project ID, we need to sync the tactic
                 {
                     tacticError = SyncTacticProject(tactic, ref SyncErrors, ref instanceLogTactic);
@@ -813,6 +791,7 @@ namespace Integration.WorkFront
                 else//no project ID, so check the tactic approval behavior options
                 {
                     IntegrationWorkFrontTacticSetting approvalSettings = db.IntegrationWorkFrontTacticSettings.Single(t => t.TacticId == tactic.PlanTacticId && t.IsDeleted == false);
+                    if (approvalSettings == null) { throw new ClientException("Cound not find Tactic WorkFront Approval Settings"); }
                     if (approvalSettings.TacticApprovalObject == Enums.WorkFrontTacticApprovalObject.Project.ToString())
                     {
                         //we need to sync the project, so send to SyncTacticProject
@@ -822,7 +801,6 @@ namespace Integration.WorkFront
                     {
                         tacticError = SyncTacticRequest(tactic, ref SyncErrors, ref instanceLogTactic);
                     }
-
                 }
 
                 tactic.LastSyncDate = DateTime.Now;
@@ -1053,9 +1031,11 @@ namespace Integration.WorkFront
             bool tacticError = false;
 
             IntegrationWorkFrontRequest request= db.IntegrationWorkFrontRequests.Single(r => r.PlanTacticId == tactic.PlanTacticId && r.IsDeleted == false);
-            if(request==null)
+            if (request == null) { throw new ClientException("No Request information found in database"); }
+            if(request.RequestId==null) 
             {
                 //create a request
+                //1: pull the workfront tactic 
             }
             else
             {
