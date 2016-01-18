@@ -6394,7 +6394,7 @@
         var TacticId;
         var ImpTacticId;
         var LineId;
-
+    
         if (name_Id.length == 1) {
             PlanId = name_Id[0].replace("L", "");
         }
@@ -6464,7 +6464,14 @@
         
         if (type == "Plan") {
             if (permission == "true") {
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan1'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>Child Campaign</li> </ul>";
+                if ('@IsPlanCreateAuthorized' == "true") {
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan1'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>Child Campaign</li> </ul>";
+                }
+                else {
+
+                    ul = "<ul style='margin: 0;'> <li class='new-prog' id='ChildCampaign'>Child Campaign</li> </ul>";
+
+                }
             }
             else {
                 $('#popupType').css('display', 'none');
