@@ -5131,6 +5131,7 @@ namespace RevenuePlanner.Controllers
                             objActualTrendModel.Value = 0;
                             objActualTrendModel.StartDate = tactic.StartDate;
                             objActualTrendModel.EndDate = tactic.EndDate;
+                            objActualTrendModel.Year = tactic.StartDate.Year; // #1910 
                             //// Calculate Trend calculation for month that is greater than current ruuning month.
                             if (involveMonthTillCurrentMonth > 0 && (_currentYear < tactic.StartDate.Year || (_trendMonth > currentMonth && _currentYear == tactic.StartDate.Year)))
                             {
@@ -6680,6 +6681,7 @@ namespace RevenuePlanner.Controllers
                         objProjectedTrendModel.Month = PeriodPrefix + _trendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
                         objProjectedTrendModel.StartDate = tactic.StartDate;
                         objProjectedTrendModel.EndDate = tactic.EndDate;
+                        objProjectedTrendModel.Year = tactic.StartDate.Year; // #1910
                         //// Calculate Trend calculation for month that is greater than current ruuning month.
                         if (_trendMonth > tactic.StartMonth && ((_currentYear < tactic.Year) || (tactic.EndMonth > currentMonth && _trendMonth >= currentMonth && _currentYear == tactic.Year)))
                         {
@@ -10943,6 +10945,41 @@ namespace RevenuePlanner.Controllers
                             {
                                 MqlProjected = ProjectedTrendList;
                             }
+                            // Add By Nishant Sheth
+                            // Desc :: #1910 Showing Goal TQL & CWs as 0
+                            ProjectedTrendList = ProjectedTrendList.Select(tac => new
+                            {
+                                Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                                TacticId = tac.PlanTacticId,
+                                Value = tac.Value,
+                                StartYear = tac.StartDate.Year,
+                                StartDate = tac.StartDate,
+                                EndDate = tac.EndDate,
+                                NoTacticMonths = tac.NoTacticMonths,
+                                TrendValue = tac.TrendValue
+                            }).ToList().Select(tac => new
+                            {
+                                Period = tac.Period,
+                                NumPeriod = (tac.Period / 13),
+                                TacticId = tac.TacticId,
+                                Value = tac.Value,
+                                StartYear = tac.StartDate.Year,
+                                StartDate = tac.StartDate,
+                                EndDate = tac.EndDate,
+                                NoTacticMonths = tac.NoTacticMonths,
+                                TrendValue = tac.TrendValue
+                            }).ToList().Select(tact => new ProjectedTrendModel
+                            {
+                                Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                                Year = tact.StartYear + tact.NumPeriod,
+                                PlanTacticId = tact.TacticId,
+                                Value = tact.Value,
+                                StartDate = tact.StartDate,
+                                EndDate = tact.EndDate,
+                                NoTacticMonths = tact.NoTacticMonths,
+                                TrendValue = tact.TrendValue
+                            }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
+
                             MqlProjected = MqlProjected.Select(tac => new
                             {
                                 Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
