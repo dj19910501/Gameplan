@@ -9849,8 +9849,7 @@ namespace RevenuePlanner.Controllers
                     //db.Entry(objTactic).State = EntityState.Modified;
 
                     #region "Sync Tactic to respective Integration Instance"
-                    //ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.Tactic); //Modified 1/17/2016 PL#1907 Brad Gray
-                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
+                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic); //Modified 1/17/2016 PL#1907 Brad Gray
                     externalIntegration.Sync();
                     #endregion
                     returnValue = true;
