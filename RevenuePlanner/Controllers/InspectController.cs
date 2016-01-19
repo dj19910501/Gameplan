@@ -2725,7 +2725,7 @@ namespace RevenuePlanner.Controllers
                  
                 // add 1/10/2016 by Brad Gray PL#1856 - get a list of active Requeust Queues for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
                 ViewBag.WorkFrontRequestQueueList = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IntegrationInstanceId
-                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false).Select(modelQ => new { modelQ.Id, modelQ.RequestQueueName })
+                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false && q.IsDeleted==false).Select(modelQ => new { modelQ.Id, modelQ.RequestQueueName })
                                         .Distinct().OrderBy(q => q.RequestQueueName).ToList();
                 // add 1/13/2016 by Brad Gray PL#1895 - get a list of active WorkFront users for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
                 ViewBag.WorkFrontUserList = db.IntegrationWorkFrontUsers.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IntegrationInstanceId
