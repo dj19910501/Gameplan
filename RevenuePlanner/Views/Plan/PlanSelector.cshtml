@@ -323,6 +323,16 @@
                     if ($(this).text() == Year) {
                         $(this).parent().addClass("active");
                     }
+                    else  //Modified By Komal rawal for #1859 to display plan selector of previous year if there are no plans in current year
+                    {
+                        if ($('#YearTabs > li ').hasClass('active') != true)
+                        {
+                            if ($(this).text() == (Year - 1)) {
+                                $(this).parent().addClass("active");
+                            }
+                        }
+                     
+                    }
                 });
             }
             else {
