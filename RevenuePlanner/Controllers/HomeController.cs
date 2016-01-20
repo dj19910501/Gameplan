@@ -173,27 +173,27 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsPlanEditable = IsPlanEditable;
                 if (activeMenu.Equals(Enums.ActiveMenu.Plan))
                 {
-                latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                    latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
                 }
                 else
                 {
                     latestPlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
                 }
-              
+
                 List<Plan> fiterActivePlan = new List<Plan>();
                 fiterActivePlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).ToList();
                 if (fiterActivePlan != null && fiterActivePlan.Any())
                 {
                     if (activeMenu.Equals(Enums.ActiveMenu.Plan))
                     {
-                    latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+                        latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
                     }
                     else
                     {
                         latestPlan = fiterActivePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
-                     
+
                     }
-                  //  latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+                    //  latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
                 }
                 if (currentPlanId != 0)
                 {
@@ -268,13 +268,19 @@ namespace RevenuePlanner.Controllers
                 //// Get list of Active(published) plans for all above models
                 //Modified for #1750 by Komal Rawal
                 var LastSetOfPlanSelected = new List<string>();
+                var LastSetOfYearSelected = new List<string>();
                 var Label = Enums.FilterLabel.Plan.ToString();
+                var Yearlabel = Enums.FilterLabel.Year.ToString();
                 var FilterName = Sessions.FilterPresetName;
-                var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
+                var SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+                var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
+                var SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.UserId).ToList();
                 var FinalSetOfPlanSelected = "";
+                var FinalSetOfYearsSelected = "";
                 if (FilterName != null && FilterName != "")
                 {
                     FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == FilterName).Select(View => View.FilterValues).FirstOrDefault();
+                    FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.ViewName == FilterName).Select(View => View.FilterValues).FirstOrDefault();
                 }
                 else
                 {
@@ -284,20 +290,104 @@ namespace RevenuePlanner.Controllers
                         FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
                     }
 
+                    FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.IsDefaultPreset == true).Select(View => View.FilterValues).FirstOrDefault();
+                    if (FinalSetOfYearsSelected == null)
+                    {
+                        FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
+                    }
+
                 }
                 if (FinalSetOfPlanSelected != null)
                 {
                     LastSetOfPlanSelected = FinalSetOfPlanSelected.Split(',').ToList();
                 }
 
+                if (FinalSetOfYearsSelected != null)
+                {
+                    LastSetOfYearSelected = FinalSetOfYearsSelected.Split(',').ToList();
+                }
+
                 activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
-                planmodel.lstPlan = activePlan.Select(plan => new PlanListModel
+                //Modified By komal Rawal for Year filter on home page.
+                var SelectedYear = activePlan.Where(plan => plan.PlanId == currentPlan.PlanId).Select(plan => plan.Year).ToList();
+
+                if (LastSetOfYearSelected.Count > 0)
+                {
+                    SelectedYear = activePlan.Where(plan => LastSetOfYearSelected.Contains(plan.Year.ToString())).Select(plan => plan.Year).Distinct().ToList();
+                }
+                else
+                {
+                    if (LastSetOfPlanSelected.Count > 0)
+                    {
+                        SelectedYear = activePlan.Where(plan => LastSetOfPlanSelected.Contains(plan.PlanId.ToString())).Select(plan => plan.Year).Distinct().ToList();
+                    }
+                }
+
+                var uniqueplanids = activePlan.Select(p => p.PlanId).Distinct().ToList();
+
+                var CampPlans = objDbMrpEntities.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId))
+                    .Select(camp => new
+                    {
+                        PlanId = camp.PlanId,
+                        StartYear = camp.StartDate.Year,
+                        EndYear = camp.EndDate.Year,
+                        StartDate = camp.StartDate,
+                        EndDate = camp.EndDate
+                    })
+                    .ToList();
+
+                var CampPlanIds = CampPlans.Where(camp => SelectedYear.Contains(camp.StartDate.Year.ToString()) || SelectedYear.Contains(camp.EndDate.Year.ToString()))
+                    .Select(camp => camp.PlanId).Distinct().ToList();
+
+                var PlanIds = activePlan.Where(plan => SelectedYear.Contains(plan.Year))
+                 .Select(plan => plan.PlanId).Distinct().ToList();
+
+
+                var allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
+
+               // var TempIds = activePlan.Select(id => id.PlanId).ToList();
+                var YearWiseListOfPlans = activePlan.Where(list => allPlanIds.Contains(list.PlanId)).ToList();
+
+                planmodel.lstPlan = YearWiseListOfPlans.Select(plan => new PlanListModel
                 {
                     PlanId = plan.PlanId,
                     Title = HttpUtility.HtmlDecode(plan.Title),
                     Checked = LastSetOfPlanSelected.Count.Equals(0) ? plan.PlanId == currentPlan.PlanId ? "checked" : "" : LastSetOfPlanSelected.Contains(plan.PlanId.ToString()) ? "checked" : "",
+                    Year = plan.Year
 
                 }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
+
+                List<SelectListItem> lstYear = new List<SelectListItem>();
+              //  var SelectedYear = activePlan.Where(list => list.Checked == "checked").Select(list => list.Year).ToList();
+                
+                // List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == published && plan.Model.ClientId == Sessions.User.ClientId).ToList();
+                
+                var StartYears = CampPlans.Select(camp => camp.StartYear)
+             .Distinct().ToList();
+
+                var EndYears = CampPlans.Select(camp => camp.EndYear)
+                    .Distinct().ToList();
+
+                var PlanYears = StartYears.Concat(EndYears).Distinct().ToList();
+
+                var yearlist = PlanYears;// Modify BY Nishant Sheth #1821
+                SelectListItem objYear = new SelectListItem();
+                foreach (int years in yearlist)
+                {
+                    string yearname = Convert.ToString(years);
+                    objYear = new SelectListItem();
+
+                    objYear.Text = years.ToString();
+
+                    objYear.Value = yearname;
+                    objYear.Selected = SelectedYear.Contains(years.ToString()) ? true : false;
+                    lstYear.Add(objYear);
+                }
+                //   ViewBag.SelectedYear = SelectedYear;
+
+                ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
+                //End
+
             }
 
             //// Added by Bhavesh, Current year first plan select in dropdown
@@ -5242,6 +5332,7 @@ namespace RevenuePlanner.Controllers
             string strThisQuarter = Enums.UpcomingActivities.thisquarter.ToString(), strThisMonth = Enums.UpcomingActivities.thismonth.ToString(),
                                     quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString(), monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
             string MinYear = string.Empty;
+            string MaxYear = string.Empty;
             //// If active plan dosen't have any current plan at that time we have to remove this month and thisquater option
             if (activePlan != null && activePlan.Any())
             {
@@ -5253,6 +5344,12 @@ namespace RevenuePlanner.Controllers
                 if (lstCampaign.Count > 0)
                 {
                     MinYear = Convert.ToString(lstCampaign.Select(a => a.StartDate.Year).Min());
+                    MaxYear = Convert.ToString(lstCampaign.Select(a => a.EndDate.Year).Max());
+                }
+                else
+                {
+                    MinYear = Convert.ToString(PlanYearList.Select(a => Convert.ToInt32(a)).Min());
+                    MaxYear = Convert.ToString(PlanYearList.Select(a => Convert.ToInt32(a)).Max());
                 }
                 foreach (var camp in lstCampaign)
                 {
@@ -5264,6 +5361,10 @@ namespace RevenuePlanner.Controllers
                     if (Convert.ToInt32(MinYear) < campStYear)
                     {
                         MinYear = Convert.ToString(campStYear);
+                    }
+                    if (Convert.ToInt32(MaxYear) < campEdYear)
+                    {
+                        MaxYear = Convert.ToString(campEdYear);
                     }
                     if (campStYear != campEdYear)
                     {
@@ -5296,7 +5397,37 @@ namespace RevenuePlanner.Controllers
                 // UpcomingActivityList.Add(new SelectListItem { Text = currentYear, Value = currentYear, Selected = true });
             }
             List<string> upcometext = UpcomingActivityList.Select(a => a.Text).ToList();
-            UpcomingActivityList.Where(a => a.Text == (upcometext.Contains(currentYear) ? currentYear : MinYear)).ToList().ForEach(a => a.Selected = true);
+            bool currentyearfirst = false;
+            bool currentyearsecond = false;
+            bool notcurrentyearmax = false;
+            int upcomingloop = 1;
+            UpcomingActivityList.ForEach(a =>
+            {
+                var item = a.Text.Split('-');
+                if (item.Length > 1 && item[0] == currentYear && !currentyearfirst)
+                {
+                    a.Selected = true;
+                    currentyearfirst = true;
+                }
+                else if (item.Length > 1)
+                {
+                    if (item[1] == currentYear && !currentyearfirst)
+                    {
+                        a.Selected = true;
+                        currentyearsecond = true;
+                    }
+                    else if (!currentyearfirst && !currentyearsecond && !notcurrentyearmax && item[1] == MaxYear)
+                    {
+                        a.Selected = true;
+                        notcurrentyearmax = true;
+                    }
+                }
+                else if (!currentyearfirst && !currentyearsecond && !notcurrentyearmax && upcomingloop == UpcomingActivityList.Count)
+                {
+                    UpcomingActivityList.Where(act => act.Text == (upcometext.Contains(currentYear) ? currentYear : MinYear)).ToList().ForEach(act => act.Selected = true);
+                }
+                upcomingloop += 1;
+            });
             UpcomingActivityList = UpcomingActivityList.GroupBy(a => a.Text).Select(x => x.First()).ToList();
 
             //var yearlistAfter = activePlan.Where(plan => plan.Year != currentYear && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
@@ -5837,10 +5968,27 @@ namespace RevenuePlanner.Controllers
 
                 }
 
+                var YearLabel = Enums.FilterLabel.Year.ToString();
+                var LastSetOfYears = new List<string>();
+
+                var SetOfYears = listofsavedviews.Where(view => view.FilterName == YearLabel).Select(View => View.FilterValues).ToList();
+                if (SetOfYears.Count > 0)
+                {
+                    if (SetOfYears.FirstOrDefault() != null)
+                    {
+                        LastSetOfYears = SetOfYears.FirstOrDefault().Split(',').ToList();
+                    }
+                    //else
+                    //{
+                    //    LastSetOfTacticType = null;
+                    //}
+
+                }
+
                 var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF")).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
 
                 Sessions.FilterPresetName = null;
-                return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType }, JsonRequestBehavior.AllowGet);
+                return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType, Years = LastSetOfYears }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -5849,7 +5997,7 @@ namespace RevenuePlanner.Controllers
         /// Action to save last accessed data
         /// </summary>
         /// <param name="PlanId">Plan Id and filters</param>
-        public JsonResult SaveLastSetofViews(string planId, string customFieldIds, string ownerIds, string TacticTypeid, string StatusIds, string ViewName)
+        public JsonResult SaveLastSetofViews(string planId, string customFieldIds, string ownerIds, string TacticTypeid, string StatusIds, string ViewName, string SelectedYears)
         {
 
 
@@ -5960,6 +6108,26 @@ namespace RevenuePlanner.Controllers
                     NewCustomFieldData.Add(objFilterValues);
                 }
             }
+
+
+            if (SelectedYears != null && SelectedYears != "")
+            {
+
+                Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+                objFilterValues.ViewName = null;
+                if (ViewName != null && ViewName != "")
+                {
+                    objFilterValues.ViewName = ViewName;
+                }
+                objFilterValues.FilterName = Enums.FilterLabel.Year.ToString();
+                objFilterValues.FilterValues = SelectedYears;
+                objFilterValues.Userid = Sessions.User.UserId;
+                objFilterValues.LastModifiedDate = DateTime.Now;
+                objFilterValues.IsDefaultPreset = false;
+                objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
+                NewCustomFieldData.Add(objFilterValues);
+            }
+
 
             if (customFieldIds != "")
             {
@@ -6748,6 +6916,13 @@ namespace RevenuePlanner.Controllers
 
 
         #endregion
+
+
+        //public JsonResult GetPlanOnYearChange(string Year)
+        //{
+
+        //    return Json(planList, JsonRequestBehavior.AllowGet);
+        //}
 
     }
 

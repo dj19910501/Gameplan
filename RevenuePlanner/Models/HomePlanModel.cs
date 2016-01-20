@@ -47,6 +47,7 @@ namespace RevenuePlanner.Models
         public int PlanId { get; set; }
         public string Title { get; set; }
         public string Checked { get; set; }
+        public string Year { get; set; }
     }
     public class TacticTypeModel
     {

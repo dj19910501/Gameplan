@@ -392,9 +392,6 @@ namespace RevenuePlanner.Helpers
             WorkFront,
             
         }
-
-
-      
         public static Dictionary<string, string> IntegrationActivity = new Dictionary<string, string>()
         {
             {"IntegrationInstanceId","Push Tactic Data - Salesforce"},
@@ -1275,6 +1272,7 @@ namespace RevenuePlanner.Helpers
             Owner,
             TacticType,
             Status,
+            Year
         }
 
         //Added by Rahul Shah for PL #1847
@@ -1321,8 +1319,6 @@ namespace RevenuePlanner.Helpers
     }
 
     #endregion
-
-
 
     /// <summary>
     /// Added By : Kalpesh Sharma PL#582

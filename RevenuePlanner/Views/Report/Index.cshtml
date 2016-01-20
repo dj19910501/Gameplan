@@ -161,12 +161,12 @@
                              {
                                  ddlYearId = "liYear" + item.Value;
                                  YearText = item.Text;
-                                 
-                                 if (item.Value == SelectedYear)
+
+                                 if (item.Selected == true)
                                  {
                                      //Modified By Nishant Sheth
                                      // Desc:: #1842 Multiple year selection for multiple year support base on #1821
-                                    <li class="accordion-inner" title="@YearText" id="@ddlYearId"  yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span>
+                                    <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId"  yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span>
                                         <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></li>
                                  }
                                  else
@@ -467,7 +467,8 @@
         customFieldIds: [],
         PlanIDs: [],
         SelectedPlans: [],
-        StatusIDs: []
+        StatusIDs: [],
+        SelectedYears: []
     };
    
     function GetOwnerListForFilter(Planids, ifexists) {
@@ -520,6 +521,7 @@
                                     var checkedclass = "";
                                     $("#ulOwnerAllModule").css("display", "block");
                                     $("#NoOwnerFound").hide();
+                                    $('#ulSelectedOwner li').remove();
                                     $.each(data.AllowedOwner, function (i, OwnerItem) {
                                         var checked = "";
                                         var checkedclass = "";
@@ -846,6 +848,26 @@
 
                     }
 
+
+                    if (data.Years != null) {
+                        if (data.Years.length != 0 && data.Years.length != undefined) {
+                            $("#ulSelectedYear li input[type=checkbox]").removeAttr('checked');
+                            $("#ulSelectedYear li ").removeClass("close-list");
+                            for (i = 0 ; i < data.Years.length; i++) {
+                                $("#ulSelectedYear li input[type=checkbox]").each(function () {
+                                    var Value = $(this).attr("yearvalue");
+                                    if (Value == data.Years[i]) {
+                                        filters.SelectedYears.push(Value);
+                                        $(this).attr('checked', 'checked');
+                                        $(this).parent().addClass("close-list");
+                                    }
+
+                                });
+
+                            }
+                        }
+                    }
+
                 }
             }
         });
@@ -879,6 +901,18 @@
 
         }
     
+        filters.SelectedYears = [];
+        var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+        years = "";
+        $.each(listCheckbox, function () {
+            if ($(this).attr("checked")) {
+                years += $(this).attr('yearValue') + ",";
+            }
+        });
+        years = years.slice(0, -1);
+        if (years != null && years != "") {
+            filters.SelectedYears.push(years);
+        }
         //Commented By Komal Rawal for ticket 1802
        // var ulTacticType = $("#ulTacticType li");
 
@@ -905,7 +939,8 @@
                 ownerIds: OwnerIds.toString(),
                 TacticTypeid: TacticTypeids.toString(),
                 StatusIds: "Report",
-                ViewName: ViewName
+                ViewName: ViewName,
+                SelectedYears: filters.SelectedYears.toString()
             },
             dataType: "json",
             success: function (data) {
@@ -1038,17 +1073,25 @@
         OnCheckboxChange(_parentliId, _checked);
     }
     function OnCheckboxChangeForPlan(_parentliId, _checked) {
+     
+        //var isyearchange = false;
+        //if (isyearchange != null && isyearchange != 'undefined' && isyearchange != '' && isLstPlan)
+        //    isyearchange = true;
         if (_checked != null && _checked != 'undefined' && _checked === 'checked') {
             $("#" + _parentliId).addClass('close-list');
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
-            GetOwnerListForFilter(PlanIds, false);
-            GetTacticTypelist(PlanIds, false);
+           
+                GetOwnerListForFilter(PlanIds, true);
+                GetTacticTypelist(PlanIds, true);
+           
         }
         else {
             $("#" + _parentliId).removeClass('close-list');
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
-            GetOwnerListForFilter(PlanIds, false);
-            GetTacticTypelist(PlanIds, false);
+          
+                GetOwnerListForFilter(PlanIds, true);
+                GetTacticTypelist(PlanIds, true);
+          
         }
     }
 
@@ -1191,8 +1234,8 @@
         }
 
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
-        GetOwnerListForFilter(PlanIds,false);
-        GetTacticTypelist(PlanIds, false);
+        GetOwnerListForFilter(PlanIds,true);
+        GetTacticTypelist(PlanIds, true);
         
     }
 
@@ -1526,9 +1569,17 @@
         });
 
     function OnYearChange(_yearli) {        
-    $(_yearli).siblings().each(function () {
-        $(this).removeClass('close-list');
-    });
+    //$(_yearli).siblings().each(function () {
+    //    $(this).removeClass('close-list');
+        //});
+
+        var id = $(_yearli).attr('id');
+        if ($(_yearli).is(':checked')) {
+            $("#" + id).addClass("close-list");
+        }
+        else {
+            $("#" + id).removeClass("close-list");
+        }
         //$(_yearli).addClass('close-list');
         // Add By Nishant Sheth
         // Desc :: #1842 multiple year selection base on #1821
@@ -1540,6 +1591,9 @@
         }
     });
     years = years.slice(0, -1);
+    if (years != null && years != "") {
+        filters.SelectedYears.push(years);
+    }
         //OptionMain = $(_yearli).attr('yearValue');
     //OptionMain = years;
     if (IsCallFromYearDropdown) {
@@ -2395,6 +2449,7 @@ $("#BtnShareReport").click(function () {
             });
             $("#accordion-Year li input:checkbox:checked").each(function () {
                 $(this).removeAttr("checked");
+                $(this).parent().removeClass("close-list");
             });
 
         }

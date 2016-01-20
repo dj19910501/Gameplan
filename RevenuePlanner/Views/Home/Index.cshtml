@@ -22,7 +22,7 @@
     var InProgressStatus = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()];
     var CompleteStatus = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()];
     var DeclineStatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()];
-
+    var ViewYearList = (List<SelectListItem>)ViewBag.ViewYear;
     var Successmsgduplicate = (string)ViewBag.SuccessMessageDuplicatePlan;
     var errormsgduplicate = (string)ViewBag.ErrorMessageDuplicatePlan;
     var ListBudgetingPlan = Model.objplanhomemodelheader != null ? Model.objplanhomemodelheader.plans : new List<SelectListItem>(); //Added By Komal Rawal for new homepage UI
@@ -502,6 +502,7 @@
                 }
 
             });
+            
             $('#ulSelectedOwner').html('');
             filters.OwnerIds = [];
 
@@ -866,6 +867,50 @@
             <div style="clear: both;"></div>
             @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
             {
+                //Modified By komal Rawal for 1911 add year filter on home page
+                <div id="accordion-Year" class="dropdown-section accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year"><span class="sidebarliwidth" id="spYearText">Year</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        </div>
+                        <div id="accordion-element-Year" class="accordion-body collapse">
+                            <ul class="scroll-list singleselect" id="ulSelectedYear">
+                                @{
+                string ddlYearId, YearText;
+                ddlYearId = YearText = string.Empty;
+                foreach (SelectListItem item in ViewYearList)
+                {
+                    ddlYearId = "liYear" + item.Value;
+                    YearText = item.Text;
+
+                    if (item.Selected == true)
+                    {
+                   
+                        <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
+                            <span class="sidebarliwidth">@YearText</span>
+                            <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="accordion-inner" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
+                            <span class="sidebarliwidth">@YearText</span>
+                            <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input>
+                        </li>
+                    }
+                }
+                                }
+                            </ul>
+                            <div class="list-tab">
+                                @if (ViewYearList == null)
+                                {
+                                    <div id="NoYearFound" class="NoDataFoundFilter">No Year Found</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                //End
                 <div id="accordion-2" class="dropdown-section accordion">
                     <div class="accordion-group">
                         <div class="accordion-heading">
@@ -1399,7 +1444,9 @@
         PlanTitles: [],
         OwnerIds: [],
         TacticTypeids: [],
-        StatusIds: []
+        StatusIds: [],
+        SelectedYears : []
+
     };
 
     var PdfFilters = {
@@ -1678,7 +1725,18 @@
             }
         });
 
-
+        filters.SelectedYears = [];
+        var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+        years = "";
+        $.each(listCheckbox, function () {
+            if ($(this).attr("checked")) {
+                years += $(this).attr('yearValue') + ",";
+            }
+        });
+        years = years.slice(0, -1);
+        if (years != null && years != "") {
+            filters.SelectedYears.push(years);
+        }
 
         //Add by Nishant For "if all selected then no record inserted for user default view"
         // Modified By Nishant Sheth
@@ -1750,7 +1808,8 @@
                 ownerIds: OwnerIds.toString(),
                 TacticTypeid: TacticTypeids.toString(),
                 StatusIds: filters.StatusIds.toString(),
-                ViewName: ViewName
+                ViewName: ViewName,
+                SelectedYears: filters.SelectedYears.toString()
 
             },
             dataType: "json",
@@ -1977,8 +2036,113 @@
         });
 
     }
+    //Added BY Komal Rawal for adding year filter on home page
+    function OnYearChange(obj) {
+        filters.SelectedYears = [];
+        var id = $(obj).attr('id');
+        if ($(obj).is(':checked')) {
+            $("#" + id).addClass("close-list");
+        }
+        else {
+            $("#" + id).removeClass("close-list");
+        }
+   
+        var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+        years = "";
+        $.each(listCheckbox, function () {
+            if ($(this).attr("checked")) {
+                years += $(this).attr('yearValue') + ",";
+            }
+        });
+        years = years.slice(0, -1);
+        if (years != null && years != "")
+        {
+            filters.SelectedYears.push(years);
+        }
+      
+            LoadPlanData(years);
+       
+    }
+    //// Load Plan data based on selected year
+    var _item;
+    function LoadPlanData(years) {
+        var strYear = years;
+        // Start
+        // Desc  :: #1842 code review - When we select the year from Year filter, plan selection is removed, It should not
+        var selectedPlanIds = [];
+        var listofselectedplan = $("#accordion-element-Plan").find("ul").find("li").find("input[type='checkbox']:checked");
+        $.each(listofselectedplan, function () {
+
+            var pid = $(this).attr('id').split('_')[0];
+            selectedPlanIds.push(pid);
+        });
+        // End
+        var isListPlan = false;
+        $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
+            type: 'POST',
+            url: '@Url.Content("~/Report/GetBudgetPlanBasedOnYear/")',
+            data: {
+                Year: strYear,
+                activemenu: '@Enums.ActiveMenu.Home.ToString().ToLower()'
+            },
+            success: function (data) {
+                $('#ulSelectedPlans').html('');
+                if (data != 'undefined' && data != null) {
+                    PlanCount = data.length;
+                    if (PlanCount > 0) {
+                        $("#PlanAllModule").css("display", "block");
+                        $("#NoPlanFound").hide();
+                        $.each(data, function (index, item) {
+                            _item = item.Value.replace(/'/g, "&#39;"); //PL #1556 Reports: Clustered Plan Names - Dashrath Prajapati
+                            $('#ulSelectedPlans').append('<li class="accordion-inner" title="' + item.Text + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" onchange="togglePlan(this)" id="' + _item + '"></input></li>');
+                        });
+                    }
+                    else {
+                        $("#PlanAllModule").css("display", "none");
+                        $("#NoPlanFound").show();
+                    }
+                }
+                else {
+                    $("#PlanAllModule").css("display", "none");
+                    $("#NoPlanFound").show();
+                }
+            
+                // Start
+                // Desc  :: #1842 code review - When we select the year from Year filter, plan selection is removed, It should not
+                var listofplan = $("#accordion-element-Plan").find("ul").find("li").find("input[type='checkbox']");
+                $.each(listofplan, function () {
+
+                    var pid = $(this).attr('id').split('_')[0];
+                    var indexofplan = $.inArray(pid, selectedPlanIds);
+                    if (indexofplan > -1) {
+                        $(this).attr("checked", "checked");
+                        togglePlan($(this),true);
+                    }
+                });
+                // End 
+                var planids = [];
+                $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+                    if ($(this).attr('checked') == 'checked') {
+                        var chkid = $(this).attr("id");
+                        if (chkid != undefined && chkid != 'undefined') {
+                            planids.push(chkid);
+                        }
+                    }
+                });
+                GetTacticTypelist(planids, true);
+                GetOwnerListForFilter(planids, true);
+            }
+        });
+    }
+    //End
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
-    function togglePlan(obj) {
+    function togglePlan(obj, isLstPlan) {
+        var IsLstPlan = false;
+        if (isLstPlan != null && isLstPlan != 'undefined' && isLstPlan != '' && isLstPlan)
+            IsLstPlan = true;
         GetLastview = false;
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
@@ -2004,8 +2168,10 @@
         //        $(this).parent().removeClass("close-list");
         //    }
         //});
-        GetOwnerListForFilter(planids, true);
+        if (!IsLstPlan) {
         GetTacticTypelist(planids, true);
+            GetOwnerListForFilter(planids, true);
+        }
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
@@ -2350,6 +2516,7 @@
         activeMenu = $('#ActiveMenu').val().toLowerCase();
         $("#divcalenderandgridtab").css("display", "block");
         $("#accordion-2").css("display", "none");
+        $("#accordion-Year").css("display", "none");
         $("#CalenderView").hide();
         $("#nl-form2 .nl-dd-checked").removeClass("nl-dd-checked");
         $("#nl-form2").find("li[value=" + $("#CurrentPlanId").val() + "]").addClass("nl-dd-checked");
@@ -6321,6 +6488,27 @@
                     }
 
 
+
+                    if (data.Years != null) {
+                        if (data.Years.length != 0 && data.Years.length != undefined) {
+                            $("#ulSelectedYear li input[type=checkbox]").removeAttr('checked');
+                            $("#ulSelectedYear li ").removeClass("close-list");
+                            for (i = 0 ; i < data.Years.length; i++) {
+                                $("#ulSelectedYear li input[type=checkbox]").each(function () {
+                                    var Value = $(this).attr("yearvalue");
+                                    if (Value == data.Years[i]) {
+                                        filters.SelectedYears.push(Value);
+                                        $(this).attr('checked', 'checked');
+                                        $(this).parent().addClass("close-list");
+                                    }
+
+                                });
+
+                            }
+                        }
+                    }
+
+
                 }
             }
         });
@@ -7170,6 +7358,11 @@ function () {
             $(this).removeClass("close-list");
             var chkid = $(this).find("input[type=checkbox]").attr("id");
             $("#" + chkid).removeAttr("checked");
+        });
+
+        $("#accordion-Year li input:checkbox:checked").each(function () {
+            $(this).removeAttr("checked");
+            $(this).parent().removeClass("close-list");
         });
 
 
