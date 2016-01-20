@@ -314,6 +314,11 @@ namespace RevenuePlanner.Controllers
                 if (LastSetOfYearSelected.Count > 0)
                 {
                     SelectedYear = activePlan.Where(plan => LastSetOfYearSelected.Contains(plan.Year.ToString())).Select(plan => plan.Year).Distinct().ToList();
+
+                    if (SelectedYear.Count == 0)
+                    {
+                        SelectedYear = LastSetOfYearSelected;
+                    }
                 }
                 else
                 {
