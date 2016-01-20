@@ -9480,7 +9480,7 @@ namespace RevenuePlanner.Controllers
                 TempData["lsteditableEntityIds"] = lsteditableEntityIds;
                 //End
                 int PlanCnt = 1, CampCnt = 1, ProgCnt = 1;
-                bool IsPlan = false;
+                bool IsPlan = true;
                 int planid = 0;
                 string type = string.Empty;
                 string Startdate = string.Empty;
@@ -9495,23 +9495,27 @@ namespace RevenuePlanner.Controllers
                 string cellTextColor = string.Empty;
                 string IsEditable = string.Empty;
                 List<int> CustomTacticids = new List<int>();
-                if (!IsFiltered)
-                {
-                    IsPlan = true;
-
-                }
-                else
-                {
-                    if (TacticfilterList.Count() > 0)
-                    {
-                        IsPlan = true;
-                    }
-                    else
-                    {
-                        IsPlan = false;
-                    }
-                }
+                // Comment this code not require #ticket 1906, by bhavesh dobariya, date: 20-jan-2016
+                //if (!(filterTacticType.Count > 0 || filteredCustomFields.Count > 0))
+                //{
+                //    IsPlan = true;
+                //}
+                //else
+                //{
+                //    if (TacticfilterList.Count() > 0)
+                //    {
+                //        IsPlan = true;
+                //    }
+                //    else
+                //    {
+                //        IsPlan = false;
+                //    }
+                //}
                 //Added by Komal Rawal for #1845 Link tactic to plan 
+                // #ticket 1906, by bhavesh dobariya, date: 20-jan-2016
+                var ownercampaignids = TacticfilterList.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
+                var ownerProgramids = TacticfilterList.Select(t => t.PlanProgramId).ToList();
+                var ownerTacticids = TacticfilterList.Select(t => t.PlanTacticId).ToList();
 
                 var LinkedTacticList = TacticfilterList.Where(list => list.LinkedTacticId != null && list.LinkedPlanId != null).ToList();
 
@@ -9666,7 +9670,7 @@ namespace RevenuePlanner.Controllers
                         plandataobjlist.Add(plandataobj);
 
                         gridjsonlistplanobj.data = plandataobjlist;
-                        Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).OrderBy(c => c.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Campaign title
+                        Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false && (((filterOwner.Count > 0 ? filterOwner.Contains(campaign.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(campaign.Status) : true)) || ownercampaignids.Contains(campaign.PlanCampaignId))).OrderBy(c => c.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Campaign title
                         CampCnt = 1;
                         if (Campaignfilterlst.Count > 0)
                         {
@@ -9691,22 +9695,23 @@ namespace RevenuePlanner.Controllers
                             });
                             foreach (var Campaignitem in lstcampaignTaskData)
                             {
-                                if (!IsFiltered)
-                                {
-                                    IsPlan = true;
+                                // Comment this code not require #ticket 1906, by bhavesh dobariya, date: 20-jan-2016
+                                //if (!IsFiltered)
+                                //{
+                                //    IsPlan = true;
 
-                                }
-                                else
-                                {
-                                    if (Campaignitem.tacticids == true)
-                                    {
-                                        IsPlan = true;
-                                    }
-                                    else
-                                    {
-                                        IsPlan = false;
-                                    }
-                                }
+                                //}
+                                //else
+                                //{
+                                //    if (Campaignitem.tacticids == true)
+                                //    {
+                                //        IsPlan = true;
+                                //    }
+                                //    else
+                                //    {
+                                //        IsPlan = false;
+                                //    }
+                                //}
 
 
                                 if (IsPlan)
@@ -9817,7 +9822,7 @@ namespace RevenuePlanner.Controllers
                                     campaignrowsobj.data = campaigndataobjlist;
 
 
-                                    Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).OrderBy(p => p.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Program title
+                                    Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false && (((filterOwner.Count > 0 ? filterOwner.Contains(prog.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(prog.Status) : true)) || ownerProgramids.Contains(prog.PlanProgramId))).OrderBy(p => p.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Program title
                                     if (Programfilterlst != null && Programfilterlst.Count > 0)
                                     {
                                         Startdate = Programfilterlst.Min(r => r.StartDate).ToString("MM/dd/yyyy");
@@ -9858,7 +9863,7 @@ namespace RevenuePlanner.Controllers
                                         PlanDHTMLXGridDataModel programrowsobj = new PlanDHTMLXGridDataModel();
                                         foreach (var Programitem in lstprogramTaskData)
                                         {
-                                            if (Programitem.tacticids)
+                                            //if (Programitem.tacticids)
                                             {
                                                 cellTextColor = stylecolorblack;
                                                 IsEditable = lockedstatezero;
@@ -9975,7 +9980,7 @@ namespace RevenuePlanner.Controllers
                                                 //}
                                                 //else
                                                 //{
-                                                finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).OrderBy(t => t.Title).ToList();
+                                                finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId && (((filterOwner.Count > 0 ? filterOwner.Contains(tacticfilter.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(tacticfilter.Status) : true)) || ownerTacticids.Contains(tacticfilter.PlanTacticId))).OrderBy(t => t.Title).ToList();
 
                                                 //}
                                                 if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)

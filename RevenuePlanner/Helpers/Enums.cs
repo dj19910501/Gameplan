@@ -1272,6 +1272,7 @@ namespace RevenuePlanner.Helpers
             Owner,
             TacticType,
             Status,
+            Year
         }
 
         //Added by Rahul Shah for PL #1847

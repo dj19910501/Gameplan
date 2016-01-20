@@ -67,19 +67,80 @@ namespace RevenuePlanner.Controllers
 
             ////Start Added by Mitesh Vaishnav for PL ticket #846
             Sessions.ReportPlanIds = new List<int>();
+            string published = Convert.ToString(Enums.PlanStatus.Published);
+            List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == published && plan.Model.ClientId == Sessions.User.ClientId).ToList();
 
+            // Get Plan Id if Session Plan id not exist : Added By Bhavesh : Report Code ereview
+            //string published = Convert.ToString(Enums.PlanStatus.Published);
+            string year = Convert.ToString(DateTime.Now.Year);
+            //int planid = db.Plans.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).FirstOrDefault().PlanId;
+            int planid = 0;
+            var checkcurrentplan = tblPlan.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault();
+            if (checkcurrentplan != null)
+            {
+                planid = tblPlan.OrderBy(p => p.Title).FirstOrDefault().PlanId; // Change By Nishant Sheth for select first plan
+            }
+            else
+            {
+                planid = tblPlan.OrderByDescending(p => Convert.ToInt32(p.Year)).OrderBy(p => p.Title).ToList().FirstOrDefault().PlanId; // Change By Nishant Sheth for select first plan
+            }
+
+            //Modified By Komal Rawal include year filter in default view
+            var LastSetOfPlanSelected = new List<string>();
+            var LastSetOfYearSelected = new List<string>();
+            var Label = Enums.FilterLabel.Plan.ToString();
+            var Yearlabel = Enums.FilterLabel.Year.ToString();
+            var FilterName = Sessions.FilterPresetName;
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
+            var SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.UserId).ToList();
+            var SetofLastYearsSelected = SetOFLastViews.Where(listview => listview.FilterName == Yearlabel && listview.Userid == Sessions.User.UserId).ToList();
+            var FinalSetOfPlanSelected = "";
+            var FinalSetOfYearsSelected = "";
+            if (FilterName != null && FilterName != "")
+            {
+                FinalSetOfPlanSelected = SetOfPlanSelected.Where(listview => listview.ViewName == FilterName).Select(listview => listview.FilterValues).FirstOrDefault();
+                FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.ViewName == FilterName).Select(listview => listview.FilterValues).FirstOrDefault();
+            }
+            else
+            {
+                FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.IsDefaultPreset == true).Select(listview => listview.FilterValues).FirstOrDefault();
+                if (FinalSetOfPlanSelected == null)
+                {
+                    FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == null).Select(listview => listview.FilterValues).FirstOrDefault();
+                }
+
+                FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.IsDefaultPreset == true).Select(listview => listview.FilterValues).FirstOrDefault();
+                if (FinalSetOfYearsSelected == null)
+                {
+                    FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.ViewName == null).Select(listview => listview.FilterValues).FirstOrDefault();
+                }
+
+            }
+            if (FinalSetOfPlanSelected != null)
+            {
+                LastSetOfPlanSelected = FinalSetOfPlanSelected.Split(',').ToList();
+            }
+
+            if (FinalSetOfYearsSelected != null)
+            {
+                LastSetOfYearSelected = FinalSetOfYearsSelected.Split(',').ToList();
+            }
+
+
+            if (LastSetOfPlanSelected.Count > 0 && LastSetOfPlanSelected != null)
+            {
+                planid = Convert.ToInt32(LastSetOfPlanSelected.FirstOrDefault());
+            }
+            //End
             //// Set Report PlanId in Session.
             if (Sessions.PlanId > 0)
             {
+                Sessions.PlanId = planid;// Add By Nishant Seth #1489
                 Sessions.ReportPlanIds.Add(Sessions.PlanId);
             }
             else
             {
-                // Get Plan Id if Session Plan id not exist : Added By Bhavesh : Report Code ereview
-                string published = Convert.ToString(Enums.PlanStatus.Published);
-                string year = Convert.ToString(DateTime.Now.Year);
-                //int planid = db.Plans.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).FirstOrDefault().PlanId;
-                int planid = db.Plans.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault().PlanId; // Change By Nishant Sheth for select first plan
+
                 Sessions.PlanId = planid;// Add By Nishant Seth #1489
                 Sessions.ReportPlanIds.Add(planid);
             }
@@ -126,15 +187,38 @@ namespace RevenuePlanner.Controllers
 
             //// Get Plan List
             List<SelectListItem> lstYear = new List<SelectListItem>();
-            List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false).ToList();
+
             // Start - Added by Arpita Soni for Ticket #1148 on 02/02/2015
             // to make default selected plan from session planId
             var selectedYear = tblPlan.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Year).FirstOrDefault();
+            if (selectedYear == null)
+            {
+                selectedYear = tblPlan.Where(plan => plan.PlanId == planid).Select(plan => plan.Year).FirstOrDefault();
+            }
+            //Modified By Komal Rawal include year filter in default view
+            List<string> SelectedYearList = new List<string>();
+            SelectedYearList.Add(selectedYear);
+
+            if (LastSetOfYearSelected.Count > 0)
+            {
+                SelectedYearList = tblPlan.Where(plan => LastSetOfYearSelected.Contains(plan.Year.ToString())).Select(plan => plan.Year).Distinct().ToList();
+                if (SelectedYearList.Count == 0)
+                {
+                    SelectedYearList = LastSetOfYearSelected;
+                }
+            }
+            else
+            {
+                if (LastSetOfPlanSelected.Count > 0)
+                {
+                    SelectedYearList = tblPlan.Where(plan => LastSetOfPlanSelected.Contains(plan.PlanId.ToString())).Select(plan => plan.Year).Distinct().ToList();
+                }
+            }
             //Add  By Nishant Sheth
             // Desc :: #1821 - Get list of plan base on start Date and end date
             //DateTime startDate = new DateTime(Convert.ToInt32(selectedYear), 1, 1);
             //DateTime endDate = new DateTime(Convert.ToInt32(selectedYear), 12, 31);
-            Common.GetReportStartEndDate(selectedYear, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
+           // Common.GetReportStartEndDate(selectedYear, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
 
             var DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
                 && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId && plan.IsActive == true).ToList();
@@ -153,11 +237,14 @@ namespace RevenuePlanner.Controllers
                 })
                 .ToList();
            // Removed by Bhavseh. We already update parent date while updating of child entity date so we can get year from parent.
-            var PlanIds = DataPlanList.Where(plan => plan.Year == selectedYear)
+            var PlanIds = DataPlanList.Where(plan =>SelectedYearList.Contains(plan.Year) )
                 .Select(plan => plan.PlanId).Distinct().ToList();
 
-            var CampPlanIds = CampPlans.Where(camp => (!(camp.StartDate >= endDate1 || camp.EndDate <= startDate1)))
+            var CampPlanIds = CampPlans.Where(camp => SelectedYearList.Contains(camp.StartDate.Year.ToString()) || SelectedYearList.Contains(camp.EndDate.Year.ToString()))
                 .Select(camp => camp.PlanId).Distinct().ToList();
+
+            //var CampPlanIds = CampPlans.Where(camp => (!(camp.StartDate >= endDate1 || camp.EndDate <= startDate1)))
+            //    .Select(camp => camp.PlanId).Distinct().ToList();
 
             var allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
             var StartYears = CampPlans.Select(camp => camp.StartYear)
@@ -184,41 +271,23 @@ namespace RevenuePlanner.Controllers
 
             var yearlist = PlanYears;// Modify BY Nishant Sheth #1821
             SelectListItem objYear = new SelectListItem();
-            foreach (int year in yearlist)
+
+        
+
+         
+            foreach (int years in yearlist)
             {
-                string yearname = Convert.ToString(year);
+                string yearname = Convert.ToString(years);
                 objYear = new SelectListItem();
 
-                objYear.Text = year.ToString();
+                objYear.Text = years.ToString();
 
                 objYear.Value = yearname;
-                objYear.Selected = yearname == selectedYear ? true : false;
+                objYear.Selected = SelectedYearList.Contains(yearname) ? true : false;
                 lstYear.Add(objYear);
             }
 
-            //
-            var LastSetOfPlanSelected = new List<string>();
-            var Label = Enums.FilterLabel.Plan.ToString();
-            var FilterName = Sessions.FilterPresetName;
-            var SetOfPlanSelected = db.Plan_UserSavedViews.Where(Saveview => Saveview.FilterName == Label && Saveview.Userid == Sessions.User.UserId).ToList();
-            var FinalSetOfPlanSelected = "";
-            if (FilterName != null && FilterName != "")
-            {
-                FinalSetOfPlanSelected = SetOfPlanSelected.Where(Saveview => Saveview.ViewName == FilterName).Select(Saveview => Saveview.FilterValues).FirstOrDefault();
-            }
-            else
-            {
-                FinalSetOfPlanSelected = SetOfPlanSelected.Where(Saveview => Saveview.IsDefaultPreset == true).Select(Saveview => Saveview.FilterValues).FirstOrDefault();
-                if (FinalSetOfPlanSelected == null)
-                {
-                    FinalSetOfPlanSelected = SetOfPlanSelected.Where(Saveview => Saveview.ViewName == null).Select(Saveview => Saveview.FilterValues).FirstOrDefault();
-                }
-
-            }
-            if (FinalSetOfPlanSelected != null)
-            {
-                LastSetOfPlanSelected = FinalSetOfPlanSelected.Split(',').ToList();
-            }
+            //End
 
 
             // activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
@@ -2131,7 +2200,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="BusinessUnitId"></param>
         /// <param name="isBusinessUnit"></param>
         /// <returns></returns>
-        public JsonResult GetBudgetPlanBasedOnYear(string Year)
+        public JsonResult GetBudgetPlanBasedOnYear(string Year, string activemenu)
         {
             string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
             string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
@@ -2170,12 +2239,25 @@ namespace RevenuePlanner.Controllers
                 //}).ToList();
                 // Modify By Nishant Sheth
                 // Desc :: #1821 - To get list of plan with start date and end date
+                if (activemenu == Enums.ActiveMenu.Home.ToString().ToLower())
+                {
                 planList = DataPlanList.Where(plan => allPlanIds.Contains(plan.PlanId)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList().Select(plan => new SelectListItem
+                    {
+                        Text =  plan.Title ,
+                        Value = plan.PlanId.ToString()
+                    }).ToList();
+                }
+                else
+                {
+                    planList = DataPlanList.Where(plan => allPlanIds.Contains(plan.PlanId)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList().Select(plan => new SelectListItem
             {
                 Text = plan.Year + " " + plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy),
                 Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy
             }).ToList();
             }
+            }
+
+
             planList = planList.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             return Json(planList, JsonRequestBehavior.AllowGet);
         }

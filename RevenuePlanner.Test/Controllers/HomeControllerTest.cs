@@ -1308,7 +1308,7 @@ namespace RevenuePlanner.Test.Controllers
 
             string Status = string.Join(",", lststatus);
 
-            var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status, "") as JsonResult;
+            var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status, "","") as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
@@ -1329,7 +1329,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
 
-            var result = objHomeController.SaveLastSetofViews("", "", "", "", "", "") as JsonResult;
+            var result = objHomeController.SaveLastSetofViews("", "", "", "", "", "","") as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName                
@@ -1351,7 +1351,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
 
-            var result = objHomeController.SaveLastSetofViews(null, null, null, null, null, null) as JsonResult;
+            var result = objHomeController.SaveLastSetofViews(null, null, null, null, null, null,null) as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
