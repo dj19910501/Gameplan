@@ -6464,7 +6464,7 @@
         
         if (type == "Plan") {
             if (permission == "true") {
-                if ('@IsPlanCreateAuthorized' == "true") {
+                if ('@IsPlanCreateAuthorized'.toLowerCase() == 'true') {
                     ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan1'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>Child Campaign</li> </ul>";
                 }
                 else {

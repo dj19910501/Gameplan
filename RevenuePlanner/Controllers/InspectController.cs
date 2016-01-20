@@ -441,8 +441,8 @@ namespace RevenuePlanner.Controllers
             //}
             //else
             //{
-                _inspectmodel = GetInspectModel(id, "campaign", false);
-          //  }
+            _inspectmodel = GetInspectModel(id, "campaign", false);
+            //  }
 
             try
             {
@@ -502,8 +502,8 @@ namespace RevenuePlanner.Controllers
             //}
             //else
             //{
-                _inspectmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Campaign).ToLower(), false);
-          //  }
+            _inspectmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Campaign).ToLower(), false);
+            //  }
 
             //// Get Tactic comment by PlanCampaignId from Plan_Campaign_Program_Tactic_Comment table.
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
@@ -1437,8 +1437,8 @@ namespace RevenuePlanner.Controllers
             //}
             //else
             //{
-                _inspectmodel = GetInspectModel(id, "program", false);
-          //  }
+            _inspectmodel = GetInspectModel(id, "program", false);
+            //  }
 
             try
             {
@@ -1923,8 +1923,8 @@ namespace RevenuePlanner.Controllers
             //}
             //else
             //{
-                im = GetInspectModel(id, Convert.ToString(Enums.Section.Program).ToLower(), false);
-          //  }
+            im = GetInspectModel(id, Convert.ToString(Enums.Section.Program).ToLower(), false);
+            //  }
 
             //// Get Tactic comments list by PlanProgramId.
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
@@ -2708,8 +2708,8 @@ namespace RevenuePlanner.Controllers
             //integrationinstance11 - Push Tactic Data Eloqua
             //integrationinstance4 - Project Management
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11); }
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false) 
-            { 
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false)
+            {
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4);
                 ViewBag.IsModelIntegratedWorkFront = true; //Added 29 Dec 2015 by Brad Gray PL#1851
                 if(pcpt.TacticType.WorkFrontTemplateId == null)
@@ -2722,7 +2722,7 @@ namespace RevenuePlanner.Controllers
                     //ViewBag.WorkFront_Template = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == pcpt.TacticType.WorkFront_Template).First().Template_Name;  //commented out 1/7/2016 by Brad Gray PL#1856
                     ViewBag.WorkFront_Template = pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name; // add 1/7/2016 by Brad Gray PL#1856
                 }
-                 
+
                 // add 1/10/2016 by Brad Gray PL#1856 - get a list of active Requeust Queues for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
                 ViewBag.WorkFrontRequestQueueList = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IntegrationInstanceId
                                     && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false && q.IsDeleted==false).Select(modelQ => new { modelQ.Id, modelQ.RequestQueueName })
@@ -3903,18 +3903,27 @@ namespace RevenuePlanner.Controllers
                                 #endregion
                                 int tacticId = pcpobj.PlanTacticId;
 
-                                Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                objNewLineitem.PlanTacticId = tacticId;
-                                objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
-                                objNewLineitem.Cost = pcpobj.Cost;
-                                objNewLineitem.Description = string.Empty;
-                                objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                objNewLineitem.CreatedDate = DateTime.Now;
-                                db.Entry(objNewLineitem).State = EntityState.Added;
+                                //Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                //objNewLineitem.PlanTacticId = tacticId;
+                                //objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
+                                //objNewLineitem.Cost = pcpobj.Cost;
+                                //objNewLineitem.Description = string.Empty;
+                                //objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                //objNewLineitem.CreatedDate = DateTime.Now;
+                                //db.Entry(objNewLineitem).State = EntityState.Added;
 
                                 //// Insert LineItem for the Tactic.
                                 if (pcpobj.Cost > 0)
                                 {
+
+                                    Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                    objNewLineitem.PlanTacticId = tacticId;
+                                    objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
+                                    objNewLineitem.Cost = pcpobj.Cost;
+                                    objNewLineitem.Description = string.Empty;
+                                    objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                    objNewLineitem.CreatedDate = DateTime.Now;
+                                    db.Entry(objNewLineitem).State = EntityState.Added;
 
                                     //Added by Komal Rawal for #1217
                                     int startmonth = pcpobj.StartDate.Month;
@@ -4558,12 +4567,12 @@ namespace RevenuePlanner.Controllers
                                         linkedTactic.Plan_Campaign_Program.Plan_Campaign.EndDate = linkedTactic.EndDate;
                                     }
                                     List<Plan_Campaign_Program_Tactic_Cost> lstLinkeTac = new List<Plan_Campaign_Program_Tactic_Cost>();
-                                        lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId).ToList();
+                                    lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId).ToList();
                                     if (yearDiff > 0 && lstLinkeTac != null && lstLinkeTac.Count >0) // is MultiYear Tactic
                                     {
                                         lstLinkeTac = lstLinkeTac.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
                                     }
-                                        
+
                                     if (lstLinkeTac != null && lstLinkeTac.Count >0)
                                     {
                                         linkedTactic.Cost = lstLinkeTac.Sum(tac => tac.Value);
@@ -4701,6 +4710,7 @@ namespace RevenuePlanner.Controllers
                                     else
                                     {
                                         objOtherLineItem.Cost = 0;
+                                        objOtherLineItem.IsDeleted = true;
                                     }
                                     db.Entry(objOtherLineItem).State = EntityState.Modified;
 
@@ -4727,6 +4737,7 @@ namespace RevenuePlanner.Controllers
                                         else
                                         {
                                             objLinkedOtherLineItem.Cost = 0;
+                                            objLinkedOtherLineItem.IsDeleted = true;
                                         }
                                         db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                     }
@@ -5364,13 +5375,24 @@ namespace RevenuePlanner.Controllers
                             if (!isvalueempty && pcpobj.TacticBudget > 0)
                             {
                                 Plan_Campaign_Program_Tactic_Budget obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
-                                obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
-                                obPlanCampaignProgramTacticBudget.Period = PeriodChar + startmonth;
-                                obPlanCampaignProgramTacticBudget.Value = pcpobj.TacticBudget;
-                                obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
-                                obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
-                                db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
-                            }
+                                var isBudExist = tblTacticBudget.Where(tact => tact.Period == PeriodChar + startmonth).Any();
+                                if (isBudExist)
+                                {
+                                    obPlanCampaignProgramTacticBudget = tblTacticBudget.Where(tact => tact.Period == PeriodChar + startmonth).FirstOrDefault();
+                                    obPlanCampaignProgramTacticBudget.Value = pcpobj.TacticBudget;
+                                    db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Modified;
+                                }
+                                else
+                                {
+                                    //Plan_Campaign_Program_Tactic_Budget obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+                                    obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
+                                    obPlanCampaignProgramTacticBudget.Period = PeriodChar + startmonth;
+                                    obPlanCampaignProgramTacticBudget.Value = pcpobj.TacticBudget;
+                                    obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
+                                    obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
+                                    db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
+                                }
+                             }
                             //End
 
                             db.Entry(pcpobj).State = EntityState.Modified;
@@ -5583,6 +5605,7 @@ namespace RevenuePlanner.Controllers
                                 else
                                 {
                                     objOtherLineItem.Cost = 0;
+                                    objOtherLineItem.IsDeleted = true;
                                 }
                                 db.Entry(objOtherLineItem).State = EntityState.Modified;
 
@@ -7050,7 +7073,10 @@ namespace RevenuePlanner.Controllers
                                     if (tacticlineitemcostmonth > tacticmonthcost)
                                     {
                                         tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
-                                        objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                        if (objTactic.Cost < tacticlineitemcostmonth)
+                                        {
+                                            objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                        }
                                     }
                                 }
                                 else
@@ -7125,6 +7151,7 @@ namespace RevenuePlanner.Controllers
                                             else
                                             {
                                                 objLinkedOtherLineItem.Cost = 0;
+                                                objLinkedOtherLineItem.IsDeleted = true;
                                             }
                                             db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                         }
@@ -7138,6 +7165,7 @@ namespace RevenuePlanner.Controllers
                                     else
                                     {
                                         objOtherLineItem.Cost = 0;
+                                        objOtherLineItem.IsDeleted = true;
                                     }
                                     db.Entry(objOtherLineItem).State = EntityState.Modified;
                                 }
@@ -7663,6 +7691,7 @@ namespace RevenuePlanner.Controllers
                                                 else
                                                 {
                                                     objLinkedOtherLineItem.Cost = 0;
+                                                    objLinkedOtherLineItem.IsDeleted = true;
                                                 }
                                                 db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                             }
@@ -7676,6 +7705,7 @@ namespace RevenuePlanner.Controllers
                                         else
                                         {
                                             objOtherLineItem.Cost = 0;
+                                            objOtherLineItem.IsDeleted = true;
                                         }
                                         db.Entry(objOtherLineItem).State = EntityState.Modified;
                                     }
@@ -8320,6 +8350,7 @@ namespace RevenuePlanner.Controllers
                                     else
                                     {
                                         objOtherLineItem.Cost = 0;
+                                        objOtherLineItem.IsDeleted = true;
                                     }
                                     db.Entry(objOtherLineItem).State = EntityState.Modified;
                                     db.SaveChanges();
@@ -8872,6 +8903,7 @@ namespace RevenuePlanner.Controllers
                                                     else
                                                     {
                                                         objLinkedOtherLineItem.Cost = 0;
+                                                        objLinkedOtherLineItem.IsDeleted = true;
                                                     }
 
                                                     db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
@@ -11390,6 +11422,7 @@ namespace RevenuePlanner.Controllers
                                             else
                                             {
                                                 objLinkedOtherLineItem.Cost = 0;
+                                                objLinkedOtherLineItem.IsDeleted = true;
                                             }
                                             db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                         }
@@ -11403,6 +11436,7 @@ namespace RevenuePlanner.Controllers
                                     else
                                     {
                                         objOtherLineItem.Cost = 0;
+                                        objOtherLineItem.IsDeleted = true;
                                     }
                                     db.Entry(objOtherLineItem).State = EntityState.Modified;
                                     db.SaveChanges();
