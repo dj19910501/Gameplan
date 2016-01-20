@@ -9322,7 +9322,7 @@ li.close-list {
 }
 
 #divPartial {
-    margin: auto;
+    margin: auto; 
 }
 
 .messagewidth {
@@ -10718,6 +10718,10 @@ font-size: 20px;
 .username{
     text-align:left;
 }
+
+
+
+
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
         min-height: 720px !important;
@@ -12661,7 +12665,8 @@ div.clue-bottom-default .cluetip-arrows {
     width: 100%;
     min-width: 800px;
     margin-top: 26px;
-    max-height:600px; /*PL 1492 Issue(2)*//*by bheru 18-11-2015 #1619*/
+    /*max-height:600px; PL 1492 Issue(2)*//*by bheru 18-11-2015 #1619*/
+    height:88vh;
 }
 
 .PopupDiv {
@@ -13963,6 +13968,21 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 .brandlogo { float:left;}
 .planheader-title {margin-top: 27px; width:auto;}/*by bheru 05-11-2015*/
 .plancart-box { display:inline;}
+
+/* Changes Added By Bhumika #618*/
+#divPartial.partial_wrapper .messagewidth {
+    left: 0;
+    margin: 0px auto 0 auto !important;
+    width:50%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 999;
+}
+.partial_wrapper {
+    position: relative;
+}
+
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {
 
@@ -13977,7 +13997,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
  margin-left: 55px;
 }
  .pop-body-wraper {
- height: 600px;/*by bheru 18-11-2015 #1619*/
+ /*height: 600px;by bheru 18-11-2015 #1619*/
+
 }
  finance_grid_add {
  margin: 0 0 0 19%;
@@ -13992,7 +14013,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
  width: 887px;
 }
  .pop-body-wraper {
- height: 500px;/*by bheru 18-11-2015 #1619*/
+ /*height: 500px;/*by bheru 18-11-2015 #1619*/
+
 }
  .finance_grid_add {
  margin: 0;/*by bheru 1678 05-11-2015*/
