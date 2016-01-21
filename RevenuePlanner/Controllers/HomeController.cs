@@ -4976,8 +4976,8 @@ namespace RevenuePlanner.Controllers
                     // Custom Restrictions applied
                     TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).ToList();
                 }
-
-                string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
+                var useridslist = otherownerids.Concat(TacticUserList.Select(tactic => tactic.CreatedBy)).Distinct().ToList();
+                string strContatedIndividualList = string.Join(",", useridslist.Select(tactic => tactic.ToString()));
                 // var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
                 var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId); //PL 1569 Dashrath Prajapati
 
