@@ -85,9 +85,10 @@
         onClickPlanTitle();
         SetAttributeData();
 
-        
+        var Tabid = 'liCalender';
         if ($('#IsGridView').val() == "True") {
             $("#CalenderView").hide();
+            Tabid = 'liGrid';// Add By Nishant Sheth Desc header value wrong with plan tab
         }
         else {
             RefreshCurrentTab();
@@ -104,7 +105,7 @@
           
         }
         $('.request-icons').show();
-        GetHealderData(SelectedPlans,filters.customFieldIds,filters.OwnerIds,filters.TacticTypeids, filters.StatusIds);
+        GetHealderData(SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, Tabid);// Modified By Nishant Sheth Desc header value wrong with plan tab
         GetNumberOfActivityPerMonByPlanId(SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
     });
 

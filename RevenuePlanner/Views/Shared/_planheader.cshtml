@@ -126,7 +126,8 @@
             }
 
 
-            function GetHealderData(selectedPlanIds,Cid, OId,Tacticids,StatusId) {
+            function GetHealderData(selectedPlanIds,Cid, OId,Tacticids,StatusId,Tabid) {
+                // Modified By Nishant Sheth add tab id as argument:  Desc header value wrong with plan tab 
                 var CustomId = "";
                 var OwnerIds = "";
                 var TacticTypeids = "";
@@ -164,7 +165,8 @@
             CustomFieldId:CustomId.toString(),
             OwnerIds:OwnerIds.toString(),
             TacticTypeids:TacticTypeids.toString(),
-            StatusIds:StatusIds.toString()
+            StatusIds:StatusIds.toString(),
+            TabId:Tabid
         },
         dataType: "json",
         success: function (data) {

@@ -1542,7 +1542,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planId">selected plan id</param>
         /// <returns>returns  HomePlanModelHeader object</returns>
-        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false)
+        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false, string TabId="")
         {
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
@@ -1597,7 +1597,7 @@ namespace RevenuePlanner.Helpers
                 {
                     int Year;
                     // Modified By Komal Rawal to get proper HUd values for #1788
-                    string[] ListYear = year.Split(',');
+                    string[] ListYear = year.Split('-');
                     string planYear = string.Empty;
 
                     bool isNumeric = int.TryParse(year, out Year);
@@ -1622,15 +1622,19 @@ namespace RevenuePlanner.Helpers
                     }
                     if (planTacticIds.Count > 0)
                     {
-                        int StartYear = planTacticIds.Select(tac => tac.StartDate.Year).Min();
-                        int EndYear = planTacticIds.Select(tac => tac.EndDate.Year).Max();
-                        if (EndYear != StartYear)
+                        // Add By Nishant Sheth Desc header value wrong with plan tab
+                        if (TabId == "liGrid")
                         {
-                            year = StartYear + "-" + EndYear;
-                        }
-                        else
-                        {
-                            year = Convert.ToString(StartYear);
+                            int StartYear = planTacticIds.Select(tac => tac.StartDate.Year).Min();
+                            int EndYear = planTacticIds.Select(tac => tac.EndDate.Year).Max();
+                            if (EndYear != StartYear)
+                            {
+                                year = StartYear + "-" + EndYear;
+                            }
+                            else
+                            {
+                                year = Convert.ToString(StartYear);
+                            }
                         }
                     }
                     DateTime StartDate;
@@ -1831,7 +1835,7 @@ namespace RevenuePlanner.Helpers
             // Add By Nishant sheth
             DateTime StartDate;
             DateTime EndDate;
-            string[] ListYear = year.Split(',');
+            string[] ListYear = year.Split('-');
             // Modified By Nishant Sheth
             // #1825 stuck of loading overlay with 'this month' and 'this quarter'
             string planYear = string.Empty;

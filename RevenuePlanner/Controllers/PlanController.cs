@@ -960,14 +960,14 @@ namespace RevenuePlanner.Controllers
         /// Get plan by plan id
         /// </summary>
         /// <param name="planid"></param>
-        public async Task<JsonResult> GetPlanByPlanID(int planid, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public async Task<JsonResult> GetPlanByPlanID(int planid, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
         {
             try
             {
                 await Task.Delay(1);
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds),
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, TabId: TabId),// Modified By Nishant Sheth Desc header value wrong with plan tab
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
@@ -990,7 +990,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="strPlanIds">Comma separated list of plan ids</param>
         /// <param name="activeMenu">Get Active Menu</param>
         /// <returns>returns Json object with values required to show in plan/home header</returns>
-        public JsonResult GetPlanByMultiplePlanIDs(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public JsonResult GetPlanByMultiplePlanIDs(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
         {
             planid = System.Web.HttpUtility.UrlDecode(planid);
             List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
@@ -11363,9 +11363,10 @@ namespace RevenuePlanner.Controllers
                                 if (tacticlineitemcostmonth > tacticmonthcost)
                                 {
                                     tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
-                                    if (objTactic.Cost < tacticlineitemcostmonth) {
+                                    if (objTactic.Cost < tacticlineitemcostmonth)
+                                    {
                                         objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
-                                    }                                    
+                                    }
                                 }
                             }
                             else
@@ -11709,7 +11710,8 @@ namespace RevenuePlanner.Controllers
                         if (LinkedTacticId != null && linkedLineItemId > 0)
                         {
                             var objLinkedOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId == null && l.IsDeleted == false);
-                            if (objLinkedOtherLineItem != null) {
+                            if (objLinkedOtherLineItem != null)
+                            {
                                 objLinkedOtherLineItem.IsDeleted = false;
                                 if (objLinkedOtherLineItem.Cost > LinkedtotalLineitemCost)
                                 {
@@ -11721,7 +11723,7 @@ namespace RevenuePlanner.Controllers
                                     objLinkedOtherLineItem.IsDeleted = true;
                                 }
                                 db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
-                            }                            
+                            }
                         }
                         objOtherLineItem.IsDeleted = false;
                         if (objTactic.Cost > totalLineitemCost)
