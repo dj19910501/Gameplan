@@ -2634,7 +2634,7 @@ namespace RevenuePlanner.Controllers
                 //                List<int> campplanid = new List<int>();
                 // Change by Nishant Sheth for remove double db trip.
                 var planData = objDbMrpEntities.Plans.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a).ToList();
-                var planList = planData.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
+                var planList = planData.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a.PlanId).ToList();
                 List<int> campplanid = new List<int>();
                 if (planList.Count == 0)
                 {
@@ -4975,8 +4975,8 @@ namespace RevenuePlanner.Controllers
                     // Custom Restrictions applied
                     TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).ToList();
                 }
-
-                string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
+                var useridslist = otherownerids.Concat(TacticUserList.Select(tactic => tactic.CreatedBy)).Distinct().ToList();
+                string strContatedIndividualList = string.Join(",", useridslist.Select(tactic => tactic.ToString()));
                 // var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
                 var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId); //PL 1569 Dashrath Prajapati
 

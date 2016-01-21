@@ -9513,10 +9513,10 @@ namespace RevenuePlanner.Controllers
                 //}
                 //Added by Komal Rawal for #1845 Link tactic to plan 
                 // #ticket 1906, by bhavesh dobariya, date: 20-jan-2016
-                var ownercampaignids = TacticfilterList.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
-                var ownerProgramids = TacticfilterList.Select(t => t.PlanProgramId).ToList();
                 var ownerTacticids = TacticfilterList.Select(t => t.PlanTacticId).ToList();
-
+                var ownerProgramids = TacticfilterList.Select(t => t.PlanProgramId).ToList().Concat(TacticfilterList.Where(tacticfilter => (((filterOwner.Count > 0 ? filterOwner.Contains(tacticfilter.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(tacticfilter.Status) : true)) || ownerTacticids.Contains(tacticfilter.PlanTacticId))).Select(t => t.PlanProgramId).ToList());
+                var ownercampaignids = TacticfilterList.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList().Concat(programdetail.Where(prog => prog.IsDeleted == false && (((filterOwner.Count > 0 ? filterOwner.Contains(prog.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(prog.Status) : true)) || ownerProgramids.Contains(prog.PlanProgramId))).Select(p => p.PlanCampaignId).ToList());
+                var ownerPlanids = TacticfilterList.Select(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId).ToList().Concat(lstcampaigndetail.Where(campaign => campaign.IsDeleted == false && (((filterOwner.Count > 0 ? filterOwner.Contains(campaign.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(campaign.Status) : true)) || ownercampaignids.Contains(campaign.PlanCampaignId))).Select(c => c.PlanId).ToList());
                 var LinkedTacticList = TacticfilterList.Where(list => list.LinkedTacticId != null && list.LinkedPlanId != null).ToList();
 
                 var ListOfLinkedPlanIds = LinkedTacticList.Select(list =>
@@ -9555,7 +9555,7 @@ namespace RevenuePlanner.Controllers
                 string dollarsymbol = "$";
                 if (IsPlan)
                 {
-                    foreach (var planitem in lstplandetail)
+                    foreach (var planitem in lstplandetail.Where(p => (((filterOwner.Count > 0 ? filterOwner.Contains(p.CreatedBy) : true)) || ownerPlanids.Contains(p.PlanId))))
                     {
                         gridjsonlistplanobj = new PlanDHTMLXGridDataModel();
 

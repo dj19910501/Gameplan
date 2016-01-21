@@ -877,6 +877,13 @@
     function SaveLastSetofViews(ViewName) {
         filters.customFieldIds = [];
 
+        //modified by komak rawal for 1911 Owner filter is gettind deselected from moving to homepage from Report
+        filters.OwnerIds = [];
+
+        $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+            filters.OwnerIds.push($(this).attr("id"));
+        });
+        //End
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
                 var chkid = $(this).attr("id");
