@@ -79,7 +79,7 @@
     var eventidonbeforedrag = 0;
     var eventidonscroll = 0;
     var editidonOpenEnd = 0;
-    var state0;
+   
 
     $(document).ready(function () {
         $("#divupcomingact").hide();
@@ -682,7 +682,6 @@
            // {
                 if(!flag)
                 {
-                    debugger;
                     HomeGrid.showRow(HomeGrid.getRowId(state0));
                 }
           //  }
@@ -1035,6 +1034,7 @@
             // HomeGrid.openItem(HomeGrid.getParentId(rowid));
             HomeGrid.openItem(rowid);
             //}
+         
             ItemIndex=HomeGrid.getRowIndex(rowid);
             state0=ItemIndex;
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
@@ -1052,6 +1052,7 @@
             var rowid = id[0];
             HomeGrid.openItem(HomeGrid.getParentId(rowid));
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+           
             ItemIndex=HomeGrid.getRowIndex(rowid);
             state0=ItemIndex;
             //var scrolltop = $(".rowselected").offset().top;
