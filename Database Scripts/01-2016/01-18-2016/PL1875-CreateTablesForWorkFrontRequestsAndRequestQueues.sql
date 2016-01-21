@@ -17,7 +17,6 @@ CREATE TABLE [dbo].[IntegrationWorkFrontRequestQueues](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[RequestQueueId] [nvarchar](50) NOT NULL,
 	[RequestQueueName] [nvarchar](255) NOT NULL,
-	[IntegrationInstanceId] [int] NOT NULL,
 	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_IntegrationWorkFrontRequestQueues] PRIMARY KEY CLUSTERED 
 (
@@ -27,15 +26,6 @@ CREATE TABLE [dbo].[IntegrationWorkFrontRequestQueues](
 end
 GO
 
-If not exists (SELECT 1 FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS  WHERE CONSTRAINT_NAME='FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId')
-ALTER TABLE [dbo].[IntegrationWorkFrontRequestQueues]  WITH CHECK ADD  CONSTRAINT [FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId] FOREIGN KEY([IntegrationInstanceId])
-REFERENCES [dbo].[IntegrationInstance] ([IntegrationInstanceId])
-GO
-
-IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES
-           WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME='IntegrationWorkFrontRequestQueues') 
-ALTER TABLE [dbo].[IntegrationWorkFrontRequestQueues] CHECK CONSTRAINT [FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId]
-GO
 
 IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES
            WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME='IntegrationWorkFrontRequests') 
