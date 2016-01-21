@@ -273,6 +273,7 @@ namespace RevenuePlanner.Controllers
                 var Yearlabel = Enums.FilterLabel.Year.ToString();
                 var FilterName = Sessions.FilterPresetName;
                 var SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+                Common.PlanUserSavedViews = SetOFLastViews; // Add by Nishant Sheth #1915
                 var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
                 var SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.UserId).ToList();
                 var FinalSetOfPlanSelected = "";
@@ -557,7 +558,8 @@ namespace RevenuePlanner.Controllers
 
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
 
-            var lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => new { plan.PlanId, plan.Model.ClientId, plan.Year }).ToList();
+            // Modified by Nishant Sheth #1915
+            List<Plan> lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();
 
 
 
@@ -590,7 +592,8 @@ namespace RevenuePlanner.Controllers
             // DESC:: For get default filter view after user log out #1750
 
             var Label = Enums.FilterLabel.Plan.ToString();
-            var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+            //var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+            var SetOfPlanSelected = Common.PlanUserSavedViews;// Add by Nishant Sheth #1915
             // Add By Nishant Sheth
             // Desc :: To resolve the select and deselct all owner issues
             string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
@@ -872,7 +875,7 @@ namespace RevenuePlanner.Controllers
                     {
                         viewBy = PlanGanttTypes.Tactic.ToString();
                     }
-                    return PrepareTacticAndRequestTabResult(filteredPlanIds, viewBy, IsFiltered, IsRequest, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult, filterOwner, filterStatus, timeFrame); // Modified By Nishant
+                    return PrepareTacticAndRequestTabResult(filteredPlanIds, viewBy, IsFiltered, IsRequest, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult, filterOwner, filterStatus, lstPlans, timeFrame); // Modified By Nishant #1915
                 }
                 else
                 {
@@ -1784,10 +1787,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="improvementTacticTypeForAccordion">list of improvement tactic type for accrodian(left side pane)</param>
         /// <param name="viewByListResult">list of viewBy dropdown options</param>
         /// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        private JsonResult PrepareTacticAndRequestTabResult(List<int> filterplanId, string viewBy, bool IsFiltered, bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult, List<Guid> filterOwner, List<string> filterStatus, string timeframe = "")
+        private JsonResult PrepareTacticAndRequestTabResult(List<int> filterplanId, string viewBy, bool IsFiltered, bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult, List<Guid> filterOwner, List<string> filterStatus, List<Plan> lstPlans, string timeframe = "")
         {
             Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
-            List<object> tacticAndRequestTaskData = GetTaskDetailTactic(ColorCodelist, filterplanId, viewBy, IsFiltered, IsRequest, planYear, activemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, filterOwner, filterStatus, timeframe); // Modified By Nishant
+            List<object> tacticAndRequestTaskData = GetTaskDetailTactic(ColorCodelist, filterplanId, viewBy, IsFiltered, IsRequest, planYear, activemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, filterOwner, filterStatus, lstPlans, timeframe); // Modified By Nishant #1915
             //   Debug.WriteLine("Step 7.1: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
             //Added By komal Rawal for #1282
 
@@ -2016,7 +2019,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="lstTactic">list of tactics</param>
         /// <param name="lstImprovementTactic">list of imporvementTactics</param>
         /// <returns>Returns object list of tasks for GANNT CHART</returns>
-        public List<object> GetTaskDetailTactic(Dictionary<string, string> ColorCodelist, List<int> filterplanId, string viewBy, bool IsFiltered, bool IsRequest, string planYear, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, List<Guid> filterOwner,List<string> filterStatus, string timeframe = "")
+        public List<object> GetTaskDetailTactic(Dictionary<string, string> ColorCodelist, List<int> filterplanId, string viewBy, bool IsFiltered, bool IsRequest, string planYear, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, List<Guid> filterOwner, List<string> filterStatus, List<Plan> lstPlans, string timeframe = "")
         {
 
             //DateTime StartDate = DateTime.Now.Date;
@@ -2075,8 +2078,8 @@ namespace RevenuePlanner.Controllers
                       list.objPlanTactic.LinkedPlanId
                ).ToList();
 
-
-            var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
+            //var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
+            var ListOfLinkedPlans = lstPlans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();// Add By Nishant Sheth #1915
 
 
 
@@ -5895,6 +5898,7 @@ namespace RevenuePlanner.Controllers
             var NewListOfViews = new List<Plan_UserSavedViews>();// Add By Nishant Sheth to resolved the default view issue with update result
             //Modified for #1750 by Komal Rawal
             var listofsavedviews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
+            Common.PlanUserSavedViews = listofsavedviews;// Add By Nishant Sheth #1915
             //Modified by Rahul shah on 24/12/2015 for PL#1837
             if (isLoadPreset == true)
             {
@@ -6029,10 +6033,11 @@ namespace RevenuePlanner.Controllers
             planIds = ListofPlans.Where(plan => plan.Status.Equals(planPublishedStatus)).Select(plan => plan.PlanId).ToList();
             // Added By Komal Rawal for #1750 to default users to their last view
             List<Plan_UserSavedViews> NewCustomFieldData = new List<Plan_UserSavedViews>();
-            NewCustomFieldData = new List<Plan_UserSavedViews>();
+            //NewCustomFieldData = new List<Plan_UserSavedViews>();
             List<string> tempFilterValues = new List<string>();
             #region "Remove previous records by userid"
-            var prevCustomFieldList = objDbMrpEntities.Plan_UserSavedViews.Where(custmfield => custmfield.Userid == Sessions.User.UserId).ToList();
+            //var prevCustomFieldList = objDbMrpEntities.Plan_UserSavedViews.Where(custmfield => custmfield.Userid == Sessions.User.UserId).ToList();
+            var prevCustomFieldList = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
             if (ViewName != null && ViewName != "")
             {
                 var ViewNames = prevCustomFieldList.Where(custmfield => custmfield.ViewName != null).Select(name => name.ViewName).ToList();
@@ -6158,7 +6163,8 @@ namespace RevenuePlanner.Controllers
                 if (filteredCustomFields != null)
                 {
                     Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                    List<Plan_UserSavedViews> listLineitem = objDbMrpEntities.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.UserId).Select(a => a).ToList();
+                    //List<Plan_UserSavedViews> listLineitem = objDbMrpEntities.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.UserId).Select(a => a).ToList();
+                    List<Plan_UserSavedViews> listLineitem = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
                     Plan_UserSavedViews objLineitem = new Plan_UserSavedViews();
                     string FilterNameTemp = "";
                     string Previousval = "";
@@ -6235,7 +6241,8 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-
+            // Add By Nishant Sheth #1915
+            Common.PlanUserSavedViews = objDbMrpEntities.Plan_UserSavedViews.Where(custmfield => custmfield.Userid == Sessions.User.UserId).ToList();
             #endregion
             //End
             return Json(new { isSuccess = true, ViewName = ViewName }, JsonRequestBehavior.AllowGet);
@@ -6252,13 +6259,14 @@ namespace RevenuePlanner.Controllers
             PresetName = Convert.ToString(PresetName).TrimStart();
             PresetName = Convert.ToString(PresetName).TrimEnd();
             PresetName = Convert.ToString(PresetName).Trim();
-            var ListOfUserViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            //var ListOfUserViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var ListOfUserViews = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
             var ResetFlagList = ListOfUserViews.Where(view => view.IsDefaultPreset == true).ToList();
-            ResetFlagList.ForEach(s => s.IsDefaultPreset = false);
+            ResetFlagList.ForEach(s => { s.IsDefaultPreset = false; objDbMrpEntities.Entry(s).State = EntityState.Modified; });// Modified By Nishant Sheth #1915
             if (!string.IsNullOrEmpty(PresetName))
             {
                 ListOfUserViews = ListOfUserViews.Where(name => name.ViewName == PresetName).ToList();
-                ListOfUserViews.ForEach(s => s.IsDefaultPreset = true);
+                ListOfUserViews.ForEach(s => { s.IsDefaultPreset = true; objDbMrpEntities.Entry(s).State = EntityState.Modified; });// Modified By Nishant Sheth #1915
 
             }
             objDbMrpEntities.SaveChanges();
@@ -6293,15 +6301,18 @@ namespace RevenuePlanner.Controllers
                 PresetName = Convert.ToString(PresetName).TrimEnd();
                 PresetName = Convert.ToString(PresetName).Trim();
 
-                var lstViewID = objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Userid == Sessions.User.UserId && x.ViewName == PresetName).ToList();
+                //var lstViewID = objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Userid == Sessions.User.UserId && x.ViewName == PresetName).ToList();
+                var lstViewID = Common.PlanUserSavedViews.Where(x => x.Userid == Sessions.User.UserId && x.ViewName == PresetName).ToList();// Add By Nishant Sheth #1915
                 if (lstViewID != null)
                 {
                     foreach (var item in lstViewID)
                     {
-                        Plan_UserSavedViews planToDelete = lstViewID.Where(x => x.Id == item.Id).SingleOrDefault();
-                        objDbMrpEntities.Plan_UserSavedViews.Remove(planToDelete);
+                        Plan_UserSavedViews planToDelete = lstViewID.Where(x => x.Id == item.Id).FirstOrDefault(); // Modified By Nishant Sheth #1915
+                        //objDbMrpEntities.Plan_UserSavedViews.Remove(planToDelete);
+                        objDbMrpEntities.Entry(planToDelete).State = EntityState.Deleted; // Add By Nishant Sheth #1915
                     }
                     objDbMrpEntities.SaveChanges();
+                    Common.PlanUserSavedViews = objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Userid == Sessions.User.UserId).ToList();// Add By Nishant Sheth #1915
                     return Json(new { isSuccess = true, msg = "Preset " + PresetName + " deleted successfuly" }, JsonRequestBehavior.AllowGet);
                 }
                 else

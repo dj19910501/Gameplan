@@ -91,7 +91,8 @@ namespace RevenuePlanner.Controllers
             var Label = Enums.FilterLabel.Plan.ToString();
             var Yearlabel = Enums.FilterLabel.Year.ToString();
             var FilterName = Sessions.FilterPresetName;
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
+            //var SetOFLastViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
+            var SetOFLastViews = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
             var SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.UserId).ToList();
             var SetofLastYearsSelected = SetOFLastViews.Where(listview => listview.FilterName == Yearlabel && listview.Userid == Sessions.User.UserId).ToList();
             var FinalSetOfPlanSelected = "";
@@ -543,7 +544,8 @@ namespace RevenuePlanner.Controllers
                 // Desc :: #1839 code review points - Tactic list is different 
                 // Desc :: To Reslove owner filter issue
                 var Label = Enums.FilterLabel.Plan.ToString();
-                var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+                //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+                var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
                 string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
                 if (planselectedowner == null)
                 {
