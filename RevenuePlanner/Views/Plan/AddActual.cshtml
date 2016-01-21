@@ -703,7 +703,42 @@
     }
 
     function onClickPlanTitle() {
-        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+        //Added by Rahul Shah for PL #1898
+            $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            $('#divCustomFieldsFilter').find("li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+
+            $("#accordion-Year li input:checkbox:checked").each(function () {
+                $(this).removeAttr("checked");
+                $(this).parent().removeClass("close-list");
+            });
+
+            $('#ulSelectedOwner li').each(function () {
+                if ($(this).attr('id').replace('liOwner', "") != '@Sessions.User.UserId') {
+
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                }
+                else {
+                    
+                    $(this).attr('checked', 'checed')
+                    $(this).parent().addClass("close-list");
+
+                }
+
+            });
+
+            $('#ulTacticType li input:checkbox:checked').each(function () {
+                $(this).removeAttr("checked");
+                $(this).parent().removeClass("close-list");
+            });
+            $('#ulStatus li input:checkbox:checked').each(function () {
+                $(this).removeAttr("checked");
+                $(this).parent().removeClass("close-list");
+            });
             CurrentPlanId = $(this).attr('value');
             $("#CurrentPlanId").val(CurrentPlanId);
             if (CurrentPlanId > 0) {  
@@ -711,6 +746,7 @@
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
                 GetList(CurrentPlanId);
             }
+            SaveLastSetofViews();
         });
     }
 

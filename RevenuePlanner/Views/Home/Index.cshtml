@@ -105,6 +105,7 @@
     <script type="text/javascript">
         var GetLastview = true;
         var pageIsScroll = false;
+        var state0 = 0;
         //Added By komal rawal for #1283
         //  var isTacticExist = false;
         function LoadTacticTypelist(data) {
@@ -478,6 +479,35 @@
 
             });
             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                //Added by Rahul Shah for PL #1898
+                $('#divCustomFieldsFilter').find("li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).removeAttr("checked");
+                });
+
+                $("#accordion-Year li input:checkbox:checked").each(function () {
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                });
+
+                $('#ulSelectedOwner li input:checkbox:checked').each(function () {
+                    if ($(this).attr('id') != '@Sessions.User.UserId') {
+                        $(this).removeAttr("checked");
+                        $(this).parent().removeClass("close-list");
+                    }
+
+                });
+
+                $('#ulTacticType li input:checkbox:checked').each(function () {
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                });
+                $('#ulStatus li input:checkbox:checked').each(function () {
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                });
+
                 IsPlanChange = true;
                 SaveLastSetofViews();
             }
@@ -1753,27 +1783,27 @@
         // End By Nishant Sheth
 
         //Added By Komal rawal to maintain the owner and tactic on plan change
-        if (IsPlanChange && !IsUpdate) {
+        //if (IsPlanChange && !IsUpdate) {
 
-            var Count = 0;
-            filters.TacticTypeids = PreviousListFilter.TacticTypeIds;
-            //$.each($("#ulTacticType li input[type=checkbox]"), function () {
+        //    var Count = 0;
+        //    filters.TacticTypeids = PreviousListFilter.TacticTypeIds;
+        //    //$.each($("#ulTacticType li input[type=checkbox]"), function () {
 
-            //    var id = $(this).attr('id').replace("CbTT", "");
-            //    var index = PreviousListFilter.TacticTypeIds.indexOf(id);
-            //    if (index >= 0) {
-            //        Count++;
-            //    }
-            //});
-            //if (Count == 0) {
-            //    $("#ulTacticType li input[type=checkbox]").attr('checked', 'checked');
-            //    $("#ulTacticType li ").addClass("close-list");
+        //    //    var id = $(this).attr('id').replace("CbTT", "");
+        //    //    var index = PreviousListFilter.TacticTypeIds.indexOf(id);
+        //    //    if (index >= 0) {
+        //    //        Count++;
+        //    //    }
+        //    //});
+        //    //if (Count == 0) {
+        //    //    $("#ulTacticType li input[type=checkbox]").attr('checked', 'checked');
+        //    //    $("#ulTacticType li ").addClass("close-list");
 
-            //}
+        //    //}
 
-            filters.OwnerIds = PreviousListFilter.OwnerIds;
+        //    filters.OwnerIds = PreviousListFilter.OwnerIds;
 
-        }
+        //}
 
 
         //if (DeselectAllStatus) {
