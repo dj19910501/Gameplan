@@ -79,7 +79,7 @@
     var eventidonbeforedrag = 0;
     var eventidonscroll = 0;
     var editidonOpenEnd = 0;
-
+    var state0;
 
     $(document).ready(function () {
         $("#divupcomingact").hide();
@@ -676,6 +676,16 @@
         HomeGrid.attachEvent("onDistributedEnd", function () {
             // your code here
             LoadAfterParsing();
+            flag=false;
+          
+           // if(relativeOffsetscroll > 0)
+           // {
+                if(!flag)
+                {
+                    debugger;
+                    HomeGrid.showRow(HomeGrid.getRowId(state0));
+                }
+          //  }
             if ($("#gridbox").find(".rowselected").length >= 1) {
                 var scrolltop = $(".rowselected").offset().top;
                 $(window).scrollTop(scrolltop - 100);
@@ -955,10 +965,11 @@
     }
 
 
-
+    var flag=false;
     // Create funtion to load grid view event - Apply Distributed Parsing
     // Added By Bhavesh - Date: 11-Nov-2015
     function LoadAfterParsing() {
+        flag=true;
         if (eventidonedit != 0) {
             HomeGrid.detachEvent(eventidonedit);
         }
@@ -1024,7 +1035,8 @@
             // HomeGrid.openItem(HomeGrid.getParentId(rowid));
             HomeGrid.openItem(rowid);
             //}
-
+            ItemIndex=HomeGrid.getRowIndex(rowid);
+            state0=ItemIndex;
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
 
             isCopyTacticHomeGrid = 0;
@@ -1040,6 +1052,8 @@
             var rowid = id[0];
             HomeGrid.openItem(HomeGrid.getParentId(rowid));
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+            ItemIndex=HomeGrid.getRowIndex(rowid);
+            state0=ItemIndex;
             //var scrolltop = $(".rowselected").offset().top;
             //  $(window).scrollTop(scrolltop - 100);
             isEditTacticHomeGrid = 0;

@@ -1431,7 +1431,7 @@
 <div id="divBackground" class="modal-backdrop fade in" style="display: none; z-index: 2502 !important;"></div>
 
 <script type="text/javascript">
-
+    var scrollstate = 0;
     var divPartial = "#divPartial";
     var GetLastview = true;
     var InspectSuccMsg = "";
@@ -4410,6 +4410,8 @@
 
                             //GanttTaskData = data.taskData; // Add By Nishant Sheth
                             renderGantt(data.taskData);
+                            var _scrollY = scrollstate.y
+                            gantt.scrollTo(0, _scrollY);
                             var w1 = window.innerWidth;
                             var w3 = document.body.clientWidth;
 
@@ -4887,7 +4889,7 @@
         ////
         hoverRows();
         AttachEventToTactic();
-
+        AttachEventToonTaskRowClick();
 
     }
 
@@ -5186,8 +5188,24 @@
         }
 
         //// Attaching double click event
-        eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowModel(taskId, null) });
+        eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) {
+            scrollstate = gantt.getScrollState();
+            ShowModel(taskId, null)
+        });
 
+    }
+
+    var eventTaskDoubleClickevent;
+    function AttachEventToonTaskRowClick() {
+        //// Detaching double click event.
+        if (eventTaskDoubleClickevent != undefined) {
+            gantt.detachEvent(eventTaskDoubleClickevent);
+        }
+
+        //// Attaching double click event
+        eventTaskDoubleClickevent = gantt.attachEvent("onTaskRowClick", function (taskId, trg) {
+            scrollstate = gantt.getScrollState();
+        });
     }
 
     //// Modified By Maninder Singh Wadhva PL Ticket#47
@@ -6828,6 +6846,9 @@
 
         ////Copy Campaign.
         $('#CloneCampaign1').click(function () {
+            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+                scrollstate = gantt.getScrollState();
+            }
             isCopyTactic = CampaignId;
             var idPlanCamaign = CampaignId;//$("#hdnPlanCampaignId").val();
             var Title = $("<div/>").text(title).html();// Encode Title
@@ -6875,6 +6896,9 @@
 
         //Child Program
         $('#ChildProgram').click(function () {
+            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+                scrollstate = gantt.getScrollState();
+            }
             isCopyTactic = CampaignId;
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RequestedModule');
             $('.taskpopup').css('display', 'none');
@@ -6889,6 +6913,9 @@
 
         //Copy Program
         $('#CloneProgram1').click(function () {
+            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+                scrollstate = gantt.getScrollState();
+            }
             isCopyTactic = ProgramId;
             var idPlanProgram = ProgramId;// $("#hdnPlanProgramId").val();
             var Title = $("<div/>").text(title).html();// Encode Title
@@ -6932,6 +6959,9 @@
 
         //Child Tactic
         $("#ChildTactic").on("click", function () {
+            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+                scrollstate = gantt.getScrollState();
+            }
             isCopyTactic = ProgramId;
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');
             $("#errorMessage").css("display", "none");
@@ -6942,6 +6972,10 @@
 
         //New Tactic
         $("#NewTactic1").on("click", function () {
+
+            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+                scrollstate = gantt.getScrollState();
+            }
             isCopyTactic = ProgramId;
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');
             $("#errorMessage").css("display", "none");
@@ -6952,6 +6986,9 @@
 
         //Copy Tactic
         $('#CloneTactic1').click(function () {
+            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+                scrollstate = gantt.getScrollState();
+            }
             isCopyTactic = ProgramId;
             var idPlanTactic = TacticId;// $("#hdnPlanTacticId").val();
             var Title = $("<div/>").text(title).html();// Encode Title
@@ -7028,7 +7065,9 @@
 
         //Copy Line Item
         $('#CloneLineItem').click(function () {
-
+            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+                scrollstate = gantt.getScrollState();
+            }
             isCopyTactic = TacticId;
             var idPlanLineItem = LineId;// $("#hdnPlanTacticId").val();
             var Title = $("<div/>").text(title).html();// Encode Title
