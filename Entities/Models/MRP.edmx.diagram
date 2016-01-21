@@ -167,16 +167,16 @@
         <AssociationConnector Association="MRPModel.BudgetID_FK" />
         <EntityTypeShape EntityType="MRPModel.Plan_UserSavedViews" Width="1.5" PointX="16.375" PointY="3.75" />
         <AssociationConnector Association="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontRequest" Width="1.5" PointX="14.25" PointY="27.5" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" />
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontRequestQueue" Width="1.5" PointX="7.25" PointY="45.75" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" />
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontUser" Width="1.5" PointX="7.5" PointY="0.75" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId" />
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTacticSetting" Width="1.5" PointX="12.75" PointY="35.125" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontRequest" Width="1.5" PointX="13.75" PointY="26.25" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

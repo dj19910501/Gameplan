@@ -521,16 +521,16 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
-          <Property Name="RequestId" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="QueueId" Type="int" Nullable="false" />
           <Property Name="PlanTacticId" Type="int" Nullable="false" />
-          <Property Name="AssignedTo" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
+          <Property Name="RequestId" Type="nvarchar" MaxLength="50" />
           <Property Name="RequestName" Type="nvarchar" MaxLength="255" Nullable="false" />
-          <Property Name="WorkFrontStatus" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="ResolvingObjId" Type="nvarchar" MaxLength="255" Nullable="false" />
-          <Property Name="ResolvingObjType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="QueueId" Type="int" Nullable="false" />
+          <Property Name="AssignedTo" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="WorkFrontRequestStatus" Type="nvarchar" MaxLength="20" />
+          <Property Name="ResolvingObjType" Type="nvarchar" MaxLength="10" />
+          <Property Name="ResolvingObjId" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationWorkFrontTacticSettings">
           <Key>
@@ -3028,23 +3028,10 @@
             <End Role="IntegrationWorkFrontTemplate" EntitySet="IntegrationWorkFrontTemplates" />
             <End Role="TacticType" EntitySet="TacticTypes" />
           </AssociationSet>
-          <EntitySet Name="IntegrationWorkFrontRequests" EntityType="MRPModel.IntegrationWorkFrontRequest" />
-          <AssociationSet Name="FK_IntegrationWorkFrontRequests_IntegrationInstanceId" Association="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
-            <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
-          </AssociationSet>
-          <AssociationSet Name="FK_IntegrationWorkFrontRequests_TacticId" Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId">
-            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
-            <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
-          </AssociationSet>
           <EntitySet Name="IntegrationWorkFrontRequestQueues" EntityType="MRPModel.IntegrationWorkFrontRequestQueue" />
           <AssociationSet Name="FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId" Association="MRPModel.FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="IntegrationWorkFrontRequestQueue" EntitySet="IntegrationWorkFrontRequestQueues" />
-          </AssociationSet>
-          <AssociationSet Name="FK_IntegrationWorkFrontRequests_QueueId" Association="MRPModel.FK_IntegrationWorkFrontRequests_QueueId">
-            <End Role="IntegrationWorkFrontRequestQueue" EntitySet="IntegrationWorkFrontRequestQueues" />
-            <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
           </AssociationSet>
           <EntitySet Name="IntegrationWorkFrontUsers" EntityType="MRPModel.IntegrationWorkFrontUser" />
           <AssociationSet Name="FK_IntegrationWorkFrontUsers_IntegrationInstanceId" Association="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId">
@@ -3055,6 +3042,19 @@
           <AssociationSet Name="FK_IntegrationWorkFrontTacticSettings_TacticId" Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="IntegrationWorkFrontTacticSetting" EntitySet="IntegrationWorkFrontTacticSettings" />
+          </AssociationSet>
+          <EntitySet Name="IntegrationWorkFrontRequests" EntityType="MRPModel.IntegrationWorkFrontRequest" />
+          <AssociationSet Name="FK_IntegrationWorkFrontRequests_IntegrationInstanceId" Association="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationWorkFrontRequests_QueueId" Association="MRPModel.FK_IntegrationWorkFrontRequests_QueueId">
+            <End Role="IntegrationWorkFrontRequestQueue" EntitySet="IntegrationWorkFrontRequestQueues" />
+            <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationWorkFrontRequests_TacticId" Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
@@ -3316,9 +3316,9 @@
           <NavigationProperty Name="Models4" Relationship="MRPModel.FK_Model_IntegrationInstanceProjMgmt" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="IntegrationWorkFrontTemplates" Relationship="MRPModel.FK_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontTemplate" />
           <NavigationProperty Name="Models11" Relationship="MRPModel.FK_Model_IntegrationInstance1" FromRole="IntegrationInstance" ToRole="Model" />
-          <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequest" />
           <NavigationProperty Name="IntegrationWorkFrontRequestQueues" Relationship="MRPModel.FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequestQueue" />
           <NavigationProperty Name="IntegrationWorkFrontUsers" Relationship="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontUser" />
+          <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequest" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -3722,8 +3722,8 @@
           <Property Type="String" Name="IntegrationInstanceEloquaId" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="LinkedTacticId" Type="Int32" />
           <Property Name="LinkedPlanId" Type="Int32" />
-          <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" FromRole="Plan_Campaign_Program_Tactic" ToRole="IntegrationWorkFrontRequest" />
           <NavigationProperty Name="IntegrationWorkFrontTacticSettings" Relationship="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" FromRole="Plan_Campaign_Program_Tactic" ToRole="IntegrationWorkFrontTacticSetting" />
+          <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" FromRole="Plan_Campaign_Program_Tactic" ToRole="IntegrationWorkFrontRequest" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -5327,49 +5327,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="IntegrationWorkFrontRequest">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="IntegrationInstanceId" Type="Int32" Nullable="false" />
-          <Property Name="RequestId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="QueueId" Type="Int32" Nullable="false" />
-          <Property Name="PlanTacticId" Type="Int32" Nullable="false" />
-          <Property Name="AssignedTo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
-          <Property Name="RequestName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="WorkFrontStatus" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ResolvingObjId" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ResolvingObjType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" FromRole="IntegrationWorkFrontRequest" ToRole="IntegrationInstance" />
-          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" FromRole="IntegrationWorkFrontRequest" ToRole="Plan_Campaign_Program_Tactic" />
-          <NavigationProperty Name="IntegrationWorkFrontRequestQueue" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" FromRole="IntegrationWorkFrontRequest" ToRole="IntegrationWorkFrontRequestQueue" />
-        </EntityType>
-        <Association Name="FK_IntegrationWorkFrontRequests_IntegrationInstanceId">
-          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
-          <End Type="MRPModel.IntegrationWorkFrontRequest" Role="IntegrationWorkFrontRequest" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="IntegrationWorkFrontRequest">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_IntegrationWorkFrontRequests_TacticId">
-          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
-          <End Type="MRPModel.IntegrationWorkFrontRequest" Role="IntegrationWorkFrontRequest" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Campaign_Program_Tactic">
-              <PropertyRef Name="PlanTacticId" />
-            </Principal>
-            <Dependent Role="IntegrationWorkFrontRequest">
-              <PropertyRef Name="PlanTacticId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="IntegrationWorkFrontRequestQueue">
           <Key>
             <PropertyRef Name="Id" />
@@ -5391,18 +5348,6 @@
             </Principal>
             <Dependent Role="IntegrationWorkFrontRequestQueue">
               <PropertyRef Name="IntegrationInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_IntegrationWorkFrontRequests_QueueId">
-          <End Type="MRPModel.IntegrationWorkFrontRequestQueue" Role="IntegrationWorkFrontRequestQueue" Multiplicity="1" />
-          <End Type="MRPModel.IntegrationWorkFrontRequest" Role="IntegrationWorkFrontRequest" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationWorkFrontRequestQueue">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="IntegrationWorkFrontRequest">
-              <PropertyRef Name="QueueId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5448,6 +5393,61 @@
             </Principal>
             <Dependent Role="IntegrationWorkFrontTacticSetting">
               <PropertyRef Name="TacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="IntegrationWorkFrontRequest">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PlanTacticId" Type="Int32" Nullable="false" />
+          <Property Name="IntegrationInstanceId" Type="Int32" Nullable="false" />
+          <Property Name="RequestId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RequestName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="QueueId" Type="Int32" Nullable="false" />
+          <Property Name="AssignedTo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="WorkFrontRequestStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="ResolvingObjType" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ResolvingObjId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" FromRole="IntegrationWorkFrontRequest" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="IntegrationWorkFrontRequestQueue" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" FromRole="IntegrationWorkFrontRequest" ToRole="IntegrationWorkFrontRequestQueue" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" FromRole="IntegrationWorkFrontRequest" ToRole="Plan_Campaign_Program_Tactic" />
+        </EntityType>
+        <Association Name="FK_IntegrationWorkFrontRequests_IntegrationInstanceId">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontRequest" Role="IntegrationWorkFrontRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontRequest">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationWorkFrontRequests_QueueId">
+          <End Type="MRPModel.IntegrationWorkFrontRequestQueue" Role="IntegrationWorkFrontRequestQueue" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontRequest" Role="IntegrationWorkFrontRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationWorkFrontRequestQueue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontRequest">
+              <PropertyRef Name="QueueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationWorkFrontRequests_TacticId">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontRequest" Role="IntegrationWorkFrontRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontRequest">
+              <PropertyRef Name="PlanTacticId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6545,23 +6545,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="IntegrationWorkFrontRequests">
-            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontRequest">
-              <MappingFragment StoreEntitySet="IntegrationWorkFrontRequests">
-                <ScalarProperty Name="ResolvingObjType" ColumnName="ResolvingObjType" />
-                <ScalarProperty Name="ResolvingObjId" ColumnName="ResolvingObjId" />
-                <ScalarProperty Name="WorkFrontStatus" ColumnName="WorkFrontStatus" />
-                <ScalarProperty Name="RequestName" ColumnName="RequestName" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="AssignedTo" ColumnName="AssignedTo" />
-                <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
-                <ScalarProperty Name="QueueId" ColumnName="QueueId" />
-                <ScalarProperty Name="RequestId" ColumnName="RequestId" />
-                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="IntegrationWorkFrontRequestQueues">
             <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontRequestQueue">
               <MappingFragment StoreEntitySet="IntegrationWorkFrontRequestQueues">
@@ -6590,6 +6573,23 @@
                 <ScalarProperty Name="TacticApprovalObject" ColumnName="TacticApprovalObject" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="TacticId" ColumnName="TacticId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationWorkFrontRequests">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontRequest">
+              <MappingFragment StoreEntitySet="IntegrationWorkFrontRequests">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="ResolvingObjId" ColumnName="ResolvingObjId" />
+                <ScalarProperty Name="ResolvingObjType" ColumnName="ResolvingObjType" />
+                <ScalarProperty Name="WorkFrontRequestStatus" ColumnName="WorkFrontRequestStatus" />
+                <ScalarProperty Name="AssignedTo" ColumnName="AssignedTo" />
+                <ScalarProperty Name="QueueId" ColumnName="QueueId" />
+                <ScalarProperty Name="RequestName" ColumnName="RequestName" />
+                <ScalarProperty Name="RequestId" ColumnName="RequestId" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
+                <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

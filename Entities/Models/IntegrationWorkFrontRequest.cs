@@ -15,19 +15,19 @@ namespace RevenuePlanner.Models
     public partial class IntegrationWorkFrontRequest
     {
         public int Id { get; set; }
+        public int PlanTacticId { get; set; }
         public int IntegrationInstanceId { get; set; }
         public string RequestId { get; set; }
-        public int QueueId { get; set; }
-        public int PlanTacticId { get; set; }
-        public string AssignedTo { get; set; }
-        public bool IsDeleted { get; set; }
         public string RequestName { get; set; }
-        public string WorkFrontStatus { get; set; }
-        public string ResolvingObjId { get; set; }
+        public int QueueId { get; set; }
+        public string AssignedTo { get; set; }
+        public string WorkFrontRequestStatus { get; set; }
         public string ResolvingObjType { get; set; }
+        public string ResolvingObjId { get; set; }
+        public bool IsDeleted { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
-        public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
         public virtual IntegrationWorkFrontRequestQueue IntegrationWorkFrontRequestQueue { get; set; }
+        public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
     }
 }

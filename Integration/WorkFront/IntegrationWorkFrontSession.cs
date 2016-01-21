@@ -673,9 +673,9 @@ namespace Integration.WorkFront
             return syncError;
         }
 
-        ///Retrieve Requests from WorkFront and store in Plan. Any requests deleted in WorkFront are marked as deleted in Plan db
+        ///Create requests. Do not retrieve them, as there can be requests in WorkFront that are not supposed to by synced with Plan
         ///Plan creates and tracks requests. Do not need to pull in other requests from WorkFront as they aren't tied to Plan projects
-        ///If request is in database but not in WorkFront, create the request. This behavior is different than templates, where we set the db entry to IsDeleted.
+        ///If request is in database but not in WorkFront, set the db entry to IsDeleted and set WorkFrontRequestStatus to 'deleted'
         ///<param name="SyncErrors">
         /// error list for tracking
         /// </param>
@@ -700,7 +700,7 @@ namespace Integration.WorkFront
                    if (requestInfoFromWorkFront != null)
                    {
                        req.RequestName = requestInfoFromWorkFront["name"].ToString();
-                       req.WorkFrontStatus = requestInfoFromWorkFront["status"].ToString();
+                       req.WorkFrontRequestStatus = requestInfoFromWorkFront["status"].ToString();
                        if (requestInfoFromWorkFront["resolvingObjCode"] == null)
                        {
                             req.ResolvingObjType = "N/A";
