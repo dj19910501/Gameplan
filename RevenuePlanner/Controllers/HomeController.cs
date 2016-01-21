@@ -2634,7 +2634,7 @@ namespace RevenuePlanner.Controllers
                 //                List<int> campplanid = new List<int>();
                 // Change by Nishant Sheth for remove double db trip.
                 var planData = objDbMrpEntities.Plans.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a).ToList();
-                var planList = planData.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
+                var planList = planData.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a.PlanId).ToList();
                 List<int> campplanid = new List<int>();
                 if (planList.Count == 0)
                 {
