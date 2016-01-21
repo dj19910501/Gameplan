@@ -4938,6 +4938,41 @@ namespace RevenuePlanner.Helpers
 
                                 var customFieldList = db.CustomField_Entity.Where(a => (campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign) || (programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic) || (linkedTacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic)).ToList();
                                 customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                ///Delete entry in Default Table of that plan
+                                var Label = Enums.FilterLabel.Plan.ToString();
+
+                                Plan_UserSavedViews PlanList = db.Plan_UserSavedViews.FirstOrDefault(plan => plan.FilterName.Equals(Label) && plan.Userid == Sessions.User.UserId);
+                                var DefaultPlanList = "";
+                                if (PlanList != null)
+                                {
+                                    DefaultPlanList = PlanList.FilterValues;
+                                }
+                              
+                                var GetDefaultPlanList = new List<string>();
+                                if (DefaultPlanList != null && DefaultPlanList != "")
+                                {
+                                    GetDefaultPlanList = DefaultPlanList.Split(',').ToList();
+                                }
+                                if (GetDefaultPlanList.Count > 0 && GetDefaultPlanList.Contains(PlanId.ToString()))
+                                {
+                                    GetDefaultPlanList.Remove(PlanId.ToString());
+                                    var FinalList = string.Join(",", GetDefaultPlanList.Select(user => user.ToString()));
+                                    if(FinalList != "" && FinalList != null)
+                                    {
+                                        PlanList.FilterValues = FinalList;
+                                        db.Entry(PlanList).State = EntityState.Modified;
+                                    }
+                                    else
+                                    {
+                                        db.Entry(PlanList).State = EntityState.Deleted;
+                                    }
+
+                                }
+
+                                //End
+
+
                             }
                             //// End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
                             else if (section == Enums.Section.Campaign.ToString() && id != 0)
