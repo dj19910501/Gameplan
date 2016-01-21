@@ -53,7 +53,7 @@ CREATE TABLE [dbo].[IntegrationWorkFrontUsers](
 END
 GO
 
-IF (OBJECT_ID('FK_IntegrationWorkFrontTacticSettings_IntegrationInstanceId', 'F') IS NULL)
+IF (OBJECT_ID('FK_IntegrationWorkFrontUsers_IntegrationInstanceId', 'F') IS NULL)
 ALTER TABLE [dbo].[IntegrationWorkFrontUsers]  WITH CHECK ADD  CONSTRAINT [FK_IntegrationWorkFrontUsers_IntegrationInstanceId] FOREIGN KEY([IntegrationInstanceId])
 REFERENCES [dbo].[IntegrationInstance] ([IntegrationInstanceId])
 GO
