@@ -13982,6 +13982,26 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 .partial_wrapper {
     position: relative;
 }
+ 
+  /*by bheru mehta 1686 09-1-2016 start*/
+ .inspect-date  .calender-dropup{
+    top:auto !important;
+    bottom:100% !important;
+    left:auto !important;
+}
+ .inspect-date  .calender-dropdown {
+top:32px !important;
+bottom:auto !important;
+left:auto !important;
+}
+ .revenue-dropup{
+  top: 233px !important;
+}
+.cost-dropup{
+  top: 572px !important;
+}
+
+/*by bheru mehta 1686 09-1-2016 end*/
 
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {

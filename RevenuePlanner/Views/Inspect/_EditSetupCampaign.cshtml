@@ -21,7 +21,7 @@
     }
     @*start Added by Mitesh Vaishnav for PL ticket #972
     Set design of calender popup in google chrome*@
-    @@media screen and (-webkit-min-device-pixel-ratio:0) {
+   @* @@media screen and (-webkit-min-device-pixel-ratio:0) {
     #dp_start .datepicker{
         top: 32px !important;
         left:auto !important;
@@ -32,7 +32,7 @@
         left:auto !important;
      min-width:220px;
     }
-   }
+   } Hide By bhumika its creating issue in chrome *@
    @*End Added by Mitesh Vaishnav for PL ticket #972
     Set design of calender popup in google chrome*@
     #btnCancel {
@@ -523,7 +523,7 @@
     });
 
     $('#dp_start .add-on').click(function (e) {
-        $('#dp_start').datepicker('show');
+        $('#dp_start').datepicker('hide'); /* Bhumika */
         $('#dp_end').datepicker('hide');
         $(".dropdown-menu").css("z-index", "25001");
         var pos = $("#t_startdate").position();
@@ -535,25 +535,82 @@
                 $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
 
                 $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
-                    top: pos_top.toString() + 'px',
-                    display: 'block'
+                   // top: pos_top.toString() + 'px', /* Bhumika */
+                   // display: 'block'
                 });
             }
             else {
                 $('#dp_start').find('.datepicker.dropdown-menu').css({
-                    top: pos_top.toString() + 'px',
-                    display: 'block'
+                   // top: pos_top.toString() + 'px',  /* Bhumika */
+                   // display: 'block'
                 });
             }
+            set_start_date_Position(); /* Bhumika */
         }, 1);
 
         //// To resolve issue of Ticket #1025, Pratik
         $(".datepicker.dropdown-menu").last().css("display", "none");
     })
-
+    function  set_start_date_Position(){
+        var scrollTop = $('.pop-body-wraper').scrollTop();
+        // alert(scrollTop);
+        var calender_div = $('#dp_start').find('.datepicker.dropdown-menu');
+        //alert(calender_div.html());
+        var topOffset = $('#dp_start').offset().top;
+        //alert(topOffset);
+        var windowHeight = $('.pop-body-wraper').height();
+        // calculate the dropdown offset relative to window position
+        var relativeOffset = topOffset - scrollTop;
+        if (relativeOffset > windowHeight / 2 ) {
+            // alert('5');
+            //calender_div.css('top', 'auto');
+            //calender_div.css('bottom', '100%');
+            calender_div.removeClass('calender-dropdown');
+            calender_div.addClass('calender-dropup');
+            $('#dp_start').datepicker('show');
+        }
+        else {
+            // alert('6');
+            //calender_div.css('top', '32px');
+            //calender_div.css('bottom', 'auto');
+            calender_div.removeClass('calender-dropup');
+            calender_div.addClass('calender-dropdown');
+            $('#dp_start').datepicker('show');
+        }
+        scrollTop = 0;
+    }
+    function set_end_date_Position() {
+        var scrollTop = $('.pop-body-wraper').scrollTop();
+        // alert(scrollTop);
+        var calender_div = $('#dp_end').find('.datepicker.dropdown-menu');
+        //alert(calender_div.html());
+        var topOffset = $('#dp_end').offset().top;
+        //alert(topOffset);
+        var windowHeight = $('.pop-body-wraper').height();
+        // calculate the dropdown offset relative to window position
+        var relativeOffset = topOffset - scrollTop;
+        if (relativeOffset > windowHeight / 2) {
+            // alert('5');
+            //calender_div.css('top', 'auto');
+            //calender_div.css('bottom', '100%');
+            calender_div.removeClass('calender-dropdown');
+            calender_div.addClass('calender-dropup');
+            $('#dp_end').datepicker('show');
+        }
+        else {
+            // alert('6');
+            //calender_div.css('top', '32px');
+            //calender_div.css('bottom', 'auto');
+            calender_div.removeClass('calender-dropup');
+            calender_div.addClass('calender-dropdown');
+            $('#dp_end').datepicker('show');
+        }
+        scrollTop = 0;
+    }
+	/* Bhumika End */
     $('#dp_end .add-on').click(function () {
         $('#dp_start').datepicker('hide');
-        $('#dp_end').datepicker('show');
+        $('#dp_end').datepicker('hide');	/* Bhumika */
         $(".dropdown-menu").css("z-index", "25001");
         var pos = $("#t_enddate").position();
         var height = $("#t_enddate").height();
@@ -563,18 +620,19 @@
             if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
                 $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
                 $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
-                    top: pos_top.toString() + 'px',
-                    display: 'block'
+                    //top: pos_top.toString() + 'px', /* Bhumika */
+                   // display: 'block'
 
                 });
             }
             else {
                 $('#dp_end').find('.datepicker.dropdown-menu').css({
-                    top: pos_top.toString() + 'px',
-                    display: 'block'
+                   // top: pos_top.toString() + 'px',		  /* Bhumika */
+                   // display: 'block'
 
                 });
             }
+            set_end_date_Position();   /* Bhumika */
         }, 1);
 
         //// To resolve issue of Ticket #1025, Pratik
