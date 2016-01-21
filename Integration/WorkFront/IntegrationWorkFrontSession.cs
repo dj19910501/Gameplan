@@ -279,7 +279,6 @@ namespace Integration.WorkFront
             {
                 SyncInstanceTemplates(ref SyncErrors);
                 SyncRequestQueues(ref SyncErrors);
-                SyncInstanceRequests(ref SyncErrors);
                 SyncInstanceUsers(ref SyncErrors);
                 //Retrieves list of all tactics tied to the integrated programs and deployed to integrationtic
                 List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.IsDeployedToIntegration == true &&
@@ -673,82 +672,6 @@ namespace Integration.WorkFront
             return syncError;
         }
 
-        ///Create requests. Do not retrieve them, as there can be requests in WorkFront that are not supposed to by synced with Plan
-        ///Plan creates and tracks requests. Do not need to pull in other requests from WorkFront as they aren't tied to Plan projects
-        ///If request is in database but not in WorkFront, set the db entry to IsDeleted and set WorkFrontRequestStatus to 'deleted'
-        ///<param name="SyncErrors">
-        /// error list for tracking
-        /// </param>
-        /// <returns>
-        /// Bool: true if sync error, false otherwise
-        /// </returns>
-        private bool SyncInstanceRequests(ref List<SyncError> SyncErrors)
-        {
-            bool syncError = false;
-            //update WorkFront requests for the instance
-            try
-            {
-                //Get the list of requests in the database
-                List<IntegrationWorkFrontRequest> requestsFromDB = db.IntegrationWorkFrontRequests.Where(r => r.IntegrationInstanceId == _integrationInstanceId && r.IsDeleted == false).ToList();
-                List<string> requestIdsFromDB = requestsFromDB.Select(req => req.RequestId).ToList();
-                //For comparison purposes, create a list of requests from WorkFront
-                List<string> requestIdsFromWorkFront = new List<string>();
-
-                foreach (IntegrationWorkFrontRequest req in requestsFromDB)
-                {
-                    JToken requestInfoFromWorkFront = client.Search(ObjCode.OPTASK, new { fields = "assignedToID,categoryID,isHelpDesk, resolvingObjCode,resolvingObjID,status", isHelpDesk = "true", ID = req.RequestId });
-                   if (requestInfoFromWorkFront != null)
-                   {
-                       req.RequestName = requestInfoFromWorkFront["name"].ToString();
-                       req.WorkFrontRequestStatus = requestInfoFromWorkFront["status"].ToString();
-                       if (requestInfoFromWorkFront["resolvingObjCode"] == null)
-                       {
-                            req.ResolvingObjType = "N/A";
-                       }
-                       else
-                       {
-                            req.ResolvingObjType = requestInfoFromWorkFront["resolvingObjCode"].ToString();
-                       }
-                       if (requestInfoFromWorkFront["resolvingObjID"] == null)
-                       {
-                            req.ResolvingObjId = "N/A";
-                       }
-                       else
-                       {
-                            req.ResolvingObjId = requestInfoFromWorkFront["resolvingObjID"].ToString();
-                       }
-                       db.Entry(req).State = EntityState.Modified;
-                      
-                   }
-                   else //it's in the database and not set to deleted, but not found in WorkFront,so need to create the request in WorkFront. 
-                   {
-                       Plan_Campaign_Program_Tactic tactic = db.Plan_Campaign_Program_Tactic.Single(t=> t.PlanTacticId == req.PlanTacticId);
-                       string projectIdFromDb = tactic.IntegrationWorkFrontProjectID;
-                       JToken createdRequest = client.Create(ObjCode.OPTASK, new { isHelpDesk = "true", projectID = projectIdFromDb, name = req.RequestName, opTaskType = "REQ" });
-                       if (createdRequest == null)
-                       {
-                           throw new ClientException("Error creating Request");
-                       }
-                   }
-                }
-            }
-            catch (Exception ex)
-            {
-                syncError = true;
-                SyncError error = new SyncError();
-                error.EntityId = _integrationInstanceId;
-                error.EntityType = Enums.EntityType.IntegrationInstance;
-                error.SectionName = "Sync Integration Requests";
-                error.Message = ex.Message;
-                error.SyncStatus = Enums.SyncStatus.Error;
-                error.TimeStamp = DateTime.Now;
-                SyncErrors.Add(error);
-            }
-            return syncError;
-        }
-
-
-
         /// <summary>
         /// Tactic Level sync method 
         /// sets up tactic integration logs
@@ -790,8 +713,8 @@ namespace Integration.WorkFront
                 }
                 else//no project ID, so check the tactic approval behavior options
                 {
-                    IntegrationWorkFrontTacticSetting approvalSettings = db.IntegrationWorkFrontTacticSettings.Single(t => t.TacticId == tactic.PlanTacticId && t.IsDeleted == false);
-                    if (approvalSettings == null) { throw new ClientException("Cound not find Tactic WorkFront Approval Settings"); }
+                    IntegrationWorkFrontTacticSetting approvalSettings = db.IntegrationWorkFrontTacticSettings.SingleOrDefault(t => t.TacticId == tactic.PlanTacticId && t.IsDeleted == false);
+                    if (approvalSettings == null) { throw new ClientException("Could not find Tactic WorkFront Approval Settings"); }
                     if (approvalSettings.TacticApprovalObject == Enums.WorkFrontTacticApprovalObject.Project.ToString())
                     {
                         //we need to sync the project, so send to SyncTacticProject
@@ -1016,6 +939,15 @@ namespace Integration.WorkFront
         /// Creates request against selected request queue and assigns request to selected workfront user
         /// Need to check request to see if it has been converted to a project. If it has, capture the project ID, store it, and resync the tactic
         /// Only create comment on object creation
+        /// Create only - Do not retrieve them, as there can be requests in WorkFront that are not supposed to by synced with Plan
+        ///Plan creates and tracks requests. Do not need to pull in other requests from WorkFront as they aren't tied to Plan projects
+        ///If request is in database but not in WorkFront, set the db entry to IsDeleted and set WorkFrontRequestStatus to 'deleted'
+        ///<param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
+        /// <returns>
+        /// Bool: true if sync error, false otherwise
+        /// </returns>
         /// </summary>
         ///  <param name="tactic">
         /// the tactic to by synced
@@ -1028,23 +960,67 @@ namespace Integration.WorkFront
         /// </returns>
         private bool SyncTacticRequest(Plan_Campaign_Program_Tactic tactic, ref List<SyncError> SyncErrors, ref IntegrationInstancePlanEntityLog instanceLogTactic )
         {
-            bool tacticError = false;
-
-            IntegrationWorkFrontRequest request= db.IntegrationWorkFrontRequests.Single(r => r.PlanTacticId == tactic.PlanTacticId && r.IsDeleted == false);
-            if (request == null) { throw new ClientException("No Request information found in database"); }
-            if(request.RequestId==null) 
+            bool syncError = false;
+            //update WorkFront requests for the instance
+            try
             {
-                //create a request
-                //1: pull the workfront tactic 
-            }
-            else
-            {
-                //update the request
-                //check to see if there is a resolving obj id (PROJ)
-                //if converted, capture the proj id, store it in the tactic, and resync the tactic to sync the project
-            }
+                //Get the list of requests in the database
+                IntegrationWorkFrontRequest requestFromDB = db.IntegrationWorkFrontRequests.SingleOrDefault(r => r.PlanTacticId == tactic.PlanTacticId && r.IntegrationInstanceId == _integrationInstanceId && r.IsDeleted == false);
+                if (requestFromDB == null) { throw new ClientException("No available request settings");}
 
-            return tacticError;
+                if (requestFromDB.RequestId == null) //no request ID in DB yet - need to create it and push to WorkFront
+                {
+                    string assignee = db.IntegrationWorkFrontUsers.Single(u => u.Id == requestFromDB.WorkFrontUserId).WorkFrontUserId;
+                    string requestQueueId = db.IntegrationWorkFrontRequestQueues.Single(q => q.Id == requestFromDB.QueueId).RequestQueueId;
+                    JToken queue = client.Search(ObjCode.QUEUE, new {ID = requestQueueId, fields="projectID"});
+                    string projectForRequest = queue["data"][0]["projectID"].ToString();
+                    JToken request = client.Create(ObjCode.OPTASK, new { projectId = projectForRequest, name = requestFromDB.RequestName, isHelpDesk = "true", opTaskType = "REQ"});
+                    if (request == null) 
+                    { 
+                        throw new ClientException("Cannot create request"); 
+                    }
+                    else
+                    {
+                        requestFromDB.RequestId = request["ID"].ToString();
+                        requestFromDB.WorkFrontRequestStatus = request["status"].ToString();
+                    }
+                }
+                else
+                {
+                    JToken requestInfoFromWorkFront = client.Search(ObjCode.OPTASK, new { fields = "assignedToID,categoryID,isHelpDesk,resolvingObjCode,resolvingObjID,status", isHelpDesk = "true", ID = requestFromDB.RequestId });
+                    if (requestInfoFromWorkFront != null) //sync it
+                    {
+                        requestFromDB.RequestName = requestInfoFromWorkFront["name"].ToString();
+                        requestFromDB.WorkFrontRequestStatus = requestInfoFromWorkFront["status"].ToString();
+                        requestFromDB.ResolvingObjType = requestInfoFromWorkFront["resolvingObjCode"].ToString();
+                        requestFromDB.ResolvingObjId = requestInfoFromWorkFront["resolvingObjID"].ToString();
+
+                        if (requestFromDB.ResolvingObjType == ObjCode.PROJECT.ToString() && requestFromDB.ResolvingObjId != null)
+                        {
+                            //TODO - request has been converted to a project
+                        }
+                    }
+                    else //it's in the database and not set to deleted. Set it to deleted and set the status to deleted
+                    {
+                        requestFromDB.IsDeleted = true;
+                        requestFromDB.WorkFrontRequestStatus = "Deleted";
+                    }
+                    db.Entry(requestFromDB).State = EntityState.Modified;
+                }
+            }
+            catch (Exception ex)
+            {
+                syncError = true;
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.SectionName = "Sync Tactic Request";
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
+            }
+            return syncError;
         }
 
 

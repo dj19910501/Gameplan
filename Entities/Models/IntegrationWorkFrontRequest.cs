@@ -20,7 +20,7 @@ namespace RevenuePlanner.Models
         public string RequestId { get; set; }
         public string RequestName { get; set; }
         public int QueueId { get; set; }
-        public string AssignedTo { get; set; }
+        public int WorkFrontUserId { get; set; }
         public string WorkFrontRequestStatus { get; set; }
         public string ResolvingObjType { get; set; }
         public string ResolvingObjId { get; set; }
@@ -29,5 +29,6 @@ namespace RevenuePlanner.Models
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationWorkFrontRequestQueue IntegrationWorkFrontRequestQueue { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
+        public virtual IntegrationWorkFrontUser IntegrationWorkFrontUser { get; set; }
     }
 }

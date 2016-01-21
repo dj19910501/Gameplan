@@ -18,7 +18,7 @@ CREATE TABLE [dbo].[IntegrationWorkFrontRequests](
 	[RequestId] [nvarchar](50) NULL,
 	[RequestName] [nvarchar](255) NOT NULL,
 	[QueueId] [int] NOT NULL,
-	[AssignedTo] [nvarchar](50) NOT NULL,
+	[WorkFrontUserId] [int] NOT NULL,
 	[WorkFrontRequestStatus] [nvarchar](20) NULL,
 	[ResolvingObjType] [nvarchar](10) NULL,
 	[ResolvingObjId] [nvarchar](50) NULL,
@@ -28,7 +28,7 @@ CREATE TABLE [dbo].[IntegrationWorkFrontRequests](
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
-end
+END
 GO
 
 if exists (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME='IntegrationWorkFrontRequests') and 
@@ -66,4 +66,15 @@ GO
 
 if exists (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME='IntegrationWorkFrontRequests')
 ALTER TABLE [dbo].[IntegrationWorkFrontRequests] CHECK CONSTRAINT [FK_IntegrationWorkFrontRequests_TacticId]
+GO
+
+if exists (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME='IntegrationWorkFrontRequests') and 
+	exists (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME='IntegrationWorkFrontUsers') and 
+	not exists (SELECT 1 FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS  WHERE CONSTRAINT_NAME='FK_IntegrationWorkFrontRequests_WorkFrontUser')
+ALTER TABLE [dbo].[IntegrationWorkFrontRequests]  WITH CHECK ADD  CONSTRAINT [FK_IntegrationWorkFrontRequests_WorkFrontUser] FOREIGN KEY([WorkFrontUserId])
+REFERENCES [dbo].[IntegrationWorkFrontUsers] ([Id])
+GO
+
+if exists (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME='FK_IntegrationWorkFrontRequests_WorkFrontUser')
+ALTER TABLE [dbo].[IntegrationWorkFrontRequests] CHECK CONSTRAINT [FK_IntegrationWorkFrontRequests_WorkFrontUser]
 GO

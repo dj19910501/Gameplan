@@ -173,10 +173,11 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId" />
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTacticSetting" Width="1.5" PointX="12.75" PointY="35.125" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontRequest" Width="1.5" PointX="13.75" PointY="26.25" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontRequest" Width="1.5" PointX="12.75" PointY="23.625" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_WorkFrontUser" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

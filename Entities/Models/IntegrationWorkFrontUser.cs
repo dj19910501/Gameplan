@@ -14,6 +14,11 @@ namespace RevenuePlanner.Models
     
     public partial class IntegrationWorkFrontUser
     {
+        public IntegrationWorkFrontUser()
+        {
+            this.IntegrationWorkFrontRequests = new HashSet<IntegrationWorkFrontRequest>();
+        }
+    
         public int Id { get; set; }
         public string WorkFrontUserId { get; set; }
         public string WorkFrontUserName { get; set; }
@@ -21,5 +26,6 @@ namespace RevenuePlanner.Models
         public bool IsDeleted { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
+        public virtual ICollection<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
     }
 }
