@@ -717,8 +717,8 @@
             });
 
             $('#ulSelectedOwner li').each(function () {
-                debugger;
-                if ($(this).attr('id').replace('liOwner',"") != '@Sessions.User.UserId') {
+                if ($(this).attr('id').replace('liOwner', "") != '@Sessions.User.UserId') {
+
                     $(this).removeAttr("checked");
                     $(this).parent().removeClass("close-list");
                 }
