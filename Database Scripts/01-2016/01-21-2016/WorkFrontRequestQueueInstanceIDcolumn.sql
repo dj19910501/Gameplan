@@ -1,7 +1,7 @@
 /* --------- Start Script of PL ticket #1897 --------- */
 -- Created by : Brad Gray
--- Created On : 1/20/2016
--- Description : Drop and recreate the IntegratinWorkFrontRequests table for field updates
+-- Created On : 1/21/2016
+-- Description : Add Integration Instance field to IntegerationWorkFrontRequestQueues table. Ensures fk to request table
 
 SET ANSI_NULLS ON
 GO
