@@ -1493,6 +1493,7 @@
 
 <script type="text/javascript">
     var scrollstate = 0;
+    var bodyscrollpos = 0;
     var divPartial = "#divPartial";
     var GetLastview = true;
     var InspectSuccMsg = "";
@@ -4473,6 +4474,8 @@
                             renderGantt(data.taskData);
                             var _scrollY = scrollstate.y
                             gantt.scrollTo(0, _scrollY);
+                            $("html, body").animate({ scrollTop: bodyscrollpos }, 100);
+
                             var w1 = window.innerWidth;
                             var w3 = document.body.clientWidth;
 
@@ -5251,6 +5254,8 @@
         //// Attaching double click event
         eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) {
             scrollstate = gantt.getScrollState();
+            bodyscrollpos= $(window).scrollTop();
+
             ShowModel(taskId, null)
         });
 
@@ -5266,6 +5271,7 @@
         //// Attaching double click event
         eventTaskDoubleClickevent = gantt.attachEvent("onTaskRowClick", function (taskId, trg) {
             scrollstate = gantt.getScrollState();
+            bodyscrollpos = $(window).scrollTop();
         });
     }
 
@@ -6909,6 +6915,7 @@
         $('#CloneCampaign1').click(function () {
             if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
                 scrollstate = gantt.getScrollState();
+                bodyscrollpos = $(window).scrollTop();
             }
             isCopyTactic = CampaignId;
             var idPlanCamaign = CampaignId;//$("#hdnPlanCampaignId").val();
@@ -6959,6 +6966,7 @@
         $('#ChildProgram').click(function () {
             if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
                 scrollstate = gantt.getScrollState();
+                bodyscrollpos = $(window).scrollTop();
             }
             isCopyTactic = CampaignId;
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RequestedModule');
@@ -6976,6 +6984,7 @@
         $('#CloneProgram1').click(function () {
             if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
                 scrollstate = gantt.getScrollState();
+                bodyscrollpos = $(window).scrollTop();
             }
             isCopyTactic = ProgramId;
             var idPlanProgram = ProgramId;// $("#hdnPlanProgramId").val();
@@ -7022,6 +7031,7 @@
         $("#ChildTactic").on("click", function () {
             if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
                 scrollstate = gantt.getScrollState();
+                bodyscrollpos = $(window).scrollTop();
             }
             isCopyTactic = ProgramId;
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');
@@ -7036,6 +7046,7 @@
 
             if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
                 scrollstate = gantt.getScrollState();
+                bodyscrollpos = $(window).scrollTop();
             }
             isCopyTactic = ProgramId;
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');
@@ -7049,6 +7060,7 @@
         $('#CloneTactic1').click(function () {
             if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
                 scrollstate = gantt.getScrollState();
+                bodyscrollpos = $(window).scrollTop();
             }
             isCopyTactic = ProgramId;
             var idPlanTactic = TacticId;// $("#hdnPlanTacticId").val();
@@ -7128,6 +7140,7 @@
         $('#CloneLineItem').click(function () {
             if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
                 scrollstate = gantt.getScrollState();
+                bodyscrollpos = $(window).scrollTop();
             }
             isCopyTactic = TacticId;
             var idPlanLineItem = LineId;// $("#hdnPlanTacticId").val();
