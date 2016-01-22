@@ -197,5 +197,14 @@ namespace RevenuePlanner.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DeleteBudget", budgetDetailIdParameter, clientIdParameter);
         }
+    
+        public virtual ObjectResult<GetCollaboratorId_Result> GetCollaboratorId(Nullable<int> planId)
+        {
+            var planIdParameter = planId.HasValue ?
+                new ObjectParameter("PlanId", planId) :
+                new ObjectParameter("PlanId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCollaboratorId_Result>("GetCollaboratorId", planIdParameter);
+        }
     }
 }

@@ -1338,8 +1338,12 @@ namespace RevenuePlanner.Helpers
                 collaboratorId.AddRange(planCampaignModifiedBy);
             }
 
-            List<Plan_Campaign_Program_Tactic_Comment> planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId))
-                                                                           .Select(pc => pc).ToList();
+
+            //List<Plan_Campaign_Program_Tactic_Comment> planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId))
+            //                                                               .Select(pc => pc).ToList();
+            // Add By Nishant Sheth
+            // Desc :: #1915 for performance
+            var planTacticComment = db.GetCollaboratorId(planId);
             var planTacticCommentCreatedBy = planTacticComment.Select(pc => pc.CreatedBy.ToString()).ToList();
             collaboratorId.AddRange(planTacticCommentCreatedBy);
 
