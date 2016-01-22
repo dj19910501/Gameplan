@@ -597,6 +597,14 @@
 
     function SaveLastSetofViews(ViewName) {
         filters.customFieldIds = [];
+        //Added by Rahul Shah on 22/01/2016 for PL #1898
+        filters.OwnerIds = [];
+        $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.OwnerIds.push(chkid);
+            }
+        });
 
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
@@ -703,8 +711,8 @@
     }
 
     function onClickPlanTitle() {
-        //Added by Rahul Shah for PL #1898
-            $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+             //Added by Rahul Shah for PL #1898
+        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
             $('#divCustomFieldsFilter').find("li").each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -716,15 +724,15 @@
                 $(this).parent().removeClass("close-list");
             });
 
-            $('#ulSelectedOwner li').each(function () {
-                if ($(this).attr('id').replace('liOwner', "") != '@Sessions.User.UserId') {
-
-                    $(this).removeAttr("checked");
+            $('#ulSelectedOwner li input:checkbox').each(function () {
+                 if ($(this).attr('id') != '@Sessions.User.UserId') {
+                 
+                   $(this).removeAttr("checked");
                     $(this).parent().removeClass("close-list");
                 }
                 else {
                     
-                    $(this).attr('checked', 'checed')
+                    $(this).attr('checked', 'checked')
                     $(this).parent().addClass("close-list");
 
                 }
@@ -740,13 +748,13 @@
                 $(this).parent().removeClass("close-list");
             });
             CurrentPlanId = $(this).attr('value');
+            SaveLastSetofViews();
             $("#CurrentPlanId").val(CurrentPlanId);
             if (CurrentPlanId > 0) {  
                 GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
                 GetList(CurrentPlanId);
-            }
-            SaveLastSetofViews();
+            }         
         });
     }
 

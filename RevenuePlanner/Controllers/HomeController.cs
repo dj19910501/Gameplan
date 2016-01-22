@@ -53,7 +53,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planProgramId">planProgramId used for notification email shared link</param>
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId = 0)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId = 0, bool IsPlanSelector = false)
         {
             //// To get permission status for Plan create, By dharmraj PL #519
             ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
@@ -64,8 +64,8 @@ namespace RevenuePlanner.Controllers
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             bool IsPlanEditable = false;
             bool isPublished = false;
-
-
+            //Added by Rahul Shah on 22/01/2016 for PL #1898
+            ViewBag.IsPlanSelector = IsPlanSelector;
 
 
             //// Set viewbag for notification email shared link inspect popup

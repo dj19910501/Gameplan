@@ -27,6 +27,7 @@
     var errormsgduplicate = (string)ViewBag.ErrorMessageDuplicatePlan;
     var ListBudgetingPlan = Model.objplanhomemodelheader != null ? Model.objplanhomemodelheader.plans : new List<SelectListItem>(); //Added By Komal Rawal for new homepage UI
     var IsGridView = (bool)ViewBag.GridView;
+    var IsPlanSelector = (bool)ViewBag.IsPlanSelector;
 
     //Added by Ravindra for  PL Ticket #1411 date 07/07/2015
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
@@ -51,6 +52,7 @@
 @Html.Hidden("hdnIsImprovement", isImprovement)
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
 @Html.Hidden("IsGridView", IsGridView)
+@Html.Hidden("IsPlanSelector", IsPlanSelector)
 @Html.Hidden("FilterName", FilterName)
 @Html.Hidden("IsTacticActualsAddEditAuthorized", IsTacticActualsAddEditAuthorized)
 
@@ -448,37 +450,17 @@
 
         });
 
-        function onClickPlanTitle() {
+    function onClickPlanTitle() {
 
-            $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            CurrentPlanId = $(this).attr('value');
+            $("#CurrentPlanId").val(CurrentPlanId);
 
-                CurrentPlanId = $(this).attr('value');
-                $("#CurrentPlanId").val(CurrentPlanId);
+            SelectedPlanTitle = $(this).text();
 
-                SelectedPlanTitle = $(this).text();
-
-                if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                    if (CurrentPlanId > 0) {
-                        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                            //EditPlanHome();
-                            var pid = $("#CurrentPlanId").val();
-
-                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
-                            window.location.href = url;
-                        }
-                        else {
-                            //   SaveLastSetofViews();
-                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
-                            window.location.href = url;
-                        }
-                    }
-
-
-                }
-
-
-            });
             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                //Added by Rahul Shah on 22/01/2016 for PL #1898
+                IsDropdownChange = true;
                 //Added by Rahul Shah for PL #1898
                 $('#divCustomFieldsFilter').find("li").each(function (i) {
                     $(this).removeClass("close-list");
@@ -508,11 +490,60 @@
                     $(this).parent().removeClass("close-list");
                 });
 
-                IsPlanChange = true;
                 SaveLastSetofViews();
+                if (CurrentPlanId > 0) {
+                    if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                        //EditPlanHome();
+                        var pid = $("#CurrentPlanId").val();
+
+                        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
+                        window.location.href = url;
+                    }
+                    else {
+                        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
+                        window.location.href = url;
+                    }
+                }
+
             }
 
+        });
+        
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()' && $('#IsPlanSelector').val() == "true") {
+            //Added by Rahul Shah for PL #1898
+            $('#divCustomFieldsFilter').find("li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+
+            $("#accordion-Year li input:checkbox:checked").each(function () {
+                $(this).removeAttr("checked");
+                $(this).parent().removeClass("close-list");
+            });
+
+            $('#ulSelectedOwner li input:checkbox:checked').each(function () {
+                if ($(this).attr('id') != '@Sessions.User.UserId') {
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                }
+
+            });
+
+            $('#ulTacticType li input:checkbox:checked').each(function () {
+                $(this).removeAttr("checked");
+                $(this).parent().removeClass("close-list");
+            });
+            $('#ulStatus li input:checkbox:checked').each(function () {
+                $(this).removeAttr("checked");
+                $(this).parent().removeClass("close-list");
+            });
+
+            IsPlanChange = true;
+            SaveLastSetofViews();
         }
+
+    }
 
         function GetOwnerListForFilter(Planids, async) {
            

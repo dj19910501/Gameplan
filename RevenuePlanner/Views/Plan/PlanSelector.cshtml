@@ -167,6 +167,13 @@
                        key: 'ActiveMenu',
                        Value: "Plan"
                    });
+                //Added by Rahul Shah on 22/01/2016 for PL #1898
+                queryStringArr.push(
+                 {
+                     key: 'IsPlanSelector',
+                     Value: "true"
+                 });
+
 
                 formSubmitEvent('@Url.Content("~/Home/Index")', queryStringArr);
             }
