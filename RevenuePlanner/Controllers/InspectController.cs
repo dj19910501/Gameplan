@@ -2695,8 +2695,22 @@ namespace RevenuePlanner.Controllers
                     IsDeployToIntegrationVisible = true;
                 }
             }
-
+            
             ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
+
+            // Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
+            bool isSyncSF = false, isSyncEloqua = false;
+            if (IsDeployToIntegrationVisible)
+            {
+                if (pcpt.IsSyncSalesForce != null && pcpt.IsSyncSalesForce.HasValue && pcpt.IsSyncSalesForce.Value)     // Get IsSyncSalesforce flag
+                    isSyncSF = true;
+                if (pcpt.IsSyncEloqua != null && pcpt.IsSyncEloqua.HasValue && pcpt.IsSyncEloqua.Value)                 // Get IsSyncEloqua flag
+                    isSyncEloqua = true;
+            }
+            ViewBag.IsSyncSF = isSyncSF;
+            ViewBag.IsSyncEloqua = isSyncEloqua;
+            // End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
+
             ///Begin Added by Brad Gray 08-10-2015 for PL#1462
             Dictionary<string, string> IntegrationLinkDictionary = new Dictionary<string, string>();
 
@@ -5925,6 +5939,60 @@ namespace RevenuePlanner.Controllers
 
             return null;
         }
+
+        public JsonResult SaveReviewIntegrationInfo(string title = "", string Id = "", string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "")
+        {
+            bool IsSyncSF = false, IsSyncEloqua = false, IsDeployToIntegration = false, IsDuplicate = false; // Declare local variables.
+            try
+            {
+                // Save Tactic Title.
+                JsonResult objJasonResult = SaveTacticTitle(Id, title, ref IsDuplicate);
+                if (objJasonResult != null && IsDuplicate)
+                    return objJasonResult;
+
+                int planTacticId = !string.IsNullOrEmpty(Id)? Convert.ToInt32(Id):0;
+                Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
+                objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId.Equals(planTacticId) && tac.IsDeleted == false).FirstOrDefault();
+                if (objTactic != null)
+                {
+                    IsDeployToIntegration = !string.IsNullOrEmpty(isDeployToIntegration) ? bool.Parse(isDeployToIntegration) : false; // Parse isDeployToIntegration value.
+                    IsSyncSF = !string.IsNullOrEmpty(isSyncSF) ? bool.Parse(isSyncSF) : false;                                        // Parse isSyncSF value
+                    IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;                            // Parse isSyncEloqua value
+                    objTactic.IsDeployedToIntegration = IsDeployToIntegration;
+                    objTactic.IsSyncEloqua = IsSyncEloqua;
+                    objTactic.IsSyncSalesForce = IsSyncSF;
+                    objTactic.ModifiedBy = Sessions.User.UserId;
+                    objTactic.ModifiedDate = DateTime.Now;
+                    db.Entry(objTactic).State = EntityState.Modified;
+
+                    #region "Update linked Tactic Integration Settings"
+                    if (objTactic.LinkedTacticId != null && objTactic.LinkedTacticId.HasValue && objTactic.LinkedTacticId.Value > 0)
+                    {
+                        int LinkedTacticId = objTactic.LinkedTacticId.Value;
+                        Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                        objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId.Equals(LinkedTacticId) && tac.IsDeleted == false).FirstOrDefault();
+                        objLinkedTactic.IsDeployedToIntegration = IsDeployToIntegration;
+                        objLinkedTactic.IsSyncEloqua = IsSyncEloqua;
+                        objLinkedTactic.IsSyncSalesForce = IsSyncSF;
+                        objLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                        objLinkedTactic.ModifiedDate = DateTime.Now;
+                        db.Entry(objLinkedTactic).State = EntityState.Modified;
+                    } 
+                    #endregion
+
+                    db.SaveChanges();
+
+                    return objJasonResult;  // if successfully tactic updated then send TacticUpdte message redirected from "SaveTacticTitle" function.
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(new { id = 0 });
+        }
+
         #endregion
 
         #region "Improvement Tactic related Functions"
@@ -9372,6 +9440,87 @@ namespace RevenuePlanner.Controllers
             return Json(new { id = 0 });
         }
 
+        public JsonResult SaveTacticTitle(string Id, string title,ref bool isDuplicate)
+        {
+            //bool isResultError = false;
+            try
+            {
+                int Tacticid = Convert.ToInt32(Id);
+                    int linkedTacticId = 0;
+
+                    //   List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Select(tac => tac).ToList();
+                    var objpcpt = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == Tacticid).FirstOrDefault();
+                    int pid = objpcpt.PlanProgramId;
+                    int cid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == pid).Select(program => program.PlanCampaignId).FirstOrDefault();
+
+                    #region "Retrieve linkedTactic"
+                    linkedTacticId = (objpcpt != null && objpcpt.LinkedTacticId.HasValue) ? objpcpt.LinkedTacticId.Value : 0;
+                    
+                    #endregion
+                    //// Get Tactic duplicate record.
+                    var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
+                                  join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                  join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                  where pcpt.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(Tacticid) && pcpt.IsDeleted.Equals(false)
+                                  && pcp.PlanProgramId == objpcpt.PlanProgramId
+                                  select pcp).FirstOrDefault();
+
+                    //// Get Linked Tactic duplicate record.
+                    Plan_Campaign_Program_Tactic dupLinkedTactic = null;
+                    Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
+                    if (linkedTacticId > 0)
+                    {
+                        linkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
+
+                        dupLinkedTactic = (from pcpt in db.Plan_Campaign_Program_Tactic
+                                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                           where pcpt.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(linkedTacticId) && pcpt.IsDeleted.Equals(false)
+                                           && pcp.PlanProgramId == linkedTactic.PlanProgramId
+                                           select pcpt).FirstOrDefault();
+                    }
+
+                    //// if duplicate record exist then return duplication message.
+                    if (dupLinkedTactic != null)
+                    {
+                        isDuplicate = true;
+                        string strDuplicateMessage = string.Format(Common.objCached.LinkedPlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                        return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+                    }
+                    else if (pcpvar != null)
+                    {
+                        isDuplicate = true;
+                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                        return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+                    }
+                    else
+                    {
+
+                        Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(Tacticid)).FirstOrDefault();
+                        pcpobj.Title = title;
+                        db.Entry(pcpobj).State = EntityState.Modified;
+
+                        #region "update linked Tactic"
+                        if (linkedTacticId > 0)
+                        {
+                            Plan_Campaign_Program_Tactic lnkPCPT = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
+                            lnkPCPT.Title = title;
+                            db.Entry(lnkPCPT).State = EntityState.Modified;
+                        }
+                        #endregion
+
+                        db.SaveChanges();
+                        string strMessag = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                        return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = Tacticid }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid, tacticStatus = pcpobj.Status });
+                    }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(new { id = 0 });
+        }
+
         /// <summary>
         /// Load program title and Id based on campaign Id 
         /// </summary>
@@ -10414,7 +10563,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="section">Decide for wich saction (tactic,program or campaign) status will be updated)</param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
         [HttpPost]
-        public JsonResult ApprovedTactic(int planTacticId, string status, string section)
+        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "")
         {
             int planid = 0;
             int result = 0;
@@ -10502,6 +10651,37 @@ namespace RevenuePlanner.Controllers
                                     Plan_Campaign_Program_Tactic tactic = Tacticlist.Where(pt => pt.PlanTacticId == planTacticId).FirstOrDefault();
                                     bool isApproved = false;
                                     DateTime todaydate = DateTime.Now;
+
+                                    #region "Update Tactic Integration Settings"
+                                    bool IsSyncSF = false, IsSyncEloqua = false, IsDeployToIntegration = false; // Declare local variables.
+                                    IsDeployToIntegration = !string.IsNullOrEmpty(isDeployToIntegration) ? bool.Parse(isDeployToIntegration) : false; // Parse isDeployToIntegration value.
+                                    IsSyncSF = !string.IsNullOrEmpty(isSyncSF) ? bool.Parse(isSyncSF) : false;                                        // Parse isSyncSF value
+                                    IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;
+                                    // Parse isSyncEloqua value
+
+                                    tactic.IsDeployedToIntegration = IsDeployToIntegration;
+                                    tactic.IsSyncEloqua = IsSyncEloqua;
+                                    tactic.IsSyncSalesForce = IsSyncSF;
+                                    tactic.ModifiedBy = Sessions.User.UserId;
+                                    tactic.ModifiedDate = DateTime.Now;
+                                    db.Entry(tactic).State = EntityState.Modified;
+
+                                    #region "Update linked Tactic Integration Settings"
+                                    if (Linkedtacticobj != null)
+                                    {
+                                        Linkedtacticobj.IsDeployedToIntegration = IsDeployToIntegration;
+                                        Linkedtacticobj.IsSyncEloqua = IsSyncEloqua;
+                                        Linkedtacticobj.IsSyncSalesForce = IsSyncSF;
+                                        Linkedtacticobj.ModifiedBy = Sessions.User.UserId;
+                                        Linkedtacticobj.ModifiedDate = DateTime.Now;
+                                        db.Entry(Linkedtacticobj).State = EntityState.Modified;
+                                    }
+                                    #endregion
+
+                                    db.SaveChanges();
+
+                                    #endregion
+
                                     if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                     {
                                         tactic.Status = status;

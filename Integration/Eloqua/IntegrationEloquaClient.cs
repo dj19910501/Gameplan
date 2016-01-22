@@ -294,7 +294,7 @@ namespace Integration.Eloqua
                 StringBuilder sb = new StringBuilder();
                 if (EntityType.Tactic.Equals(_entityType))
                 {
-                    List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
+                    List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && statusList.Contains(tactic.Status) && tactic.IsSyncEloqua.HasValue && tactic.IsSyncEloqua.Value == true).ToList();
                     Plan_Campaign_Program_Tactic planTactic = tblTactic.Where(tactic => tactic.PlanTacticId == _id).FirstOrDefault();
                     if (planTactic != null)
                     {
@@ -609,7 +609,7 @@ namespace Integration.Eloqua
                 int total = 0;
                 //int pageSize = 10;
                 int maxpage = 0;
-                List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
+                List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncEloqua.HasValue && tactic.IsSyncEloqua.Value == true).ToList();
                 List<Plan_Campaign_Program_Tactic> tacticList = tblTactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
                 List<Plan_Improvement_Campaign_Program_Tactic> IMPtacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
                 if (tacticList.Count > 0 || IMPtacticList.Count > 0)

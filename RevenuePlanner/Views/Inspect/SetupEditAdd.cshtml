@@ -153,7 +153,7 @@
             <span style="min-width: 100%; position: relative; display: block;">
                 @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)Model.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
             </span>
-            <p class="margin-top-10">Tactic Planned Cost</p>
+            <p>Tactic Planned Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Start Date</p>
             <span style="position: relative;">
@@ -187,7 +187,7 @@
                 @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = Model.Owner })
             }
 
-            @if (ExtIntService)
+            @*@if (ExtIntService)
             {
 
                 <p style="width: 110%;" class="margin-top-10">Deployed to Integration</p>
@@ -199,7 +199,7 @@
                 {
                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Don't sync to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
                 }
-            }
+            }*@
 
             <div class="cf width100">
                 <div class="margin-right10 pull-left" style="width: 47%">

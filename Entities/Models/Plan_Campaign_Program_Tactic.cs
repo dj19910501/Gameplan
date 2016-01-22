@@ -51,6 +51,8 @@ namespace RevenuePlanner.Models
         public string IntegrationInstanceEloquaId { get; set; }
         public Nullable<int> LinkedTacticId { get; set; }
         public Nullable<int> LinkedPlanId { get; set; }
+        public Nullable<bool> IsSyncSalesForce { get; set; }
+        public Nullable<bool> IsSyncEloqua { get; set; }
     
         public virtual Plan_Campaign_Program Plan_Campaign_Program { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }

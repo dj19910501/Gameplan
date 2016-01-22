@@ -20,6 +20,8 @@
     var tacticEloquaInstance = ViewBag.TacticEloquaInstance;
     var tacticIntegrationProjMgmtInstance = ViewBag.TacticIntegrationProjMgmtInstance;
     List<RevenuePlanner.Models.CustomFieldReviewTab> topThreeCustomFields = ViewBag.TopThreeCustomFields;
+    bool IsSyncSF = (bool)ViewBag.IsSyncSF;             // Get IsSyncSalesforce flag
+    bool IsSyncEloqua = (bool)ViewBag.IsSyncEloqua;     // Get IsSyncEloqua flag
 }
 
 
@@ -162,7 +164,8 @@
                 </div>
             }
         </div>
-
+        @if (tacticReview.IsIntegrationInstanceExist == "Yes")
+        {
         <!--Begin PL#1872 Brad Gray, 09 Jan 2016-->
         <div class="cf margin-top40 width96 textalign-mozcenter" style="padding-bottom: 5px;">
             <div class="span6 review_no_padding">
@@ -177,12 +180,8 @@
                       }
 }
             </div>
-
-          
-
-
-
         </div>
+        }
     </div>
 
     <div class="span2 right-col-tab no_margin_top" id="inspect-modal-left-column2">
@@ -273,11 +272,19 @@
         <div id="integrationSettings" class="width100">
             <!--Modified 09 Jan 2016 by Brad Gray PL#1872 to allow changes per integration-->
             @{
+                int intgrtnCnt = 0,cntr=0;
+                string clsBottomBorderDiv = "border-bottom-div";
+                intgrtnCnt = ((Dictionary<string, string>)ViewBag.IntegrationTypeLinks).Count;
                 foreach (var item in ViewBag.IntegrationTypeLinks)
                 {
+                    cntr += 1;
+                    if (cntr == intgrtnCnt)
+                    {
+                        clsBottomBorderDiv = string.Empty;
+                    }
                     if (item.Key == Enums.IntegrationType.Eloqua.ToString())
                     {
-                          <div class="span12 border-bottom-div margin-left20 margin-top20" style="width:98%"> 
+                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua @clsBottomBorderDiv" integrationType="@item.Key" style="width:98%"> 
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -291,7 +298,7 @@
                     }
                     else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
                     {
-                          <div class="span12 border-bottom-div margin-left20 margin-top20" style="width:98%"> 
+                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua @clsBottomBorderDiv" integrationType="@item.Key" style="width:98%"> 
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -299,7 +306,7 @@
                                 </a>
                             </div>
                             <div class="span1 margin-top16">
-                                <input id="salesforceIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle">
+                                <input id="salesforceIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" integrationType="@item.Key">
                             </div>
                           </div>
                     }
@@ -633,6 +640,47 @@
 
         /* =======  End  =============  */
 
+		//Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
+        var ele = $("#salesforceIntegrationToggle");
+        
+        
+        var isDeployIntegration = '@IsDeployToIntegrationVisible';
+        var isSyncSF = '@IsSyncSF';
+        var isSyncEloqua = '@IsSyncEloqua';
+
+        if (isDeployIntegration) {
+            $('.integration-SF-Eloqua').each(function (key, val) {
+                //debugger;
+                var _divToggle = $(this).find("div.integrationToggle");
+                var _intgrtnType = $(this).attr('integrationType');
+                if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()') {
+
+                    if (isSyncEloqua.toLowerCase() == 'true') {
+                        _divToggle.removeClass('btn-default off').addClass('btn-success');      // Set Eloqua toggle button to ON.
+                    }
+                    else {
+                        _divToggle.removeClass('btn-success').addClass('btn-default off');      // Set Eloqua toggle button to OFF.
+                    }
+                }
+                if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()') {
+                    if (isSyncSF.toLowerCase() == 'true'){
+                        _divToggle.removeClass('btn-default off').addClass('btn-success');      // Set Salesforce toggle button to ON.
+                    }
+                    else {
+                        _divToggle.removeClass('btn-success').addClass('btn-default off');      // Set Salesforce toggle button to OFF.
+                    }
+                }
+            });
+        }
+        else {
+            $('.integration-SF-Eloqua').each(function (key, val) {
+                var _divToggle = $(this).find("div.integrationToggle");
+                var _intgrtnType = $(this).attr('integrationType');
+                _divToggle.removeClass('btn-success').addClass('btn-default off');      // Set all integration toggle button to OFF.
+            });
+        }
+        //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
+
         $("#t_integration_status").click(function () {
             showHide('integrationInfo');
             if ($(this).hasClass("icon-check-blue")) {
@@ -640,12 +688,15 @@
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
                 $("#hdnIsDeployedToIntegration").val(false);
+                $("#integration-id").text("No");             // Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919.
             }
             else {
                 $(this).val("Sync to integration");
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
                 $("#hdnIsDeployedToIntegration").val(true);
+                $("#integration-id").text("Yes");            // Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919.
+
             }
         });
 
@@ -849,13 +900,43 @@
             }
 
             var RedirectType = $("#hdnRequestedModule").val();
+            //Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919 & #1921.
+            var isDeployToIntegration = false;
+            if ($("#t_integration_status").hasClass("icon-check-blue")) { // if Deployed To Integration True.
+                isDeployToIntegration = true;
+            }
+
+            var isSyncSF = false;
+            var isSyncEloqua = false;
+            if (isDeployToIntegration) {
+                $('.integration-SF-Eloqua').each(function (key, val) {
+                    var _divToggle = $(this).find("div.integrationToggle");
+                    var _intgrtnType = $(this).attr('integrationType');
+                    if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncEloqua = true;
+                        }
+                    }
+                    if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncSF = true;
+                        }
+                    }
+                });
+            }
+            //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919 & #1921.
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/ApprovedTactic/")',
                 data: {
                     status: stat,
                     planTacticId: PlanTacticId,
-                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()" //section parameter added to approve tactic
+                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", //section parameter added to approve tactic,
+                    isDeployToIntegration: isDeployToIntegration,
+                    isSyncSF: isSyncSF,
+                    isSyncEloqua: isSyncEloqua
                 },
                 success: function (data) {
                     if (data != 'undefined') {
@@ -943,6 +1024,97 @@
     function toggleRequestOptions() {
         $('#workFrontRequestOptions').toggleClass('hidden show');
     }
+    // Begin - Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919. Save Tactic Title, DeployToIntegration & Sync settings for Eloqua & Salesforce.
+    function SaveReviewIntegrationInfo()
+    {
+        var returnparameter = false;
+        //debugger;
+        // Start - Get & Validate Tactic Title
+        var title = htmlEncode($('#txtTacticTitle').val());
+        var planTacticId = $("#hdnPlanTacticId").val();
+        var txtTacticValue = $("#txtTacticTitle").val();
+        var iserror = false;
+
+        if (title == '') {
+            $('#txtTacticTitle').addClass("error");
+            iserror = true;
+        }
+        else {
+            $('#txtTacticTitle').removeClass("error");
+        }
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
+        // End - Get & Validate Tactic Title
+
+        var isDeployToIntegration = false;
+        if ($("#t_integration_status").hasClass("icon-check-blue")) { // if Deployed To Integration True.
+            isDeployToIntegration = true;
+        }
+
+        var isSyncSF = false;
+        var isSyncEloqua = false;
+        if (isDeployToIntegration) {
+            $('.integration-SF-Eloqua').each(function (key, val) {
+                var _divToggle = $(this).find("div.integrationToggle");
+                var _intgrtnType = $(this).attr('integrationType');
+                if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()') {
+                    var isOff = _divToggle.hasClass('off');
+                    if (!isOff) {
+                        isSyncEloqua = true;
+                    }
+                }
+                if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()') {
+                    var isOff = _divToggle.hasClass('off');
+                    if (!isOff) {
+                        isSyncSF = true;
+                    }
+                }
+            });
+        }
+
+        
+        //if ($(this).hasClass("icon-check-blue")) { // if Deployed To Integration 'No'.
+        //    isDeployToIntegration = false;
+        //}
+
+        
+        //if ($(this).hasClass("icon-check-blue")) { // if Deployed To Integration 'No'.
+        //    isDeployToIntegration = false;
+        //}
+
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/SaveReviewIntegrationInfo/")',
+            data: { title: title, Id: planTacticId, isDeployToIntegration: isDeployToIntegration, isSyncSF: isSyncSF, isSyncEloqua: isSyncEloqua },
+            success: function (data) {
+                //debugger;
+                if (!data.IsDuplicate) {
+                    var planTacticId = data.planTacticId;
+                    var planCampaignId = data.planCampaignId;
+                    var planProgramId = data.planProgramId;
+                    var requestedModule = $("#hdnRequestedModule").val();
+                    $('#lblTacticTitle').text(txtTacticValue);
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.Msg);
+                    $("#errorMessage").css("display", "none");
+                    //  RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId);
+                    returnparameter = true
+                }
+                else {
+                    ShowError(data.errormsg);
+                    returnparameter = false;
+                }
+            }
+        });
+        return returnparameter;
+
+    }
+
+
 </script>
 
 <script>

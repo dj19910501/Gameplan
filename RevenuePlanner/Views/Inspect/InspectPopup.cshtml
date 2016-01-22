@@ -316,7 +316,8 @@
                   }
 
                   else if (activeTab = TabReview) {
-                      var ReturnParameter = SaveTitle();
+                      var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
+                      
                       if (ReturnParameter == false) {
                           return false;
                       }
@@ -438,7 +439,7 @@
 
                   else if (activeTab == TabReview) {
 
-                      var ReturnParameter = SaveTitle();
+                      var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
                       if (ReturnParameter == false) {
                           return false;
                       }
@@ -551,6 +552,7 @@
     }
 
     function loadReview(id, tabValue) {
+        //debugger;
         $.ajaxSetup({ cache: false });
         var url;
         var ProgramOpt = $("#hdnTacticBudgetAllocationOpt").val();
@@ -590,7 +592,7 @@
                 });
             }
         }
-
+        //debugger;
         if (tabValue == TabReview) {
             //$('#txtTacticTitle').css('display', 'none');
             //$('#lblTacticTitle').css('display', 'block');
