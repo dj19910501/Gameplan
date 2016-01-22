@@ -974,15 +974,15 @@ namespace Integration.WorkFront
                     string requestQueueId = db.IntegrationWorkFrontRequestQueues.Single(q => q.Id == requestFromDB.QueueId).RequestQueueId;
                     JToken queue = client.Search(ObjCode.QUEUE, new {ID = requestQueueId, fields="projectID"});
                     string projectForRequest = queue["data"][0]["projectID"].ToString();
-                    JToken request = client.Create(ObjCode.OPTASK, new { projectId = projectForRequest, name = requestFromDB.RequestName, isHelpDesk = "true", opTaskType = "REQ"});
+                    JToken request = client.Create(ObjCode.OPTASK, new { projectID = projectForRequest, name = requestFromDB.RequestName, isHelpDesk = "true", opTaskType = "REQ", assignedToID = assignee });
                     if (request == null) 
                     { 
                         throw new ClientException("Cannot create request"); 
                     }
                     else
                     {
-                        requestFromDB.RequestId = request["ID"].ToString();
-                        requestFromDB.WorkFrontRequestStatus = request["status"].ToString();
+                        requestFromDB.RequestId = request["data"]["ID"].ToString();
+                        requestFromDB.WorkFrontRequestStatus = request["data"]["status"].ToString();
                     }
                 }
                 else
@@ -990,14 +990,20 @@ namespace Integration.WorkFront
                     JToken requestInfoFromWorkFront = client.Search(ObjCode.OPTASK, new { fields = "assignedToID,categoryID,isHelpDesk,resolvingObjCode,resolvingObjID,status", isHelpDesk = "true", ID = requestFromDB.RequestId });
                     if (requestInfoFromWorkFront != null) //sync it
                     {
-                        requestFromDB.RequestName = requestInfoFromWorkFront["name"].ToString();
-                        requestFromDB.WorkFrontRequestStatus = requestInfoFromWorkFront["status"].ToString();
-                        requestFromDB.ResolvingObjType = requestInfoFromWorkFront["resolvingObjCode"].ToString();
-                        requestFromDB.ResolvingObjId = requestInfoFromWorkFront["resolvingObjID"].ToString();
+                        requestFromDB.RequestName = requestInfoFromWorkFront["data"][0]["name"].ToString();
+                        requestFromDB.WorkFrontRequestStatus = requestInfoFromWorkFront["data"][0]["status"].ToString();
+                        requestFromDB.ResolvingObjType = requestInfoFromWorkFront["data"][0]["resolvingObjCode"].ToString();
+                        requestFromDB.ResolvingObjId = requestInfoFromWorkFront["data"][0]["resolvingObjID"].ToString();
 
-                        if (requestFromDB.ResolvingObjType == ObjCode.PROJECT.ToString() && requestFromDB.ResolvingObjId != null)
+                        if (requestFromDB.ResolvingObjType == ObjCode.PROJECT.ToString().ToUpper() && requestFromDB.ResolvingObjId != null)
                         {
-                            //TODO - request has been converted to a project
+                            //request has been converted to a project - store it in in the tactic table
+                            tactic.IntegrationWorkFrontProjectID = requestFromDB.ResolvingObjId;
+                            //Save the data && resync the tactic so it syncs with the project now
+                            db.Entry(requestFromDB).State = EntityState.Modified;
+                            db.SaveChanges();
+                            SyncTacticProject(tactic, ref SyncErrors, ref instanceLogTactic);
+
                         }
                     }
                     else //it's in the database and not set to deleted. Set it to deleted and set the status to deleted
