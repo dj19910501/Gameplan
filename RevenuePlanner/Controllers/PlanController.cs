@@ -9529,7 +9529,7 @@ namespace RevenuePlanner.Controllers
 
                 var ListOfLinkedPlanIds = LinkedTacticList.Select(list =>
                           list.LinkedPlanId
-                   ).ToList();
+                   ).Distinct().ToList();
 
 
                 var ListOfLinkedPlans = db.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();

@@ -2076,12 +2076,9 @@ namespace RevenuePlanner.Controllers
 
             var ListOfLinkedPlanIds = LinkedTacticList.Select(list =>
                       list.objPlanTactic.LinkedPlanId
-               ).ToList();
+               ).Distinct().ToList();
 
-            //var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
-            var ListOfLinkedPlans = lstPlans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();// Add By Nishant Sheth #1915
-
-
+            var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
 
             var ListOfLinkedTactics = LinkedTacticList.Select(list =>
                 new
