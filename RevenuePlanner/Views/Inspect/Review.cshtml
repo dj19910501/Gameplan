@@ -23,7 +23,6 @@
     bool IsSyncSF = (bool)ViewBag.IsSyncSF;             // Get IsSyncSalesforce flag
     bool IsSyncEloqua = (bool)ViewBag.IsSyncEloqua;     // Get IsSyncEloqua flag
     bool IsSyncWorkFront = (bool)ViewBag.IsSyncWorkFront; //Get IsSyncWorkFront flag - true if the tactic is integrated
-    bool IsModelIntegratedWorkFront = (bool)ViewBag.IsModelIntegratedWorkFront; //True if the model is integrated - separate from IsSyncWorkFront
 }
 
 
@@ -642,10 +641,10 @@
 
         /* =======  End  =============  */
 
-		//Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
+        //Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
         var ele = $("#salesforceIntegrationToggle");
-        
-        
+
+
         var isDeployIntegration = '@IsDeployToIntegrationVisible';
         var isSyncSF = '@IsSyncSF';
         var isSyncEloqua = '@IsSyncEloqua';
@@ -702,8 +701,8 @@
             }
         });
 
-
-        if ($("#t_integration_status").hasClass("icon-check-blue") && IsModelIntegratedWorkFront) //if false, elements aren't displayed. updated by Brad Gray 22 Jan 2016 PL#1894
+        var isModelIntegratedWorkFront = '@ViewBag.IsModelIntegratedWorkFront';
+        if ($("#t_integration_status").hasClass("icon-check-blue") && isModelIntegratedWorkFront=="true") //if false, elements aren't displayed. updated by Brad Gray 22 Jan 2016 PL#1894
         {
             if ($('#workFrontRequestOnApproval').checked == true) {
                 $('#workFrontRequestOptions').addClass("show");
@@ -1030,8 +1029,7 @@
         $('#workFrontRequestOptions').toggleClass('hidden show');
     }
     // Begin - Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919. Save Tactic Title, DeployToIntegration & Sync settings for Eloqua & Salesforce.
-    function SaveReviewIntegrationInfo()
-    {
+    function SaveReviewIntegrationInfo() {
         var returnparameter = false;
         //debugger;
         // Start - Get & Validate Tactic Title
@@ -1079,12 +1077,12 @@
             });
         }
 
-        
+
         //if ($(this).hasClass("icon-check-blue")) { // if Deployed To Integration 'No'.
         //    isDeployToIntegration = false;
         //}
 
-        
+
         //if ($(this).hasClass("icon-check-blue")) { // if Deployed To Integration 'No'.
         //    isDeployToIntegration = false;
         //}
