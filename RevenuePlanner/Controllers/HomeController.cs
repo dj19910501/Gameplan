@@ -5415,6 +5415,19 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                     }
+                    else
+                    {
+                        var checkMinYear = UpcomingActivityList.Where(a => a.Text == MinYear).Select(a => a.Text).FirstOrDefault();
+                        if (checkMinYear == null)
+                        {
+                            UpcomingActivityList.Add(new SelectListItem { Text = MinYear, Value = MinYear, Selected = false });
+                        }
+                        var checkMaxYear = UpcomingActivityList.Where(a => a.Text == MaxYear).Select(a => a.Text).FirstOrDefault();
+                        if (checkMaxYear == null)
+                        {
+                            UpcomingActivityList.Add(new SelectListItem { Text = MaxYear, Value = MaxYear, Selected = false });
+                        }
+                    }
                 }
                 // UpcomingActivityList.Add(new SelectListItem { Text = currentYear, Value = currentYear, Selected = true });
             }
