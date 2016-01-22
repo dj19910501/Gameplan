@@ -2699,16 +2699,21 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
 
             // Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
-            bool isSyncSF = false, isSyncEloqua = false;
+            bool isSyncSF = false, isSyncEloqua = false, isSyncWorkFront = false; //added isSyncWorkFront - 22 Jan 2016 Brad Gray PL#1922
             if (IsDeployToIntegrationVisible)
             {
                 if (pcpt.IsSyncSalesForce != null && pcpt.IsSyncSalesForce.HasValue && pcpt.IsSyncSalesForce.Value)     // Get IsSyncSalesforce flag
                     isSyncSF = true;
                 if (pcpt.IsSyncEloqua != null && pcpt.IsSyncEloqua.HasValue && pcpt.IsSyncEloqua.Value)                 // Get IsSyncEloqua flag
                     isSyncEloqua = true;
+                if (pcpt.IsSyncWorkFront != null && pcpt.IsSyncWorkFront.HasValue && pcpt.IsSyncWorkFront.Value)        // Get IsSyncWorkFront flag - added 22 Jan 2016 Brad Gray PL#1922
+                {
+                    isSyncWorkFront = true;
+                }
             }
             ViewBag.IsSyncSF = isSyncSF;
             ViewBag.IsSyncEloqua = isSyncEloqua;
+            ViewBag.IsSyncWorkFront = isSyncWorkFront; //added 22 Jan 2016 Brad Gray PL#1922
             // End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
 
             ///Begin Added by Brad Gray 08-10-2015 for PL#1462

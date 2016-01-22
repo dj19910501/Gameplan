@@ -63,7 +63,6 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Budget> Plan_Campaign_Budget { get; set; }
         public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
         public DbSet<Plan_Campaign_Program_Budget> Plan_Campaign_Program_Budget { get; set; }
-        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Budget> Plan_Campaign_Program_Tactic_Budget { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
@@ -105,6 +104,7 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationWorkFrontUser> IntegrationWorkFrontUsers { get; set; }
         public DbSet<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
         public DbSet<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

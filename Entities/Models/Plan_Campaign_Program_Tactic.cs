@@ -16,14 +16,14 @@ namespace RevenuePlanner.Models
     {
         public Plan_Campaign_Program_Tactic()
         {
+            this.IntegrationWorkFrontRequests = new HashSet<IntegrationWorkFrontRequest>();
+            this.IntegrationWorkFrontTacticSettings = new HashSet<IntegrationWorkFrontTacticSetting>();
             this.Plan_Campaign_Program_Tactic_Actual = new HashSet<Plan_Campaign_Program_Tactic_Actual>();
             this.Plan_Campaign_Program_Tactic_Cost = new HashSet<Plan_Campaign_Program_Tactic_Cost>();
             this.Plan_Campaign_Program_Tactic_Budget = new HashSet<Plan_Campaign_Program_Tactic_Budget>();
             this.Plan_Campaign_Program_Tactic_Comment = new HashSet<Plan_Campaign_Program_Tactic_Comment>();
             this.Plan_Campaign_Program_Tactic_LineItem = new HashSet<Plan_Campaign_Program_Tactic_LineItem>();
             this.Tactic_Share = new HashSet<Tactic_Share>();
-            this.IntegrationWorkFrontTacticSettings = new HashSet<IntegrationWorkFrontTacticSetting>();
-            this.IntegrationWorkFrontRequests = new HashSet<IntegrationWorkFrontRequest>();
         }
     
         public int PlanTacticId { get; set; }
@@ -53,7 +53,10 @@ namespace RevenuePlanner.Models
         public Nullable<int> LinkedPlanId { get; set; }
         public Nullable<bool> IsSyncSalesForce { get; set; }
         public Nullable<bool> IsSyncEloqua { get; set; }
+        public Nullable<bool> IsSyncWorkFront { get; set; }
     
+        public virtual ICollection<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
+        public virtual ICollection<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
         public virtual Plan_Campaign_Program Plan_Campaign_Program { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost { get; set; }
@@ -65,7 +68,5 @@ namespace RevenuePlanner.Models
         public virtual Stage Stage { get; set; }
         public virtual TacticType TacticType { get; set; }
         public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }
-        public virtual ICollection<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
-        public virtual ICollection<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
     }
 }

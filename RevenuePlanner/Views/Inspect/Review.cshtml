@@ -22,6 +22,8 @@
     List<RevenuePlanner.Models.CustomFieldReviewTab> topThreeCustomFields = ViewBag.TopThreeCustomFields;
     bool IsSyncSF = (bool)ViewBag.IsSyncSF;             // Get IsSyncSalesforce flag
     bool IsSyncEloqua = (bool)ViewBag.IsSyncEloqua;     // Get IsSyncEloqua flag
+    bool IsSyncWorkFront = (bool)ViewBag.IsSyncWorkFront; //Get IsSyncWorkFront flag - true if the tactic is integrated
+    bool IsModelIntegratedWorkFront = (bool)ViewBag.IsModelIntegratedWorkFront; //True if the model is integrated - separate from IsSyncWorkFront
 }
 
 
@@ -701,21 +703,24 @@
         });
 
 
+        if ($("#t_integration_status").hasClass("icon-check-blue") && IsModelIntegratedWorkFront) //if false, elements aren't displayed. updated by Brad Gray 22 Jan 2016 PL#1894
+        {
+            if ($('#workFrontRequestOnApproval').checked == true) {
+                $('#workFrontRequestOptions').addClass("show");
+            }
+            else {
+                $('#workFrontRequestOptions').addClass("hidden");
+            }
 
-        if ($('#workFrontRequestOnApproval').checked == true) {
-            $('#workFrontRequestOptions').addClass("show");
-        }
-        else {
-            $('#workFrontRequestOptions').addClass("hidden");
+            var workFrontSettingsSection = document.getElementById('workFrontSettings');
+            if (document.getElementById('workfrontIntegrationToggle').checked) {
+                workFrontSettingsSection.style.display = 'block';
+            }
+            else {
+                workFrontSettingsSection.style.display = 'none';
+            }
         }
 
-        var workFrontSettingsSection = document.getElementById('workFrontSettings');
-        if (document.getElementById('workfrontIntegrationToggle').checked) {
-            workFrontSettingsSection.style.display = 'block';
-        }
-        else {
-            workFrontSettingsSection.style.display = 'none';
-        }
 
 
         /*Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model */
