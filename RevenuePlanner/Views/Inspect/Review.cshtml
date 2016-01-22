@@ -56,15 +56,21 @@
     #divTab .sbToggle {
         border-top: 4px solid #6d6d6d !important;
     }
-    #divTab .sbHolder {
+   /* #divTab .sbHolder {
         background-color: #dff0f8 !important;
         background-image:none;
-     }
-    #multipleselect_WorkFrontRequestQueue {
-     left: -3px !important;
-    top: 29px !important;
-     min-width:205px;
+     }*/
+    #workFrontRequestOptions .ui-multiselect{min-width: 150px;}
+    #multipleselect_WorkFrontRequestQueue, #multipleselect_WorkFrontRequestAssignee {
+        left: -3px !important;
+        top: 29px !important;
+        min-width:205px !important;
     }
+    #workFrontRequestOptions  #multipleselect_WorkFrontRequestAssignee.drop-up {
+    bottom: 40px !important;
+    padding: 0;
+    top: auto !important;
+}
 
   .toggle.integrationToggle, .toggle-on.integrationToggle, .toggle-off.integrationToggle { border-radius: 20px; }
   .toggle.integrationToggle .toggle-handle { border-radius: 20px; }
@@ -337,6 +343,7 @@
                                     <div class="cf form-group">
                                         @Html.Label("Request Queue")
                                         <span style="min-width: 100%; position: relative; display: block;">
+                                            @*@Html.DropDownList("Request Queue", new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })*@
                                             @Html.DropDownList("Request Queue", new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
                                         </span>
                                     </div>
@@ -571,6 +578,60 @@
             el.style.display = 'none';
         }
 
+        /* Add By Bhumika For dropdown menu*/
+        $('#WorkFrontRequestQueue').multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1,
+            CustomName: '@Common.CustomTitle'
+        }).multiselectfilter();
+
+        var spanWorkFrontRequestQueue = $('#multipleselect_WorkFrontRequestQueue');
+        $('#btnMultiselect_WorkFrontRequestQueue').after(spanWorkFrontRequestQueue); // to create dropdown menu under selectbox
+
+        $('#WorkFrontRequestAssignee').multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1,
+            CustomName: '@Common.CustomTitle'
+        }).multiselectfilter();
+
+        var spanWorkFrontRequestAssignee = $('#multipleselect_WorkFrontRequestAssignee');
+        $('#btnMultiselect_WorkFrontRequestAssignee').after(spanWorkFrontRequestAssignee); // to create dropdown menu under selectbox
+
+        /* ==== */
+        @* var DropdownTop = 0;
+        $(".pop-body-wraper").scroll(function () {
+
+            var scrollTop = $(this).scrollTop();
+            $('#btnMultiselect_WorkFrontRequestAssignee').click(function () {
+                //$(this).each(function () {
+                 //alert('hi3');
+                // get the top offset of the dropdown (distance from top of the page)
+                var dropdown_div = $(this).next('#multipleselect_WorkFrontRequestAssignee');
+                //var dropdown_height = dropdown_div.height();
+                var topOffset = dropdown_div.offset().top;
+                // calculate the dropdown offset relative to window position
+                var relativeOffset = topOffset - scrollTop;
+                // get the window height
+                var windowHeight = $('.pop-body-wraper').height();
+                // if the relative offset is greater than half the window height,
+                // reverse the dropdown.
+                if (relativeOffset > windowHeight / 2 ) {
+                    //alert('5');
+                    dropdown_div.addClass("drop-up");
+                }
+                else {
+                    //alert('6');
+                    dropdown_div.removeClass("drop-up");
+                }
+                scrollTop = 0;
+            });
+
+        });*@
+
+
+        /* =======  End  =============  */
 
         $("#t_integration_status").click(function () {
             showHide('integrationInfo');
@@ -587,9 +648,9 @@
                 $("#hdnIsDeployedToIntegration").val(true);
             }
         });
-      
 
-        
+
+
         if ($('#workFrontRequestOnApproval').checked == true) {
             $('#workFrontRequestOptions').addClass("show");
         }
@@ -604,12 +665,12 @@
         else {
             workFrontSettingsSection.style.display = 'none';
         }
-        
+
 
         /*Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model */
         ImageTipsy('#diffrentStageIcon');
-        /*NumberFormatterTipsyTitle(".tipsyclassTitle", 55);*/ //Commented by Arpita Soni on 02/01/15 for ticket #1082 
-        //Added By : Pratik, Code review point changes 
+        /*NumberFormatterTipsyTitle(".tipsyclassTitle", 55);*/ //Commented by Arpita Soni on 02/01/15 for ticket #1082
+        //Added By : Pratik, Code review point changes
         $('.addFormatterActualNumber').each(function () {
             SetPriceValue($(this));
         });
@@ -617,12 +678,12 @@
         //Added by Komal Rawal for ticket #1158
         if ($('#hdnIsPlanEditable').val().toString().toLowerCase() == 'true') {
 
-        
+
             $('#divDeployToIntegration').css('display', 'block');
 
-          }
-          
-		  if ($('#txtAreaComment').hasClass('light-gray-background')) {
+        }
+
+        if ($('#txtAreaComment').hasClass('light-gray-background')) {
             $('#txtAreaComment').attr("disabled", "disabled");
         }
         //End
@@ -658,7 +719,7 @@
                 },
                 success: function (data) {
                     if (data.result) {
-                        /*Added by Mitesh Vaishnav for PL ticket #690 
+                        /*Added by Mitesh Vaishnav for PL ticket #690
                         Change of sync to don’t sync or vice versa integration section update to 'Yes' and 'No'  */
                         if ('@tacticReview.IsIntegrationInstanceExist' == 'Yes') {
                             if (IsDeployedToIntegration) {
@@ -704,7 +765,7 @@
         $("#divComment").scrollTop(divheight);
 
         // On Comment Button Save Commnet
-       
+
         $("#btnComment").click(function () {
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
@@ -735,29 +796,29 @@
                         if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                         } else {
-                        if (data.id != 0) {
-                            $("#successMessage").css("display", "block");
-                            /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                            $("#spanMessageSuccess").empty();
-                            $("#spanMessageSuccess").text(data.msg);
-                            var requestedModule = $("#hdnRequestedModule").val();
-                            var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();  
-                            var inspectMode='';
-                            if (IsEditable == strViewMode.toString())
-                                inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                            else {
-                                inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                            }
+                            if (data.id != 0) {
+                                $("#successMessage").css("display", "block");
+                                /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(data.msg);
+                                var requestedModule = $("#hdnRequestedModule").val();
+                                var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();
+                                var inspectMode = '';
+                                if (IsEditable == strViewMode.toString())
+                                    inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                                else {
+                                    inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                                }
 
-                            // loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);//section parameter passed to open tactic popup
-                            loadReview($("#hdnPlanTacticId").val(), TabReview);
+                                // loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);//section parameter passed to open tactic popup
+                                loadReview($("#hdnPlanTacticId").val(), TabReview);
+                            }
+                            else {
+                                $("#errorMessage").css("display", "block");
+                                $("#spanMessageError").empty();
+                                $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                            }
                         }
-                        else {
-                            $("#errorMessage").css("display", "block");
-                            $("#spanMessageError").empty();
-                            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                        }
-                    }
                     }
                 },
                 error: function () {
@@ -801,36 +862,36 @@
                         if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                         } else {
-                        if (data.id != 0) {
-                            $("#successMessage").css("display", "block");
-                            $("#spanMessageSuccess").empty();
-                            $("#spanMessageSuccess").text(data.msg);
-                            var inspectMode = '';
-                            var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();
+                            if (data.id != 0) {
+                                $("#successMessage").css("display", "block");
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(data.msg);
+                                var inspectMode = '';
+                                var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();
                                 if (IsEditable == strViewMode.toString())
-                                inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                            else
-                                inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                            var requestedModule = $("#hdnRequestedModule").val();
-                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
+                                    inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                                else
+                                    inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                                var requestedModule = $("#hdnRequestedModule").val();
+                                loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
 
-                            //Added By : Kalpesh Sharma Internal review points 18/11/2014
-                            
-                            if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
-                                RefershPlanHeaderCalc();
-                                RefreshCurrentTab();//Added by Mitesh Vaishnav for PL ticket #1132
+                                //Added By : Kalpesh Sharma Internal review points 18/11/2014
+
+                                if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
+                                    RefershPlanHeaderCalc();
+                                    RefreshCurrentTab();//Added by Mitesh Vaishnav for PL ticket #1132
                                 }
-                            else if (RedirectType == "@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()") {
+                                else if (RedirectType == "@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()") {
                                     var _planId = $('#PlanId').val();  //// Get PlanId value from ApplyToCalendar page.
                                     GetHealderData(_planId);    //// Called HeaderData function exist in ApplyToCalendar Page.
                                     GetNumberOfActivityPerMonByPlanId(_planId, ''); //// Called HeaderData function exist in ApplyToCalendar Page.
+                                }
                             }
-                        }
-                        else {
-                            $("#errorMessage").css("display", "block");
-                            $("#spanMessageError").empty();
-                            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                        }
+                            else {
+                                $("#errorMessage").css("display", "block");
+                                $("#spanMessageError").empty();
+                                $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                            }
                         }
                     }
                 },
