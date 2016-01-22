@@ -683,6 +683,7 @@
                 if(!flag)
                 {
                     HomeGrid.showRow(HomeGrid.getRowId(state0));
+                    HomeGrid.openItem(HomeGrid.getRowId(state0)) //Added by Rahul Shah for PL #1744
                 }
           //  }
             if ($("#gridbox").find(".rowselected").length >= 1) {
@@ -1543,9 +1544,19 @@
                                         HomeGrid.cells(tactid, 6).setValue((newTactVal));
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                             //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
-                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "true") {
+                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") { //Modiied by Rahul Shah
 
                                                 HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.otherLineItemCost));
+                                            }
+                                        }
+                                    }
+                                        //Added by Rahul Shah for PL #1744
+                                    else if(states.lineItemCost == states.tacticCost){
+                                        for (var i = 0; i < TotalRowIds.split(',').length; i++) {
+                                            //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
+
+                                                HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
                                             }
                                         }
                                     }
@@ -1553,12 +1564,17 @@
 
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                             //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
-                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "true") {
+                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
 
                                                 HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.otherLineItemCost));
 
                                             }
                                         }
+                                        //Added by Rahul Shah for PL #1744. here gridrefresh and also set focus
+                                        $('#liGrid').click();
+                                        ItemIndex=HomeGrid.getRowIndex(tactid);
+                                        state0=ItemIndex;
+                                     
                                     }
                                     HomeGrid.cells(rowId, 6).setValue((nValue));
                                     //Commented By Rahul Shah on 16/10/2015 for PL 1559
@@ -1726,6 +1742,18 @@
 
                                         HomeGrid.cells(rowId, 6).setValue((oValue));
                                     }
+                                    //Added by Rahul Shah for PL #1744.
+                                    else if (nValue == states.lineItemCost) {
+                                        if (TotalRowIds != "") {
+                                            for (var i = 0; i < TotalRowIds.split(',').length; i++) {
+
+                                                //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                                if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
+                                                    HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
+                                                }
+                                            }
+                                        }
+                                    }
                                     else {
 
                                         diff = parseInt(nValue) - parseInt(oValue);
@@ -1738,19 +1766,23 @@
                                             for (var i = 0; i < TotalRowIds.split(',').length; i++) {
 
                                                 //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
-                                                if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "true") {
+                                                if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
                                                     HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.OtherLineItemCost));
                                                 }
                                             }
                                         }
-
+                                        //Added by Rahul Shah for PL #1744. here gridrefresh and also set focus
+                                        $('#liGrid').click();
+                                        ItemIndex=HomeGrid.getRowIndex(rowId);
+                                        state0=ItemIndex;
+                                      
                                     }
                                 }
                                 if (UpdateColumn == "Owner") {
                                     CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
 
                                 }
-
+                                
                             }
                         });
                     }
