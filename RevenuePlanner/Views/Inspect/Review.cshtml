@@ -285,7 +285,7 @@
                     }
                     if (item.Key == Enums.IntegrationType.Eloqua.ToString())
                     {
-                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua @clsBottomBorderDiv" integrationType="@item.Key" style="width:98%"> 
+                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationType="@item.Key" style="width:98%"> 
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -299,7 +299,7 @@
                     }
                     else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
                     {
-                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua @clsBottomBorderDiv" integrationType="@item.Key" style="width:98%"> 
+                        <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationtype="@item.Key" style="width:98%">
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -307,13 +307,13 @@
                                 </a>
                             </div>
                             <div class="span1 margin-top16">
-                                <input id="salesforceIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" integrationType="@item.Key">
+                                <input id="salesforceIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" integrationtype="@item.Key">
                             </div>
-                          </div>
+                        </div>
                     }
                     else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
                     {
-                        <div id="workFrontSection" class="span12 margin-left20 margin-top20" style="width:98%">
+                        <div id="workFrontSection" class="span12 margin-left20 integration-SF-Eloqua-WF margin-top20" integrationtype="@item.Key" style="width:98%">
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -326,7 +326,7 @@
                             </div>
 
                             <div id="workFrontSettings">
-                            <!--Begin PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
+                                <!--Begin PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
                                 <div class="span2 float-left margin-left20" style="padding-bottom: 8px; margin-bottom: 8px">
                                     <label id="workfrontTacticType">Tactic Type</label>
                                     <label id="tacticTypeTitle" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.TacticTypeTitle)">@Html.Raw(tacticReview.TacticTypeTitle)</label>
@@ -641,16 +641,17 @@
 
         /* =======  End  =============  */
 
-        //Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
+        //Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919. -WF integration added 23 Jan 2016 by Brad Gray PL#1921
         var ele = $("#salesforceIntegrationToggle");
 
 
         var isDeployIntegration = '@IsDeployToIntegrationVisible';
         var isSyncSF = '@IsSyncSF';
         var isSyncEloqua = '@IsSyncEloqua';
+        var isSyncWorkFront = '@IsSyncWorkFront';
 
         if (isDeployIntegration) {
-            $('.integration-SF-Eloqua').each(function (key, val) {
+            $('.integration-SF-Eloqua-WF').each(function (key, val) {
                 //debugger;
                 var _divToggle = $(this).find("div.integrationToggle");
                 var _intgrtnType = $(this).attr('integrationType');
@@ -664,17 +665,28 @@
                     }
                 }
                 if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()') {
-                    if (isSyncSF.toLowerCase() == 'true'){
+                    if (isSyncSF.toLowerCase() == 'true') {
                         _divToggle.removeClass('btn-default off').addClass('btn-success');      // Set Salesforce toggle button to ON.
                     }
                     else {
                         _divToggle.removeClass('btn-success').addClass('btn-default off');      // Set Salesforce toggle button to OFF.
                     }
                 }
+                if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()') {
+                    var workFrontSettingsSection = document.getElementById('workFrontSettings');
+                    if (isSyncWorkFront.toLowerCase() == 'true') {
+                        _divToggle.removeClass('btn-default off').addClass('btn-success');      // Set WorkFront toggle button to ON.
+                        workFrontSettingsSection.style.display = 'block';
+                    }
+                    else {
+                        _divToggle.removeClass('btn-success').addClass('btn-default off');      // Set WorkFront toggle button to OFF.
+                        workFrontSettingsSection.style.display = 'none';
+                    }
+                }
             });
         }
         else {
-            $('.integration-SF-Eloqua').each(function (key, val) {
+            $('.integration-SF-Eloqua-WF').each(function (key, val) {
                 var _divToggle = $(this).find("div.integrationToggle");
                 var _intgrtnType = $(this).attr('integrationType');
                 _divToggle.removeClass('btn-success').addClass('btn-default off');      // Set all integration toggle button to OFF.
@@ -702,21 +714,15 @@
         });
 
         var isModelIntegratedWorkFront = '@ViewBag.IsModelIntegratedWorkFront';
-        if ($("#t_integration_status").hasClass("icon-check-blue") && isModelIntegratedWorkFront=="true") //if false, elements aren't displayed. updated by Brad Gray 22 Jan 2016 PL#1894
+        console.log(isModelIntegratedWorkFront);
+        if ($("#t_integration_status").hasClass("icon-check-blue") && isModelIntegratedWorkFront == "True") //if false, elements aren't displayed. updated by Brad Gray 22 Jan 2016 PL#1894
         {
+            console.log("scooby");
             if ($('#workFrontRequestOnApproval').checked == true) {
                 $('#workFrontRequestOptions').addClass("show");
             }
             else {
                 $('#workFrontRequestOptions').addClass("hidden");
-            }
-
-            var workFrontSettingsSection = document.getElementById('workFrontSettings');
-            if (document.getElementById('workfrontIntegrationToggle').checked) {
-                workFrontSettingsSection.style.display = 'block';
-            }
-            else {
-                workFrontSettingsSection.style.display = 'none';
             }
         }
 
@@ -904,7 +910,7 @@
             }
 
             var RedirectType = $("#hdnRequestedModule").val();
-            //Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919 & #1921.
+            //Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919 & #1921. - WF integration added 23 Jan 2016 by Brad Gray PL#1921
             var isDeployToIntegration = false;
             if ($("#t_integration_status").hasClass("icon-check-blue")) { // if Deployed To Integration True.
                 isDeployToIntegration = true;
@@ -912,8 +918,9 @@
 
             var isSyncSF = false;
             var isSyncEloqua = false;
+            var isSyncWorkFront = false;
             if (isDeployToIntegration) {
-                $('.integration-SF-Eloqua').each(function (key, val) {
+                $('.integration-SF-Eloqua-WF').each(function (key, val) {
                     var _divToggle = $(this).find("div.integrationToggle");
                     var _intgrtnType = $(this).attr('integrationType');
                     if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()') {
@@ -928,6 +935,12 @@
                             isSyncSF = true;
                         }
                     }
+                    if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncWorkFront = true;
+                        }
+                    }
                 });
             }
             //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919 & #1921.
@@ -940,7 +953,8 @@
                     section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", //section parameter added to approve tactic,
                     isDeployToIntegration: isDeployToIntegration,
                     isSyncSF: isSyncSF,
-                    isSyncEloqua: isSyncEloqua
+                    isSyncEloqua: isSyncEloqua,
+                    isSyncWorkFront: isSyncWorkFront
                 },
                 success: function (data) {
                     if (data != 'undefined') {
@@ -1058,8 +1072,9 @@
 
         var isSyncSF = false;
         var isSyncEloqua = false;
+        var isSyncWorkFront = false;
         if (isDeployToIntegration) {
-            $('.integration-SF-Eloqua').each(function (key, val) {
+            $('.integration-SF-Eloqua-WF').each(function (key, val) {
                 var _divToggle = $(this).find("div.integrationToggle");
                 var _intgrtnType = $(this).attr('integrationType');
                 if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()') {
@@ -1072,6 +1087,12 @@
                     var isOff = _divToggle.hasClass('off');
                     if (!isOff) {
                         isSyncSF = true;
+                    }
+                }
+                if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()') {
+                    var isOff = _divToggle.hasClass('off');
+                    if (!isOff) {
+                        isSyncWorkFront = true;
                     }
                 }
             });
@@ -1091,7 +1112,7 @@
             async: false,
             type: 'POST',
             url: '@Url.Content("~/Inspect/SaveReviewIntegrationInfo/")',
-            data: { title: title, Id: planTacticId, isDeployToIntegration: isDeployToIntegration, isSyncSF: isSyncSF, isSyncEloqua: isSyncEloqua },
+            data: { title: title, Id: planTacticId, isDeployToIntegration: isDeployToIntegration, isSyncSF: isSyncSF, isSyncEloqua: isSyncEloqua, isSyncWorkFront: isSyncWorkFront },
             success: function (data) {
                 //debugger;
                 if (!data.IsDuplicate) {

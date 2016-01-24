@@ -5945,9 +5945,9 @@ namespace RevenuePlanner.Controllers
             return null;
         }
 
-        public JsonResult SaveReviewIntegrationInfo(string title = "", string Id = "", string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "")
+        public JsonResult SaveReviewIntegrationInfo(string title = "", string Id = "", string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "")
         {
-            bool IsSyncSF = false, IsSyncEloqua = false, IsDeployToIntegration = false, IsDuplicate = false; // Declare local variables.
+            bool IsSyncSF = false, IsSyncEloqua = false, IsSyncWorkFront = false, IsDeployToIntegration = false, IsDuplicate = false; // Declare local variables.
             try
             {
                 // Save Tactic Title.
@@ -5963,9 +5963,11 @@ namespace RevenuePlanner.Controllers
                     IsDeployToIntegration = !string.IsNullOrEmpty(isDeployToIntegration) ? bool.Parse(isDeployToIntegration) : false; // Parse isDeployToIntegration value.
                     IsSyncSF = !string.IsNullOrEmpty(isSyncSF) ? bool.Parse(isSyncSF) : false;                                        // Parse isSyncSF value
                     IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;                            // Parse isSyncEloqua value
+                    IsSyncWorkFront = !string.IsNullOrEmpty(isSyncWorkFront) ? bool.Parse(isSyncWorkFront) : false;                            // Parse isSyncWorkFront value
                     objTactic.IsDeployedToIntegration = IsDeployToIntegration;
                     objTactic.IsSyncEloqua = IsSyncEloqua;
                     objTactic.IsSyncSalesForce = IsSyncSF;
+                    objTactic.IsSyncWorkFront = IsSyncWorkFront;
                     objTactic.ModifiedBy = Sessions.User.UserId;
                     objTactic.ModifiedDate = DateTime.Now;
                     db.Entry(objTactic).State = EntityState.Modified;
@@ -10568,7 +10570,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="section">Decide for wich saction (tactic,program or campaign) status will be updated)</param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
         [HttpPost]
-        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "")
+        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "")
         {
             int planid = 0;
             int result = 0;
