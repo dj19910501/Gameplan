@@ -2716,6 +2716,20 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsSyncWorkFront = isSyncWorkFront; //added 22 Jan 2016 Brad Gray PL#1922
             // End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
 
+            //add the appropriate WorkFront information to the model - PL#1922, 1872 - Brad Gray 24 Jan 2016
+            if (isSyncWorkFront)
+            {
+                int? wfAssignee = db.IntegrationWorkFrontRequests.Where(a => a.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt
+               && a.PlanTacticId == pcpt.PlanTacticId && a.IsDeleted == false).FirstOrDefault().WorkFrontUserId;
+                int? wfRQ = db.IntegrationWorkFrontRequests.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt
+                    && q.PlanTacticId == pcpt.PlanTacticId && q.IsDeleted == false).FirstOrDefault().QueueId;
+
+                _inspectmodel.WorkFrontTemplate = pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name;
+                _inspectmodel.WorkFrontRequestQueueId = wfRQ;
+                _inspectmodel.WorkFrontRequestAssignee = wfAssignee;
+                _inspectmodel.WorkFrontTacticApprovalBehavior = db.IntegrationWorkFrontTacticSettings.Where(s => s.TacticId == pcpt.PlanTacticId && s.IsDeleted == false).FirstOrDefault().TacticApprovalObject;
+            }
+
             ///Begin Added by Brad Gray 08-10-2015 for PL#1462
             Dictionary<string, string> IntegrationLinkDictionary = new Dictionary<string, string>();
 
@@ -2765,6 +2779,8 @@ namespace RevenuePlanner.Controllers
                        inst.IntegrationTypeAttributeId == workFrontCompanyNameAttributeId).FirstOrDefault().Value;
                     string append = "/project/view?ID=" + pcpt.IntegrationWorkFrontProjectID;
                     url = string.Concat("https://", prepend, url, append);
+
+                 
                 }
                 else if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
                 {
@@ -2782,6 +2798,8 @@ namespace RevenuePlanner.Controllers
                 }
             }
             ViewBag.IntegrationTypeLinks = IntegrationLinkDictionary;
+        
+            
             ///End Added by Brad Gray 08-10-2015 for PL#1462
 
             ////Start : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
@@ -2848,7 +2866,7 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.TopThreeCustomFields = topThreeCustomFields;
 
-            return PartialView("Review");
+            return PartialView("Review", _inspectmodel);
         }
 
         /// <summary>
@@ -5945,7 +5963,7 @@ namespace RevenuePlanner.Controllers
             return null;
         }
 
-        public JsonResult SaveReviewIntegrationInfo(string title = "", string Id = "", string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "")
+        public JsonResult SaveReviewIntegrationInfo(string title = "", string Id = "", string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
         {
             bool IsSyncSF = false, IsSyncEloqua = false, IsSyncWorkFront = false, IsDeployToIntegration = false, IsDuplicate = false; // Declare local variables.
             try
@@ -5963,7 +5981,7 @@ namespace RevenuePlanner.Controllers
                     IsDeployToIntegration = !string.IsNullOrEmpty(isDeployToIntegration) ? bool.Parse(isDeployToIntegration) : false; // Parse isDeployToIntegration value.
                     IsSyncSF = !string.IsNullOrEmpty(isSyncSF) ? bool.Parse(isSyncSF) : false;                                        // Parse isSyncSF value
                     IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;                            // Parse isSyncEloqua value
-                    IsSyncWorkFront = !string.IsNullOrEmpty(isSyncWorkFront) ? bool.Parse(isSyncWorkFront) : false;                            // Parse isSyncWorkFront value
+                    IsSyncWorkFront = !string.IsNullOrEmpty(isSyncWorkFront) ? bool.Parse(isSyncWorkFront) : false;                   // Parse isSyncWorkFront value
                     objTactic.IsDeployedToIntegration = IsDeployToIntegration;
                     objTactic.IsSyncEloqua = IsSyncEloqua;
                     objTactic.IsSyncSalesForce = IsSyncSF;
@@ -5972,6 +5990,13 @@ namespace RevenuePlanner.Controllers
                     objTactic.ModifiedDate = DateTime.Now;
                     db.Entry(objTactic).State = EntityState.Modified;
 
+                    if(IsSyncWorkFront)
+                    {
+                        SaveWorkFrontTacticReviewSettings(objTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+                    }
+
+                   
+                  
                     #region "Update linked Tactic Integration Settings"
                     if (objTactic.LinkedTacticId != null && objTactic.LinkedTacticId.HasValue && objTactic.LinkedTacticId.Value > 0)
                     {
@@ -5981,9 +6006,16 @@ namespace RevenuePlanner.Controllers
                         objLinkedTactic.IsDeployedToIntegration = IsDeployToIntegration;
                         objLinkedTactic.IsSyncEloqua = IsSyncEloqua;
                         objLinkedTactic.IsSyncSalesForce = IsSyncSF;
+                        objLinkedTactic.IsSyncWorkFront = IsSyncWorkFront;
                         objLinkedTactic.ModifiedBy = Sessions.User.UserId;
                         objLinkedTactic.ModifiedDate = DateTime.Now;
                         db.Entry(objLinkedTactic).State = EntityState.Modified;
+
+                        //If integrated to WF, updated the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+                        if (IsSyncWorkFront)
+                        {
+                            SaveWorkFrontTacticReviewSettings(objLinkedTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF); 
+                        }
                     } 
                     #endregion
 
@@ -5998,6 +6030,84 @@ namespace RevenuePlanner.Controllers
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return Json(new { id = 0 });
+        }
+
+
+        /// <summary>
+        /// If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray PL#1922
+        /// Tactics integrated with WorkFront need to be tied to either a project or a request
+        /// If tied to a request, the request needs to be linked to a request queue - comes across as an int: the id from the IntegrationWorkFrontRequestQueues table
+        /// If tied to a request, the request needs to be linked to a workfront user - comes in as an int: the id from the IntegrationWorkFrontUsers table
+        /// </summary>
+        /// <param name="objTactic"></param>
+        /// <param name="approvalBehaviorWorkFront"></param>
+        /// <param name="requestQueueWF"></param>
+        /// <param name="assigneeWF"></param>
+        public void SaveWorkFrontTacticReviewSettings(Plan_Campaign_Program_Tactic objTactic, string approvalBehaviorWorkFront = "", string requestQueueWF="", string assigneeWF="")
+        {
+            try
+            {
+                IntegrationWorkFrontTacticSetting wfSetting = db.IntegrationWorkFrontTacticSettings.Where(set => set.TacticId == objTactic.PlanTacticId && set.IsDeleted == false).FirstOrDefault();
+
+                //verify we have the information we need
+                if (approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString() && approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString())
+                {
+                    throw new Exception("Attempted to save WorkFront information without valid Tactic Approval Options");
+                }
+                if (approvalBehaviorWorkFront == Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString())
+                {
+                    if (requestQueueWF == string.Empty || requestQueueWF == "undefined")
+                    {
+                        throw new Exception("Attempted to save WorkFront Request information without valid Request Queue");
+                    }
+                    if (assigneeWF == string.Empty || assigneeWF == "undefined")
+                    {
+                        throw new Exception("Attempted to save WorkFront Request information without valid Assignee");
+                    }
+                }
+
+                IntegrationWorkFrontTacticSetting settings;
+                if (wfSetting == null) //no tactic settings for WorkFront in the database. Create an entry
+                {
+                    settings = new IntegrationWorkFrontTacticSetting();
+                    db.Entry(settings).State = EntityState.Added;
+                }
+                else
+                {
+                    settings = db.IntegrationWorkFrontTacticSettings.Where(s => s.TacticId == objTactic.PlanTacticId && s.IsDeleted == false).FirstOrDefault();
+                    db.Entry(settings).State = EntityState.Modified;
+                }
+                settings.TacticId = objTactic.PlanTacticId;
+                settings.IsDeleted = false;
+                settings.TacticApprovalObject = approvalBehaviorWorkFront;
+                if (settings.TacticApprovalObject == Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()) //need to create  or update the request
+                {
+                    int intInstanceId = (int)objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
+                    IntegrationWorkFrontRequest req = db.IntegrationWorkFrontRequests.Where(r => r.PlanTacticId == objTactic.PlanTacticId && r.IsDeleted == false && r.IntegrationInstanceId == intInstanceId).FirstOrDefault();
+                    if (req == null) //create a new request
+                    {
+                        req = new IntegrationWorkFrontRequest();
+                        req.PlanTacticId = objTactic.PlanTacticId;
+                        req.RequestName = objTactic.Title;
+                        req.IntegrationInstanceId = intInstanceId;
+                        req.IsDeleted = false;
+                        req.QueueId = Int32.Parse(requestQueueWF);
+                        req.WorkFrontUserId = Int32.Parse(assigneeWF);
+                        db.Entry(req).State = EntityState.Added;
+                    }
+                    else //update current request entry
+                    {
+                        req.QueueId = Int32.Parse(requestQueueWF);
+                        req.WorkFrontUserId = Int32.Parse(assigneeWF);
+                        db.Entry(req).State = EntityState.Modified;
+                    }
+                }
+                db.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
         }
 
         #endregion
@@ -10185,6 +10295,7 @@ namespace RevenuePlanner.Controllers
                 {
                     double budgetAllocation = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => tacCost.PlanTacticId == id).ToList().Sum(tacCost => tacCost.Value);
                     Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
+                    
                     imodel = new InspectModel()
                               {
                                   PlanTacticId = pcpt.PlanTacticId,
@@ -10215,7 +10326,8 @@ namespace RevenuePlanner.Controllers
                                   StageTitle = pcpt.Stage.Title,
                                   StageLevel = pcpt.Stage.Level,
                                   ProjectedStageValue = pcpt.ProjectedStageValue,
-                                  TacticCustomName = pcpt.TacticCustomName,
+                                  TacticCustomName = pcpt.TacticCustomName
+                                  
                               };
 
 
@@ -10567,7 +10679,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="planTacticId">Plan Tactic Id.</param>
         /// <param name="status">status.</param>
-        /// <param name="section">Decide for wich saction (tactic,program or campaign) status will be updated)</param>
+        /// <param name="section">Decide for wich section (tactic,program or campaign) status will be updated)</param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
         [HttpPost]
         public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "")
@@ -10660,15 +10772,16 @@ namespace RevenuePlanner.Controllers
                                     DateTime todaydate = DateTime.Now;
 
                                     #region "Update Tactic Integration Settings"
-                                    bool IsSyncSF = false, IsSyncEloqua = false, IsDeployToIntegration = false; // Declare local variables.
+                                    bool IsSyncSF = false, IsSyncEloqua = false, IsDeployToIntegration = false, IsSyncWorkFront = false;              // Declare local variables.
                                     IsDeployToIntegration = !string.IsNullOrEmpty(isDeployToIntegration) ? bool.Parse(isDeployToIntegration) : false; // Parse isDeployToIntegration value.
                                     IsSyncSF = !string.IsNullOrEmpty(isSyncSF) ? bool.Parse(isSyncSF) : false;                                        // Parse isSyncSF value
-                                    IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;
-                                    // Parse isSyncEloqua value
+                                    IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;                            // Parse isSyncEloqua value
+                                    IsSyncWorkFront = !string.IsNullOrEmpty(isSyncWorkFront) ? bool.Parse(isSyncWorkFront) : false;                   // Parse isSyncWorkFront value
 
                                     tactic.IsDeployedToIntegration = IsDeployToIntegration;
                                     tactic.IsSyncEloqua = IsSyncEloqua;
                                     tactic.IsSyncSalesForce = IsSyncSF;
+                                    tactic.IsSyncWorkFront = IsSyncWorkFront;
                                     tactic.ModifiedBy = Sessions.User.UserId;
                                     tactic.ModifiedDate = DateTime.Now;
                                     db.Entry(tactic).State = EntityState.Modified;

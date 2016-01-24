@@ -1,5 +1,5 @@
 ﻿@using RevenuePlanner.Helpers
-@model RevenuePlanner.Models.IntegrationWorkFrontRequestQueue
+@model RevenuePlanner.Models.InspectModel
 @{
     var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     var deployStatus = tacticReview.IsDeployedToIntegration == true ? "Sync To Integration" : "Don't Sync To Integration";
@@ -342,7 +342,7 @@
                                     </div>
                                     <div class="radio" style="width:100%; float:left; margin-left:20px">
                                         <label class="font-size12">
-                                            <input id="workFrontRequestOnApproval" type="radio" name="optionsRadios" value="Create a Requeust" onclick="toggleRequestOptions()">Create a Request
+                                            <input id="workFrontRequestOnApproval" type="radio" name="optionsRadios" value="Create a Request" onclick="toggleRequestOptions()">Create a Request
                                             <span class="fa fa-angle-double-right" style="margin-left:5px"></span>
                                         </label>
                                     </div>
@@ -351,14 +351,13 @@
                                     <div class="cf form-group">
                                         @Html.Label("Request Queue")
                                         <span style="min-width: 100%; position: relative; display: block;">
-                                            @*@Html.DropDownList("Request Queue", new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })*@
-                                            @Html.DropDownList("Request Queue", new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
+                                            @Html.DropDownListFor(m=>m.WorkFrontRequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
                                         </span>
                                     </div>
                                     <div class="cf form-group">
                                         @Html.Label("Assigned To")
                                         <span style="min-width: 100%; position: relative; display: block;">
-                                            @Html.DropDownList("IntegrationWorkFrontUser", new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontUserList, "Id", "WorkFrontUserName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
+                                            @Html.DropDownListFor(m=>m.WorkFrontRequestAssignee, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontUserList, "Id", "WorkFrontUserName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
                                         </span>
                                     </div>
                                 </div><!--end workFrontRequestOptions div-->
@@ -714,14 +713,19 @@
         });
 
         var isModelIntegratedWorkFront = '@ViewBag.IsModelIntegratedWorkFront';
-        console.log(isModelIntegratedWorkFront);
         if ($("#t_integration_status").hasClass("icon-check-blue") && isModelIntegratedWorkFront == "True") //if false, elements aren't displayed. updated by Brad Gray 22 Jan 2016 PL#1894
         {
-            console.log("scooby");
-            if ($('#workFrontRequestOnApproval').checked == true) {
+            var workFrontApproval = @Html.Raw(Json.Encode(Model.WorkFrontTacticApprovalBehavior));
+            var requestBtn = document.getElementById('workFrontRequestOnApproval');
+            var projectBtn = document.getElementById('workFrontProjectOnApproval');
+            if (workFrontApproval == '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()')
+            {
+                requestBtn.checked = true;
                 $('#workFrontRequestOptions').addClass("show");
             }
-            else {
+            else
+            {
+                projectBtn.checked = true;
                 $('#workFrontRequestOptions').addClass("hidden");
             }
         }
@@ -1040,9 +1044,23 @@
     }
 
     function toggleRequestOptions() {
-        $('#workFrontRequestOptions').toggleClass('hidden show');
+        var request = document.getElementById('workFrontRequestOnApproval');
+        var requestChecked = request.checked;
+        if (requestChecked) {
+            if ($('#workFrontRequestOptions').hasClass("hidden")) {
+                $('#workFrontRequestOptions').removeClass("hidden");
+                $('#workFrontRequestOptions').addClass("show");
+            }
+        }
+        else {
+            if ($('#workFrontRequestOptions').hasClass("show")) {
+                $('#workFrontRequestOptions').removeClass("show");
+                $('#workFrontRequestOptions').addClass("hidden");
+            }
+        }
     }
     // Begin - Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919. Save Tactic Title, DeployToIntegration & Sync settings for Eloqua & Salesforce.
+    // WorkFront information add 23/24 Jan 2016 by Brad Gray for PL#1921 & PL#1922
     function SaveReviewIntegrationInfo() {
         var returnparameter = false;
         //debugger;
@@ -1051,6 +1069,7 @@
         var planTacticId = $("#hdnPlanTacticId").val();
         var txtTacticValue = $("#txtTacticTitle").val();
         var iserror = false;
+
 
         if (title == '') {
             $('#txtTacticTitle').addClass("error");
@@ -1098,6 +1117,22 @@
             });
         }
 
+        var wfTacticApproval = "undefined";
+        var requestQueue = "undefined";
+        var assignee = "undefined";
+        if (isSyncWorkFront == true) {
+            var request = document.getElementById('workFrontRequestOnApproval');
+            var requestChecked = request.checked;
+            if (requestChecked) {
+                wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()';
+                requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
+                assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
+            }
+            else
+            {
+                wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString()';
+            }
+        }
 
         //if ($(this).hasClass("icon-check-blue")) { // if Deployed To Integration 'No'.
         //    isDeployToIntegration = false;
@@ -1112,7 +1147,10 @@
             async: false,
             type: 'POST',
             url: '@Url.Content("~/Inspect/SaveReviewIntegrationInfo/")',
-            data: { title: title, Id: planTacticId, isDeployToIntegration: isDeployToIntegration, isSyncSF: isSyncSF, isSyncEloqua: isSyncEloqua, isSyncWorkFront: isSyncWorkFront },
+            data: {
+                title: title, Id: planTacticId, isDeployToIntegration: isDeployToIntegration, isSyncSF: isSyncSF, isSyncEloqua: isSyncEloqua, isSyncWorkFront: isSyncWorkFront,
+                approvalBehaviorWorkFront: wfTacticApproval, requestQueueWF: requestQueue, assigneeWF: assignee
+            },
             success: function (data) {
                 //debugger;
                 if (!data.IsDuplicate) {
@@ -1137,7 +1175,6 @@
         return returnparameter;
 
     }
-
 
 </script>
 
