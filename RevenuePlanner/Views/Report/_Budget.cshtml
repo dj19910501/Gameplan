@@ -1,6 +1,9 @@
-﻿@using RevenuePlanner.Models
+﻿@*@model System.Web.Mvc.JsonResult*@
+@model RevenuePlanner.Models.BudgetDHTMLXGridModel
+@using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
-@model List<BudgetModelReport>
+@*@model List<BudgetDHTMLXGridDataModel>*@
+
 @{
     string AllocatedBy = ViewBag.AllocatedBy;
     string Tab = ViewBag.Tab;
@@ -9,7 +12,7 @@
     {
         isPlanTab = false;
     }
-    BudgetModelReport main = Model.Where(p => p.ActivityType == ActivityType.ActivityMain).SingleOrDefault();
+    //BudgetModelReport main = Model.Where(p => p.ActivityType == ActivityType.ActivityMain).SingleOrDefault();
     string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
     string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower();
     string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
@@ -20,74 +23,73 @@
     string CurrentQuarter = ViewBag.CurrentQuarter;
     string TodayDate = ViewBag.TodayDate;
     bool isData = true;
-    string SortingId = ViewBag.SortingId;
+    string SortingId = ViewBag.SortingId; 
 }
-<div class="tab-content all-height cf">
-    <div class="tab-pane active all-height" id="panel-656352">
-        <div id="paln-populated-collaborators-panel-wrapper" class="pl20 cf">
-            <div class="cf all-height lenght-div">
-                <div class="budget-table report-budget-@AllocatedBy source-sans-proregular">
-                    <table cellpadding="0" cellspacing="0" border="0" class="budget-table">
-                        <tbody class="column1">
-                            <tr>
-                                <td>
-                                    <div>&nbsp;</div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div>&nbsp;</div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div><a id="aPlanDetails">@main.ActivityName</a></div>
-                                </td>
-                            </tr>
-                                @Html.ActivityMainParentReport(ActivityType.ActivityPlan, main.ActivityId, Model)
-                        </tbody>
-                        <tbody class="column2">
-                       @Html.PlanMonthReport(ActivityType.ActivityMain, main.ActivityId, Model, AllocatedBy, isPlanTab)
-                           
-                            @Html.ParentMonthReport(ActivityType.ActivityPlan, main.ActivityId, Model, AllocatedBy, isPlanTab)
-                        </tbody>
-                        <tbody class="column3">
-                            <tr>
-                                <td colspan="3">
-                                    <div>FY @ViewBag.DisplayYear</div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div>Actual
-                                        <a id="Actual_Up_Total" class="UpperArrowReport"></a>
-                                        <a id="Actual_Down_Total" class="DownArrowReport"></a>
-                                    </div>
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
+<style>
+    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell
+    {
+        text-align: center;
+        padding-left: 0px !important;
+    }
 
-                                </td>
-                                <td>
-                                    <div>Planned
-                                        <a id="Planned_Up_Total" class="UpperArrowReport"></a>
-                                        <a id="Planned_Down_Total" class="DownArrowReport"></a>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>Budget
-                                        <a id="Allocated_Up_Total" class="UpperArrowReport"></a>
-                                        <a id="Allocated_Down_Total" class="DownArrowReport"></a>
-                                    </div>
-                                </td>
-                            </tr>
-                           
-                         @Html.ParentSummaryReport(ActivityType.ActivityPlan, main.ActivityId, Model, AllocatedBy, isPlanTab)
-                        </tbody>
-                    </table>
-                    <div style="clear: both;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr
+    {
+        width: 100% !important;
+    }
+
+        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr tr
+        {
+            color: black;
+        }
+
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px
+    {
+        width: 100% !important;
+    }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr
+        {
+            color: black;
+        }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar.budgetError
+        {
+            background: #ff1e26 none repeat scroll 0 0;
+        }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar
+        {
+            background: #3fa9f5 none repeat scroll 0 0;
+            bottom: 0;
+            height: 2px !important;
+            left: 0;
+            margin: 0;
+            max-width: 100%;
+            padding: 0;
+            position: absolute;
+        }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.budgetError, span.budgetError
+        {
+            color: #ff1e26;
+        }
+
+    #gridbox.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td
+    {
+        position: relative;
+    }
+
+    .dhxgrid_sort_asc, .dhxgrid_sort_desc
+    {
+        background-repeat: no-repeat;
+        height: 26px;
+        top:44px !important;     
+        width: 15px;
+    }    
+</style>
+<div id="gridbox" style="background-color: white;"></div>
 
 <script type="text/javascript">
     
@@ -111,7 +113,17 @@
 
     LoadBudgetSortingEvent();
     $(document).ready(function () {
-
+        
+        BindBudgetGrid();
+        @if(Model.Grid.rows.Count() == 1 )
+        {
+            //Model.Where(p => p.ActivityType == ActivityType.ActivityTactic).Count() == 0
+            isData = false;
+        }
+        if ('@isData' == 'False') {
+            $('.gridbox').empty();
+            $('.gridbox').html('<div class="NoDataFound">No data found for selected active filters.</div>');
+        }        
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
@@ -124,16 +136,7 @@
             advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
         });
     });
-    var heights = $('.column1').find('div').map(function () {
-        var intWidth = 0;
-        if ($(this).css('display') == 'none') {
-            intWidth = $(this).actual('width');
-        }
-        else {
-            intWidth = $(this).width();
-        }
-        return $(this).width();
-    }).get();
+    
 
     $('.accordionClick').on('click', function () {
         var accordionId = $(this).parent().attr('id');
@@ -150,57 +153,8 @@
             $(this).width(data.scrollWidth);
         });
 
-    });
-
-    $("#campaignLevel").css('background', '#F2F2F2');
-   
-    $('.column2 tr:first td').attr("colspan", "3");
-    var column2DivWidth = $('.column2 div').css('min-width').replace("px", "");
-    var minwidthcolumn2 = ((parseFloat(column2DivWidth) * 3) + 2) + "px";
-    $('.column2 tr:first td div').css('min-width', minwidthcolumn2);
-
-    var column3DivWidth = $('.column3 div').css('min-width').replace("px", "");
-    var minwidthcolumn3 = ((parseFloat(column3DivWidth) * 3) + 2) + "px";
-    $('.column3 tr:first td div').css('min-width', minwidthcolumn3);
-
-    $('.column1').find('div').each(function () {
-        var id = $(this).attr('id');
-        
-        $(this).mouseover(function () {
-            $('.budget-table .column1').find('#' + id).each(function () {
-                $(this).addClass('reportRowHover');
-            });
-            $('.budget-table .column2').find('#' + id).each(function () {
-                $(this).addClass('reportRowHover');
-            });
-            $('.budget-table .column3').find('#' + id).each(function () {
-                $(this).addClass('reportRowHover');
-            });
-        });
-
-        $(this).mouseout(function () {
-            $('.budget-table .column1').find('#' + id).each(function () {
-                $(this).removeClass('reportRowHover');
-            });
-            $('.budget-table .column2').find('#' + id).each(function () {
-                $(this).removeClass('reportRowHover');
-            });
-            $('.budget-table .column3').find('#' + id).each(function () {
-                $(this).removeClass('reportRowHover');
-            });
-        });
-        
-    });
-
-   
-    @if(Model.Where(p => p.ActivityType == ActivityType.ActivityTactic).Count() == 0)
-    {
-        isData = false;
-    }
-    if ('@isData' == 'False') {
-        $('.budget-table').empty();
-        $('.budget-table').html('<div class="NoDataFound">No data found for selected active filters.</div>');
-    }
+    });   
+      
     function AddTipsy() {
         $("div[Allocated]").each(function () {
             bootstrapetitle($(this), 'Allocated : $' + $(this).attr('Allocated'), "tipsy-innerWhite");           
@@ -214,6 +168,37 @@
             bootstrapetitle($(this), 'Over Budget by : $' + $(this).attr('OverBudget'), "tipsy-innerRed");           
         });
     }
+
+    var HomeGrid;
+    var editidonOpenEnd = 0;
+    function BindBudgetGrid() {
+        
+        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';        
+        
+        HomeGrid = new dhtmlXGridObject('gridbox');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        HomeGrid.setImagePath(imgpath);
+        HomeGrid.setImageSize(1, 1);
+        HomeGrid.setHeader('@Model.SetHeader');
+        HomeGrid.attachHeader(@Html.Raw(Json.Encode(Model.AttachHeader))); 
+        HomeGrid.setColTypes('@Model.ColType');   
+        HomeGrid.setInitWidths('@Model.Width');  
+        HomeGrid.setColSorting('@Model.ColSorting');
+        HomeGrid.enableAutoHeight(true);
+        HomeGrid.enableAutoWidth(false);
+        HomeGrid.setEditable(false);
+        HomeGrid.init();
+        HomeGrid.enableDistributedParsing(true, 10, 0.1);
+        HomeGrid.parse(JsonModel, "json");
+        HomeGrid.setColumnHidden(0, true);
+        AddTipsy();
+    }
+    if (editidonOpenEnd != 0) {
+        HomeGrid.detachEvent(editidonOpenEnd);
+    }
+    editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
+        AddTipsy();
+    });
 
     function SetHeader() {
         $('#divViewBy').show();

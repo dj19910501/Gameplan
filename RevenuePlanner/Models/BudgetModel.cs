@@ -119,4 +119,52 @@ namespace RevenuePlanner.Models
         public int CusotmFieldOptionId { get; set; }
         public List<int> CusotmFieldEntityIds { get; set; }
     }
+    //Added By Maitri Gandhi #1852: Convert Finance Report Grid to DHTMLX Tree Grid
+    public class BudgetDHTMLXGridModel
+    {       
+        public string SetHeader { get; set; }
+        public string ColType { get; set; }
+        public string Width { get; set; }
+        public string ColSorting { get; set; }
+        public List<string> AttachHeader { get; set; }
+        
+        public BudgetDHTMLXGrid Grid { get; set; }
+    }
+    public class BudgetDHTMLXGrid
+    {
+        public List<BudgetDHTMLXGridDataModel> rows { get; set; }
+        public List<BudgetHead> head { get; set; }
+    }
+    public class BudgetHead
+    {
+        public List<BudgetOptions> options { get; set; }
+        public string value { get; set; }
+        public int width { get; set; }
+        public string align { get; set; }
+        public string type { get; set; }
+        public string id { get; set; }
+        public string sort { get; set; }
+    }
+    public class BudgetOptions
+    {
+        public string id { get; set; }
+        public string value { get; set; }
+    }
+    public class BudgetDHTMLXGridDataModel
+    {
+        public string id { get; set; }
+        public string open { get; set; }
+        public string bgColor { get; set; }
+        public List<Budgetdataobj> data { get; set; }
+        //public Planuserdatagrid userdata { get; set; }
+        public List<BudgetDHTMLXGridDataModel> rows { get; set; }
+    }
+    public class Budgetdataobj
+    {
+        public string value { get; set; }
+        public string locked { get; set; }
+        public string style { get; set; }
+        public string actval { get; set; }
+        public string type { get; set; }
+    }
 }
