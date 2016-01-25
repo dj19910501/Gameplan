@@ -15,3 +15,11 @@ CROSS APPLY(Select PlanProgramId,PlanCampaignId From  [dbo].[Plan_Campaign_Progr
 CROSS APPLY(Select PlanCampaignId,Planid FROM  [dbo].[Plan_Campaign] Camp WHERE Program.[PlanCampaignId]=Camp.[PlanCampaignId])Camp
 Where Camp.Planid=@PlanId
 END
+-- Add By Rahul Shah
+-- Desc :: set delete flag when otherLineItem's cost is '0'
+Go
+IF (EXISTS(SELECT * FROM [Plan_Campaign_Program_Tactic_Lineitem] WHERE LineItemTypeId is Null and Cost = 0 and isDeleted = 0)) 
+BEGIN 
+	Update [Plan_Campaign_Program_Tactic_Lineitem] Set isDeleted = 1 WHERE LineItemTypeId is Null and Cost = 0 and isDeleted = 0
+End
+
