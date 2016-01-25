@@ -2641,7 +2641,7 @@ namespace RevenuePlanner.Controllers
                     campplanid = objDbMrpEntities.Plan_Campaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && filterplanId.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
                 }
                 var taskDataPlan = planData.Where(plan => plan.IsDeleted.Equals(false)
-                    && (campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planList.Contains(plan.PlanId)) && ((filterOwner.Count > 0 ? filterOwner.Contains(plan.CreatedBy) : true) || OwnerFilterPlanidsMain.Contains(plan.PlanId)))
+                    && (campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planList.Contains(plan.PlanId)))
                                                   .ToList()
                                                    .Select(plan => new
                                                    {
