@@ -73,6 +73,7 @@
 
   .toggle.integrationToggle, .toggle-on.integrationToggle, .toggle-off.integrationToggle { border-radius: 20px; }
   .toggle.integrationToggle .toggle-handle { border-radius: 20px; }
+  .integrationToggle .toggle-group { transition: left 0.1s; -webkit-transition: left 0.1s; }
 </style>
 
 <script src="~/Scripts/js/bootstrap2-toggle.min.js"></script>
@@ -318,7 +319,7 @@
                             </div>
 
                             <div class="span1 margin-top16">
-                                <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" onchange=showHideBlock('workFrontSettings')>
+                                <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" onchange=toggleWorkFrontSettings()>
                             </div>
 
                             <div id="workFrontSettings">
@@ -1052,12 +1053,19 @@
             el.style.display = 'table';
     }
 
-    function showHideBlock(id) {
-        var el = document.getElementById(id);
-        if (el && el.style.display == 'block')
-            el.style.display = 'none';
+    function toggleWorkFrontSettings() {
+        var wfToggle = document.getElementById('workfrontIntegrationToggle');
+        var wfChecked = wfToggle.checked;
+        var wfSettings = document.getElementById('workFrontSettings');
+        if(wfChecked)
+        {
+            
+            wfSettings.style.display = "block";
+        }
         else
-            el.style.display = 'block';
+        {
+            wfSettings.style.display = "none";
+        }
     }
 
     function toggleRequestOptions() {
