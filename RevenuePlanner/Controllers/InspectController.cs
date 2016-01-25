@@ -2763,7 +2763,7 @@ namespace RevenuePlanner.Controllers
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4);
                 ViewBag.IsModelIntegratedWorkFront = true; //Added 29 Dec 2015 by Brad Gray PL#1851
 
-                if(pcpt.TacticType.IntegrationWorkFrontTemplate != null)
+                if(pcpt.TacticType.IntegrationWorkFrontTemplate != null && pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name != null)
                 {
                     _inspectmodel.WorkFrontTemplate = pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name;
                 }
