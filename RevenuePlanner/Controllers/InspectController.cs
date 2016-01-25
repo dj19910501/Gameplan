@@ -2717,17 +2717,34 @@ namespace RevenuePlanner.Controllers
             // End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
 
             //add the appropriate WorkFront information to the model - PL#1922, 1872 - Brad Gray 24 Jan 2016
-            if (isSyncWorkFront)
-            {
-                int? wfAssignee = db.IntegrationWorkFrontRequests.Where(a => a.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt
-               && a.PlanTacticId == pcpt.PlanTacticId && a.IsDeleted == false).FirstOrDefault().WorkFrontUserId;
-                int? wfRQ = db.IntegrationWorkFrontRequests.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt
-                    && q.PlanTacticId == pcpt.PlanTacticId && q.IsDeleted == false).FirstOrDefault().QueueId;
 
+            //setup WorkFront information to keep from making redundant calls;
+            IntegrationWorkFrontTacticSetting tSetting;
+            IntegrationWorkFrontRequest tRequest;
+            if(isSyncWorkFront)
+            {
+                tSetting = db.IntegrationWorkFrontTacticSettings.Where(s => s.TacticId == pcpt.PlanTacticId && s.IsDeleted == false).FirstOrDefault();
+                tRequest = db.IntegrationWorkFrontRequests.Where(a => a.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt
+                        && a.PlanTacticId == pcpt.PlanTacticId && a.IsDeleted == false).FirstOrDefault();
                 _inspectmodel.WorkFrontTemplate = pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name;
-                _inspectmodel.WorkFrontRequestQueueId = wfRQ;
-                _inspectmodel.WorkFrontRequestAssignee = wfAssignee;
-                _inspectmodel.WorkFrontTacticApprovalBehavior = db.IntegrationWorkFrontTacticSettings.Where(s => s.TacticId == pcpt.PlanTacticId && s.IsDeleted == false).FirstOrDefault().TacticApprovalObject;
+
+                if (tSetting != null)
+                {
+                    _inspectmodel.WorkFrontTacticApprovalBehavior = tSetting.TacticApprovalObject;
+                }
+                if (_inspectmodel.WorkFrontTacticApprovalBehavior == Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString())
+                {
+                    if (tRequest != null)
+                    {
+                        _inspectmodel.WorkFrontRequestQueueId = tRequest.QueueId;
+                        _inspectmodel.WorkFrontRequestAssignee = tRequest.WorkFrontUserId;
+                    }
+                }
+            }
+            else
+            {
+                tSetting = null; 
+                tRequest = null;
             }
 
             ///Begin Added by Brad Gray 08-10-2015 for PL#1462
@@ -2745,16 +2762,6 @@ namespace RevenuePlanner.Controllers
             {
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4);
                 ViewBag.IsModelIntegratedWorkFront = true; //Added 29 Dec 2015 by Brad Gray PL#1851
-                if(pcpt.TacticType.WorkFrontTemplateId == null)
-                {
-                    ViewBag.WorkFront_Template = "None Selected";
-                }
-                else
-                {
-
-                    //ViewBag.WorkFront_Template = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == pcpt.TacticType.WorkFront_Template).First().Template_Name;  //commented out 1/7/2016 by Brad Gray PL#1856
-                    ViewBag.WorkFront_Template = pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name; // add 1/7/2016 by Brad Gray PL#1856
-                }
 
                 // add 1/10/2016 by Brad Gray PL#1856 - get a list of active Requeust Queues for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
                 ViewBag.WorkFrontRequestQueueList = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IntegrationInstanceId
@@ -2777,10 +2784,23 @@ namespace RevenuePlanner.Controllers
                     int workFrontCompanyNameAttributeId = db.IntegrationTypeAttributes.Where(att => att.IntegrationTypeId == instance.IntegrationTypeId && att.Attribute == "Company Name").FirstOrDefault().IntegrationTypeAttributeId;
                     string prepend = db.IntegrationInstance_Attribute.Where(inst => inst.IntegrationInstanceId == instance.IntegrationInstanceId &&
                        inst.IntegrationTypeAttributeId == workFrontCompanyNameAttributeId).FirstOrDefault().Value;
-                    string append = "/project/view?ID=" + pcpt.IntegrationWorkFrontProjectID;
+                    string append=String.Empty;
+                    
+                    if (pcpt.IntegrationWorkFrontProjectID == null) //updates to link to request. PL#1896 - Brad Gray 24 Jan 2016
+                    {
+                        if(tSetting!=null&&tSetting.TacticApprovalObject==Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString())
+                        {
+                            if (tRequest!= null && tRequest.RequestId != null)
+                            {
+                                append = "/issue/view?ID=" + tRequest.RequestId; 
+                            }
+                        }
+                    }
+                    else
+                    {
+                        append = "/project/view?ID=" + pcpt.IntegrationWorkFrontProjectID;
+                    }
                     url = string.Concat("https://", prepend, url, append);
-
-                 
                 }
                 else if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
                 {
@@ -10682,7 +10702,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="section">Decide for wich section (tactic,program or campaign) status will be updated)</param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
         [HttpPost]
-        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "")
+        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "",  string approvalBehaviorWorkFront = "", string requestQueueWF="", string assigneeWF="")
         {
             int planid = 0;
             int result = 0;
@@ -10778,6 +10798,11 @@ namespace RevenuePlanner.Controllers
                                     IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;                            // Parse isSyncEloqua value
                                     IsSyncWorkFront = !string.IsNullOrEmpty(isSyncWorkFront) ? bool.Parse(isSyncWorkFront) : false;                   // Parse isSyncWorkFront value
 
+                                    if (IsSyncWorkFront)
+                                    {
+                                        SaveWorkFrontTacticReviewSettings(tactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+                                    }
+
                                     tactic.IsDeployedToIntegration = IsDeployToIntegration;
                                     tactic.IsSyncEloqua = IsSyncEloqua;
                                     tactic.IsSyncSalesForce = IsSyncSF;
@@ -10792,8 +10817,15 @@ namespace RevenuePlanner.Controllers
                                         Linkedtacticobj.IsDeployedToIntegration = IsDeployToIntegration;
                                         Linkedtacticobj.IsSyncEloqua = IsSyncEloqua;
                                         Linkedtacticobj.IsSyncSalesForce = IsSyncSF;
+                                        Linkedtacticobj.IsSyncWorkFront = IsSyncWorkFront;
                                         Linkedtacticobj.ModifiedBy = Sessions.User.UserId;
                                         Linkedtacticobj.ModifiedDate = DateTime.Now;
+
+                                        if (IsSyncWorkFront)
+                                        {
+                                            SaveWorkFrontTacticReviewSettings(Linkedtacticobj, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+                                        }
+
                                         db.Entry(Linkedtacticobj).State = EntityState.Modified;
                                     }
                                     #endregion

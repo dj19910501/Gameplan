@@ -331,7 +331,7 @@
                                     <label id="workfrontTacticType">Tactic Type</label>
                                     <label id="tacticTypeTitle" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.TacticTypeTitle)">@Html.Raw(tacticReview.TacticTypeTitle)</label>
                                     <label id="workfrontTemplate" class="margin-top20">WorkFront Template</label>
-                                    <label id="workfront_template" class="blue-text bold font-size12" title="@Html.Raw(ViewBag.WorkFront_Template) ">@Html.Raw(ViewBag.WorkFront_Template)</label>
+                                    <label id="workfront_template" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.WorkFrontTemplate) ">@Html.Raw(tacticReview.WorkFrontTemplate)</label>
                                 </div>
                                 <div class="span2" style="padding-left:40px">
                                     <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
@@ -947,6 +947,24 @@
                     }
                 });
             }
+
+            var wfTacticApproval = "undefined";
+            var requestQueue = "undefined";
+            var assignee = "undefined";
+            if (isSyncWorkFront == true) {
+                var request = document.getElementById('workFrontRequestOnApproval');
+                var requestChecked = request.checked;
+                if (requestChecked) {
+                    wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()';
+                    requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
+                    assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
+                }
+                else
+                {
+                    wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString()';
+                }
+            }
+
             //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919 & #1921.
             $.ajax({
                 type: 'POST',
@@ -958,7 +976,10 @@
                     isDeployToIntegration: isDeployToIntegration,
                     isSyncSF: isSyncSF,
                     isSyncEloqua: isSyncEloqua,
-                    isSyncWorkFront: isSyncWorkFront
+                    isSyncWorkFront: isSyncWorkFront,
+                    approvalBehaviorWorkFront: wfTacticApproval, 
+                    requestQueueWF: requestQueue, 
+                    assigneeWF: assignee
                 },
                 success: function (data) {
                     if (data != 'undefined') {
