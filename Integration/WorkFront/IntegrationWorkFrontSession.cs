@@ -965,6 +965,22 @@ namespace Integration.WorkFront
                         requestFromDB.RequestId = request["data"]["ID"].ToString();
                         requestFromDB.WorkFrontRequestStatus = request["data"]["status"].ToString();
                     }
+
+                    //Add tactic review comment on initial creation
+                    Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                    objTacticComment.PlanTacticId = tactic.PlanTacticId;
+                    objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.WorkFront.ToString();
+                    objTacticComment.CreatedDate = DateTime.Now;
+                    if (Common.IsAutoSync)
+                    {
+                       objTacticComment.CreatedBy = new Guid();
+                    }
+                    else
+                    {
+                       objTacticComment.CreatedBy = this._userId;
+                    }
+                    db.Entry(objTacticComment).State = EntityState.Added;
+                    db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
                 }
                 else
                 {
