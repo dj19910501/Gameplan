@@ -9563,7 +9563,7 @@ namespace RevenuePlanner.Controllers
                 string dollarsymbol = "$";
                 if (IsPlan)
                 {
-                    foreach (var planitem in lstplandetail.Where(p => (((filterOwner.Count > 0 ? filterOwner.Contains(p.CreatedBy) : true)) || ownerPlanids.Contains(p.PlanId))))
+                    foreach (var planitem in lstplandetail)
                     {
                         gridjsonlistplanobj = new PlanDHTMLXGridDataModel();
 

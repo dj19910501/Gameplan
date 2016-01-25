@@ -9327,7 +9327,7 @@ li.close-list {
 
 .messagewidth {
     max-width: 68%;
-    min-width: 68%;
+    /*min-width: 68%;*/
     margin: 31px auto 0 !important;
 }
 
@@ -13970,15 +13970,17 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 .plancart-box { display:inline;}
 
 /* Changes Added By Bhumika #618*/
-#divPartial.partial_wrapper .messagewidth {
+.partial_wrapper .messagewidth {
     left: 0;
     margin: 0px auto 0 auto !important;
-    width:50%;
+    max-width:45%;
     position: absolute;
     right: 0;
     top: 0;
     z-index: 999;
 }
+.messagewidth.alert-error{border-color: #b94a48;}
+.messagewidth.alert-success{border-color: #468847;}
 .partial_wrapper {
     position: relative;
 }

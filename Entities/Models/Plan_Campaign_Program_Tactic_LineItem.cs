@@ -37,9 +37,9 @@ namespace RevenuePlanner.Models
         public Nullable<int> LinkedLineItemId { get; set; }
     
         public virtual LineItemType LineItemType { get; set; }
-        public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_LineItem_Actual> Plan_Campaign_Program_Tactic_LineItem_Actual { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_LineItem_Cost> Plan_Campaign_Program_Tactic_LineItem_Cost { get; set; }
         public virtual ICollection<LineItem_Budget> LineItem_Budget { get; set; }
+        public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
     }
 }

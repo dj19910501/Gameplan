@@ -1531,7 +1531,7 @@
                                     return false;
                                 }
                                 else if (UpdateColumn == "Planned Cost") {
-
+                                   
                                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                                     diff = parseInt(nValue) - parseInt(oValue);
                                     diffLineAndTactic = states.lineItemCost - states.tacticCost
@@ -1547,6 +1547,7 @@
                                             if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") { //Modiied by Rahul Shah
 
                                                 HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.otherLineItemCost));
+                                                HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
                                             }
                                         }
                                     }
@@ -1571,11 +1572,14 @@
                                             }
                                         }
                                         //Added by Rahul Shah for PL #1744. here gridrefresh and also set focus
-                                        $('#liGrid').click();
-                                        ItemIndex=HomeGrid.getRowIndex(tactid);
-                                        state0=ItemIndex;
+                                        //$('#liGrid').click();
+                                        //ItemIndex=HomeGrid.getRowIndex(tactid);
+                                        //state0=ItemIndex;
                                      
                                     }
+                                    $('#liGrid').click();
+                                    ItemIndex=HomeGrid.getRowIndex(tactid);
+                                    state0=ItemIndex;
                                     HomeGrid.cells(rowId, 6).setValue((nValue));
                                     //Commented By Rahul Shah on 16/10/2015 for PL 1559
                                     //LoadPlanGrid();
@@ -1772,11 +1776,14 @@
                                             }
                                         }
                                         //Added by Rahul Shah for PL #1744. here gridrefresh and also set focus
-                                        $('#liGrid').click();
-                                        ItemIndex=HomeGrid.getRowIndex(rowId);
-                                        state0=ItemIndex;
+                                        //$('#liGrid').click();
+                                        //ItemIndex=HomeGrid.getRowIndex(rowId);
+                                        //state0=ItemIndex;
                                       
                                     }
+                                    $('#liGrid').click();
+                                    ItemIndex=HomeGrid.getRowIndex(rowId);
+                                    state0=ItemIndex;
                                 }
                                 if (UpdateColumn == "Owner") {
                                     CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))

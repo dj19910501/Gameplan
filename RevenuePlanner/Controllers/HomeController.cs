@@ -2090,7 +2090,7 @@ namespace RevenuePlanner.Controllers
                 );
             //End
 
-            if (IsRequest || IsFiltered) //When clicked on request tab data will be displayed in bottom up approach else top-down for ViewBy Tactic
+            if (IsRequest) //When clicked on request tab data will be displayed in bottom up approach else top-down for ViewBy Tactic
             {
 
                 #region Prepare Plan Task Data
@@ -2117,6 +2117,8 @@ namespace RevenuePlanner.Controllers
                 CreatedBy = objplan.CreatedBy,
                 Status = objplan.Status
             }).Select(objplan => objplan).OrderBy(objplan => objplan.text);
+
+              
 
                 //// Finalize task data plan list for gantt chart
                 var newTaskDataPlan = taskDataPlan.Select(plan => new
@@ -2641,7 +2643,7 @@ namespace RevenuePlanner.Controllers
                     campplanid = objDbMrpEntities.Plan_Campaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && filterplanId.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
                 }
                 var taskDataPlan = planData.Where(plan => plan.IsDeleted.Equals(false)
-                    && (campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planList.Contains(plan.PlanId)) && ((filterOwner.Count > 0 ? filterOwner.Contains(plan.CreatedBy) : true) || OwnerFilterPlanidsMain.Contains(plan.PlanId)))
+                    && (campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planList.Contains(plan.PlanId)))
                                                   .ToList()
                                                    .Select(plan => new
                                                    {
@@ -5413,6 +5415,19 @@ namespace RevenuePlanner.Controllers
                             {
                                 UpcomingActivityList.Add(new SelectListItem { Text = campStYear + "-" + campEdYear, Value = campStYear + "-" + campEdYear, Selected = false });
                             }
+                        }
+                    }
+                    else
+                    {
+                        var checkMinYear = UpcomingActivityList.Where(a => a.Text == MinYear).Select(a => a.Text).FirstOrDefault();
+                        if (checkMinYear == null)
+                        {
+                            UpcomingActivityList.Add(new SelectListItem { Text = MinYear, Value = MinYear, Selected = false });
+                        }
+                        var checkMaxYear = UpcomingActivityList.Where(a => a.Text == MaxYear).Select(a => a.Text).FirstOrDefault();
+                        if (checkMaxYear == null)
+                        {
+                            UpcomingActivityList.Add(new SelectListItem { Text = MaxYear, Value = MaxYear, Selected = false });
                         }
                     }
                 }

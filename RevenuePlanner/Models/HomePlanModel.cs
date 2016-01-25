@@ -178,6 +178,12 @@ namespace RevenuePlanner.Models
         public string RedirectType { get; set; }
 
         public int PlanLineitemId { get; set; }
+
+        //Add integration information
+        public string WorkFrontTemplate { get; set; }
+        public int? WorkFrontRequestQueueId { get; set; }
+        public int? WorkFrontRequestAssignee { get; set; }
+        public string WorkFrontTacticApprovalBehavior { get; set; }
     }
 
     public class InspectReviewModel

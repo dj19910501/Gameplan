@@ -40,7 +40,6 @@
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Budget" Width="1.5" PointX="11.337605869089069" PointY="28.7491806879403" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program" Width="1.5" PointX="5.4197054791356" PointY="4.4238645007944966" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Budget" Width="1.5" PointX="5.21138968188846" PointY="26.503084925237616" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="1.5" PointX="10.511748683877173" PointY="30.831987440042191" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual" Width="1.5" PointX="10.910022088750276" PointY="7.680626693964296" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Budget" Width="1.5" PointX="1.3261994669801553" PointY="17.728147246748279" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Comment" Width="1.5" PointX="8.69072513873257" PointY="5.9939792631165956" />
@@ -112,16 +111,6 @@
         <AssociationConnector Association="MRPModel.FK__Plan_Camp__PlanP__42ACE4D4" />
         <AssociationConnector Association="MRPModel.FK__Tactic_Sh__PlanP__44952D46" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Budget_Plan_Campaign_Program_Budget" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Actual_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic_Budget" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" />
-        <AssociationConnector Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign" />
@@ -172,12 +161,23 @@
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontUser" Width="1.5" PointX="7.5" PointY="0.75" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId" />
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTacticSetting" Width="1.5" PointX="12.75" PointY="35.125" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" />
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontRequest" Width="1.5" PointX="12.75" PointY="23.625" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_WorkFrontUser" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="1.5" PointX="7.625" PointY="0.75" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Actual_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic_Budget" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" />
+        <AssociationConnector Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
