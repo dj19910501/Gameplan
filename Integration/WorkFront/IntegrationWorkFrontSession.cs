@@ -692,6 +692,7 @@ namespace Integration.WorkFront
         private bool SyncTactic(Plan_Campaign_Program_Tactic tactic, ref List<SyncError> SyncErrors)  
         {
             bool tacticError = false;
+            if (tactic.IsSyncWorkFront == false) { return tacticError; }  //setting at tactic level determining if the tactic should be synced - Added by Brad Gray 24 Jan 2016 PL#1921
             IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
            
             try
