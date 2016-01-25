@@ -2726,7 +2726,7 @@ namespace RevenuePlanner.Controllers
                 tSetting = db.IntegrationWorkFrontTacticSettings.Where(s => s.TacticId == pcpt.PlanTacticId && s.IsDeleted == false).FirstOrDefault();
                 tRequest = db.IntegrationWorkFrontRequests.Where(a => a.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt
                         && a.PlanTacticId == pcpt.PlanTacticId && a.IsDeleted == false).FirstOrDefault();
-                _inspectmodel.WorkFrontTemplate = pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name;
+                
 
                 if (tSetting != null)
                 {
@@ -2762,6 +2762,8 @@ namespace RevenuePlanner.Controllers
             {
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4);
                 ViewBag.IsModelIntegratedWorkFront = true; //Added 29 Dec 2015 by Brad Gray PL#1851
+
+                _inspectmodel.WorkFrontTemplate = pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name;
 
                 // add 1/10/2016 by Brad Gray PL#1856 - get a list of active Requeust Queues for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
                 ViewBag.WorkFrontRequestQueueList = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IntegrationInstanceId
