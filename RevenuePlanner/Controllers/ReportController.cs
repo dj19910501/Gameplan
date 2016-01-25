@@ -220,7 +220,7 @@ namespace RevenuePlanner.Controllers
             // Desc :: #1821 - Get list of plan base on start Date and end date
             //DateTime startDate = new DateTime(Convert.ToInt32(selectedYear), 1, 1);
             //DateTime endDate = new DateTime(Convert.ToInt32(selectedYear), 12, 31);
-           // Common.GetReportStartEndDate(selectedYear, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
+            // Common.GetReportStartEndDate(selectedYear, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
 
             var DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
                 && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId && plan.IsActive == true).ToList();
@@ -238,8 +238,8 @@ namespace RevenuePlanner.Controllers
                     EndDate = camp.EndDate
                 })
                 .ToList();
-           // Removed by Bhavseh. We already update parent date while updating of child entity date so we can get year from parent.
-            var PlanIds = DataPlanList.Where(plan =>SelectedYearList.Contains(plan.Year) )
+            // Removed by Bhavseh. We already update parent date while updating of child entity date so we can get year from parent.
+            var PlanIds = DataPlanList.Where(plan => SelectedYearList.Contains(plan.Year))
                 .Select(plan => plan.PlanId).Distinct().ToList();
 
             var CampPlanIds = CampPlans.Where(camp => SelectedYearList.Contains(camp.StartDate.Year.ToString()) || SelectedYearList.Contains(camp.EndDate.Year.ToString()))
@@ -274,9 +274,9 @@ namespace RevenuePlanner.Controllers
             var yearlist = PlanYears;// Modify BY Nishant Sheth #1821
             SelectListItem objYear = new SelectListItem();
 
-        
 
-         
+
+
             foreach (int years in yearlist)
             {
                 string yearname = Convert.ToString(years);
@@ -2139,8 +2139,6 @@ namespace RevenuePlanner.Controllers
 
         #region Budget
 
-
-
         /// <summary>
         /// View Budget 
         /// </summary>
@@ -2226,7 +2224,7 @@ namespace RevenuePlanner.Controllers
                 var CampPlanIds = db.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId)).Select(camp => new { PlanId = camp.PlanId, StartDate = camp.StartDate, EndDate = camp.EndDate }).ToList()
                     .Where(camp => ListYears.Contains(camp.StartDate.Year.ToString()) || ListYears.Contains(camp.EndDate.Year.ToString()))
                     .Select(camp => camp.PlanId).Distinct().ToList();
-               // Removed by Bhavseh. We already update parent date while updating of child entity date so we can get year from parent.
+                // Removed by Bhavseh. We already update parent date while updating of child entity date so we can get year from parent.
                 var PlanIds = DataPlanList.Where(plan => ListYears.Contains(plan.Year))
                     .Select(plan => plan.PlanId).Distinct().ToList();
 
@@ -2244,11 +2242,11 @@ namespace RevenuePlanner.Controllers
                 // Desc :: #1821 - To get list of plan with start date and end date
                 if (activemenu == Enums.ActiveMenu.Home.ToString().ToLower())
                 {
-                planList = DataPlanList.Where(plan => allPlanIds.Contains(plan.PlanId)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList().Select(plan => new SelectListItem
-                    {
-                        Text =  plan.Title ,
-                        Value = plan.PlanId.ToString()
-                    }).ToList();
+                    planList = DataPlanList.Where(plan => allPlanIds.Contains(plan.PlanId)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList().Select(plan => new SelectListItem
+                        {
+                            Text = plan.Title,
+                            Value = plan.PlanId.ToString()
+                        }).ToList();
                 }
                 else
                 {
@@ -2257,7 +2255,7 @@ namespace RevenuePlanner.Controllers
                 Text = plan.Year + " " + plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy),
                 Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy
             }).ToList();
-            }
+                }
             }
 
 
@@ -3051,8 +3049,656 @@ namespace RevenuePlanner.Controllers
                 }
                 SortingModel.ForEach(s => model.Add(s));
             }
-            return PartialView("_Budget", model);
+
+            //Added By Maitri Gandhi #1852: Convert Finance Report Grid to DHTMLX Tree Grid
+            #region "DHTMLX Tree Grid" 
+            BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
+            //GenerateHeader            
+            objBudgetDHTMLXGrid = GenerateHeaderString(ViewBag.AllocatedBy, objBudgetDHTMLXGrid);
+            List<BudgetDHTMLXGridDataModel> gridjsonlist = new List<BudgetDHTMLXGridDataModel>();
+
+            BudgetDHTMLXGridDataModel gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
+            //ActivityMain
+            BudgetModelReport budgetPlan = model.SingleOrDefault(pl => pl.ActivityType == ActivityType.ActivityMain);
+            gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
+            gridjsonlistPlanObj.id = ActivityType.ActivityPlan + HttpUtility.HtmlEncode(budgetPlan.ActivityId);
+            gridjsonlistPlanObj.open = null;
+
+            List<Budgetdataobj> BudgetDataObjList = new List<Budgetdataobj>();
+            Budgetdataobj BudgetDataObj = new Budgetdataobj();
+
+            BudgetDataObj.value = "Plan";
+            BudgetDataObjList.Add(BudgetDataObj);
+
+            BudgetDataObj = new Budgetdataobj();
+            BudgetDataObj.value = HttpUtility.HtmlEncode(budgetPlan.ActivityName);
+            BudgetDataObjList.Add(BudgetDataObj);
+
+            BudgetDataObjList = PlanMonthReport(model, ActivityType.ActivityMain, budgetPlan.ActivityId, BudgetDataObjList, Tab);
+
+            BudgetDataObjList = ParentSummaryReport(budgetPlan, BudgetDataObjList, Tab, ActivityType.ActivityMain);
+
+            gridjsonlistPlanObj.data = BudgetDataObjList;
+            gridjsonlist.Add(gridjsonlistPlanObj);
+            //All Activities
+            foreach (BudgetModelReport bm in model.Where(p => p.ActivityType == ActivityType.ActivityPlan))
+            {
+                gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
+                gridjsonlistPlanObj.id = ActivityType.ActivityPlan + HttpUtility.HtmlEncode(bm.ActivityId);
+                gridjsonlistPlanObj.open = "1";
+                gridjsonlistPlanObj.bgColor = "#e6e6e6";
+
+                BudgetDataObjList = new List<Budgetdataobj>();
+                BudgetDataObj = new Budgetdataobj();
+
+                BudgetDataObj.value = "Plan";
+                BudgetDataObjList.Add(BudgetDataObj);
+
+                BudgetDataObj = new Budgetdataobj();
+                BudgetDataObj.value = HttpUtility.HtmlEncode(bm.ActivityName);
+                BudgetDataObjList.Add(BudgetDataObj);
+
+                BudgetDataObjList = ParentMonthReport(bm, ActivityType.ActivityPlan, BudgetDataObjList, Tab);
+
+                BudgetDataObjList = ParentSummaryReport(bm, BudgetDataObjList, Tab, ActivityType.ActivityPlan);
+
+                gridjsonlistPlanObj.data = BudgetDataObjList;
+                List<BudgetDHTMLXGridDataModel> CampaignRowsObjList = new List<BudgetDHTMLXGridDataModel>();
+                BudgetDHTMLXGridDataModel CampaignRowsObj = new BudgetDHTMLXGridDataModel();
+                foreach (BudgetModelReport bmc in model.Where(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == bm.ActivityId))
+                {
+                    CampaignRowsObj = new BudgetDHTMLXGridDataModel();
+                    CampaignRowsObj.id = ActivityType.ActivityCampaign + HttpUtility.HtmlEncode(bmc.ActivityId);
+                    CampaignRowsObj.open = null;
+                    CampaignRowsObj.bgColor = "#f2f2f2";
+
+                    List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
+                    Budgetdataobj CampaignDataObj = new Budgetdataobj();
+
+                    CampaignDataObj.value = "Campaign";
+                    CampaignDataObjList.Add(CampaignDataObj);
+
+                    CampaignDataObj = new Budgetdataobj();
+                    CampaignDataObj.value = HttpUtility.HtmlEncode(bmc.ActivityName);
+                    CampaignDataObjList.Add(CampaignDataObj);
+
+                    CampaignDataObjList = ParentMonthReport(bmc, ActivityType.ActivityCampaign, CampaignDataObjList, Tab);
+
+                    CampaignDataObjList = ParentSummaryReport(bmc, CampaignDataObjList, Tab, ActivityType.ActivityCampaign);
+
+                    CampaignRowsObj.data = CampaignDataObjList;
+                    List<BudgetDHTMLXGridDataModel> ProgramRowsObjList = new List<BudgetDHTMLXGridDataModel>();
+                    BudgetDHTMLXGridDataModel ProgramRowsObj = new BudgetDHTMLXGridDataModel();
+                    foreach (BudgetModelReport bmp in model.Where(p => p.ActivityType == ActivityType.ActivityProgram && p.ParentActivityId == bmc.ActivityId))
+                    {
+                        ProgramRowsObj = new BudgetDHTMLXGridDataModel();
+                        ProgramRowsObj.id = ActivityType.ActivityProgram + HttpUtility.HtmlEncode(bmp.ActivityId);
+                        ProgramRowsObj.open = null;
+
+                        List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
+                        Budgetdataobj ProgramDataObj = new Budgetdataobj();
+
+                        ProgramDataObj.value = "Program";
+                        ProgramDataObjList.Add(ProgramDataObj);
+
+                        ProgramDataObj = new Budgetdataobj();
+                        ProgramDataObj.value = HttpUtility.HtmlEncode(bmp.ActivityName);
+                        ProgramDataObjList.Add(ProgramDataObj);
+
+                        ProgramDataObjList = ParentMonthReport(bmp, ActivityType.ActivityProgram, ProgramDataObjList, Tab);
+
+                        ProgramDataObjList = ParentSummaryReport(bmp, ProgramDataObjList, Tab, ActivityType.ActivityProgram);
+
+                        ProgramRowsObj.data = ProgramDataObjList;
+                        List<BudgetDHTMLXGridDataModel> TacticRowsObjList = new List<BudgetDHTMLXGridDataModel>();
+                        BudgetDHTMLXGridDataModel TacticRowsObj = new BudgetDHTMLXGridDataModel();
+                        foreach (BudgetModelReport bmt in model.Where(p => p.ActivityType == ActivityType.ActivityTactic && p.ParentActivityId == bmp.ActivityId))
+                        {
+                            TacticRowsObj = new BudgetDHTMLXGridDataModel();
+                            TacticRowsObj.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(bmt.ActivityId);
+                            TacticRowsObj.open = null;
+
+                            List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
+                            Budgetdataobj TacticDataObj = new Budgetdataobj();
+
+                            TacticDataObj.value = "Tactic";
+                            TacticDataObjList.Add(TacticDataObj);
+
+                            TacticDataObj = new Budgetdataobj();
+                            TacticDataObj.value =HttpUtility.HtmlEncode(bmt.ActivityName);
+                            TacticDataObjList.Add(TacticDataObj);
+
+                            TacticDataObjList = ParentMonthReport(bmt, ActivityType.ActivityTactic, TacticDataObjList, Tab);
+
+                            TacticDataObjList = ParentSummaryReport(bmt, TacticDataObjList, Tab, ActivityType.ActivityTactic);
+
+                            TacticRowsObj.data = TacticDataObjList;
+                            List<BudgetDHTMLXGridDataModel> LineRowsObjList = new List<BudgetDHTMLXGridDataModel>();
+                            BudgetDHTMLXGridDataModel LineRowsObj = new BudgetDHTMLXGridDataModel();
+                            foreach (BudgetModelReport bml in model.Where(p => p.ActivityType == ActivityType.ActivityLineItem && p.ParentActivityId == bmt.ActivityId))
+                            {
+                                LineRowsObj = new BudgetDHTMLXGridDataModel();
+                                LineRowsObj.id = ActivityType.ActivityLineItem + HttpUtility.HtmlEncode(bml.ActivityId);
+                                LineRowsObj.open = null;
+
+                                List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
+                                Budgetdataobj LineDataObj = new Budgetdataobj();
+
+                                LineDataObj.value = "LineItem";
+                                LineDataObjList.Add(LineDataObj);
+
+                                LineDataObj = new Budgetdataobj();
+                                LineDataObj.value = HttpUtility.HtmlEncode(bml.ActivityName);
+                                LineDataObjList.Add(LineDataObj);
+
+                                LineDataObjList = ParentMonthReport(bml, ActivityType.ActivityLineItem, LineDataObjList, Tab);
+
+                                LineDataObjList = ParentSummaryReport(bml, LineDataObjList, Tab, ActivityType.ActivityLineItem);
+
+                                LineRowsObj.data = LineDataObjList;
+                                LineRowsObjList.Add(LineRowsObj);
+                            }
+                            TacticRowsObj.rows = LineRowsObjList;
+                            TacticRowsObjList.Add(TacticRowsObj);
+                        }
+                        ProgramRowsObj.rows = TacticRowsObjList;
+                        ProgramRowsObjList.Add(ProgramRowsObj);
+                    }
+                    CampaignRowsObj.rows = ProgramRowsObjList;
+                    CampaignRowsObjList.Add(CampaignRowsObj);
+                }
+                gridjsonlistPlanObj.rows = CampaignRowsObjList;
+                gridjsonlist.Add(gridjsonlistPlanObj);
+            }            
+            objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
+            objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;            
+            #endregion
+            return PartialView("_Budget", objBudgetDHTMLXGrid);
         }
+
+        /// <summary>
+        /// Added By: Maitri Gandhi.
+        /// Action to Generate Header String
+        /// </summary>
+        /// <param name="AllocatedBy"> AllocatedBy</param>
+        public BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid)
+        {
+            string setHeader, colType, width, colSorting;
+            List<string> attachHeader = new List<string>();
+            setHeader = "ActivityType,";
+            colType = "ro,tree";
+            width = "10,250";
+            colSorting = "na,na";
+            attachHeader.Add("#rspan");
+            attachHeader.Add("#rspan");
+            int incrementCount = 1;
+            bool isQuarter = false;
+            if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
+            {
+                incrementCount = 3;
+                isQuarter = true;
+            }
+            for (int i = 1; i <= 12; i += incrementCount)
+            {
+                if (isQuarter)
+                {
+                    setHeader = setHeader + ",Q" + ((i / incrementCount) + 1) + ",#cspan,#cspan";
+                    colType = colType + ",ro,ro,ro";
+                    width = width + ",120,120,120";
+                    colSorting = colSorting + ",str,str,str";
+                    attachHeader.Add("Actual");
+                    attachHeader.Add("Planned");
+                    attachHeader.Add("Budget");
+                }
+                else
+                {
+                    DateTime dt = new DateTime(2012, i, 1);
+                    setHeader = setHeader + "," + dt.ToString("MMM").ToUpper() + ",#cspan,#cspan";
+                    colType = colType + ",ro,ro,ro";
+                    width = width + ",120,120,120";
+                    colSorting = colSorting + ",str,str,str";
+                    attachHeader.Add("Actual");
+                    attachHeader.Add("Planned");
+                    attachHeader.Add("Budget");
+                }
+            }
+            setHeader = setHeader + ",FY " + ViewBag.DisplayYear + ",#cspan,#cspan";
+            colType = colType + ",ro,ro,ro";
+            width = width + ",120,120,120";
+            colSorting = colSorting + ",str,str,str";
+            attachHeader.Add("Actual");
+            attachHeader.Add("Planned");
+            attachHeader.Add("Budget");
+            objBudgetDHTMLXGrid.SetHeader = setHeader;
+            objBudgetDHTMLXGrid.AttachHeader = attachHeader;
+            objBudgetDHTMLXGrid.ColType = colType;
+            objBudgetDHTMLXGrid.Width = width;
+            objBudgetDHTMLXGrid.ColSorting = colSorting;
+            return objBudgetDHTMLXGrid;
+        }
+
+        /// <summary>
+        /// Added By: Maitri Gandhi.
+        /// Action to Plan Month Report for ActivityTypeMain 
+        /// </summary>
+        public List<Budgetdataobj> PlanMonthReport(List<BudgetModelReport> model, string Activitytype, string activityId, List<Budgetdataobj> BudgetDataObjList, string Tab)
+        {
+            int incrementCount = 1;
+            bool isQuarter = false;
+            double actualValue = 0;
+            double plannedValue = 0;
+            double childAllocatedValue = 0;
+            string formatThousand = "#,#0.##";
+            string DivId = string.Empty;
+            string overbudget = string.Empty, cssclass = string.Empty, budgetError = " budgetError", budgetErrorCss="background:#ff1e26;";
+            double dblProgress = 0;
+            Budgetdataobj BudgetDataObj = new Budgetdataobj();
+            if (ViewBag.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
+            {
+                incrementCount = 3;
+                isQuarter = true;
+            }
+            BudgetModelReport budgetPlan = model.SingleOrDefault(pl => pl.ActivityType == Activitytype && pl.ActivityId == activityId);
+            for (int i = 1; i <= 12; i += incrementCount)
+            {
+                switch (i)
+                {
+                    case 1:
+                        actualValue = budgetPlan.MonthActual.Jan;
+                        plannedValue = budgetPlan.MonthPlanned.Jan;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Jan;
+                        break;
+                    case 2:
+                        actualValue = budgetPlan.MonthActual.Feb;
+                        plannedValue = budgetPlan.MonthPlanned.Feb;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Feb;
+                        break;
+                    case 3:
+                        actualValue = budgetPlan.MonthActual.Mar;
+                        plannedValue = budgetPlan.MonthPlanned.Mar;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Mar;
+                        break;
+                    case 4:
+                        actualValue = budgetPlan.MonthActual.Apr;
+                        plannedValue = budgetPlan.MonthPlanned.Apr;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Apr;
+                        break;
+                    case 5:
+                        actualValue = budgetPlan.MonthActual.May;
+                        plannedValue = budgetPlan.MonthPlanned.May;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.May;
+                        break;
+                    case 6:
+                        actualValue = budgetPlan.MonthActual.Jun;
+                        plannedValue = budgetPlan.MonthPlanned.Jun;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Jun;
+                        break;
+                    case 7:
+                        actualValue = budgetPlan.MonthActual.Jul;
+                        plannedValue = budgetPlan.MonthPlanned.Jul;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Jul;
+                        break;
+                    case 8:
+                        actualValue = budgetPlan.MonthActual.Aug;
+                        plannedValue = budgetPlan.MonthPlanned.Aug;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Aug;
+                        break;
+                    case 9:
+                        actualValue = budgetPlan.MonthActual.Sep;
+                        plannedValue = budgetPlan.MonthPlanned.Sep;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Sep;
+                        break;
+                    case 10:
+                        actualValue = budgetPlan.MonthActual.Oct;
+                        plannedValue = budgetPlan.MonthPlanned.Oct;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Oct;
+                        break;
+                    case 11:
+                        actualValue = budgetPlan.MonthActual.Nov;
+                        plannedValue = budgetPlan.MonthPlanned.Nov;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Nov;
+                        break;
+                    case 12:
+                        actualValue = budgetPlan.MonthActual.Dec;
+                        plannedValue = budgetPlan.MonthPlanned.Dec;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Dec;
+                        break;
+                }
+                DivId = Activitytype + activityId;
+                //Actual
+                BudgetDataObj = new Budgetdataobj();
+                cssclass = string.Empty;
+                if (Tab == ReportTabType.Plan.ToString())
+                {
+                    if (actualValue > childAllocatedValue)
+                    {
+                        cssclass = cssclass + budgetError;
+                        overbudget = "OverBudget = " + Math.Abs(childAllocatedValue - actualValue).ToString(formatThousand);
+                    }
+                    dblProgress = (actualValue == 0 && childAllocatedValue == 0) ? 0 : (actualValue > 0 && childAllocatedValue == 0) ? 101 : actualValue / childAllocatedValue * 100;
+                    if (dblProgress > 100)
+                    {
+                        BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + actualValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar></span>" + "</div>";
+                    }
+                    else
+                    {
+                        BudgetDataObj.value = "<div id=" + DivId + (cssclass!=string.Empty?" class=" + cssclass :string.Empty)+" " + overbudget + ">" + actualValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
+                    }
+                }
+                BudgetDataObjList.Add(BudgetDataObj);
+                //Planned
+                BudgetDataObj = new Budgetdataobj();
+                cssclass = string.Empty;
+                if (Tab == ReportTabType.Plan.ToString())
+                {
+                    if (plannedValue > childAllocatedValue)
+                    {
+                        cssclass = cssclass + budgetError;
+                        overbudget = "OverBudget = " + Math.Abs(childAllocatedValue - plannedValue).ToString(formatThousand);
+                    }
+                    dblProgress = (plannedValue == 0 && childAllocatedValue == 0) ? 0 : (plannedValue > 0 && childAllocatedValue == 0) ? 101 : plannedValue / childAllocatedValue * 100;
+                    if (dblProgress > 100)
+                    {
+                        BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + plannedValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar></span>" + "</div>";
+                    }
+                    else
+                    {
+                        BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + plannedValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
+                    }
+                }
+                BudgetDataObjList.Add(BudgetDataObj);
+                //Budget
+                BudgetDataObj = new Budgetdataobj();
+                if (Tab == ReportTabType.Plan.ToString())
+                {
+                    BudgetDataObj.value = "<div id=" + DivId + ">" + childAllocatedValue.ToString(formatThousand) + "</div>";
+                }
+                else
+                {
+                    BudgetDataObj.value = "<div id=" + DivId + ">" + "---" + "</div>";
+                }
+                BudgetDataObjList.Add(BudgetDataObj);
+            }
+            return BudgetDataObjList;
+        }
+
+        /// <summary>
+        /// Added By: Maitri Gandhi.
+        /// Action to Parent Month Report
+        /// </summary>
+        public List<Budgetdataobj> ParentMonthReport(BudgetModelReport budgetPlan, string Activitytype, List<Budgetdataobj> BudgetDataObjList, string Tab)
+        {
+            int incrementCount = 1;
+            bool isQuarter = false;
+            double allocatedValue = 0;
+            double actualValue = 0;
+            double plannedValue = 0;
+            double childAllocatedValue = 0;
+            string formatThousand = "#,#0.##";
+            string DivId = string.Empty;
+            string overbudget = string.Empty, cssclass = string.Empty, budgetError = " budgetError", budgetErrorCss = "background:#ff1e26;";
+            double dblProgress = 0;
+            Budgetdataobj BudgetDataObj = new Budgetdataobj();
+            if (ViewBag.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
+            {
+                incrementCount = 3;
+                isQuarter = true;
+            }
+            //foreach (BudgetModelReport budgetPlan in model.Where(pl => pl.ActivityType == Activitytype && pl.ParentActivityId == activityId))
+            if (budgetPlan != null)
+            {
+                for (int i = 1; i <= 12; i += incrementCount)
+                {
+                    switch (i)
+                    {
+                        case 1:
+                            actualValue = budgetPlan.MonthActual.Jan;
+                            allocatedValue = budgetPlan.MonthAllocated.Jan;
+                            plannedValue = budgetPlan.MonthPlanned.Jan;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Jan;
+                            break;
+                        case 2:
+                            actualValue = budgetPlan.MonthActual.Feb;
+                            allocatedValue = budgetPlan.MonthAllocated.Feb;
+                            plannedValue = budgetPlan.MonthPlanned.Feb;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Feb;
+                            break;
+                        case 3:
+                            actualValue = budgetPlan.MonthActual.Mar;
+                            allocatedValue = budgetPlan.MonthAllocated.Mar;
+                            plannedValue = budgetPlan.MonthPlanned.Mar;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Mar;
+                            break;
+                        case 4:
+                            actualValue = budgetPlan.MonthActual.Apr;
+                            allocatedValue = budgetPlan.MonthAllocated.Apr;
+                            plannedValue = budgetPlan.MonthPlanned.Apr;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Apr;
+                            break;
+                        case 5:
+                            actualValue = budgetPlan.MonthActual.May;
+                            allocatedValue = budgetPlan.MonthAllocated.May;
+                            plannedValue = budgetPlan.MonthPlanned.May;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.May;
+                            break;
+                        case 6:
+                            actualValue = budgetPlan.MonthActual.Jun;
+                            allocatedValue = budgetPlan.MonthAllocated.Jun;
+                            plannedValue = budgetPlan.MonthPlanned.Jun;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Jun;
+                            break;
+                        case 7:
+                            actualValue = budgetPlan.MonthActual.Jul;
+                            allocatedValue = budgetPlan.MonthAllocated.Jul;
+                            plannedValue = budgetPlan.MonthPlanned.Jul;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Jul;
+                            break;
+                        case 8:
+                            actualValue = budgetPlan.MonthActual.Aug;
+                            allocatedValue = budgetPlan.MonthAllocated.Aug;
+                            plannedValue = budgetPlan.MonthPlanned.Aug;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Aug;
+                            break;
+                        case 9:
+                            actualValue = budgetPlan.MonthActual.Sep;
+                            allocatedValue = budgetPlan.MonthAllocated.Sep;
+                            plannedValue = budgetPlan.MonthPlanned.Sep;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Sep;
+                            break;
+                        case 10:
+                            actualValue = budgetPlan.MonthActual.Oct;
+                            allocatedValue = budgetPlan.MonthAllocated.Oct;
+                            plannedValue = budgetPlan.MonthPlanned.Oct;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Oct;
+                            break;
+                        case 11:
+                            actualValue = budgetPlan.MonthActual.Nov;
+                            allocatedValue = budgetPlan.MonthAllocated.Nov;
+                            plannedValue = budgetPlan.MonthPlanned.Nov;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Nov;
+                            break;
+                        case 12:
+                            actualValue = budgetPlan.MonthActual.Dec;
+                            allocatedValue = budgetPlan.MonthAllocated.Dec;
+                            plannedValue = budgetPlan.MonthPlanned.Dec;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Dec;
+                            break;
+                    }
+                    //if (isQuarter)
+                    //{
+                    DivId = Activitytype + budgetPlan.ActivityId;
+                    //Actual
+                    BudgetDataObj = new Budgetdataobj();
+                    if (Activitytype == ActivityType.ActivityLineItem && plannedValue <= 0)
+                    {
+                        BudgetDataObj.value = "<div id=" + DivId + ">" + "---" + "</div>";
+                    }
+                    else
+                    {
+                        cssclass = string.Empty;
+                        if (Tab == ReportTabType.Plan.ToString())
+                        {
+                            if (actualValue > allocatedValue)
+                            {
+                                cssclass = cssclass + budgetError;
+                                overbudget = "OverBudget = " + Math.Abs(allocatedValue - actualValue).ToString(formatThousand);
+                            }
+                            dblProgress = 0;
+                            dblProgress = (actualValue == 0 && allocatedValue == 0) ? 0 : (actualValue > 0 && allocatedValue == 0) ? 101 : actualValue / allocatedValue * 100;
+                            if (dblProgress > 100)
+                            {
+                                BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + actualValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar></span>" + "</div>";
+                            }
+                            else
+                            {
+                                BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + actualValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
+                            } overbudget = string.Empty;
+                        }
+                    }
+                    BudgetDataObjList.Add(BudgetDataObj);
+                    //Planned
+                    BudgetDataObj = new Budgetdataobj();
+                    if (Activitytype == ActivityType.ActivityLineItem && plannedValue <= 0)
+                    {
+                        BudgetDataObj.value = "<div id=" + DivId + ">" + "---" + "</div>";
+                    }
+                    else
+                    {
+                        cssclass = string.Empty;
+                        if (Tab == ReportTabType.Plan.ToString())
+                        {
+                            if (plannedValue > allocatedValue)
+                            {
+                                cssclass = cssclass + budgetError;
+                                overbudget = "OverBudget = " + Math.Abs(allocatedValue - plannedValue).ToString(formatThousand);
+                            }
+                            dblProgress = 0;
+                            dblProgress = (plannedValue == 0 && allocatedValue == 0) ? 0 : (plannedValue > 0 && allocatedValue == 0) ? 101 : plannedValue / allocatedValue * 100;
+                            if (dblProgress > 100)
+                            {
+                                BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + plannedValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;"+budgetErrorCss+" class=progressBar></span>" + "</div>";
+                            }
+                            else
+                            {
+                                BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + plannedValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
+                            } overbudget = string.Empty;
+                        }
+                    }
+                    BudgetDataObjList.Add(BudgetDataObj);
+                    //Budget
+                    BudgetDataObj = new Budgetdataobj();
+                    if (Activitytype != ActivityType.ActivityLineItem && Activitytype != ActivityType.ActivityTactic && Tab == ReportTabType.Plan.ToString())
+                    {
+                        cssclass = string.Empty;
+                        if (Tab == ReportTabType.Plan.ToString())
+                        {
+                            if (allocatedValue < childAllocatedValue)
+                            {
+                                cssclass = cssclass + budgetError;
+                                BudgetDataObj.value = "<div id=" + DivId + " Allocated=" + childAllocatedValue.ToString(formatThousand) + " class= budgetError>" + allocatedValue.ToString(formatThousand) + "</div>";
+                            }
+                            else if (allocatedValue > childAllocatedValue)
+                            {
+                                BudgetDataObj.value = "<div id=" + DivId + " Remaining=" + (allocatedValue - childAllocatedValue).ToString(formatThousand) + " >" + allocatedValue.ToString(formatThousand) + "</div>";
+                            }
+                            else
+                                BudgetDataObj.value = "<div id=" + DivId + ">" + allocatedValue.ToString(formatThousand) + "</div>";
+                            overbudget = string.Empty;
+                        }
+                    }
+                    else
+                    {
+                        BudgetDataObj.value = "<div id=" + DivId + ">" + "---" + "</div>";
+                    }
+                    BudgetDataObjList.Add(BudgetDataObj);
+                }
+                //}
+            }
+            return BudgetDataObjList;
+        }
+
+        /// <summary>
+        /// Added By: Maitri Gandhi.
+        /// Action to Parent Summary Report
+        /// </summary>
+        public List<Budgetdataobj> ParentSummaryReport(BudgetModelReport bm, List<Budgetdataobj> BudgetDataObjList, string Tab, string activityType)
+        {
+            string formatThousand = "#,#0.##", budgetErrorCss = "background:#ff1e26;";
+            double dblProgress = 0;
+            Budgetdataobj BudgetDataObj;
+            double sumMonthActual = bm.MonthActual.Jan + bm.MonthActual.Feb + bm.MonthActual.Mar + bm.MonthActual.Apr + bm.MonthActual.May + bm.MonthActual.Jun + bm.MonthActual.Jul + bm.MonthActual.Aug + bm.MonthActual.Sep + bm.MonthActual.Oct + bm.MonthActual.Nov + bm.MonthActual.Dec;
+            double sumMonthPlanned = bm.MonthPlanned.Jan + bm.MonthPlanned.Feb + bm.MonthPlanned.Mar + bm.MonthPlanned.Apr + bm.MonthPlanned.May + bm.MonthPlanned.Jun + bm.MonthPlanned.Jul + bm.MonthPlanned.Aug + bm.MonthPlanned.Sep + bm.MonthPlanned.Oct + bm.MonthPlanned.Nov + bm.MonthPlanned.Dec;
+            double sumMonthAllocated = bm.MonthAllocated.Jan + bm.MonthAllocated.Feb + bm.MonthAllocated.Mar + bm.MonthAllocated.Apr + bm.MonthAllocated.May + bm.MonthAllocated.Jun + bm.MonthAllocated.Jul + bm.MonthAllocated.Aug + bm.MonthAllocated.Sep + bm.MonthAllocated.Oct + bm.MonthAllocated.Nov + bm.MonthAllocated.Dec;
+            double sumMonthChildAllocated = bm.ChildMonthAllocated.Jan + bm.ChildMonthAllocated.Feb + bm.ChildMonthAllocated.Mar + bm.ChildMonthAllocated.Apr + bm.ChildMonthAllocated.May + bm.ChildMonthAllocated.Jun + bm.ChildMonthAllocated.Jul + bm.ChildMonthAllocated.Aug + bm.ChildMonthAllocated.Sep + bm.ChildMonthAllocated.Oct + bm.ChildMonthAllocated.Nov + bm.ChildMonthAllocated.Dec;
+
+            //Actual
+            BudgetDataObj = new Budgetdataobj();
+            if (Tab == ReportTabType.Plan.ToString())
+            {
+                dblProgress = 0;
+                dblProgress = (sumMonthActual == 0 && sumMonthAllocated == 0) ? 0 : (sumMonthActual > 0 && sumMonthAllocated == 0) ? 101 : sumMonthActual / sumMonthAllocated * 100;
+                if (dblProgress > 100)
+                {
+                    BudgetDataObj.value = "<div class=budgetError OverBudget=" + Math.Abs(sumMonthAllocated - sumMonthActual).ToString(formatThousand) + ">" + Math.Abs(sumMonthActual).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar ></span></div>";
+                }
+                else
+                {
+                    BudgetDataObj.value = "<div>" + Math.Abs(sumMonthActual).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span></div>";
+                }
+            }
+            BudgetDataObjList.Add(BudgetDataObj);
+            //Planned
+            BudgetDataObj = new Budgetdataobj();
+            if (Tab == ReportTabType.Plan.ToString())
+            {
+                dblProgress = 0;
+                dblProgress = (sumMonthPlanned == 0 && sumMonthAllocated == 0) ? 0 : (sumMonthPlanned > 0 && sumMonthAllocated == 0) ? 101 : sumMonthPlanned / sumMonthAllocated * 100;
+                if (dblProgress > 100)
+                {
+                    BudgetDataObj.value = "<div class= budgetError OverBudget=" + Math.Abs(sumMonthAllocated - sumMonthPlanned).ToString(formatThousand) + ">" + Math.Abs(sumMonthPlanned).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar ></span></div>";
+                }
+                else
+                {
+                    BudgetDataObj.value = "<div>" + Math.Abs(sumMonthPlanned).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span></div>";
+                }
+            }
+            //BudgetDataObj.value = "<div>" + Math.Abs(sumMonthPlanned).ToString(formatThousand) + "</div>";
+            BudgetDataObjList.Add(BudgetDataObj);
+            //Budget
+            BudgetDataObj = new Budgetdataobj();
+            if (Tab == ReportTabType.Plan.ToString())
+            {
+                if (sumMonthAllocated < sumMonthChildAllocated)
+                {
+                    if (bm.ActivityType == ActivityType.ActivityMain)
+                        BudgetDataObj.value = "<div>" + Math.Abs(sumMonthChildAllocated).ToString(formatThousand) + "</div>";
+                    else
+                        BudgetDataObj.value = "<div class = budgetError Allocated=" + sumMonthChildAllocated.ToString(formatThousand) + ">" + Math.Abs(sumMonthAllocated).ToString(formatThousand) + "</div>";
+                }
+                else if (sumMonthAllocated > sumMonthChildAllocated)
+                {
+                    if (bm.ActivityType == ActivityType.ActivityMain)
+                        BudgetDataObj.value = "<div >" + Math.Abs(sumMonthChildAllocated).ToString(formatThousand) + "</div>";
+                    else
+                        BudgetDataObj.value = "<div  Remaining=" + (sumMonthAllocated - sumMonthChildAllocated).ToString(formatThousand) + ">" + Math.Abs(sumMonthAllocated).ToString(formatThousand) + "</div>";
+                }
+                else
+                {
+                    if (bm.ActivityType == ActivityType.ActivityMain)
+                        BudgetDataObj.value = "<div>" + Math.Abs(sumMonthChildAllocated).ToString(formatThousand) + "</div>";
+                    else
+                        BudgetDataObj.value = "<div>" + Math.Abs(sumMonthAllocated).ToString(formatThousand) + "</div>";
+                }
+            }
+            else
+            {
+                BudgetDataObj.value = "<div>" + "---" + "</div>";
+            }
+            BudgetDataObjList.Add(BudgetDataObj);
+
+            return BudgetDataObjList;
+        }
+
 
         /// <summary>
         /// Get Empty Month List
