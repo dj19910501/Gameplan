@@ -2825,7 +2825,20 @@ namespace RevenuePlanner.Controllers
             ////Start : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
             ViewBag.TacticIntegrationInstance = pcpt.IntegrationInstanceTacticId;
             ViewBag.TacticEloquaInstance = pcpt.IntegrationInstanceEloquaId;
-            ViewBag.TacticIntegrationProjMgmtInstance = pcpt.IntegrationWorkFrontProjectID;
+            if (pcpt.IntegrationWorkFrontProjectID != null) //modified 24 Jan 2016 by Brad Gray PL#1851
+            {
+                ViewBag.TacticIntegrationProjMgmtInstance = pcpt.IntegrationWorkFrontProjectID;
+            }
+            else if(tRequest!=null && tRequest.RequestId!=null)
+            {
+                ViewBag.TacticIntegrationProjMgmtInstance = tRequest.RequestId;
+            }
+            else
+            {
+                ViewBag.TacticIntegrationProjMgmtInstance = null;
+            }
+            
+            
             string pullResponses = Operation.Pull_Responses.ToString();
             string pullClosedWon = Operation.Pull_ClosedWon.ToString();
             string pullQualifiedLeads = Operation.Pull_QualifiedLeads.ToString();
