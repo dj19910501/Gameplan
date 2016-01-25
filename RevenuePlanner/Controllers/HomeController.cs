@@ -2090,7 +2090,7 @@ namespace RevenuePlanner.Controllers
                 );
             //End
 
-            if (IsRequest || IsFiltered) //When clicked on request tab data will be displayed in bottom up approach else top-down for ViewBy Tactic
+            if (IsRequest) //When clicked on request tab data will be displayed in bottom up approach else top-down for ViewBy Tactic
             {
 
                 #region Prepare Plan Task Data
@@ -2117,6 +2117,8 @@ namespace RevenuePlanner.Controllers
                 CreatedBy = objplan.CreatedBy,
                 Status = objplan.Status
             }).Select(objplan => objplan).OrderBy(objplan => objplan.text);
+
+              
 
                 //// Finalize task data plan list for gantt chart
                 var newTaskDataPlan = taskDataPlan.Select(plan => new
