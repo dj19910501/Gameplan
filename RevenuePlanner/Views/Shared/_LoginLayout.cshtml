@@ -1,6 +1,7 @@
 ﻿@using RevenuePlanner.Helpers
 @using System.Configuration
-@{
+
+@*@{
     var _isDisplayLayout = "";
 
     if (Convert.ToString(ConfigurationManager.AppSettings["ShowBookmark"]) != null)
@@ -12,7 +13,8 @@
         _isDisplayLayout = "no";
     }
 
-}
+}*@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
