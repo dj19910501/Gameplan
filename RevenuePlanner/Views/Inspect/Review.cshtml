@@ -608,7 +608,6 @@
         /* =======  End  =============  */
 
         var tacticStatus = @tacticReview.Status;
-        console.log(tacticStatus.id);
         if(tacticStatus.id == "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()" ||
             tacticStatus.id == "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()" ||
                 tacticStatus.id == "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()" )
@@ -887,7 +886,6 @@
             {
                 return false;   
             }
-            console.log("btnApproved");
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
             statusValue = $("#hdnStatusValue").val();
@@ -945,12 +943,9 @@
                 var request = document.getElementById('workFrontRequestOnApproval');
                 var requestChecked = request.checked;
                 if (requestChecked) {
-                    console.log("requestChecked");
                     wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()';
                     requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
-                    console.log("requestQueue is.." + requestQueue);
                     assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
-                    console.log("requestAssignee is.." + assignee);
                 }
                 else
                 {
@@ -1083,7 +1078,6 @@
     // Begin - Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919. Save Tactic Title, DeployToIntegration & Sync settings for Eloqua & Salesforce.
     // WorkFront information add 23/24 Jan 2016 by Brad Gray for PL#1921 & PL#1922
     function SaveReviewIntegrationInfo() {
-        console.log("SaveReviewIntegrationInfo");
         var returnparameter = false;
         //debugger;
         // Start - Get & Validate Tactic Title
@@ -1143,14 +1137,12 @@
         var requestQueue = "undefined";
         var assignee = "undefined";
         if (isSyncWorkFront == true) {
-            console.log("isSyncWorkFront is true");
             var request = document.getElementById('workFrontRequestOnApproval');
             var requestChecked = request.checked;
             if (requestChecked) {
                 wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()';
                 if(document.getElementById)
                 {
-                    console.log("request is checked");
                     requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
                     assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
                 }
