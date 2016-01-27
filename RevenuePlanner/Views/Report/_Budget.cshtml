@@ -23,7 +23,7 @@
     string CurrentQuarter = ViewBag.CurrentQuarter;
     string TodayDate = ViewBag.TodayDate;
     bool isData = true;
-    string SortingId = ViewBag.SortingId; 
+    //string SortingId = ViewBag.SortingId; 
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
@@ -89,13 +89,13 @@
         width: 15px;
     }    
 </style>
-<div id="gridbox" style="background-color: white;"></div>
+<div id="gridbox" style="background-color: white; width:100%;"></div>
 
 <script type="text/javascript">
     
     AddTipsy();
     SetHeader();
-    if ('@SortingId' != '') {
+    @*if ('@SortingId' != '') {
         var sortid = '#' + '@SortingId';
         if ($(sortid).hasClass('UpperArrowReport')) {
             $(sortid).removeClass('UpperArrowReport');
@@ -109,7 +109,7 @@
         }
         else if ($(sortid).hasClass('DownArrowReportBlue')) {
         }
-    }
+    }*@
 
     LoadBudgetSortingEvent();
     $(document).ready(function () {
