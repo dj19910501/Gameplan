@@ -147,7 +147,7 @@
     // End by Nishant Sheth
     $(document).ready(function () {
         $("body").append(pleaseWaitDiv);
-            if ('@_isDisplayLayout' == "yes") {
+            @*if ('@_isDisplayLayout' == "yes") {
                 var _isTrue = '@Convert.ToString(ConfigurationManager.AppSettings["ShowBookmark"])';
                 if (_isTrue == 'false') {
                     $("#_loginLayout").hide()
@@ -155,7 +155,7 @@
                 else {
                     $("#_loginLayout").show()
                 }
-              }
+              }*@
 
 
         $(".alert").find(".close").on("click", function (e) {
