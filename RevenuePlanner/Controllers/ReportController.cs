@@ -2739,316 +2739,318 @@ namespace RevenuePlanner.Controllers
             ViewBag.CurrentQuarter = "Q" + currentQuarter;
             ViewBag.TodayDate = TodayDate;
             ViewBag.DisplayYear = Year;
-            ViewBag.SortingId = SortingId;
-            if (SortingId != null && SortingId != string.Empty)
-            {
-                List<BudgetModelReport> SortingModel = new List<BudgetModelReport>();
-                SortingModel = model.Where(m => m.ActivityType == ActivityType.ActivityPlan).ToList();
-                SortingModel.ForEach(s => model.Remove(s));
+            #region "Manual Sorting"
+            //ViewBag.SortingId = SortingId;
+            //if (SortingId != null && SortingId != string.Empty)
+            //{
+            //    List<BudgetModelReport> SortingModel = new List<BudgetModelReport>();
+            //    SortingModel = model.Where(m => m.ActivityType == ActivityType.ActivityPlan).ToList();
+            //    SortingModel.ForEach(s => model.Remove(s));
 
-                string[] splitsorting = SortingId.Split('_');
-                string SortingColumn = splitsorting[0];
-                string SortingUpDown = splitsorting[1];
-                string SortingColumnMonth = splitsorting[2];
-                if (SortingColumn == "Actual")
-                {
-                    if (SortingUpDown == "Up")
-                    {
-                        switch (SortingColumnMonth)
-                        {
-                            case "1":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Jan).ToList();
-                                break;
-                            case "2":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Feb).ToList();
-                                break;
-                            case "3":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Mar).ToList();
-                                break;
-                            case "4":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Apr).ToList();
-                                break;
-                            case "5":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.May).ToList();
-                                break;
-                            case "6":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Jun).ToList();
-                                break;
-                            case "7":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Jul).ToList();
-                                break;
-                            case "8":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Aug).ToList();
-                                break;
-                            case "9":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Sep).ToList();
-                                break;
-                            case "10":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Oct).ToList();
-                                break;
-                            case "11":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Nov).ToList();
-                                break;
-                            case "12":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthActual.Dec).ToList();
-                                break;
-                            case "Total":
-                                SortingModel = SortingModel.OrderBy(s => (
-                                      s.MonthActual.Jan + s.MonthActual.Feb + s.MonthActual.Mar + s.MonthActual.Apr
-                                    + s.MonthActual.May + s.MonthActual.Jun + s.MonthActual.Jul + s.MonthActual.Aug
-                                    + s.MonthActual.Sep + s.MonthActual.Oct + s.MonthActual.Nov + s.MonthActual.Dec)).ToList();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        switch (SortingColumnMonth)
-                        {
-                            case "1":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Jan).ToList();
-                                break;
-                            case "2":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Feb).ToList();
-                                break;
-                            case "3":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Mar).ToList();
-                                break;
-                            case "4":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Apr).ToList();
-                                break;
-                            case "5":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.May).ToList();
-                                break;
-                            case "6":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Jun).ToList();
-                                break;
-                            case "7":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Jul).ToList();
-                                break;
-                            case "8":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Aug).ToList();
-                                break;
-                            case "9":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Sep).ToList();
-                                break;
-                            case "10":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Oct).ToList();
-                                break;
-                            case "11":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Nov).ToList();
-                                break;
-                            case "12":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Dec).ToList();
-                                break;
-                            case "Total":
-                                SortingModel = SortingModel.OrderByDescending(s => (
-                                      s.MonthActual.Jan + s.MonthActual.Feb + s.MonthActual.Mar + s.MonthActual.Apr
-                                    + s.MonthActual.May + s.MonthActual.Jun + s.MonthActual.Jul + s.MonthActual.Aug
-                                    + s.MonthActual.Sep + s.MonthActual.Oct + s.MonthActual.Nov + s.MonthActual.Dec)).ToList();
-                                break;
-                        }
-                    }
-                }
-                else if (SortingColumn == "Planned")
-                {
-                    if (SortingUpDown == "Up")
-                    {
-                        switch (SortingColumnMonth)
-                        {
-                            case "1":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Jan).ToList();
-                                break;
-                            case "2":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Feb).ToList();
-                                break;
-                            case "3":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Mar).ToList();
-                                break;
-                            case "4":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Apr).ToList();
-                                break;
-                            case "5":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.May).ToList();
-                                break;
-                            case "6":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Jun).ToList();
-                                break;
-                            case "7":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Jul).ToList();
-                                break;
-                            case "8":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Aug).ToList();
-                                break;
-                            case "9":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Sep).ToList();
-                                break;
-                            case "10":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Oct).ToList();
-                                break;
-                            case "11":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Nov).ToList();
-                                break;
-                            case "12":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Dec).ToList();
-                                break;
-                            case "Total":
-                                SortingModel = SortingModel.OrderBy(s => (
-                                      s.MonthPlanned.Jan + s.MonthPlanned.Feb + s.MonthPlanned.Mar + s.MonthPlanned.Apr
-                                    + s.MonthPlanned.May + s.MonthPlanned.Jun + s.MonthPlanned.Jul + s.MonthPlanned.Aug
-                                    + s.MonthPlanned.Sep + s.MonthPlanned.Oct + s.MonthPlanned.Nov + s.MonthPlanned.Dec)).ToList();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        switch (SortingColumnMonth)
-                        {
-                            case "1":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Jan).ToList();
-                                break;
-                            case "2":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Feb).ToList();
-                                break;
-                            case "3":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Mar).ToList();
-                                break;
-                            case "4":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Apr).ToList();
-                                break;
-                            case "5":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.May).ToList();
-                                break;
-                            case "6":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Jun).ToList();
-                                break;
-                            case "7":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Jul).ToList();
-                                break;
-                            case "8":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Aug).ToList();
-                                break;
-                            case "9":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Sep).ToList();
-                                break;
-                            case "10":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Oct).ToList();
-                                break;
-                            case "11":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Nov).ToList();
-                                break;
-                            case "12":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Dec).ToList();
-                                break;
-                            case "Total":
-                                SortingModel = SortingModel.OrderByDescending(s => (
-                                      s.MonthPlanned.Jan + s.MonthPlanned.Feb + s.MonthPlanned.Mar + s.MonthPlanned.Apr
-                                    + s.MonthPlanned.May + s.MonthPlanned.Jun + s.MonthPlanned.Jul + s.MonthPlanned.Aug
-                                    + s.MonthPlanned.Sep + s.MonthPlanned.Oct + s.MonthPlanned.Nov + s.MonthPlanned.Dec)).ToList();
-                                break;
-                        }
-                    }
-                }
-                else if (SortingColumn == "Allocated")
-                {
-                    if (SortingUpDown == "Up")
-                    {
-                        switch (SortingColumnMonth)
-                        {
-                            case "1":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Jan).ToList();
-                                break;
-                            case "2":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Feb).ToList();
-                                break;
-                            case "3":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Mar).ToList();
-                                break;
-                            case "4":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Apr).ToList();
-                                break;
-                            case "5":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.May).ToList();
-                                break;
-                            case "6":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Jun).ToList();
-                                break;
-                            case "7":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Jul).ToList();
-                                break;
-                            case "8":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Aug).ToList();
-                                break;
-                            case "9":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Sep).ToList();
-                                break;
-                            case "10":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Oct).ToList();
-                                break;
-                            case "11":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Nov).ToList();
-                                break;
-                            case "12":
-                                SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Dec).ToList();
-                                break;
-                            case "Total":
-                                SortingModel = SortingModel.OrderBy(s => (
-                                      s.MonthAllocated.Jan + s.MonthAllocated.Feb + s.MonthAllocated.Mar + s.MonthAllocated.Apr
-                                    + s.MonthAllocated.May + s.MonthAllocated.Jun + s.MonthAllocated.Jul + s.MonthAllocated.Aug
-                                    + s.MonthAllocated.Sep + s.MonthAllocated.Oct + s.MonthAllocated.Nov + s.MonthAllocated.Dec)).ToList();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        switch (SortingColumnMonth)
-                        {
-                            case "1":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Jan).ToList();
-                                break;
-                            case "2":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Feb).ToList();
-                                break;
-                            case "3":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Mar).ToList();
-                                break;
-                            case "4":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Apr).ToList();
-                                break;
-                            case "5":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.May).ToList();
-                                break;
-                            case "6":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Jun).ToList();
-                                break;
-                            case "7":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Jul).ToList();
-                                break;
-                            case "8":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Aug).ToList();
-                                break;
-                            case "9":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Sep).ToList();
-                                break;
-                            case "10":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Oct).ToList();
-                                break;
-                            case "11":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Nov).ToList();
-                                break;
-                            case "12":
-                                SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Dec).ToList();
-                                break;
-                            case "Total":
-                                SortingModel = SortingModel.OrderByDescending(s => (
-                                      s.MonthAllocated.Jan + s.MonthAllocated.Feb + s.MonthAllocated.Mar + s.MonthAllocated.Apr
-                                    + s.MonthAllocated.May + s.MonthAllocated.Jun + s.MonthAllocated.Jul + s.MonthAllocated.Aug
-                                    + s.MonthAllocated.Sep + s.MonthAllocated.Oct + s.MonthAllocated.Nov + s.MonthAllocated.Dec)).ToList();
-                                break;
-                        }
-                    }
-                }
-                SortingModel.ForEach(s => model.Add(s));
-            }
+            //    string[] splitsorting = SortingId.Split('_');
+            //    string SortingColumn = splitsorting[0];
+            //    string SortingUpDown = splitsorting[1];
+            //    string SortingColumnMonth = splitsorting[2];
+            //    if (SortingColumn == "Actual")
+            //    {
+            //        if (SortingUpDown == "Up")
+            //        {
+            //            switch (SortingColumnMonth)
+            //            {
+            //                case "1":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Jan).ToList();
+            //                    break;
+            //                case "2":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Feb).ToList();
+            //                    break;
+            //                case "3":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Mar).ToList();
+            //                    break;
+            //                case "4":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Apr).ToList();
+            //                    break;
+            //                case "5":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.May).ToList();
+            //                    break;
+            //                case "6":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Jun).ToList();
+            //                    break;
+            //                case "7":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Jul).ToList();
+            //                    break;
+            //                case "8":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Aug).ToList();
+            //                    break;
+            //                case "9":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Sep).ToList();
+            //                    break;
+            //                case "10":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Oct).ToList();
+            //                    break;
+            //                case "11":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Nov).ToList();
+            //                    break;
+            //                case "12":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthActual.Dec).ToList();
+            //                    break;
+            //                case "Total":
+            //                    SortingModel = SortingModel.OrderBy(s => (
+            //                          s.MonthActual.Jan + s.MonthActual.Feb + s.MonthActual.Mar + s.MonthActual.Apr
+            //                        + s.MonthActual.May + s.MonthActual.Jun + s.MonthActual.Jul + s.MonthActual.Aug
+            //                        + s.MonthActual.Sep + s.MonthActual.Oct + s.MonthActual.Nov + s.MonthActual.Dec)).ToList();
+            //                    break;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            switch (SortingColumnMonth)
+            //            {
+            //                case "1":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Jan).ToList();
+            //                    break;
+            //                case "2":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Feb).ToList();
+            //                    break;
+            //                case "3":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Mar).ToList();
+            //                    break;
+            //                case "4":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Apr).ToList();
+            //                    break;
+            //                case "5":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.May).ToList();
+            //                    break;
+            //                case "6":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Jun).ToList();
+            //                    break;
+            //                case "7":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Jul).ToList();
+            //                    break;
+            //                case "8":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Aug).ToList();
+            //                    break;
+            //                case "9":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Sep).ToList();
+            //                    break;
+            //                case "10":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Oct).ToList();
+            //                    break;
+            //                case "11":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Nov).ToList();
+            //                    break;
+            //                case "12":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthActual.Dec).ToList();
+            //                    break;
+            //                case "Total":
+            //                    SortingModel = SortingModel.OrderByDescending(s => (
+            //                          s.MonthActual.Jan + s.MonthActual.Feb + s.MonthActual.Mar + s.MonthActual.Apr
+            //                        + s.MonthActual.May + s.MonthActual.Jun + s.MonthActual.Jul + s.MonthActual.Aug
+            //                        + s.MonthActual.Sep + s.MonthActual.Oct + s.MonthActual.Nov + s.MonthActual.Dec)).ToList();
+            //                    break;
+            //            }
+            //        }
+            //    }
+            //    else if (SortingColumn == "Planned")
+            //    {
+            //        if (SortingUpDown == "Up")
+            //        {
+            //            switch (SortingColumnMonth)
+            //            {
+            //                case "1":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Jan).ToList();
+            //                    break;
+            //                case "2":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Feb).ToList();
+            //                    break;
+            //                case "3":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Mar).ToList();
+            //                    break;
+            //                case "4":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Apr).ToList();
+            //                    break;
+            //                case "5":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.May).ToList();
+            //                    break;
+            //                case "6":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Jun).ToList();
+            //                    break;
+            //                case "7":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Jul).ToList();
+            //                    break;
+            //                case "8":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Aug).ToList();
+            //                    break;
+            //                case "9":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Sep).ToList();
+            //                    break;
+            //                case "10":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Oct).ToList();
+            //                    break;
+            //                case "11":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Nov).ToList();
+            //                    break;
+            //                case "12":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthPlanned.Dec).ToList();
+            //                    break;
+            //                case "Total":
+            //                    SortingModel = SortingModel.OrderBy(s => (
+            //                          s.MonthPlanned.Jan + s.MonthPlanned.Feb + s.MonthPlanned.Mar + s.MonthPlanned.Apr
+            //                        + s.MonthPlanned.May + s.MonthPlanned.Jun + s.MonthPlanned.Jul + s.MonthPlanned.Aug
+            //                        + s.MonthPlanned.Sep + s.MonthPlanned.Oct + s.MonthPlanned.Nov + s.MonthPlanned.Dec)).ToList();
+            //                    break;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            switch (SortingColumnMonth)
+            //            {
+            //                case "1":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Jan).ToList();
+            //                    break;
+            //                case "2":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Feb).ToList();
+            //                    break;
+            //                case "3":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Mar).ToList();
+            //                    break;
+            //                case "4":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Apr).ToList();
+            //                    break;
+            //                case "5":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.May).ToList();
+            //                    break;
+            //                case "6":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Jun).ToList();
+            //                    break;
+            //                case "7":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Jul).ToList();
+            //                    break;
+            //                case "8":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Aug).ToList();
+            //                    break;
+            //                case "9":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Sep).ToList();
+            //                    break;
+            //                case "10":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Oct).ToList();
+            //                    break;
+            //                case "11":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Nov).ToList();
+            //                    break;
+            //                case "12":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthPlanned.Dec).ToList();
+            //                    break;
+            //                case "Total":
+            //                    SortingModel = SortingModel.OrderByDescending(s => (
+            //                          s.MonthPlanned.Jan + s.MonthPlanned.Feb + s.MonthPlanned.Mar + s.MonthPlanned.Apr
+            //                        + s.MonthPlanned.May + s.MonthPlanned.Jun + s.MonthPlanned.Jul + s.MonthPlanned.Aug
+            //                        + s.MonthPlanned.Sep + s.MonthPlanned.Oct + s.MonthPlanned.Nov + s.MonthPlanned.Dec)).ToList();
+            //                    break;
+            //            }
+            //        }
+            //    }
+            //    else if (SortingColumn == "Allocated")
+            //    {
+            //        if (SortingUpDown == "Up")
+            //        {
+            //            switch (SortingColumnMonth)
+            //            {
+            //                case "1":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Jan).ToList();
+            //                    break;
+            //                case "2":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Feb).ToList();
+            //                    break;
+            //                case "3":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Mar).ToList();
+            //                    break;
+            //                case "4":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Apr).ToList();
+            //                    break;
+            //                case "5":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.May).ToList();
+            //                    break;
+            //                case "6":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Jun).ToList();
+            //                    break;
+            //                case "7":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Jul).ToList();
+            //                    break;
+            //                case "8":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Aug).ToList();
+            //                    break;
+            //                case "9":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Sep).ToList();
+            //                    break;
+            //                case "10":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Oct).ToList();
+            //                    break;
+            //                case "11":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Nov).ToList();
+            //                    break;
+            //                case "12":
+            //                    SortingModel = SortingModel.OrderBy(s => s.MonthAllocated.Dec).ToList();
+            //                    break;
+            //                case "Total":
+            //                    SortingModel = SortingModel.OrderBy(s => (
+            //                          s.MonthAllocated.Jan + s.MonthAllocated.Feb + s.MonthAllocated.Mar + s.MonthAllocated.Apr
+            //                        + s.MonthAllocated.May + s.MonthAllocated.Jun + s.MonthAllocated.Jul + s.MonthAllocated.Aug
+            //                        + s.MonthAllocated.Sep + s.MonthAllocated.Oct + s.MonthAllocated.Nov + s.MonthAllocated.Dec)).ToList();
+            //                    break;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            switch (SortingColumnMonth)
+            //            {
+            //                case "1":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Jan).ToList();
+            //                    break;
+            //                case "2":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Feb).ToList();
+            //                    break;
+            //                case "3":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Mar).ToList();
+            //                    break;
+            //                case "4":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Apr).ToList();
+            //                    break;
+            //                case "5":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.May).ToList();
+            //                    break;
+            //                case "6":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Jun).ToList();
+            //                    break;
+            //                case "7":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Jul).ToList();
+            //                    break;
+            //                case "8":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Aug).ToList();
+            //                    break;
+            //                case "9":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Sep).ToList();
+            //                    break;
+            //                case "10":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Oct).ToList();
+            //                    break;
+            //                case "11":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Nov).ToList();
+            //                    break;
+            //                case "12":
+            //                    SortingModel = SortingModel.OrderByDescending(s => s.MonthAllocated.Dec).ToList();
+            //                    break;
+            //                case "Total":
+            //                    SortingModel = SortingModel.OrderByDescending(s => (
+            //                          s.MonthAllocated.Jan + s.MonthAllocated.Feb + s.MonthAllocated.Mar + s.MonthAllocated.Apr
+            //                        + s.MonthAllocated.May + s.MonthAllocated.Jun + s.MonthAllocated.Jul + s.MonthAllocated.Aug
+            //                        + s.MonthAllocated.Sep + s.MonthAllocated.Oct + s.MonthAllocated.Nov + s.MonthAllocated.Dec)).ToList();
+            //                    break;
+            //            }
+            //        }
+            //    }
+            //    SortingModel.ForEach(s => model.Add(s));
+            //}
+            #endregion
 
             //Added By Maitri Gandhi #1852: Convert Finance Report Grid to DHTMLX Tree Grid
             #region "DHTMLX Tree Grid" 
@@ -3385,6 +3387,10 @@ namespace RevenuePlanner.Controllers
                         BudgetDataObj.value = "<div id=" + DivId + (cssclass!=string.Empty?" class=" + cssclass :string.Empty)+" " + overbudget + ">" + actualValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
                     }
                 }
+                else
+                {
+                    BudgetDataObj.value = "<div id=" + DivId + ">" + actualValue.ToString(formatThousand) + "</div>";
+                }
                 BudgetDataObjList.Add(BudgetDataObj);
                 //Planned
                 BudgetDataObj = new Budgetdataobj();
@@ -3405,6 +3411,10 @@ namespace RevenuePlanner.Controllers
                     {
                         BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + plannedValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
                     }
+                }
+                else
+                {
+                    BudgetDataObj.value = "<div id=" + DivId + ">" + plannedValue.ToString(formatThousand) + "</div>";
                 }
                 BudgetDataObjList.Add(BudgetDataObj);
                 //Budget
@@ -3524,8 +3534,6 @@ namespace RevenuePlanner.Controllers
                             childAllocatedValue = budgetPlan.ChildMonthAllocated.Dec;
                             break;
                     }
-                    //if (isQuarter)
-                    //{
                     DivId = Activitytype + budgetPlan.ActivityId;
                     //Actual
                     BudgetDataObj = new Budgetdataobj();
@@ -3533,7 +3541,7 @@ namespace RevenuePlanner.Controllers
                     {
                         BudgetDataObj.value = "<div id=" + DivId + ">" + "---" + "</div>";
                     }
-                    else
+                    else if (Activitytype != ActivityType.ActivityLineItem && Activitytype != Helpers.ActivityType.ActivityTactic)
                     {
                         cssclass = string.Empty;
                         if (Tab == ReportTabType.Plan.ToString())
@@ -3554,6 +3562,14 @@ namespace RevenuePlanner.Controllers
                                 BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + actualValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
                             } overbudget = string.Empty;
                         }
+                        else
+                        {
+                            BudgetDataObj.value = "<div id=" + DivId + ">" + actualValue.ToString(formatThousand) + "</div>";
+                        }
+                    }
+                    else
+                    {
+                        BudgetDataObj.value = "<div id=" + DivId + ">" + actualValue.ToString(formatThousand) + "</div>";
                     }
                     BudgetDataObjList.Add(BudgetDataObj);
                     //Planned
@@ -3562,7 +3578,7 @@ namespace RevenuePlanner.Controllers
                     {
                         BudgetDataObj.value = "<div id=" + DivId + ">" + "---" + "</div>";
                     }
-                    else
+                    else if (Activitytype != ActivityType.ActivityLineItem && Activitytype != ActivityType.ActivityTactic)
                     {
                         cssclass = string.Empty;
                         if (Tab == ReportTabType.Plan.ToString())
@@ -3583,6 +3599,14 @@ namespace RevenuePlanner.Controllers
                                 BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + plannedValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
                             } overbudget = string.Empty;
                         }
+                        else
+                        {
+                            BudgetDataObj.value = "<div id=" + DivId + ">" + plannedValue.ToString(formatThousand) + "</div>";
+                        }
+                    }
+                    else
+                    {
+                        BudgetDataObj.value = "<div id=" + DivId + ">" + plannedValue.ToString(formatThousand) + "</div>";
                     }
                     BudgetDataObjList.Add(BudgetDataObj);
                     //Budget
@@ -3604,7 +3628,7 @@ namespace RevenuePlanner.Controllers
                             else
                                 BudgetDataObj.value = "<div id=" + DivId + ">" + allocatedValue.ToString(formatThousand) + "</div>";
                             overbudget = string.Empty;
-                        }
+                        }                        
                     }
                     else
                     {
@@ -3612,7 +3636,6 @@ namespace RevenuePlanner.Controllers
                     }
                     BudgetDataObjList.Add(BudgetDataObj);
                 }
-                //}
             }
             return BudgetDataObjList;
         }
@@ -3646,6 +3669,10 @@ namespace RevenuePlanner.Controllers
                     BudgetDataObj.value = "<div>" + Math.Abs(sumMonthActual).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span></div>";
                 }
             }
+            else
+            {
+                BudgetDataObj.value = "<div>" + Math.Abs(sumMonthActual).ToString(formatThousand) + "</div>";
+            }
             BudgetDataObjList.Add(BudgetDataObj);
             //Planned
             BudgetDataObj = new Budgetdataobj();
@@ -3662,7 +3689,10 @@ namespace RevenuePlanner.Controllers
                     BudgetDataObj.value = "<div>" + Math.Abs(sumMonthPlanned).ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span></div>";
                 }
             }
-            //BudgetDataObj.value = "<div>" + Math.Abs(sumMonthPlanned).ToString(formatThousand) + "</div>";
+            else
+            {
+                BudgetDataObj.value = "<div>" + Math.Abs(sumMonthPlanned).ToString(formatThousand) + "</div>";
+            }
             BudgetDataObjList.Add(BudgetDataObj);
             //Budget
             BudgetDataObj = new Budgetdataobj();
