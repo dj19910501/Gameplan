@@ -582,6 +582,8 @@
             el.style.display = 'none';
         }
 
+
+
         /* Add By Bhumika For dropdown menu*/
         $('#WorkFrontRequestQueue').multiselect({
             multiple: false,
@@ -603,39 +605,19 @@
         var spanWorkFrontRequestAssignee = $('#multipleselect_WorkFrontRequestAssignee');
         $('#btnMultiselect_WorkFrontRequestAssignee').after(spanWorkFrontRequestAssignee); // to create dropdown menu under selectbox
 
-        /* ==== */
-        @* var DropdownTop = 0;
-        $(".pop-body-wraper").scroll(function () {
-
-            var scrollTop = $(this).scrollTop();
-            $('#btnMultiselect_WorkFrontRequestAssignee').click(function () {
-                //$(this).each(function () {
-                 //alert('hi3');
-                // get the top offset of the dropdown (distance from top of the page)
-                var dropdown_div = $(this).next('#multipleselect_WorkFrontRequestAssignee');
-                //var dropdown_height = dropdown_div.height();
-                var topOffset = dropdown_div.offset().top;
-                // calculate the dropdown offset relative to window position
-                var relativeOffset = topOffset - scrollTop;
-                // get the window height
-                var windowHeight = $('.pop-body-wraper').height();
-                // if the relative offset is greater than half the window height,
-                // reverse the dropdown.
-                if (relativeOffset > windowHeight / 2 ) {
-                    //alert('5');
-                    dropdown_div.addClass("drop-up");
-                }
-                else {
-                    //alert('6');
-                    dropdown_div.removeClass("drop-up");
-                }
-                scrollTop = 0;
-            });
-
-        });*@
-
-
         /* =======  End  =============  */
+
+        var tacticStatus = @tacticReview.Status;
+        console.log(tacticStatus.id);
+        if(tacticStatus.id == "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()" ||
+            tacticStatus.id == "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()" ||
+                tacticStatus.id == "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()" )
+        {
+            var wfP = document.getElementById("workFrontProjectOnApproval");
+            var wfR = document.getElementById("workFrontRequestOnApproval");
+            wfP.disabled=true;
+            wfR.disabled=true;
+        }
 
         //Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919. -WF integration added 23 Jan 2016 by Brad Gray PL#1921
         var ele = $("#salesforceIntegrationToggle");
@@ -762,6 +744,11 @@
         });
 
         $("#btnSync").click(function () {
+
+            if(ValidateFields()==false)
+            {
+                return false;   
+            }
 
             var IsDeployedToIntegration = false;
             IsDeployedToIntegration = '@tacticReview.IsDeployedToIntegration';
@@ -895,6 +882,12 @@
 
         // Click on Approved Button Save Comment & Change Status
         $("#btnApproved").click(function () {
+
+            if(ValidateFields()==false)
+            {
+                return false;   
+            }
+            console.log("btnApproved");
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
             statusValue = $("#hdnStatusValue").val();
@@ -952,9 +945,12 @@
                 var request = document.getElementById('workFrontRequestOnApproval');
                 var requestChecked = request.checked;
                 if (requestChecked) {
+                    console.log("requestChecked");
                     wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()';
                     requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
+                    console.log("requestQueue is.." + requestQueue);
                     assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
+                    console.log("requestAssignee is.." + assignee);
                 }
                 else
                 {
@@ -974,8 +970,8 @@
                     isSyncSF: isSyncSF,
                     isSyncEloqua: isSyncEloqua,
                     isSyncWorkFront: isSyncWorkFront,
-                    approvalBehaviorWorkFront: wfTacticApproval, 
-                    requestQueueWF: requestQueue, 
+                    approvalBehaviorWorkFront: wfTacticApproval,
+                    requestQueueWF: requestQueue,
                     assigneeWF: assignee
                 },
                 success: function (data) {
@@ -1059,7 +1055,7 @@
         var wfSettings = document.getElementById('workFrontSettings');
         if(wfChecked)
         {
-            
+
             wfSettings.style.display = "block";
         }
         else
@@ -1087,6 +1083,7 @@
     // Begin - Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919. Save Tactic Title, DeployToIntegration & Sync settings for Eloqua & Salesforce.
     // WorkFront information add 23/24 Jan 2016 by Brad Gray for PL#1921 & PL#1922
     function SaveReviewIntegrationInfo() {
+        console.log("SaveReviewIntegrationInfo");
         var returnparameter = false;
         //debugger;
         // Start - Get & Validate Tactic Title
@@ -1146,12 +1143,18 @@
         var requestQueue = "undefined";
         var assignee = "undefined";
         if (isSyncWorkFront == true) {
+            console.log("isSyncWorkFront is true");
             var request = document.getElementById('workFrontRequestOnApproval');
             var requestChecked = request.checked;
             if (requestChecked) {
                 wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()';
-                requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
-                assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
+                if(document.getElementById)
+                {
+                    console.log("request is checked");
+                    requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
+                    assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
+                }
+              
             }
             else
             {
@@ -1199,6 +1202,33 @@
         });
         return returnparameter;
 
+    }
+
+    function ValidateFields()
+    {
+        var validFields;
+         var errorCount = 0;
+        if('@IsSyncWorkFront'=='True')
+        {
+            var wfR = document.getElementById("workFrontRequestOnApproval");
+            if(wfR.checked==true)
+            {
+                if ($('#WorkFrontRequestQueue').val() == "") {
+                    $('#btnMultiselect_WorkFrontRequestQueue').addClass('error');
+                    errorCount++;
+                }
+                if ($('#WorkFrontRequestAssignee').val() == "") {
+                    $('#btnMultiselect_WorkFrontRequestAssignee').addClass('error');
+                    errorCount++;
+                }
+            }
+        }
+
+        if(errorCount > 0)
+        {
+            return false;
+        }
+        else return true;
     }
 
 </script>
