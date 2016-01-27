@@ -607,16 +607,7 @@
 
         /* =======  End  =============  */
 
-        var tacticStatus = @tacticReview.Status;
-        if(tacticStatus.id == "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()" ||
-            tacticStatus.id == "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()" ||
-                tacticStatus.id == "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()" )
-        {
-            var wfP = document.getElementById("workFrontProjectOnApproval");
-            var wfR = document.getElementById("workFrontRequestOnApproval");
-            wfP.disabled=true;
-            wfR.disabled=true;
-        }
+
 
         //Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919. -WF integration added 23 Jan 2016 by Brad Gray PL#1921
         var ele = $("#salesforceIntegrationToggle");
@@ -670,6 +661,23 @@
             });
         }
         //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
+
+       
+        if(isSyncWorkFront.toLowerCase()=='true')
+        {
+            var tacticStatus = @tacticReview.Status;
+            var complete = '@RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()';
+            var approved = '@RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()';
+            tacticStatus = tacticStatus.id.toString();
+            if(tacticStatus==complete || tacticStatus==approved) 
+            {
+           
+              var wfP = document.getElementById("workFrontProjectOnApproval");
+              var wfR = document.getElementById("workFrontRequestOnApproval");
+              wfP.disabled=true;
+              wfR.disabled=true;
+            }
+        }
 
         $("#t_integration_status").click(function () {
             showHide('integrationInfo');
