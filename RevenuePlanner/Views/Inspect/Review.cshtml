@@ -348,13 +348,13 @@
                                     <div class="cf form-group">
                                         @Html.Label("Request Queue")
                                         <span style="min-width: 100%; position: relative; display: block;">
-                                            @Html.DropDownListFor(m=>m.WorkFrontRequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
+                                            @Html.DropDownListFor(m => m.WorkFrontRequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
                                         </span>
                                     </div>
                                     <div class="cf form-group">
                                         @Html.Label("Assigned To")
                                         <span style="min-width: 100%; position: relative; display: block;">
-                                            @Html.DropDownListFor(m=>m.WorkFrontRequestAssignee, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontUserList, "Id", "WorkFrontUserName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
+                                            @Html.DropDownListFor(m => m.WorkFrontRequestAssignee, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontUserList, "Id", "WorkFrontUserName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
                                         </span>
                                     </div>
                                 </div><!--end workFrontRequestOptions div-->
@@ -1086,6 +1086,12 @@
     // Begin - Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919. Save Tactic Title, DeployToIntegration & Sync settings for Eloqua & Salesforce.
     // WorkFront information add 23/24 Jan 2016 by Brad Gray for PL#1921 & PL#1922
     function SaveReviewIntegrationInfo() {
+       
+        if(ValidateFields()==false)
+        {
+            return false;   
+        }
+
         var returnparameter = false;
         //debugger;
         // Start - Get & Validate Tactic Title
