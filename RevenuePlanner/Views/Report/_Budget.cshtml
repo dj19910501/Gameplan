@@ -8,7 +8,7 @@
     string AllocatedBy = ViewBag.AllocatedBy;
     string Tab = ViewBag.Tab;
     bool isPlanTab = true;
-    if(Tab != ReportTabType.Plan.ToString())
+    if (Tab != ReportTabType.Plan.ToString())
     {
         isPlanTab = false;
     }
@@ -54,6 +54,16 @@
             color: black;
         }
 
+            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.treegrid_cell
+            {
+                text-align: left !important;
+            }
+
+            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div
+            {
+                text-align: center;
+            }
+
         div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar.budgetError
         {
             background: #ff1e26 none repeat scroll 0 0;
@@ -85,14 +95,14 @@
     {
         background-repeat: no-repeat;
         height: 26px;
-        top:44px !important;     
+        top: 44px !important;
         width: 15px;
-    }    
+    }
 </style>
-<div id="gridbox" style="background-color: white; width:100%;"></div>
+<div id="gridbox" style="background-color: white; width: 100%;"></div>
 
 <script type="text/javascript">
-    
+
     AddTipsy();
     SetHeader();
     @*if ('@SortingId' != '') {
@@ -113,9 +123,9 @@
 
     LoadBudgetSortingEvent();
     $(document).ready(function () {
-        
+
         BindBudgetGrid();
-        @if(Model.Grid.rows.Count() == 1 )
+        @if (Model.Grid.rows.Count() == 1)
         {
             //Model.Where(p => p.ActivityType == ActivityType.ActivityTactic).Count() == 0
             isData = false;
@@ -123,7 +133,7 @@
         if ('@isData' == 'False') {
             $('.gridbox').empty();
             $('.gridbox').html('<div class="NoDataFound">No data found for selected active filters.</div>');
-        }        
+        }
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
@@ -136,7 +146,7 @@
             advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
         });
     });
-    
+
 
     $('.accordionClick').on('click', function () {
         var accordionId = $(this).parent().attr('id');
@@ -153,36 +163,36 @@
             $(this).width(data.scrollWidth);
         });
 
-    });   
-      
+    });
+
     function AddTipsy() {
         $("div[Allocated]").each(function () {
-            bootstrapetitle($(this), 'Allocated : $' + $(this).attr('Allocated'), "tipsy-innerWhite");           
+            bootstrapetitle($(this), 'Allocated : $' + $(this).attr('Allocated'), "tipsy-innerWhite");
         });
 
         $("div[Remaining]").each(function () {
-            bootstrapetitle($(this), 'Remaining : $' + $(this).attr('Remaining'), "tipsy-innerWhite");           
+            bootstrapetitle($(this), 'Remaining : $' + $(this).attr('Remaining'), "tipsy-innerWhite");
         });
 
         $("div[OverBudget]").each(function () {
-            bootstrapetitle($(this), 'Over Budget by : $' + $(this).attr('OverBudget'), "tipsy-innerRed");           
+            bootstrapetitle($(this), 'Over Budget by : $' + $(this).attr('OverBudget'), "tipsy-innerRed");
         });
     }
 
     var HomeGrid;
     var editidonOpenEnd = 0;
     function BindBudgetGrid() {
-        
-        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';        
-        
+
+        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
+
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setHeader('@Model.SetHeader');
-        HomeGrid.attachHeader(@Html.Raw(Json.Encode(Model.AttachHeader))); 
-        HomeGrid.setColTypes('@Model.ColType');   
-        HomeGrid.setInitWidths('@Model.Width');  
+        HomeGrid.attachHeader(@Html.Raw(Json.Encode(Model.AttachHeader)));
+        HomeGrid.setColTypes('@Model.ColType');
+        HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
@@ -203,7 +213,7 @@
     function SetHeader() {
         $('#divViewBy').show();
         if ('@AllocatedBy' != '@strDefault') {
-           
+
             var sumMonth = number_format('@MainTotalActual', 0, '.', ',');
             var allocated = number_format('@MainTotalAllocated', 0, '.', ',');
             $('#SpanTotalSpend').prop('title', '$' + sumMonth);
@@ -216,7 +226,7 @@
 
             $('#SpanCurrentQuarter').html('@CurrentQuarter');
             $('#SpanTodayDate').html('@TodayDate');
-         
+
             sumMonth = FormatNumber('@MainTotalActual', false);
             allocated = FormatNumber('@MainTotalAllocated', false);
             $('#SpanTotalSpend').html(sumMonth);
@@ -267,13 +277,13 @@
                 else if (i == 5) {
                     strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
                     if ('@PercAllocated.May' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.May%"><span style="width:@PercAllocated.May%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.May%"><span style="width:@PercAllocated.May%;" class="error"></span></div>';
-            }
-            else if (i == 6) {
-                strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
-                if ('@PercAllocated.Jun' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.May%"><span style="width:@PercAllocated.May%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.May%"><span style="width:@PercAllocated.May%;" class="error"></span></div>';
+                }
+                else if (i == 6) {
+                    strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
+                    if ('@PercAllocated.Jun' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Jun%"><span style="width:@PercAllocated.Jun%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Jun%"><span style="width:@PercAllocated.Jun%;" class="error"></span></div>';
