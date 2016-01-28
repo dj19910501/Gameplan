@@ -668,16 +668,20 @@
         }
         //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
 
-       
+
         if(isSyncWorkFront.toLowerCase()=='true')
         {
-            var tacticStatus = @tacticReview.Status;
+
+            var tacticStatus = '@tacticReview.Status';
             var complete = '@RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()';
             var approved = '@RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()';
-            tacticStatus = tacticStatus.id.toString();
-            if(tacticStatus==complete || tacticStatus==approved) 
+            var inprogress = '@RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()';
+            var inprogress2 = 'In-Progress'; //tactic status differers from enum
+            console.log(tacticStatus);
+            console.log(inprogress);
+            if(tacticStatus==complete || tacticStatus==approved || tacticStatus == inprogress || tacticStatus == inprogress2)
             {
-           
+
               var wfP = document.getElementById("workFrontProjectOnApproval");
               var wfR = document.getElementById("workFrontRequestOnApproval");
               wfP.disabled=true;
@@ -760,7 +764,7 @@
 
             if(ValidateFields()==false)
             {
-                return false;   
+                return false;
             }
 
             var IsDeployedToIntegration = false;
@@ -898,7 +902,7 @@
 
             if(ValidateFields()==false)
             {
-                return false;   
+                return false;
             }
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
@@ -1092,10 +1096,10 @@
     // Begin - Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919. Save Tactic Title, DeployToIntegration & Sync settings for Eloqua & Salesforce.
     // WorkFront information add 23/24 Jan 2016 by Brad Gray for PL#1921 & PL#1922
     function SaveReviewIntegrationInfo() {
-       
+
         if(ValidateFields()==false)
         {
-            return false;   
+            return false;
         }
 
         var returnparameter = false;
@@ -1166,7 +1170,7 @@
                     requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
                     assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
                 }
-              
+
             }
             else
             {
@@ -1219,7 +1223,7 @@
     function ValidateFields()
     {
         var validFields;
-         var errorCount = 0;
+        var errorCount = 0;
         if('@IsSyncWorkFront'=='True')
         {
             var wfR = document.getElementById("workFrontRequestOnApproval");
