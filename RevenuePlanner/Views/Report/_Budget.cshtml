@@ -198,8 +198,18 @@
         HomeGrid.enableAutoWidth(false);
         HomeGrid.setEditable(false);
         HomeGrid.init();
+        setTimeout(function () { 
+            HomeGrid.setSizes();
+        },100);
+        
+        
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
-        HomeGrid.parse(JsonModel, "json");
+
+        var mainGridData = JsonModel;
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+
+        HomeGrid.parse(GridDataHomeGrid, "json");
         HomeGrid.setColumnHidden(0, true);
         AddTipsy();
     }
