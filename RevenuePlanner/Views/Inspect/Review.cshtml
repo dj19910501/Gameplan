@@ -1224,7 +1224,8 @@
     {
         var validFields;
         var errorCount = 0;
-        if('@IsSyncWorkFront'=='True')
+        var wfToggle = document.getElementById('workfrontIntegrationToggle');
+        if('@IsSyncWorkFront'=='True' || (wfToggle!=null && wfToggle.checked == true) ) //Update for PL#1935 Brad Gray 28 Jan 2016
         {
             var wfR = document.getElementById("workFrontRequestOnApproval");
             if(wfR.checked==true)
