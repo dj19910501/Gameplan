@@ -596,7 +596,7 @@
           //hide the other datepicker in add-on onclick
           $('#dp_start .add-on').click(function () {
               //debugger;
-              $('#dp_start').datepicker('hide');/* Bhumika */
+              //$('#dp_start').datepicker('hide');/* Bhumika */
               $('#dp_end').datepicker('hide');
               $(".dropdown-menu").css("z-index", "25001");
               var pos = $("#t_startdate").position();
@@ -609,12 +609,12 @@
                       $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
                       $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
                           //top: pos_top.toString() + 'px',	 /* Bhumika */
-                          //display: 'none'
+                          display: 'block'
                       });
                   }
                   else {
                       $('#dp_start').find('.datepicker.dropdown-menu').css({
-                          top: pos_top.toString() + 'px',
+                          //top: pos_top.toString() + 'px',
                           display: 'block'
                       });
                   }
@@ -643,7 +643,7 @@
                   //calender_div.css('bottom', '100%');
                   calender_div.removeClass('calender-dropdown');
                   calender_div.addClass('calender-dropup');
-                  $('#dp_start').datepicker('show');
+                  //$('#dp_start').datepicker('show');
               }
               else {
                  // alert('6');
@@ -651,7 +651,7 @@
                   //calender_div.css('bottom', 'auto');
                   calender_div.removeClass('calender-dropup');
                   calender_div.addClass('calender-dropdown');
-                  $('#dp_start').datepicker('show');
+                  //$('#dp_start').datepicker('show');
               }
               scrollTop = 0;
           }
@@ -671,7 +671,7 @@
                   //calender_div.css('bottom', '100%');
                   calender_div.removeClass('calender-dropdown');
                   calender_div.addClass('calender-dropup');
-                  $('#dp_end').datepicker('show');
+                  //$('#dp_end').datepicker('show');
               }
               else {
                   // alert('6');
@@ -679,14 +679,14 @@
                   //calender_div.css('bottom', 'auto');
                   calender_div.removeClass('calender-dropup');
                   calender_div.addClass('calender-dropdown');
-                  $('#dp_end').datepicker('show');
+                  //$('#dp_end').datepicker('show');
               }
               scrollTop = 0;
           }	 
 /* Bhumika  End*/
           $('#dp_end .add-on').click(function () {
               $('#dp_start').datepicker('hide');
-              $('#dp_end').datepicker('hide');		/* Bhumika */
+              //$('#dp_end').datepicker('hide');		/* Bhumika */
               $(".dropdown-menu").css("z-index", "25001");
               var pos = $("#t_enddate").position();
               var height = $("#t_enddate").height();
@@ -697,13 +697,13 @@
                       $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
                       $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
                           //top: pos_top.toString() + 'px', /* Bhumika */
-                          //display: 'block'
+                          display: 'block'
                       });
                   }
                   else {
                       $('#dp_end').find('.datepicker.dropdown-menu').css({
                           //top: pos_top.toString() + 'px',			  /* Bhumika */
-                         // display: 'block'
+                          display: 'block'
                       });
                   }
                   set_end_date_Position(); /* Bhumika */

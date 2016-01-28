@@ -584,6 +584,8 @@ namespace Integration.WorkFront
                    queuesToDelete.Select(c => { c.IsDeleted = true; return c; }).ToList();
                    db.Entry(queuesToDelete).State = EntityState.Modified;
                }
+
+               db.SaveChanges();
               
             }
             catch (Exception ex)
@@ -730,29 +732,6 @@ namespace Integration.WorkFront
                 tactic.ModifiedDate = DateTime.Now;
                 tactic.ModifiedBy = _userId;
                 db.Entry(tactic).State = EntityState.Modified;
-
-                //program portfolio information -- all programs should be linked to a portfolio in WorkFront - regardless of sync type
-                IntegrationWorkFrontPortfolio portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
-                    port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault();
-                JToken existingInWorkFront = null;
-                if (portfolioInfo != null) // If Gameplan doesn't have an ID - can't search for a portfolio.
-                {
-                    existingInWorkFront = client.Search(ObjCode.PORTFOLIO, new { ID = portfolioInfo.PortfolioId }); 
-                }
-                                   
-                if (portfolioInfo == null || existingInWorkFront == null || !existingInWorkFront["data"].HasValues || portfolioInfo.PortfolioId != existingInWorkFront["data"][0]["ID"].ToString())
-                {
-                    bool programError = syncProgram(tactic.Plan_Campaign_Program, ref SyncErrors); //force program sync to create a portfolio if none found
-                    if (programError) { throw new ClientException("Cannot Sync the Program associated with Tactic. Tactic: " + tactic.Title + "; Program: " + tactic.Plan_Campaign_Program.Title); }
-                    portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
-                    port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault(); //try again to get info
-
-                    if (portfolioInfo == null) //check again to ensure we got information
-                    {
-                        throw new ClientException("Cannot determine portfolio for tactic " + tactic.Title); //it didn't work - throw excecption
-                    }
-                }
-
               
                 if (!tacticError) 
                 {
@@ -815,17 +794,9 @@ namespace Integration.WorkFront
             TacticType tacticType = db.TacticTypes.Where(type => type.TacticTypeId == tactic.TacticTypeId).FirstOrDefault();
             Enums.Mode currentMode = Common.GetMode(tactic.IntegrationWorkFrontProjectID);
 
-            //if IntegrationWorkFrontProjectID doesn't exist in WorkFront, create a new one
-            if (currentMode == Enums.Mode.Update)
-            {
-               JToken checkExists = client.Search(ObjCode.PROJECT, new { ID = tactic.IntegrationWorkFrontProjectID, map = true });
-               if (checkExists == null || checkExists["data"].HasValues == false)
-               { currentMode = Enums.Mode.Create; }
-            }
-
-            //program portfolio information -- all programs should be linked to a portfolio in WorkFront
+            //program portfolio information -- all programs should be linked to a portfolio in WorkFront - regardless of sync type
             IntegrationWorkFrontPortfolio portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
-               port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault();
+                port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault();
             JToken existingInWorkFront = null;
             if (portfolioInfo != null) // If Gameplan doesn't have an ID - can't search for a portfolio.
             {
@@ -834,25 +805,34 @@ namespace Integration.WorkFront
 
             if (portfolioInfo == null || existingInWorkFront == null || !existingInWorkFront["data"].HasValues || portfolioInfo.PortfolioId != existingInWorkFront["data"][0]["ID"].ToString())
             {
-               bool programError = syncProgram(tactic.Plan_Campaign_Program, ref SyncErrors); //force program sync to create a portfolio if none found
-               if (programError) { throw new ClientException("Cannot Sync the Program associated with Tactic. Tactic: " + tactic.Title + "; Program: " + tactic.Plan_Campaign_Program.Title); }
-               portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
-               port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault(); //try again to get info
+                bool programError = syncProgram(tactic.Plan_Campaign_Program, ref SyncErrors); //force program sync to create a portfolio if none found
+                if (programError) { throw new ClientException("Cannot Sync the Program associated with Tactic. Tactic: " + tactic.Title + "; Program: " + tactic.Plan_Campaign_Program.Title); }
+                portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
+                port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault(); //try again to get info
 
-               if (portfolioInfo == null) //check again to ensure we got information
-               {
-                  throw new ClientException("Cannot determine portfolio for tactic " + tactic.Title); //it didn't work - throw excecption
-               }
+                if (portfolioInfo == null) //check again to ensure we got information
+                {
+                    throw new ClientException("Cannot determine portfolio for tactic " + tactic.Title); //it didn't work - throw excecption
+                }
+            }
+
+            //if IntegrationWorkFrontProjectID doesn't exist in WorkFront, create a new one
+            if (currentMode == Enums.Mode.Update)
+            {
+               JToken checkExists = client.Search(ObjCode.PROJECT, new { ID = tactic.IntegrationWorkFrontProjectID, map = true });
+               if (checkExists == null || checkExists["data"].HasValues == false)
+               { currentMode = Enums.Mode.Create; }
             }
 
             if (currentMode.Equals(Enums.Mode.Create))
             {
                instanceLogTactic.Operation = Operation.Create.ToString();
-               string templateToUse = tacticType.IntegrationWorkFrontTemplate.TemplateId;
-               if (templateToUse == null)
+               if (tacticType.IntegrationWorkFrontTemplate == null || tacticType.IntegrationWorkFrontTemplate.TemplateId == null)
                {
                   throw new ClientException("Tactic Type to Template Mapping Not Found for tactic " + tactic.Title + ".");
                }
+
+               string templateToUse = tacticType.IntegrationWorkFrontTemplate.TemplateId;
                JToken templateInfo = client.Search(ObjCode.TEMPLATE, new { ID = templateToUse });
                if (templateInfo == null || !templateInfo["data"].HasValues)
                {
