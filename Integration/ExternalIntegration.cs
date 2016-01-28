@@ -118,9 +118,11 @@ namespace Integration
             try
             {
             Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Check entity type");
+           
             if (EntityType.Tactic.Equals(_entityType))
             {
 
+                Plan_Campaign_Program_Tactic tacticForIntegration = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id);
                 int? sfdcInstanceId = 0, eloquaInstanceId = 0, workfrontInstanceId = 0;
                 Model objModel = new Model();
                 objModel = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model;
@@ -149,9 +151,12 @@ namespace Integration
                 }
                 if (workfrontInstanceId.HasValue && workfrontInstanceId.Value > 0) //added Brad Gray 10-13-2015 PL#1514
                 {
-                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with WorkFront started - Initiated by Approved Flow");
-                    SyncTactic(workfrontInstanceId.Value);
-                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with WorkFront started - Initiated by Approved Flow");
+                    if (tacticForIntegration.IsSyncWorkFront != null && (bool)tacticForIntegration.IsSyncWorkFront == true)
+                    {
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with WorkFront started - Initiated by Approved Flow");
+                        SyncTactic(workfrontInstanceId.Value);
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with WorkFront started - Initiated by Approved Flow");
+                    }
                 } 
                 #endregion
             }
