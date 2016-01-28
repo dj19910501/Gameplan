@@ -56,6 +56,7 @@
 @Html.Hidden("FilterName", FilterName)
 @Html.Hidden("IsTacticActualsAddEditAuthorized", IsTacticActualsAddEditAuthorized)
 
+
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
@@ -85,7 +86,8 @@
     }
 </style>
 @*@if (activeMenu.ToLower() == "plan")*@
-
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap2-toggle.min.js")"></script>
+<link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />

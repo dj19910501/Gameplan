@@ -76,9 +76,6 @@
   .integrationToggle .toggle-group { transition: left 0.1s; -webkit-transition: left 0.1s; }
 </style>
 
-<script src="~/Scripts/js/bootstrap2-toggle.min.js"></script>
-<link rel="stylesheet" href="~/Content/css/bootstrap2-toggle.min.css">
-
  <div class="row border-bottom-div">
     <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
         <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
@@ -170,11 +167,11 @@
                 <p class="margin-top-10 text_align_left">Deployed to Integration</p>
                    @{ if (tacticReview.IsDeployedToIntegration)
                     {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important; width:100%" readonly" />
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important; width:100%" readonly="true" />
                     }
                       else
                       {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Don't sync to integration" style="margin-top: 0px ! important; width:100%" readonly" />
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Don't sync to integration" style="margin-top: 0px ! important; width:100%" readonly="true" />
                       }
 }
             </div>
@@ -282,7 +279,7 @@
                     }
                     if (item.Key == Enums.IntegrationType.Eloqua.ToString())
                     {
-                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationType="@item.Key" style="width:98%"> 
+                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationType="@item.Key" toggle-id="eloquaIntegrationToggle" style="width:98%"> 
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -290,13 +287,14 @@
                                 </a>
                             </div>
                             <div class="span1 margin-top16">
-                                <input id="eloquaIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle">
+                                @*<input id="eloquaIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle">*@
+                                <input id="eloquaIntegrationToggle" type="checkbox">
                             </div>
                           </div>
                     }
                     else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
                     {
-                        <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationtype="@item.Key" style="width:98%">
+                        <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationtype="@item.Key" toggle-id="salesforceIntegrationToggle" style="width:98%">
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -304,13 +302,13 @@
                                 </a>
                             </div>
                             <div class="span1 margin-top16">
-                                <input id="salesforceIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" integrationtype="@item.Key">
+                                <input id="salesforceIntegrationToggle" type="checkbox">
                             </div>
                         </div>
                     }
                     else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
                     {
-                        <div id="workFrontSection" class="span12 margin-left20 integration-SF-Eloqua-WF margin-top20" integrationtype="@item.Key" style="width:98%">
+                        <div id="workFrontSection" class="span12 margin-left20 integration-SF-Eloqua-WF margin-top20" integrationtype="@item.Key" toggle-id="workfrontIntegrationToggle" style="width:98%">
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -319,7 +317,8 @@
                             </div>
 
                             <div class="span1 margin-top16">
-                                <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" onchange=toggleWorkFrontSettings()>
+                                @*<input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" onchange=toggleWorkFrontSettings()>*@
+                                <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" onchange=toggleWorkFrontSettings()> @*Modified by Viral Kadiya on 28th Jan 2016 related to Pl ticket #1936*@
                             </div>
 
                             <div id="workFrontSettings">
@@ -610,9 +609,6 @@
 
 
         //Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919. -WF integration added 23 Jan 2016 by Brad Gray PL#1921
-        var ele = $("#salesforceIntegrationToggle");
-
-
         var isDeployIntegration = '@IsDeployToIntegrationVisible';
         var isSyncSF = '@IsSyncSF';
         var isSyncEloqua = '@IsSyncEloqua';
@@ -623,31 +619,37 @@
                 //debugger;
                 var _divToggle = $(this).find("div.integrationToggle");
                 var _intgrtnType = $(this).attr('integrationType');
+                var toggleId = $(this).attr('toggle-id');
+                var eleToggle = $("#"+toggleId);
+                eleToggle.bootstrapToggle({
+                    onstyle:"success",
+                    style:"integrationToggle"
+                });
                 if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()') {
 
                     if (isSyncEloqua.toLowerCase() == 'true') {
-                        _divToggle.removeClass('btn-default off').addClass('btn-success');      // Set Eloqua toggle button to ON.
+                        eleToggle.bootstrapToggle('on');            // Set Eloqua toggle button to ON.
                     }
                     else {
-                        _divToggle.removeClass('btn-success').addClass('btn-default off');      // Set Eloqua toggle button to OFF.
+                        eleToggle.bootstrapToggle('off');           // Set Eloqua toggle button to OFF.
                     }
                 }
                 if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()') {
                     if (isSyncSF.toLowerCase() == 'true') {
-                        _divToggle.removeClass('btn-default off').addClass('btn-success');      // Set Salesforce toggle button to ON.
+                        eleToggle.bootstrapToggle('on');            // Set Salesforce toggle button to ON.
                     }
                     else {
-                        _divToggle.removeClass('btn-success').addClass('btn-default off');      // Set Salesforce toggle button to OFF.
+                        eleToggle.bootstrapToggle('off');           // Set Salesforce toggle button to OFF.
                     }
                 }
                 if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()') {
                     var workFrontSettingsSection = document.getElementById('workFrontSettings');
                     if (isSyncWorkFront.toLowerCase() == 'true') {
-                        _divToggle.removeClass('btn-default off').addClass('btn-success');      // Set WorkFront toggle button to ON.
+                        eleToggle.bootstrapToggle('on');                    // Set WorkFront toggle button to ON.
                         workFrontSettingsSection.style.display = 'block';
                     }
                     else {
-                        _divToggle.removeClass('btn-success').addClass('btn-default off');      // Set WorkFront toggle button to OFF.
+                        eleToggle.bootstrapToggle('off');                   // Set WorkFront toggle button to OFF.
                         workFrontSettingsSection.style.display = 'none';
                     }
                 }
@@ -655,9 +657,13 @@
         }
         else {
             $('.integration-SF-Eloqua-WF').each(function (key, val) {
-                var _divToggle = $(this).find("div.integrationToggle");
-                var _intgrtnType = $(this).attr('integrationType');
-                _divToggle.removeClass('btn-success').addClass('btn-default off');      // Set all integration toggle button to OFF.
+                var toggleId = $(this).attr('toggle-id');
+                var eleToggle = $("#"+toggleId);
+                eleToggle.bootstrapToggle({
+                    onstyle:"success",
+                    style:"integrationToggle"
+                });
+                eleToggle.bootstrapToggle('off');                           // Set all integration toggle button to OFF.   
             });
         }
         //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
