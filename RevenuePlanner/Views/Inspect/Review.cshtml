@@ -74,6 +74,7 @@
   .toggle.integrationToggle, .toggle-on.integrationToggle, .toggle-off.integrationToggle { border-radius: 20px; }
   .toggle.integrationToggle .toggle-handle { border-radius: 20px; }
   .integrationToggle .toggle-group { transition: left 0.1s; -webkit-transition: left 0.1s; }
+  .toggle.integrationToggle {min-height: 20px;}
 </style>
 
  <div class="row border-bottom-div">
@@ -318,7 +319,7 @@
 
                             <div class="span1 margin-top16">
                                 @*<input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" onchange=toggleWorkFrontSettings()>*@
-                                <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" onchange=toggleWorkFrontSettings()> @*Modified by Viral Kadiya on 28th Jan 2016 related to Pl ticket #1936*@
+                                <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="integrationToggle"onchange=toggleWorkFrontSettings()> @*Modified by Viral Kadiya on 28th Jan 2016 related to Pl ticket #1936*@
                             </div>
 
                             <div id="workFrontSettings">
