@@ -139,15 +139,21 @@ namespace Integration
                 #region "Execute Syncing process for Salesforce, Eloqua, & WorkFront"
                 if (sfdcInstanceId.HasValue && sfdcInstanceId.Value > 0)
                 {
-                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Salesforce started - Initiated by Approved Flow");
-                    SyncTactic(sfdcInstanceId.Value);
-                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Salesforce started - Initiated by Approved Flow");
+                    if (tacticForIntegration.IsSyncSalesForce != null && (bool)tacticForIntegration.IsSyncSalesForce == true)
+                    {
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Salesforce started - Initiated by Approved Flow");
+                        SyncTactic(sfdcInstanceId.Value);
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Salesforce started - Initiated by Approved Flow");
+                    }
                 }
                 if (eloquaInstanceId.HasValue && eloquaInstanceId.Value > 0)
                 {
-                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Eloqua started - Initiated by Approved Flow");
-                    SyncTactic(eloquaInstanceId.Value);
-                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Eloqua started - Initiated by Approved Flow");
+                    if (tacticForIntegration.IsSyncEloqua != null && (bool)tacticForIntegration.IsSyncEloqua == true)
+                    {
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Eloqua started - Initiated by Approved Flow");
+                        SyncTactic(eloquaInstanceId.Value);
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Eloqua started - Initiated by Approved Flow");
+                    }
                 }
                 if (workfrontInstanceId.HasValue && workfrontInstanceId.Value > 0) //added Brad Gray 10-13-2015 PL#1514
                 {
