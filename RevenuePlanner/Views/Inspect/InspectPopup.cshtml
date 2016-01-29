@@ -273,7 +273,14 @@
                   $("#successMessage").css("display", "none");
                   $('#MultiSelectProcced').css("display", "none");
                   var planTacticId = $("#hdnPlanTacticId").val();
-                  InspectMode = "@Enums.InspectPopupMode.Edit.ToString()";
+                  if (planTacticId != 0) {
+                      InspectMode = "@Enums.InspectPopupMode.Edit.ToString()";
+                  }
+                  else
+                  {
+                      InspectMode = "@Enums.InspectPopupMode.Add.ToString()";
+                  }
+
                   loadReview(planTacticId, tabtext);
               }
 
@@ -317,7 +324,7 @@
 
                   else if (activeTab = TabReview) {
                       var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
-                      
+
                       if (ReturnParameter == false) {
                           return false;
                       }
@@ -401,7 +408,7 @@
                       }
                       else {
                           $('.close-x-big-icon').trigger('click');
-                        
+
                       }
                   }
 
@@ -412,7 +419,7 @@
                       }
                       else {
                           $('.close-x-big-icon').trigger('click');
-                          
+
                       }
                   }
 
@@ -433,7 +440,7 @@
                       }
                       else {
                           $('.close-x-big-icon').trigger('click');
-                        
+
                       }
                   }
 
@@ -446,7 +453,7 @@
                       else {
 
                           $('.close-x-big-icon').trigger('click');
-                          
+
                       }
                   }
               }
@@ -503,7 +510,7 @@
                     $("#spanMessageSuccess").text(data.Msg);
                     $("#errorMessage").css("display", "none");
                     // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                  //  RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId);
+                    //  RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId);
                     returnparameter = true
                 }
                 else {
@@ -552,7 +559,6 @@
     }
 
     function loadReview(id, tabValue) {
-        //debugger;
         $.ajaxSetup({ cache: false });
         var url;
         var ProgramOpt = $("#hdnTacticBudgetAllocationOpt").val();
@@ -798,13 +804,13 @@
                                 if (document.getElementById("liGrid") != null && document.getElementById("liGrid").className.indexOf("active") >= 0) {
                                     LoadPlanGrid();
                                     gridSearchFlag = 0;
-                                    
-                                  
+
+
                                 }
                                 else {
                                     RefreshCurrentTab();
                                     //Added by Rahul Shah on 20/10/2015 fro PL #1634
-                                   
+
                                 }
                                 //Added by Rahul Shah on 20/10/2015 fro PL #1634
                                 addDefaultModalPopupBackgroungColor();

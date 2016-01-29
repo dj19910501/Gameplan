@@ -228,18 +228,26 @@
               if (tabtext != activeTab) {
                   var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1325
               }
-              if (returnpara) {
-              RemoveTabClass();
-              $(this).removeClass("pull-left");
-              $(this).addClass("active pull-left");
-              $("#successMessageViewProgram").css("display", "none");
-              $("#errorMessageEditProgram").css("display", "none");
-              $("#errorMessage").css("display", "none");
-              $("#successMessage").css("display", "none");
-              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-              //var tabtext = ($(this).children('a').text());
+
               var planProgramId = $("#hdnPlanProgramId").val();
-              loadReview(planProgramId, tabtext);
+              if (planProgramId != 0 || tabtext != activeTab) {
+                  if (returnpara) {
+                      RemoveTabClass();
+                      $(this).removeClass("pull-left");
+                      $(this).addClass("active pull-left");
+                      $("#successMessageViewProgram").css("display", "none");
+                      $("#errorMessageEditProgram").css("display", "none");
+                      $("#errorMessage").css("display", "none");
+                      $("#successMessage").css("display", "none");
+                      /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                      //var tabtext = ($(this).children('a').text());
+
+                      loadReview(planProgramId, tabtext);
+                  }
+              }
+              else
+              {
+                  loadAddSetup();
               }
 
           });

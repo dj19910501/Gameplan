@@ -378,15 +378,23 @@
              if (tabtext != activeTab) {
                  var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal 
              }
-             if (returnpara) {
-                 $("#successMessageViewCampaign").slideUp(50);
-                 $("#errorMessageEditCampaign").slideUp(50);
-                 RemoveTabClass();
-                 $(this).removeClass("pull-left");
-                 $(this).addClass("active pull-left");
-                 $("#errorMessage").css("display", "none");
-                 $("#successMessage").css("display", "none");
-                 loadReview(PlanLineItemId, tabtext);
+           
+             PlanLineItemId = $("#hdnPlanLineItemID").val();
+             if (PlanLineItemId != 0 || tabtext != activeTab) {
+                 if (returnpara) {
+                     $("#successMessageViewCampaign").slideUp(50);
+                     $("#errorMessageEditCampaign").slideUp(50);
+                     RemoveTabClass();
+                     $(this).removeClass("pull-left");
+                     $(this).addClass("active pull-left");
+                     $("#errorMessage").css("display", "none");
+                     $("#successMessage").css("display", "none");
+                     loadReview(PlanLineItemId, tabtext);
+                 }
+             }
+             else
+             {
+                 loadAddSetup();
              }
          });
 

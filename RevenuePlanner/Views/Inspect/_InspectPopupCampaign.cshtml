@@ -231,6 +231,10 @@
               if (tabtext != activeTab) {
                   var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1324
               }
+           
+              // If condition for campaign id , added by komal rawal for blank setup page on click of setup tab when we create new campaign . Date : 29-jan-2016.Ticket: #1938
+              var campaignId = $("#hdnPlanCampaignId").val();
+              if (campaignId != 0 || tabtext != activeTab) {
               if (returnpara) {
 
                   //$("#successMessageViewCampaign").slideUp(50);
@@ -243,8 +247,13 @@
                   $("#successMessageViewCampaign").css("display", "none");
                   $("#errorMessageEditCampaign").css("display", "none");
                   /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                  var campaignId = $("#hdnPlanCampaignId").val()
+                
                   loadReview(campaignId, tabtext);
+              }
+              }
+              else
+              {
+                  loadAddSetup();
               }
 
           });
@@ -470,7 +479,6 @@ else {
       }
 
       function loadReview(id, tabValue) {
-
           $("#hdnInspectPopup").val(tabValue);
           $.ajaxSetup({ cache: false });
           var url;
@@ -511,7 +519,7 @@ else {
           $("#li" + tabValue).addClass("active pull-left");
           $('#div' + tabValue).css({ display: "block" });
 
-          $("#divTab").empty();
+         $("#divTab").empty();
 
           $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
               if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
