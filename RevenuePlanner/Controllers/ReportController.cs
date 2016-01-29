@@ -7657,7 +7657,7 @@ namespace RevenuePlanner.Controllers
                         bool isNumeric = int.TryParse(categories[i - 1], out year);
                         if (!(isNumeric) && isMonthList == false)
                         {
-                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : Convert.ToInt32(ListYear.Min());
+                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : (isNumeric ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
                             DateTime TFstartDate = new DateTime(year, 1, 1);
                             DateTime TFendDate = new DateTime(year, 12, 31);
                             for (int k = 1; k <= 4; k++)
@@ -7722,7 +7722,8 @@ namespace RevenuePlanner.Controllers
                         bool isNumeric = int.TryParse(categories[i - 1], out year);
                         if (!(isNumeric) && isMonthList == false)
                         {
-                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : Convert.ToInt32(ListYear.Min());
+                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : (isNumeric ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
+                           
                             DateTime TFstartDate = new DateTime(year, 1, 1);
                             DateTime TFendDate = new DateTime(year, 12, 31);
                             for (int k = 1; k <= 12; k++)
@@ -8912,8 +8913,15 @@ namespace RevenuePlanner.Controllers
                     //TotalTrendQ4 = TotalTrendQ4 + (ActualQ4);
                     // Add By Nishant Sheth #1839
                     int ListIndex = 0; double Total = 0; bool Quarteryvalues = false;
-                    foreach (var YearName in ListYear)
+                    foreach (var year in ListYear)
                     {
+                        string YearName = year;
+                        int n;
+                        bool isNumeric = int.TryParse(YearName, out n);
+                        if (!isNumeric)
+                        {
+                            YearName = System.DateTime.Now.Year.ToString();
+                        }
                         DateTime TFStartDate = new DateTime(Convert.ToInt32(YearName), 1, 1);
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
@@ -8954,8 +8962,15 @@ namespace RevenuePlanner.Controllers
                     //}
                     // Add By Nishant Sheth #1839
                     bool Quarteryvalues = false;
-                    foreach (var YearName in ListYear)
+                    foreach (var year in ListYear)
                     {
+                        string YearName = year;
+                        int n;
+                        bool isNumeric = int.TryParse(YearName, out n);
+                        if (!isNumeric)
+                        {
+                            YearName = System.DateTime.Now.Year.ToString();
+                        }
                         DateTime TFStartDate = new DateTime(Convert.ToInt32(YearName), 1, 1);
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
@@ -9038,8 +9053,15 @@ namespace RevenuePlanner.Controllers
                     //ROIList.Add(Math.Round(TotalTrendQ4, 2).ToString());
                     // Add By Nishant Sheth #1839
                     int ListIndex = 0; double Total = 0; bool Quarteryvalues = false;
-                    foreach (var YearName in ListYear)
+                    foreach (var year in ListYear)
                     {
+                        string YearName = year;
+                        int n;
+                        bool isNumeric = int.TryParse(YearName, out n);
+                        if (!isNumeric)
+                        {
+                            YearName = System.DateTime.Now.Year.ToString();
+                        }
                         DateTime TFStartDate = new DateTime(Convert.ToInt32(YearName), 1, 1);
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
@@ -9083,8 +9105,15 @@ namespace RevenuePlanner.Controllers
                     //}
                     // Add By Nishant Sheth #1839
                     int ListIndex = 0; bool Quarteryvalues = false;
-                    foreach (var YearName in ListYear)
+                    foreach (var year in ListYear)
                     {
+                        string YearName = year;
+                        int n;
+                        bool isNumeric = int.TryParse(YearName, out n);
+                        if (!isNumeric)
+                        {
+                            YearName = System.DateTime.Now.Year.ToString();
+                        }
                         DateTime TFStartDate = new DateTime(Convert.ToInt32(YearName), 1, 1);
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
@@ -9500,8 +9529,16 @@ namespace RevenuePlanner.Controllers
 
                     // Add By Nishant Sheth #1839
                     int ListIndex = 0; double Total = 0; bool Quarteryvalues = false;
-                    foreach (var YearName in ListYear)
+                    foreach (var year in ListYear)
                     {
+                        string YearName = year;
+                        int n;
+                        bool isNumeric = int.TryParse(YearName, out n);
+                        if (!isNumeric)
+                        {
+                            YearName = System.DateTime.Now.Year.ToString();
+                        }
+
                         DateTime TFStartDate = new DateTime(Convert.ToInt32(YearName), 1, 1);
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
@@ -9534,8 +9571,15 @@ namespace RevenuePlanner.Controllers
                     double _actualval = 0;
                     // Add By Nishant Sheth #1839
                     bool Quarteryvalues = false;
-                    foreach (var YearName in ListYear)
+                    foreach (var year in ListYear)
                     {
+                        string YearName = year;
+                        int n;
+                        bool isNumeric = int.TryParse(YearName, out n);
+                        if (!isNumeric)
+                        {
+                            YearName = System.DateTime.Now.Year.ToString();
+                        }
                         DateTime TFStartDate = new DateTime(Convert.ToInt32(YearName), 1, 1);
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
@@ -9602,8 +9646,15 @@ namespace RevenuePlanner.Controllers
 
                     // Add By Nishant Sheth #1839
                     int ListIndex = 0; double Total = 0; bool Quarteryvalues = false;
-                    foreach (var YearName in ListYear)
+                    foreach (var year in ListYear)
                     {
+                        string YearName = year;
+                        int n;
+                        bool isNumeric = int.TryParse(YearName, out n);
+                        if (!isNumeric)
+                        {
+                            YearName = System.DateTime.Now.Year.ToString();
+                        }
                         DateTime TFStartDate = new DateTime(Convert.ToInt32(YearName), 1, 1);
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
@@ -9639,8 +9690,15 @@ namespace RevenuePlanner.Controllers
                     string _curntPeriod = string.Empty;
                     // Add By Nishant Sheth #1839
                     int ListIndex = 0; bool Quarteryvalues = false;
-                    foreach (var YearName in ListYear)
+                    foreach (var year in ListYear)
                     {
+                        string YearName = year;
+                        int n;
+                        bool isNumeric = int.TryParse(YearName, out n);
+                        if (!isNumeric)
+                        {
+                            YearName = System.DateTime.Now.Year.ToString();
+                        }
                         DateTime TFStartDate = new DateTime(Convert.ToInt32(YearName), 1, 1);
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)

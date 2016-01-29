@@ -81,6 +81,7 @@
     <Compile Include="Controllers\PlanControllerTest.cs" />
     <Compile Include="Controllers\ReportControllerTest.cs" />
     <Compile Include="Helper\CommonTest.cs" />
+    <Compile Include="Helper\ClonehelperTest.cs" />
     <Compile Include="Integration\IntegrationEloquaClientTest.cs" />
     <Compile Include="MockHelpers\DataHelper.cs" />
     <Compile Include="MockHelpers\MockHelpers.cs" />

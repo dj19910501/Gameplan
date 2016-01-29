@@ -19,7 +19,7 @@ namespace RevenuePlanner.Test.Controllers
     public class ReportControllerTest
     {
         #region "Overview section of Report"
-
+        MRPEntities db = new MRPEntities();
         #region "GetOverviewData function TestCases"
         #region GetOverviewData section with TimeFrame Empty
         /// <summary>
@@ -158,6 +158,8 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = SetOFLastViews; 
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
             lst.Add(planId);
@@ -185,6 +187,8 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(9775);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = SetOFLastViews; 
 
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
@@ -229,8 +233,11 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueData_IsQuarterly_Empty()
         {
-            //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Set session value
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = SetOFLastViews; 
+          
             List<int> lst = new List<int>();
             lst.Add(9775);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
@@ -280,6 +287,8 @@ namespace RevenuePlanner.Test.Controllers
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
             lst.Add(planId);
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = SetOFLastViews; 
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
@@ -1215,6 +1224,8 @@ namespace RevenuePlanner.Test.Controllers
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
             lst.Add(planId);
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = SetOFLastViews; 
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             //int planId=DataHelper.GetPlanId();
             //// Call GetWaterFallData() function
@@ -1240,6 +1251,8 @@ namespace RevenuePlanner.Test.Controllers
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
             lst.Add(planId);
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = SetOFLastViews; 
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             //int planId=DataHelper.GetPlanId();
             //// Call GetWaterFallData() function
@@ -1335,6 +1348,8 @@ namespace RevenuePlanner.Test.Controllers
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
             lst.Add(planId);
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = SetOFLastViews; 
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
             var result = ReportController.GetWaterFallData(string.Empty, string.Empty) as PartialViewResult;

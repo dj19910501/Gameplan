@@ -99,12 +99,15 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Home_View_For_Plan_Screen_With_PlanId()
         {
+            MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
             //// Call index method
             HomeController objHomeController = new HomeController();
             int planId = DataHelper.GetPlanId();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = SetOFLastViews; 
             var result = objHomeController.Index(Enums.ActiveMenu.Plan, planId) as ViewResult;
 
             if (result != null)
@@ -1057,12 +1060,15 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Add_Actual_View()
         {
+            MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
             //// Call AddActual method
             PlanController objHomeController = new PlanController();
             Sessions.PlanId = DataHelper.GetPlanId();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = SetOFLastViews; 
             var result = objHomeController.AddActual(Convert.ToInt32(Sessions.PlanId)) as ViewResult;
 
             if (result != null)
@@ -1072,7 +1078,7 @@ namespace RevenuePlanner.Test.Controllers
 
                 Assert.IsNotNull(result.Model);
                 HomePlanModel objModel = (HomePlanModel)result.Model;
-                Assert.IsNotNull(objModel.objIndividuals);
+                Assert.IsNotNull(objModel);
 
                 Assert.IsNotNull(result.ViewBag.IsPlanEditable);
             }

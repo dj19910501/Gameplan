@@ -4724,9 +4724,12 @@ namespace RevenuePlanner.Helpers
                 && customfield.CustomFieldType.Name == DropDownList).ToList(); //Modified by Arpita Soni for PL ticket 1148 (added filter of CustomFieldTypeId)
 
             List<int> customfieldids = customfieldlist.Select(cfl => cfl.CustomFieldId).ToList();
-            // Check tacticid exists or not then use concat
-            List<int> allentityids = tacticids.Concat(programids).Concat(campaignids).Concat(LineItemIds).ToList();
-
+            List<int> allentityids = new List<int>();
+            if (tacticids.Count > 0) // // To handle object null reference exception  - Dashrath Prajapati - 29/01/2016
+            {
+                // Check tacticid exists or not then use concat
+               allentityids = tacticids.Concat(programids).Concat(campaignids).Concat(LineItemIds).ToList();
+            }
             var customfieldentity = db.CustomField_Entity.Where(cfe => customfieldids.Contains(cfe.CustomFieldId)).Select(cfe => new { EntityId = cfe.EntityId, CustomFieldId = cfe.CustomFieldId }).ToList();
 
             //var fcustomfieldentity = customfieldentity.Where(cf => allentityids.Contains(cf.EntityId)).ToList();
