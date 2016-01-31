@@ -657,6 +657,41 @@ namespace RevenuePlanner.Helpers
                 }
                 // end by nishant Sheth
 
+                //Begin Add clone of integration settings - Brad Gray 29 Jan 2016 PL#1945
+                if (objPlanCampaignProgramTactic != null && objPlanCampaignProgramTactic.IsSyncWorkFront != null && (bool)objPlanCampaignProgramTactic.IsSyncWorkFront)
+                {
+                    IntegrationWorkFrontTacticSetting wfSettings = db.IntegrationWorkFrontTacticSettings.FirstOrDefault(t => t.TacticId == ID && t.IsDeleted == false);
+                    if (wfSettings != null) //need to create a workfront tactic settings entry. 
+                    {
+                        IntegrationWorkFrontTacticSetting newSet = new IntegrationWorkFrontTacticSetting();
+                        newSet.TacticId = objPlanCampaignProgramTactic.PlanTacticId;
+                        newSet.TacticApprovalObject = wfSettings.TacticApprovalObject;
+                        newSet.IsDeleted = wfSettings.IsDeleted;
+                        db.Entry(newSet).State = EntityState.Added;
+
+                        if (wfSettings.TacticApprovalObject == Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString() ) //if the tactic approval object is a request, need to create a request entry as well
+                        {
+                            IntegrationWorkFrontRequest wfReq = db.IntegrationWorkFrontRequests.FirstOrDefault(req => req.PlanTacticId == ID && req.IsDeleted == false);
+                            if (wfReq!=null)
+                            {
+                                IntegrationWorkFrontRequest newReq = new IntegrationWorkFrontRequest();
+                                newReq.ResolvingObjType = null;
+                                newReq.ResolvingObjId = null;
+                                newReq.PlanTacticId = objPlanCampaignProgramTactic.PlanTacticId;
+                                newReq.RequestId = null;
+                                newReq.WorkFrontRequestStatus = null;
+                                newReq.IntegrationWorkFrontRequestQueue = wfReq.IntegrationWorkFrontRequestQueue;
+                                newReq.IntegrationWorkFrontUser = wfReq.IntegrationWorkFrontUser;
+                                newReq.IntegrationInstanceId = wfReq.IntegrationInstanceId;
+                                newReq.RequestName = wfReq.RequestName + " " + Suffix;
+                                newReq.IsDeleted = false;
+                                db.Entry(newReq).State = EntityState.Added;
+                            }
+                        }
+                    }
+                }
+                //End Add clone of integration settings - Brad Gray 29 Jan 2016 PL#1945
+
                 db.SaveChanges();
                 ////End Added by Mitesh Vaishnav for PL ticket #720
 
