@@ -152,6 +152,7 @@ namespace RevenuePlanner.Helpers
                                     ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                                     pcpt.IntegrationInstanceTacticId = null;
                                     pcpt.IntegrationInstanceEloquaId = null;
+                                    pcpt.IntegrationWorkFrontProjectID = null; //added by Brad Gray 31 Jan 2016 PL#1944
                                     pcpt.LastSyncDate = null;
                                     pcpt.LinkedTacticId = null;
                                     pcpt.LinkedPlanId = null;
@@ -334,6 +335,7 @@ namespace RevenuePlanner.Helpers
                                 ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                                 pcpt.IntegrationInstanceTacticId = null;
                                 pcpt.IntegrationInstanceEloquaId = null;
+                                pcpt.IntegrationWorkFrontProjectID = null; //added by Brad Gray 31 Jan 2016 PL#1944
                                 pcpt.LastSyncDate = null;
                                 pcpt.LinkedTacticId = null;
                                 pcpt.LinkedPlanId = null;
@@ -486,6 +488,7 @@ namespace RevenuePlanner.Helpers
                             ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                             t.IntegrationInstanceTacticId = null;
                             t.IntegrationInstanceEloquaId = null;
+                            t.IntegrationWorkFrontProjectID = null; //added by Brad Gray 31 Jan 2016 PL#1944
                             t.LastSyncDate = null;
                             t.LinkedTacticId = null;
                             t.LinkedPlanId = null;
