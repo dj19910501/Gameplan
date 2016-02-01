@@ -486,7 +486,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="currentPlanId">current selected plan Id</param>
         /// <param name="activeMenu">current active menu</param>
         /// <returns>returns partial view of PlanDropdown</returns>
-        public ActionResult HomePlan(int currentPlanId)
+        public ActionResult HomePlan(int currentPlanId,string fltrYears)
         {
             HomePlan objHomePlan = new HomePlan();
 
@@ -495,7 +495,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.ViewByTab = lstViewByTab;
 
             //// Prepare upcoming activity dropdown values
-            List<SelectListItem> lstUpComingActivity = UpComingActivity(Convert.ToString(currentPlanId));
+            List<SelectListItem> lstUpComingActivity = UpComingActivity(Convert.ToString(currentPlanId), fltrYears);
             lstUpComingActivity = lstUpComingActivity.Where(activity => !string.IsNullOrEmpty(activity.Text)).OrderBy(activity => activity.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewUpComingActivity = lstUpComingActivity;
 
@@ -558,17 +558,13 @@ namespace RevenuePlanner.Controllers
 
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
 
-            // Modified by Nishant Sheth #1915
-            List<Plan> lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();
-
-
-
             bool IsRequest = false;
             bool IsFiltered = false;
             string planYear = string.Empty;
             int year;
-            bool isNumeric = int.TryParse(timeFrame, out year);
             string[] listYear = timeFrame.Split('-');
+            bool isNumeric = int.TryParse(listYear[0], out year);
+            
             if (isNumeric)
             {
                 planYear = Convert.ToString(year);
@@ -587,6 +583,14 @@ namespace RevenuePlanner.Controllers
                 }
                 // End By Nishant Sheth
             }
+            // Modified by Nishant Sheth #1915
+
+            // Modified By Nishant Sheth Date:30-Jan-2016
+            // Desc :: To resolve the display all plan if there is no tactic 
+            List<Plan> lstPlans = objDbMrpEntities.Plans.Where(plan =>
+                (!isNumeric ? (plan.Year == planYear) : (listYear.Contains(plan.Year))) &&
+                planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();
+            // End By Nishant Sheth
 
             // Add By Nishant Sheth
             // DESC:: For get default filter view after user log out #1750
@@ -5296,25 +5300,25 @@ namespace RevenuePlanner.Controllers
         /// <param name="planids">comma sepreated plan id(s)</param>
         /// <param name="CurrentTime">Current Time</param>
         /// <returns></returns>
-        public JsonResult BindUpcomingActivitesValues(string planids, string CurrentTime)
+        public JsonResult BindUpcomingActivitesValues(string planids, string CurrentTime, string fltrYears)
         {
             //// Fetch the list of Upcoming Activity
-            List<SelectListItem> objUpcomingActivity = UpComingActivity(planids);
+            List<SelectListItem> objUpcomingActivity = UpComingActivity(planids, fltrYears);
 
-            bool IsItemExists = objUpcomingActivity.Where(activity => activity.Value == CurrentTime).Any();
+            //bool IsItemExists = objUpcomingActivity.Where(activity => activity.Value == CurrentTime).Any();
 
-            if (IsItemExists)
-            {
-                foreach (SelectListItem activity in objUpcomingActivity)
-                {
-                    activity.Selected = false;
-                    //// Set it Selected ture if we found current time value in the list.
-                    if (CurrentTime == activity.Value)
-                    {
-                        activity.Selected = true;
-                    }
-                }
-            }
+            //if (IsItemExists)
+            //{
+            //    foreach (SelectListItem activity in objUpcomingActivity)
+            //    {
+            //        activity.Selected = false;
+            //        //// Set it Selected ture if we found current time value in the list.
+            //        if (CurrentTime == activity.Value)
+            //        {
+            //            activity.Selected = true;
+            //        }
+            //    }
+            //}
 
             objUpcomingActivity = objUpcomingActivity.Where(activity => !string.IsNullOrEmpty(activity.Text)).OrderBy(activity => activity.Text, new AlphaNumericComparer()).ToList();
             return Json(objUpcomingActivity.ToList(), JsonRequestBehavior.AllowGet);
@@ -5325,7 +5329,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="PlanIds">comma sepreated string plan id(s)</param>
         /// <returns>List fo SelectListItem of Upcoming activity</returns>
-        public List<SelectListItem> UpComingActivity(string PlanIds)
+        public List<SelectListItem> UpComingActivity(string PlanIds,string fltrYears)
         {
             //// List of plan id(s)
             List<int> planIds = string.IsNullOrWhiteSpace(PlanIds) ? new List<int>() : PlanIds.Split(',').Select(plan => int.Parse(plan)).ToList();
@@ -5338,6 +5342,7 @@ namespace RevenuePlanner.Controllers
 
             //// Get the Current year and Pre define Upcoming Activites.
             string currentYear = DateTime.Now.Year.ToString();
+            string strPrevYear = Convert.ToString(DateTime.Now.Year - 1);
 
             List<SelectListItem> UpcomingActivityList = new List<SelectListItem>();
             foreach (var Planyear in PlanYearList)
@@ -5351,6 +5356,8 @@ namespace RevenuePlanner.Controllers
             //// Fetch the pervious year and future year list and insert into the list object
             var yearlistPrevious = activePlan.Where(plan => plan.Year != currentYear && Convert.ToInt32(plan.Year) < DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
             yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
+
+            
 
 
             string strThisQuarter = Enums.UpcomingActivities.thisquarter.ToString(), strThisMonth = Enums.UpcomingActivities.thismonth.ToString(),
@@ -5465,6 +5472,32 @@ namespace RevenuePlanner.Controllers
                 }
                 upcomingloop += 1;
             });
+
+            #region "Verify filter selected year has current year and previous year"
+            List<string> lstFilterYear = new List<string>();
+            if (!string.IsNullOrEmpty(fltrYears))
+            {
+                lstFilterYear = fltrYears.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                // Verify whether current & previous year plan selected in filter & exist in lstFiterYear or not.
+                if ((lstFilterYear.Any(yr => yr.Equals(currentYear)) && lstFilterYear.Any(yr => yr.Equals(strPrevYear))) && (PlanYearList.Any(yr => yr.Equals(currentYear)) && PlanYearList.Any(yr => yr.Equals(strPrevYear))))
+                {
+                    //Set selected value 'false' for all items in UpcomingActivityList.
+                    UpcomingActivityList.ForEach(item => item.Selected = false);
+                    string strTimeFrame = strPrevYear + "-" + currentYear;
+
+                    // Remove old currentYear-PrevYear Timeframe value from UpcomingActivityList.
+                    if (UpcomingActivityList.Any(year => year.Text.Equals(strTimeFrame)))
+                    { 
+                        var multiTimeFrame =  UpcomingActivityList.Where(year => year.Text.Equals(strTimeFrame)).FirstOrDefault();
+                        UpcomingActivityList.Remove(multiTimeFrame);
+                    }
+                    // Set currentyear - PrevYear range selected to True.
+                    UpcomingActivityList.Add(new SelectListItem { Text = strTimeFrame, Value = strTimeFrame, Selected = true });
+                }
+            }
+            #endregion
+
             UpcomingActivityList = UpcomingActivityList.GroupBy(a => a.Text).Select(x => x.First()).ToList();
 
             //var yearlistAfter = activePlan.Where(plan => plan.Year != currentYear && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();

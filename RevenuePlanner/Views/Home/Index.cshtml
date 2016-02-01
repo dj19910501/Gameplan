@@ -236,7 +236,16 @@
             //  $("#nl-form2").hide();
             //Added by Nirav for Custom Dropdown - 388
 
-            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid, function (response, status, xhr) {
+            var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+            var years = "";
+            $.each(listCheckbox, function () {
+                if ($(this).attr("checked")) {
+                    years += $(this).attr('yearValue') + ",";
+                }
+            });
+            years = years.slice(0, -1);
+
+            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&fltrYears=' + years, function (response, status, xhr) {
                 if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                     //// Call function to redirect on service unavailibility.
                     //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -2451,13 +2460,26 @@
     // End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
 
     function BindUpcomingActivites(SelectedPlanIds) {
+
+        // Start - #1942
+        var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+        var years = "";
+        $.each(listCheckbox, function () {
+            if ($(this).attr("checked")) {
+                years += $(this).attr('yearValue') + ",";
+            }
+        });
+        years = years.slice(0, -1);
+        // End - #1942
+
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Home/BindUpcomingActivitesValues/")',
             async: false,// Comment by bhavesh // Uncomment By Nishant Sheth Desc :: Due to selected min year records display
             data: {
                 planids: SelectedPlanIds,
-                CurrentTime: Currenttime
+                CurrentTime: Currenttime,
+                fltrYears: years
             },
             success: function (data) {
                 BindUpcomingActivies(data);
