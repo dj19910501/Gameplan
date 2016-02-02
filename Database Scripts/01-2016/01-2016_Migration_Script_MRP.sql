@@ -41,3 +41,19 @@ BEGIN
 	Update [Plan_Campaign_Program_Tactic_Lineitem] Set isDeleted = 1 WHERE LineItemTypeId is Null and Cost = 0 and isDeleted = 0
 End
 
+Go
+
+
+/* --------- Start Script of PL ticket #1943 --------- */
+-- Created by : Komal Rawal
+-- Created On : 02/02/2016
+-- Description : Add column DependencyDate column to Plan table - 
+
+IF not exists (SELECT * FROM sys.columns  WHERE Name = N'DependencyDate' AND Object_ID = Object_ID(N'Plan'))
+BEGIN
+ALTER TABLE [dbo].[Plan] ADD DependencyDate datetime
+END
+GO
+
+/* --------- End Script of PL ticket #1943 --------- */
+
