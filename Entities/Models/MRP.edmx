@@ -3082,9 +3082,7 @@
             <End Role="IntegrationWorkFrontUser" EntitySet="IntegrationWorkFrontUsers" />
             <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
           </AssociationSet>
-          <FunctionImport Name="GetCollaboratorId" ReturnType="Collection(MRPModel.GetCollaboratorId_Result)">
-          <Parameter Name="PlanId" Mode="In" Type="Int32" />
-          </FunctionImport>
+          
           <EntitySet Name="Plan_Campaign_Program_Tactic" EntityType="MRPModel.Plan_Campaign_Program_Tactic" />
           <AssociationSet Name="FK_IntegrationWorkFrontRequests_TacticId" Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
@@ -3134,6 +3132,9 @@
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
+          <FunctionImport Name="GetCollaboratorId" ReturnType="Collection(MRPModel.GetCollaboratorId_Result)">
+            <Parameter Name="PlanId" Mode="In" Type="Int32" />
+          </FunctionImport>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -5357,15 +5358,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <ComplexType Name="GetCollaboratorId_Result">
-          <Property Type="Int32" Name="PlanTacticCommentId" Nullable="false" />
-          <Property Type="Int32" Name="PlanTacticId" Nullable="true" />
-          <Property Type="String" Name="Comment" Nullable="false" MaxLength="4000" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="Int32" Name="PlanProgramId" Nullable="true" />
-          <Property Type="Int32" Name="PlanCampaignId" Nullable="true" />
-        </ComplexType>
+        
         <EntityType Name="Plan_Campaign_Program_Tactic">
           <Key>
             <PropertyRef Name="PlanTacticId" />
@@ -5557,6 +5550,15 @@
           </ReferentialConstraint>
         </Association>
         <ComplexType Name="GetCollaboratorId1_Result">
+          <Property Type="Int32" Name="PlanTacticCommentId" Nullable="false" />
+          <Property Type="Int32" Name="PlanTacticId" Nullable="true" />
+          <Property Type="String" Name="Comment" Nullable="false" MaxLength="4000" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="Int32" Name="PlanProgramId" Nullable="true" />
+          <Property Type="Int32" Name="PlanCampaignId" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetCollaboratorId_Result">
           <Property Type="Int32" Name="PlanTacticCommentId" Nullable="false" />
           <Property Type="Int32" Name="PlanTacticId" Nullable="true" />
           <Property Type="String" Name="Comment" Nullable="false" MaxLength="4000" />
@@ -6725,6 +6727,7 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+         
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
