@@ -235,7 +235,7 @@
     </ul>
 
     <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left">
-        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString().ToLower(), 0, Enums.InspectPopupMode.Edit.ToString())
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString().ToLower(),Model.StartDate, 0, Enums.InspectPopupMode.Edit.ToString())
     </div>
 
     @*<div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">

@@ -40,6 +40,7 @@ namespace RevenuePlanner.Models
         public double GoalValue { get; set; }
         public string AllocatedBy { get; set; }
         public string EloquaFolderPath { get; set; }
+        public Nullable<System.DateTime> DependencyDate { get; set; }
     
         public virtual Model Model { get; set; }
         public virtual ICollection<Plan_Budget> Plan_Budget { get; set; }

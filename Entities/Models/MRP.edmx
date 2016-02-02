@@ -678,6 +678,7 @@
           <Property Name="GoalValue" Type="float" Nullable="false" />
           <Property Name="AllocatedBy" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="EloquaFolderPath" Type="nvarchar" MaxLength="4000" />
+          <Property Name="DependencyDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Plan_Budget">
           <Key>
@@ -3668,6 +3669,7 @@
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Team" Relationship="MRPModel.FK_Plan_Collaborator_Plan" FromRole="Plan" ToRole="Plan_Team" />
           <NavigationProperty Name="Plan_Improvement_Campaign" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Plan" FromRole="Plan" ToRole="Plan_Improvement_Campaign" />
+          <Property Name="DependencyDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Plan_Budget">
           <Key>
@@ -6015,6 +6017,7 @@
           <EntitySetMapping Name="Plans">
             <EntityTypeMapping TypeName="MRPModel.Plan">
               <MappingFragment StoreEntitySet="Plan">
+                <ScalarProperty Name="DependencyDate" ColumnName="DependencyDate" />
                 <ScalarProperty Name="EloquaFolderPath" ColumnName="EloquaFolderPath" />
                 <ScalarProperty Name="AllocatedBy" ColumnName="AllocatedBy" />
                 <ScalarProperty Name="GoalValue" ColumnName="GoalValue" />

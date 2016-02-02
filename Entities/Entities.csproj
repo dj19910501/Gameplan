@@ -112,6 +112,9 @@
     <Compile Include="Models\GameplanDataTypePull.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\GetCollaboratorId1_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\GetCollaboratorId_Result.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
