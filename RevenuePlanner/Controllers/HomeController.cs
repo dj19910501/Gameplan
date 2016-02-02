@@ -557,13 +557,16 @@ namespace RevenuePlanner.Controllers
             //// Create plan list based on PlanIds of search filter
 
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
+            // Modified by Nishant Sheth #1915
+            List<Plan> lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();
 
             bool IsRequest = false;
             bool IsFiltered = false;
             string planYear = string.Empty;
             int year;
+            bool isNumeric = int.TryParse(timeFrame, out year);
             string[] listYear = timeFrame.Split('-');
-            bool isNumeric = int.TryParse(listYear[0], out year);
+            //bool isNumeric = int.TryParse(listYear[0], out year);
             
             if (isNumeric)
             {
@@ -587,9 +590,9 @@ namespace RevenuePlanner.Controllers
 
             // Modified By Nishant Sheth Date:30-Jan-2016
             // Desc :: To resolve the display all plan if there is no tactic 
-            List<Plan> lstPlans = objDbMrpEntities.Plans.Where(plan =>
-                (!isNumeric ? (plan.Year == planYear) : (listYear.Contains(plan.Year))) &&
-                planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();
+            //List<Plan> lstPlans = objDbMrpEntities.Plans.Where(plan =>
+            //    (!isNumeric ? (plan.Year == planYear) : (listYear.Contains(plan.Year))) &&
+            //    planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();
             // End By Nishant Sheth
 
             // Add By Nishant Sheth
@@ -5300,7 +5303,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planids">comma sepreated plan id(s)</param>
         /// <param name="CurrentTime">Current Time</param>
         /// <returns></returns>
-        public JsonResult BindUpcomingActivitesValues(string planids, string CurrentTime, string fltrYears)
+        public JsonResult BindUpcomingActivitesValues(string planids, string fltrYears)
         {
             //// Fetch the list of Upcoming Activity
             List<SelectListItem> objUpcomingActivity = UpComingActivity(planids, fltrYears);
@@ -5384,6 +5387,7 @@ namespace RevenuePlanner.Controllers
                 }
                 foreach (var camp in lstCampaign)
                 {
+                    int campPlanYear = Convert.ToInt32(camp.Plan.Year);
                     int campStYear = camp.StartDate.Year;
                     int campEdYear = camp.EndDate.Year;
                     int campYearDiffer = campEdYear - campStYear;
@@ -5435,6 +5439,15 @@ namespace RevenuePlanner.Controllers
                         if (checkMaxYear == null)
                         {
                             UpcomingActivityList.Add(new SelectListItem { Text = MaxYear, Value = MaxYear, Selected = false });
+                        }
+                    }
+                    if (campPlanYear != camp.StartDate.Year || campPlanYear != camp.EndDate.Year)
+                    {
+                        int campyear = campPlanYear != camp.StartDate.Year ? camp.StartDate.Year : camp.EndDate.Year;
+                        var checkFromTo = UpcomingActivityList.Where(a => a.Text == campPlanYear + "-" + campyear).Select(a => a.Text).FirstOrDefault();
+                        if (checkFromTo == null)
+                        {
+                            UpcomingActivityList.Add(new SelectListItem { Text = campPlanYear + "-" + campyear, Value = campPlanYear + "-" + campyear, Selected = false });
                         }
                     }
                 }

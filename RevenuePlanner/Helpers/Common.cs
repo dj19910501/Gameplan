@@ -1845,7 +1845,7 @@ namespace RevenuePlanner.Helpers
             // #1825 stuck of loading overlay with 'this month' and 'this quarter'
             string planYear = string.Empty;
 
-            bool isNumeric = int.TryParse(ListYear[0], out Year);
+            bool isNumeric = int.TryParse(year, out Year);
 
             if (isNumeric)
             {
@@ -1877,12 +1877,8 @@ namespace RevenuePlanner.Helpers
 
             // Modify by Nishant sheth
             // Desc :: to get correct count for tactic and for multiple years #1750
-            //var planList = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a).ToList();
-            // Desc :: To resolve the display all plan if there is no tactic 
-            List<Plan> planList = db.Plans.Where(plan =>
-                (!isNumeric ? (plan.Year == planYear) : (ListYear.Contains(plan.Year))) &&
-                planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();
-            var planData = planList.Select(a => a.PlanId).ToList();
+            var planList = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a).ToList();
+            var planData = planList.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == year).Select(a => a.PlanId).ToList();
 
             var campplist = db.Plan_Campaign.Where(camp => (!((camp.EndDate < StartDate) || (camp.StartDate > EndDate))) && planIds.Contains(camp.PlanId)).Select(a => new { PlanCampaignId = a.PlanCampaignId, PlanId = a.PlanId }).ToList();
             var campplanid = campplist.Select(a => a.PlanId).ToList();
