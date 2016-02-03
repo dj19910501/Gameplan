@@ -278,7 +278,8 @@
                                     }
                                     $(this).find('.dropdown_new_btn p:first').text(Selectedvalue);
                                 }
-                                if (cnt == 1) {
+                                
+                                if (cnt == 1 || cnt == 0) {
                                     maindiv.css("display", "none");
                                     $(this).find('.dropdown_new_btn p:first').text('Please Select');
                                     $(this).find('tbody tr').find('input:checkbox').removeAttr('checked');
