@@ -4299,8 +4299,8 @@ namespace RevenuePlanner.Helpers
             List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
             StringBuilder sb = new StringBuilder(string.Empty);
 
-           
 
+            DateTime? EntityCreatedDate = null;
 
 
             //fieldCounter variable for defining raw style
@@ -4320,28 +4320,34 @@ namespace RevenuePlanner.Helpers
                 {
                     Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
                     TacticType = pcpt.TacticTypeId.ToString();
+                    EntityCreatedDate = pcpt.CreatedDate;
                     //var programId = pcpt.PlanProgramId;
                     //var CampignId = db.Plan_Campaign_Program.Where(pid => pid.PlanProgramId == programId).Select(pid => pid.PlanCampaignId).FirstOrDefault();
                     PlanID = pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId;
+                   
                 }
 
                 if (section == Enums.EntityType.Program.ToString().ToLower() && id != 0)
                 {
 
                     Plan_Campaign_Program Program = db.Plan_Campaign_Program.Where(pid => pid.PlanProgramId == id).FirstOrDefault();
+                    EntityCreatedDate = Program.CreatedDate;
                     PlanID = Program.Plan_Campaign.PlanId;
 
                 }
 
                 if (section == Enums.EntityType.Campaign.ToString().ToLower() && id != 0)
                 {
-                    PlanID = db.Plan_Campaign.Where(pid => pid.PlanCampaignId == id).Select(pid => pid.PlanId).FirstOrDefault();
+                    Plan_Campaign Campaign = db.Plan_Campaign.Where(pid => pid.PlanCampaignId == id).FirstOrDefault();
+                    PlanID = Campaign.PlanId;
+                    EntityCreatedDate = Campaign.CreatedDate;
 
                 }
 
                 if (section == Enums.EntityType.Lineitem.ToString().ToLower() && id != 0)
                 {
                     Plan_Campaign_Program_Tactic_LineItem Lineitem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lid => lid.PlanLineItemId.Equals(id)).FirstOrDefault();
+                    EntityCreatedDate = Lineitem.CreatedDate;
                     PlanID = Lineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                 }
                 DateTime? DependencyDate = null;
@@ -4355,10 +4361,10 @@ namespace RevenuePlanner.Helpers
                     }
                    
                 }
-               
-                if(EntityStartDate != null)
+
+                if (EntityCreatedDate != null)
                 {
-                    EntityStartDate = EntityStartDate.Date;
+                    EntityCreatedDate = EntityCreatedDate.Value.Date;
                 }
                 List<int> customFieldIds = customFieldList.Select(cs => cs.customFieldId).ToList();
                 var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
@@ -4378,7 +4384,7 @@ namespace RevenuePlanner.Helpers
                         displayCheckbox, selectionMode, footerText, singlehover, trhover, footerclose, enableCheck, inputcolorcss, DisplayStyle;
                 bool editableOptions, isEditable;
                 string ParentField = "CustomField";
-                if ((EntityStartDate >= DependencyDate) || id == 0 || DependencyDate == null)
+                if ((EntityCreatedDate >= DependencyDate) || id == 0 || DependencyDate == null)
                 {
 
 
