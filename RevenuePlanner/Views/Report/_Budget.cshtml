@@ -131,9 +131,10 @@
             isData = false;
         }
         if ('@isData' == 'False') {
-            $('.gridbox').empty();
-            $('.gridbox').html('<div class="NoDataFound">No data found for selected active filters.</div>');
+            $('.gridbox').empty();            
+            $('#divTabData').html('<div class="NoDataFound">No data found for selected active filters.</div>');
         }
+
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
@@ -182,9 +183,8 @@
     var HomeGrid;
     var editidonOpenEnd = 0;
     function BindBudgetGrid() {
-
+        
         var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
-
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
