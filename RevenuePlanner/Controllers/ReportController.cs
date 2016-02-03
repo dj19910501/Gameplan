@@ -2278,6 +2278,8 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetReportBudgetData(string Year, string AllocatedBy, string Tab, string SortingId)
         {
+            string ListYear = Year.Split(',').Min(); // TODO :: needd to remove this when we implement multi year support
+            Year = ListYear;
             if (Year == "thisquarter")
             {
                 Year = currentYear;
