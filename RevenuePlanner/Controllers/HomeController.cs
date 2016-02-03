@@ -558,7 +558,7 @@ namespace RevenuePlanner.Controllers
 
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
             // Modified by Nishant Sheth #1915
-            List<Plan> lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();
+            List<Plan> lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();          
 
             bool IsRequest = false;
             bool IsFiltered = false;
@@ -586,6 +586,9 @@ namespace RevenuePlanner.Controllers
                 }
                 // End By Nishant Sheth
             }
+
+          
+
             // Modified by Nishant Sheth #1915
 
             // Modified By Nishant Sheth Date:30-Jan-2016
@@ -618,7 +621,9 @@ namespace RevenuePlanner.Controllers
             }
 
             //// Get list of planIds from filtered plans
+
             var filteredPlanIds = lstPlans.Where(plan => plan.Year == planYear || planId.Split(',').Contains(plan.PlanId.ToString())).ToList().Select(plan => plan.PlanId).ToList();
+            
 
             CalendarStartDate = CalendarEndDate = DateTime.Now;
             Common.GetPlanGanttStartEndDate(planYear, timeFrame, ref CalendarStartDate, ref CalendarEndDate);
@@ -2036,6 +2041,10 @@ namespace RevenuePlanner.Controllers
             // Add By Nishant
             Common.GetPlanGanttStartEndDate(planYear, timeframe, ref CalendarStartDate, ref CalendarEndDate);
 
+           
+            string[] listYear = timeframe.Split('-'); //PL #1960 Dashrath Prajapati
+           
+
             string tacticStatusSubmitted = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
             //Added By komal Rawal for #1282
@@ -2643,14 +2652,17 @@ namespace RevenuePlanner.Controllers
                 //                List<int> campplanid = new List<int>();
                 // Change by Nishant Sheth for remove double db trip.
                 var planData = objDbMrpEntities.Plans.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a).ToList();
-                var planList = planData.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a.PlanId).ToList();
+                var planList = planData.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && listYear.Contains(plan.Year)).Select(a => a.PlanId).ToList(); ////PL #1960 Dashrath Prajapati
                 List<int> campplanid = new List<int>();
+                List<int> campplanid1 = new List<int>();
                 if (planList.Count == 0)
                 {
                     campplanid = objDbMrpEntities.Plan_Campaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && filterplanId.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
+
                 }
+                var cmgnidlist = taskDataCampaignforPlanMain.Select(i => i.Plan.PlanId); //PL #1960 Dashrath Prajapati
                 var taskDataPlan = planData.Where(plan => plan.IsDeleted.Equals(false)
-                    && (campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planList.Contains(plan.PlanId)))
+                    && (cmgnidlist.Count() > 0 ? cmgnidlist.Contains(plan.PlanId) : planList.Contains(plan.PlanId)))
                                                   .ToList()
                                                    .Select(plan => new
                                                    {
