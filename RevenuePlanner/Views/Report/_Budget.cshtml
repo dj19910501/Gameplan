@@ -200,13 +200,13 @@
         HomeGrid.init();
         setTimeout(function () { 
             HomeGrid.setSizes();
-        },100);
+        },200);
         
         
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
 
         var mainGridData = JsonModel;
-        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
 
         HomeGrid.parse(GridDataHomeGrid, "json");
