@@ -4378,7 +4378,7 @@ namespace RevenuePlanner.Helpers
                         displayCheckbox, selectionMode, footerText, singlehover, trhover, footerclose, enableCheck, inputcolorcss, DisplayStyle;
                 bool editableOptions, isEditable;
                 string ParentField = "CustomField";
-                if ((EntityStartDate >= DependencyDate) || id == 0)
+                if ((EntityStartDate >= DependencyDate) || id == 0 || DependencyDate == null)
                 {
 
 
