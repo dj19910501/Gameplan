@@ -1875,10 +1875,12 @@ div.gridbox table.row20px tr td {
     padding: 0;
 }
 
+
 div.gridbox .objbox {
     background-color: #fff;
     position: relative;
-    -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch; 
+    /*height: 82vh !important;*/
 }
 
 div.gridbox table.obj td span.space, div.gridbox table.obj td img.space {
@@ -2736,4 +2738,11 @@ div.dhx_modal_cover {
 .dhtmlx-alert .dhtmlx_popup_text, .dhtmlx-confirm .dhtmlx_popup_text {
     border: 1px solid #d5d5d5;
     border-width: 0 1px 0 1px;
+}
+
+
+/* tkt 1948 */
+#gridbox{height: 60vh !important;}
+@media screen and (max-width:1300px){ 
+    #gridbox{height: 90vh !important;}
 }
