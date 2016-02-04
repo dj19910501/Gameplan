@@ -228,10 +228,22 @@
                             var arrParentOptionId = ParentOptionID.split(",");
                             var i;
                             $(this).css("display", "none");
-                            if (arrParentOptionId.indexOf(filters.chekboxIds.toString()) > -1 && $(this).css("display") == "none") {
-                                $(this).css("display", "inline-block");
-                                cnt++;
+                            //if (arrParentOptionId.indexOf(filters.chekboxIds.toString()) > -1 && $(this).css("display") == "none") {
+                            //    $(this).css("display", "inline-block");
+                            //    cnt++;
+                            //}
+
+                            //Modified by Dashrath Prajapati for PL#1965
+                            for (i = 0 ; i < filters.chekboxIds.length; i++) {
+                                if (arrParentOptionId.indexOf(filters.chekboxIds[i]) > -1) {
+                                    if ($(this).css("display") == "none") {
+                                        $(this).css("display", "inline-block");
+                                        cnt++;
+                                    }
+                                }
                             }
+                            //up to here PL#1965
+
                             if (cnt == 0) {
                                 $(this).find('input[type=text]').val('');
                             }
