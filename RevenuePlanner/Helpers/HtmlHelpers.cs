@@ -4698,6 +4698,7 @@ namespace RevenuePlanner.Helpers
                                     item.option.Insert(0, objSelectOption);
                                     foreach (var objOption in item.option)
                                     {
+                                        IsDisplayBlock = false;
                                         DisplayStyle = " style=\"";
                                         List<string> optionstring = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? new List<string>() : objOption.ParentOptionId.Select(l => l.ToString()).ToList());
                                         if (item.isChild == true)
