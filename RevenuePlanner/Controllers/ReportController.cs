@@ -1418,7 +1418,7 @@ namespace RevenuePlanner.Controllers
                 lstChildRevenueToPlan.Add(new ViewByModel { Text = "All", Value = "0" });
                 List<ViewByModel> childCustomFieldOptionList = new List<ViewByModel>();
                 if (lstParentRevenueSummery.Count > 0)
-                    childCustomFieldOptionList = GetChildLabelDataViewByModel(lstParentRevenueSummery.First().Value, option);
+                    childCustomFieldOptionList = GetChildLabelDataViewByModel(lstParentRevenueSummery.FirstOrDefault().Value, option);
 
                 ViewBag.ChildTabListRevenueToPlan = lstChildRevenueToPlan.Concat(childCustomFieldOptionList).ToList();
                 #endregion
@@ -4247,10 +4247,11 @@ namespace RevenuePlanner.Controllers
                     if (Tab.Contains(Common.TacticCustomTitle) && Sessions.ReportCustomFieldIds != null && Sessions.ReportCustomFieldIds.Count() > 0)
                     {
                         List<CustomFieldFilter> lstCustomFieldFilter = Sessions.ReportCustomFieldIds.ToList();
-                        var optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).First() != "" ?
+                        var optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).FirstOrDefault() != "" ?
                         lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).ToList() :
                         cusomfieldEntity.Where(x => x.CustomFieldId == customfieldId).Select(x => x.Value).Distinct().ToList();
-                        customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldOptionId.ToString())).ToList();
+                        //customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldOptionId.ToString())).ToList();
+                        customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldId.ToString()+"_"+option.CustomFieldOptionId.ToString())).ToList();
                     }
                     //// Retrieve CustomFieldOptions based on CustomField & Filtered CustomFieldOptionValues.
                     planobj = customfieldoptionlist.Select(p => new BudgetReportTab
@@ -10086,7 +10087,7 @@ namespace RevenuePlanner.Controllers
                 lstChildRevenueToPlan.Add(new ViewByModel { Text = "All", Value = "0" });
                 List<ViewByModel> childCustomFieldOptionList = new List<ViewByModel>();
                 if (lstParentConversionSummery.Count > 0)
-                    childCustomFieldOptionList = GetChildLabelDataViewByModel(lstParentConversionSummery.First().Value, timeFrameOption);
+                    childCustomFieldOptionList = GetChildLabelDataViewByModel(lstParentConversionSummery.FirstOrDefault().Value, timeFrameOption);
 
                 ViewBag.ChildTabListRevenueToPlan = lstChildRevenueToPlan.Concat(childCustomFieldOptionList).ToList();
                 #endregion
