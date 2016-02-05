@@ -4538,7 +4538,8 @@ namespace RevenuePlanner.Helpers
                                     trhover = "";
                                     footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:block;\"><span class=\"swap-text\">X close</span></a>";
                                 }
-
+                                var IsDisplayBlock = false;
+                                var NameList = new List<string>();
                                 #region tactic inspect pop up
 
                                 if (section == Enums.EntityType.Tactic.ToString().ToLower())
@@ -4554,11 +4555,11 @@ namespace RevenuePlanner.Helpers
                                     #endregion
 
                                     item.option.Insert(0, objSelectOption);
-
+                                   
                                     foreach (var objOption in item.option)
                                     {
 
-
+                                        IsDisplayBlock = false;
                                         DisplayStyle = " style=\"";
                                         List<string> optionstring = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? new List<string>() : objOption.ParentOptionId.Select(l => l.ToString()).ToList());
                                         if (item.isChild == true)
@@ -4566,6 +4567,7 @@ namespace RevenuePlanner.Helpers
                                             if ((objOption.ChildOptionId == true && entityvalues.Intersect(optionstring).Any() || objOption.value.ToString() == "Please Select"))
                                             {
                                                 DisplayStyle += "display:block;";
+                                                IsDisplayBlock = true;
                                             }
                                             else
                                             {
@@ -4576,6 +4578,7 @@ namespace RevenuePlanner.Helpers
                                         else
                                         {
                                             DisplayStyle += "display:block;";
+                                            IsDisplayBlock = true;
 
                                         }
                                         //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
@@ -4592,9 +4595,10 @@ namespace RevenuePlanner.Helpers
                                         {
                                             isEditable = lstEditableRestrictions.Where(customRestriction => customRestriction.CustomFieldId == item.customFieldId && customRestriction.CustomFieldOptionId == objOption.customFieldOptionId).Any();
                                         }
-
+                                      
                                         if (isEditable) //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                                         {
+                                           
                                             enableCheck = string.Empty;
                                             inputcolorcss = "class=\"multiselect-input-text-color-grey\"";
                                             if ((item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString())) || (item.option.Count == 1 && item.isRequired))
@@ -4608,7 +4612,7 @@ namespace RevenuePlanner.Helpers
                                                 // List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
                                                 // var IsSelected = val.Contains(ParentOptionID.ToString());
 
-                                                if (item.isChild && !IsSelected)
+                                                if (item.isChild && !IsSelected && item.value.Contains(objOption.customFieldOptionId.ToString()) == false)
                                                 {
                                                     name += "Please Select" + ", ";
                                                     inputcolorcss = string.Empty;
@@ -4622,18 +4626,45 @@ namespace RevenuePlanner.Helpers
                                                 }
                                                 else
                                                 {
-
+                                                   if(IsDisplayBlock)
+                                                    {
                                                     name += objOption.value + ", ";
                                                     enableCheck = "checked=\"checked\"";
                                                     inputcolorcss = string.Empty;
+                                                    }
+
+                                            
 
                                                 }
                                             }
+                                            NameList = new List<string>();
+                                            if (name != "")
+                                                {
+                                                 NameList = name.Remove(name.Length - 2, 2).Split(',').ToList();
+                                                }
+                                              
+                                            if (NameList.Count <= 1 && selectionMode != "Single")
+                                            {
+
+                                                displayCheckbox = "style=\"display:none;\"";
+                                                selectionMode = "Single";
+                                                footerText = "> Multi-selection";
+                                                singlehover = "single-p";
+                                                trhover = "trdropdownhover";
+                                                footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:none;\"><span class=\"swap-text\">X close</span></a>";
+                                            }
+                                          
                                             //Modified By Komal Rawal for #1864
                                             var ParentOption = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? "0" : string.Join(",", objOption.ParentOptionId));
                                             sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + ParentOption + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
                                         }
                                     }
+
+                                    if (NameList.Count > 1)
+                                    {
+                                        footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:block;\"><span class=\"swap-text\">X close</span></a>";
+                                    }
+                                    
                                     sb.Append("</tbody><tfoot class=\"dropdown-table-footer\"><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"" + selectionMode + "\"><span class=\"swap-text\">" + footerText + "</span>" + footerclose + "</a></td></tr></tfoot></table></div></div></div>");
                                     if (name.Length > 0)
                                     {
@@ -4674,6 +4705,7 @@ namespace RevenuePlanner.Helpers
                                             if ((objOption.ChildOptionId == true && entityvalues.Intersect(optionstring).Any() || objOption.value.ToString() == "Please Select"))
                                             {
                                                 DisplayStyle += "display:block;";
+                                                IsDisplayBlock = true;
                                             }
                                             else
                                             {
@@ -4684,6 +4716,7 @@ namespace RevenuePlanner.Helpers
                                         else
                                         {
                                             DisplayStyle += "display:block;";
+                                            IsDisplayBlock = true;
 
                                         }
                                         enableCheck = string.Empty;
@@ -4692,22 +4725,47 @@ namespace RevenuePlanner.Helpers
                                         {
                                             //List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
                                             //var IsSelected = item.value.Where(v => ListIDs.Contains(v)).Any();
-                                            if (item.isChild && !IsSelected)
+                                            if (item.isChild && !IsSelected && item.value.Contains(objOption.customFieldOptionId.ToString()) == false)
                                             {
                                                 name += "Please Select" + ", ";
                                                 item.value.Clear();
                                             }
                                             else
                                             {
-                                                name += objOption.value + ", ";
-                                                enableCheck = "checked=\"checked\"";
+                                                if (IsDisplayBlock)
+                                                {
+                                                    name += objOption.value + ", ";
+                                                    enableCheck = "checked=\"checked\"";
+                                                }
 
                                             }
 
                                         }
+
+                                        NameList = new List<string>();
+                                        if (name != "")
+                                        {
+                                            NameList = name.Remove(name.Length - 2, 2).Split(',').ToList();
+                                        }
+
+                                        if (NameList.Count <= 1 && selectionMode != "Single")
+                                        {
+
+                                            displayCheckbox = "style=\"display:none;\"";
+                                            selectionMode = "Single";
+                                            footerText = "> Multi-selection";
+                                            singlehover = "single-p";
+                                            trhover = "trdropdownhover";
+                                            footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:none;\"><span class=\"swap-text\">X close</span></a>";
+                                        }
                                         //Modified By Komal Rawal for #1864
                                         var ParentOption = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? "0" : string.Join(",", objOption.ParentOptionId));
                                         sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + ParentOption + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200-program\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
+                                    }
+
+                                    if (NameList.Count > 1)
+                                    {
+                                        footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:block;\"><span class=\"swap-text\">X close</span></a>";
                                     }
                                     sb.Append("</tbody><tfoot class=\"programcampaignborder\"><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"" + selectionMode + "\"><span class=\"swap-text\">" + footerText + "</span></a></td></tr></tfoot></table></div></div></div>");
                                     if (name.Length > 0)
