@@ -10148,7 +10148,7 @@ namespace RevenuePlanner.Controllers
                                                                 Type = taskdata.LineItemTypeId != null ? taskdata.LineItemType.Title : "",
                                                                 CreatedBy = taskdata.CreatedBy,
                                                                 IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
-                                                                IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || tactic.CreatedBy.Equals(Sessions.User.UserId)) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1"//Tactic created by condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
+                                                                IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || (tactic.IstactEditable == "0")) == true ? "0" : "1"//Tactic created by condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
                                                             });
 
                                                             List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
