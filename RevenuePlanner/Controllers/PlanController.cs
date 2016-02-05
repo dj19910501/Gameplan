@@ -11618,6 +11618,12 @@ namespace RevenuePlanner.Controllers
 
 
                     }
+                    else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    {
+
+                        objLineitem.CreatedBy = new Guid(UpdateVal);
+
+                    }
                     objLineitem.ModifiedBy = Sessions.User.UserId;
                     objLineitem.ModifiedDate = DateTime.Now;
                     db.Entry(objLineitem).State = EntityState.Modified;
