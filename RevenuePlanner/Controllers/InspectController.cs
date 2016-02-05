@@ -9965,7 +9965,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
+                            if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId) || objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId))//Tactic created by condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
                             {
                                 IsPlanCreateAll = true;
                             }
@@ -9976,7 +9976,7 @@ namespace RevenuePlanner.Controllers
 
                         }
 
-                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
+                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId) || objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId))//Tactic created by condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
                         {
                             IsPlanEditable = true;
                         }
@@ -9991,8 +9991,11 @@ namespace RevenuePlanner.Controllers
                         }
                         // To get permission status for Add/Edit Actual, By dharmraj PL #519
                         ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
-
-
+                        //Tactic editable condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
+                        if (lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.CreatedBy))
+                        {
+                            IsPlanEditable = true;
+                        }
                     }
 
 
