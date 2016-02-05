@@ -11263,7 +11263,7 @@ namespace RevenuePlanner.Controllers
 
                         //// Get duplicate record to check duplication.
                         var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
-                                       where pcptl.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(id) && pcptl.IsDeleted.Equals(false)
+                                       where pcptl.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower()) && pcptl.PlanTacticId == objLineitem.PlanTacticId && !pcptl.PlanLineItemId.Equals(id) && pcptl.IsDeleted.Equals(false)
                                        select pcptl).FirstOrDefault();
 
                         //// if duplicate record exist then return Duplicate message.
