@@ -687,7 +687,7 @@ namespace RevenuePlanner.Controllers
                         //Create default Plan Improvement Campaign, Program
                         int returnValue = CreatePlanImprovementCampaignAndProgram();
                     }
-                    return Json(new { id = plan.PlanId, redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = plan.PlanId, ismsg = "Plan Saved Successfully." }) });
+                    return Json(new { id = plan.PlanId, redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = plan.PlanId, ismsg = "Plan Saved Successfully.", IsPlanSelector = true }) });
 
                 }
             }
