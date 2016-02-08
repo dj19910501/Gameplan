@@ -927,7 +927,7 @@ namespace Integration.WorkFront
             {
                 //Get the list of requests in the database
                 IntegrationWorkFrontRequest requestFromDB = db.IntegrationWorkFrontRequests.SingleOrDefault(r => r.PlanTacticId == tactic.PlanTacticId && r.IntegrationInstanceId == _integrationInstanceId && r.IsDeleted == false);
-                if (requestFromDB == null) { throw new ClientException("No available request settings");}
+                if (requestFromDB == null) { throw new ClientException("No available request settings in tactic " + tactic.Title);}
 
                 if (requestFromDB.RequestId == null) //no request ID in DB yet - need to create it and push to WorkFront
                 {
