@@ -2741,8 +2741,3 @@ div.dhx_modal_cover {
 }
 
 
-/* tkt 1948 */
-#gridbox{height: 60vh !important;}
-@media screen and (max-width:1300px){ 
-    #gridbox{height: 90vh !important;}
-}
