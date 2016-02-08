@@ -14003,6 +14003,16 @@ left:auto !important;
   top: 572px !important;
 }
 
+
+@media screen and (max-width: 1280px)  and (orientation: landscape) { 
+     #gridbox.gridViewGrid.gridbox {height:80vh !important}
+}
+@media screen and (max-width: 1600px)  and (orientation: landscape) { 
+     #gridbox.gridViewGrid.gridbox {height:70vh !important}
+}
+
+
+
 /*by bheru mehta 1686 09-1-2016 end*/
 
 /************************************************ Responsive css start here **********************************************************/
