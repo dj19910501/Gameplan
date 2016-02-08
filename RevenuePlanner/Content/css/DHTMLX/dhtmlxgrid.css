@@ -2740,4 +2740,6 @@ div.dhx_modal_cover {
     border-width: 0 1px 0 1px;
 }
 
+/* #1948 IE-11 only */
+.finance-tbl .gridbox.gridbox_dhx_skyblue.isIE div.objbox{padding-bottom:18px !important}
 
