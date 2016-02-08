@@ -938,7 +938,7 @@ namespace Integration.WorkFront
                     JToken request = client.Create(ObjCode.OPTASK, new { projectID = projectForRequest, name = requestFromDB.RequestName, isHelpDesk = "true", opTaskType = "REQ", assignedToID = assignee });
                     if (request == null) 
                     { 
-                        throw new ClientException("Cannot create request"); 
+                        throw new ClientException("Cannot create request for tactic " + tactic.Title); 
                     }
                     else
                     {
