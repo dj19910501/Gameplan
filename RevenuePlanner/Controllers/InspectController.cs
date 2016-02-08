@@ -4332,7 +4332,10 @@ namespace RevenuePlanner.Controllers
                                     totalLineitemCost = objtotalLineitemCost.Sum(l => l.Cost);
                                 if (totalLineitemCost > form.Cost)
                                 {
-                                    form.Cost = totalLineitemCost;
+                                    // Added by Viral Kadiya for Pl ticket #1970.
+                                    string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                                    return Json(new { IsError = true, errormsg = strReduceTacticPlannedCostMessage });
+                                    //form.Cost = totalLineitemCost;
                                 }
                                 //Added By komal Rawal for #1249
                                 if (form.Cost > pcpobj.Cost)

@@ -1038,4 +1038,10 @@
 		<value>{0} with same title exist in the linked plan.</value>
 	</Field>
 	<!--End Added by Viral Kadiya for PL ticket #1849-->
+  <!--start Added by Viral Kadiya for PL ticket #1970-->
+  <Field>
+    <Name>TacticPlanedCostReduce</Name>
+    <value>{0} planned cost can not be less than the sum of line items. Please change the cost of line items.</value>
+  </Field>
+  <!--End Added by Viral Kadiya for PL ticket #1970-->
 </Messages>

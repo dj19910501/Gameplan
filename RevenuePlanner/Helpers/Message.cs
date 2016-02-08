@@ -2627,6 +2627,21 @@ namespace RevenuePlanner.Helpers
                 _LinkedPlanEntityDuplicated = value;
             }
         }
+        ////Start - Added by Viral Kadiya for PL ticket #1970
+        private string _TacticPlanedCostReduce;
+        public string TacticPlanedCostReduce
+        {
+            get
+            {
+                return _TacticPlanedCostReduce;
+            }
+            set
+            {
+                _TacticPlanedCostReduce = value;
+            }
+        }
+        
+        ////End - Added by Viral Kadiya for PL ticket #1970
         #endregion
 
         #region  Functions
@@ -3466,6 +3481,11 @@ namespace RevenuePlanner.Helpers
                                         case "ExtendedProgram":
                                             _ExtendedProgram = strMsgValue;
                                             break;
+                                        ////Start - Added by Viral Kadiya for PL ticket #1970
+                                        case "TacticPlanedCostReduce":
+                                            _TacticPlanedCostReduce = strMsgValue;
+                                            break;
+                                        ////End - Added by Viral Kadiya for PL ticket #1970
                                     }
                                 }
                                 i = i + 1;

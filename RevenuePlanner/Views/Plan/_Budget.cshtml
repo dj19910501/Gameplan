@@ -21,6 +21,10 @@
     bool isPlannedTab = ((int)Enums.BudgetTab.Planned).ToString() == strTab ? true : false;
     string columnBorderClass = isPlannedTab ? string.Empty : "columnBorder";
 }
+<div id="errorMessageInspectPopup" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <div id="cErrorInspectPopup"></div>
+</div>
 <div class="tab-content all-height cf">
     <div class="tab-pane active all-height" id="panel-656352">
         <div id="paln-populated-collaborators-panel-wrapper" class="pl20 cf">
@@ -136,6 +140,7 @@
         </div>
     </div>
                     </div>
+
 <script type="text/javascript">
     var heights = $('.column1').find('div').map(function () {
         var intWidth = 0;
@@ -507,6 +512,7 @@ $("[linktype=lineitem]").click(function (e) {
             horizontalScroll: true,
             advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
         });
+        $('#errorMessageDuplicatePlan').slideUp(400);
     });
 
 
@@ -575,6 +581,7 @@ $("[linktype=lineitem]").click(function (e) {
             dataType: "json",
             data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter,
             success: function (data) {
+                //debugger;
                 if (data.isSuccess == true) {
                     section = section.toLowerCase();
                     $("#hdnBudgetingIsSave").val("true");
@@ -590,7 +597,10 @@ $("[linktype=lineitem]").click(function (e) {
                     // updatePopupDetails(data, entityId, section, month);
                 }
                 else {
-                    alert('Error');
+                    $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
+                    //$("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+                    $('#errorMessageDuplicatePlan').slideDown(700);
+                    
                 }
             }
         });

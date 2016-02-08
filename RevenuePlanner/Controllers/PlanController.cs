@@ -5265,7 +5265,10 @@ namespace RevenuePlanner.Controllers
                                     var costlineitemperiod = lineitemcostlist.Where(pcptlc => pcptlc.Period == period).Sum(pcptlc => pcptlc.Value);
                                     if (monthlycost < costlineitemperiod)
                                     {
-                                        monthlycost = costlineitemperiod;
+                                        // Added by Viral Kadiya for Pl ticket #1970.
+                                        string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                                        return Json(new { isSuccess = false, errormsg = strReduceTacticPlannedCostMessage });
+                                        //monthlycost = costlineitemperiod;
                                     }
                                 }
                                 double tacticost = 0;
@@ -5296,7 +5299,10 @@ namespace RevenuePlanner.Controllers
                                 }
                                 if (totalLineitemCost > yearlycost)
                                 {
-                                    yearlycost = totalLineitemCost;
+                                    // Added by Viral Kadiya for Pl ticket #1970.
+                                    string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                                    return Json(new { isSuccess = false, errormsg = strReduceTacticPlannedCostMessage });
+                                   // yearlycost = totalLineitemCost;
                                 }
 
                                 if (tacticost > yearlycost)
@@ -5426,7 +5432,10 @@ namespace RevenuePlanner.Controllers
                                     var costlineitemperiod = lineitemcostlist.Where(pcptc => pcptc.Period == (PeriodChar + (QuarterCnt)) || pcptc.Period == (PeriodChar + (QuarterCnt + 1)) || pcptc.Period == (PeriodChar + (QuarterCnt + 2))).Sum(pcptlc => pcptlc.Value);
                                     if (monthlycost < costlineitemperiod)
                                     {
-                                        monthlycost = costlineitemperiod;
+                                        // Added by Viral Kadiya for Pl ticket #1970.
+                                        string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                                        return Json(new { isSuccess = false, errormsg = strReduceTacticPlannedCostMessage });
+                                        //monthlycost = costlineitemperiod;
                                     }
                                 }
 
@@ -5523,7 +5532,10 @@ namespace RevenuePlanner.Controllers
                                 }
                                 if (totalLineitemCost > yearlycost)
                                 {
-                                    yearlycost = totalLineitemCost;
+                                    // Added by Viral Kadiya for Pl ticket #1970.
+                                    string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                                    return Json(new { isSuccess = false, errormsg = strReduceTacticPlannedCostMessage });
+                                    //yearlycost = totalLineitemCost;
                                 }
 
                                 if (tacticost > yearlycost)
@@ -10522,7 +10534,7 @@ namespace RevenuePlanner.Controllers
             int oldCampaignId = 0;
             UpdateColumn = UpdateColumn.Trim();
             int yearDiff = 0, perdNum = 12, cntr = 0;
-            bool isMultiYearlinkedTactic = false;
+            bool isMultiYearlinkedTactic = false, IsError = false ;
             List<string> lstLinkedPeriods = new List<string>();
             try
             {
@@ -10730,7 +10742,10 @@ namespace RevenuePlanner.Controllers
                             totalLineitemCost = objtotalLineitemCost.Sum(l => l.Cost);
                         if (totalLineitemCost > Convert.ToDouble(UpdateVal))
                         {
-                            UpdateVal = totalLineitemCost.ToString();
+                            // Added by Viral Kadiya for Pl ticket #1970.
+                            string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                            return Json(new { IsError = true, errormsg = strReduceTacticPlannedCostMessage });
+                            //UpdateVal = totalLineitemCost.ToString();
                         }
                         if (Convert.ToDouble(UpdateVal) > pcpobj.Cost)
                         {

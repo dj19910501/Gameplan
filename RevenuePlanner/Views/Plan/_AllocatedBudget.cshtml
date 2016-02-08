@@ -114,6 +114,7 @@
     }).get();
 
     $(document).ready(function () {
+        $('#errorMessageDuplicatePlan').slideUp(400);
         //The object CurrentTab is initiate in parent of this view
         var TacCustomTitle = "@Common.TacticCustomTitle";
         if (currentTab == "aPlanned" && $('#ddlViewBy').val().indexOf(TacCustomTitle) < 0) {
