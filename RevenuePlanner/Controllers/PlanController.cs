@@ -8847,15 +8847,15 @@ namespace RevenuePlanner.Controllers
                  var LastSetOfViews = Common.PlanUserSavedViews;
                  var Label = Enums.FilterLabel.Plan.ToString();
                  var SetOfPlanSelected = LastSetOfViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
-                 var SavedPlanIds = SetOfPlanSelected.Select(view => view.FilterValues).FirstOrDefault();
-                 if (SavedPlanIds != null && SavedPlanIds != "")
+                 var SavedPlanIds = SetOfPlanSelected.Select(view => view.FilterValues).ToList();
+                 if (SavedPlanIds != null && SavedPlanIds.Count > 0)
                  {
-                  //   var FinalSavedPlanIds = SavedPlanIds.Split(',').ToList();
-                     ViewBag.IsLastSavedPlan = SavedPlanIds;
+                     ViewBag.LastSavedPlanIDs = String.Join(",", SavedPlanIds);
                  }
                  else
                  {
-                     ViewBag.IsLastSavedPlan = null;
+
+                     ViewBag.LastSavedPlanIDs = null;
                  }
                 //List<string> tacticStatus = Common.GetStatusListAfterApproved();
                 //// Tthis is inititalized as 0 bcoz to get the status for tactics.
