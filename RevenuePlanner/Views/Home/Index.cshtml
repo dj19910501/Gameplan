@@ -28,7 +28,8 @@
     var ListBudgetingPlan = Model.objplanhomemodelheader != null ? Model.objplanhomemodelheader.plans : new List<SelectListItem>(); //Added By Komal Rawal for new homepage UI
     var IsGridView = (bool)ViewBag.GridView;
     var IsPlanSelector = (bool)ViewBag.IsPlanSelector;
-
+    var IsSavedPlan = (string)ViewBag.LastSavedPlanIDs;
+    var PreviousPlanID = (int)ViewBag.PreviousPlanID;
     //Added by Ravindra for  PL Ticket #1411 date 07/07/2015
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
@@ -54,6 +55,7 @@
 @Html.Hidden("IsGridView", IsGridView)
 @Html.Hidden("IsPlanSelector", IsPlanSelector)
 @Html.Hidden("FilterName", FilterName)
+@Html.Hidden("IsSavedPlan", IsSavedPlan)
 @Html.Hidden("IsTacticActualsAddEditAuthorized", IsTacticActualsAddEditAuthorized)
 
 
@@ -107,399 +109,412 @@
 
 @section Sidebar{
     <script type="text/javascript">
-        var GetLastview = true;
-        var pageIsScroll = false;
-        var state0 = 0;
-        //Added By komal rawal for #1283
-        //  var isTacticExist = false;
-        function LoadTacticTypelist(data) {
+    var GetLastview = true;
+    var pageIsScroll = false;
+    var state0 = 0;
+    //Added By komal rawal for #1283
+    //  var isTacticExist = false;
+    function LoadTacticTypelist(data) {
 
-            if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
-                TactictypeCount = data.TacticTypelist.length;
-                if (TactictypeCount > 0) {
-                    $("#TacticTypeAllModule").css("display", "block");
-                    $("#NoTTFound").hide();
-                    $('#ulTacticType li').remove();
-                    $.each(data.TacticTypelist, function (i, TactictypeItem) {
-                        //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
-                        var checked = "";
-                        var checkedclass = "";
-                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
-                    });
-                }
-                else {
-                    $("#TacticTypeAllModule").css("display", "none");
-                    $("#NoTTFound").show();
-                }
-            }
-
-        }
-
-        function GetTacticTypelist(Planids, async) {
-          
-            var asyncval = false;
-            if (async != undefined && async != 'undefined' && async != '' && async != null) {
-                asyncval = async;
-            }
-
-            $('#ulTacticType').html('');
-
-            filters.TacticTypeids = [];
-
-            $.ajax({
-                beforeSend: function (x) {
-                    if (!asyncval) {
-                        myApp.showPleaseWait();
-                    }
-                },
-                type: "GET",
-                cache: false,
-                async: asyncval,
-                url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
-                data: {
-                    PlanId: Planids.toString()
-                },
-                dataType: "json",
-                success: function (data) {
-
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                    }
-                    else {
-                        if (data.isSuccess == true) {
-                            LoadTacticTypelist(data);
-                        }
-                        else {
-                            $("#TacticTypeAllModule").css("display", "none");
-                            $("#NoTTFound").show();
-                        }
-                        //if (GetLastview == true) {
-                        //    LastSetofTT();
-                        //}
-
-                        async = true;
-
-                    }
-                }
-            });
-
-        }
-
-        //  var TacticDeselectAll = false;
-        function BulkTTOperation(selection) {
-            GetLastview = false;
-            filters.TacticTypeids = [];
-            if (selection) {
-                $("#ulTacticType li").each(function (i) {
-                    $(this).addClass("close-list");
-                    var chkid = $(this).find("input[type=checkbox]").attr("id");
-                    $("#" + chkid).attr("checked", "checked");
-                    filters.TacticTypeids.push(chkid.replace("CbTT", ""));
-
+        if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
+            TactictypeCount = data.TacticTypelist.length;
+            if (TactictypeCount > 0) {
+                $("#TacticTypeAllModule").css("display", "block");
+                $("#NoTTFound").hide();
+                $('#ulTacticType li').remove();
+                $.each(data.TacticTypelist, function (i, TactictypeItem) {
+                    //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
+                    var checked = "";
+                    var checkedclass = "";
+                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                 });
             }
             else {
-                //    TacticDeselectAll = true;
-                $("#ulTacticType li").each(function (i) {
-                    $(this).removeClass("close-list");
-                    var chkid = $(this).find("input[type=checkbox]").attr("id");
-                    $("#" + chkid).removeAttr("checked");
-                });
+                $("#TacticTypeAllModule").css("display", "none");
+                $("#NoTTFound").show();
             }
-
         }
 
-        function toggleTacticType(obj) {
-            GetLastview = false;
-            var id = $(obj).attr('id').toString().replace("CbTT", "");
-            if ($(obj).is(':checked')) {
-                $("#liTT" + id).addClass("close-list");
-            }
-            else {
-                $("#liTT" + id).removeClass("close-list");
-            }
+    }
 
-            filters.TacticTypeids = [];
-            $("#ulTacticType li input[type=checkbox]").each(function () {
-                var chkid = $(this).attr("id");
-                if ($(this).is(':checked')) {
-                    filters.TacticTypeids.push(chkid.replace("CbTT", ""));
-                }
-            });
+    function GetTacticTypelist(Planids, async) {
+
+        var asyncval = false;
+        if (async != undefined && async != 'undefined' && async != '' && async != null) {
+            asyncval = async;
         }
 
-        //End
-        // Edited to add PlanYear option.
-        var Currenttime = "thisquarter";
-        $(document).ready(function () {
-            var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
-            //  $("#nl-form2").hide();
-            //Added by Nirav for Custom Dropdown - 388
+        $('#ulTacticType').html('');
 
-            var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
-            var years = "";
-            $.each(listCheckbox, function () {
-                if ($(this).attr("checked")) {
-                    years += $(this).attr('yearValue') + ",";
+        filters.TacticTypeids = [];
+
+        $.ajax({
+            beforeSend: function (x) {
+                if (!asyncval) {
+                    myApp.showPleaseWait();
                 }
-            });
-            years = years.slice(0, -1);
+            },
+            type: "GET",
+            cache: false,
+            async: asyncval,
+            url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
+            data: {
+                PlanId: Planids.toString()
+            },
+            dataType: "json",
+            success: function (data) {
 
-            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&fltrYears=' + years, function (response, status, xhr) {
-                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                    //// Call function to redirect on service unavailibility.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
-            });//activeMenu parameter added
+                else {
+                    if (data.isSuccess == true) {
+                        LoadTacticTypelist(data);
+                    }
+                    else {
+                        $("#TacticTypeAllModule").css("display", "none");
+                        $("#NoTTFound").show();
+                    }
+                    //if (GetLastview == true) {
+                    //    LastSetofTT();
+                    //}
 
-            switch ($('#ActiveMenu').val().toLowerCase()) {
-                case 'home':
-                    $("#DivButtonsHome").show();
-                    $("#DivButtonsPlanSummary").hide();
+                    async = true;
+
+                }
+            }
+        });
+
+    }
+
+    //  var TacticDeselectAll = false;
+    function BulkTTOperation(selection) {
+        GetLastview = false;
+        filters.TacticTypeids = [];
+        if (selection) {
+            $("#ulTacticType li").each(function (i) {
+                $(this).addClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).attr("checked", "checked");
+                filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+
+            });
+        }
+        else {
+            //    TacticDeselectAll = true;
+            $("#ulTacticType li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+        }
+
+    }
+
+    function toggleTacticType(obj) {
+        GetLastview = false;
+        var id = $(obj).attr('id').toString().replace("CbTT", "");
+        if ($(obj).is(':checked')) {
+            $("#liTT" + id).addClass("close-list");
+        }
+        else {
+            $("#liTT" + id).removeClass("close-list");
+        }
+
+        filters.TacticTypeids = [];
+        $("#ulTacticType li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+            }
+        });
+    }
+
+    //End
+    // Edited to add PlanYear option.
+    var Currenttime = "thisquarter";
+
+    $(document).ready(function () {
+        var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
+        //  $("#nl-form2").hide();
+        //Added by Nirav for Custom Dropdown - 388
+
+        var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+        var years = "";
+        $.each(listCheckbox, function () {
+            if ($(this).attr("checked")) {
+                years += $(this).attr('yearValue') + ",";
+            }
+        });
+        years = years.slice(0, -1);
+
+        $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&fltrYears=' + years, function (response, status, xhr) {
+            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });//activeMenu parameter added
+
+        switch ($('#ActiveMenu').val().toLowerCase()) {
+            case 'home':
+                $("#DivButtonsHome").show();
+                $("#DivButtonsPlanSummary").hide();
+                break;
+            case 'plan':
+                $("#DivButtonsHome").hide();
+                $("#DivButtonsPlanSummary").show();
+                break;
+        }
+        $("#modalMainContainer").hide();
+
+        //   if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
+        //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+        $('.toggleStatus').click(function () {
+            $(this).hide();
+            $('.toggle-status div').show();
+            showTacticStatus = true;
+            RefreshCurrentTab();
+            gantt.refreshData();
+        });
+
+        $('.toggleStatusHide').click(function () {
+            $('.toggleStatus').show();
+            $('.toggle-status div').hide();
+            showTacticStatus = false;
+            RefreshCurrentTab();
+            gantt.refreshData();
+        });
+        //// End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+
+        $('.gantt-padding').removeClass('padding-top0');
+        $('#DivloadPlan').removeClass('no-bottom-border');
+        // }
+        // else {
+        //      $('.gantt-padding').addClass('padding-top0');
+        //     $('#DivloadPlan').addClass('no-bottom-border');
+        // }
+
+
+        // #1780
+        // Created funtion to Select or Clear Plan/Campaign/Program/Tactic
+        // Added By Ashish Mistry On 27-11-2015
+
+        $(document).on("click", ".honeycombbox-icon-gantt", function (e) {
+            CloseClick = false;
+            var entityType = $(this).attr('id').toUpperCase().toString();
+            var task_id = $(this).attr('name1');
+            //gantt.open(task_id);
+            switch (entityType) {
+                case 'PLAN':
+                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                        $(this).removeClass("honeycombbox-icon-gantt-Active");
+                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                        if (index >= 0) {
+                            ExportSelectedIds.TaskID.splice(index, 1);
+                            ExportSelectedIds.Title.splice(index, 1);
+                            ExportSelectedIds.OwnerName.splice(index, 1);
+                            ExportSelectedIds.TacticType.splice(index, 1);
+                            ExportSelectedIds.ColorCode.splice(index, 1);
+                            ExportSelectedIds.PlanFlag.splice(index, 1);
+                        }
+                        //var innertask = gantt.getChildren(task_id);
+                        //gantt.eachTask(function (task) {
+
+                        //    var tId = task.id;
+
+                        //    var index = innertask.indexOf(tId);
+                        //    if (index >= 0 || tId == task_id) {
+                        //        task.$open = true;
+                        //    }
+                        //});
+                        // gantt.render();
+                    }
+                    else {
+                        $(this).addClass("honeycombbox-icon-gantt-Active");
+                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                        ExportSelectedIds.PlanFlag.push('Calender');
+
+                        //var innertask = gantt.getChildren(task_id);
+                        //gantt.eachTask(function (task) {
+
+                        //    var tId = task.id;
+
+                        //    var index = innertask.indexOf(tId);
+                        //    if (index >= 0 || tId == task_id) {
+                        //        task.$open = true;
+                        //    }
+                        //});
+                        // gantt.render();
+                    }
                     break;
-                case 'plan':
-                    $("#DivButtonsHome").hide();
-                    $("#DivButtonsPlanSummary").show();
+                case 'CAMPAIGN':
+                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                        //var innertask = gantt.getChildren($(this).attr('name1'));
+                        //gantt.eachTask(function (task) {
+                        //    var tId = task.id;
+
+                        //    var index = innertask.indexOf(tId);
+                        //    if (index >= 0 || tId == task_id) {
+                        //        task.$open = true;
+                        //    }
+                        //});
+                        // gantt.render();
+                        $(this).removeClass("honeycombbox-icon-gantt-Active");
+                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                        if (index >= 0) {
+                            ExportSelectedIds.TaskID.splice(index, 1);
+                            ExportSelectedIds.Title.splice(index, 1);
+                            ExportSelectedIds.OwnerName.splice(index, 1);
+                            ExportSelectedIds.TacticType.splice(index, 1);
+                            ExportSelectedIds.ColorCode.splice(index, 1);
+                            ExportSelectedIds.PlanFlag.splice(index, 1);
+                        }
+
+                    }
+                    else {
+                        $(this).addClass("honeycombbox-icon-gantt-Active");
+                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                        ExportSelectedIds.PlanFlag.push('Calender');
+                        //var innertask = gantt.getChildren($(this).attr('name1'));
+                        //gantt.eachTask(function (task) {
+                        //    var tId = task.id;
+
+                        //    var index = innertask.indexOf(tId);
+                        //    if (index >= 0 || tId == task_id) {
+
+                        //        task.$open = true;
+                        //    }
+                        //});
+                        //  gantt.render();
+                    }
+                    break;
+                case 'PROGRAM':
+                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                        //gantt.open($(this).attr('name1'));
+
+                        //gantt.render();
+                        $(this).removeClass("honeycombbox-icon-gantt-Active");
+                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                        if (index >= 0) {
+                            ExportSelectedIds.TaskID.splice(index, 1);
+                            ExportSelectedIds.Title.splice(index, 1);
+                            ExportSelectedIds.OwnerName.splice(index, 1);
+                            ExportSelectedIds.TacticType.splice(index, 1);
+                            ExportSelectedIds.ColorCode.splice(index, 1);
+                            ExportSelectedIds.PlanFlag.splice(index, 1);
+                        }
+                    }
+                    else {
+                        $(this).addClass("honeycombbox-icon-gantt-Active");
+                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                        ExportSelectedIds.PlanFlag.push('Calender');
+                        //gantt.open($(this).attr('name1'));
+                    }
+                    break;
+                case 'TACTIC':
+                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                        $(this).removeClass("honeycombbox-icon-gantt-Active");
+                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                        if (index >= 0) {
+                            ExportSelectedIds.TaskID.splice(index, 1);
+                            ExportSelectedIds.Title.splice(index, 1);
+                            ExportSelectedIds.OwnerName.splice(index, 1);
+                            ExportSelectedIds.TacticType.splice(index, 1);
+                            ExportSelectedIds.ColorCode.splice(index, 1);
+                            ExportSelectedIds.PlanFlag.splice(index, 1);
+                        }
+                        $(this).addClass("honeycombbox-icon-gantt");
+                    }
+                    else {
+                        $(this).addClass("honeycombbox-icon-gantt-Active");
+                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                        ExportSelectedIds.PlanFlag.push('Calender');
+                    }
                     break;
             }
-            $("#modalMainContainer").hide();
 
-            //   if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
-            //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
-            $('.toggleStatus').click(function () {
-                $(this).hide();
-                $('.toggle-status div').show();
-                showTacticStatus = true;
-                RefreshCurrentTab();
-                gantt.refreshData();
-            });
+            if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+                $(".honeycombbox").hide();
+            }
+            else {
 
-            $('.toggleStatusHide').click(function () {
-                $('.toggleStatus').show();
-                $('.toggle-status div').hide();
-                showTacticStatus = false;
-                RefreshCurrentTab();
-                gantt.refreshData();
-            });
-            //// End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
-
-            $('.gantt-padding').removeClass('padding-top0');
-            $('#DivloadPlan').removeClass('no-bottom-border');
-            // }
-            // else {
-            //      $('.gantt-padding').addClass('padding-top0');
-            //     $('#DivloadPlan').addClass('no-bottom-border');
-            // }
-
-
-            // #1780
-            // Created funtion to Select or Clear Plan/Campaign/Program/Tactic
-            // Added By Ashish Mistry On 27-11-2015
-
-            $(document).on("click", ".honeycombbox-icon-gantt", function (e) {
-                CloseClick = false;
-                var entityType = $(this).attr('id').toUpperCase().toString();
-                var task_id = $(this).attr('name1');
-                //gantt.open(task_id);
-                switch (entityType) {
-                    case 'PLAN':
-                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                            $(this).removeClass("honeycombbox-icon-gantt-Active");
-                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                            if (index >= 0) {
-                                ExportSelectedIds.TaskID.splice(index, 1);
-                                ExportSelectedIds.Title.splice(index, 1);
-                                ExportSelectedIds.OwnerName.splice(index, 1);
-                                ExportSelectedIds.TacticType.splice(index, 1);
-                                ExportSelectedIds.ColorCode.splice(index, 1);
-                                ExportSelectedIds.PlanFlag.splice(index, 1);
-                            }
-                            //var innertask = gantt.getChildren(task_id);
-                            //gantt.eachTask(function (task) {
-
-                            //    var tId = task.id;
-
-                            //    var index = innertask.indexOf(tId);
-                            //    if (index >= 0 || tId == task_id) {
-                            //        task.$open = true;
-                            //    }
-                            //});
-                            // gantt.render();
-                        }
-                        else {
-                            $(this).addClass("honeycombbox-icon-gantt-Active");
-                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                            ExportSelectedIds.PlanFlag.push('Calender');
-
-                            //var innertask = gantt.getChildren(task_id);
-                            //gantt.eachTask(function (task) {
-
-                            //    var tId = task.id;
-
-                            //    var index = innertask.indexOf(tId);
-                            //    if (index >= 0 || tId == task_id) {
-                            //        task.$open = true;
-                            //    }
-                            //});
-                            // gantt.render();
-                        }
-                        break;
-                    case 'CAMPAIGN':
-                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                            //var innertask = gantt.getChildren($(this).attr('name1'));
-                            //gantt.eachTask(function (task) {
-                            //    var tId = task.id;
-
-                            //    var index = innertask.indexOf(tId);
-                            //    if (index >= 0 || tId == task_id) {
-                            //        task.$open = true;
-                            //    }
-                            //});
-                            // gantt.render();
-                            $(this).removeClass("honeycombbox-icon-gantt-Active");
-                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                            if (index >= 0) {
-                                ExportSelectedIds.TaskID.splice(index, 1);
-                                ExportSelectedIds.Title.splice(index, 1);
-                                ExportSelectedIds.OwnerName.splice(index, 1);
-                                ExportSelectedIds.TacticType.splice(index, 1);
-                                ExportSelectedIds.ColorCode.splice(index, 1);
-                                ExportSelectedIds.PlanFlag.splice(index, 1);
-                            }
-
-                        }
-                        else {
-                            $(this).addClass("honeycombbox-icon-gantt-Active");
-                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                            ExportSelectedIds.PlanFlag.push('Calender');
-                            //var innertask = gantt.getChildren($(this).attr('name1'));
-                            //gantt.eachTask(function (task) {
-                            //    var tId = task.id;
-
-                            //    var index = innertask.indexOf(tId);
-                            //    if (index >= 0 || tId == task_id) {
-
-                            //        task.$open = true;
-                            //    }
-                            //});
-                            //  gantt.render();
-                        }
-                        break;
-                    case 'PROGRAM':
-                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                            //gantt.open($(this).attr('name1'));
-
-                            //gantt.render();
-                            $(this).removeClass("honeycombbox-icon-gantt-Active");
-                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                            if (index >= 0) {
-                                ExportSelectedIds.TaskID.splice(index, 1);
-                                ExportSelectedIds.Title.splice(index, 1);
-                                ExportSelectedIds.OwnerName.splice(index, 1);
-                                ExportSelectedIds.TacticType.splice(index, 1);
-                                ExportSelectedIds.ColorCode.splice(index, 1);
-                                ExportSelectedIds.PlanFlag.splice(index, 1);
-                            }
-                        }
-                        else {
-                            $(this).addClass("honeycombbox-icon-gantt-Active");
-                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                            ExportSelectedIds.PlanFlag.push('Calender');
-                            //gantt.open($(this).attr('name1'));
-                        }
-                        break;
-                    case 'TACTIC':
-                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                            $(this).removeClass("honeycombbox-icon-gantt-Active");
-                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                            if (index >= 0) {
-                                ExportSelectedIds.TaskID.splice(index, 1);
-                                ExportSelectedIds.Title.splice(index, 1);
-                                ExportSelectedIds.OwnerName.splice(index, 1);
-                                ExportSelectedIds.TacticType.splice(index, 1);
-                                ExportSelectedIds.ColorCode.splice(index, 1);
-                                ExportSelectedIds.PlanFlag.splice(index, 1);
-                            }
-                            $(this).addClass("honeycombbox-icon-gantt");
-                        }
-                        else {
-                            $(this).addClass("honeycombbox-icon-gantt-Active");
-                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                            ExportSelectedIds.PlanFlag.push('Calender');
-                        }
-                        break;
-                }
-
-                if ($('.honeycombbox-icon-gantt-Active').length == 0) {
-                    $(".honeycombbox").hide();
-                }
-                else {
-
-                    $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
-                    $(".honeycombbox").show();
-                }
-                //$("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
-            });
-
+                $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+                $(".honeycombbox").show();
+            }
+            //$("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
         });
+
+    });
 
     function onClickPlanTitle() {
 
+        var IsSavedPlan = $('#IsSavedPlan').val();
+        if (IsSavedPlan != null) {
+            IsSavedPlan = IsSavedPlan.split(',');
+        }
+
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
             CurrentPlanId = $(this).attr('value');
+            if ($('#IsSavedPlan').val() == "") {
+                $('#IsSavedPlan').val($("#CurrentPlanId").val());
+                IsSavedPlan = $('#IsSavedPlan').val();
+            }
             $("#CurrentPlanId").val(CurrentPlanId);
-
             SelectedPlanTitle = $(this).text();
-
             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                 //Added by Rahul Shah on 22/01/2016 for PL #1898
                 IsDropdownChange = true;
                 //Added by Rahul Shah for PL #1898
-                $('#divCustomFieldsFilter').find("li").each(function (i) {
-                    $(this).removeClass("close-list");
-                    var chkid = $(this).find("input[type=checkbox]").attr("id");
-                    $("#" + chkid).removeAttr("checked");
-                });
 
-                $("#accordion-Year li input:checkbox:checked").each(function () {
-                    $(this).removeAttr("checked");
-                    $(this).parent().removeClass("close-list");
-                });
+                if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
 
-                $('#ulSelectedOwner li input:checkbox:checked').each(function () {
-                    if ($(this).attr('id') != '@Sessions.User.UserId') {
+                    $('#divCustomFieldsFilter').find("li").each(function (i) {
+                        $(this).removeClass("close-list");
+                        var chkid = $(this).find("input[type=checkbox]").attr("id");
+                        $("#" + chkid).removeAttr("checked");
+                    });
+
+                    $("#accordion-Year li input:checkbox:checked").each(function () {
                         $(this).removeAttr("checked");
                         $(this).parent().removeClass("close-list");
-                    }
+                    });
 
-                });
+                    $('#ulSelectedOwner li input:checkbox:checked').each(function () {
+                        if ($(this).attr('id') != '@Sessions.User.UserId') {
+                            $(this).removeAttr("checked");
+                            $(this).parent().removeClass("close-list");
+                        }
 
-                $('#ulTacticType li input:checkbox:checked').each(function () {
-                    $(this).removeAttr("checked");
-                    $(this).parent().removeClass("close-list");
-                });
-                $('#ulStatus li input:checkbox:checked').each(function () {
-                    $(this).removeAttr("checked");
-                    $(this).parent().removeClass("close-list");
-                });
+                    });
+
+                    $('#ulTacticType li input:checkbox:checked').each(function () {
+                        $(this).removeAttr("checked");
+                        $(this).parent().removeClass("close-list");
+                    });
+                    $('#ulStatus li input:checkbox:checked').each(function () {
+                        $(this).removeAttr("checked");
+                        $(this).parent().removeClass("close-list");
+                    });
+                }
+
 
                 SaveLastSetofViews();
                 if (CurrentPlanId > 0) {
@@ -519,190 +534,197 @@
             }
 
         });
-        
+
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()' && $('#IsPlanSelector').val() == "true") {
+
             //Added by Rahul Shah for PL #1898
-            $('#divCustomFieldsFilter').find("li").each(function (i) {
-                $(this).removeClass("close-list");
-                var chkid = $(this).find("input[type=checkbox]").attr("id");
-                $("#" + chkid).removeAttr("checked");
-            });
+          
+            if ($('#IsSavedPlan').val() == "") {
+                IsSavedPlan = '@PreviousPlanID.ToString()';
+            }
+            if (IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) {
+                $('#divCustomFieldsFilter').find("li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).removeAttr("checked");
+                });
 
-            $("#accordion-Year li input:checkbox:checked").each(function () {
-                $(this).removeAttr("checked");
-                $(this).parent().removeClass("close-list");
-            });
-
-            $('#ulSelectedOwner li input:checkbox:checked').each(function () {
-                if ($(this).attr('id') != '@Sessions.User.UserId') {
+                $("#accordion-Year li input:checkbox:checked").each(function () {
                     $(this).removeAttr("checked");
                     $(this).parent().removeClass("close-list");
-                }
+                });
 
-            });
+                $('#ulSelectedOwner li input:checkbox:checked').each(function () {
+                    if ($(this).attr('id') != '@Sessions.User.UserId') {
+                        $(this).removeAttr("checked");
+                        $(this).parent().removeClass("close-list");
+                    }
 
-            $('#ulTacticType li input:checkbox:checked').each(function () {
-                $(this).removeAttr("checked");
-                $(this).parent().removeClass("close-list");
-            });
-            $('#ulStatus li input:checkbox:checked').each(function () {
-                $(this).removeAttr("checked");
-                $(this).parent().removeClass("close-list");
-            });
+                });
 
+
+                $('#ulTacticType li input:checkbox:checked').each(function () {
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                });
+                $('#ulStatus li input:checkbox:checked').each(function () {
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                });
+            }
             IsPlanChange = true;
             SaveLastSetofViews();
         }
 
     }
 
-        function GetOwnerListForFilter(Planids, async) {
-           
-            var asyncval = false;
-            if (async != undefined && async != 'undefined' && async != '' && async != null) {
-                asyncval = async;
+    function GetOwnerListForFilter(Planids, async) {
+
+        var asyncval = false;
+        if (async != undefined && async != 'undefined' && async != '' && async != null) {
+            asyncval = async;
+        }
+        else {
+            asyncval = false;
+        }
+        //Added by Rahul Shah on 06/01/2016 for PL #1854
+        var ids = [];
+        $('#ulSelectedOwner li').each(function () {
+            if ($(this).hasClass("close-list")) {
+                var id = $(this).attr('id').replace('liOwner', '')
+                ids.push(id);
             }
-            else {
-                asyncval = false;
-            }
-            //Added by Rahul Shah on 06/01/2016 for PL #1854
-            var ids = [];
-            $('#ulSelectedOwner li').each(function () {
-                if ($(this).hasClass("close-list")) {
-                    var id = $(this).attr('id').replace('liOwner', '')
-                    ids.push(id);
+
+        });
+
+        $('#ulSelectedOwner').html('');
+        filters.OwnerIds = [];
+
+        $.ajax({
+            beforeSend: function (x) {
+                if (!asyncval) {
+                    myApp.showPleaseWait();
                 }
-
-            });
-            
-            $('#ulSelectedOwner').html('');
-            filters.OwnerIds = [];
-
-            $.ajax({
-                beforeSend: function (x) {
-                    if (!asyncval) {
-                        myApp.showPleaseWait();
-                    }
-                },
-                type: "GET",
-                cache: false,
-                async: asyncval,
-                url: '@Url.Action("GetOwnerListForFilter", "Home")',
-                data: {
-                    PlanId: Planids.toString(),
-                    ViewBy: type,
-                    ActiveMenu: $('#ActiveMenu').val()
-                },
-                dataType: "json",
-                success: function (data) {
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                    }
-                    else {
-                        if (data.isSuccess == true) {
-                            if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
-                                OwnerCount = data.AllowedOwner.length;
-                                if (OwnerCount > 0) {
-                                    var IsOwnerPresent = false;
-                                    var checked = "";
-                                    var checkedclass = "";
-                                    $("#ulOwnerAllModule").css("display", "block");
-                                    $("#NoOwnerFound").hide();
-                                    $('#ulSelectedOwner li').remove();
-                                    $.each(data.AllowedOwner, function (i, OwnerItem) {
-                                        var LoggedInOwner = data.LoggedInUser.OwnerId;
-                                        //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
-                                        checked = "";
-                                        checkedclass = "";
-                                        if (OwnerItem.OwnerId == LoggedInOwner) {
-                                            IsOwnerPresent = true;
-                                            checked = "checked"
-                                            checkedclass = "close-list"
-                                        }
-
-                                        //Added by Rahul Shah on 06/01/2016 for PL #1854
-                                        if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
-                                            checked = "checked"
-                                            checkedclass = "close-list"
-                                        }
-
-
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
-                                        // filters.OwnerIds.push(OwnerItem.OwnerId);
-                                    });
-                                    //Modified by Nishant to bring the owner name in the list even if they dont own any tactic
-                                    if (IsOwnerPresent == false) {
-                                        // Modified By Nishant Sheth
-                                        // Desc:: To resolve the #1790 observation
+            },
+            type: "GET",
+            cache: false,
+            async: asyncval,
+            url: '@Url.Action("GetOwnerListForFilter", "Home")',
+            data: {
+                PlanId: Planids.toString(),
+                ViewBy: type,
+                ActiveMenu: $('#ActiveMenu').val()
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
+                else {
+                    if (data.isSuccess == true) {
+                        if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
+                            OwnerCount = data.AllowedOwner.length;
+                            if (OwnerCount > 0) {
+                                var IsOwnerPresent = false;
+                                var checked = "";
+                                var checkedclass = "";
+                                $("#ulOwnerAllModule").css("display", "block");
+                                $("#NoOwnerFound").hide();
+                                $('#ulSelectedOwner li').remove();
+                                $.each(data.AllowedOwner, function (i, OwnerItem) {
+                                    var LoggedInOwner = data.LoggedInUser.OwnerId;
+                                    //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
+                                    checked = "";
+                                    checkedclass = "";
+                                    if (OwnerItem.OwnerId == LoggedInOwner) {
+                                        IsOwnerPresent = true;
                                         checked = "checked"
                                         checkedclass = "close-list"
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                     }
 
+                                    //Added by Rahul Shah on 06/01/2016 for PL #1854
+                                    if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
+                                        checked = "checked"
+                                        checkedclass = "close-list"
+                                    }
+
+
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
+                                    // filters.OwnerIds.push(OwnerItem.OwnerId);
+                                });
+                                //Modified by Nishant to bring the owner name in the list even if they dont own any tactic
+                                if (IsOwnerPresent == false) {
+                                    // Modified By Nishant Sheth
+                                    // Desc:: To resolve the #1790 observation
+                                    checked = "checked"
+                                    checkedclass = "close-list"
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                 }
-                                else {
-                                    $("#ulOwnerAllModule").css("display", "none");
-                                    $("#NoOwnerFound").show();
-                                }
+
                             }
                             else {
                                 $("#ulOwnerAllModule").css("display", "none");
                                 $("#NoOwnerFound").show();
                             }
-
-
                         }
-                        //if (GetLastview == true)
-                        //{
-                        //    LastSetofowners();
-                        //}
+                        else {
+                            $("#ulOwnerAllModule").css("display", "none");
+                            $("#NoOwnerFound").show();
+                        }
 
 
                     }
-                    async = true;
+                    //if (GetLastview == true)
+                    //{
+                    //    LastSetofowners();
+                    //}
 
+
+                }
+                async = true;
+
+            }
+        });
+    }
+
+    function populateNFActivity(items, id) {
+        var $dropdown = $("#" + id);
+        var $html = '';
+        if (items.length > 0) {
+            $.each(items, function (index, time) {
+
+                if (time.Selected) {
+                    $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
+                    Currenttime = time.Value;
+                } else {
+                    $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
                 }
             });
         }
+        $dropdown.append($html);
+    }
 
-        function populateNFActivity(items, id) {
-            var $dropdown = $("#" + id);
-            var $html = '';
-            if (items.length > 0) {
-                $.each(items, function (index, time) {
-
-                    if (time.Selected) {
-                        $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
-                        Currenttime = time.Value;
-                    } else {
-                        $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
-                    }
-                });
-            }
-            $dropdown.append($html);
+    function populateNF(items, id) {
+        var $dropdown = $("#" + id);
+        var $html = '';
+        if (items.length > 0) {
+            $.each(items, function (index, plan) {
+                if (plan.Selected) {
+                    SelectedPlanTitle = plan.Text;
+                    $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
+                    CurrentPlanId = plan.Value;
+                    $("#CurrentPlanId").val(CurrentPlanId);
+                } else {
+                    $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
+                }
+            });
+        } else {
+            $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
+            CurrentPlanId = 0;
+            $("#CurrentPlanId").val(CurrentPlanId);
         }
-
-        function populateNF(items, id) {
-            var $dropdown = $("#" + id);
-            var $html = '';
-            if (items.length > 0) {
-                $.each(items, function (index, plan) {
-                    if (plan.Selected) {
-                        SelectedPlanTitle = plan.Text;
-                        $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
-                        CurrentPlanId = plan.Value;
-                        $("#CurrentPlanId").val(CurrentPlanId);
-                    } else {
-                        $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
-                    }
-                });
-            } else {
-                $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
-                CurrentPlanId = 0;
-                $("#CurrentPlanId").val(CurrentPlanId);
-            }
-            $dropdown.append($html);
-        }
+        $dropdown.append($html);
+    }
 
 
     </script>
@@ -1791,7 +1813,7 @@
 
         }
 
-
+     
         $("#ulStatus li input[type=checkbox]").each(function () {
             var chkid = $(this).attr("id");
             if ($(this).is(':checked')) {

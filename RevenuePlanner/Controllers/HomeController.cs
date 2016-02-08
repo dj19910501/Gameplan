@@ -53,7 +53,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planProgramId">planProgramId used for notification email shared link</param>
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId = 0, bool IsPlanSelector = false)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0)
         {
             //// To get permission status for Plan create, By dharmraj PL #519
             ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
@@ -66,6 +66,8 @@ namespace RevenuePlanner.Controllers
             bool isPublished = false;
             //Added by Rahul Shah on 22/01/2016 for PL #1898
             ViewBag.IsPlanSelector = IsPlanSelector;
+
+            ViewBag.PreviousPlanID = PreviousPlanID;
 
 
             //// Set viewbag for notification email shared link inspect popup
@@ -262,19 +264,20 @@ namespace RevenuePlanner.Controllers
                 isPublished = currentPlan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString()); //Added by Dashrath Prajapati-PL #1758 Publish Plan: Unable to Publish Draft Plan 
                 ViewBag.IsPublished = isPublished;
             }
-
+            var Label = Enums.FilterLabel.Plan.ToString();
+            var SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
             if (Enums.ActiveMenu.Home.Equals(activeMenu))
             {
                 //// Get list of Active(published) plans for all above models
                 //Modified for #1750 by Komal Rawal
                 var LastSetOfPlanSelected = new List<string>();
                 var LastSetOfYearSelected = new List<string>();
-                var Label = Enums.FilterLabel.Plan.ToString();
                 var Yearlabel = Enums.FilterLabel.Year.ToString();
                 var FilterName = Sessions.FilterPresetName;
-                var SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+               // var SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
                 Common.PlanUserSavedViews = SetOFLastViews; // Add by Nishant Sheth #1915
-                var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
+            //    var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
                 var SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.UserId).ToList();
                 var FinalSetOfPlanSelected = "";
                 var FinalSetOfYearsSelected = "";
@@ -411,7 +414,18 @@ namespace RevenuePlanner.Controllers
 
                     Sessions.PlanId = planmodel.PlanId;
                     GetCustomAttributesIndex(ref planmodel);
-
+                    var SavedPlanIds = SetOfPlanSelected.Select(view => view.FilterValues).FirstOrDefault();
+                    if(SavedPlanIds != null && SavedPlanIds != "")
+                    {
+                       ViewBag.LastSavedPlanIDs = SavedPlanIds;
+                    }
+                    else
+                    {
+                       
+                        ViewBag.LastSavedPlanIDs = null;
+                    }
+                   
+                   
 
                     //// Select Tactics of selected plans
                     //    var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && planmodel.PlanId == campaign.PlanId).Select(campaign => campaign.PlanCampaignId).ToList();

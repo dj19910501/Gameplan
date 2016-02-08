@@ -82,9 +82,11 @@
 
 
 <script type="text/javascript">
+   
     var isError = false;
     var errormsg = '@errorMsg';
     var successmsg = '@successmsg';
+    var PreviousPlanId = '@Sessions.PlanId';
     $(document).ready(function () {
         /*Added by Mitesh Vaishnav on 16/07/2014 for functional review point 64   */
         if ('@TempData["IsNoModel"]' == 'True') {
@@ -152,6 +154,7 @@
 
         // Function to redirect to the Plan Assortment screen based on plan selection
         $('#table_baseline').on('click', 'tbody tr', function (e) {
+
             var PlanId = $(this).attr("id");
             if (PlanId != null) {
                 var queryStringArr = [];
@@ -173,7 +176,11 @@
                      key: 'IsPlanSelector',
                      Value: "true"
                  });
-
+                queryStringArr.push(
+               {
+                   key: 'PreviousPlanID',
+                   Value: PreviousPlanId
+               });
 
                 formSubmitEvent('@Url.Content("~/Home/Index")', queryStringArr);
             }

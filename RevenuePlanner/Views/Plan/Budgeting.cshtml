@@ -593,7 +593,9 @@ function populateNF(items, id) {
     }
     $dropdown.append($html);
 }
+
 function onClickPlanTitle() {
+   
     $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
         CurrentPlanId = $(this).attr('value');
         ShowChangeLog(CurrentPlanId);
@@ -613,7 +615,7 @@ function onClickPlanTitle() {
 
 function BackToPlan() {
     var pid = $("#CurrentPlanId").val();
-    var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid;
+    var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&IsPlanSelector=' + "true" + '&PreviousPlanID=' + '@Sessions.PlanId';
         window.location.href = url;
     }
 

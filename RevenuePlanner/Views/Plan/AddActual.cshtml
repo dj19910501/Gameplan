@@ -9,9 +9,12 @@
     var IsQuarter = ViewBag.IsQuarter;
     string FilterName = Sessions.FilterPresetName;
     var PageTitle = "Add Actuals";
+    var IsSavedPlan = (string)ViewBag.IsLastSavedPlan;
 }
 @Html.Hidden("PageTitle", PageTitle)
 @Html.Hidden("FilterName", FilterName)
+@Html.Hidden("IsSavedPlan", IsSavedPlan)
+
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
@@ -625,11 +628,16 @@
                 }
             }
         });
+     
         if (filters.SelectedPlans.length == 1) {
             CurrentPlanId = filters.SelectedPlans[0].toString();
             $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
-
         }
+        
+        //if (filters.SelectedPlans.length == 0) {
+        //    filters.SelectedPlans.push($("#CurrentPlanId").val());
+        //}
+     
         //if (TacticDeselectAll) {
         //    filters.TacticTypeids.push(0);
         //}
@@ -711,43 +719,56 @@
     }
 
     function onClickPlanTitle() {
+        var IsSavedPlan = $('#IsSavedPlan').val();
+        if (IsSavedPlan != null) {
+            IsSavedPlan = IsSavedPlan.split(',');
+        }
+        if ($('#IsSavedPlan').val() == "") {
+            $('#IsSavedPlan').val($("#CurrentPlanId").val());
+            IsSavedPlan = $('#IsSavedPlan').val();
+
+        }
              //Added by Rahul Shah for PL #1898
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            $('#divCustomFieldsFilter').find("li").each(function (i) {
-                $(this).removeClass("close-list");
-                var chkid = $(this).find("input[type=checkbox]").attr("id");
-                $("#" + chkid).removeAttr("checked");
-            });
-
-            $("#accordion-Year li input:checkbox:checked").each(function () {
-                $(this).removeAttr("checked");
-                $(this).parent().removeClass("close-list");
-            });
-
-            $('#ulSelectedOwner li input:checkbox').each(function () {
-                 if ($(this).attr('id') != '@Sessions.User.UserId') {
-                 
-                   $(this).removeAttr("checked");
-                    $(this).parent().removeClass("close-list");
-                }
-                else {
-                    
-                    $(this).attr('checked', 'checked')
-                    $(this).parent().addClass("close-list");
-
-                }
-
-            });
-
-            $('#ulTacticType li input:checkbox:checked').each(function () {
-                $(this).removeAttr("checked");
-                $(this).parent().removeClass("close-list");
-            });
-            $('#ulStatus li input:checkbox:checked').each(function () {
-                $(this).removeAttr("checked");
-                $(this).parent().removeClass("close-list");
-            });
             CurrentPlanId = $(this).attr('value');
+           
+            if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) && $('#IsSavedPlan').val() != "") {
+                $('#divCustomFieldsFilter').find("li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).removeAttr("checked");
+                });
+
+                $("#accordion-Year li input:checkbox:checked").each(function () {
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                });
+
+                $('#ulSelectedOwner li input:checkbox').each(function () {
+                    if ($(this).attr('id') != '@Sessions.User.UserId') {
+
+                        $(this).removeAttr("checked");
+                        $(this).parent().removeClass("close-list");
+                    }
+                    else {
+
+                        $(this).attr('checked', 'checked')
+                        $(this).parent().addClass("close-list");
+
+                    }
+
+                });
+
+                $('#ulTacticType li input:checkbox:checked').each(function () {
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                });
+                $('#ulStatus li input:checkbox:checked').each(function () {
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                });
+            }
+          
             SaveLastSetofViews();
             $("#CurrentPlanId").val(CurrentPlanId);
             if (CurrentPlanId > 0) {  
