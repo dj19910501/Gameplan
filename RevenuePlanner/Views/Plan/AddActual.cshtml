@@ -9,11 +9,11 @@
     var IsQuarter = ViewBag.IsQuarter;
     string FilterName = Sessions.FilterPresetName;
     var PageTitle = "Add Actuals";
-    var IsSavedPlan = (string)ViewBag.IsLastSavedPlan;
+   // var IsSavedPlan = (string)ViewBag.IsLastSavedPlan;
 }
 @Html.Hidden("PageTitle", PageTitle)
 @Html.Hidden("FilterName", FilterName)
-@Html.Hidden("IsSavedPlan", IsSavedPlan)
+
 
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
@@ -719,20 +719,13 @@
     }
 
     function onClickPlanTitle() {
-        var IsSavedPlan = $('#IsSavedPlan').val();
-        if (IsSavedPlan != null) {
-            IsSavedPlan = IsSavedPlan.split(',');
-        }
-        if ($('#IsSavedPlan').val() == "") {
-            $('#IsSavedPlan').val($("#CurrentPlanId").val());
-            IsSavedPlan = $('#IsSavedPlan').val();
-
-        }
+        var IsSavedPlan = null;
+        
              //Added by Rahul Shah for PL #1898
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
             CurrentPlanId = $(this).attr('value');
-           
-            if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) && $('#IsSavedPlan').val() != "") {
+            IsSavedPlan = $("#CurrentPlanId").val();
+            if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
                 $('#divCustomFieldsFilter').find("li").each(function (i) {
                     $(this).removeClass("close-list");
                     var chkid = $(this).find("input[type=checkbox]").attr("id");

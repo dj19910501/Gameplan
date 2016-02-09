@@ -28,7 +28,7 @@
     var ListBudgetingPlan = Model.objplanhomemodelheader != null ? Model.objplanhomemodelheader.plans : new List<SelectListItem>(); //Added By Komal Rawal for new homepage UI
     var IsGridView = (bool)ViewBag.GridView;
     var IsPlanSelector = (bool)ViewBag.IsPlanSelector;
-    var IsSavedPlan = (string)ViewBag.LastSavedPlanIDs;
+ //   var IsSavedPlan = (string)ViewBag.LastSavedPlanIDs;
     var PreviousPlanID = (int)ViewBag.PreviousPlanID;
     //Added by Ravindra for  PL Ticket #1411 date 07/07/2015
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
@@ -55,7 +55,6 @@
 @Html.Hidden("IsGridView", IsGridView)
 @Html.Hidden("IsPlanSelector", IsPlanSelector)
 @Html.Hidden("FilterName", FilterName)
-@Html.Hidden("IsSavedPlan", IsSavedPlan)
 @Html.Hidden("IsTacticActualsAddEditAuthorized", IsTacticActualsAddEditAuthorized)
 
 
@@ -466,17 +465,14 @@
 
     function onClickPlanTitle() {
 
-        var IsSavedPlan = $('#IsSavedPlan').val();
-        if (IsSavedPlan != null) {
-            IsSavedPlan = IsSavedPlan.split(',');
-        }
+        var IsSavedPlan = null;
+     
 
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
             CurrentPlanId = $(this).attr('value');
-            if ($('#IsSavedPlan').val() == "") {
-                $('#IsSavedPlan').val($("#CurrentPlanId").val());
-                IsSavedPlan = $('#IsSavedPlan').val();
-            }
+          
+            IsSavedPlan = $("#CurrentPlanId").val();
+          
             $("#CurrentPlanId").val(CurrentPlanId);
             SelectedPlanTitle = $(this).text();
             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -540,9 +536,9 @@
 
             //Added by Rahul Shah for PL #1898
           
-            if ($('#IsSavedPlan').val() == "") {
+         
                 IsSavedPlan = '@PreviousPlanID.ToString()';
-            }
+         
             if (IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) {
                 $('#divCustomFieldsFilter').find("li").each(function (i) {
                     $(this).removeClass("close-list");

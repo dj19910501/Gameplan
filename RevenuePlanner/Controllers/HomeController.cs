@@ -414,16 +414,16 @@ namespace RevenuePlanner.Controllers
 
                     Sessions.PlanId = planmodel.PlanId;
                     GetCustomAttributesIndex(ref planmodel);
-                    var SavedPlanIds = SetOfPlanSelected.Select(view => view.FilterValues).ToList();
-                    if(SavedPlanIds != null && SavedPlanIds.Count > 0)
-                    {
-                        ViewBag.LastSavedPlanIDs = String.Join(",", SavedPlanIds);
-                    }
-                    else
-                    {
+                    //var SavedPlanIds = SetOfPlanSelected.Select(view => view.FilterValues).ToList();
+                    //if(SavedPlanIds != null && SavedPlanIds.Count > 0)
+                    //{
+                    //    ViewBag.LastSavedPlanIDs = String.Join(",", SavedPlanIds);
+                    //}
+                    //else
+                    //{
                        
-                        ViewBag.LastSavedPlanIDs = null;
-                    }
+                    //    ViewBag.LastSavedPlanIDs = null;
+                    //}
                    
                    
 
