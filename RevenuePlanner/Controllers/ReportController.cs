@@ -3055,7 +3055,7 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             //Added By Maitri Gandhi #1852: Convert Finance Report Grid to DHTMLX Tree Grid
-            #region "DHTMLX Tree Grid" 
+            #region "DHTMLX Tree Grid"
             BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
             //GenerateHeader            
             objBudgetDHTMLXGrid = GenerateHeaderString(ViewBag.AllocatedBy, objBudgetDHTMLXGrid);
@@ -3169,7 +3169,7 @@ namespace RevenuePlanner.Controllers
                             TacticDataObjList.Add(TacticDataObj);
 
                             TacticDataObj = new Budgetdataobj();
-                            TacticDataObj.value =HttpUtility.HtmlEncode(bmt.ActivityName);
+                            TacticDataObj.value = HttpUtility.HtmlEncode(bmt.ActivityName);
                             TacticDataObjList.Add(TacticDataObj);
 
                             TacticDataObjList = ParentMonthReport(bmt, ActivityType.ActivityTactic, TacticDataObjList, Tab);
@@ -3213,9 +3213,9 @@ namespace RevenuePlanner.Controllers
                 }
                 gridjsonlistPlanObj.rows = CampaignRowsObjList;
                 gridjsonlist.Add(gridjsonlistPlanObj);
-            }            
+            }
             objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
-            objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;            
+            objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;
             #endregion
             return PartialView("_Budget", objBudgetDHTMLXGrid);
         }
@@ -3294,7 +3294,7 @@ namespace RevenuePlanner.Controllers
             double childAllocatedValue = 0;
             string formatThousand = "#,#0.##";
             string DivId = string.Empty;
-            string overbudget = string.Empty, cssclass = string.Empty, budgetError = " budgetError", budgetErrorCss="background:#ff1e26;";
+            string overbudget = string.Empty, cssclass = string.Empty, budgetError = " budgetError", budgetErrorCss = "background:#ff1e26;";
             double dblProgress = 0;
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             if (ViewBag.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
@@ -3386,7 +3386,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        BudgetDataObj.value = "<div id=" + DivId + (cssclass!=string.Empty?" class=" + cssclass :string.Empty)+" " + overbudget + ">" + actualValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
+                        BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + actualValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
                     }
                 }
                 else
@@ -3594,7 +3594,7 @@ namespace RevenuePlanner.Controllers
                             dblProgress = (plannedValue == 0 && allocatedValue == 0) ? 0 : (plannedValue > 0 && allocatedValue == 0) ? 101 : plannedValue / allocatedValue * 100;
                             if (dblProgress > 100)
                             {
-                                BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + plannedValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;"+budgetErrorCss+" class=progressBar></span>" + "</div>";
+                                BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + plannedValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar></span>" + "</div>";
                             }
                             else
                             {
@@ -3630,7 +3630,7 @@ namespace RevenuePlanner.Controllers
                             else
                                 BudgetDataObj.value = "<div id=" + DivId + ">" + allocatedValue.ToString(formatThousand) + "</div>";
                             overbudget = string.Empty;
-                        }                        
+                        }
                     }
                     else
                     {
@@ -4251,7 +4251,7 @@ namespace RevenuePlanner.Controllers
                         lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).ToList() :
                         cusomfieldEntity.Where(x => x.CustomFieldId == customfieldId).Select(x => x.Value).Distinct().ToList();
                         //customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldOptionId.ToString())).ToList();
-                        customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldId.ToString()+"_"+option.CustomFieldOptionId.ToString())).ToList();
+                        customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldId.ToString() + "_" + option.CustomFieldOptionId.ToString())).ToList();
                     }
                     //// Retrieve CustomFieldOptions based on CustomField & Filtered CustomFieldOptionValues.
                     planobj = customfieldoptionlist.Select(p => new BudgetReportTab
@@ -7660,7 +7660,8 @@ namespace RevenuePlanner.Controllers
                         bool isNumeric = int.TryParse(categories[i - 1], out year);
                         if (!(isNumeric) && isMonthList == false)
                         {
-                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : (isNumeric ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
+                            //year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : (isNumeric ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
+                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : ((categorieslength == 4 || categorieslength == 12) ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
                             DateTime TFstartDate = new DateTime(year, 1, 1);
                             DateTime TFendDate = new DateTime(year, 12, 31);
                             for (int k = 1; k <= 4; k++)
@@ -7725,8 +7726,8 @@ namespace RevenuePlanner.Controllers
                         bool isNumeric = int.TryParse(categories[i - 1], out year);
                         if (!(isNumeric) && isMonthList == false)
                         {
-                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : (isNumeric ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
-                           
+                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : ((categorieslength == 4 || categorieslength == 12) ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
+
                             DateTime TFstartDate = new DateTime(year, 1, 1);
                             DateTime TFendDate = new DateTime(year, 12, 31);
                             for (int k = 1; k <= 12; k++)
