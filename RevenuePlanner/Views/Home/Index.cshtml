@@ -2672,7 +2672,10 @@
                     //    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
                     //}
                     //else {
-                        innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                    //innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                    // Modified By Nishant Sheth
+                    // Des :: #1981 export pdf issue for plan name display undefined
+                    innerfiltervalueplan += " " + $("#" + this).parent().parent("#ulSelectedPlans").children().children("#" + this).parent().attr('title') + ",";
                     //}
                     //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
                 });
@@ -2680,7 +2683,7 @@
         }
         else {
            
-            innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text();
+            innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text()+",";
         }
 
         var isAvailablerecord = false;
@@ -3347,13 +3350,15 @@
         if (activeMenu == "home") {
             if (PdfFilters.SelectedPlans.length > 0) {
                 $.each(PdfFilters.SelectedPlans, function () {
-                    innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
-
+                    //innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                    // Modified By Nishant Sheth
+                    // Des :: #1981 export pdf issue for plan name display undefined
+                    innerfiltervalueplan += " " + $("#" + this).parent().parent("#ulSelectedPlans").children().children("#" + this).parent().attr('title') + ",";
                 });
             }
         }
         else {
-            innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text()
+            innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text() + ",";
         }
 
 

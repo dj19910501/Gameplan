@@ -7660,7 +7660,10 @@ namespace RevenuePlanner.Controllers
                         bool isNumeric = int.TryParse(categories[i - 1], out year);
                         if (!(isNumeric) && isMonthList == false)
                         {
-                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : (isNumeric ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
+                            //year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : (isNumeric ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
+                            // Modified By Nishant Sheth
+                            // Desc :: #1976 issue for flat line chart dataissue
+                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : ((categorieslength == 4 || categorieslength == 12) ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
                             DateTime TFstartDate = new DateTime(year, 1, 1);
                             DateTime TFendDate = new DateTime(year, 12, 31);
                             for (int k = 1; k <= 4; k++)
@@ -7725,8 +7728,10 @@ namespace RevenuePlanner.Controllers
                         bool isNumeric = int.TryParse(categories[i - 1], out year);
                         if (!(isNumeric) && isMonthList == false)
                         {
-                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : (isNumeric ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
-                           
+                            //year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : (isNumeric ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
+                            // Modified By Nishant Sheth
+                            // Desc :: #1976 issue for flat line chart dataissue
+                            year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : ((categorieslength == 4 || categorieslength == 12) ? Convert.ToInt32(ListYear.Min()) : System.DateTime.Now.Year);
                             DateTime TFstartDate = new DateTime(year, 1, 1);
                             DateTime TFendDate = new DateTime(year, 12, 31);
                             for (int k = 1; k <= 12; k++)
