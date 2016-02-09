@@ -1244,7 +1244,7 @@
             </div>
             <!--First Static Accordion END-->
             <!--Second Static Accordion-->
-            <div class="accordion colors left-nav improvements margin-bottom10" id="improvements">
+            <div class="accordion colors left-nav improvements margin-bottom10" id="improvements" style="display:none"> @*// added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters*@
                 <div class="accordion-group source-sans-proregular">
                     <div class="accordion-heading">
                         <a href="#DivAccordionImprovementActivities" data-parent="improvements" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
@@ -4442,7 +4442,7 @@
                         if (data.taskData.length > 0 || isRequest) {
                             $("#gantt_here").show();
                             $(".pull-right.toggle-status.source-sans-proregular").show();
-                            $("#improvements").show();
+                           // $("#improvements").show();
                             $('#lblMarkringActivitiestitle').hide();
                             $('#divCollaborator').show();
                             $("#NodatawithfilterCalendar").hide();
@@ -7327,6 +7327,7 @@ function () {
     });
     $(".sidebar-toogle-wrapper h4.text-shadow-black").css("display", "none");
     $(".sidebar-section").css("display", "none");
+    $("#improvements > .accordion-group").css('display', 'none'); // added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters
     $('.sidebar-toogle a').html(">>").css('letter-spacing', '-1px');
 
     $(".wraper-btns").css("display", "none");

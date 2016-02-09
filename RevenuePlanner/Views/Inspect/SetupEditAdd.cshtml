@@ -824,6 +824,10 @@
               var selectedOption = $(this).val();
               loadChildProgramList(selectedOption, "ddlProgram");
           });
+
+          $("#ddlcampaign").val(htmlDecode($("#ddlcampaign").val())); // added by dashrath prajapati for pl#1916 Ampersand
+          $("#ddlProgram").val(htmlDecode($("#ddlProgram").val()));  // added by dashrath prajapati for pl#1916 Ampersand
+
       });
     function loadChildProgramList(parentOption, id) {
         $.ajax({

@@ -3840,11 +3840,21 @@ namespace RevenuePlanner.Controllers
                 PlanCampaignId = c.PlanCampaignId,
                 Title = HttpUtility.HtmlDecode(c.Title)
             }).OrderBy(pc => pc.Title).ToList();
+            //var programList = db.Plan_Campaign_Program.Where(pcp => pcp.IsDeleted.Equals(false) && pcp.PlanCampaignId == pcpt.Plan_Campaign_Program.PlanCampaignId).Select(pcp => new
+            //{
+            //    pcp.PlanProgramId,
+            //    pcp.Title
+            //}).OrderBy(pcp => pcp.Title).ToList();
+
             var programList = db.Plan_Campaign_Program.Where(pcp => pcp.IsDeleted.Equals(false) && pcp.PlanCampaignId == pcpt.Plan_Campaign_Program.PlanCampaignId).Select(pcp => new
             {
                 pcp.PlanProgramId,
                 pcp.Title
-            }).OrderBy(pcp => pcp.Title).ToList();
+            }).ToList().Select(c => new
+            {
+                PlanProgramId = c.PlanProgramId,
+                Title = HttpUtility.HtmlDecode(c.Title)
+            }).OrderBy(pc => pc.Title).ToList();    // added by dashrath prajapati for pl#1916 Ampersand
 
             ippctm.PlanCampaignList = campaignList.Select(c => new SelectListValue { Id = c.PlanCampaignId, Title = c.Title }).ToList();
             ippctm.CampaignProgramList = programList.Select(p => new SelectListValue { Id = p.PlanProgramId, Title = p.Title }).ToList();
