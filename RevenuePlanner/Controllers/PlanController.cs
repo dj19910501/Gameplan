@@ -9582,6 +9582,7 @@ namespace RevenuePlanner.Controllers
 
 
                 string stylecolorblack = "color:#000";
+                string stylecolorgray = "color:#999"; // Add By Nishant Sheth #1987
 
                 string doubledesh = "--";
                 string typero = "ro";
@@ -9642,6 +9643,7 @@ namespace RevenuePlanner.Controllers
                         // Declare Data List and Object variable
                         List<Plandataobj> plandataobjlist = new List<Plandataobj>();
                         Plandataobj plandataobj = new Plandataobj();
+                        cellTextColor = IsPlanEditable ? stylecolorgray : stylecolorblack; // Modified By Nishant Sheth #1987
 
                         plandataobj.value = "Plan";
                         plandataobjlist.Add(plandataobj);
@@ -9760,7 +9762,7 @@ namespace RevenuePlanner.Controllers
                                             if (CustomTacticids.Count > 0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Count() != CustomTacticids.Count)
                                             {
                                                 IsEditable = lockedstateone; // readonly
-                                                cellTextColor = "";
+                                                cellTextColor = stylecolorgray; // Modified By Nishant Sheth #1987
                                             }
                                             else
                                             {
@@ -9772,7 +9774,7 @@ namespace RevenuePlanner.Controllers
                                         else
                                         {
                                             IsEditable = lockedstateone;
-                                            cellTextColor = "";
+                                            cellTextColor = stylecolorgray; // Modified By Nishant Sheth #1987
 
                                         }
 
@@ -9825,10 +9827,12 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj = new Plandataobj();
                                     campaigndataobj.value = Campaignitem.totalcost.ToString();
                                     campaigndataobj.actval = Campaignitem.totalcost.ToString();
+                                    campaigndataobj.style = cellTextColor;
                                     campaigndataobjlist.Add(campaigndataobj);
 
                                     campaigndataobj = new Plandataobj();
                                     campaigndataobj.value = doubledesh;
+                                    campaigndataobj.style = cellTextColor;
                                     campaigndataobj.type = typero;
                                     campaigndataobjlist.Add(campaigndataobj);
 
@@ -9840,16 +9844,19 @@ namespace RevenuePlanner.Controllers
 
                                     campaigndataobj = new Plandataobj();
                                     campaigndataobj.value = doubledesh;
+                                    campaigndataobj.style = cellTextColor;
                                     campaigndataobjlist.Add(campaigndataobj);
 
                                     campaigndataobj = new Plandataobj();
                                     campaigndataobj.value = ConvertNumberToRoundFormate(Campaignitem.totalmql).ToString();
+                                    campaigndataobj.style = cellTextColor;
                                     campaigndataobj.actval = Campaignitem.totalmql.ToString();
                                     campaigndataobjlist.Add(campaigndataobj);
 
                                     campaigndataobj = new Plandataobj();
                                     campaigndataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Campaignitem.totalrevenue).ToString();
                                     campaigndataobj.actval = Campaignitem.totalrevenue.ToString();
+                                    campaigndataobj.style = cellTextColor;
                                     campaigndataobjlist.Add(campaigndataobj);
 
                                     campaignrowsobj.data = campaigndataobjlist;
@@ -9911,7 +9918,7 @@ namespace RevenuePlanner.Controllers
                                                         if (CustomTacticids.Count > 0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Count() != CustomTacticids.Count)
                                                         {
                                                             IsEditable = lockedstateone;
-                                                            cellTextColor = "";
+                                                            cellTextColor = stylecolorgray; // Modified By Nishant Sheth #1987
                                                         }
                                                         else
                                                         {
@@ -9922,7 +9929,7 @@ namespace RevenuePlanner.Controllers
                                                     else
                                                     {
                                                         IsEditable = lockedstateone;
-                                                        cellTextColor = "";
+                                                        cellTextColor = stylecolorgray;// Modified By Nishant Sheth #1987
 
                                                     }
                                                 }
@@ -9974,11 +9981,13 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj = new Plandataobj();
                                                 programdataobj.value = Programitem.totalcost.ToString();
                                                 programdataobj.actval = Programitem.totalcost.ToString();
+                                                programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
                                                 programdataobj = new Plandataobj();
                                                 programdataobj.value = doubledesh;
                                                 programdataobj.type = typero;
+                                                programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
                                                 programdataobj = new Plandataobj();
@@ -9989,16 +9998,19 @@ namespace RevenuePlanner.Controllers
 
                                                 programdataobj = new Plandataobj();
                                                 programdataobj.value = doubledesh;
+                                                programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
                                                 programdataobj = new Plandataobj();
                                                 programdataobj.value = ConvertNumberToRoundFormate(Programitem.totalmql).ToString();
                                                 programdataobj.actval = Programitem.totalmql.ToString();
+                                                programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
                                                 programdataobj = new Plandataobj();
                                                 programdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Programitem.totalrevenue).ToString();
                                                 programdataobj.actval = Programitem.totalrevenue.ToString();
+                                                programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
                                                 programrowsobj.data = programdataobjlist;
@@ -10061,7 +10073,7 @@ namespace RevenuePlanner.Controllers
                                                     {
                                                         var LinkTacticPermission = ((tactic.enddate.Year - tactic.startdate.Year) > 0) ? true : false;
                                                         var LinkedTacticId = tactic.LinkTacticId == null ? "null" : tactic.LinkTacticId.ToString();
-                                                        cellTextColor = tactic.IstactEditable == lockedstateone ? "" : stylecolorblack;
+                                                        cellTextColor = tactic.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
 
                                                         tacticrowsobj = new PlanDHTMLXGridDataModel();
                                                         tacticrowsobj.id = "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index;
@@ -10144,11 +10156,13 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj = new Plandataobj();
                                                         tacticdataobj.value = ConvertNumberToRoundFormate(tactic.totalmql).ToString();
                                                         tacticdataobj.actval = tactic.totalmql.ToString();
+                                                        tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
                                                         tacticdataobj = new Plandataobj();
                                                         tacticdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(tactic.totalrevenue).ToString();
                                                         tacticdataobj.actval = tactic.totalrevenue.ToString();
+                                                        tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
                                                         tacticrowsobj.data = tacticdataobjlist;
@@ -10180,7 +10194,7 @@ namespace RevenuePlanner.Controllers
                                                             PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
                                                             foreach (var lineitem in lstLineItemTaskData)
                                                             {
-                                                                cellTextColor = lineitem.IstactEditable == lockedstateone ? "" : stylecolorblack;
+                                                                cellTextColor = lineitem.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
 
                                                                 lineitemrowsobj = new PlanDHTMLXGridDataModel();
                                                                 lineitemrowsobj.id = "line." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "." + lineitem.index;
@@ -10228,20 +10242,26 @@ namespace RevenuePlanner.Controllers
 
                                                                 lineitemdataobj = new Plandataobj();
                                                                 lineitemdataobj.value = lstUserDetails.Where(lst => lst.UserId == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault();
+                                                                // Add By Nishant Sheth #1987
+                                                                lineitemdataobj.locked = lineitem.IstactEditable; 
+                                                                lineitemdataobj.style = cellTextColor;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                                                 lineitemdataobj = new Plandataobj();
                                                                 lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.style = cellTextColor;// Add By Nishant Sheth #1987
                                                                 lineitemdataobj.type = typero;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                                                 lineitemdataobj = new Plandataobj();
                                                                 lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.style = cellTextColor;// Add By Nishant Sheth #1987
                                                                 lineitemdataobj.type = typero;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                                                 lineitemdataobj = new Plandataobj();
                                                                 lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.style = cellTextColor;// Add By Nishant Sheth #1987
                                                                 lineitemdataobj.type = typero;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
 
