@@ -575,7 +575,10 @@
 
     }
 
-    function GetOwnerListForFilter(Planids, async) {
+        var ids = [];
+        var IsDeselectAll = false
+
+    function GetOwnerListForFilter(Planids, async,OnPlanChange) {
 
         var asyncval = false;
         if (async != undefined && async != 'undefined' && async != '' && async != null) {
@@ -585,17 +588,29 @@
             asyncval = false;
         }
         //Added by Rahul Shah on 06/01/2016 for PL #1854
-        var ids = [];
+        if (IsDeselectAll == true ) {
+            ids = [];
+        }
+
         $('#ulSelectedOwner li').each(function () {
             if ($(this).hasClass("close-list")) {
                 var id = $(this).attr('id').replace('liOwner', '')
+                var Index = ids.indexOf(id);
+                if (Index == -1) {
                 ids.push(id);
+            }
             }
 
         });
 
         $('#ulSelectedOwner').html('');
+      
+    
+        if (filters.OwnerIds != "" || OnPlanChange != true ||  ids != "") {
+        
         filters.OwnerIds = [];
+        }
+      
 
         $.ajax({
             beforeSend: function (x) {
@@ -619,6 +634,7 @@
                 }
                 else {
                     if (data.isSuccess == true) {
+                    
                         if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
                             OwnerCount = data.AllowedOwner.length;
                             if (OwnerCount > 0) {
@@ -633,12 +649,14 @@
                                     //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
                                     checked = "";
                                     checkedclass = "";
+                                    
                                     if (OwnerItem.OwnerId == LoggedInOwner) {
                                         IsOwnerPresent = true;
+                                            if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
                                         checked = "checked"
                                         checkedclass = "close-list"
                                     }
-
+                                    }
                                     //Added by Rahul Shah on 06/01/2016 for PL #1854
                                     if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
                                         checked = "checked"
@@ -649,6 +667,30 @@
                                     $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
                                     // filters.OwnerIds.push(OwnerItem.OwnerId);
                                 });
+
+
+                                //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
+                                var OwnerIds = [];
+                                $('#ulSelectedOwner li').each(function () {
+                                    var id = $(this).attr('id').replace('liOwner', '')
+                                    OwnerIds.push(id);
+                                });
+                                var listofindex = [];
+                                for (i = 0; i < ids.length; i++) {
+                                    var index = OwnerIds.indexOf(ids[i]);
+                                    if (!(index >= 0)) {
+                                        listofindex.push(ids[i]);
+
+                                    }
+                                }
+                                $.each(listofindex, function (i) {
+                                    var Index = ids.indexOf(listofindex[i])
+                                    if (Index >= 0) {
+                                        ids.splice(Index, 1);
+                                    }
+                                });
+
+                                //End
                                 //Modified by Nishant to bring the owner name in the list even if they dont own any tactic
                                 if (IsOwnerPresent == false) {
                                     // Modified By Nishant Sheth
@@ -2226,7 +2268,7 @@
                     }
                 });
                 GetTacticTypelist(planids, true);
-                GetOwnerListForFilter(planids, true);
+                GetOwnerListForFilter(planids, true,true);
             }
         });
     }
@@ -2263,7 +2305,7 @@
         //});
         if (!IsLstPlan) {
         GetTacticTypelist(planids, true);
-            GetOwnerListForFilter(planids, true);
+            GetOwnerListForFilter(planids, true,true);
         }
     }
 
@@ -2288,6 +2330,10 @@
         }
         else {
             $("#liOwner" + id).removeClass("close-list");
+            var Index = ids.indexOf(id)
+            if (Index >= 0) {
+                ids.splice(Index, 1);
+            }
         }
         filters.OwnerIds = [];
         $("#ulSelectedOwner li input[type=checkbox]").each(function () {
@@ -2538,6 +2584,7 @@
             });
         }
         else {
+            IsDeselectAll = true;
             $("#ulSelectedPlans li").each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -2555,7 +2602,7 @@
         //});
       
         if (activeMenu.toLowerCase() == 'home') {
-            GetOwnerListForFilter(planids, true);
+            GetOwnerListForFilter(planids, true,true);
             GetTacticTypelist(planids, true);
         }
       
@@ -2593,6 +2640,7 @@
             });
         }
         else {
+            IsDeselectAll = true;
             $("#ulSelectedOwner li").each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
