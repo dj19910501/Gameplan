@@ -6107,7 +6107,7 @@ namespace RevenuePlanner.Controllers
         /// Action to save last accessed data
         /// </summary>
         /// <param name="PlanId">Plan Id and filters</param>
-        public JsonResult SaveLastSetofViews(string planId, string customFieldIds, string ownerIds, string TacticTypeid, string StatusIds, string ViewName, string SelectedYears)
+        public JsonResult SaveLastSetofViews(string planId, string customFieldIds, string ownerIds, string TacticTypeid, string StatusIds, string ViewName, string SelectedYears, string ParentCustomFieldsIds)
         {
 
 
@@ -6176,7 +6176,7 @@ namespace RevenuePlanner.Controllers
                 objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
                 NewCustomFieldData.Add(objFilterValues);
             }
-            if (TacticTypeid != null && TacticTypeid != "")
+            //if (TacticTypeid != null && TacticTypeid != "") //Commented by Rahul Shah for PL #1952.
             {
                 //if(TacticTypeid == "0")
                 //{
@@ -6198,7 +6198,7 @@ namespace RevenuePlanner.Controllers
             }
             if (StatusIds != "AddActual" && StatusIds != "Report")
             {
-                if (StatusIds != null && StatusIds != "")
+                //if (StatusIds != null && StatusIds != "")  //Commented by Rahul Shah for PL #1952.
                 {
                     //if (StatusIds == "0")
                     //{
@@ -6290,8 +6290,54 @@ namespace RevenuePlanner.Controllers
 
                 }
             }
+            else
+            {   //Added by Rahul Shah for PL #1952.
+                string[] filteredCustomFields = string.IsNullOrWhiteSpace(ParentCustomFieldsIds) ? null : ParentCustomFieldsIds.Split(',');
+                if (filteredCustomFields != null)
+                {
+                    Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+                    //List<Plan_UserSavedViews> listLineitem = objDbMrpEntities.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.UserId).Select(a => a).ToList();
+                    List<Plan_UserSavedViews> listLineitem = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
+                    Plan_UserSavedViews objLineitem = new Plan_UserSavedViews();
+                    string FilterNameTemp = "";
+                    string Previousval = "";
+                    foreach (string customField in filteredCustomFields)
+                    {
+                        var PreviousValue = "CF" + "_" + customField.ToString();
+                        var ExistingFieldlist = listLineitem.Where(pcpobjw => pcpobjw.FilterName.Equals(PreviousValue)).FirstOrDefault();
+                        FilterNameTemp += string.IsNullOrEmpty(FilterNameTemp) ? (ExistingFieldlist != null ? ExistingFieldlist.FilterValues : "") : "";
+                        if (FilterNameTemp == PreviousValue)
+                        {
 
-            if (StatusIds != null && StatusIds != "")
+                            Previousval += ',' + customField.Split('_')[1];
+                            objFilterValues.FilterValues = Previousval;
+                        }
+
+                        else
+                        {
+                            objFilterValues = new Plan_UserSavedViews();
+                            objFilterValues.ViewName = null;
+                            if (ViewName != null && ViewName != "")
+                            {
+                                objFilterValues.ViewName = ViewName;
+                            }
+                            objFilterValues.FilterName = "CF" + "_" + customField;
+                            objFilterValues.FilterValues = "";
+                            objFilterValues.Userid = Sessions.User.UserId;
+                            objFilterValues.LastModifiedDate = DateTime.Now;
+                            objFilterValues.IsDefaultPreset = false;
+                            FilterNameTemp = "";
+                            FilterNameTemp += "CF" + "_" + customField;
+                            Previousval = "";
+                            //Previousval = customField.Split('_')[1];
+                            objDbMrpEntities.Plan_UserSavedViews.Add(objFilterValues);
+                        }
+                        NewCustomFieldData.Add(objFilterValues);
+                    }
+                }
+            }
+
+            //if (StatusIds != null && StatusIds != "")//Commented by Rahul Shah for PL #1952.
             {
                 if (StatusIds == "Report" || StatusIds == "AddActual")
                 {
