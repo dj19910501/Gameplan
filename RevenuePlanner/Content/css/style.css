@@ -15829,3 +15829,35 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
  .lickSuccessMsg{
     font-weight:bold;
     }
+
+ /*#1952,#1953,#1954*/
+ #ulSelectedFilter
+    {
+        height: 275px;
+        overflow: auto;
+    }
+
+        #ulSelectedFilter li
+        {
+            line-height: 5px;
+            margin: 2px 2px 5px;
+            height:auto;
+        }
+
+    .sidebarliwidthSelected-left, .sidebarliwidthSelected-right
+    {
+        font-size: 14px !important;
+        padding-bottom: 0 !important;
+        line-height: 18px;
+    }
+
+    .sidebarliwidthSelected-left
+    {
+        font-weight: bold;
+    }
+    span.filter-count, span.filter-count > span {
+    font-size: 14px !important;
+}
+    span.filter-count
+    {float:right;
+    }

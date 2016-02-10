@@ -147,10 +147,93 @@
 
             <div style="clear: both;"></div>
             
+            @*View Selected Filter Section - #1954 - Added By: Maitri Gandhi *@
+             <div id="accordion-SelectedFilter" class="dropdown-section accordion">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">View Selected Filters<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                    </div>
+                    <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
+                        <ul class="scroll-list singleselect" id="ulSelectedFilter">
+                                                        @{
+                                                            List<string> YearText1 = new List<string>();
+                                                            List<string> PlanTitle = new List<string>();
+                                                            List<string> OwnerName = new List<string>();
+                                                            List<string> StatusTitle = new List<string>();
+                                }
+                                                            
+                            <li class="accordion-inner" title="Year">
+                                <span class="sidebarliwidthSelected-left">Year - </span>
+                                @{  
+                                    foreach (SelectListItem item in ViewYearList)
+                                    {
+                                        if (item.Selected == true)
+                                        {
+                                            YearText1.Add(item.Text);
+                                        }
+                                    }
+                                    if (ViewYearList.Count == YearText1.Count())
+                                    {
+                                        YearText1.Clear();
+                                        YearText1.Add("All");
+                                    }
+                                }
+                                <span id="lstYear" class="sidebarliwidthSelected-right">@string.Join(", ", YearText1).ToString()</span>
+                            </li>
+
+                            <li class="accordion-inner" title="Plan">
+                                <span class="sidebarliwidthSelected-left">Plan -  </span>
+                                @{
+                                    foreach (var objplan in planList)
+                                    {
+                                        if (objplan.Checked == "checked")
+                                        {
+                                            PlanTitle.Add(objplan.Title);
+                                        }
+                                    }
+                                    if (planList.Count == PlanTitle.Count())
+                                    {
+                                        PlanTitle.Clear();
+                                        PlanTitle.Add("All");
+                                    }
+                                    
+                                }
+                                <span id="lstPlan" class="sidebarliwidthSelected-right">@string.Join(", ", PlanTitle).ToString()</span>
+
+                            </li> 
+                                                
+                            @{
+                                foreach (var custField in ViewCustomFields)
+                                {
+                                <li class="accordion-inner" title='@custField.Name'>
+                                    <div id="CustomFields">
+                                    <span class="sidebarliwidthSelected-left">@custField.Name - </span>
+                                    <span id="lstCustomFieldSelected_@custField.CustomFieldId" class="sidebarliwidthSelected-right">All</span>
+                                    </div>
+                            </li>
+                                }
+                            }
+
+                            <li class="accordion-inner" title="Owner">
+                                <span class="sidebarliwidthSelected-left">Owner - </span>
+                                <span id="lstOwner" class="sidebarliwidthSelected-right"></span>
+
+                            </li>
+
+                            <li class="accordion-inner" title="TacticType">
+                                <span class="sidebarliwidthSelected-left">TacticType - </span>
+                                <span id="lstTType" class="sidebarliwidthSelected-right"></span>
+                            </li>                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             <div id="accordion-Year" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year"><span class="sidebarliwidth" id="spYearText">Year</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year">Year<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>
+                            <span id="tYearcount" class="filter-count">/@ViewYearList.Count</span><span id="cYearcount" class="filter-count"></span></h2>
                     </div>
                     <div id="accordion-element-Year" class="accordion-body collapse">
                         <ul class="scroll-list singleselect" id="ulSelectedYear">
@@ -207,7 +290,9 @@
             <div id="accordion-2" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>
+                            <span id="tPlancount" class="filter-count"></span> <span id="cPlancount" class="filter-count">/@planList.Count()</span>
+                        </h2>
                     </div>
                     <div id="accordion-element-Plan" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulSelectedPlans">
@@ -254,6 +339,7 @@
                 acordionId = acordionParentId = acordionElementId = acordionElementHref =liCustom =ulCustom = allCustom = noCustom =string.Empty;
                 List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
                 List<CustomFieldOption> tblCustomFieldOption = ViewCustomFieldOptions;
+                int custFieldCount = 0;
                 foreach (CustomField custField in ViewCustomFields)
                 {
                     lstCutomFieldOptions = tblCustomFieldOption.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Value).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Value, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
@@ -267,7 +353,7 @@
                     <div id="@acordionId" class="dropdown-section accordion">
                         <div class="accordion-group">
                            <div class="accordion-heading">
-                               <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Name</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                               <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Name</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i><span class="filter-count"><span id="SelectedCustomFilter_@custField.CustomFieldId">@lstCutomFieldOptions.Count()</span>/@lstCutomFieldOptions.Count()</span></h2>
                            </div>
                            <div id="@acordionElementId" class="accordion-body collapse">
                                <ul class="scroll-list" id="@ulCustom">
@@ -276,7 +362,7 @@
                     {
                         liCustom = "liCustom" + item.Value;
                         cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
-                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" cutomtitle="@item.Text" class="chkbxfilter" id="@cutomoptioninputid" onchange="OnMultiselectchange(this);"></input></li>
+                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" cutomtitle="@item.Text" class="chkbxfilter" id="@cutomoptioninputid" onchange="OnMultiselectchange(this,@custField.CustomFieldId,@custFieldCount);"></input></li>
                     }
                                 }
                                </ul>
@@ -284,9 +370,9 @@
                                   @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
                                   {
                                    <ul id="@allCustom">
-                                       <li><a onclick="BulkCustomFieldOperation(true,'@ulCustom')">select all</a></li>
+                                       <li><a onclick="BulkCustomFieldOperation(true,'@ulCustom','@lstCutomFieldOptions.Count()')">select all</a></li>
                                        <li>|</li>
-                                       <li><a onclick="BulkCustomFieldOperation(false,'@ulCustom')">deselect all</a></li>
+                                       <li><a onclick="BulkCustomFieldOperation(false,'@ulCustom','@lstCutomFieldOptions.Count()')">deselect all</a></li>
                                    </ul>
                                   }
                                   else
@@ -297,6 +383,7 @@
                            </div>
                        </div>
                    </div>
+                                  custFieldCount++;
                 }
              }
         </div>
@@ -304,7 +391,7 @@
             <div id="accordion-Owner" class="dropdown-section accordion" > 
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i><span id="tOwnercount" class="filter-count"></span><span id="cOwnercount" class="filter-count"></span></h2>
         </div>
                     <div id="accordion-element-Owner" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulSelectedOwner">
@@ -324,7 +411,7 @@
               <div id="accordion-TacticType" class="dropdown-section accordion" >
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i><span id="tTTcount" class="filter-count"></span><span id="cTTcount" class="filter-count"></span></h2>
                     </div>
                     <div id="accordion-element-TacticType" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulTacticType">
@@ -468,8 +555,26 @@
         PlanIDs: [],
         SelectedPlans: [],
         StatusIDs: [],
+    SelectedYears: [],
+    parentCustomFieldsIds: [],
         SelectedYears: []
     };
+var selectedFilters = {
+    yearIds: [],
+    planName: [],
+    ownerName: [],
+    tacticTypeTitle: [],
+    StatusIds: []
+};
+var TotalStatus = 0;
+var checkedOwnercount = 0;
+var checkedTTcount = 0;
+//var checkedStatuscount = 0;
+var checkedPlancount = 0;
+var checkedYearcount = 0;
+var AutoSelectedCustomField = 0;
+checkedYearcount = $('#ulSelectedYear li input:checked').length;
+$('#cYearcount').text(checkedYearcount);
    
     function GetOwnerListForFilter(Planids, ifexists) {
         var type = '@PlanGanttTypes.Tactic.ToString()';
@@ -564,6 +669,10 @@
                                 $("#ulOwnerAllModule").css("display", "none");
                                 $("#NoOwnerFound").show();
                             }
+                        checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
+                        TotalOwnercount = $("#ulSelectedOwner li").length;
+                        $('#tOwnercount').text('/' + TotalOwnercount);
+                        $('#cOwnercount').text(checkedOwnercount);
                         }
                     }
                 }
@@ -588,6 +697,8 @@
                     $("#" + chkid).removeAttr("checked");
                 });
             }
+        checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
+        $('#cOwnercount').text(checkedOwnercount);
         }
 
 
@@ -606,6 +717,8 @@
                     filters.OwnerIds.push(chkid);
                 }
             });
+        checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
+        $('#cOwnercount').text(checkedOwnercount);
         }
 
         function GetTacticTypelist(Planids, ifexists) {
@@ -647,8 +760,8 @@
                                       var checkedclass = "";
                                       //Modify by Rahul Shah on 28/10/2015 for PL #1438
                                      
-                                          //checked = "checked";
-                                          //checkedclass = "close-list";
+                                    checked = "checked";
+                                    checkedclass = "close-list";
                                       //}
                                       $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                                   });
@@ -662,6 +775,10 @@
                               $("#TacticTypeAllModule").css("display", "none");
                               $("#NoTTFound").show();
                           }
+                        TactictypeCount = $("#ulTacticType li").length;
+                        checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
+                        $('#tTTcount').text('/' + TactictypeCount);
+                        $('#cTTcount').text(checkedTTcount);
                       }
                   }
               }
@@ -687,10 +804,13 @@
                   var chkid = $(this).find("input[type=checkbox]").attr("id");
                   $("#" + chkid).removeAttr("checked");
               });
-          }
+            //checkedTTcount = 0;
+        }
+        checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
+        $('#cTTcount').text(checkedTTcount);
+    }
 
-      }
-
+    var SelectedCustomFieldOption;
       function toggleTacticType(obj) {
           var id = $(obj).attr('id').toString().replace("CbTT", "");
           if ($(obj).is(':checked')) {
@@ -707,6 +827,8 @@
                   filters.TacticTypeids.push(chkid.replace("CbTT", ""));
               }
           });
+        checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
+        $('#cTTcount').text(checkedTTcount);
       }
 
       //End
@@ -773,6 +895,7 @@
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
+                    AutoSelectedCustomField = 0;
                     if (data.Customfields.length != 0 && data.Customfields.length != undefined) {
                         for (i = 0 ; i < data.Customfields.length; i++) {
                             if (data.Customfields[i].ID.split('_').length > 1) {
@@ -785,6 +908,7 @@
                                     if (chkfieldid == CustomFieldId) {
                                         if (CustomFieldValues.indexOf(chkOptionid) != -1) {
                                             $(this).attr('checked', 'checked');
+                                            AutoSelectedCustomField++;
                                             filters.customFieldIds.push(chkid);
                                             $(this).parent().addClass("close-list");
                                         }
@@ -794,10 +918,21 @@
 
                                     }
                                 });
+                                $("#SelectedCustomFilter_" + CustomFieldId).text(AutoSelectedCustomField);
+                                AutoSelectedCustomField = 0;
                             }
                         }
                     }
+                    else {
+                        //Code for Select All                        
+                        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                            $(this).attr('checked', 'checked');
+                            $(this).parent().addClass("close-list");
+                            AutoSelectedCustomField++;
+                        });
+                        $('#ulSelectedFilter').find("li #CustomFields .sidebarliwidthSelected-right").text("All");
 
+                    }
 
                     if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined) {
                        
@@ -869,6 +1004,7 @@
                     }
 
                 }
+                UpdateSelectedFilters();
             }
         });
 
@@ -879,11 +1015,15 @@
 
         //modified by komak rawal for 1911 Owner filter is gettind deselected from moving to homepage from Report
         filters.OwnerIds = [];
+        filters.parentCustomFieldsIds = [];
 
         $("#ulSelectedOwner li input:checkbox:checked").map(function () {
             filters.OwnerIds.push($(this).attr("id"));
         });
         //End
+        $('#divCustomFieldsFilter').children().each(function () {
+            filters.parentCustomFieldsIds.push($(this).attr('id').split('-')[1])
+        });
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
                 var chkid = $(this).attr("id");
@@ -934,6 +1074,7 @@
         var OwnerIds = filters.OwnerIds;
         var TacticTypeids = filters.TacticTypeids;
         var GetSelectedPlanNo = filters.SelectedPlans.length;
+        var ParentCustomFieldsIds = filters.parentCustomFieldsIds;
 
         $.ajax({
             type: "GET",
@@ -947,7 +1088,8 @@
                 TacticTypeid: TacticTypeids.toString(),
                 StatusIds: "Report",
                 ViewName: ViewName,
-                SelectedYears: filters.SelectedYears.toString()
+                SelectedYears: filters.SelectedYears.toString(),
+                ParentCustomFieldsIds: filters.parentCustomFieldsIds.toString()
             },
             dataType: "json",
             success: function (data) {
@@ -1072,12 +1214,12 @@
         OnCheckboxChangeForPlan(_planliId, _checked);
     }
 
-    function OnMultiselectchange(_checkbox) {
+function OnMultiselectchange(_checkbox, CustFieldId, count) {
         var _checked = $(_checkbox).attr('checked');
         var _val = $(_checkbox).attr('id');
         //Modified by komal rawal to solve Custom filter selection problem in reports.
         var _parentliId = "liCustom" + _val.split("_")[1];
-        OnCheckboxChange(_parentliId, _checked);
+    OnCheckboxChange(_parentliId, _checked, CustFieldId, count);
     }
     function OnCheckboxChangeForPlan(_parentliId, _checked) {
      
@@ -1100,14 +1242,21 @@
                 GetTacticTypelist(PlanIds, true);
           
         }
+    checkedPlancount = $("#ulSelectedPlans li input:checkbox:checked").length;
+    $('#cPlancount').text(checkedPlancount);
     }
 
-    function OnCheckboxChange(_parentliId, _checked) {
+function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
+    var SelectedCustomFields = parseInt($("#SelectedCustomFilter_" + CustFieldId).text());
         if (_checked != null && _checked != 'undefined' && _checked === 'checked') {
             $("#" + _parentliId).addClass('close-list');
+        SelectedCustomFields++;
+        $("#SelectedCustomFilter_" + CustFieldId).text(SelectedCustomFields);
         }
         else {
             $("#" + _parentliId).removeClass('close-list');
+        SelectedCustomFields--;
+        $("#SelectedCustomFilter_" + CustFieldId).text(SelectedCustomFields);
         }
     }
 
@@ -1201,7 +1350,11 @@
                 else {
                     $("#PlanAllModule").css("display", "none");
                     $("#NoPlanFound").show();
+                    
                 }
+                checkedPlancount = $("#ulSelectedPlans li input:checkbox:checked").length;
+                $('#tPlancount').text('/' + PlanCount);
+                $('#cPlancount').text(checkedPlancount);
                 // Addd By Nishant Sheth
                 // Desc  :: #1842 code review - When we select the year from Year filter, plan selection is removed, It should not
                 var listofplan = $("#accordion-element-Plan").find("ul").find("li").find("input[type='checkbox']");
@@ -1239,14 +1392,15 @@
                 $("#" + chkid).removeAttr("checked");
             });
         }
-
+        checkedPlancount = $("#ulSelectedPlans li input:checkbox:checked").length;
+        $('#cPlancount').text(checkedPlancount);
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         GetOwnerListForFilter(PlanIds,true);
         GetTacticTypelist(PlanIds, true);
         
     }
 
-    function BulkCustomFieldOperation(selection,ulCutomFieldId) {
+    function BulkCustomFieldOperation(selection, ulCutomFieldId, TotalCount) {
         var ul_lis = "#" + ulCutomFieldId + " li";
         if (selection) {
             $(ul_lis).each(function (i) {
@@ -1254,6 +1408,7 @@
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
                 $("#" + chkid).attr("checked", "checked");
             });
+            $("#SelectedCustomFilter_" + ulCutomFieldId.replace('ul','')).text(TotalCount);
         }
         else {
             $(ul_lis).each(function (i) {
@@ -1261,6 +1416,7 @@
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
                 $("#" + chkid).removeAttr("checked");
             });
+            $("#SelectedCustomFilter_" + ulCutomFieldId.replace('ul', '')).text("0");
         }
     }
 
@@ -1573,7 +1729,119 @@
                     SaveLastSetofViews();
                 }
             SavePresetValue = false;
+            UpdateSelectedFilters();
         });
+
+    function UpdateSelectedFilters() {
+    //set custom field filters
+        $("#ulSelectedFilter").find("li #CustomFields .sidebarliwidthselected-right").text("");
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+
+        var checkedcounter = 0, allcounter = 0, currenttext = "", id = null;
+        $(this).find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+
+                var chkid = $(this).attr("id");
+
+                currenttext = currenttext + ", " + $($(this).parent()).find("span.sidebarliwidth").text();
+
+                checkedcounter++;
+            }
+            allcounter++;
+        });
+        //id = this.id.split("-")[1];
+        id = this.id.replace('accordion', '');
+
+        if (checkedcounter == allcounter) {
+            $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text("All");
+        }
+        else {
+            if (checkedcounter == 0) {
+                $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text("None");
+                $("#SelectedCustomFilter_" + id).text("0");
+
+            }
+            else {
+                currenttext = currenttext.substring(1);
+                $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text(currenttext);
+            }
+        }
+    });
+    //set static-default field filters
+    selectedFilters.ownerName = [];
+    selectedFilters.tacticTypeTitle = [];
+    selectedFilters.yearIds = [];
+    selectedFilters.planName = [];
+
+    $("#ulSelectedYear li input[type=checkbox]:checked").each(function () {
+        selectedFilters.yearIds.push($(this).attr("yearvalue"));
+    });
+    if (selectedFilters.yearIds.length == 0) {
+        $('#lstYear').text("None");
+    }
+    else if ($("#ulSelectedYear li").length == selectedFilters.yearIds.length) {
+        $('#lstYear').text("All");
+    }
+
+    else {
+        $('#lstYear').text(selectedFilters.yearIds.join(", "));
+    }
+
+    $("#ulSelectedPlans li input[type=checkbox]:checked").each(function () {
+        selectedFilters.planName.push($(this).parent().attr("title"));
+    });
+    if (selectedFilters.planName.length == 0) {
+        $('#lstPlan').text("None");
+    }
+    else if ($("#ulSelectedPlans li").length == selectedFilters.planName.length) {
+        $('#lstPlan').text("All");
+    }
+    else {
+        $('#lstPlan').text(selectedFilters.planName.join(", "));
+    }
+
+    checkedyearcount = selectedFilters.yearIds.length;
+    $('#cYearcount').text(checkedyearcount);
+    checkedplancount = selectedFilters.planName.length;
+    $('#cPlancount').text(checkedplancount);
+    $('#tPlancount').text("/" + $("#ulSelectedPlans li").length.toString());
+
+    $("#ulSelectedOwner li input[type=checkbox]:checked").each(function () {
+        selectedFilters.ownerName.push($(this).attr('ownertitle').toString());
+
+    });
+    if (selectedFilters.ownerName.length == 0) {
+        $('#lstOwner').text("None");
+    }
+    else if ($("#ulSelectedOwner li").length == selectedFilters.ownerName.length) {
+        $('#lstOwner').text("All");
+    }
+    else {
+        $('#lstOwner').text(selectedFilters.ownerName.join(", "));
+    }
+
+    $("#ulTacticType li input[type=checkbox]:checked").each(function () {
+
+        selectedFilters.tacticTypeTitle.push($(this).attr('tactictypetitle').toString());
+    });
+    if (selectedFilters.tacticTypeTitle.length == 0) {
+        $('#lstTType').text("None");
+    }
+    else if ($("#ulTacticType li").length == selectedFilters.tacticTypeTitle.length) {
+
+        $('#lstTType').text("All");
+    }
+    else {
+        $('#lstTType').text(selectedFilters.tacticTypeTitle.join(", "));
+    }
+
+    checkedttcount = selectedFilters.tacticTypeTitle.length;
+    $('#cTTcount').text(checkedttcount);
+
+    checkedownercount = selectedFilters.ownerName.length;
+    $('#cOwnercount').text(checkedownercount);
+
+}
 
     function OnYearChange(_yearli) {        
     //$(_yearli).siblings().each(function () {
@@ -1587,6 +1855,8 @@
         else {
             $("#" + id).removeClass("close-list");
         }
+    checkedYearcount = $('#ulSelectedYear li input:checked').length;
+    $('#cYearcount').text(checkedYearcount);
         //$(_yearli).addClass('close-list');
         // Add By Nishant Sheth
         // Desc :: #1842 multiple year selection base on #1821
@@ -2458,7 +2728,7 @@ $("#BtnShareReport").click(function () {
                 $(this).removeAttr("checked");
                 $(this).parent().removeClass("close-list");
             });
-
+    UpdateSelectedFilters();
         }
 
         function LoadPreset() {
