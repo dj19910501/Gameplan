@@ -579,7 +579,7 @@
         var IsDeselectAll = false
 
     function GetOwnerListForFilter(Planids, async,OnPlanChange) {
-
+       
         var asyncval = false;
         if (async != undefined && async != 'undefined' && async != '' && async != null) {
             asyncval = async;
@@ -605,7 +605,7 @@
 
         $('#ulSelectedOwner').html('');
       
-    
+     
         if (filters.OwnerIds != "" || OnPlanChange != true ||  ids != "") {
         
         filters.OwnerIds = [];
@@ -651,8 +651,10 @@
                                     checkedclass = "";
                                     
                                     if (OwnerItem.OwnerId == LoggedInOwner) {
+                                      
                                         IsOwnerPresent = true;
-                                            if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+                                        if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+                                           
                                         checked = "checked"
                                         checkedclass = "close-list"
                                     }
@@ -693,10 +695,13 @@
                                 //End
                                 //Modified by Nishant to bring the owner name in the list even if they dont own any tactic
                                 if (IsOwnerPresent == false) {
+                                
                                     // Modified By Nishant Sheth
                                     // Desc:: To resolve the #1790 observation
-                                    checked = "checked"
-                                    checkedclass = "close-list"
+                                    if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+                                        checked = "checked"
+                                        checkedclass = "close-list"
+                                    }
                                     $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                 }
 

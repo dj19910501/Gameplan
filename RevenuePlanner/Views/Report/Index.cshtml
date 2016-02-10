@@ -597,8 +597,10 @@
 
                                     // Modified By Nishant Sheth
                                     // Desc:: To resolve the #1790 observation
-                                    checked = "checked"
-                                    checkedclass = "close-list"
+                                    if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+                                        checked = "checked"
+                                        checkedclass = "close-list"
+                                    }
                                     $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                 }
                             }
