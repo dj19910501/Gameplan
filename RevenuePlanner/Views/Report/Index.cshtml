@@ -576,25 +576,40 @@ var AutoSelectedCustomField = 0;
 checkedYearcount = $('#ulSelectedYear li input:checked').length;
 $('#cYearcount').text(checkedYearcount);
    
-    function GetOwnerListForFilter(Planids, ifexists) {
+    var ids = [];
+    var IsDeselectAll = false
+    function GetOwnerListForFilter(Planids, ifexists, OnPlanChange) {
         var type = '@PlanGanttTypes.Tactic.ToString()';
         var asyncval = false;
         if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
             asyncval = ifexists;
         }
         //Added by Rahul Shah on 06/01/2016 for PL #1854
-        var ids = [];
+       
+        if (IsDeselectAll == true )
+        {
+            ids = [];
+        }
+       
         $('#ulSelectedOwner li').each(function () {
             if ($(this).hasClass("close-list")) {
                 var id = $(this).attr('id').replace('liOwner', '')
+                var Index = ids.indexOf(id);
+                if (Index == -1)
+                {
                 ids.push(id);
             }
 
+            }
         });
+      
     $('#ulSelectedOwner').html('');
-    if (!ifexists) {
+    
+        if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+          
         filters.OwnerIds = [];
     }
+  
     $.ajax({
         beforeSend: function (x) {
             myApp.hidePleaseWait();
@@ -633,14 +648,18 @@ $('#cYearcount').text(checkedYearcount);
                                         var LoggedInOwner = data.LoggedInUser.OwnerId;
                                         if (OwnerItem.OwnerId == LoggedInOwner) {
                                             IsOwnerPresent = true;
+                                        if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
                                             checked = "checked"
                                             checkedclass = "close-list"
                                         }
+                                    }
                                         //Added by Rahul Shah on 06/01/2016 for PL #1854
+
                                         if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
                                             checked = "checked"
                                             checkedclass = "close-list"
                                         }
+
                                         //var checked = "";
                                         //var checkedclass = "";
                                         //Modify by Rahul Shah on 28/10/2015 for PL #1438
@@ -650,13 +669,44 @@ $('#cYearcount').text(checkedYearcount);
                                         //}
 
                                         $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
+
+                                   
+
+
                                     });
+
+                                //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
+                              
+                                var OwnerIds = [];
+                                $('#ulSelectedOwner li').each(function () {
+                                    var id = $(this).attr('id').replace('liOwner', '')
+                                    OwnerIds.push(id);
+                                });
+                                var listofindex = [];
+                                for (i = 0; i < ids.length; i++) {
+                                    var index = OwnerIds.indexOf(ids[i]);
+                                    if (!(index >= 0)) {
+                                        listofindex.push(ids[i]);
+
+                                    }
+                                }
+                                $.each(listofindex, function (i) {
+                                    var Index = ids.indexOf(listofindex[i])
+                                    if (Index >= 0) {
+                                        ids.splice(Index, 1);
+                                    }
+                                });
+                               
+                          
+                             //End
                                     if (IsOwnerPresent == false) {
 
                                         // Modified By Nishant Sheth
                                         // Desc:: To resolve the #1790 observation
+                                    if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
                                         checked = "checked"
                                         checkedclass = "close-list"
+                                    }
                                         $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                     }
                                 }
@@ -691,6 +741,7 @@ $('#cYearcount').text(checkedYearcount);
                 });
             }
             else {
+                IsDeselectAll = true;
                 $("#ulSelectedOwner li").each(function (i) {
                     $(this).removeClass("close-list");
                     var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -709,6 +760,12 @@ $('#cYearcount').text(checkedYearcount);
             }
             else {
                 $("#liOwner" + id).removeClass("close-list");
+                var Index = ids.indexOf(id)
+                if (Index >= 0) {
+                    ids.splice(Index, 1);
+                }
+
+               
             }
             filters.OwnerIds = [];
             $("#ulSelectedOwner li input[type=checkbox]").each(function () {
@@ -1230,7 +1287,7 @@ function OnMultiselectchange(_checkbox, CustFieldId, count) {
             $("#" + _parentliId).addClass('close-list');
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
            
-                GetOwnerListForFilter(PlanIds, true);
+                GetOwnerListForFilter(PlanIds, true,true);
                 GetTacticTypelist(PlanIds, true);
            
         }
@@ -1238,7 +1295,7 @@ function OnMultiselectchange(_checkbox, CustFieldId, count) {
             $("#" + _parentliId).removeClass('close-list');
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
           
-                GetOwnerListForFilter(PlanIds, true);
+                GetOwnerListForFilter(PlanIds,true,true);
                 GetTacticTypelist(PlanIds, true);
           
         }
@@ -1364,13 +1421,14 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
                     var indexofplan = $.inArray(pid, selectedPlanIds);
                     if (indexofplan > -1) {
                         $(this).attr("checked", "checked");
-                        OnPlanchange($(this));
+                        //Commented By komal rawal for 1984 owner did not remain selected when year changes.
+                       // OnPlanchange($(this));
                     }
                 });
                 // End By Nishant Sheth
                 PlanIds = GetFilterIdForPlan(multiselectPlanId);
                 GetTacticTypelist(PlanIds,false);
-                GetOwnerListForFilter(PlanIds,false);
+                GetOwnerListForFilter(PlanIds,false,true);
             }
         });
     }
@@ -1386,6 +1444,7 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
             });
         }
         else {
+            IsDeselectAll = true;
             $(ulPlanli).each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -1395,7 +1454,7 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
         checkedPlancount = $("#ulSelectedPlans li input:checkbox:checked").length;
         $('#cPlancount').text(checkedPlancount);
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
-        GetOwnerListForFilter(PlanIds,true);
+        GetOwnerListForFilter(PlanIds,true,true);
         GetTacticTypelist(PlanIds, true);
         
     }
@@ -1586,9 +1645,15 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
             var isShowAddActual = 0;
             $('#' + ulPlanId).find("input[type='checkbox']").each(function () {
                 if (this.checked) {
+                    $(this).parent().addClass("close-list");
                     isShowAddActual++;
                     var splitvalue = $(this).attr('id').split("_");
                     finalValue += splitvalue[0] + ",";
+                }
+                else
+                {
+                    $(this).parent().removeClass("close-list");
+
                 }
             });
 
