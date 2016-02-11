@@ -1069,7 +1069,7 @@ $('#cYearcount').text(checkedYearcount);
 
     function SaveLastSetofViews(ViewName) {
         filters.customFieldIds = [];
-
+        filters.TacticTypeids = [];
         //modified by komak rawal for 1911 Owner filter is gettind deselected from moving to homepage from Report
         filters.OwnerIds = [];
         filters.parentCustomFieldsIds = [];
@@ -1079,7 +1079,15 @@ $('#cYearcount').text(checkedYearcount);
         });
         //End
         $('#divCustomFieldsFilter').children().each(function () {
-            filters.parentCustomFieldsIds.push($(this).attr('id').split('-')[1])
+            var custID = $(this).attr("id");
+            filters.parentCustomFieldsIds.push(custID.replace("accordion", ""));
+        });
+        $("#ulTacticType li input[type=checkbox]").each(function () {
+
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+            }
         });
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
