@@ -117,7 +117,7 @@
              <div id="accordion-SelectedFilter" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">View Selected Filters<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">View Selected Filters<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
                         <ul class="scroll-list singleselect" id="ulSelectedFilter">
@@ -816,12 +816,10 @@
             CurrentPlanId = $(this).attr('value');
             IsSavedPlan = $("#CurrentPlanId").val();
             if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
-                $('#divCustomFieldsFilter').find("li").each(function (i) {
-                    //$(this).removeClass("close-list");
-                    $(this).addClass("close-list");
-                    var chkid = $(this).find("input[type=checkbox]").attr("id");
-                    //$("#" + chkid).removeAttr("checked");
-                    $("#" + chkid).attr("checked", "checked");
+                $('#divCustomFieldsFilter li input:checkbox').each(function (i) {
+                    $(this).parent().addClass("close-list");
+                    var chkid = $(this).attr("id");
+                    $(this).attr("checked", "checked");
                 });
 
                 $("#accordion-Year li input:checkbox:checked").each(function () {

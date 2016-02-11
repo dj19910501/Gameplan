@@ -494,11 +494,11 @@
                 //Added by Rahul Shah for PL #1898
 
                 if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
-
-                    $('#divCustomFieldsFilter').find("li").each(function (i) {
-                        $(this).addClass("close-list");
-                        var chkid = $(this).find("input[type=checkbox]").attr("id");
-                        $("#" + chkid).attr("checked","checked");
+                    //modified by Rahul shah for designing issue in custom field.. display extra close icon
+                    $('#divCustomFieldsFilter li input:checkbox').each(function (i) {
+                        $(this).parent().addClass("close-list");
+                        var chkid = $(this).attr("id");
+                        $(this).attr("checked", "checked");
                     });
 
                     $("#accordion-Year li input:checkbox:checked").each(function () {
@@ -553,12 +553,12 @@
                 IsSavedPlan = '@PreviousPlanID.ToString()';
          
             if (IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) {
-                $('#divCustomFieldsFilter').find("li").each(function (i) {
-                    $(this).addClass("close-list");
-                    var chkid = $(this).find("input[type=checkbox]").attr("id");
-                    $("#" + chkid).attr("checked", "checked");
+                //modified by Rahul shah for designing issue in custom field.. display extra close icon
+                $('#divCustomFieldsFilter li input:checkbox').each(function (i) {
+                    $(this).parent().addClass("close-list");
+                    var chkid = $(this).attr("id");
+                    $(this).attr("checked", "checked");
                 });
-
                 $("#accordion-Year li input:checkbox:checked").each(function () {
                     $(this).removeAttr("checked");
                     $(this).parent().removeClass("close-list");
@@ -1024,7 +1024,7 @@
             <div id="accordion-SelectedFilter" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">View Selected Filters<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">View Selected Filters<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
                         <ul class="scroll-list singleselect" id="ulSelectedFilter">
