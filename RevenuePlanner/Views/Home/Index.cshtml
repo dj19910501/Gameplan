@@ -2954,6 +2954,7 @@
         @*var pid = $("#CurrentPlanId").val();
         var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
         window.location.href = url;*@
+        var currentplanid = $("#CurrentPlanId").val();// Add By Nishant Sheth #1981 export pdf issue for plan tab.
         $("#lblMarkringActivitiesTitle").hide();
         $("#nl-form2").show();
         $("#DivButtonsHome").hide();
@@ -2964,8 +2965,9 @@
         $("#accordion-2").css("display", "none");
         $("#accordion-Year").css("display", "none");
         $("#CalenderView").hide();
+        $("#dropdown-plan-title").val(currentplanid);// Add By Nishant Sheth #1981 export pdf issue for plan tab.
         $("#nl-form2 .nl-dd-checked").removeClass("nl-dd-checked");
-        $("#nl-form2").find("li[value=" + $("#CurrentPlanId").val() + "]").addClass("nl-dd-checked");
+        $("#nl-form2").find("li[value=" + currentplanid + "]").addClass("nl-dd-checked");
         $("#nl-form2 .nl-field-toggle").html($("#nl-form2").find("li[value=" + $("#CurrentPlanId").val() + "]").attr("originalvalue"));
         $('.plan').addClass('active');
         $('.home').removeClass('active');
@@ -2975,7 +2977,7 @@
 
     function CallPDF() {
         //  $("#gantt_here").css("Width", $("#testdiv").width());
-       
+        
         if ($("#NodatawithfilterCalendar").css('display') == "block")
         {
             return false;
@@ -3005,7 +3007,7 @@
         });
       
       
-
+        
         if (activeMenu == 'home') {
             if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
                 $.each(PdfFilters.SelectedPlans, function () {
@@ -3023,8 +3025,9 @@
             }
         }
         else {
-           
-            innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text()+",";
+            // Modified By Nishant Sheth
+            // Desc :: #1981 export pdf issue for plan name display undefined
+            innerfiltervalueplan += " " + $("#dropdown-plan-title option:selected").text() + ",";
         }
 
         var isAvailablerecord = false;
@@ -3699,7 +3702,9 @@
             }
         }
         else {
-            innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text() + ",";
+            // Modified By Nishant Sheth
+            // Desc :: #1981 export pdf issue for plan name display undefined
+            innerfiltervalueplan += " " + $("#dropdown-plan-title option:selected").text() + ",";
         }
 
 
