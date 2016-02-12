@@ -113,7 +113,7 @@
     var state0 = 0;
     //Added By komal rawal for #1283
     //  var isTacticExist = false;
-    function LoadTacticTypelist(data) {
+    function LoadTacticTypelist(data, tacids) {
 
         if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
             TactictypeCount = data.TacticTypelist.length;
@@ -124,11 +124,42 @@
                 $.each(data.TacticTypelist, function (i, TactictypeItem) {
                     //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
                         //var checked = "";
-                        //var checkedclass = "";                        
+                    //var checkedclass = ""; 
+                    //Added by Maitri Gandhi for #1952
+                    var checkedclass = "";
+                    var checked = "";
+                    if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
                         checked = "checked"
                         checkedclass = "close-list"
+                    }
+                    if (tacids.length == 0 && IsDeselectAllTactics == false) {
+                        checked = "checked"
+                        checkedclass = "close-list"
+                    }
                     $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                 });
+                //Added by Maitri Gandhi for #1952
+                var TacticIds = [];
+                $('#ulTacticType li').each(function () {
+                    var id = $(this).attr('id').replace('liTT', '')
+                    TacticIds.push(id);
+                });
+                var listofindex = [];
+                for (i = 0; i < tacids.length; i++) {
+                    var index = TacticIds.indexOf(tacids[i]);
+                    if (!(index >= 0)) {
+                        listofindex.push(tacids[i]);
+
+                    }
+                }
+                $.each(listofindex, function (i) {
+                    var Index = tacids.indexOf(listofindex[i])
+                    if (Index >= 0) {
+                        tacids.splice(Index, 1);
+                    }
+                });
+
+                //End
 
             }
             else {
@@ -137,13 +168,29 @@
             }
         }
     }
-    function GetTacticTypelist(Planids, async) {
+    var tacids = [];
+    var IsDeselectAllTactics = false;
+    function GetTacticTypelist(Planids, async, OnPlanChange) {
 
         var asyncval = false;
         if (async != undefined && async != 'undefined' && async != '' && async != null) {
             asyncval = async;
         }
-
+        else {
+            asyncval = false;
+        }        
+        if (IsDeselectAllTactics == true) {
+            tacids = [];
+        }
+        $('#ulTacticType li').each(function () {
+            if ($(this).hasClass("close-list")) {
+                var id = $(this).attr('id').replace('liTT', '')
+                var Index = tacids.indexOf(id);
+                if (Index == -1) {
+                    tacids.push(id);
+                }
+            }
+        });
         $('#ulTacticType').html('');
 
         filters.TacticTypeids = [];
@@ -169,7 +216,7 @@
                 }
                 else {
                     if (data.isSuccess == true) {
-                        LoadTacticTypelist(data);
+                        LoadTacticTypelist(data, tacids);
                     }
                     else {
                         $("#TacticTypeAllModule").css("display", "none");
@@ -206,6 +253,7 @@
 
         }
         else {
+            IsDeselectAllTactics = true;
             //    TacticDeselectAll = true;
             $("#ulTacticType li").each(function (i) {
                 $(this).removeClass("close-list");
@@ -226,6 +274,10 @@
             $("#liTT" + id).addClass("close-list");
         }
         else {
+            var Index = tacids.indexOf(id)
+            if (Index >= 0) {
+                tacids.splice(Index, 1);
+            }
             $("#liTT" + id).removeClass("close-list");
         }
 
@@ -2552,7 +2604,7 @@
                         }
                     }
                 });
-                GetTacticTypelist(planids, true);
+                GetTacticTypelist(planids, true, true);
                 GetOwnerListForFilter(planids, true,true);
             }
         });
@@ -2880,6 +2932,7 @@
         }
         else {
             IsDeselectAll = true;
+            IsDeselectAllTactics = true;
             $("#ulSelectedPlans li").each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -2899,7 +2952,7 @@
       
         if (activeMenu.toLowerCase() == 'home') {
             GetOwnerListForFilter(planids, true,true);
-            GetTacticTypelist(planids, true);
+            GetTacticTypelist(planids, true, true);
         }
       
     }

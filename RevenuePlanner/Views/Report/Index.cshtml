@@ -777,12 +777,28 @@ $('#cYearcount').text(checkedYearcount);
         checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
         $('#cOwnercount').text(checkedOwnercount);
         }
-
+        var tacids = [];
+        var IsDeselectAllTactics = false;
         function GetTacticTypelist(Planids, ifexists) {
             var asyncval = false;
             if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
                 asyncval = ifexists;
             }
+            else {
+                asyncval = false;
+            }
+            if (IsDeselectAllTactics == true) {
+                tacids = [];
+            }
+            $('#ulTacticType li').each(function () {
+                if ($(this).hasClass("close-list")) {
+                    var id = $(this).attr('id').replace('liTT', '')
+                    var Index = tacids.indexOf(id);
+                    if (Index == -1) {
+                        tacids.push(id);
+                    }
+                }
+            });
 
             $('#ulTacticType').html('');
             if (!ifexists) {
@@ -816,12 +832,39 @@ $('#cYearcount').text(checkedYearcount);
                                       var checked = "";
                                       var checkedclass = "";
                                       //Modify by Rahul Shah on 28/10/2015 for PL #1438
-                                     
+                                      if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
                                     checked = "checked";
                                     checkedclass = "close-list";
+                                      }
+                                      if (tacids.length == 0 && IsDeselectAllTactics == false) {
+                                          checked = "checked"
+                                          checkedclass = "close-list"
+                                      }
                                       //}
                                       $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                                   });
+                                  //Added by Maitri Gandhi for #1952
+                                  var TacticIds = [];
+                                  $('#ulTacticType li').each(function () {
+                                      var id = $(this).attr('id').replace('liTT', '')
+                                      TacticIds.push(id);
+                                  });
+                                  var listofindex = [];
+                                  for (i = 0; i < tacids.length; i++) {
+                                      var index = TacticIds.indexOf(tacids[i]);
+                                      if (!(index >= 0)) {
+                                          listofindex.push(tacids[i]);
+
+                                      }
+                                  }
+                                  $.each(listofindex, function (i) {
+                                      var Index = tacids.indexOf(listofindex[i])
+                                      if (Index >= 0) {
+                                          tacids.splice(Index, 1);
+                                      }
+                                  });
+
+                                  //End
                               }
                               else {
                                   $("#TacticTypeAllModule").css("display", "none");
@@ -1435,7 +1478,7 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
                 });
                 // End By Nishant Sheth
                 PlanIds = GetFilterIdForPlan(multiselectPlanId);
-                GetTacticTypelist(PlanIds,false);
+                GetTacticTypelist(PlanIds,false,true);
                 GetOwnerListForFilter(PlanIds,false,true);
             }
         });
@@ -1453,6 +1496,7 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
         }
         else {
             IsDeselectAll = true;
+            IsDeselectAllTactics = true;
             $(ulPlanli).each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -1463,7 +1507,7 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
         $('#cPlancount').text(checkedPlancount);
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         GetOwnerListForFilter(PlanIds,true,true);
-        GetTacticTypelist(PlanIds, true);
+        GetTacticTypelist(PlanIds, true,true);
         
     }
 
