@@ -1378,7 +1378,7 @@ namespace RevenuePlanner.Controllers
                 }
                 ViewBag.WorkFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
                                                              modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name)
-                                                 .Select(modelTemplate => new { modelTemplate.TemplateId, modelTemplate.Template_Name }).Distinct().ToList();
+                                                 .Select(modelTemplate => new { modelTemplate.ID, modelTemplate.Template_Name }).Distinct().ToList();
                 ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
                 //End addition by Brad Gray for PL#1734
             }

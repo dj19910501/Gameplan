@@ -708,7 +708,7 @@
         });
 
         var isModelIntegratedWorkFront = '@ViewBag.IsModelIntegratedWorkFront';
-        if ($("#t_integration_status").hasClass("icon-check-blue") && isModelIntegratedWorkFront == "True") //if false, elements aren't displayed. updated by Brad Gray 22 Jan 2016 PL#1894
+        if (isModelIntegratedWorkFront == "True") //if false, elements aren't displayed. updated by Brad Gray 22 Jan 2016 PL#1894, 12 Feb 2016 #1990
         {
             var workFrontApproval = @Html.Raw(Json.Encode(Model.WorkFrontTacticApprovalBehavior));
             var requestBtn = document.getElementById('workFrontRequestOnApproval');
