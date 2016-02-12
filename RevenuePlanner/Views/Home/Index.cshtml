@@ -11,7 +11,7 @@
     //// Modified By Maninder Singh Wadhva PL Ticket#47
     bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
-    string  FilterName = Sessions.FilterPresetName;
+    string FilterName = Sessions.FilterPresetName;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable; //Added By Komal Rawal for new homepage UI
@@ -28,7 +28,7 @@
     var ListBudgetingPlan = Model.objplanhomemodelheader != null ? Model.objplanhomemodelheader.plans : new List<SelectListItem>(); //Added By Komal Rawal for new homepage UI
     var IsGridView = (bool)ViewBag.GridView;
     var IsPlanSelector = (bool)ViewBag.IsPlanSelector;
- //   var IsSavedPlan = (string)ViewBag.LastSavedPlanIDs;
+    //   var IsSavedPlan = (string)ViewBag.LastSavedPlanIDs;
     var PreviousPlanID = (int)ViewBag.PreviousPlanID;
     //Added by Ravindra for  PL Ticket #1411 date 07/07/2015
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
@@ -108,456 +108,519 @@
 
 @section Sidebar{
     <script type="text/javascript">
-    var GetLastview = true;
-    var pageIsScroll = false;
-    var state0 = 0;
-    //Added By komal rawal for #1283
-    //  var isTacticExist = false;
-    function LoadTacticTypelist(data, tacids) {
+        var GetLastview = true;
+        var pageIsScroll = false;
+        var state0 = 0;
+        //Added By komal rawal for #1283
+        //  var isTacticExist = false;
+        function LoadTacticTypelist(data, tacids) {
 
-        if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
-            TactictypeCount = data.TacticTypelist.length;
-            if (TactictypeCount > 0) {
-                $("#TacticTypeAllModule").css("display", "block");
-                $("#NoTTFound").hide();
-                $('#ulTacticType li').remove();
-                $.each(data.TacticTypelist, function (i, TactictypeItem) {
-                    //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
+            if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
+                TactictypeCount = data.TacticTypelist.length;
+                if (TactictypeCount > 0) {
+                    $("#TacticTypeAllModule").css("display", "block");
+                    $("#NoTTFound").hide();
+                    $('#ulTacticType li').remove();
+                    $.each(data.TacticTypelist, function (i, TactictypeItem) {
+                        //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
                         //var checked = "";
-                    //var checkedclass = ""; 
+                        //var checkedclass = "";
+                        //Added by Maitri Gandhi for #1952
+                        var checkedclass = "";
+                        var checked = "";
+                        if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                            checked = "checked"
+                            checkedclass = "close-list"
+                        }
+                        if (tacids.length == 0 && IsDeselectAllTactics == false) {
+                            checked = "checked"
+                            checkedclass = "close-list"
+                        }
+                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
+                    });
                     //Added by Maitri Gandhi for #1952
-                    var checkedclass = "";
-                    var checked = "";
-                    if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
-                        checked = "checked"
-                        checkedclass = "close-list"
+                    var TacticIds = [];
+                    $('#ulTacticType li').each(function () {
+                        var id = $(this).attr('id').replace('liTT', '')
+                        TacticIds.push(id);
+                    });
+                    var listofindex = [];
+                    for (i = 0; i < tacids.length; i++) {
+                        var index = TacticIds.indexOf(tacids[i]);
+                        if (!(index >= 0)) {
+                            listofindex.push(tacids[i]);
+
+                        }
                     }
-                    if (tacids.length == 0 && IsDeselectAllTactics == false) {
-                        checked = "checked"
-                        checkedclass = "close-list"
-                    }
-                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
-                });
-                //Added by Maitri Gandhi for #1952
-                var TacticIds = [];
-                $('#ulTacticType li').each(function () {
-                    var id = $(this).attr('id').replace('liTT', '')
-                    TacticIds.push(id);
-                });
-                var listofindex = [];
-                for (i = 0; i < tacids.length; i++) {
-                    var index = TacticIds.indexOf(tacids[i]);
-                    if (!(index >= 0)) {
-                        listofindex.push(tacids[i]);
+                    $.each(listofindex, function (i) {
+                        var Index = tacids.indexOf(listofindex[i])
+                        if (Index >= 0) {
+                            tacids.splice(Index, 1);
+                        }
+                    });
 
-                    }
-                }
-                $.each(listofindex, function (i) {
-                    var Index = tacids.indexOf(listofindex[i])
-                    if (Index >= 0) {
-                        tacids.splice(Index, 1);
-                    }
-                });
+                    //End
 
-                //End
-
-            }
-            else {
-                $("#TacticTypeAllModule").css("display", "none");
-                $("#NoTTFound").show();
-            }
-        }
-    }
-    var tacids = [];
-    var IsDeselectAllTactics = false;
-    function GetTacticTypelist(Planids, async, OnPlanChange) {
-
-        var asyncval = false;
-        if (async != undefined && async != 'undefined' && async != '' && async != null) {
-            asyncval = async;
-        }
-        else {
-            asyncval = false;
-        }        
-        if (IsDeselectAllTactics == true) {
-            tacids = [];
-        }
-        $('#ulTacticType li').each(function () {
-            if ($(this).hasClass("close-list")) {
-                var id = $(this).attr('id').replace('liTT', '')
-                var Index = tacids.indexOf(id);
-                if (Index == -1) {
-                    tacids.push(id);
-                }
-            }
-        });
-        $('#ulTacticType').html('');
-
-        filters.TacticTypeids = [];
-
-        $.ajax({
-            beforeSend: function (x) {
-                if (!asyncval) {
-                    myApp.showPleaseWait();
-                }
-            },
-            type: "GET",
-            cache: false,
-            async: asyncval,
-            url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
-            data: {
-                PlanId: Planids.toString()
-            },
-            dataType: "json",
-            success: function (data) {
-
-                if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
-                    if (data.isSuccess == true) {
-                        LoadTacticTypelist(data, tacids);
-                    }
-                    else {
-                        $("#TacticTypeAllModule").css("display", "none");
-                        $("#NoTTFound").show();
-                    }
-                    TactictypeCount = $("#ulTacticType li").length;
-                    checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
-                    $('#tTTcount').text('/' + TactictypeCount);
-                    $('#cTTcount').text(checkedTTcount);
-                    //if (GetLastview == true) {
-                    //    LastSetofTT();
-                    //}
-
-                    async = true;
-
+                    $("#TacticTypeAllModule").css("display", "none");
+                    $("#NoTTFound").show();
                 }
             }
-        });
-
-    }
-
-    //  var TacticDeselectAll = false;
-    function BulkTTOperation(selection) {
-        GetLastview = false;
-        filters.TacticTypeids = [];
-        if (selection) {
-            $("#ulTacticType li").each(function (i) {
-                $(this).addClass("close-list");
-                var chkid = $(this).find("input[type=checkbox]").attr("id");
-                $("#" + chkid).attr("checked", "checked");
-                filters.TacticTypeids.push(chkid.replace("CbTT", ""));
-
-            });
-
         }
-        else {
-            IsDeselectAllTactics = true;
-            //    TacticDeselectAll = true;
-            $("#ulTacticType li").each(function (i) {
-                $(this).removeClass("close-list");
-                var chkid = $(this).find("input[type=checkbox]").attr("id");
-                $("#" + chkid).removeAttr("checked");
-            });
+        var tacids = [];
+        var IsDeselectAllTactics = false;
+        function GetTacticTypelist(Planids, async, OnPlanChange) {
 
-        }
-        checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
-        $('#cTTcount').text(checkedTTcount);
-    }
-
-    var SelectedCustomFieldOption;
-    function toggleTacticType(obj) {
-        GetLastview = false;
-        var id = $(obj).attr('id').toString().replace("CbTT", "");
-        if ($(obj).is(':checked')) {
-            $("#liTT" + id).addClass("close-list");
-        }
-        else {
-            var Index = tacids.indexOf(id)
-            if (Index >= 0) {
-                tacids.splice(Index, 1);
-            }
-            $("#liTT" + id).removeClass("close-list");
-        }
-
-        filters.TacticTypeids = [];
-        $("#ulTacticType li input[type=checkbox]").each(function () {
-            var chkid = $(this).attr("id");
-            if ($(this).is(':checked')) {
-                filters.TacticTypeids.push(chkid.replace("CbTT", ""));
-            }
-        });
-        checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
-        $('#cTTcount').text(checkedTTcount);
-
-
-    }
-
-    //End
-    // Edited to add PlanYear option.
-    var Currenttime = "thisquarter";
-
-    $(document).ready(function () {
-        var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
-        //  $("#nl-form2").hide();
-        //Added by Nirav for Custom Dropdown - 388
-
-        var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
-        var years = "";
-        $.each(listCheckbox, function () {
-            if ($(this).attr("checked")) {
-                years += $(this).attr('yearValue') + ",";
-            }
-        });
-        years = years.slice(0, -1);
-
-        $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&fltrYears=' + years, function (response, status, xhr) {
-            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                //// Call function to redirect on service unavailibility.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-            }
-        });//activeMenu parameter added
-
-        switch ($('#ActiveMenu').val().toLowerCase()) {
-            case 'home':
-                $("#DivButtonsHome").show();
-                $("#DivButtonsPlanSummary").hide();
-                break;
-            case 'plan':
-                $("#DivButtonsHome").hide();
-                $("#DivButtonsPlanSummary").show();
-                break;
-        }
-        $("#modalMainContainer").hide();
-
-        //   if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
-        //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
-        $('.toggleStatus').click(function () {
-            $(this).hide();
-            $('.toggle-status div').show();
-            showTacticStatus = true;
-            RefreshCurrentTab();
-            gantt.refreshData();
-        });
-
-        $('.toggleStatusHide').click(function () {
-            $('.toggleStatus').show();
-            $('.toggle-status div').hide();
-            showTacticStatus = false;
-            RefreshCurrentTab();
-            gantt.refreshData();
-        });
-        //// End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
-
-        $('.gantt-padding').removeClass('padding-top0');
-        $('#DivloadPlan').removeClass('no-bottom-border');
-        // }
-        // else {
-        //      $('.gantt-padding').addClass('padding-top0');
-        //     $('#DivloadPlan').addClass('no-bottom-border');
-        // }
-
-
-        // #1780
-        // Created funtion to Select or Clear Plan/Campaign/Program/Tactic
-        // Added By Ashish Mistry On 27-11-2015
-
-        $(document).on("click", ".honeycombbox-icon-gantt", function (e) {
-            CloseClick = false;
-            var entityType = $(this).attr('id').toUpperCase().toString();
-            var task_id = $(this).attr('name1');
-            //gantt.open(task_id);
-            switch (entityType) {
-                case 'PLAN':
-                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                        $(this).removeClass("honeycombbox-icon-gantt-Active");
-                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                        if (index >= 0) {
-                            ExportSelectedIds.TaskID.splice(index, 1);
-                            ExportSelectedIds.Title.splice(index, 1);
-                            ExportSelectedIds.OwnerName.splice(index, 1);
-                            ExportSelectedIds.TacticType.splice(index, 1);
-                            ExportSelectedIds.ColorCode.splice(index, 1);
-                            ExportSelectedIds.PlanFlag.splice(index, 1);
-                        }
-                        //var innertask = gantt.getChildren(task_id);
-                        //gantt.eachTask(function (task) {
-
-                        //    var tId = task.id;
-
-                        //    var index = innertask.indexOf(tId);
-                        //    if (index >= 0 || tId == task_id) {
-                        //        task.$open = true;
-                        //    }
-                        //});
-                        // gantt.render();
-                    }
-                    else {
-                        $(this).addClass("honeycombbox-icon-gantt-Active");
-                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                        ExportSelectedIds.PlanFlag.push('Calender');
-
-                        //var innertask = gantt.getChildren(task_id);
-                        //gantt.eachTask(function (task) {
-
-                        //    var tId = task.id;
-
-                        //    var index = innertask.indexOf(tId);
-                        //    if (index >= 0 || tId == task_id) {
-                        //        task.$open = true;
-                        //    }
-                        //});
-                        // gantt.render();
-                    }
-                    break;
-                case 'CAMPAIGN':
-                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                        //var innertask = gantt.getChildren($(this).attr('name1'));
-                        //gantt.eachTask(function (task) {
-                        //    var tId = task.id;
-
-                        //    var index = innertask.indexOf(tId);
-                        //    if (index >= 0 || tId == task_id) {
-                        //        task.$open = true;
-                        //    }
-                        //});
-                        // gantt.render();
-                        $(this).removeClass("honeycombbox-icon-gantt-Active");
-                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                        if (index >= 0) {
-                            ExportSelectedIds.TaskID.splice(index, 1);
-                            ExportSelectedIds.Title.splice(index, 1);
-                            ExportSelectedIds.OwnerName.splice(index, 1);
-                            ExportSelectedIds.TacticType.splice(index, 1);
-                            ExportSelectedIds.ColorCode.splice(index, 1);
-                            ExportSelectedIds.PlanFlag.splice(index, 1);
-                        }
-
-                    }
-                    else {
-                        $(this).addClass("honeycombbox-icon-gantt-Active");
-                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                        ExportSelectedIds.PlanFlag.push('Calender');
-                        //var innertask = gantt.getChildren($(this).attr('name1'));
-                        //gantt.eachTask(function (task) {
-                        //    var tId = task.id;
-
-                        //    var index = innertask.indexOf(tId);
-                        //    if (index >= 0 || tId == task_id) {
-
-                        //        task.$open = true;
-                        //    }
-                        //});
-                        //  gantt.render();
-                    }
-                    break;
-                case 'PROGRAM':
-                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                        //gantt.open($(this).attr('name1'));
-
-                        //gantt.render();
-                        $(this).removeClass("honeycombbox-icon-gantt-Active");
-                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                        if (index >= 0) {
-                            ExportSelectedIds.TaskID.splice(index, 1);
-                            ExportSelectedIds.Title.splice(index, 1);
-                            ExportSelectedIds.OwnerName.splice(index, 1);
-                            ExportSelectedIds.TacticType.splice(index, 1);
-                            ExportSelectedIds.ColorCode.splice(index, 1);
-                            ExportSelectedIds.PlanFlag.splice(index, 1);
-                        }
-                    }
-                    else {
-                        $(this).addClass("honeycombbox-icon-gantt-Active");
-                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                        ExportSelectedIds.PlanFlag.push('Calender');
-                        //gantt.open($(this).attr('name1'));
-                    }
-                    break;
-                case 'TACTIC':
-                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                        $(this).removeClass("honeycombbox-icon-gantt-Active");
-                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                        if (index >= 0) {
-                            ExportSelectedIds.TaskID.splice(index, 1);
-                            ExportSelectedIds.Title.splice(index, 1);
-                            ExportSelectedIds.OwnerName.splice(index, 1);
-                            ExportSelectedIds.TacticType.splice(index, 1);
-                            ExportSelectedIds.ColorCode.splice(index, 1);
-                            ExportSelectedIds.PlanFlag.splice(index, 1);
-                        }
-                        $(this).addClass("honeycombbox-icon-gantt");
-                    }
-                    else {
-                        $(this).addClass("honeycombbox-icon-gantt-Active");
-                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                        ExportSelectedIds.PlanFlag.push('Calender');
-                    }
-                    break;
-            }
-
-            if ($('.honeycombbox-icon-gantt-Active').length == 0) {
-                $(".honeycombbox").hide();
+            var asyncval = false;
+            if (async != undefined && async != 'undefined' && async != '' && async != null) {
+                asyncval = async;
             }
             else {
-
-                $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
-                $(".honeycombbox").show();
+                asyncval = false;
             }
-            //$("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+            if (IsDeselectAllTactics == true) {
+                tacids = [];
+            }
+            $('#ulTacticType li').each(function () {
+                if ($(this).hasClass("close-list")) {
+                    var id = $(this).attr('id').replace('liTT', '')
+                    var Index = tacids.indexOf(id);
+                    if (Index == -1) {
+                        tacids.push(id);
+                    }
+                }
+            });
+            $('#ulTacticType').html('');
+
+            filters.TacticTypeids = [];
+
+            $.ajax({
+                beforeSend: function (x) {
+                    if (!asyncval) {
+                        myApp.showPleaseWait();
+                    }
+                },
+                type: "GET",
+                cache: false,
+                async: asyncval,
+                url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
+                data: {
+                    PlanId: Planids.toString()
+                },
+                dataType: "json",
+                success: function (data) {
+
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
+                        if (data.isSuccess == true) {
+                            LoadTacticTypelist(data, tacids);
+                        }
+                        else {
+                            $("#TacticTypeAllModule").css("display", "none");
+                            $("#NoTTFound").show();
+                        }
+                        TactictypeCount = $("#ulTacticType li").length;
+                        checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
+                        $('#tTTcount').text('/' + TactictypeCount);
+                        $('#cTTcount').text(checkedTTcount);
+                        //if (GetLastview == true) {
+                        //    LastSetofTT();
+                        //}
+
+                        async = true;
+
+                    }
+                }
+            });
+
+        }
+
+        //  var TacticDeselectAll = false;
+        function BulkTTOperation(selection) {
+            GetLastview = false;
+            filters.TacticTypeids = [];
+            if (selection) {
+                $("#ulTacticType li").each(function (i) {
+                    $(this).addClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).attr("checked", "checked");
+                    filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+
+                });
+
+            }
+            else {
+                IsDeselectAllTactics = true;
+                //    TacticDeselectAll = true;
+                $("#ulTacticType li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).removeAttr("checked");
+                });
+
+            }
+            checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
+            $('#cTTcount').text(checkedTTcount);
+        }
+
+        var SelectedCustomFieldOption;
+        function toggleTacticType(obj) {
+            GetLastview = false;
+            var id = $(obj).attr('id').toString().replace("CbTT", "");
+            if ($(obj).is(':checked')) {
+                $("#liTT" + id).addClass("close-list");
+            }
+            else {
+                var Index = tacids.indexOf(id)
+                if (Index >= 0) {
+                    tacids.splice(Index, 1);
+                }
+                $("#liTT" + id).removeClass("close-list");
+            }
+
+            filters.TacticTypeids = [];
+            $("#ulTacticType li input[type=checkbox]").each(function () {
+                var chkid = $(this).attr("id");
+                if ($(this).is(':checked')) {
+                    filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+                }
+            });
+            checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
+            $('#cTTcount').text(checkedTTcount);
+
+
+        }
+
+        //End
+        // Edited to add PlanYear option.
+        var Currenttime = "thisquarter";
+
+        $(document).ready(function () {
+            var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
+            //  $("#nl-form2").hide();
+            //Added by Nirav for Custom Dropdown - 388
+
+            var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+            var years = "";
+            $.each(listCheckbox, function () {
+                if ($(this).attr("checked")) {
+                    years += $(this).attr('yearValue') + ",";
+                }
+            });
+            years = years.slice(0, -1);
+
+            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&fltrYears=' + years, function (response, status, xhr) {
+                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                    //// Call function to redirect on service unavailibility.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
+            });//activeMenu parameter added
+
+            switch ($('#ActiveMenu').val().toLowerCase()) {
+                case 'home':
+                    $("#DivButtonsHome").show();
+                    $("#DivButtonsPlanSummary").hide();
+                    break;
+                case 'plan':
+                    $("#DivButtonsHome").hide();
+                    $("#DivButtonsPlanSummary").show();
+                    break;
+            }
+            $("#modalMainContainer").hide();
+
+            //   if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
+            //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+            $('.toggleStatus').click(function () {
+                $(this).hide();
+                $('.toggle-status div').show();
+                showTacticStatus = true;
+                RefreshCurrentTab();
+                gantt.refreshData();
+            });
+
+            $('.toggleStatusHide').click(function () {
+                $('.toggleStatus').show();
+                $('.toggle-status div').hide();
+                showTacticStatus = false;
+                RefreshCurrentTab();
+                gantt.refreshData();
+            });
+            //// End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+
+            $('.gantt-padding').removeClass('padding-top0');
+            $('#DivloadPlan').removeClass('no-bottom-border');
+            // }
+            // else {
+            //      $('.gantt-padding').addClass('padding-top0');
+            //     $('#DivloadPlan').addClass('no-bottom-border');
+            // }
+
+
+            // #1780
+            // Created funtion to Select or Clear Plan/Campaign/Program/Tactic
+            // Added By Ashish Mistry On 27-11-2015
+
+            $(document).on("click", ".honeycombbox-icon-gantt", function (e) {
+                CloseClick = false;
+                var entityType = $(this).attr('id').toUpperCase().toString();
+                var task_id = $(this).attr('name1');
+                //gantt.open(task_id);
+                switch (entityType) {
+                    case 'PLAN':
+                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                            $(this).removeClass("honeycombbox-icon-gantt-Active");
+                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                            if (index >= 0) {
+                                ExportSelectedIds.TaskID.splice(index, 1);
+                                ExportSelectedIds.Title.splice(index, 1);
+                                ExportSelectedIds.OwnerName.splice(index, 1);
+                                ExportSelectedIds.TacticType.splice(index, 1);
+                                ExportSelectedIds.ColorCode.splice(index, 1);
+                                ExportSelectedIds.PlanFlag.splice(index, 1);
+                            }
+                            //var innertask = gantt.getChildren(task_id);
+                            //gantt.eachTask(function (task) {
+
+                            //    var tId = task.id;
+
+                            //    var index = innertask.indexOf(tId);
+                            //    if (index >= 0 || tId == task_id) {
+                            //        task.$open = true;
+                            //    }
+                            //});
+                            // gantt.render();
+                        }
+                        else {
+                            $(this).addClass("honeycombbox-icon-gantt-Active");
+                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                            ExportSelectedIds.PlanFlag.push('Calender');
+
+                            //var innertask = gantt.getChildren(task_id);
+                            //gantt.eachTask(function (task) {
+
+                            //    var tId = task.id;
+
+                            //    var index = innertask.indexOf(tId);
+                            //    if (index >= 0 || tId == task_id) {
+                            //        task.$open = true;
+                            //    }
+                            //});
+                            // gantt.render();
+                        }
+                        break;
+                    case 'CAMPAIGN':
+                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                            //var innertask = gantt.getChildren($(this).attr('name1'));
+                            //gantt.eachTask(function (task) {
+                            //    var tId = task.id;
+
+                            //    var index = innertask.indexOf(tId);
+                            //    if (index >= 0 || tId == task_id) {
+                            //        task.$open = true;
+                            //    }
+                            //});
+                            // gantt.render();
+                            $(this).removeClass("honeycombbox-icon-gantt-Active");
+                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                            if (index >= 0) {
+                                ExportSelectedIds.TaskID.splice(index, 1);
+                                ExportSelectedIds.Title.splice(index, 1);
+                                ExportSelectedIds.OwnerName.splice(index, 1);
+                                ExportSelectedIds.TacticType.splice(index, 1);
+                                ExportSelectedIds.ColorCode.splice(index, 1);
+                                ExportSelectedIds.PlanFlag.splice(index, 1);
+                            }
+
+                        }
+                        else {
+                            $(this).addClass("honeycombbox-icon-gantt-Active");
+                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                            ExportSelectedIds.PlanFlag.push('Calender');
+                            //var innertask = gantt.getChildren($(this).attr('name1'));
+                            //gantt.eachTask(function (task) {
+                            //    var tId = task.id;
+
+                            //    var index = innertask.indexOf(tId);
+                            //    if (index >= 0 || tId == task_id) {
+
+                            //        task.$open = true;
+                            //    }
+                            //});
+                            //  gantt.render();
+                        }
+                        break;
+                    case 'PROGRAM':
+                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                            //gantt.open($(this).attr('name1'));
+
+                            //gantt.render();
+                            $(this).removeClass("honeycombbox-icon-gantt-Active");
+                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                            if (index >= 0) {
+                                ExportSelectedIds.TaskID.splice(index, 1);
+                                ExportSelectedIds.Title.splice(index, 1);
+                                ExportSelectedIds.OwnerName.splice(index, 1);
+                                ExportSelectedIds.TacticType.splice(index, 1);
+                                ExportSelectedIds.ColorCode.splice(index, 1);
+                                ExportSelectedIds.PlanFlag.splice(index, 1);
+                            }
+                        }
+                        else {
+                            $(this).addClass("honeycombbox-icon-gantt-Active");
+                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                            ExportSelectedIds.PlanFlag.push('Calender');
+                            //gantt.open($(this).attr('name1'));
+                        }
+                        break;
+                    case 'TACTIC':
+                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                            $(this).removeClass("honeycombbox-icon-gantt-Active");
+                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                            if (index >= 0) {
+                                ExportSelectedIds.TaskID.splice(index, 1);
+                                ExportSelectedIds.Title.splice(index, 1);
+                                ExportSelectedIds.OwnerName.splice(index, 1);
+                                ExportSelectedIds.TacticType.splice(index, 1);
+                                ExportSelectedIds.ColorCode.splice(index, 1);
+                                ExportSelectedIds.PlanFlag.splice(index, 1);
+                            }
+                            $(this).addClass("honeycombbox-icon-gantt");
+                        }
+                        else {
+                            $(this).addClass("honeycombbox-icon-gantt-Active");
+                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                            ExportSelectedIds.PlanFlag.push('Calender');
+                        }
+                        break;
+                }
+
+                if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+                    $(".honeycombbox").hide();
+                }
+                else {
+
+                    $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+                    $(".honeycombbox").show();
+                }
+                //$("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+            });
+
         });
 
-    });
+        function onClickPlanTitle() {
 
-    function onClickPlanTitle() {
+            var IsSavedPlan = null;
 
-        var IsSavedPlan = null;
-     
 
-        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            CurrentPlanId = $(this).attr('value');
-          
-            IsSavedPlan = $("#CurrentPlanId").val();
-          
-            $("#CurrentPlanId").val(CurrentPlanId);
-            SelectedPlanTitle = $(this).text();
-            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                //Added by Rahul Shah on 22/01/2016 for PL #1898
-                IsDropdownChange = true;
+            $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                CurrentPlanId = $(this).attr('value');
+
+                IsSavedPlan = $("#CurrentPlanId").val();
+
+                $("#CurrentPlanId").val(CurrentPlanId);
+                SelectedPlanTitle = $(this).text();
+                if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                    //Added by Rahul Shah on 22/01/2016 for PL #1898
+                    IsDropdownChange = true;
+                    //Added by Rahul Shah for PL #1898
+
+                    if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
+                        //modified by Rahul shah for designing issue in custom field.. display extra close icon
+                        $('#divCustomFieldsFilter li input:checkbox').each(function (i) {
+                            $(this).parent().addClass("close-list");
+                            var chkid = $(this).attr("id");
+                            $(this).attr("checked", "checked");
+                        });
+
+                        $("#accordion-Year li input:checkbox:checked").each(function () {
+                            $(this).removeAttr("checked");
+                            $(this).parent().removeClass("close-list");
+                        });
+
+                        $('#ulSelectedOwner li input:checkbox').each(function () {
+                            if ($(this).attr('id') != '@Sessions.User.UserId') {
+                                $(this).removeAttr("checked");
+                                $(this).parent().removeClass("close-list");
+                            }
+                            else {
+                                $(this).attr("checked", "checked");
+                                $(this).parent().addClass("close-list");
+                            }
+
+                        });
+                        GetTacticTypelist(CurrentPlanId, false);
+                        //$('#ulTacticType li input:checkbox:checked').each(function () {
+                        //    $(this).attr("checked","checked");
+                        //    $(this).parent().addClass("close-list");
+                        //});
+                        $('#ulStatus li input:checkbox').each(function () {
+                            $(this).attr("checked", "checked");
+                            $(this).parent().addClass("close-list");
+                        });
+                    }
+
+
+                    SaveLastSetofViews();
+                    if (CurrentPlanId > 0) {
+                        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                            //EditPlanHome();
+                            var pid = $("#CurrentPlanId").val();
+
+                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
+                            window.location.href = url;
+                        }
+                        else {
+                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
+                            window.location.href = url;
+                        }
+                    }
+
+                }
+
+            });
+
+
+            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()' && $('#IsPlanSelector').val().toLowerCase() == "true") {
+
                 //Added by Rahul Shah for PL #1898
 
-                if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
+
+                IsSavedPlan = '@PreviousPlanID.ToString()';
+
+                if (IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) {
+
                     //modified by Rahul shah for designing issue in custom field.. display extra close icon
                     $('#divCustomFieldsFilter li input:checkbox').each(function (i) {
                         $(this).parent().addClass("close-list");
                         var chkid = $(this).attr("id");
                         $(this).attr("checked", "checked");
                     });
-
                     $("#accordion-Year li input:checkbox:checked").each(function () {
                         $(this).removeAttr("checked");
                         $(this).parent().removeClass("close-list");
                     });
-
+                    //Modified by komal rawal Logged in owner did not come selected.
                     $('#ulSelectedOwner li input:checkbox').each(function () {
                         if ($(this).attr('id') != '@Sessions.User.UserId') {
                             $(this).removeAttr("checked");
@@ -570,282 +633,218 @@
 
                     });
                     GetTacticTypelist(CurrentPlanId, false);
+
                     //$('#ulTacticType li input:checkbox:checked').each(function () {
                     //    $(this).attr("checked","checked");
                     //    $(this).parent().addClass("close-list");
                     //});
+
+
                     $('#ulStatus li input:checkbox').each(function () {
                         $(this).attr("checked", "checked");
                         $(this).parent().addClass("close-list");
                     });
+
                 }
-
-
+                IsPlanChange = true;
                 SaveLastSetofViews();
-                if (CurrentPlanId > 0) {
-                    if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                        //EditPlanHome();
-                        var pid = $("#CurrentPlanId").val();
-
-                        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
-                        window.location.href = url;
-                    }
-                    else {
-                        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
-                        window.location.href = url;
-                    }
-                }
-
             }
 
-        });
-
-     
-        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()' && $('#IsPlanSelector').val().toLowerCase() == "true") {
-
-            //Added by Rahul Shah for PL #1898
-       
-         
-                IsSavedPlan = '@PreviousPlanID.ToString()';
-         
-            if (IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) {
-              
-                //modified by Rahul shah for designing issue in custom field.. display extra close icon
-                $('#divCustomFieldsFilter li input:checkbox').each(function (i) {
-                    $(this).parent().addClass("close-list");
-                    var chkid = $(this).attr("id");
-                    $(this).attr("checked", "checked");
-                });
-                $("#accordion-Year li input:checkbox:checked").each(function () {
-                    $(this).removeAttr("checked");
-                    $(this).parent().removeClass("close-list");
-                });
-                //Modified by komal rawal Logged in owner did not come selected.
-                $('#ulSelectedOwner li input:checkbox').each(function () {
-                    if ($(this).attr('id') != '@Sessions.User.UserId') {
-                        $(this).removeAttr("checked");
-                        $(this).parent().removeClass("close-list");
-                    }
-                    else
-                    {
-                        $(this).attr("checked", "checked");
-                        $(this).parent().addClass("close-list");
-                    }
-
-                });
-                GetTacticTypelist(CurrentPlanId, false);
-
-                //$('#ulTacticType li input:checkbox:checked').each(function () {
-                //    $(this).attr("checked","checked");
-                //    $(this).parent().addClass("close-list");
-                //});
-               
-
-                $('#ulStatus li input:checkbox').each(function () {
-                    $(this).attr("checked", "checked");
-                    $(this).parent().addClass("close-list");
-                });
-
-            }
-            IsPlanChange = true;
-            SaveLastSetofViews();
         }
-
-    }
 
         var ids = [];
         var IsDeselectAll = false
 
-    function GetOwnerListForFilter(Planids, async,OnPlanChange) {
+        function GetOwnerListForFilter(Planids, async, OnPlanChange) {
 
-        var asyncval = false;
-        if (async != undefined && async != 'undefined' && async != '' && async != null) {
-            asyncval = async;
-        }
-        else {
-            asyncval = false;
-        }
-        //Added by Rahul Shah on 06/01/2016 for PL #1854
-        if (IsDeselectAll == true ) {
-            ids = [];
-        }
-
-        $('#ulSelectedOwner li').each(function () {
-            if ($(this).hasClass("close-list")) {
-                var id = $(this).attr('id').replace('liOwner', '')
-                var Index = ids.indexOf(id);
-                if (Index == -1) {
-                ids.push(id);
+            var asyncval = false;
+            if (async != undefined && async != 'undefined' && async != '' && async != null) {
+                asyncval = async;
             }
+            else {
+                asyncval = false;
+            }
+            //Added by Rahul Shah on 06/01/2016 for PL #1854
+            if (IsDeselectAll == true) {
+                ids = [];
             }
 
-        });
-
-        $('#ulSelectedOwner').html('');
-      
-     
-        if (filters.OwnerIds != "" || OnPlanChange != true ||  ids != "") {
-        
-        filters.OwnerIds = [];
-        }
-      
-
-        $.ajax({
-            beforeSend: function (x) {
-                if (!asyncval) {
-                    myApp.showPleaseWait();
+            $('#ulSelectedOwner li').each(function () {
+                if ($(this).hasClass("close-list")) {
+                    var id = $(this).attr('id').replace('liOwner', '')
+                    var Index = ids.indexOf(id);
+                    if (Index == -1) {
+                        ids.push(id);
+                    }
                 }
-            },
-            type: "GET",
-            cache: false,
-            async: asyncval,
-            url: '@Url.Action("GetOwnerListForFilter", "Home")',
-            data: {
-                PlanId: Planids.toString(),
-                ViewBy: type,
-                ActiveMenu: $('#ActiveMenu').val()
-            },
-            dataType: "json",
-            success: function (data) {
-                if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                }
-                else {
-                    if (data.isSuccess == true) {
-                        if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
-                            OwnerCount = data.AllowedOwner.length;
-                            if (OwnerCount > 0) {
-                                var IsOwnerPresent = false;
-                                var checked = "";
-                                var checkedclass = "";
-                                $("#ulOwnerAllModule").css("display", "block");
-                                $("#NoOwnerFound").hide();
-                                $('#ulSelectedOwner li').remove();
-                                $.each(data.AllowedOwner, function (i, OwnerItem) {
-                                    var LoggedInOwner = data.LoggedInUser.OwnerId;
-                                    //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
-                                    checked = "";
-                                    checkedclass = "";
-                                    
-                                    if (OwnerItem.OwnerId == LoggedInOwner) {
-                                      
-                                        IsOwnerPresent = true;
+
+            });
+
+            $('#ulSelectedOwner').html('');
+
+
+            if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+
+                filters.OwnerIds = [];
+            }
+
+
+            $.ajax({
+                beforeSend: function (x) {
+                    if (!asyncval) {
+                        myApp.showPleaseWait();
+                    }
+                },
+                type: "GET",
+                cache: false,
+                async: asyncval,
+                url: '@Url.Action("GetOwnerListForFilter", "Home")',
+                data: {
+                    PlanId: Planids.toString(),
+                    ViewBy: type,
+                    ActiveMenu: $('#ActiveMenu').val()
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
+                        if (data.isSuccess == true) {
+                            if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
+                                OwnerCount = data.AllowedOwner.length;
+                                if (OwnerCount > 0) {
+                                    var IsOwnerPresent = false;
+                                    var checked = "";
+                                    var checkedclass = "";
+                                    $("#ulOwnerAllModule").css("display", "block");
+                                    $("#NoOwnerFound").hide();
+                                    $('#ulSelectedOwner li').remove();
+                                    $.each(data.AllowedOwner, function (i, OwnerItem) {
+                                        var LoggedInOwner = data.LoggedInUser.OwnerId;
+                                        //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
+                                        checked = "";
+                                        checkedclass = "";
+
+                                        if (OwnerItem.OwnerId == LoggedInOwner) {
+
+                                            IsOwnerPresent = true;
+                                            if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+                                                checked = "checked"
+                                                checkedclass = "close-list"
+                                            }
+                                        }
+                                        //Added by Rahul Shah on 06/01/2016 for PL #1854
+                                        if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
+                                            checked = "checked"
+                                            checkedclass = "close-list"
+                                        }
+
+
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
+                                        // filters.OwnerIds.push(OwnerItem.OwnerId);
+                                    });
+
+
+                                    //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
+                                    var OwnerIds = [];
+                                    $('#ulSelectedOwner li').each(function () {
+                                        var id = $(this).attr('id').replace('liOwner', '')
+                                        OwnerIds.push(id);
+                                    });
+                                    var listofindex = [];
+                                    for (i = 0; i < ids.length; i++) {
+                                        var index = OwnerIds.indexOf(ids[i]);
+                                        if (!(index >= 0)) {
+                                            listofindex.push(ids[i]);
+
+                                        }
+                                    }
+                                    $.each(listofindex, function (i) {
+                                        var Index = ids.indexOf(listofindex[i])
+                                        if (Index >= 0) {
+                                            ids.splice(Index, 1);
+                                        }
+                                    });
+
+                                    //End
+                                    //Modified by Nishant to bring the owner name in the list even if they dont own any tactic
+                                    if (IsOwnerPresent == false) {
+
+                                        // Modified By Nishant Sheth
+                                        // Desc:: To resolve the #1790 observation
                                         if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
-                                        checked = "checked"
-                                        checkedclass = "close-list"
-                                    }
-                                    }
-                                    //Added by Rahul Shah on 06/01/2016 for PL #1854
-                                    if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
-                                        checked = "checked"
-                                        checkedclass = "close-list"
+                                            checked = "checked"
+                                            checkedclass = "close-list"
+                                        }
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                     }
 
-
-                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
-                                    // filters.OwnerIds.push(OwnerItem.OwnerId);
-                                });
-
-                            
-                                //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
-                                var OwnerIds = [];
-                                $('#ulSelectedOwner li').each(function () {
-                                    var id = $(this).attr('id').replace('liOwner', '')
-                                    OwnerIds.push(id);
-                                });
-                                var listofindex = [];
-                                for (i = 0; i < ids.length; i++) {
-                                    var index = OwnerIds.indexOf(ids[i]);
-                                    if (!(index >= 0)) {
-                                        listofindex.push(ids[i]);
-
-                                    }
                                 }
-                                $.each(listofindex, function (i) {
-                                    var Index = ids.indexOf(listofindex[i])
-                                    if (Index >= 0) {
-                                        ids.splice(Index, 1);
-                                    }
-                                });
-
-                                //End
-                                //Modified by Nishant to bring the owner name in the list even if they dont own any tactic
-                                if (IsOwnerPresent == false) {
-                                
-                                    // Modified By Nishant Sheth
-                                    // Desc:: To resolve the #1790 observation
-                                    if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
-                                    checked = "checked"
-                                    checkedclass = "close-list"
-                                    }
-                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
+                                else {
+                                    $("#ulOwnerAllModule").css("display", "none");
+                                    $("#NoOwnerFound").show();
                                 }
-
                             }
                             else {
                                 $("#ulOwnerAllModule").css("display", "none");
                                 $("#NoOwnerFound").show();
                             }
+                            checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
+                            TotalOwnercount = $("#ulSelectedOwner li").length;
+                            $('#tOwnercount').text('/' + TotalOwnercount);
+                            $('#cOwnercount').text(checkedOwnercount);
                         }
-                        else {
-                            $("#ulOwnerAllModule").css("display", "none");
-                            $("#NoOwnerFound").show();
-                        }
-                        checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
-                        TotalOwnercount = $("#ulSelectedOwner li").length;
-                        $('#tOwnercount').text('/' + TotalOwnercount);
-                        $('#cOwnercount').text(checkedOwnercount);
+                        //if (GetLastview == true)
+                        //{
+                        //    LastSetofowners();
+                        //}
+
                     }
-                    //if (GetLastview == true)
-                    //{
-                    //    LastSetofowners();
-                    //}
-                   
-                }
-                async = true;
+                    async = true;
 
+                }
+            });
+        }
+
+        function populateNFActivity(items, id) {
+            var $dropdown = $("#" + id);
+            var $html = '';
+            if (items.length > 0) {
+                $.each(items, function (index, time) {
+
+                    if (time.Selected) {
+                        $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
+                        Currenttime = time.Value;
+                    } else {
+                        $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                    }
+                });
             }
-        });
-    }
-
-    function populateNFActivity(items, id) {
-        var $dropdown = $("#" + id);
-        var $html = '';
-        if (items.length > 0) {
-            $.each(items, function (index, time) {
-
-                if (time.Selected) {
-                    $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
-                    Currenttime = time.Value;
-                } else {
-                    $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
-                }
-            });
+            $dropdown.append($html);
         }
-        $dropdown.append($html);
-    }
 
-    function populateNF(items, id) {
-        var $dropdown = $("#" + id);
-        var $html = '';
-        if (items.length > 0) {
-            $.each(items, function (index, plan) {
-                if (plan.Selected) {
-                    SelectedPlanTitle = plan.Text;
-                    $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
-                    CurrentPlanId = plan.Value;
-                    $("#CurrentPlanId").val(CurrentPlanId);
-                } else {
-                    $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
-                }
-            });
-        } else {
-            $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
-            CurrentPlanId = 0;
-            $("#CurrentPlanId").val(CurrentPlanId);
+        function populateNF(items, id) {
+            var $dropdown = $("#" + id);
+            var $html = '';
+            if (items.length > 0) {
+                $.each(items, function (index, plan) {
+                    if (plan.Selected) {
+                        SelectedPlanTitle = plan.Text;
+                        $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
+                        CurrentPlanId = plan.Value;
+                        $("#CurrentPlanId").val(CurrentPlanId);
+                    } else {
+                        $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
+                    }
+                });
+            } else {
+                $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
+                CurrentPlanId = 0;
+                $("#CurrentPlanId").val(CurrentPlanId);
+            }
+            $dropdown.append($html);
         }
-        $dropdown.append($html);
-    }
 
 
     </script>
@@ -1007,9 +1006,9 @@
                     <div id="AttachChartCanvasmultiyear" style="width: 135px; height: 85px; position: absolute; margin-left: 155px; margin-top: -10px;">
                     </div>
 
-                   <div id="legendchart" style="display: block; position: absolute; margin-top: -228px;margin-left: 495px;">
+                    <div id="legendchart" style="display: block; position: absolute; margin-top: -228px;margin-left: 495px;">
                         <div style="position: absolute; right: 42px; font-size: 10px; top:231px">
-                            <span id="firstyear" ></span><div style="display: inline-block; margin-left: -2px;margin-top:4px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #C633C9; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
+                            <span id="firstyear"></span><div style="display: inline-block; margin-left: -2px;margin-top:4px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #C633C9; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
                         </div>
                         <div style="position: absolute; right: 42px; font-size: 10px; top: 260px;">
                             <span id="secondyear"></span><div style="display: inline-block; margin-left: -2px;margin-top:6px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #407B22; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
@@ -1087,63 +1086,64 @@
                     </div>
                     <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
                         <ul class="scroll-list singleselect" id="ulSelectedFilter">
-                                                        @{
+                            @{
                                 List<string> YearText1 = new List<string>();
                                 List<string> PlanTitle = new List<string>();
                                 List<string> OwnerName = new List<string>();
                                 List<string> StatusTitle = new List<string>();
-                                }
-                          @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower()) { 
-                                                            
-                            <li class="accordion-inner" title="Year">
-                                <span class="sidebarliwidthSelected-left">Year - </span>
-                                @{  
-                                    foreach (SelectListItem item in ViewYearList)
-                                    {
-                                        if (item.Selected == true)
-                                        {
-                                            YearText1.Add(item.Text);                                           
-                                        }
-                                    }
-                                    if (ViewYearList.Count == YearText1.Count())
-                                    {                                        
-                                        YearText1.Clear();
-                                        YearText1.Add("All");                                     
-                                    }
-                                }
-                                <span id="lstYear" class="sidebarliwidthSelected-right">@string.Join(", ", YearText1).ToString()</span>
-                            </li>
+                            }
+                            @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+                            {
 
-                            <li class="accordion-inner" title="Plan">
-                                <span class="sidebarliwidthSelected-left">Plan -  </span>
-                                @{
-                                    foreach (var objplan in planList)
+                                <li class="accordion-inner" title="Year">
+                                    <span class="sidebarliwidthSelected-left">Year - </span>
+                                    @{
+                                foreach (SelectListItem item in ViewYearList)
+                                {
+                                    if (item.Selected == true)
                                     {
-                                        if (objplan.Checked == "checked")                                        
-                                        {
-                                            PlanTitle.Add(objplan.Title);                                        
-                                        }
+                                        YearText1.Add(item.Text);
                                     }
-                                    if (planList.Count == PlanTitle.Count())
-                                    {
-                                        PlanTitle.Clear();
-                                        PlanTitle.Add("All");
-                                    }
-                                    
                                 }
-                                <span id="lstPlan" class="sidebarliwidthSelected-right">@string.Join(", ", PlanTitle).ToString()</span>
+                                if (ViewYearList.Count == YearText1.Count())
+                                {
+                                    YearText1.Clear();
+                                    YearText1.Add("All");
+                                }
+                                    }
+                                    <span id="lstYear" class="sidebarliwidthSelected-right">@string.Join(", ", YearText1).ToString()</span>
+                                </li>
 
-                            </li> 
-                           }                           
+                                <li class="accordion-inner" title="Plan">
+                                    <span class="sidebarliwidthSelected-left">Plan -  </span>
+                                    @{
+                                foreach (var objplan in planList)
+                                {
+                                    if (objplan.Checked == "checked")
+                                    {
+                                        PlanTitle.Add(objplan.Title);
+                                    }
+                                }
+                                if (planList.Count == PlanTitle.Count())
+                                {
+                                    PlanTitle.Clear();
+                                    PlanTitle.Add("All");
+                                }
+
+                                    }
+                                    <span id="lstPlan" class="sidebarliwidthSelected-right">@string.Join(", ", PlanTitle).ToString()</span>
+
+                                </li>
+                            }
                             @{
                                 foreach (var custField in customfiledList)
                                 {
-                                <li class="accordion-inner" title='@custField.Title'>
-                                    <div id="CustomFields">
-                                    <span class="sidebarliwidthSelected-left">@custField.Title - </span>
-                                    <span id="lstCustomFieldSelected_@custField.CustomFieldId" class="sidebarliwidthSelected-right">All</span>
-                                    </div>
-                            </li>
+                                    <li class="accordion-inner" title='@custField.Title'>
+                                        <div id="CustomFields">
+                                            <span class="sidebarliwidthSelected-left">@custField.Title - </span>
+                                            <span id="lstCustomFieldSelected_@custField.CustomFieldId" class="sidebarliwidthSelected-right">All</span>
+                                        </div>
+                                    </li>
                                 }
                             }
 
@@ -1186,7 +1186,7 @@
 
                     if (item.Selected == true)
                     {
-                   
+
                         <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
                             <span class="sidebarliwidth">@YearText</span>
                             <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input>
@@ -1211,59 +1211,63 @@
                         </div>
                     </div>
                 </div>
-                //End
-                <div id="accordion-2" class="dropdown-section accordion">
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan
-                            <i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>                            
-                            <span id="tPlancount" class="filter-count"></span> <span id="cPlancount" class="filter-count">/@planList.Count()</span></h2>
-                        </div>
-                        <div id="accordion-element-Plan" class="accordion-body collapse">
-                            <ul class="scroll-list" id="ulSelectedPlans">
-                                @{
-                string liPlanid;
-                foreach (var objplan in planList)
-                {
-                    liPlanid = "liPlan" + objplan.PlanId;
-                    if (objplan.Checked == "checked")
-                    // if(objplan.PlanId == CurrentPlanId)
-                    {
-                        <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span>
-                                <input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked">
-                                </input></li>
-                    }
-                    else
-                    {
-                        <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
-                    }
-                }
+                                //End
+                                <div id="accordion-2" class="dropdown-section accordion">
+                                    <div class="accordion-group">
+                                        <div class="accordion-heading">
+                                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">
+                                                Plan
+                                                <i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>
+                                                <span id="tPlancount" class="filter-count"></span> <span id="cPlancount" class="filter-count">/@planList.Count()</span>
+                                            </h2>
+                                        </div>
+                                        <div id="accordion-element-Plan" class="accordion-body collapse">
+                                            <ul class="scroll-list" id="ulSelectedPlans">
+                                                @{
+                                string liPlanid;
+                                foreach (var objplan in planList)
+                                {
+                                    liPlanid = "liPlan" + objplan.PlanId;
+                                    if (objplan.Checked == "checked")
+                                    // if(objplan.PlanId == CurrentPlanId)
+                                    {
+                                        <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid">
+                                            <span class="sidebarliwidth">@objplan.Title</span>
+                                            <input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked">
+                                            </input>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
+                                    }
                                 }
+                                                }
 
-                            </ul>
-                            <div class="list-tab">
-                                @if (planList != null && planList.Count > 0)
-                                {
-                                    <ul id="PlanAllModule">
-                                        <li><a onclick="BulkPlanOperation(true)">select all</a></li>
-                                        <li>|</li>
-                                        <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
-                                    </ul>
-                                    <div id="NoPlanFound" class="NoDataFoundFilter" style="display: none;">No Plan Found</div>
-                                }
-                                else
-                                {
-                                    <ul id="PlanAllModule" style="display: none;">
-                                        <li><a onclick="BulkPlanOperation(true)">select all</a></li>
-                                        <li>|</li>
-                                        <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
-                                    </ul>
-                                    <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                            </ul>
+                                            <div class="list-tab">
+                                                @if (planList != null && planList.Count > 0)
+                                                {
+                                                    <ul id="PlanAllModule">
+                                                        <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                                        <li>|</li>
+                                                        <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
+                                                    </ul>
+                                                    <div id="NoPlanFound" class="NoDataFoundFilter" style="display: none;">No Plan Found</div>
+                                                }
+                                                else
+                                                {
+                                                    <ul id="PlanAllModule" style="display: none;">
+                                                        <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                                        <li>|</li>
+                                                        <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
+                                                    </ul>
+                                                    <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
             }
             <div id="divCustomFieldsFilter">
                 @{
@@ -1296,7 +1300,7 @@
                             liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
                             cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
 
-                                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid"></input></li>
+                            <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid"></input></li>
                         }
                                         }
                                     </ul>
@@ -1317,7 +1321,7 @@
                                 </div>
                             </div>
                         </div>
-                                    custFieldCount++;
+                                        custFieldCount++;
                     }
                 }
             </div>
@@ -1421,7 +1425,7 @@
                         <ul class="scroll-list" id="ulStatus">
                             @*//Modified by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view*@
                             <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /></li>
-                            <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus"  /></li>
+                            <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></li>
                             <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></li>
                             <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></li>
                             <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></li>
@@ -1460,7 +1464,8 @@
             </div>
             <!--First Static Accordion END-->
             <!--Second Static Accordion-->
-            <div class="accordion colors left-nav improvements margin-bottom10" id="improvements" style="display:none"> @*// added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters*@
+            <div class="accordion colors left-nav improvements margin-bottom10" id="improvements" style="display:none">
+                @*// added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters*@
                 <div class="accordion-group source-sans-proregular">
                     <div class="accordion-heading">
                         <a href="#DivAccordionImprovementActivities" data-parent="improvements" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
@@ -1634,7 +1639,7 @@
     </div>
 </div>
 
-<div class="honeycombbox" style="display:none">
+<div class="honeycombbox" style="display:none" id="divhoneycombbox">
     <span id="totalEntity" class="badge">0</span>
     <!-- honeycomb svg -->
     <svg id="honeycomb" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -1754,7 +1759,7 @@
         OwnerIds: [],
         TacticTypeids: [],
         StatusIds: [],
-        SelectedYears : []
+        SelectedYears: []
 
     };
 
@@ -1900,8 +1905,8 @@
         // Add by Nishant Sheth
         // Desc:: To resolve the header data issue
         // Modified By Nishant Sheth Desc header value wrong with plan tab
-        GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds,$(this).attr('id'));
-       
+        GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, $(this).attr('id'));
+
     });
 
     //End
@@ -2021,7 +2026,7 @@
                 AllCounter++;
             });
             id = this.id.split("-")[1];
-            
+
             if (CheckedCounter == AllCounter) {
                 $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text("All");
             }
@@ -2184,7 +2189,7 @@
 
         }
 
-     
+
         $("#ulStatus li input[type=checkbox]").each(function () {
             var chkid = $(this).attr("id");
             if ($(this).is(':checked')) {
@@ -2336,7 +2341,7 @@
         //    filters.TacticTypeids = [];
         //}
         // Desc ::  to resolve the owner filter issue
-        
+
         filters.OwnerIds = [];
         $("#ulSelectedOwner li input:checkbox:checked").map(function () {
             filters.OwnerIds.push($(this).attr("id"));
@@ -2496,7 +2501,7 @@
 
                 $("div[id^='LinkIcon']").each(function () {
 
-                    bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+                    bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
                 });
 
                 LoadImprovementGrid(CurrentPlanId)
@@ -2524,13 +2529,12 @@
             }
         });
         years = years.slice(0, -1);
-        if (years != null && years != "")
-        {
+        if (years != null && years != "") {
             filters.SelectedYears.push(years);
         }
-      
-            LoadPlanData(years);
-       
+
+        LoadPlanData(years);
+
     }
     //// Load Plan data based on selected year
     var _item;
@@ -2591,10 +2595,10 @@
                     var indexofplan = $.inArray(pid, selectedPlanIds);
                     if (indexofplan > -1) {
                         $(this).attr("checked", "checked");
-                        togglePlan($(this),true);
+                        togglePlan($(this), true);
                     }
                 });
-                // End 
+                // End
                 var planids = [];
                 $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
                     if ($(this).attr('checked') == 'checked') {
@@ -2605,7 +2609,7 @@
                     }
                 });
                 GetTacticTypelist(planids, true, true);
-                GetOwnerListForFilter(planids, true,true);
+                GetOwnerListForFilter(planids, true, true);
             }
         });
     }
@@ -2643,13 +2647,13 @@
         //    }
         //});
         if (!IsLstPlan) {
-        GetTacticTypelist(planids, true);
-            GetOwnerListForFilter(planids, true,true);
+            GetTacticTypelist(planids, true);
+            GetOwnerListForFilter(planids, true, true);
         }
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
-    
+
     function toggleCustomFields(obj, CustFieldId, count) {
         var SelectedCustomFields = parseInt($("#SelectedCustomFilter_" + CustFieldId).text());
         GetLastview = false;
@@ -2706,9 +2710,9 @@
                     }
                     else {
                         // Set collaborator details
-    //Added by kausha somaiya for ticket no #1869
+                        //Added by kausha somaiya for ticket no #1869
                         if ($('#gantt_here').html().length > 0)
-                        $("#divCollaborator").css("display", "block");
+                            $("#divCollaborator").css("display", "block");
                         $('#divCollaborator').empty(); // Clear collaborators div content
                         ////  set collaborator's image
                         if (data.collaboratorsImage != null && data.collaboratorsImage != 'undefined') {
@@ -2768,7 +2772,7 @@
             $('#pMQLs').show();
             $('.changes').show();
             $('#Notabcontent').hide();
-        }
+          }
         else {
             $('#DivloadPlan').hide();
             $('.tab-content').hide();
@@ -2778,6 +2782,7 @@
             $('#pMQLs').hide();
             $('.changes').hide();
             $('#Notabcontent').show();
+            $('#divhoneycombbox').hide();// Add By Nishant Sheth Desc :: To hide the honey comb icon with no data exist
             // Start - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #63
             $('#marketing-activities').hide();
             $('#improvements').hide();
@@ -2949,12 +2954,12 @@
         //        $(this).parent().removeClass("close-list");
         //    }
         //});
-      
+
         if (activeMenu.toLowerCase() == 'home') {
-            GetOwnerListForFilter(planids, true,true);
+            GetOwnerListForFilter(planids, true, true);
             GetTacticTypelist(planids, true, true);
         }
-      
+
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
@@ -3028,7 +3033,7 @@
         $("#dropdown-plan-title").val(currentplanid);// Add By Nishant Sheth #1981 export pdf issue for plan tab.
         $("#nl-form2 .nl-dd-checked").removeClass("nl-dd-checked");
         $("#nl-form2").find("li[value=" + currentplanid + "]").addClass("nl-dd-checked");
-        $("#nl-form2 .nl-field-toggle").html($("#nl-form2").find("li[value=" + $("#CurrentPlanId").val() + "]").attr("originalvalue"));
+        $("#nl-form2 .nl-field-toggle").html($("#nl-form2").find("li[value=" + currentplanid + "]").attr("originalvalue"));//Modified by Nishant :: Set variable instead of jquey element
         $('.plan').addClass('active');
         $('.home').removeClass('active');
         $('html head title').html("Plan");
@@ -3037,103 +3042,82 @@
 
     function CallPDF() {
         //  $("#gantt_here").css("Width", $("#testdiv").width());
-        
-        if ($("#NodatawithfilterCalendar").css('display') == "block")
-        {
+        var isAvailablerecord = false;
+        // Modified By Nishant Sheth
+        // Desc :: To resolve the #1981 code review points to resolve click on clear filters and
+        if (PdfFilters.SelectedPlans.toString().trim().length > 0 && activeMenu == 'home') {
+            isAvailablerecord = true;
+        } else {
+            if ($("#CurrentPlanId").val() > 0 && activeMenu != 'home') {
+                isAvailablerecord = true;
+            }
+        }
+        if ($("#NodatawithfilterCalendar").css('display') == "block") {
             return false;
         }
-
-        $.each(GanttTaskData.data, function () {
-            this.color = '#' + this.colorcode;
-        });
-
-        gantt.init("gantt_here");
-        gantt.parse(GanttTaskData);
-        var htmltestdiv = '';
-        htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
-        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
-        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
-        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
-        htmltestdiv += isQuater + '</span>';
-        htmltestdiv += '</p>';
-
-        var innerfiltervalueplan = "";
-        var isselectedplan = true;
-        var DropDownPlan = true;
-        $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
-            if ($(this).attr('checked') == 'checked') {
-                isselectedplan = true;
-            }
-        });
-      
-      
-        
-        if (activeMenu == 'home') {
-            if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
-                $.each(PdfFilters.SelectedPlans, function () {
-                    //if (activeMenu == "plan") {
-                    //    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
-                    //}
-                    //else {
-                    //innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
-                    // Modified By Nishant Sheth
-                    // Des :: #1981 export pdf issue for plan name display undefined
-                    innerfiltervalueplan += " " + $("#" + this).parent().parent("#ulSelectedPlans").children().children("#" + this).parent().attr('title') + ",";
-                    //}
-                    //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
-                });
-            }
-        }
-        else {
-            // Modified By Nishant Sheth
-            // Desc :: #1981 export pdf issue for plan name display undefined
-            innerfiltervalueplan += " " + $("#dropdown-plan-title option:selected").text() + ",";
-        }
-
-        var isAvailablerecord = false;
-        var _noplandivMsg = $("#Notabcontent").css("display");
-        if (_noplandivMsg == "none") {
-            isAvailablerecord = true;
-        }
         if (isAvailablerecord) {
+            $.each(GanttTaskData.data, function () {
+                this.color = '#' + this.colorcode;
+            });
+
+            gantt.init("gantt_here");
+            gantt.parse(GanttTaskData);
+            var htmltestdiv = '';
+            htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            htmltestdiv += isQuater + '</span>';
+            htmltestdiv += '</p>';
+
+            var innerfiltervalueplan = "";
+            var isselectedplan = true;
+            var DropDownPlan = true;
+            $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+                if ($(this).attr('checked') == 'checked') {
+                    isselectedplan = true;
+                }
+            });
+
+
+
+            if (activeMenu == 'home') {
+                if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
+                    $.each(PdfFilters.SelectedPlans, function () {
+                        //if (activeMenu == "plan") {
+                        //    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                        //}
+                        //else {
+                        //innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                        // Modified By Nishant Sheth
+                        // Des :: #1981 export pdf issue for plan name display undefined
+                        innerfiltervalueplan += " " + $("#" + this).parent().parent("#ulSelectedPlans").children().children("#" + this).parent().attr('title') + ",";
+                        //}
+                        //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+                    });
+                }
+            }
+            else {
+                // Modified By Nishant Sheth
+                // Desc :: #1981 export pdf issue for plan name display undefined
+                innerfiltervalueplan += " " + $("#dropdown-plan-title option:selected").text() + ",";
+            }
+
+            //var isAvailablerecord = false;
+            //// Modified By Nishant Sheth
+            //// Desc :: To resolve the #1981 code review points to resolve click on clear filters and
+            //if (PdfFilters.SelectedPlans.toString().trim().length > 0 && activeMenu == 'home') {
+            //    isAvailablerecord = true;
+            //} else {
+            //    if ($("#CurrentPlanId").val() > 0 && activeMenu != 'home') {
+            //        isAvailablerecord = true;
+            //    }
+            //}
+            //if (isAvailablerecord) {
             if (PdfFilters.SelectedPlans.toLocaleString().trim().length > 0) {
                 DropDownPlan = false;
             }
-            //if (DropDownPlan == true) {
-            //    //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
-            //    if (activeMenu == 'plan') {
-            //        innerfiltervalueplan += " " + $("select#dropdown-plan-title option").filter(":selected").text();
-            //    }
-            //}
 
-            //if (isselectedplan) {
-
-            //    $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
-            //        if ($(this).attr('checked') == 'checked') {
-            //            var chkid = $(this).parent().attr("title");
-            //            if (chkid != undefined && chkid != 'undefined') {
-            //                innerfiltervalueplan += " " + chkid + ",";
-            //                DropDownPlan = false;
-            //            }
-            //        }
-            //    });
-            //    if (DropDownPlan == true) {
-            //        innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
-            //    }
-            //}
-            //else {
-
-            //    $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
-            //        var chkid = $(this).parent().attr("title");
-            //        if (chkid != undefined && chkid != 'undefined') {
-            //            innerfiltervalueplan += " " + chkid + ",";
-            //            DropDownPlan = false;
-            //        }
-            //    });
-            //    if (DropDownPlan == true) {
-            //        innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
-            //    }
-            //}
             if (innerfiltervalueplan != undefined && innerfiltervalueplan != 'undefined' && innerfiltervalueplan != '') {
                 htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
                 htmltestdiv += '<label style="color:#050708;font-weight: 600;">Plan: </label>';
@@ -3180,44 +3164,7 @@
                 }
                 //alert(id.substring(sl + 1, sl.length));
             });
-            //$('#divCustomFieldsFilter').find('.dropdown-section').each(function () {
-            //    var headertitle = $(this).find("h2 span").text();
 
-            //    var innerfiltervalue = "";
-            //    var isselected = true;
-            //    $(this).find("input[type=checkbox]").each(function () {
-            //        if ($(this).attr('checked') == 'checked') {
-            //            isselected = true;
-            //        }
-            //    });
-            //    if (isselected) {
-            //        $(this).find("input[type=checkbox]").each(function () {
-            //            if ($(this).attr('checked') == 'checked') {
-            //                var chkid = $(this).parent().attr("title");
-            //                if (chkid != undefined && chkid != 'undefined') {
-            //                    innerfiltervalue += " " + chkid + ",";
-            //                }
-            //            }
-            //        });
-            //    }
-            //    else {
-            //        $(this).find("input[type=checkbox]").each(function () {
-            //            var chkid = $(this).parent().attr("title");
-            //            if (chkid != undefined && chkid != 'undefined') {
-            //                innerfiltervalue += " " + chkid + ",";
-            //            }
-            //        });
-            //    }
-            //    if (innerfiltervalue != undefined && innerfiltervalue != 'undefined' && innerfiltervalue != '') {
-            //        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
-            //        htmltestdiv += '<label style="color:#050708;font-weight: 600;">' + headertitle + ': </label>';
-            //        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
-            //        innerfiltervalue = innerfiltervalue.substring(0, innerfiltervalue.length - 1);
-            //        htmltestdiv += innerfiltervalue + '</span>';
-            //        htmltestdiv += '</p>';
-            //    }
-
-            //});
 
             var innerfiltervalueOwner = "";
             var isselectedOwner = true;
@@ -3228,29 +3175,7 @@
                     //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
                 });
             }
-            //$("#ulSelectedOwner").find("input[type=checkbox]").each(function () {
-            //    if ($(this).attr('checked') == 'checked') {
-            //        isselectedOwner = true;
-            //    }
-            //});
-            //if (isselectedOwner) {
-            //    $("#ulSelectedOwner").find("input[type=checkbox]").each(function () {
-            //        if ($(this).attr('checked') == 'checked') {
-            //            var chkid = $(this).parent().attr("title");
-            //            if (chkid != undefined && chkid != 'undefined') {
-            //                innerfiltervalueOwner += " " + chkid + ",";
-            //            }
-            //        }
-            //    });
-            //}
-            //else {
-            //    $("#ulSelectedOwner").find("input[type=checkbox]").each(function () {
-            //        var chkid = $(this).parent().attr("title");
-            //        if (chkid != undefined && chkid != 'undefined') {
-            //            innerfiltervalueOwner += " " + chkid + ",";
-            //        }
-            //    });
-            //}
+
             if (innerfiltervalueOwner != undefined && innerfiltervalueOwner != 'undefined' && innerfiltervalueOwner != '') {
                 htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
                 htmltestdiv += '<label style="color:#050708;font-weight: 600;">Owner: </label>';
@@ -3268,29 +3193,7 @@
                     //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
                 });
             }
-            //$("#ulTacticType").find("input[type=checkbox]").each(function () {
-            //    if ($(this).attr('checked') == 'checked') {
-            //        isselectedTacticType = true;
-            //    }
-            //});
-            //if (isselectedTacticType) {
-            //    $("#ulTacticType").find("input[type=checkbox]").each(function () {
-            //        if ($(this).attr('checked') == 'checked') {
-            //            var chkid = $(this).parent().attr("title");
-            //            if (chkid != undefined && chkid != 'undefined') {
-            //                innerfiltervalueTacticType += " " + chkid + ",";
-            //            }
-            //        }
-            //    });
-            //}
-            //else {
-            //    $("#ulTacticType").find("input[type=checkbox]").each(function () {
-            //        var chkid = $(this).parent().attr("title");
-            //        if (chkid != undefined && chkid != 'undefined') {
-            //            innerfiltervalueTacticType += " " + chkid + ",";
-            //        }
-            //    });
-            //}
+
             if (innerfiltervalueTacticType != undefined && innerfiltervalueTacticType != 'undefined' && innerfiltervalueTacticType != '') {
                 htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
                 htmltestdiv += '<label style="color:#050708;font-weight: 600;">Tactic Type: </label>';
@@ -3308,29 +3211,7 @@
                     //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
                 });
             }
-            //$("#ulStatus").find("input[type=checkbox]").each(function () {
-            //    if ($(this).attr('checked') == 'checked') {
-            //        isselectedStatus = true;
-            //    }
-            //});
-            //if (isselectedStatus) {
-            //    $("#ulStatus").find("input[type=checkbox]").each(function () {
-            //        if ($(this).attr('checked') == 'checked') {
-            //            var chkid = $(this).parent().find("span").text();
-            //            if (chkid != undefined && chkid != 'undefined') {
-            //                innerfiltervalueStatus += " " + chkid + ",";
-            //            }
-            //        }
-            //    });
-            //}
-            //else {
-            //    $("#ulStatus").find("input[type=checkbox]").each(function () {
-            //        var chkid = $(this).parent().find("span").text();
-            //        if (chkid != undefined && chkid != 'undefined') {
-            //            innerfiltervalueStatus += " " + chkid + ",";
-            //        }
-            //    });
-            //}
+
             if (innerfiltervalueStatus != undefined && innerfiltervalueStatus != 'undefined' && innerfiltervalueStatus != '') {
                 htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
                 htmltestdiv += '<label style="color:#050708;font-weight: 600;">Status: </label>';
@@ -3385,29 +3266,6 @@
             $("#ptacticcounttest").text($("#ptacticcount").text());
 
 
-            //<p style=" line-height: 24px;margin: 0;">
-            //       <label style="color:#050708;font-weight: 600;">Business Unit:</label>
-            //       <span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">Enterprise, Mid-Market, SMB</span>
-            //   </p>
-            //var ChartHtml = $("#chartCanvas").html();
-            //var Canvas = $("#chart2").find(".dhx_canvas_text");
-            //var i = 0;
-            //$.each(Canvas, function () {
-
-            //    if (i > 4) {
-            //        var left = (0.73 * parseFloat($(this).css('left')));
-            //        var top = (0.67 * parseFloat($(this).css('top')));
-            //        var text = $(this).text();
-            //        var BarHeight = ((70.6 - parseFloat(top))/1.667);
-            //        //ChartHtml += "<div style='margin-left:" + left + "%;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;height:80%'>";
-            //        ChartHtml += "<div style='margin-top:" + top + "%;margin-left:" + left + "%;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;height:70.6%'>";
-            //        ChartHtml += text;
-            //        ChartHtml += "<div style='width:62.5%;background-color: #C633C9;height:" + BarHeight + "%;'></div>";
-            //        ChartHtml += "</div>";
-            //        //ChartHtml += "</div>";
-            //    }
-            //    i++;
-            //});
             if (isQuater.split('-').length > 1) {
                 $("#AttachChartCanvas").html('');
                 $("#legendchart").show();
@@ -3447,8 +3305,7 @@
                 $("#AttachChartCanvasmultiyear").html('');
                 $("#AttachChartCanvasmultiyear").html(AttachChartHtml);
             }
-            else
-            {
+            else {
                 $("#legendchart").hide();
                 $("#AttachChartCanvasmultiyear").html('');
                 var ChartHtml = $("#chartCanvas").html();
@@ -3521,7 +3378,7 @@
             });
         }
         else {
-            $('#cErrorInspectPopup').html('No plan exists to export the data in .pdf'); //PL #1595 - Dashrath Prajapati
+            $('#cErrorInspectPopup').html('No plan selected to export the data in .pdf'); //PL #1595 - Dashrath Prajapati
             $('#errorMessageInspectPopup').css("display", "block");
             $('#errorMessageInspectPopup').removeClass('message-position');
         }
@@ -3605,175 +3462,192 @@
     }
     //Added by Rahul Shah for PL #1782 for Honeycomb pdf
     function CallPdfHoneyComb() {
-
-        var GanttTaskDataforHoney = {
-            data: new Array()
-        };// Added By Rahul Shah For HoneyComp Pdf
-        var GanttTaskDataNew = GanttTaskData;
-        var defaultParentArr = {
-            index: [],
-            parent: [],
-            tacticId: [],
-
+        var isAvailablerecord = false;
+        // Modified By Nishant Sheth
+        // Desc :: To resolve the #1981 code review points to resolve click on clear filters and
+        if (PdfFilters.SelectedPlans.toString().trim().length > 0 && activeMenu == 'home') {
+            isAvailablerecord = true;
         }
-
-        var Status = "";
-        var planyear = GanttTaskDataNew.data[0].start_date.getFullYear();
-        for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
-            if (GanttTaskDataNew.data[i].type != undefined) {
-                if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
-
-                    Status = GanttTaskDataNew.data[i].Status;
-                }
+        else {
+            if ($("#CurrentPlanId").val() > 0 && activeMenu != 'home') {
+                isAvailablerecord = true;
             }
-            for (var j = 0; j < ExportSelectedIds.TaskID.length; j++) {
-                if (GanttTaskDataNew.data[i].id == ExportSelectedIds.TaskID[j]) {
+        }
+        if (isAvailablerecord) {
+            var GanttTaskDataforHoney = {
+                data: new Array()
+            };// Added By Rahul Shah For HoneyComp Pdf
+            var GanttTaskDataNew = GanttTaskData;
+            var defaultParentArr = {
+                index: [],
+                parent: [],
+                tacticId: [],
 
-                    GetParentIdRecursive(GanttTaskDataNew.data[i].id);
+            }
 
-                    //defaultParentArr.index.push(i);
+            var Status = "";
+            var planyear = GanttTaskDataNew.data[0].start_date.getFullYear();
+            for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
+                if (GanttTaskDataNew.data[i].type != undefined) {
+                    if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
 
-                    //defaultParentArr.parent.push(GanttTaskDataNew.data[i].parent);
-                    //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].parent = 0;
-                    //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
-                    if (GanttTaskDataNew.data[i].type != undefined) {
-                        if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
+                        Status = GanttTaskDataNew.data[i].Status;
+                    }
+                }
+                for (var j = 0; j < ExportSelectedIds.TaskID.length; j++) {
+                    if (GanttTaskDataNew.data[i].id == ExportSelectedIds.TaskID[j]) {
 
-                            //TotalTact = TotalTact + 1;
-                            //TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
-                            // Add BY Nishant Sheth
-                            //Desc:: resolve the issue with view by dropdown
-                            var name_Id = GanttTaskDataNew.data[i].id.split('_');
-                            var name = name_Id[0];
-                            var PlanId;
-                            var CampaignId;
-                            var ProgramId;
-                            var TacticId;
-                            var ImpTacticId;
-                            var LineId;
-                            if (name_Id.length == 1) {
-                                PlanId = name_Id[0].replace("L", "");
-                            }
-                            else if (name_Id.length == 2) {
-                                // Chaneg By Nishant Sheth
-                                // Desc:: To resolve issue with change view by dropdown
-                                var nameindex = name.indexOf("Z");
-                                if (nameindex >= 0) {
-                                    PlanId = name_Id[1].replace("L", "");
-                                    CampaignId = name_Id[1].replace("C", "");
-                                } else {
+                        GetParentIdRecursive(GanttTaskDataNew.data[i].id);
+
+                        //defaultParentArr.index.push(i);
+
+                        //defaultParentArr.parent.push(GanttTaskDataNew.data[i].parent);
+                        //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].parent = 0;
+                        //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
+                        if (GanttTaskDataNew.data[i].type != undefined) {
+                            if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
+
+                                //TotalTact = TotalTact + 1;
+                                //TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
+                                // Add BY Nishant Sheth
+                                //Desc:: resolve the issue with view by dropdown
+                                var name_Id = GanttTaskDataNew.data[i].id.split('_');
+                                var name = name_Id[0];
+                                var PlanId;
+                                var CampaignId;
+                                var ProgramId;
+                                var TacticId;
+                                var ImpTacticId;
+                                var LineId;
+                                if (name_Id.length == 1) {
                                     PlanId = name_Id[0].replace("L", "");
-                                    CampaignId = name_Id[1].replace("C", "");
                                 }
-                            }
-                            else if (name_Id.length == 3) {
-                                // Chaneg By Nishant Sheth
-                                // Desc:: To resolve issue with change view by dropdown
-                                var nameindex = name.indexOf("Z");
-                                if (nameindex >= 0) {
-                                    PlanId = name_Id[1].replace("L", "");
-                                    CampaignId = name_Id[2].replace("C", "");
-                                    //ProgramId = name_Id[2].replace("P", "");
-                                } else {
-                                    PlanId = name_Id[0].replace("L", "");
-                                    CampaignId = name_Id[1].replace("C", "");
-                                    ProgramId = name_Id[2].replace("P", "");
+                                else if (name_Id.length == 2) {
+                                    // Chaneg By Nishant Sheth
+                                    // Desc:: To resolve issue with change view by dropdown
+                                    var nameindex = name.indexOf("Z");
+                                    if (nameindex >= 0) {
+                                        PlanId = name_Id[1].replace("L", "");
+                                        CampaignId = name_Id[1].replace("C", "");
+                                    } else {
+                                        PlanId = name_Id[0].replace("L", "");
+                                        CampaignId = name_Id[1].replace("C", "");
+                                    }
                                 }
-                            }
-                            else if (name_Id.length == 4) {
-                                // Chaneg By Nishant Sheth
-                                // Desc:: To resolve issue with change view by dropdown
-                                var nameindex = name.indexOf("Z");
-                                if (nameindex >= 0) {
-                                    PlanId = name_Id[1].replace("L", "");
-                                    CampaignId = name_Id[2].replace("C", "");
-                                    ProgramId = name_Id[3].replace("P", "");
-                                    //TacticId = name_Id[3].replace("T", "");
-                                } else {
-                                    PlanId = name_Id[0].replace("L", "");
-                                    CampaignId = name_Id[1].replace("C", "");
-                                    ProgramId = name_Id[2].replace("P", "");
-                                    TacticId = name_Id[3].replace("T", "");
+                                else if (name_Id.length == 3) {
+                                    // Chaneg By Nishant Sheth
+                                    // Desc:: To resolve issue with change view by dropdown
+                                    var nameindex = name.indexOf("Z");
+                                    if (nameindex >= 0) {
+                                        PlanId = name_Id[1].replace("L", "");
+                                        CampaignId = name_Id[2].replace("C", "");
+                                        //ProgramId = name_Id[2].replace("P", "");
+                                    } else {
+                                        PlanId = name_Id[0].replace("L", "");
+                                        CampaignId = name_Id[1].replace("C", "");
+                                        ProgramId = name_Id[2].replace("P", "");
+                                    }
                                 }
-                            }
-                            else {
+                                else if (name_Id.length == 4) {
+                                    // Chaneg By Nishant Sheth
+                                    // Desc:: To resolve issue with change view by dropdown
+                                    var nameindex = name.indexOf("Z");
+                                    if (nameindex >= 0) {
+                                        PlanId = name_Id[1].replace("L", "");
+                                        CampaignId = name_Id[2].replace("C", "");
+                                        ProgramId = name_Id[3].replace("P", "");
+                                        //TacticId = name_Id[3].replace("T", "");
+                                    } else {
+                                        PlanId = name_Id[0].replace("L", "");
+                                        CampaignId = name_Id[1].replace("C", "");
+                                        ProgramId = name_Id[2].replace("P", "");
+                                        TacticId = name_Id[3].replace("T", "");
+                                    }
+                                }
+                                else {
 
-                                // Chaneg By Nishant Sheth
-                                // Desc:: To resolve issue with change view by dropdown
-                                var nameindex = name.indexOf("Z");
-                                if (nameindex >= 0) {
-                                    PlanId = name_Id[1].replace("L", "");
-                                    CampaignId = name_Id[2].replace("C", "");
-                                    ProgramId = name_Id[3].replace("P", "");
-                                    TacticId = name_Id[4].replace("T", "");
-                                    //LineId = name_Id[4];
-                                } else {
-                                    PlanId = name_Id[0].replace("L", "");
-                                    CampaignId = name_Id[1].replace("C", "");
-                                    ProgramId = name_Id[2].replace("P", "");
-                                    TacticId = name_Id[3].replace("T", "");
-                                    LineId = name_Id[4];
+                                    // Chaneg By Nishant Sheth
+                                    // Desc:: To resolve issue with change view by dropdown
+                                    var nameindex = name.indexOf("Z");
+                                    if (nameindex >= 0) {
+                                        PlanId = name_Id[1].replace("L", "");
+                                        CampaignId = name_Id[2].replace("C", "");
+                                        ProgramId = name_Id[3].replace("P", "");
+                                        TacticId = name_Id[4].replace("T", "");
+                                        //LineId = name_Id[4];
+                                    } else {
+                                        PlanId = name_Id[0].replace("L", "");
+                                        CampaignId = name_Id[1].replace("C", "");
+                                        ProgramId = name_Id[2].replace("P", "");
+                                        TacticId = name_Id[3].replace("T", "");
+                                        LineId = name_Id[4];
+                                    }
                                 }
-                            }
 
-                            defaultParentArr.tacticId.push(TacticId);
+                                defaultParentArr.tacticId.push(TacticId);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        for (var p = 0; p < selectedIds.length; p++) {
+            for (var p = 0; p < selectedIds.length; p++) {
 
-            var taskdata = gantt.getTask(selectedIds[p]);
-            GanttTaskDataforHoney.data.push(taskdata);
-            GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
-        }
-
-        var tacticids = defaultParentArr.tacticId;
-        gantt.clearAll();
-        gantt.init("gantt_honey");
-        gantt.parse(GanttTaskDataforHoney);
-        gantt.refreshData();
-        var htmltestdiv = '';
-        htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
-        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
-        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
-        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
-        htmltestdiv += isQuater + '</span>';
-        htmltestdiv += '</p>';
-
-        var innerfiltervalueplan = "";
-        var isselectedplan = true;
-        var DropDownPlan = true;
-        $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
-            if ($(this).attr('checked') == 'checked') {
-                isselectedplan = true;
+                var taskdata = gantt.getTask(selectedIds[p]);
+                GanttTaskDataforHoney.data.push(taskdata);
+                GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
             }
-        });
-        if (activeMenu == "home") {
-            if (PdfFilters.SelectedPlans.length > 0) {
-                $.each(PdfFilters.SelectedPlans, function () {
-                    //innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
-                    // Modified By Nishant Sheth
-                    // Des :: #1981 export pdf issue for plan name display undefined
-                    innerfiltervalueplan += " " + $("#" + this).parent().parent("#ulSelectedPlans").children().children("#" + this).parent().attr('title') + ",";
-                });
+
+            var tacticids = defaultParentArr.tacticId;
+            gantt.clearAll();
+            gantt.init("gantt_honey");
+            gantt.parse(GanttTaskDataforHoney);
+            gantt.refreshData();
+            var htmltestdiv = '';
+            htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            htmltestdiv += isQuater + '</span>';
+            htmltestdiv += '</p>';
+
+            var innerfiltervalueplan = "";
+            var isselectedplan = true;
+            var DropDownPlan = true;
+            $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+                if ($(this).attr('checked') == 'checked') {
+                    isselectedplan = true;
+                }
+            });
+            if (activeMenu == "home") {
+                if (PdfFilters.SelectedPlans.length > 0) {
+                    $.each(PdfFilters.SelectedPlans, function () {
+                        //innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                        // Modified By Nishant Sheth
+                        // Des :: #1981 export pdf issue for plan name display undefined
+                        innerfiltervalueplan += " " + $("#" + this).parent().parent("#ulSelectedPlans").children().children("#" + this).parent().attr('title') + ",";
+                    });
+                }
             }
-        }
-        else {
-            // Modified By Nishant Sheth
-            // Desc :: #1981 export pdf issue for plan name display undefined
-            innerfiltervalueplan += " " + $("#dropdown-plan-title option:selected").text() + ",";
-        }
+            else {
+                // Modified By Nishant Sheth
+                // Desc :: #1981 export pdf issue for plan name display undefined
+                innerfiltervalueplan += " " + $("#dropdown-plan-title option:selected").text() + ",";
+            }
 
 
-        var isAvailablerecord = false;
-        var _noplandivMsg = $("#Notabcontent").css("display");
-        if (_noplandivMsg == "none") {
-            isAvailablerecord = true;
-        }
-        if (isAvailablerecord) {
+            //var isAvailablerecord = false;
+            //// Modified By Nishant Sheth
+            //// Desc :: To resolve the #1981 code review points to resolve click on clear filters and
+            //if (PdfFilters.SelectedPlans.toString().trim().length > 0 && activeMenu == 'home') {
+            //    isAvailablerecord = true;
+            //}
+            //else {
+            //    if ($("#CurrentPlanId").val() > 0 && activeMenu != 'home') {
+            //        isAvailablerecord = true;
+            //    }
+            //}
+            //if (isAvailablerecord) {
             if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
                 DropDownPlan = false;
             }
@@ -4009,8 +3883,7 @@
                 $("#AttachChartCanvasmultiyear").html(AttachChartHtml);
                 //$("#AttachChartCanvasmultiyear").css('margin-left', '60px');
             }
-            else
-            {
+            else {
                 $("#legendchart").hide();
                 $("#AttachChartCanvasmultiyear").html('');
                 ChartHtml = $("#chartCanvas").html();
@@ -4097,7 +3970,7 @@
 
         }
         else {
-            $('#cErrorInspectPopup').html('No plan exists to export the data in .pdf'); //PL #1595 - Dashrath Prajapati
+            $('#cErrorInspectPopup').html('No plan selected to export the data in .pdf'); //PL #1595 - Dashrath Prajapati
             $('#errorMessageInspectPopup').css("display", "block");
             $('#errorMessageInspectPopup').removeClass('message-position');
         }
@@ -4266,7 +4139,7 @@
         checkedPlancount = $("#ulSelectedPlans li input:checkbox:checked").length;
         $('#tPlancount').text('/' + $('#ulSelectedPlans li').length);
         $('#cPlancount').text(checkedPlancount);
-        
+
         GetTacticTypelist(planids);
         GetOwnerListForFilter(planids);
         //  alert($('#FilterName').val());
@@ -4760,38 +4633,45 @@
     function AjaxRequest() {
         //// Start - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
         if (IsUpdate) {
-        filters.customFieldIds = [];
+            filters.customFieldIds = [];
 
-        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
-            if ($(this).attr('checked') == 'checked') {
-                var chkid = $(this).attr("id");
-                if (chkid != undefined && chkid != 'undefined') {
-                    filters.customFieldIds.push(chkid);
+            $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                if ($(this).attr('checked') == 'checked') {
+                    var chkid = $(this).attr("id");
+                    if (chkid != undefined && chkid != 'undefined') {
+                        filters.customFieldIds.push(chkid);
+                    }
                 }
-            }
-        });
-        filters.SelectedPlans = [];
-        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
-            if ($(this).attr('checked') == 'checked') {
-                var chkid = $(this).attr("id");
-                if (chkid != undefined && chkid != 'undefined') {
-                    filters.SelectedPlans.push(chkid);
+            });
+            filters.SelectedPlans = [];
+            $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+                if ($(this).attr('checked') == 'checked') {
+                    var chkid = $(this).attr("id");
+                    if (chkid != undefined && chkid != 'undefined') {
+                        filters.SelectedPlans.push(chkid);
+                    }
                 }
-            }
-        });
-        if (filters.SelectedPlans.length == 1) {
-            CurrentPlanId = filters.SelectedPlans[0].toString();
-            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+            });
+            if (filters.SelectedPlans.length == 1) {
+                CurrentPlanId = filters.SelectedPlans[0].toString();
+                $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
 
-        }
+            }
 
             // Add by dasharth parjapti
             // Desc ::  to resolve the owner filter issue
-        filters.OwnerIds = [];
-        $("#ulSelectedOwner li input:checkbox:checked").map(function () {
-            filters.OwnerIds.push($(this).attr("id"));
-        });
-    }
+            filters.OwnerIds = [];
+            $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+                filters.OwnerIds.push($(this).attr("id"));
+            });
+
+            // Add By Nishant Sheth
+            // Desc :: To resolve the #1981 code review points to resolve click on clear filters and
+            filters.TacticTypeids = [];
+            $("#ulTacticType li input:checkbox:checked").map(function () {
+                filters.TacticTypeids.push($(this).attr("id").replace("CbTT", ""));
+            });
+        }
         //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
 
         var Planid = filters.SelectedPlans;
@@ -4857,7 +4737,7 @@
                         if (data.taskData.length > 0 || isRequest) {
                             $("#gantt_here").show();
                             $(".pull-right.toggle-status.source-sans-proregular").show();
-                           // $("#improvements").show();
+                            // $("#improvements").show();
                             $('#lblMarkringActivitiestitle').hide();
                             $('#divCollaborator').show();
                             $("#NodatawithfilterCalendar").hide();
@@ -4956,7 +4836,7 @@
 
                             $("div[id^='LinkIcon']").each(function () {
 
-                                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') +"</U>"), "tipsy-innerWhite");
+                                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
                             });
                             $(".gantt_container .gantt_tree_content").each(function (index, element) {
 
@@ -5017,6 +4897,7 @@
             $('#pbudget').attr("original-title", "$0");
             $('.changes').hide();
             $('#Notabcontent').show();
+            $('#divhoneycombbox').hide(); // Add By Nishant Sheth Desc :: To hide the honey comb icon with no data exist
             // Start - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #63
             $('#marketing-activities').hide();
             $('#improvements').hide();
@@ -5711,7 +5592,7 @@
         //// Attaching double click event
         eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) {
             scrollstate = gantt.getScrollState();
-            bodyscrollpos= $(window).scrollTop();
+            bodyscrollpos = $(window).scrollTop();
 
             ShowModel(taskId, null)
         });
@@ -6957,7 +6838,7 @@
                                 $(this).parent().addClass("close-list");
 
                             });
-                            
+
 
                         }
                     }
@@ -7162,7 +7043,7 @@
         var TacticId;
         var ImpTacticId;
         var LineId;
-    
+
         if (name_Id.length == 1) {
             PlanId = name_Id[0].replace("L", "");
         }
@@ -7229,7 +7110,7 @@
         }
 
         var ul;
-        
+
         if (type == "Plan") {
             if (permission == "true") {
                 if ('@IsPlanCreateAuthorized'.toLowerCase() == 'true') {
@@ -7259,13 +7140,11 @@
 
             if (permission == "true") {
 
-                if (LinkTacticPermission.toLowerCase() == "true" && LinkedTacticId == "null" )
-                {
+                if (LinkTacticPermission.toLowerCase() == "true" && LinkedTacticId == "null") {
                     ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)' popupType='Copying'>Copy To</li> <li class='link-icon' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblLinkTo' onclick='OpentCopyPopup(this)'popupType='Linking'><i class='fa fa-link'></i>Link To</li></ul>";
                 }
-                else
-                {
-                   
+                else {
+
                     ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' popupType='Copying' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
 
                 }
@@ -7441,7 +7320,7 @@
                                 if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
                                     LoadPlanGrid();
                                 }
-                             
+
                             }
                         }
 
@@ -7584,7 +7463,7 @@
                                 if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
                                     LoadPlanGrid();
                                 }
-                                //Added by kausha somaiya on 09/01/2015 for ticket no #1869 
+                                //Added by kausha somaiya on 09/01/2015 for ticket no #1869
                                 GetCollaborators(CurrentPlanId);
                             }
                         }
@@ -7961,7 +7840,7 @@ function () {
         BulkPlanOperation(false);
         BulkTTOperation(false);
         BulkStatusOperation(false);
-    //Added vy kausha for ticket no #1836
+        //Added vy kausha for ticket no #1836
         BulkOwnerOperation(false);
         LoadPlanData(null);
         $('#divCustomFieldsFilter').find("li").each(function (i) {
@@ -7975,7 +7854,15 @@ function () {
             $(this).parent().removeClass("close-list");
         });
         UpdateSelectedFilters();
-
+        // Add By Nishant Sheth
+        // Desc :: To resolve the #1981 code review points to resolve click on clear filters and after click on export pdf button without update result button click
+        PdfFilters.customFieldIds = [];
+        PdfFilters.PlanIDs = [];
+        PdfFilters.SelectedPlans = [];
+        PdfFilters.PlanTitles = [];
+        PdfFilters.OwnerIds = [];
+        PdfFilters.TacticTypeids = [];
+        // End By Nishant Sheth
     }
 
     function LoadPreset() {
