@@ -6002,7 +6002,9 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
+                
                 Common.PlanUserSavedViews = Sessions.PlanUserSavedViews;
+                listofsavedviews = Common.PlanUserSavedViews;
             }
             //ENd
             // Add By Nishant Sheth #1915
