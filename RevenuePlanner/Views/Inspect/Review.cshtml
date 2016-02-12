@@ -1224,18 +1224,30 @@
         var validFields;
         var errorCount = 0;
         var wfToggle = document.getElementById('workfrontIntegrationToggle');
-        if('@IsSyncWorkFront'=='True' || (wfToggle!=null && wfToggle.checked == true) ) //Update for PL#1935 Brad Gray 28 Jan 2016
+        var intDeployToggle = document.getElementById('')
+        var isDeployed; //added for PL#1989 by Brad Gray 11 Feb 2016
+        if ($("#t_integration_status").hasClass("icon-check-blue")) {
+            isDeployed = 'true'
+        }
+        else{
+            isDeployed = 'false';
+        }
+
+        if( isDeployed == 'true' ) //don't validate these at all if the tactic isn't deployed
         {
-            var wfR = document.getElementById("workFrontRequestOnApproval");
-            if(wfR.checked==true)
+            if( '@IsSyncWorkFront'=='True' || (wfToggle!=null && wfToggle.checked == true) ) //Update for PL#1935 Brad Gray 28 Jan 2016
             {
-                if ($('#WorkFrontRequestQueue').val() == "") {
-                    $('#btnMultiselect_WorkFrontRequestQueue').addClass('error');
-                    errorCount++;
-                }
-                if ($('#WorkFrontRequestAssignee').val() == "") {
-                    $('#btnMultiselect_WorkFrontRequestAssignee').addClass('error');
-                    errorCount++;
+                var wfR = document.getElementById("workFrontRequestOnApproval");
+                if(wfR.checked==true)
+                {
+                    if ($('#WorkFrontRequestQueue').val() == "") {
+                        $('#btnMultiselect_WorkFrontRequestQueue').addClass('error');
+                        errorCount++;
+                    }
+                    if ($('#WorkFrontRequestAssignee').val() == "") {
+                        $('#btnMultiselect_WorkFrontRequestAssignee').addClass('error');
+                        errorCount++;
+                    }
                 }
             }
         }
