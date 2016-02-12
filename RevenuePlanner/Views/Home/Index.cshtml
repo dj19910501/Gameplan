@@ -506,10 +506,14 @@
                         $(this).parent().removeClass("close-list");
                     });
 
-                    $('#ulSelectedOwner li input:checkbox:checked').each(function () {
+                    $('#ulSelectedOwner li input:checkbox').each(function () {
                         if ($(this).attr('id') != '@Sessions.User.UserId') {
                             $(this).removeAttr("checked");
                             $(this).parent().removeClass("close-list");
+                        }
+                        else {
+                            $(this).attr("checked", "checked");
+                            $(this).parent().addClass("close-list");
                         }
 
                     });
@@ -548,11 +552,12 @@
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()' && $('#IsPlanSelector').val().toLowerCase() == "true") {
 
             //Added by Rahul Shah for PL #1898
-          
+       
          
                 IsSavedPlan = '@PreviousPlanID.ToString()';
          
             if (IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) {
+              
                 //modified by Rahul shah for designing issue in custom field.. display extra close icon
                 $('#divCustomFieldsFilter li input:checkbox').each(function (i) {
                     $(this).parent().addClass("close-list");
@@ -563,11 +568,16 @@
                     $(this).removeAttr("checked");
                     $(this).parent().removeClass("close-list");
                 });
-
-                $('#ulSelectedOwner li input:checkbox:checked').each(function () {
+                //Modified by komal rawal Logged in owner did not come selected.
+                $('#ulSelectedOwner li input:checkbox').each(function () {
                     if ($(this).attr('id') != '@Sessions.User.UserId') {
                         $(this).removeAttr("checked");
                         $(this).parent().removeClass("close-list");
+                    }
+                    else
+                    {
+                        $(this).attr("checked", "checked");
+                        $(this).parent().addClass("close-list");
                     }
 
                 });
@@ -650,7 +660,6 @@
                 }
                 else {
                     if (data.isSuccess == true) {
-                    
                         if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
                             OwnerCount = data.AllowedOwner.length;
                             if (OwnerCount > 0) {
@@ -670,7 +679,6 @@
                                       
                                         IsOwnerPresent = true;
                                         if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
-                                           
                                         checked = "checked"
                                         checkedclass = "close-list"
                                     }
@@ -686,7 +694,7 @@
                                     // filters.OwnerIds.push(OwnerItem.OwnerId);
                                 });
 
-
+                            
                                 //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
                                 var OwnerIds = [];
                                 $('#ulSelectedOwner li').each(function () {
@@ -740,8 +748,7 @@
                     //{
                     //    LastSetofowners();
                     //}
-
-
+                   
                 }
                 async = true;
 
