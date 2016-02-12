@@ -92,7 +92,22 @@ namespace RevenuePlanner.Controllers
             var Yearlabel = Enums.FilterLabel.Year.ToString();
             var FilterName = Sessions.FilterPresetName;
             //var SetOFLastViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
-            var SetOFLastViews = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
+            //Added By komal Rawal for #1959 to handle last viewed data in session
+            var SetOFLastViews = new List<Plan_UserSavedViews>();
+             if (Common.PlanUserSavedViews == null)
+             {
+                 Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
+
+             }
+             if (Sessions.PlanUserSavedViews == null)
+             {
+                 SetOFLastViews = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
+             }
+             else
+             {
+                 SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
+             }
+          //End
             var SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.UserId).ToList();
             var SetofLastYearsSelected = SetOFLastViews.Where(listview => listview.FilterName == Yearlabel && listview.Userid == Sessions.User.UserId).ToList();
             var FinalSetOfPlanSelected = "";

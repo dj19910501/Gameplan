@@ -265,7 +265,18 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsPublished = isPublished;
             }
             var Label = Enums.FilterLabel.Plan.ToString();
-            var SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+
+            //Added By komal Rawal for #1959 to handle last viewed data in session
+            var SetOFLastViews = new List<Plan_UserSavedViews>();
+            if(Sessions.PlanUserSavedViews == null)
+            {
+                SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            }
+            else
+            {
+                SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
+            }
+          //End
             var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
             if (Enums.ActiveMenu.Home.Equals(activeMenu))
             {
@@ -5981,8 +5992,22 @@ namespace RevenuePlanner.Controllers
             var LastSetOfStatus = new List<string>();
             var NewListOfViews = new List<Plan_UserSavedViews>();// Add By Nishant Sheth to resolved the default view issue with update result
             //Modified for #1750 by Komal Rawal
-            var listofsavedviews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
-            Common.PlanUserSavedViews = listofsavedviews;// Add By Nishant Sheth #1915
+
+            //Modified By komal Rawal for #1959 to handle last viewed data in session
+           var listofsavedviews = new List<Plan_UserSavedViews>();
+            if (Sessions.PlanUserSavedViews == null || isLoadPreset == true)
+            {
+                 listofsavedviews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
+                Common.PlanUserSavedViews = listofsavedviews;
+            }
+            else
+            {
+                Common.PlanUserSavedViews = Sessions.PlanUserSavedViews;
+            }
+            //ENd
+            // Add By Nishant Sheth #1915
+
+          
             //Modified by Rahul shah on 24/12/2015 for PL#1837
             if (isLoadPreset == true)
             {
@@ -6025,6 +6050,8 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
+                    if(Sessions.PlanUserSavedViews == null)
+                    {
                     // Add By Nishant Sheth to resolved the default view issue with update result
                     NewListOfViews = listofsavedviews.Where(view => view.IsDefaultPreset == true).ToList();
                     if (NewListOfViews.Count == 0)
@@ -6035,6 +6062,13 @@ namespace RevenuePlanner.Controllers
                     {
                         listofsavedviews = NewListOfViews;
                     }
+                   
+                    }
+                    else
+                    {
+                        listofsavedviews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
+                    }
+                  
                     // End By Nishant Sheth
                 }
                 var SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel).Select(View => View.FilterValues).ToList();
@@ -6111,6 +6145,7 @@ namespace RevenuePlanner.Controllers
         {
 
 
+            Sessions.PlanUserSavedViews = null;  //Added By komal Rawal for #1959 to handle last viewed data in session
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
             List<Plan> ListofPlans = objDbMrpEntities.Plans.Where(p => planIds.Contains(p.PlanId)).ToList();
             string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
@@ -6141,40 +6176,17 @@ namespace RevenuePlanner.Controllers
 
 
             #region "Save filter values to Plan_UserSavedViews"
-
+            //Modified By Komal Rawal on 12-02-16 created a function InsertLastViewedUserData to decrease same lines of code.
 
             if (planIds.Count != 0)
             {
-                Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                objFilterValues.ViewName = null;
-                if (ViewName != null && ViewName != "")
-                {
-                    objFilterValues.ViewName = ViewName;
-                }
-                objFilterValues.FilterName = Enums.FilterLabel.Plan.ToString();
-                objFilterValues.FilterValues = planId;
-                objFilterValues.Userid = Sessions.User.UserId;
-                objFilterValues.LastModifiedDate = DateTime.Now;
-                objFilterValues.IsDefaultPreset = false;
-                NewCustomFieldData.Add(objFilterValues);
-                objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
+                InsertLastViewedUserData(planId, ViewName, Enums.FilterLabel.Plan.ToString(), NewCustomFieldData);
 
             }
             //if (ownerIds != null && ownerIds != "") // Commented By Nishant Sheth Desc:: To resolve owner filter issue
             {
-                Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                objFilterValues.ViewName = null;
-                if (ViewName != null && ViewName != "")
-                {
-                    objFilterValues.ViewName = ViewName;
-                }
-                objFilterValues.FilterName = Enums.FilterLabel.Owner.ToString();
-                objFilterValues.FilterValues = ownerIds;
-                objFilterValues.Userid = Sessions.User.UserId;
-                objFilterValues.LastModifiedDate = DateTime.Now;
-                objFilterValues.IsDefaultPreset = false;
-                objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
-                NewCustomFieldData.Add(objFilterValues);
+                InsertLastViewedUserData(ownerIds, ViewName, Enums.FilterLabel.Owner.ToString(), NewCustomFieldData);
+              
             }
             //if (TacticTypeid != null && TacticTypeid != "") //Commented by Rahul Shah for PL #1952.
             {
@@ -6182,61 +6194,22 @@ namespace RevenuePlanner.Controllers
                 //{
                 //    TacticTypeid = null;
                 //}
-                Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                objFilterValues.ViewName = null;
-                if (ViewName != null && ViewName != "")
-                {
-                    objFilterValues.ViewName = ViewName;
-                }
-                objFilterValues.FilterName = Enums.FilterLabel.TacticType.ToString();
-                objFilterValues.FilterValues = TacticTypeid;
-                objFilterValues.Userid = Sessions.User.UserId;
-                objFilterValues.LastModifiedDate = DateTime.Now;
-                objFilterValues.IsDefaultPreset = false;
-                objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
-                NewCustomFieldData.Add(objFilterValues);
+                InsertLastViewedUserData(TacticTypeid, ViewName,Enums.FilterLabel.TacticType.ToString(), NewCustomFieldData);
+              
             }
             if (StatusIds != "AddActual" && StatusIds != "Report")
             {
                 //if (StatusIds != null && StatusIds != "")  //Commented by Rahul Shah for PL #1952.
                 {
-                    //if (StatusIds == "0")
-                    //{
-                    //    StatusIds = null;
-                    //}
-                    Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                    objFilterValues.ViewName = null;
-                    if (ViewName != null && ViewName != "")
-                    {
-                        objFilterValues.ViewName = ViewName;
-                    }
-                    objFilterValues.FilterName = Enums.FilterLabel.Status.ToString();
-                    objFilterValues.FilterValues = StatusIds;
-                    objFilterValues.Userid = Sessions.User.UserId;
-                    objFilterValues.LastModifiedDate = DateTime.Now;
-                    objFilterValues.IsDefaultPreset = false;
-                    objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
-                    NewCustomFieldData.Add(objFilterValues);
+                    InsertLastViewedUserData(StatusIds, ViewName, Enums.FilterLabel.Status.ToString(), NewCustomFieldData);
                 }
             }
 
 
             if (SelectedYears != null && SelectedYears != "")
             {
+                InsertLastViewedUserData(SelectedYears, ViewName, Enums.FilterLabel.Year.ToString(), NewCustomFieldData);
 
-                Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                objFilterValues.ViewName = null;
-                if (ViewName != null && ViewName != "")
-                {
-                    objFilterValues.ViewName = ViewName;
-                }
-                objFilterValues.FilterName = Enums.FilterLabel.Year.ToString();
-                objFilterValues.FilterValues = SelectedYears;
-                objFilterValues.Userid = Sessions.User.UserId;
-                objFilterValues.LastModifiedDate = DateTime.Now;
-                objFilterValues.IsDefaultPreset = false;
-                objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
-                NewCustomFieldData.Add(objFilterValues);
             }
 
 
@@ -6360,6 +6333,7 @@ namespace RevenuePlanner.Controllers
                 var isCheckinNew = NewCustomFieldData.Select(a => a.FilterValues).Except(prevCustomFieldList.Select(b => b.FilterValues)).Any();
                 if (isCheckinPrev == true || isCheckinNew == true)
                 {
+
                     prevCustomFieldList.ForEach(custmfield => objDbMrpEntities.Entry(custmfield).State = EntityState.Deleted);
                     objDbMrpEntities.SaveChanges();
                 }
@@ -6375,8 +6349,29 @@ namespace RevenuePlanner.Controllers
             Common.PlanUserSavedViews = objDbMrpEntities.Plan_UserSavedViews.Where(custmfield => custmfield.Userid == Sessions.User.UserId).ToList();
             #endregion
             //End
+            Sessions.PlanUserSavedViews = Common.PlanUserSavedViews;  //Added By komal Rawal for #1959 to handle last viewed data in session
             return Json(new { isSuccess = true, ViewName = ViewName }, JsonRequestBehavior.AllowGet);
         }
+
+        //Added By Komal Rawal on 12-02-16 for code optimazation.
+        //Desc : Function to insert data into Plan_UserSaved Views table for filters in left pane.
+        private void InsertLastViewedUserData(string Ids, string ViewName, string FilterName, List<Plan_UserSavedViews> NewCustomFieldData)
+        {
+            Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+            objFilterValues.ViewName = null;
+            if (ViewName != null && ViewName != "")
+            {
+                objFilterValues.ViewName = ViewName;
+            }
+            objFilterValues.FilterName = FilterName;
+            objFilterValues.FilterValues = Ids;
+            objFilterValues.Userid = Sessions.User.UserId;
+            objFilterValues.LastModifiedDate = DateTime.Now;
+            objFilterValues.IsDefaultPreset = false;
+            NewCustomFieldData.Add(objFilterValues);
+            objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
+        }
+        //End
 
         /// <summary>
         /// To Set the default filter

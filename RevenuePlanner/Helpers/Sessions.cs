@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RevenuePlanner.Models;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Web;
@@ -194,6 +195,7 @@ namespace RevenuePlanner.Helpers
             HttpContext.Current.Session["PublishedPlanId"] = 0;
             Sessions.ModelId = 0;
             Sessions.ReportPlanId = 0;
+            Sessions.PlanUserSavedViews = null;
         }
 
         /// <summary>
@@ -425,6 +427,25 @@ namespace RevenuePlanner.Helpers
             {
                 HttpContext.Current.Session["FilterPresetName"] = value;
             }
+        }
+
+        //Added By komal Rawal for #1959 to handle last viewed data in session
+        public static List<Plan_UserSavedViews> PlanUserSavedViews
+        {
+
+            get
+            {
+                if (HttpContext.Current.Session["PlanUserSavedViews"] != null)
+                {
+                    return (List<Plan_UserSavedViews>)HttpContext.Current.Session["PlanUserSavedViews"];
+                }
+                return null;
+            }
+            set
+            {
+                HttpContext.Current.Session["PlanUserSavedViews"] = value;
+            }
+
         }
 
     }
