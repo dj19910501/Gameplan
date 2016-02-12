@@ -701,6 +701,15 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
+        /// Enum for Quarter/Month base value.
+        /// Added By: Nishant Sheth
+        /// </summary>
+        public enum QuarterMonthDigit
+        {
+            Quarter = 4,
+            Month = 12
+        }
+        /// <summary>
         /// Data Dictionary to hold Month values.
         /// Added By: Bhavesh Dobariya.
         /// </summary>

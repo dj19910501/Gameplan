@@ -7292,8 +7292,10 @@ namespace RevenuePlanner.Controllers
                 if (ListYear.Contains(currentYear)) // Modified By Nishant Sheth #1839
                 {
                     IsDisplay = true;
-                    TodayValue = GetTodayPlotValue(timeframeOption, IsQuarterly, IsPadding: true);
                 }
+                // Add By Nishant Sheth
+                // Desc :: #1925 - To resolve previous year actual values display with green color.
+                    TodayValue = GetTodayPlotValue(timeframeOption, IsQuarterly, IsPadding: true);
                 #endregion
 
                 #region "Get Series list"
@@ -7542,6 +7544,27 @@ namespace RevenuePlanner.Controllers
                     }
                     resultTodayValue = resultTodayValue + beforeYearcount;
                     // End By Nishant Sheth
+                }
+                else
+                {
+                    // Add By Nishant Sheth
+                    // Desc :: #1925 - To resolve previous year actual values display with green color.
+                    int paddingplot = 1; // Desc :: use for padding plot on graph
+                    int seriesplot = Convert.ToInt32(Enums.QuarterMonthDigit.Quarter);//Desc:: use for plot graph values
+                    if (!IsQuarterly)
+                    {
+                        paddingplot = 2;
+                        seriesplot = Convert.ToInt32(Enums.QuarterMonthDigit.Month);
+                    }
+
+                    foreach (var YearName in ListYear)
+                    {
+                        if (Convert.ToInt32(currentYear) > Convert.ToInt32(YearName))
+                        {
+                            paddingplot += seriesplot;
+                        }
+                    }
+                    resultTodayValue = resultTodayValue + paddingplot;
                 }
                 #endregion
             }
