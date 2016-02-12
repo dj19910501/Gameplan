@@ -648,7 +648,7 @@ $('#cYearcount').text(checkedYearcount);
                                         var LoggedInOwner = data.LoggedInUser.OwnerId;
                                         if (OwnerItem.OwnerId == LoggedInOwner) {
                                             IsOwnerPresent = true;
-                                        if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+                                            if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(OwnerItem.OwnerId) >= 0) {
                                             checked = "checked"
                                             checkedclass = "close-list"
                                         }
@@ -703,7 +703,7 @@ $('#cYearcount').text(checkedYearcount);
 
                                         // Modified By Nishant Sheth
                                         // Desc:: To resolve the #1790 observation
-                                    if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+                                        if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(OwnerItem.OwnerId) >= 0) {
                                         checked = "checked"
                                         checkedclass = "close-list"
                                     }
@@ -898,7 +898,8 @@ $('#cYearcount').text(checkedYearcount);
               });
           }
           else {
-            //  TacticDeselectAll = true;
+              //  TacticDeselectAll = true;
+              IsDeselectAllTactics = true; //Added by Komal Rawal on 12-02-16 to solve issue when we deselect all tactic and change plan it should be deselected
               $("#ulTacticType li").each(function (i) {
                   $(this).removeClass("close-list");
                   var chkid = $(this).find("input[type=checkbox]").attr("id");

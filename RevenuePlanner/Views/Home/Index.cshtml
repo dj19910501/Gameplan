@@ -729,7 +729,8 @@
                                         if (OwnerItem.OwnerId == LoggedInOwner) {
 
                                             IsOwnerPresent = true;
-                                            if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+                                            //Modified BY komal when logged in owner deselect and change plan it should come deselected
+                                        if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(OwnerItem.OwnerId) >= 0) {
                                                 checked = "checked"
                                                 checkedclass = "close-list"
                                             }
@@ -773,7 +774,7 @@
 
                                         // Modified By Nishant Sheth
                                         // Desc:: To resolve the #1790 observation
-                                        if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+                                    if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(OwnerItem.OwnerId) >= 0) {
                                             checked = "checked"
                                             checkedclass = "close-list"
                                         }
