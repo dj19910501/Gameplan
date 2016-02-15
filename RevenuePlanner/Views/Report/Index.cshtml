@@ -632,7 +632,8 @@ $('#cYearcount').text(checkedYearcount);
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
                     else {
-                        if (data.isSuccess == true) {
+                    if (data.isSuccess == true) {
+                        var LoggedInOwner = data.LoggedInUser.OwnerId;
                             if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
                                 OwnerCount = data.AllowedOwner.length;
                                 if (OwnerCount > 0) {
@@ -645,7 +646,7 @@ $('#cYearcount').text(checkedYearcount);
                                     $.each(data.AllowedOwner, function (i, OwnerItem) {
                                         var checked = "";
                                         var checkedclass = "";
-                                        var LoggedInOwner = data.LoggedInUser.OwnerId;
+                                      
                                         if (OwnerItem.OwnerId == LoggedInOwner) {
                                             IsOwnerPresent = true;
                                             if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(OwnerItem.OwnerId) >= 0) {
@@ -703,7 +704,7 @@ $('#cYearcount').text(checkedYearcount);
 
                                         // Modified By Nishant Sheth
                                         // Desc:: To resolve the #1790 observation
-                                        if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(OwnerItem.OwnerId) >= 0) {
+                                        if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(LoggedInOwner) >= 0) {
                                         checked = "checked"
                                         checkedclass = "close-list"
                                     }
