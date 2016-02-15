@@ -3943,9 +3943,9 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
-                int planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == form.PlanCampaignId && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).FirstOrDefault();
 
                 int cid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == form.PlanProgramId).Select(program => program.PlanCampaignId).FirstOrDefault();
+                int planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == cid && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).FirstOrDefault();
                 int pid = form.PlanProgramId;
                 var customFields = JsonConvert.DeserializeObject<List<CustomFieldStageWeight>>(customFieldInputs);
 
@@ -3972,6 +3972,45 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
+
+                                // Added by Viral Kadiya related to PL ticket #2002: When we create a new tactic, then the integration need to look at the model. If under model integration, there are any integration mapped then the switched for these needs to be turned on as well.
+                                int sfdcInstanceId = 0, elqaInstanceId = 0;
+                                #region "Get SFDC & Elqoua InstanceId from Model by Plan"
+                                if(planid >0)
+                                {
+                                    Model objModel = new Model();
+                                    Plan objPlan = new Plan();
+                                    
+                                    objPlan = db.Plans.Where(plan=> plan.PlanId == planid).FirstOrDefault();
+                                    if(objPlan != null)
+                                    {
+                                        objModel = objPlan.Model;
+                                        if (objModel != null)
+                                        {
+                                            if (objModel.IntegrationInstanceId.HasValue)
+                                                sfdcInstanceId = objModel.IntegrationInstanceId.Value;
+                                            if (objModel.IntegrationInstanceEloquaId.HasValue)
+                                                elqaInstanceId = objModel.IntegrationInstanceId.Value;
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #region "Get IsDeployedToIntegration by TacticTypeId"
+                                int TacticTypeId = 0;
+                                bool isDeployedToIntegration = false;
+                                if(form.TacticTypeId != null)
+                                {
+                                    TacticTypeId =form.TacticTypeId;
+                                    TacticType objTacType = new TacticType();
+                                    objTacType = db.TacticTypes.Where(tacType => tacType.TacticTypeId == form.TacticTypeId).FirstOrDefault();
+                                    if (objTacType != null && objTacType.IsDeployedToIntegration)
+                                    {
+                                        isDeployedToIntegration = true;
+                                    }
+                                }
+                                #endregion
+
                                 #region "Save New record to Plan_Campaign_Program_Tactic table"
                                 Plan_Campaign_Program_Tactic pcpobj = new Plan_Campaign_Program_Tactic();
                                 pcpobj.PlanProgramId = form.PlanProgramId;
@@ -3982,12 +4021,19 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.StartDate = form.StartDate;
                                 pcpobj.EndDate = form.EndDate;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
-                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                                pcpobj.IsDeployedToIntegration = isDeployedToIntegration;
                                 pcpobj.StageId = form.StageId;
                                 pcpobj.ProjectedStageValue = form.ProjectedStageValue;
                                 pcpobj.CreatedBy = Sessions.User.UserId;
                                 pcpobj.CreatedDate = DateTime.Now;
                                 pcpobj.TacticBudget = form.Cost; //modified for 1229
+                                if (isDeployedToIntegration)
+                                {
+                                    if (sfdcInstanceId > 0)
+                                        pcpobj.IsSyncSalesForce = true;         // Set SFDC setting to True if Salesforce instance mapped under Tactic's Model.
+                                    if (elqaInstanceId > 0)
+                                        pcpobj.IsSyncEloqua = true;             // Set Eloqua setting to True if Eloqua instance mapped under Tactic's Model.
+                                }
                                 db.Entry(pcpobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
                                 #endregion
@@ -4608,7 +4654,7 @@ namespace RevenuePlanner.Controllers
 
                                 //End
 
-                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                                //pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 pcpobj.StageId = form.StageId;
                                 pcpobj.ProjectedStageValue = form.ProjectedStageValue;
                                 pcpobj.ModifiedBy = Sessions.User.UserId;
