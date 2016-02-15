@@ -546,11 +546,17 @@
                     //Added by Rahul Shah for PL #1898
 
                     if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
-                        //modified by Rahul shah for designing issue in custom field.. display extra close icon
-                        $('#divCustomFieldsFilter li input:checkbox').each(function (i) {
-                            $(this).parent().addClass("close-list");
-                            var chkid = $(this).attr("id");
-                            $(this).attr("checked", "checked");
+                        // Modified By Rahul Shah
+                        // Desc :: To resolve the #1952 code review points to mismatch customfield selection count on plan change
+                        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+                            var id = 0, CheckedCounter = 0;
+                            $(this).find("input[type=checkbox]").each(function () {
+                                $(this).parent().addClass("close-list");
+                                $(this).attr("checked", "checked");
+                                CheckedCounter++;
+                            });
+                            id = this.id.split("-")[1];
+                            $("#SelectedCustomFilter_" + id).text(CheckedCounter);
                         });
 
                         $("#accordion-Year li input:checkbox:checked").each(function () {
@@ -570,10 +576,12 @@
 
                         });
                         GetTacticTypelist(CurrentPlanId, false);
-                        //$('#ulTacticType li input:checkbox:checked').each(function () {
-                        //    $(this).attr("checked","checked");
-                        //    $(this).parent().addClass("close-list");
-                        //});
+                        // Modified By Rahul Shah
+                        // Desc :: To resolve the #1952 code review points to mismatch Tactic Type selection count on plan change.
+                        $('#ulTacticType li input:checkbox').each(function () {
+                            $(this).attr("checked", "checked");
+                            $(this).parent().addClass("close-list");
+                        });
                         $('#ulStatus li input:checkbox').each(function () {
                             $(this).attr("checked", "checked");
                             $(this).parent().addClass("close-list");
@@ -582,6 +590,7 @@
 
 
                     SaveLastSetofViews();
+                    UpdateSelectedFilters();
                     if (CurrentPlanId > 0) {
                         if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
                             //EditPlanHome();
@@ -610,11 +619,17 @@
 
                 if (IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) {
 
-                    //modified by Rahul shah for designing issue in custom field.. display extra close icon
-                    $('#divCustomFieldsFilter li input:checkbox').each(function (i) {
-                        $(this).parent().addClass("close-list");
-                        var chkid = $(this).attr("id");
-                        $(this).attr("checked", "checked");
+                    // Modified By Rahul Shah
+                    // Desc :: To resolve the #1952 code review points to mismatch customfield selection count on plan change
+                    $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+                        var id = 0, CheckedCounter = 0;
+                        $(this).find("input[type=checkbox]").each(function () {
+                            $(this).parent().addClass("close-list");
+                            $(this).attr("checked", "checked");
+                            CheckedCounter++;
+                        });
+                        id = this.id.split("-")[1];
+                        $("#SelectedCustomFilter_" + id).text(CheckedCounter);
                     });
                     $("#accordion-Year li input:checkbox:checked").each(function () {
                         $(this).removeAttr("checked");
@@ -633,11 +648,12 @@
 
                     });
                     GetTacticTypelist(CurrentPlanId, false);
-
-                    //$('#ulTacticType li input:checkbox:checked').each(function () {
-                    //    $(this).attr("checked","checked");
-                    //    $(this).parent().addClass("close-list");
-                    //});
+                    // Modified By Rahul Shah
+                    // Desc :: To resolve the #1952 code review points to mismatch Tactic Type selection count on plan change.
+                    $('#ulTacticType li input:checkbox').each(function () {
+                        $(this).attr("checked", "checked");
+                        $(this).parent().addClass("close-list");
+                    });
 
 
                     $('#ulStatus li input:checkbox').each(function () {
@@ -648,6 +664,7 @@
                 }
                 IsPlanChange = true;
                 SaveLastSetofViews();
+                UpdateSelectedFilters();
             }
 
         }

@@ -1464,9 +1464,7 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
                     $("#NoPlanFound").show();
                     
                 }
-                checkedPlancount = $("#ulSelectedPlans li input:checkbox:checked").length;
-                $('#tPlancount').text('/' + PlanCount);
-                $('#cPlancount').text(checkedPlancount);
+                
                 // Addd By Nishant Sheth
                 // Desc  :: #1842 code review - When we select the year from Year filter, plan selection is removed, It should not
                 var listofplan = $("#accordion-element-Plan").find("ul").find("li").find("input[type='checkbox']");
@@ -1484,6 +1482,11 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
                 PlanIds = GetFilterIdForPlan(multiselectPlanId);
                 GetTacticTypelist(PlanIds,true,true);// Modified By Nishant Sheth #1956 : Enable async true paramter
                 GetOwnerListForFilter(PlanIds, true, true);// Modified By Nishant Sheth #1956 : Enable async true paramter
+                // Added By Rahul Shah
+                // Desc :: To resolve the internal review points to mismatch Plan selection count on Year change
+                checkedPlancount = $("#ulSelectedPlans li input:checkbox:checked").length;
+                $('#tPlancount').text('/' + PlanCount);
+                $('#cPlancount').text(checkedPlancount);
             }
         });
     }

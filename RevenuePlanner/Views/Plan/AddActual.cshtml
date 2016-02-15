@@ -816,12 +816,18 @@
             CurrentPlanId = $(this).attr('value');
             IsSavedPlan = $("#CurrentPlanId").val();
             if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
-                $('#divCustomFieldsFilter li input:checkbox').each(function (i) {
-                    $(this).parent().addClass("close-list");
-                    var chkid = $(this).attr("id");
-                    $(this).attr("checked", "checked");
+                // Modified By Rahul Shah
+                // Desc :: To resolve the #1952 code review points to mismatch customfield selection count on plan change.
+                $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+                    var id = 0, CheckedCounter = 0;
+                    $(this).find("input[type=checkbox]").each(function () {
+                        $(this).parent().addClass("close-list");
+                        $(this).attr("checked", "checked");
+                        CheckedCounter++;
+                    });
+                    id = this.id.split("-")[1];
+                    $("#SelectedCustomFilter_" + id).text(CheckedCounter);
                 });
-
                 $("#accordion-Year li input:checkbox:checked").each(function () {
                     $(this).removeAttr("checked");
                     $(this).parent().removeClass("close-list");
@@ -841,12 +847,14 @@
                     }
 
                 });
+                // Modified By Rahul Shah
+                // Desc :: To resolve the #1952 code review points to mismatch Tactic Type and Satus selection count on plan change
                 GetTacticTypelist(CurrentPlanId, false);
-                $('#ulTacticType li input:checkbox:checked').each(function () {
+                $('#ulTacticType li input:checkbox').each(function () {
                     $(this).attr("checked", "checked");
                     $(this).parent().addClass("close-list");
                 });
-                $('#ulStatus li input:checkbox:checked').each(function () {
+                $('#ulStatus li input:checkbox').each(function () {
                     $(this).attr("checked", "checked");
                     $(this).parent().addClass("close-list");
                 });
@@ -858,7 +866,7 @@
                 GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
                 GetList(CurrentPlanId);
-            }         
+            }
         });
     }
 
