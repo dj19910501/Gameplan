@@ -12372,34 +12372,39 @@ div.clue-bottom-default .cluetip-arrows {
     background: url(../images/border-inner-accordion.png) 0 top repeat-x #efefef;
     margin-left: 20px;
     display: block;
-    padding: 2px 10px !important;
+    padding: 2px 10px ; /* !important #1951 - sidebar design */
     border-top: none !important;
 }
+.accordion-heading  h2 .fa {font-size: 16px} /* #1951 - sidebar design */
 
 .accordion-group {
     border: none !important;
     border-radius: 0 !important;
 }
 
-.accordion-inner:focus,
+/*.accordion-inner:focus,
 .accordion-inner:hover {
     background-color: #dcdce0;
+}*/  /* #1951 - sidebar design */
+li.accordion-inner.close-list {
+    background: none !important; /* #1951 - sidebar design */
 }
-
+.accordion-group .indicator{text-align: right; margin-right: 2px; }
 .accordion-toggle span.icon-check {
     background: url(../images/icon-check-accordion.png) right 4px no-repeat;
     font-weight: lighter;
 }
 
 .sidebar-section .accordion-group {
-    border: 1px solid #b3b3b3 !important;
+    /*border-bottom: 1px solid #b3b3b3 !important;*/ /* #1951 - sidebar design */
     margin-bottom: 14px !important;
 }
 
 .sidebar-section .accordion-heading {
-    padding: 0 0 0 10px !important;
+    border-bottom: 1px solid #b3b3b3 !important; /* #1951 - sidebar design */
+    padding: 0 !important;
     position: relative;
-    background-color: #f2f2f2;
+   /* background-color: #f2f2f2; padding: 0 0 0 10px !important;  #1951 - sidebar design */
 }
 
 .sidebar-section .accordion-body.collapse {
@@ -12407,15 +12412,15 @@ div.clue-bottom-default .cluetip-arrows {
     border-bottom: 0 !important;
 }
 
-    .sidebar-section .accordion-body.collapse.in .scroll-list {
-        border-top: 2px solid #d3d3d3 !important;
-        border-bottom: 2px solid #d3d3d3 !important;
-    }
+.sidebar-section .accordion-body.collapse.in .scroll-list {
+/* border-top: 1px solid #b3b3b3 !important;  #1951 - sidebar design*/
+border-bottom: 0 solid #d3d3d3 !important;
+}
 
-.sidebar-section .accordion-body .scroll-list {
+/*.sidebar-section .accordion-body .scroll-list {
     border-top: 2px solid #d3d3d3;
     border-bottom: 2px solid #d3d3d3;
-}
+}*/ /*#1951 - sidebar design*/
 
 .sidebar-section ul,
 .sidebar-section ul li {
@@ -12428,7 +12433,7 @@ div.clue-bottom-default .cluetip-arrows {
         height: 30px;
         line-height: 28px;
         background: 0 0;
-        margin: 2px;
+        margin: 2px 0 2px 2px; /* #1951 - sidebar design */
     }
 
 .sidebar-section .accordion-group a {
@@ -12443,20 +12448,53 @@ div.clue-bottom-default .cluetip-arrows {
 .sidebar-section .accordion-group .list-tab {
     height: 34px;
     line-height: 32px;
-    background-color: #f2f2f2;
+    background-color: transparent ;/*#f2f2f2  #1951 - sidebar design */
 }
 
-    .sidebar-section .accordion-group .list-tab ul {
-        float: right;
-        padding: 0 5px;
-    }
+.sidebar-section .accordion-group .list-tab ul {
+    float: right;
+    padding: 0 5px;
+}
 
-    .sidebar-section .accordion-group .list-tab li {
-        float: left;
-        font-size: 12px;
-        list-style: none;
-        padding-left: 6px;
-    }
+.sidebar-section .accordion-group .list-tab li {
+    float: left;
+    font-size: 12px;
+    list-style: none;
+    padding-left: 6px;
+}
+
+/* #1951 - sidebar design  checkbox styling */
+#Filtersidebar ul.scroll-list li input[type="checkbox"]{
+    -moz-appearance: none;
+    border: 0 solid #c8c6c6;
+    border-radius: 2px;
+    height: 15px;
+    margin: 0 5px 0 0;
+    opacity: 0;
+    width: 15px;
+    z-index: 2;   
+}
+.sidebar-section li.accordion-inner span.chkbx-icon {
+    display: inline-block;
+    position: relative;
+    font-family: FontAwesome;
+    font-size:20px;
+    float:right;
+}
+.sidebar-section li.accordion-inner .chkbx-icon::after {
+    content: "\f096";
+    display: block;  
+    position: absolute;
+    z-index: -1;
+    right:0;
+}
+.sidebar-section li.accordion-inner.close-list .chkbx-icon::after {
+    content: "\f14a";
+    color: #1A638A;
+}
+/* #1951 - sidebar design  checkbox styling  End*/
+
+
 .top-revenue-table table thead tr th:nth-child(1) {
     width: 30%;
 }
@@ -14011,8 +14049,43 @@ left:auto !important;
      #gridbox.gridViewGrid.gridbox {height:70vh !important}
 }
 
+/*#1952,#1953,#1954*/
+ #ulSelectedFilter{
+    height: 275px;
+    overflow: auto;
+}
 
+#ulSelectedFilter li{
+    line-height: 5px;
+    margin: 5px 2px 10px;
+    height:auto;
+}
 
+.sidebarliwidthSelected-left, .sidebarliwidthSelected-right{
+    font-size: 14px !important;
+    padding-bottom: 0 !important;
+    line-height: 18px;
+}
+
+.sidebarliwidthSelected-left{
+    font-weight: bold;
+}
+span.filter-count, span.filter-count > span {
+    font-size: 14px !important;
+}
+span.filter-count{float:right;}
+
+/* #1952 */
+#accordion-SelectedFilter{
+    background: #fff none repeat scroll 0 0;
+    border-radius: 6px;
+    padding: 5px 10px;
+    margin-bottom:20px !important;
+}
+
+.sidebar-section #accordion-SelectedFilter .accordion-heading {
+    border-bottom: 0 none !important;
+}
 /*by bheru mehta 1686 09-1-2016 end*/
 
 /************************************************ Responsive css start here **********************************************************/
@@ -15830,34 +15903,5 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     font-weight:bold;
     }
 
- /*#1952,#1953,#1954*/
- #ulSelectedFilter
-    {
-        height: 275px;
-        overflow: auto;
-    }
+ 
 
-        #ulSelectedFilter li
-        {
-            line-height: 5px;
-            margin: 2px 2px 5px;
-            height:auto;
-        }
-
-    .sidebarliwidthSelected-left, .sidebarliwidthSelected-right
-    {
-        font-size: 14px !important;
-        padding-bottom: 0 !important;
-        line-height: 18px;
-    }
-
-    .sidebarliwidthSelected-left
-    {
-        font-weight: bold;
-    }
-    span.filter-count, span.filter-count > span {
-    font-size: 14px !important;
-}
-    span.filter-count
-    {float:right;
-    }

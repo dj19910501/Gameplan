@@ -16,17 +16,17 @@
     <!--font Awesome css-->
     <link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css" />
     <!--font Awesome css-->
-   <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_Feb1.css")" type="text/css" />
-    @* <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" type="text/css" />*@
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Oct1.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_Feb1.css")" type="text/css" />
+    @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" type="text/css" />*@
+     <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Oct1.css")" type="text/css" />
 
-    @Scripts.Render("~/bundles/GetJS")
-    <script type="text/javascript">
-        //Added By: Rahul Shah on 25/09/2015 to address ticket PL #900 Exception handling in client side scripting
-        //Summary: Added reference of script file and also initialize the javaScript variable 'logErrorUrl' so that errorhandler.js knows
-        var logErrorUrl = '@Url.Action("LogJavaScriptError", "Error")';
-    </script>
-   @* <script src="@Url.Content("~/Scripts/js/errorhandler.js")" type="text/javascript"></script>*@
+     @Scripts.Render("~/bundles/GetJS")
+     <script type="text/javascript">
+         //Added By: Rahul Shah on 25/09/2015 to address ticket PL #900 Exception handling in client side scripting
+         //Summary: Added reference of script file and also initialize the javaScript variable 'logErrorUrl' so that errorhandler.js knows
+         var logErrorUrl = '@Url.Action("LogJavaScriptError", "Error")';
+     </script>
+    @* <script src="@Url.Content("~/Scripts/js/errorhandler.js")" type="text/javascript"></script>*@
     <!-- #1746 Edited by Brad Gray 5 Dec 2015-->
     <script src="@Url.Content("~/Scripts/js/bootstrap-notify.min.js")"></script>
     <!-- #1746-->

@@ -75,7 +75,7 @@
 
     .chkbxfilter {
         float: right;
-        margin: 7px -3px 0 0 !important;
+        margin: 7px 0 0 0 !important; /* #1951 - sidebar design */
     }
 
     .sbOptions li a {
@@ -136,7 +136,7 @@
                             checked = "checked"
                             checkedclass = "close-list"
                         }
-                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
+                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></span></li>');
                     });
                     //Added by Maitri Gandhi for #1952
                     var TacticIds = [];
@@ -760,7 +760,7 @@
                                         }
 
 
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></span></li>');
                                         // filters.OwnerIds.push(OwnerItem.OwnerId);
                                     });
 
@@ -776,7 +776,7 @@
                                             checked = "checked"
                                             checkedclass = "close-list"
                                         }
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></span></li>');
                                     }
 
                                     //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
@@ -1104,7 +1104,7 @@
             <div id="accordion-SelectedFilter" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">View Selected Filters<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i></h2>
+                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">View Selected Filters<i class="indicator fa fa-angle-up pull-right"></i>@*<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i> tkt#1951 *@</h2>
                     </div>
                     <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
                         <ul class="scroll-list singleselect" id="ulSelectedFilter">
@@ -1194,7 +1194,7 @@
                 <div id="accordion-Year" class="dropdown-section accordion">
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year">Year<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i><span id="tYearcount" class="filter-count">/@ViewYearList.Count</span><span id="cYearcount" class="filter-count"></span></h2>
+                            <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year">Year<i class="indicator fa fa-angle-down pull-right"></i><span id="tYearcount" class="filter-count">/@ViewYearList.Count</span><span id="cYearcount" class="filter-count"></span></h2>
                         </div>
                         <div id="accordion-element-Year" class="accordion-body collapse">
                             <ul class="scroll-list singleselect" id="ulSelectedYear">
@@ -1211,14 +1211,15 @@
 
                         <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
                             <span class="sidebarliwidth">@YearText</span>
-                            <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input>
+                            <span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span>  @*#1951 - sidebar design  checkbox styling*@ 
+
                         </li>
                     }
                     else
                     {
                         <li class="accordion-inner" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
                             <span class="sidebarliwidth">@YearText</span>
-                            <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input>
+                            <span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span> @*#1951 - sidebar design  checkbox styling*@ 
                         </li>
                     }
                 }
@@ -1237,11 +1238,9 @@
                                 <div id="accordion-2" class="dropdown-section accordion">
                                     <div class="accordion-group">
                                         <div class="accordion-heading">
-                                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">
-                                                Plan
-                                                <i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>
-                                                <span id="tPlancount" class="filter-count"></span> <span id="cPlancount" class="filter-count">/@planList.Count()</span>
-                                            </h2>
+                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan
+                                <i class="indicator fa fa-angle-down pull-right"></i>                            
+                            <span id="tPlancount" class="filter-count"></span> <span id="cPlancount" class="filter-count">/@planList.Count()</span></h2>
                                         </div>
                                         <div id="accordion-element-Plan" class="accordion-body collapse">
                                             <ul class="scroll-list" id="ulSelectedPlans">
@@ -1253,15 +1252,13 @@
                                     if (objplan.Checked == "checked")
                                     // if(objplan.PlanId == CurrentPlanId)
                                     {
-                                        <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid">
-                                            <span class="sidebarliwidth">@objplan.Title</span>
-                                            <input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked">
-                                            </input>
-                                        </li>
+                                        <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span>
+                                <span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked">
+                                </input></span> @*#1951 - sidebar design  checkbox styling*@ </li>
                                     }
                                     else
                                     {
-                                        <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
+    <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></span> @*#1951 - sidebar design  checkbox styling*@ </li>
                                     }
                                 }
                                                 }
@@ -1273,7 +1270,7 @@
                                                     <ul id="PlanAllModule">
                                                         <li><a onclick="BulkPlanOperation(true)">select all</a></li>
                                                         <li>|</li>
-                                                        <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
+                                        <li><a onclick="BulkPlanOperation(false)">@*deselect all*@clear</a></li>
                                                     </ul>
                                                     <div id="NoPlanFound" class="NoDataFoundFilter" style="display: none;">No Plan Found</div>
                                                 }
@@ -1282,7 +1279,7 @@
                                                     <ul id="PlanAllModule" style="display: none;">
                                                         <li><a onclick="BulkPlanOperation(true)">select all</a></li>
                                                         <li>|</li>
-                                                        <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
+                                        <li><a onclick="BulkPlanOperation(false)">@*deselect all*@clear</a></li>
                                                     </ul>
                                                     <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
                                                 }
@@ -1311,7 +1308,7 @@
                         <div id="@acordionId" class="dropdown-section accordion">
                             <div class="accordion-group">
                                 <div class="accordion-heading">
-                                    <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i><span class="filter-count"><span id="SelectedCustomFilter_@custField.CustomFieldId">@lstCutomFieldOptions.Count()</span>/@lstCutomFieldOptions.Count()</span></h2>
+                                    <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator fa fa-angle-down pull-right"></i><span class="filter-count"><span id="SelectedCustomFilter_@custField.CustomFieldId">@lstCutomFieldOptions.Count()</span>/@lstCutomFieldOptions.Count()</span></h2>
                                 </div>
                                 <div id="@acordionElementId" class="accordion-body collapse">
                                     <ul class="scroll-list" id="@ulCustom">
@@ -1322,7 +1319,7 @@
                             liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
                             cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
 
-                            <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid"></input></li>
+                                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid"></input></span> @*#1951 - sidebar design  checkbox styling*@</li>
                         }
                                         }
                                     </ul>
@@ -1332,7 +1329,7 @@
                                             <ul id="@allCustom">
                                                 <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">select all</a></li>
                                                 <li>|</li>
-                                                <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">deselect all</a></li>
+                                                <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">@*deselect all*@clear</a></li>
                                             </ul>
                                         }
                                         else
@@ -1350,7 +1347,7 @@
             <div id="accordion-Owner" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i><span id="tOwnercount" class="filter-count"></span><span id="cOwnercount" class="filter-count"></span></h2>
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator fa fa-angle-down pull-right"></i>@*#1951 - sidebar design  checkbox styling*@<span id="tOwnercount" class="filter-count"></span><span id="cOwnercount" class="filter-count"></span></h2>
                     </div>
                     <div id="accordion-element-Owner" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulSelectedOwner">
@@ -1359,7 +1356,8 @@
                                 foreach (var owner in ownerList)
                                 {
                                     liid = "liOwner" + owner.OwnerId;
-                                    <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span><input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input></li>
+                                    <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span><span class="chkbx-icon">
+                                        <input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input></span> @*#1951 - sidebar design  checkbox styling*@</li>
                                 }
                             }
                         </ul>
@@ -1369,7 +1367,7 @@
                                 <ul id="ulOwnerAllModule">
                                     <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
                                     <li>|</li>
-                                    <li><a onclick="BulkOwnerOperation(false)">deselect all</a></li>
+                                    <li><a onclick="BulkOwnerOperation(false)">@*deselect all*@clear</a></li>
                                 </ul>
                                 <div id="NoOwnerFound" class="NoDataFoundFilter" style="display: none;">No Owner Found</div>
                             }
@@ -1378,7 +1376,7 @@
                                 <ul id="ulOwnerAllModule" style="display: none;">
                                     <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
                                     <li>|</li>
-                                    <li><a onclick="BulkOwnerOperation(false)">deselect all</a></li>
+                                    <li><a onclick="BulkOwnerOperation(false)">@*deselect all*@clear</a></li>
                                 </ul>
                                 <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
                             }
@@ -1390,7 +1388,7 @@
             <div id="accordion-TacticType" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i><span id="tTTcount" class="filter-count"></span><span id="cTTcount" class="filter-count"></span></h2>
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator fa fa-angle-down pull-right"></i><span id="tTTcount" class="filter-count"></span><span id="cTTcount" class="filter-count"></span></h2>
                     </div>
                     <div id="accordion-element-TacticType" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulTacticType">
@@ -1404,7 +1402,7 @@
                                     cbttid = "CbTT" + tactictype.TacticTypeId;
                                     <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
                                         <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
-                                        <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input>
+                                        <span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input></span> @*#1951 - sidebar design  checkbox styling*@
                                     </li>
                                 }
                             }
@@ -1418,7 +1416,7 @@
                                 <ul id="TacticTypeAllModule">
                                     <li><a onclick="BulkTTOperation(true)">select all</a></li>
                                     <li>|</li>
-                                    <li><a onclick="BulkTTOperation(false)">deselect all</a></li>
+                                    <li><a onclick="BulkTTOperation(false)">@*deselect all*@clear</a></li>
                                 </ul>
                                 <div id="NoTTFound" class="NoDataFoundFilter" style="display: none;">No Tactic Type Found</div>
                             }
@@ -1427,7 +1425,7 @@
                                 <ul id="TacticTypeAllModule" style="display: none;">
                                     <li><a onclick="BulkTTOperation(true)">select all</a></li>
                                     <li>|</li>
-                                    <li><a onclick="BulkTTOperation(false)">deselect all</a></li>
+                                    <li><a onclick="BulkTTOperation(false)">@*deselect all*@clear</a></li>
                                 </ul>
                                 <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>
                             }
@@ -1441,23 +1439,23 @@
             <div id="accordion-Status" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Status" href="#accordion-element-Status">Status<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i><span id="tStatuscount" class="filter-count"></span><span id="cStatuscount" class="filter-count"></span></h2>
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Status" href="#accordion-element-Status">Status<i class="indicator fa fa-angle-down pull-right"></i><span id="tStatuscount" class="filter-count"></span><span id="cStatuscount" class="filter-count"></span></h2>
                     </div>
                     <div id="accordion-element-Status" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulStatus">
                             @*//Modified by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view*@
-                            <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /></li>
-                            <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></li>
-                            <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></li>
-                            <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></li>
-                            <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></li>
-                            <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></li>
+                            <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /> </span> @*#1951 - sidebar design  checkbox styling*@</li>
+                            <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></span></li>
+                            <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></span></li>
+                            <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></span></li>
+                            <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></span></li>
+                            <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></span></li>
                         </ul>
                         <div class="list-tab">
                             <ul id="StatusAllModule">
                                 <li><a onclick="BulkStatusOperation(true)">select all</a></li>
                                 <li>|</li>
-                                <li><a onclick="BulkStatusOperation(false)">deselect all</a></li>
+                                <li><a onclick="BulkStatusOperation(false)">@*deselect all*@clear</a></li>
                             </ul>
                         </div>
                     </div>
@@ -1486,8 +1484,7 @@
             </div>
             <!--First Static Accordion END-->
             <!--Second Static Accordion-->
-            <div class="accordion colors left-nav improvements margin-bottom10" id="improvements" style="display:none">
-                @*// added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters*@
+            <div class="accordion colors left-nav improvements margin-bottom10" id="improvements" style="display:none"> @*// added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters*@
                 <div class="accordion-group source-sans-proregular">
                     <div class="accordion-heading">
                         <a href="#DivAccordionImprovementActivities" data-parent="improvements" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
@@ -2854,7 +2851,7 @@
                     html += '<div id="accordion-' + customFieldId + '" class="dropdown-section accordion">';
                     html += '<div class="accordion-group">';
                     html += '<div class="accordion-heading">';
-                    html += '<h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-' + customFieldId + '" href="#accordion-element-' + customFieldId + '"><span class="sidebar_label tipsyclassTitle">' + customFieldName + '</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2> ';
+                    html += '<h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-' + customFieldId + '" href="#accordion-element-' + customFieldId + '"><span class="sidebar_label tipsyclassTitle">' + customFieldName + '</span><i class="indicator fa fa-angle-down pull-right"></i></h2> ';
                     html += '</div>'
                     html += '<div id="accordion-element-' + customFieldId + '" class="accordion-body collapse">';
                     html += '<ul class="scroll-list" id="ulSelected' + customFieldId + '">';
@@ -2879,7 +2876,7 @@
                         html += '<ul id="' + customFieldId + 'AllModule" style="display:none;">';
                     }
                     html += '<li><a onclick="BulkCustomFieldOperation(true, ' + customFieldId + ')">select all</a></li><li>|</li>';
-                    html += '<li><a onclick="BulkCustomFieldOperation(false, ' + customFieldId + ')">deselect all</a></li></ul>';
+                    html += '<li><a onclick="BulkCustomFieldOperation(false, ' + customFieldId + ')">@*deselect all*@clear</a></li></ul>';
                     if (customFieldSpecificOptions > 0) {
                         html += '<div id="No' + customFieldId + 'Found" class="NoDataFoundFilter" style="display:none;">No ' + customFieldName + ' Found</div>';
                     }
@@ -6804,7 +6801,8 @@
             $(e.target)
 				.prev('.accordion-heading')
 				.find("i.indicator")
-				.toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+            //.toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+            .toggleClass('fa-angle-down fa-angle-up');
         }
         $('.accordion').on('hidden.bs.collapse', toggleChevron);
         $('.accordion').on('shown.bs.collapse', toggleChevron);
