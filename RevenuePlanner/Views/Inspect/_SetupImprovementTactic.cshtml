@@ -238,33 +238,37 @@
           if (!CheckDateYear(sdate, '@hdnYear', "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
     });;
 
-    //hide the other datepicker in add-on onclick
+    //Modified By komal rawal for #1983 Calendar did not open for date selection.
     $('#dp_start .add-on').click(function () {
-        // $('#dp_start').datepicker('show');
-        $('#dp_start').datepicker('hide');/* Bhumika */
-        $('#dp_end').datepicker('hide');/* Bhumika */
+        //$('#dp_start').datepicker('hide');/* Bhumika */
+        $('#dp_end').datepicker('hide');
         $(".dropdown-menu").css("z-index", "25001");
-        var pos = $("#txtDate").position();
-        var height = $("#txtDate").height();
+        var pos = $("#t_startdate").position();
+        var height = $("#t_startdate").height();
         var scrollTop = $("#modal-container-186470").scrollTop();
-        var pos_top = pos.top + height + scrollTop + 10;
+     //   var pos_top = pos.top + height + scrollTop + 10;
+
         setTimeout(function () {
             if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-                $("#txtDate").after($(".datepicker.dropdown-menu").eq(0));
-                $("#txtDate").parent().find(".datepicker.dropdown-menu").css({
-                   // top: pos_top.toString() + 'px',/* Bhumika */
-                   // display: 'block'
+                $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
+                $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
+                    //top: pos_top.toString() + 'px',	 /* Bhumika */
+                    display: 'block'
                 });
             }
             else {
                 $('#dp_start').find('.datepicker.dropdown-menu').css({
-                     top: pos_top.toString() + 'px', 
+                    //top: pos_top.toString() + 'px',
                     display: 'block'
                 });
             }
             set_start_date_Position();	  /* Bhumika */
         }, 1);
+
+        //// To resolve issue of Ticket #1025, Pratik
+        $(".datepicker.dropdown-menu").last().css("display", "none");
     })
+
 
     /* Bhumika  Start*/
     function set_start_date_Position() {
