@@ -676,30 +676,7 @@ $('#cYearcount').text(checkedYearcount);
 
                                     });
 
-                                //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
-                              
-                                var OwnerIds = [];
-                                $('#ulSelectedOwner li').each(function () {
-                                    var id = $(this).attr('id').replace('liOwner', '')
-                                    OwnerIds.push(id);
-                                });
-                                var listofindex = [];
-                                for (i = 0; i < ids.length; i++) {
-                                    var index = OwnerIds.indexOf(ids[i]);
-                                    if (!(index >= 0)) {
-                                        listofindex.push(ids[i]);
-
-                                    }
-                                }
-                                $.each(listofindex, function (i) {
-                                    var Index = ids.indexOf(listofindex[i])
-                                    if (Index >= 0) {
-                                        ids.splice(Index, 1);
-                                    }
-                                });
-                               
-                          
-                             //End
+                             
                                     if (IsOwnerPresent == false) {
 
                                         // Modified By Nishant Sheth
@@ -710,6 +687,31 @@ $('#cYearcount').text(checkedYearcount);
                                     }
                                         $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                     }
+
+                                    //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
+
+                                    var OwnerIds = [];
+                                    $('#ulSelectedOwner li').each(function () {
+                                        var id = $(this).attr('id').replace('liOwner', '')
+                                        OwnerIds.push(id);
+                                    });
+                                    var listofindex = [];
+                                    for (i = 0; i < ids.length; i++) {
+                                        var index = OwnerIds.indexOf(ids[i]);
+                                        if (!(index >= 0)) {
+                                            listofindex.push(ids[i]);
+
+                                        }
+                                    }
+                                    $.each(listofindex, function (i) {
+                                        var Index = ids.indexOf(listofindex[i])
+                                        if (Index >= 0) {
+                                            ids.splice(Index, 1);
+                                        }
+                                    });
+
+
+                                    //End
                                 }
                                 else {
                                     $("#ulOwnerAllModule").css("display", "none");
