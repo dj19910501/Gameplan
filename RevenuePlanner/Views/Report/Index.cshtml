@@ -1479,8 +1479,8 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
                 });
                 // End By Nishant Sheth
                 PlanIds = GetFilterIdForPlan(multiselectPlanId);
-                GetTacticTypelist(PlanIds,false,true);
-                GetOwnerListForFilter(PlanIds,false,true);
+                GetTacticTypelist(PlanIds,true,true);// Modified By Nishant Sheth #1956 : Enable async true paramter
+                GetOwnerListForFilter(PlanIds, true, true);// Modified By Nishant Sheth #1956 : Enable async true paramter
             }
         });
     }
