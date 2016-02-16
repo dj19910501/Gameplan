@@ -1,7 +1,7 @@
 ﻿@model RevenuePlanner.Models.Plan_Campaign_Program_Tactic_LineItemModel
 @using RevenuePlanner.Helpers
 @{
-
+    var IsLineItemAddEdit = Model.IsLineItemAddEdit;
     string campaignTitle = Convert.ToString(ViewBag.CampaignTitle);
     string programTitle = Convert.ToString(ViewBag.ProgramTitle);
     string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
@@ -47,7 +47,11 @@
         top: 20px !important;
         min-width:205px;
     }
-
+      #multipleselect_ddlOwner {
+     left: -3px !important;
+    top: 29px !important;
+     min-width:205px;
+    }
     .finance_mapping div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue
     {
     background: #fff !important;
@@ -221,9 +225,19 @@
 
         </div>
         <div class="span3 review_no_padding" id="inspect-modal-left-column3">
-            <p>@Html.Raw("Owner")</p>
+            @*Modified By Komal Rawal for #1974
+            Desc: To Enable edit owner feature from Lineitem popup*@
+            <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>
+            @if (IsLineItemAddEdit)
+            {
+                 <span style="min-width: 100%; position: relative; display: block;">
+                 @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)Model.OwnerList, "Id", "Name"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                 </span>
+            }
+            else
+            {
             @Html.TextBox("txtOwner", owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
-            
+            }
             
             @if (!isOtherLineitem)
             {
@@ -666,6 +680,20 @@
             if (dropdowntop >= (windownheight - 300)) { $('.dropdown-wrapper').addClass('dropup') }
         });
 
+        //Added By Komal RAwal
+        $('#ddlOwner').multiselect({
+
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1,
+            CustomName: '@Common.CustomTitle'
+        }).multiselectfilter();
+
+        $('#ddlOwner').next().css('width', '95%');
+        $('#ddlOwner').next().css('min-height', '30px');
+        var spanOwner = $('#multipleselect_ddlOwner');
+        $('#btnMultiselect_ddlOwner').after(spanOwner);
+        //End
 
         var DropdownTop = 0;
         $( ".pop-body-wraper" ).scroll(function() {
@@ -851,6 +879,19 @@
             //        }
             //    }
             //});
+        //// RequireField validation for Owner Dropdown
+        //Added By Komal Rawal for #1974
+        //Desc: To Enable edit owner feature from Lineitem popup
+            if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+                var OwnerValue = $('#ddlOwner').val();
+                if (OwnerValue == "") {
+                    $('#btnMultiselect_ddlOwner').addClass("error");
+                }
+                else {
+                    $('#btnMultiselect_ddlOwner').removeClass("error");
+                }
+            }
+        //End
             if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
                 var LineItemTypeValue = $('#LineItemTypeId').val();
                 if (LineItemTypeValue == "") {

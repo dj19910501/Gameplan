@@ -586,6 +586,24 @@ $('#cYearcount').text(checkedYearcount);
         if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
             asyncval = ifexists;
         }
+        var SelectedPlanCount = 0;
+
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                SelectedPlanCount++;
+
+            }
+        });
+
+
+        if (SelectedPlanCount == 0) {
+            IsDeselectAll = true;
+        }
+        else if (SelectedPlanCount > 1 && filters.OwnerIds != "") {
+            IsDeselectAll = false;
+        }
+
+
         //Added by Rahul Shah on 06/01/2016 for PL #1854
        
         if (IsDeselectAll == true )
@@ -792,6 +810,23 @@ $('#cYearcount').text(checkedYearcount);
             else {
                 asyncval = false;
             }
+            var SelectedPlanCount = 0;
+
+            $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+                if ($(this).attr('checked') == 'checked') {
+                    SelectedPlanCount++;
+
+                }
+            });
+
+
+            if (SelectedPlanCount == 0) {
+                IsDeselectAll = true;
+            }
+            else if (SelectedPlanCount > 1 && filters.TacticTypeids != "") {
+                IsDeselectAll = false;
+            }
+
             if (IsDeselectAllTactics == true) {
                 tacids = [];
             }

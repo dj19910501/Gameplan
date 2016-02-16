@@ -221,6 +221,11 @@ namespace RevenuePlanner.Models
         public DateTime CEndDate { get; set; }
         public string AllocatedBy { get; set; }
         public bool IsOtherLineItem { get; set; }
+        //Added By Komal Rawal for #1974
+        //Desc: To Enable edit owner feature from Lineitem popup.
+        public bool IsLineItemAddEdit { get; set; }
+        public List<SelectListUser> OwnerList { get; set; }
+        public Guid OwnerId { get; set; }
       
     }
 
