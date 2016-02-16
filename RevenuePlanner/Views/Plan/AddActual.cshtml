@@ -35,7 +35,7 @@
     <style type="text/css">
         .chkbxfilter {
             float: right;
-            margin: 7px -3px 0 0 !important;
+            margin: 7px 0 0 0 !important;
         }
     </style>
     @*modified by Rahul Shah for Pl #1837*@
@@ -117,7 +117,7 @@
              <div id="accordion-SelectedFilter" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">View Selected Filters<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i></h2>
+                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">View Selected Filters<i class="indicator fa fa-angle-up pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
                         <ul class="scroll-list singleselect" id="ulSelectedFilter">
@@ -174,7 +174,7 @@
                                 @foreach (var customFieldOption in currentCustomFieldOptions)
                                 {
                                     string id = "li_" + customFieldOption.CustomFieldId.ToString() + "_" + customFieldOption.CustomFieldOptionId.ToString();
-                                    <li class="accordion-inner" id="@id" title="@customFieldOption.Title"><span class="sidebarliwidth">@customFieldOption.Title</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" id="@customFieldOption.CustomFieldId.ToString()_@customFieldOption.CustomFieldOptionId.ToString()" onchange="toggleCustomFields(this,@CustomField.CustomFieldId,@custFieldCount)" /></span> @*#1951 - sidebar design  checkbox styling*@</li>
+                                    <li class="accordion-inner" id="@id" title="@customFieldOption.Title"><span class="sidebarliwidth">@customFieldOption.Title</span><input type="checkbox" class="chkbxfilter" id="@customFieldOption.CustomFieldId.ToString()_@customFieldOption.CustomFieldOptionId.ToString()" onchange="toggleCustomFields(this,@CustomField.CustomFieldId,@custFieldCount)" /> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@</li>
                                 }
                                 </ul>
                                 <div class="list-tab">
@@ -456,7 +456,7 @@
                                     checked = "checked";
                                     checkedclass = "close-list";
                                         //}
-                                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></span></li>');
+                                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
                                     });
                                 }
                                 else {
@@ -534,7 +534,7 @@
                                 //checkedclass = "close-list";
                                 //}
 
-                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></span></li>');
+                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
                             });
                             if (IsOwnerPresent == false) {
 
@@ -542,7 +542,7 @@
                                 // Desc:: To resolve the #1790 observation
                                 checked = "checked"
                                 checkedclass = "close-list"
-                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></span></li>');
+                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>'); /*<span class="chkbx-icon"></span> */
                             }
                         }
                         else {

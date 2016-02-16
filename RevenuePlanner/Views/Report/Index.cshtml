@@ -34,7 +34,7 @@
     }
     .chkbxfilter {
         float: right;
-        margin: 7px -3px 0 0 !important;
+        margin: 7px 0 0 0 !important;
     }
     
     .singleselect li {
@@ -250,12 +250,12 @@
                                      //Modified By Nishant Sheth
                                      // Desc:: #1842 Multiple year selection for multiple year support base on #1821
                                     <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId"  yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span>
-                                        <span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span> @*#1951 - sidebar design  checkbox styling*@</li>
+                                        <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@</li>
                                  }
                                  else
                                  {
                                      <li class="accordion-inner" title="@YearText" id="@ddlYearId"  yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span>
-                                         <span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span> @*#1951 - sidebar design  checkbox styling*@
+                                         <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input> @*<span class="chkbx-icon"> </span> #1951 - sidebar design  checkbox styling*@
                                     </li>
                                  }
                              }
@@ -303,11 +303,11 @@
                                  ddlId = "liPlan" + "_" + item.PlanId;
                                  if (item.Checked == "checked")
                                  {
-                                     <li class="accordion-inner close-list" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" checked="checked" id="@item.PlanId" onchange="OnPlanchange(this);"></input></span> @*#1951 - sidebar design  checkbox styling*@</li>
+                                     <li class="accordion-inner close-list" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" checked="checked" id="@item.PlanId" onchange="OnPlanchange(this);"></input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@</li>
                                  }
                                  else
                                  {
-                                    <li class="accordion-inner" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" id="@item.PlanId" onchange="OnPlanchange(this);"></input></span> @*#1951 - sidebar design  checkbox styling*@</li>
+                                    <li class="accordion-inner" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" id="@item.PlanId" onchange="OnPlanchange(this);"></input> @*<span class="chkbx-icon"> </span> #1951 - sidebar design  checkbox styling*@</li>
                                  }
 
                              }
@@ -363,7 +363,7 @@
                         liCustom = "liCustom" + item.Value;
                         cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
                         <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span>
-                            <span class="chkbx-icon"><input type="checkbox" cutomtitle="@item.Text" class="chkbxfilter" id="@cutomoptioninputid" onchange="OnMultiselectchange(this,@custField.CustomFieldId,@custFieldCount);"></input></span> @*#1951 - sidebar design  checkbox styling*@
+                            <input type="checkbox" cutomtitle="@item.Text" class="chkbxfilter" id="@cutomoptioninputid" onchange="OnMultiselectchange(this,@custField.CustomFieldId,@custFieldCount);"></input> @*<span class="chkbx-icon"> </span> #1951 - sidebar design  checkbox styling*@
                         </li>
                     }
                                 }
@@ -671,7 +671,7 @@ $('#cYearcount').text(checkedYearcount);
                                            // checkedclass = "close-list";
                                         //}
 
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></span></li>');
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
 
                                    
 
@@ -846,7 +846,7 @@ $('#cYearcount').text(checkedYearcount);
                                           checkedclass = "close-list"
                                       }
                                       //}
-                                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></span></li>');
+                                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                                   });
                                   //Added by Maitri Gandhi for #1952
                                   var TacticIds = [];

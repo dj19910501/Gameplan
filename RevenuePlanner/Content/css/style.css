@@ -12465,16 +12465,16 @@ border-bottom: 0 solid #d3d3d3 !important;
 
 /* #1951 - sidebar design  checkbox styling */
 #Filtersidebar ul.scroll-list li input[type="checkbox"]{
-    -moz-appearance: none;
-    border: 0 solid #c8c6c6;
+    /*-moz-appearance: none;*/
+    border: 1px solid #c8c6c6;
     border-radius: 2px;
     height: 15px;
     margin: 0 5px 0 0;
-    opacity: 0;
+    opacity: 1;
     width: 15px;
     z-index: 2;   
 }
-.sidebar-section li.accordion-inner span.chkbx-icon {
+/*.sidebar-section li.accordion-inner span.chkbx-icon {
     display: inline-block;
     position: relative;
     font-family: FontAwesome;
@@ -12491,7 +12491,7 @@ border-bottom: 0 solid #d3d3d3 !important;
 .sidebar-section li.accordion-inner.close-list .chkbx-icon::after {
     content: "\f14a";
     color: #1A638A;
-}
+}*/
 /* #1951 - sidebar design  checkbox styling  End*/
 
 

@@ -136,7 +136,7 @@
                             checked = "checked"
                             checkedclass = "close-list"
                         }
-                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></span></li>');
+                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                     });
                     //Added by Maitri Gandhi for #1952
                     var TacticIds = [];
@@ -760,7 +760,7 @@
                                         }
 
 
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></span></li>');
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
                                         // filters.OwnerIds.push(OwnerItem.OwnerId);
                                     });
 
@@ -776,7 +776,7 @@
                                             checked = "checked"
                                             checkedclass = "close-list"
                                         }
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></span></li>');
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                     }
 
                                     //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
@@ -1211,15 +1211,16 @@
 
                         <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
                             <span class="sidebarliwidth">@YearText</span>
-                            <span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span>  @*#1951 - sidebar design  checkbox styling*@ 
-
+                            <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input> 
+                            @*<span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span>  @*#1951 - sidebar design  checkbox styling*@                            
                         </li>
                     }
                     else
                     {
                         <li class="accordion-inner" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
                             <span class="sidebarliwidth">@YearText</span>
-                            <span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span> @*#1951 - sidebar design  checkbox styling*@ 
+                            <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input>
+                            @*<span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span> @*#1951 - sidebar design  checkbox styling*@
                         </li>
                     }
                 }
@@ -1253,12 +1254,12 @@
                                     // if(objplan.PlanId == CurrentPlanId)
                                     {
                                         <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span>
-                                <span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked">
-                                </input></span> @*#1951 - sidebar design  checkbox styling*@ </li>
+                                <input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked">
+                                </input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@ </li>
                                     }
                                     else
                                     {
-    <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></span> @*#1951 - sidebar design  checkbox styling*@ </li>
+    <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input> @*<span class="chkbx-icon"> </span> #1951 - sidebar design  checkbox styling*@ </li>
                                     }
                                 }
                                                 }
@@ -1319,7 +1320,7 @@
                             liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
                             cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
 
-                                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid"></input></span> @*#1951 - sidebar design  checkbox styling*@</li>
+                                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid"></input> @*<span class="chkbx-icon"> </span> #1951 - sidebar design  checkbox styling*@</li>
                         }
                                         }
                                     </ul>
@@ -1356,8 +1357,8 @@
                                 foreach (var owner in ownerList)
                                 {
                                     liid = "liOwner" + owner.OwnerId;
-                                    <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span><span class="chkbx-icon">
-                                        <input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input></span> @*#1951 - sidebar design  checkbox styling*@</li>
+                                    <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span>
+                                        <input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input> @* <span class="chkbx-icon"> </span> #1951 - sidebar design  checkbox styling*@</li>
                                 }
                             }
                         </ul>
@@ -1402,7 +1403,7 @@
                                     cbttid = "CbTT" + tactictype.TacticTypeId;
                                     <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
                                         <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
-                                        <span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input></span> @*#1951 - sidebar design  checkbox styling*@
+                                        <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@
                                     </li>
                                 }
                             }
@@ -1444,12 +1445,12 @@
                     <div id="accordion-element-Status" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulStatus">
                             @*//Modified by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view*@
-                            <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /> </span> @*#1951 - sidebar design  checkbox styling*@</li>
-                            <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></span></li>
-                            <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></span></li>
-                            <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></span></li>
-                            <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></span></li>
-                            <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></span></li>
+                            <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /> @*<span class="chkbx-icon"> </span> #1951 - sidebar design  checkbox styling*@</li>
+                            <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></li>
+                            <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></li>
+                            <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></li>
+                            <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></li>
+                            <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></li>
                         </ul>
                         <div class="list-tab">
                             <ul id="StatusAllModule">
