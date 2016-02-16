@@ -689,6 +689,17 @@
         }
 
         $("#t_integration_status").click(function () {
+            // Added by Viral Kadiya for #2002 - Show/hide sync button based on Deployed To Integration value selection.
+            var tactStatus = '@tacticReview.Status';
+            var complete = '@RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()';
+            var approved = '@RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()';
+            var inprogress = '@RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()';
+            var inprogress2 = 'In-Progress'; //tactic status differers from enum
+            var isVisibleSyncbtn = false;
+            if(tactStatus==complete || tactStatus==approved || tactStatus == inprogress || tactStatus == inprogress2)
+            {
+                isVisibleSyncbtn = true;
+            }
             showHide('integrationInfo');
             if ($(this).hasClass("icon-check-blue")) {
                 $(this).val("Don't sync to integration");
@@ -696,6 +707,10 @@
                 $(this).removeClass("icon-check-blue");
                 $("#hdnIsDeployedToIntegration").val(false);
                 $("#integration-id").text("No");             // Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919.
+                // Added by Viral Kadiya for #2002 - Show/hide sync button based on Deployed To Integration value selection.
+                if(isVisibleSyncbtn){       // Sync button exist when Tactic status from 'In-Progress, Complete or Approved'
+                    $("#divDeployToIntegration").css('display','none');
+                }
             }
             else {
                 $(this).val("Sync to integration");
@@ -703,7 +718,10 @@
                 $(this).removeClass("icon-check-gray");
                 $("#hdnIsDeployedToIntegration").val(true);
                 $("#integration-id").text("Yes");            // Added by Viral Kadiya on 21st Jan 2016 for Pl ticket #1919.
-
+                // Added by Viral Kadiya for #2002 - Show/hide sync button based on Deployed To Integration value selection.
+                if(isVisibleSyncbtn){       // Sync button exist when Tactic status from 'In-Progress, Complete or Approved'
+                    $("#divDeployToIntegration").css('display','block');
+                }
             }
         });
 
@@ -766,28 +784,59 @@
                 return false;
             }
 
-            var IsDeployedToIntegration = false;
-            IsDeployedToIntegration = '@tacticReview.IsDeployedToIntegration';
+           @* var IsDeployedToIntegration = false;
+            IsDeployedToIntegration = '@tacticReview.IsDeployedToIntegration';*@
             //var spanSyncStatus = $("#hdnSyncStatusValue").val();
             //if (spanSyncStatus == 'Sync') {
             //    IsDeployedToIntegration = true;
             //}
             var PlanTacticId = $('#hdnPlanTacticId').val();
 
+            // Start - Added by Viral Kaidya for #2002 - Save Sync settings for Eloqua & SFDC on Sync button click
+            var isDeployToIntegration = false;
+            if ($("#t_integration_status").hasClass("icon-check-blue")) { // if Deployed To Integration True.
+                isDeployToIntegration = true;
+            }
+
+            var isSyncSF = false;
+            var isSyncEloqua = false;
+            var isSyncWorkFront = false;
+            if (isDeployToIntegration) {
+                $('.integration-SF-Eloqua-WF').each(function (key, val) {
+                    var _divToggle = $(this).find("div.integrationToggle");
+                    var _intgrtnType = $(this).attr('integrationType');
+                    if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncEloqua = true;
+                        }
+                    }
+                    if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncSF = true;
+                        }
+                    }
+                });
+            }
+            // End - Added by Viral Kaidya for #2002 - Save Sync settings for Eloqua & SFDC on Sync button click
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/SaveSyncToIntegration/")',
                 data: {
                     id: PlanTacticId,
-                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()" //section parameter added to save tactic comment
-                    //IsDeployedToIntegration: IsDeployedToIntegration
+                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", //section parameter added to save tactic comment
+                    isDeployToIntegration: isDeployToIntegration,
+                    isSyncSF:isSyncSF,
+                    isSyncEloqua : isSyncEloqua
                 },
                 success: function (data) {
                     if (data.result) {
                         /*Added by Mitesh Vaishnav for PL ticket #690
                         Change of sync to don’t sync or vice versa integration section update to 'Yes' and 'No'  */
                         if ('@tacticReview.IsIntegrationInstanceExist' == 'Yes') {
-                            if (IsDeployedToIntegration) {
+                            if (isDeployToIntegration) {
                                 $('#integration-id').html('Yes')
                             }
                             else {
