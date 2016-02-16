@@ -43,7 +43,7 @@
             
         </div>
         <div class="span3 " id="inspect-modal-left-column3">
-           <p>@Html.Raw("Owner")</p>
+           <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>
             @Html.TextBox("txtOwner",owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = owner })
             <p>@Html.Raw("Line Item Cost")</p>
             @Html.TextBoxFor(model=>model.Cost, new { @class = "span12 input-small currency_dollar truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })

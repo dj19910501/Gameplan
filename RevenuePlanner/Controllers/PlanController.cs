@@ -11681,6 +11681,10 @@ namespace RevenuePlanner.Controllers
                     {
                         linkedLineItem.ModifiedBy = Sessions.User.UserId;
                         linkedLineItem.ModifiedDate = DateTime.Now;
+                        //Modified By Komal Rawal for #1974
+                        //Desc: To Enable edit owner feature from Lineitem popup
+                        linkedLineItem.CreatedBy = new Guid(UpdateVal);
+                        //ENd
                         db.Entry(linkedLineItem).State = EntityState.Modified;
                     }
                     #endregion

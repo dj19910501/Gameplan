@@ -7023,12 +7023,53 @@ namespace RevenuePlanner.Controllers
             pcptlm.PEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.EndDate;
             pcptlm.CStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.StartDate;
             pcptlm.CEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate;
-
+            pcptlm.IsLineItemAddEdit = true;
+            pcptlm.OwnerId = pcptl.CreatedBy;
 
             User userName = new User();
             try
             {
                 userName = objBDSUserRepository.GetTeamMemberDetails(pcptl.CreatedBy, Sessions.ApplicationId);
+                //Added By Komal Rawal for #1974
+                //Desc: To Enable edit owner feature from Lineitem popup.
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                //Modified By Komal Rawal for #1360
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); // PL #1532 Dashrath Prajapati
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+
+                if (lstClientUsers.Count() > 0)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    ViewBag.IsServiceUnavailable = false;
+
+
+                    string strUserList = string.Join(",", lstClientUsers);
+                    //List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    //lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+
+                        pcptlm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
+
+                    }
+                    else
+                    {
+
+                        pcptlm.OwnerList = new List<SelectListUser>();
+                    }
+                }
+                else
+                {
+
+                    pcptlm.OwnerList = new List<SelectListUser>();
+                }
+               //End
             }
             catch (Exception e)
             {
@@ -7817,6 +7858,7 @@ namespace RevenuePlanner.Controllers
                                 }
 
                                 objLineitem.ModifiedBy = Sessions.User.UserId;
+                                objLineitem.CreatedBy = form.OwnerId;
                                 objLineitem.ModifiedDate = DateTime.Now;
                                 db.Entry(objLineitem).State = EntityState.Modified;
                                 #endregion
@@ -8224,6 +8266,7 @@ namespace RevenuePlanner.Controllers
 
                                     Lineitemobj.ModifiedBy = Sessions.User.UserId;
                                     Lineitemobj.ModifiedDate = DateTime.Now;
+                                    Lineitemobj.CreatedBy = form.OwnerId;
                                     db.Entry(Lineitemobj).State = EntityState.Modified;
                                     #endregion
 
@@ -9343,6 +9386,7 @@ namespace RevenuePlanner.Controllers
             pc.AllocatedBy = objPlan.AllocatedBy;
             pc.IsOtherLineItem = false;
             pc.AllocatedBy = objPlan.AllocatedBy;
+            pc.IsLineItemAddEdit = false;
             #endregion
 
             return PartialView("_EditSetupLineitem", pc);
