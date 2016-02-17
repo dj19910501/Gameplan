@@ -620,6 +620,10 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
+                            // Start - Added by Viral Kadiya for PL ticket #1967 - We will need to change the owner of the line items to the one that copied the tactic.
+                            pcptl.CreatedBy = UserId;
+                            pcptl.CreatedDate = DateTime.Now;
+                            // End - Added by Viral Kadiya for PL ticket #1967 - We will need to change the owner of the line items to the one that copied the tactic.
                             pcptl.LineItemType = null;
                             pcptl.LinkedLineItemId = null;
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
@@ -970,6 +974,10 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
+                            // Start - Added by Viral Kadiya for PL ticket #1967 - We will need to change the owner of the line items to the one that copied the tactic.
+                            pcptl.CreatedBy = UserId;
+                            pcptl.CreatedDate = DateTime.Now;
+                            // End - Added by Viral Kadiya for PL ticket #1967 - We will need to change the owner of the line items to the one that copied the tactic.
                             pcptl.LineItemType = null;
                             pcptl.LinkedLineItemId = null;
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
