@@ -1712,6 +1712,7 @@ namespace Integration.Eloqua
             string effectiveDate = "EffectiveDate";
             string costActual = "CostActual";   // Added by Sohel Pathan on 11/09/2014 for PL ticket #773
             string tacticType = "TacticType";   //// Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
+            string tacticTitle = "Title";   //// Added by Viral kadiya on 02/17/2016 for PL ticket #1916
 
             Type sourceType = ((T)obj).GetType();
             PropertyInfo[] sourceProps = sourceType.GetProperties();
@@ -1739,6 +1740,12 @@ namespace Integration.Eloqua
                         value = ((Plan_Campaign_Program_Tactic)obj).TacticType.Title;
                     }
                     //// End - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
+                    //// Start - Added by Viral Kadiya on 02/16/2016 for PL ticket #1916
+                    if (mapping.Key == tacticTitle)
+                    {
+                        value = System.Web.HttpUtility.HtmlDecode(value);
+                    }
+                    //// End - Added by Viral Kadiya on 02/16/2016 for PL ticket #1916
                 }
                 // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
                 else
