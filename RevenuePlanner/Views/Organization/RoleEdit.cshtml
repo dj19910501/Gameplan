@@ -196,33 +196,42 @@
             colorCode = coloredit;
             $('.nl-dd-checked').attr('value', roleid.toString());//review point
         }
+        //Commented by Rahul Shah on 17/02/2015 for PL #1973. its not working on function calling
+        //function ShowError(value) {
+        //    $("#errorMessage").slideDown(400);
+        //    $("html, body").animate({ scrollTop: 0 }, 1000);//to scroll the body to top automatically..dd
+        //    $("#spanErrorMessageRole").empty();
+        //    $("#spanErrorMessageRole").text(value);
+        //    return false;
+        //}
 
-        function ShowError(value) {
-            $("#errorMessage").slideDown(400);
-            $("html, body").animate({ scrollTop: 0 }, 1000);//to scroll the body to top automatically..dd
-            $("#spanErrorMessageRole").empty();
-            $("#spanErrorMessageRole").text(value);
-            return false;
-        }
-
-        function close_popup() {
-            $('#DivBackgroundShareTacticDel').css("display", "none");
-            $('#DivPartialShareTacticDel').css("display", "none");
-            $('#DivBackgroundShareTacticDel').remove();
-            $('#DivPartialShareTacticDel').remove();
-            close_messages();
-        }
-
-        function close_messages() {
-            $('#errorMessage').css("display", "none");
-            $('#successMessage').css("display", "none");
-        }
-
+     
         $('#delbtn').click(function () {
             $('#DivPartialShareTacticDel').hide();
         });
 
     });
+    //Added by Rahul Shah on 17/02/2015 for PL #1973. display error message when Click on Save & Close button without checking any checkbox.
+    function ShowError(value) {
+        $("#errorMessage").slideDown(400);
+        $("html, body").animate({ scrollTop: 0 }, 1000);//to scroll the body to top automatically..dd
+        $("#spanErrorMessageRole").empty();
+        $("#spanErrorMessageRole").text(value);
+        return false;
+    }
+
+    function close_popup() {
+        $('#DivBackgroundShareTacticDel').css("display", "none");
+        $('#DivPartialShareTacticDel').css("display", "none");
+        $('#DivBackgroundShareTacticDel').remove();
+        $('#DivPartialShareTacticDel').remove();
+        close_messages();
+    }
+
+    function close_messages() {
+        $('#errorMessage').css("display", "none");
+        $('#successMessage').css("display", "none");
+    }
 
     $('#savebtn').click(function () {
         var checked = [];
