@@ -13830,7 +13830,12 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
     line-height: 20px !important;
     font-family: source_sans_prosemibold, Arial, sans-serif !important;
     font-size: 13px !important;
+    outline:0 none !important;
 }
+.dhx_combo_select option:hover{background:#3399FF; outline:0 none !important; color:#fff}
+
+.dhx_combo_select:hover, .dhx_combo_select:focus,
+.dhx_combo_select option:hover, .dhx_combo_select option:focus{ outline:0 none !important;}
 
 .user_title {
     /*max-width: 65%;*/
@@ -15902,6 +15907,3 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
  .lickSuccessMsg{
     font-weight:bold;
     }
-
- 
-
