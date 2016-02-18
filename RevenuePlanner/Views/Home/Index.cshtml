@@ -158,7 +158,7 @@
                 }
             }
         }
-     
+     	   var currentRequestforTactics = null;  //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
         function GetTacticTypelist(Planids, async, OnPlanChange) {
             
             var asyncval = false;
@@ -184,11 +184,16 @@
 
             filters.TacticTypeids = [];
 
-            $.ajax({
+            currentRequestforTactics = $.ajax({
                 beforeSend: function (x) {
                     if (!asyncval) {
                         myApp.showPleaseWait();
                     }
+                    //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
+                    if (currentRequestforTactics != null) {
+                        currentRequestforTactics.abort();
+                    }
+                    //End
                 },
                 type: "GET",
                 cache: false,
@@ -220,6 +225,7 @@
                         //}
 
                         async = true;
+                        currentRequestforTactics = null; //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
 
                     }
                 }
@@ -655,7 +661,7 @@
 
         var ids = [];
         var IsDeselectAll = false
-
+        var currentRequest = null;   //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
         function GetOwnerListForFilter(Planids, async, OnPlanChange) {
 
             var asyncval = false;
@@ -710,11 +716,14 @@
                 filters.OwnerIds = [];
             }
 
-
-            $.ajax({
+            currentRequest = $.ajax({
                 beforeSend: function (x) {
                     if (!asyncval) {
                         myApp.showPleaseWait();
+                    }
+                    //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
+                    if (currentRequest != null) {
+                        currentRequest.abort();
                     }
                 },
                 type: "GET",
@@ -829,8 +838,9 @@
 
                     }
                     async = true;
-
+                    currentRequest = null;
                 }
+    
             });
         }
 
@@ -7975,12 +7985,21 @@ function () {
     }
 
     function ClearAllPreset() {
-        BulkPlanOperation(false);
+      
         BulkTTOperation(false);
         BulkStatusOperation(false);
         //Added vy kausha for ticket no #1836
         BulkOwnerOperation(false);
+        //Modified By komal Rawal to solve issue of owner list function getting called twice.
+        if (activeMenu.toLowerCase() == 'home') {
         LoadPlanData(null);
+        }
+        else
+        {
+            BulkPlanOperation(false);
+
+        }
+      //End
         $('#divCustomFieldsFilter').find("li").each(function (i) {
             $(this).removeClass("close-list");
             var chkid = $(this).find("input[type=checkbox]").attr("id");

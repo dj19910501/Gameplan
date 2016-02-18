@@ -587,7 +587,8 @@ checkedYearcount = $('#ulSelectedYear li input:checked').length;
 $('#cYearcount').text(checkedYearcount);
    
     var ids = [];
-    var IsDeselectAll = false
+    var IsDeselectAll = false;
+    var currentRequest = null;//Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
     function GetOwnerListForFilter(Planids, ifexists, OnPlanChange) {
         var type = '@PlanGanttTypes.Tactic.ToString()';
         var asyncval = false;
@@ -638,9 +639,13 @@ $('#cYearcount').text(checkedYearcount);
         filters.OwnerIds = [];
     }
   
-    $.ajax({
+        currentRequest =  $.ajax({
         beforeSend: function (x) {
             myApp.hidePleaseWait();
+            //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
+            if (currentRequest != null) {
+                currentRequest.abort();
+            }
         },
         type: "GET",
         cache: false,
@@ -756,6 +761,7 @@ $('#cYearcount').text(checkedYearcount);
                         $('#cOwnercount').text(checkedOwnercount);
                         }
                     }
+                currentRequest = null;//Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
                 }
         });
         }
@@ -809,6 +815,7 @@ $('#cYearcount').text(checkedYearcount);
         $('#cOwnercount').text(checkedOwnercount);
         }
         
+	        var currentRequestforTactics = null;//Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
         function GetTacticTypelist(Planids, ifexists) {
             var asyncval = false;
             if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
@@ -832,9 +839,13 @@ $('#cYearcount').text(checkedYearcount);
             if (!ifexists) {
                 filters.TacticTypeids = [];
             }
-            $.ajax({
+            currentRequestforTactics =  $.ajax({
                 beforeSend: function (x) {
                     myApp.hidePleaseWait();
+                    //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
+                    if (currentRequestforTactics != null) {
+                        currentRequestforTactics.abort();
+                    }
                 },
                 type: "GET",
                 cache: false,
@@ -888,6 +899,8 @@ $('#cYearcount').text(checkedYearcount);
                         $('#cTTcount').text(checkedTTcount);
                       }
                   }
+
+                currentRequestforTactics = null;//Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
               }
         });
 
