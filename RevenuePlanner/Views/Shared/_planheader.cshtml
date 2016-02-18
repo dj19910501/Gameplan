@@ -258,6 +258,31 @@ function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam,Cid, OId,Ta
         }
     });
 
+    //Added for "Select All" case of #1952 and #1993 By Maitri Gandhi on 16/2/2016
+    var CheckedCounter = 0, AllCounter = 0, id = null;
+    $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+        if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+            AllCounter = $(this).find("input[type=checkbox]").length;
+            CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+            if (AllCounter == CheckedCounter) {                    
+                id = this.id;
+                if (id != null && id != "" && id.indexOf("-") > -1) {
+                    id = this.id.split("-")[1];
+                }
+                var i = 0, customfieldid;
+                for (i = 0; i < _filters.customFieldIds.length; i++) {
+                    if (_filters.customFieldIds[i].indexOf("_") > -1) {
+                        customfieldid = _filters.customFieldIds[i].split("_")[0];
+                        if (id == customfieldid) {
+                            _filters.customFieldIds.splice(i, 1);
+                            i--;
+                        }
+                    }
+                }
+            }
+        }
+    });        ////End
+
     @*if( _filters.OwnerIds.length == 0)
     {
         _filters.OwnerIds.push('@Sessions.User.UserId');

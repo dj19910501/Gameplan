@@ -37,6 +37,10 @@
             float: right;
             margin: 7px 0 0 0 !important;
         }
+        #accordion-SelectedFilter .accordion-group
+    {
+        margin-bottom:0 !important;
+    }
     </style>
     @*modified by Rahul Shah for Pl #1837*@
       <!--success message-->
@@ -113,7 +117,7 @@
                
             <div style="clear: both;"></div>
             
-             @*View Selected Filter Section - #1954 - Added By: Maitri Gandhi *@
+             @*View Selected Filter Section - #1953 - Added By: Maitri Gandhi *@
              <div id="accordion-SelectedFilter" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
@@ -347,6 +351,10 @@
         PlanTitles: [],
         StatusIDs: []
     };
+    //Added By Maitri Gandhi for #1953 on 18/2/2016
+    var FiltersAll = "All";
+    var FiltersNone = "None";
+
     var selectedFilters = {
         yearIds: [],
         planName: [],
@@ -605,20 +613,20 @@
 
                                     }
                                 });
+                                //Maintain CustomeField Count : 1853 By Maitri Gandhi
                                 $("#SelectedCustomFilter_" + CustomFieldId).text(AutoSelectedCustomField);
                                 AutoSelectedCustomField = 0;
                             }
                         }
                     }
                     else {
-                        //Code for Select All
-
+                        //Code for Select All : 1853 By Maitri Gandhi
                         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
                             $(this).attr('checked', 'checked');
                             $(this).parent().addClass("close-list");
                             AutoSelectedCustomField++;
                         });
-                        $('#ulSelectedFilter').find("li #CustomFields .sidebarliwidthSelected-right").text("All");
+                        $('#ulSelectedFilter').find("li #CustomFields .sidebarliwidthSelected-right").text(FiltersAll);
                     }
 
                     if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined) {
@@ -706,22 +714,23 @@
                 }
             }
         });
-        filters.SelectedPlans = [];
-
-        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
-            if ($(this).attr('checked') == 'checked') {
-                var chkid = $(this).attr("id");
-                var chkplanid = chkid.split('_');
-                if (chkid != undefined && chkid != 'undefined') {
-                    filters.SelectedPlans.push(chkplanid[0]);
-                }
-            }
-        });
+        //Commented By Komal Rawal on 17-02-2016 to resolve issue of Saving last viewed Plan on dropdown change.
+        //filters.SelectedPlans = [];
+        //$('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        var chkid = $(this).attr("id");
+        //        var chkplanid = chkid.split('_');
+        //        if (chkid != undefined && chkid != 'undefined') {
+        //            filters.SelectedPlans.push(chkplanid[0]);
+        //        }
+        //    }
+        //});
      
-        if (filters.SelectedPlans.length == 1) {
-            CurrentPlanId = filters.SelectedPlans[0].toString();
-            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
-        }
+        //if (filters.SelectedPlans.length == 1) {
+        //    CurrentPlanId = filters.SelectedPlans[0].toString();
+        //    $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+        //}
+        //End
         
         //if (filters.SelectedPlans.length == 0) {
         //    filters.SelectedPlans.push($("#CurrentPlanId").val());
@@ -739,7 +748,7 @@
         });
 
    
-        var Planid = filters.SelectedPlans;
+        var Planid = CurrentPlanId;   //Modified By Komal Rawal on 17-02-2016 to resolve issue of Saving last viewed Plan on dropdown change.
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
         var TacticTypeids = filters.TacticTypeids;
@@ -757,7 +766,8 @@
                 ownerIds: OwnerIds.toString(),
                 TacticTypeid: TacticTypeids.toString(),
                 StatusIds: "AddActual",
-                ViewName: ViewName
+                ViewName: ViewName,
+                ParentCustomFieldsIds: filters.parentCustomFieldsIds.toString()  //Modified By Komal rawal to handle scenario of null entry in custom field.
             },
             dataType: "json",
             success: function (data) {
@@ -817,7 +827,7 @@
             IsSavedPlan = $("#CurrentPlanId").val();
             if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
                 // Modified By Rahul Shah
-                // Desc :: To resolve the #1952 code review points to mismatch customfield selection count on plan change.
+                // Desc :: To resolve the #1953 code review points to mismatch customfield selection count on plan change.
                 $("#divCustomFieldsFilter").find("div.accordion").each(function () {
                     var id = 0, CheckedCounter = 0;
                     $(this).find("input[type=checkbox]").each(function () {
@@ -848,7 +858,7 @@
 
                 });
                 // Modified By Rahul Shah
-                // Desc :: To resolve the #1952 code review points to mismatch Tactic Type and Satus selection count on plan change
+                // Desc :: To resolve the #1953 code review points to mismatch Tactic Type and Satus selection count on plan change
                 GetTacticTypelist(CurrentPlanId, false);
                 $('#ulTacticType li input:checkbox').each(function () {
                     $(this).attr("checked", "checked");
@@ -988,6 +998,30 @@
             }
         });
         //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
+        //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
+        var CheckedCounter = 0, AllCounter = 0, id = null;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                if (AllCounter == CheckedCounter) {                    
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                    }
+                    var i = 0, customfieldid;
+                    for (i = 0; i < customFieldIds.length; i++) {
+                        if (customFieldIds[i].indexOf("_") > -1) {
+                            customfieldid = customFieldIds[i].split("_")[0];
+                            if (id == customfieldid) {
+                                customFieldIds.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });        ////End
         var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
@@ -1471,19 +1505,19 @@
             }
             else {
                 if (Status == 0) {
-                    $html += '@RevenuePlanner.Helpers.Common.objCached.NoOpenTacticExists';
+                    $html += '@RevenuePlanner.Helpers.Common.objCached.NoOpenTacticExists';                    
                     //Added by Arpita Soni on 01/13/2015 for ticket #1090
                     //$('#ulSelectedOwner li').hide();
-                    $('#ulOwnerAllModule ').hide();
-                    $('#NoOwnerFound1').show();
+                    //$('#ulOwnerAllModule ').hide();
+                    //$('#NoOwnerFound1').show();
                     //Ended by Arpita Soni on 01/13/2015 for ticket #1090
                 }
                 else {
                     $html += '@RevenuePlanner.Helpers.Common.objCached.NoTacticExistPlan';
                     //Added by Arpita Soni on 01/13/2015 for ticket #1090
                     //$('#ulSelectedOwner li').hide();
-                    $('#ulOwnerAllModule ').hide();
-                    $('#NoOwnerFound1').show();
+                    //$('#ulOwnerAllModule ').hide();
+                    //$('#NoOwnerFound1').show();
                     //Ended by Arpita Soni on 01/13/2015 for ticket #1090
                 }
                 var $tableActuals = $('.accordion-actuals');
@@ -1815,31 +1849,31 @@
         UpdateSelectedFilters();
         //CallAjax();
     }
-
+    ////Added to set filters count and selected filters name : 1853 By Maitri Gandhi
     function UpdateSelectedFilters() {
         //Set Custom Field Filters
         $("#ulSelectedFilter").find("li #CustomFields .sidebarliwidthSelected-right").text("");
+        var CheckedCounter = 0, AllCounter = 0, CurrentText = "", id = null;
         $("#divCustomFieldsFilter").find("div.accordion").each(function () {
-
-            var CheckedCounter = 0, AllCounter = 0, CurrentText = "", id = null;
-            $(this).find("input[type=checkbox]").each(function () {
-                if ($(this).attr('checked') == 'checked') {
-
-                    var chkid = $(this).attr("id");
+            CheckedCounter = 0; AllCounter = 0; CurrentText = ""; id = null; 
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                $(this).find("input[type=checkbox]:checked").each(function () {
 
                     CurrentText = CurrentText + ", " + $($(this).parent()).find("span.sidebarliwidth").text();
-
-                    CheckedCounter++;
-                }
-                AllCounter++;
-            });
-            id = this.id.split("-")[1];
+                });
+            }
+            id = this.id;
+            if (id != null && id != "" && id.indexOf("-") > -1) {
+                id = this.id.split("-")[1];
+            }
             if (CheckedCounter == AllCounter) {
-                $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text("All");
+                $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text(FiltersAll);
             }
             else {
                 if (CheckedCounter == 0) {
-                    $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text("None");
+                    $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text(FiltersNone);
                     $("#SelectedCustomFilter_" + id).text("0");
 
                 }
@@ -1861,10 +1895,10 @@
 
         });
         if (selectedFilters.ownerName.length == 0) {
-            $('#lstOwner').text("None");
+            $('#lstOwner').text(FiltersNone);
         }
         else if ($("#ulSelectedOwner li").length == selectedFilters.ownerName.length) {
-            $('#lstOwner').text("All");
+            $('#lstOwner').text(FiltersAll);
         }
         else {
             $('#lstOwner').text(selectedFilters.ownerName.join(", "));
@@ -1875,11 +1909,11 @@
             selectedFilters.tacticTypeTitle.push($(this).attr('tactictypetitle').toString());
         });
         if (selectedFilters.tacticTypeTitle.length == 0) {
-            $('#lstTType').text("None");
+            $('#lstTType').text(FiltersNone);
         }
         else if ($("#ulTacticType li").length == selectedFilters.tacticTypeTitle.length) {
 
-            $('#lstTType').text("All");
+            $('#lstTType').text(FiltersAll);
         }
         else {
             $('#lstTType').text(selectedFilters.tacticTypeTitle.join(", "));
@@ -1890,9 +1924,6 @@
 
         checkedOwnercount = selectedFilters.ownerName.length;
         $('#cOwnercount').text(checkedOwnercount);
-
-
-
     }
 
     function toggleCustomFields(obj, CustFieldId, count) {

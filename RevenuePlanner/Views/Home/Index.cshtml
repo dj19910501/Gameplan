@@ -85,6 +85,10 @@
     .sbSelector {
         color: #6d6d6d !important;
     }
+    #accordion-SelectedFilter .accordion-group
+    {
+        margin-bottom:0 !important;
+    }
 </style>
 @*@if (activeMenu.ToLower() == "plan")*@
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap2-toggle.min.js")"></script>
@@ -114,7 +118,6 @@
         //Added By komal rawal for #1283
         //  var isTacticExist = false;
         function LoadTacticTypelist(data, tacids) {
-
             if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
                 TactictypeCount = data.TacticTypelist.length;
                 if (TactictypeCount > 0) {
@@ -125,41 +128,28 @@
                         //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
                         //var checked = "";
                         //var checkedclass = "";
-                        //Added by Maitri Gandhi for #1952
+                       
                         var checkedclass = "";
                         var checked = "";
-                        if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                        //if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                        //    checked = "checked"
+                        //    checkedclass = "close-list"
+                        //}
+                        //if (tacids.length == 0 && IsDeselectAllTactics == false) {
+                        //    checked = "checked"
+                        //    checkedclass = "close-list"
+                        //}                        
                             checked = "checked"
                             checkedclass = "close-list"
-                        }
-                        if (tacids.length == 0 && IsDeselectAllTactics == false) {
-                            checked = "checked"
-                            checkedclass = "close-list"
-                        }
+                        ////Added by Maitri Gandhi for #1952
+                            if (Array.isArray(tacids) && tacids.length > 0) {                                
+                                if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                                    checked = ""
+                                    checkedclass = ""
+                                }
+                            }
                         $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
-                    });
-                    //Added by Maitri Gandhi for #1952
-                    var TacticIds = [];
-                    $('#ulTacticType li').each(function () {
-                        var id = $(this).attr('id').replace('liTT', '')
-                        TacticIds.push(id);
-                    });
-                    var listofindex = [];
-                    for (i = 0; i < tacids.length; i++) {
-                        var index = TacticIds.indexOf(tacids[i]);
-                        if (!(index >= 0)) {
-                            listofindex.push(tacids[i]);
-
-                        }
-                    }
-                    $.each(listofindex, function (i) {
-                        var Index = tacids.indexOf(listofindex[i])
-                        if (Index >= 0) {
-                            tacids.splice(Index, 1);
-                        }
-                    });
-
-                    //End
+                    });                    
 
                 }
                 else {
@@ -168,10 +158,9 @@
                 }
             }
         }
-        var tacids = [];
-        var IsDeselectAllTactics = false;
+     
         function GetTacticTypelist(Planids, async, OnPlanChange) {
-
+            
             var asyncval = false;
             if (async != undefined && async != 'undefined' && async != '' && async != null) {
                 asyncval = async;
@@ -179,29 +168,11 @@
             else {
                 asyncval = false;
             }
-            //Modified by komal Rawal to deselect all tactic types if there are no plans selected.
-            var SelectedPlanCount = 0;
-
-            $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
-                if ($(this).attr('checked') == 'checked') {
-                    SelectedPlanCount++;
-
-                }
-            });
-
-
-            if (SelectedPlanCount == 0) {
-                IsDeselectAll = true;
-            }
-            else if (SelectedPlanCount > 1 && filters.TacticTypeids != "") {
-                IsDeselectAll = false;
-            }
-            //End
-            if (IsDeselectAllTactics == true) {
-                tacids = [];
-            }
+                        
+            var tacids = [];
             $('#ulTacticType li').each(function () {
-                if ($(this).hasClass("close-list")) {
+                
+                if ($(this).hasClass("close-list") == false) {            
                     var id = $(this).attr('id').replace('liTT', '')
                     var Index = tacids.indexOf(id);
                     if (Index == -1) {
@@ -271,7 +242,6 @@
 
             }
             else {
-                IsDeselectAllTactics = true;
                 //    TacticDeselectAll = true;
                 $("#ulTacticType li").each(function (i) {
                     $(this).removeClass("close-list");
@@ -291,11 +261,7 @@
             if ($(obj).is(':checked')) {
                 $("#liTT" + id).addClass("close-list");
             }
-            else {
-                var Index = tacids.indexOf(id)
-                if (Index >= 0) {
-                    tacids.splice(Index, 1);
-                }
+            else {               
                 $("#liTT" + id).removeClass("close-list");
             }
 
@@ -1160,7 +1126,7 @@
                                     <span class="sidebarliwidthSelected-left">Year - </span>
                                     @{
                                 foreach (SelectListItem item in ViewYearList)
-                                {
+                                {   
                                     if (item.Selected == true)
                                     {
                                         YearText1.Add(item.Text);
@@ -1830,6 +1796,10 @@
 
     };
 
+    //Added By Maitri Gandhi for #1952 on 18/2/2016
+    var FiltersAll = "All";
+    var FiltersNone = "None";
+
     var selectedFilters = {
         yearIds: [],
         planName: [],
@@ -2046,7 +2016,31 @@
                         }
                     }
                 });
-
+                //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
+                var CheckedCounter = 0, AllCounter = 0, id = null;
+                $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+                    if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                        AllCounter = $(this).find("input[type=checkbox]").length;
+                        CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                        if (AllCounter == CheckedCounter) {
+                            id = this.id;
+                            if (id != null && id != "" && id.indexOf("-") > -1) {
+                                id = this.id.split("-")[1];
+                            }
+                            var i = 0, customfieldid;
+                            for (i = 0; i < filters.customFieldIds.length; i++) {
+                                if (filters.customFieldIds[i].indexOf("_") > -1) {
+                                    customfieldid = filters.customFieldIds[i].split("_")[0];
+                                    if (id == customfieldid) {
+                                        filters.customFieldIds.splice(i, 1);
+                                        i--;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });        ////End
+                
                 var CustomFieldId = filters.customFieldIds;
                 var OwnerIds = filters.OwnerIds;
                 var TacticTypeids = filters.TacticTypeids;
@@ -2075,31 +2069,32 @@
         SavePresetValue = false;
     }
 
-    function UpdateSelectedFilters() {
+    ////Added to set filters count and selected filters name : 1952 By Maitri Gandhi
+    function UpdateSelectedFilters() {        
         //Set Custom Field Filters
         $("#ulSelectedFilter").find("li #CustomFields .sidebarliwidthSelected-right").text("");
-        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
-
-            var CheckedCounter = 0, AllCounter = 0, CurrentText = "", id = null;
-            $(this).find("input[type=checkbox]").each(function () {
-                if ($(this).attr('checked') == 'checked') {
-
-                    var chkid = $(this).attr("id");
+        var CheckedCounter = 0, AllCounter = 0, CurrentText = "", id = null;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {            
+            CheckedCounter = 0; AllCounter = 0; CurrentText = ""; id = null; 
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                $(this).find("input[type=checkbox]:checked").each(function () {
 
                     CurrentText = CurrentText + ", " + $($(this).parent()).find("span.sidebarliwidth").text();
-
-                    CheckedCounter++;
-                }
-                AllCounter++;
-            });
-            id = this.id.split("-")[1];
-
+                });
+            }
+            
+            id = this.id;
+            if (id != null && id != "" && id.indexOf("-") > -1) {
+                id = this.id.split("-")[1];
+            }
             if (CheckedCounter == AllCounter) {
-                $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text("All");
+                $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text(FiltersAll);
             }
             else {
                 if (CheckedCounter == 0) {
-                    $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text("None");
+                    $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text(FiltersNone);
                     $("#SelectedCustomFilter_" + id).text("0");
 
                 }
@@ -2122,10 +2117,10 @@
             selectedFilters.yearIds.push($(this).attr("yearvalue"));
         });
         if (selectedFilters.yearIds.length == 0) {
-            $('#lstYear').text("None");
+            $('#lstYear').text(FiltersNone);
         }
         else if ($("#ulSelectedYear li").length == selectedFilters.yearIds.length) {
-            $('#lstYear').text("All");
+            $('#lstYear').text(FiltersAll);
         }
 
         else {
@@ -2137,13 +2132,13 @@
         });
 
         if (selectedFilters.planName.length == 0) {
-            $('#lstPlan').text("None");
+            $('#lstPlan').text(FiltersNone);
             //$('#cPlancount').text("0");
             //if($("#ulSelectedPlans li").length == 0)
             //    $('#tPlancount').text("/0");
         }
         else if ($("#ulSelectedPlans li").length == selectedFilters.planName.length) {
-            $('#lstPlan').text("All");
+            $('#lstPlan').text(FiltersAll);
         }
         else {
             $('#lstPlan').text(selectedFilters.planName.join(", "));
@@ -2158,10 +2153,10 @@
             selectedFilters.StatusIds.push($(this).attr('id'));
         });
         if (selectedFilters.StatusIds.length == 0) {
-            $('#lstStatus').text("None");
+            $('#lstStatus').text(FiltersNone);
         }
         else if ($('#ulStatus li').length == selectedFilters.StatusIds.length) {
-            $('#lstStatus').text("All");
+            $('#lstStatus').text(FiltersAll);
         }
         else {
             $('#lstStatus').text(selectedFilters.StatusIds.join(", "));
@@ -2173,10 +2168,10 @@
 
         });
         if (selectedFilters.ownerName.length == 0) {
-            $('#lstOwner').text("None");
+            $('#lstOwner').text(FiltersNone);
         }
         else if ($("#ulSelectedOwner li").length == selectedFilters.ownerName.length) {
-            $('#lstOwner').text("All");
+            $('#lstOwner').text(FiltersAll);
         }
         else {
             $('#lstOwner').text(selectedFilters.ownerName.join(", "));
@@ -2187,11 +2182,11 @@
             selectedFilters.tacticTypeTitle.push($(this).attr('tactictypetitle').toString());
         });
         if (selectedFilters.tacticTypeTitle.length == 0) {
-            $('#lstTType').text("None");
+            $('#lstTType').text(FiltersNone);
         }
         else if ($("#ulTacticType li").length == selectedFilters.tacticTypeTitle.length) {
 
-            $('#lstTType').text("All");
+            $('#lstTType').text(FiltersAll);
         }
         else {
             $('#lstTType').text(selectedFilters.tacticTypeTitle.join(", "));
@@ -2250,12 +2245,14 @@
                 }
             }
         });
-        if (filters.SelectedPlans.length == 1) {
-            CurrentPlanId = filters.SelectedPlans[0].toString();
-            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+       
+        //Commented By Komal Rawal on 17-02-2016 to resolve issue of dropdown change from Edit plan 
+        //if (filters.SelectedPlans.length == 1) {
+        //    CurrentPlanId = filters.SelectedPlans[0].toString();
+        //    $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
 
-        }
-
+        //}
+        //End
 
         $("#ulStatus li input[type=checkbox]").each(function () {
             var chkid = $(this).attr("id");
@@ -2437,6 +2434,31 @@
             CurrentPlanId = filters.SelectedPlans[0].toString();
             $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
         }
+        
+        //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
+        var CheckedCounter = 0, AllCounter = 0, id = null;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                if (AllCounter == CheckedCounter) {
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                    }
+                    var i = 0, customfieldid;
+                    for (i = 0; i < filters.customFieldIds.length; i++) {
+                        if (filters.customFieldIds[i].indexOf("_") > -1) {
+                            customfieldid = filters.customFieldIds[i].split("_")[0];
+                            if (id == customfieldid) {
+                                filters.customFieldIds.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });        ////End
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
         var TacticTypeids = filters.TacticTypeids;
@@ -2538,6 +2560,30 @@
                 }
             }
         });
+        //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
+        var CheckedCounter = 0, AllCounter = 0, id = null;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                if (AllCounter == CheckedCounter) {
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                    }
+                    var i = 0, customfieldid;
+                    for (i = 0; i < filters.customFieldIds.length; i++) {
+                        if (filters.customFieldIds[i].indexOf("_") > -1) {
+                            customfieldid = filters.customFieldIds[i].split("_")[0];
+                            if (id == customfieldid) {
+                                filters.customFieldIds.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });        ////End
         //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
         state0 = 0;
 
@@ -2714,7 +2760,7 @@
         //    }
         //});
         if (!IsLstPlan) {
-            GetTacticTypelist(planids, true);
+            GetTacticTypelist(planids, true, true);
             GetOwnerListForFilter(planids, true, true);
         }
     }
@@ -3004,7 +3050,6 @@
         }
         else {
             IsDeselectAll = true;
-            IsDeselectAllTactics = true;
             $("#ulSelectedPlans li").each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -4740,6 +4785,31 @@
             });
         }
         //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
+
+        //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
+        var CheckedCounter = 0, AllCounter = 0, id = null;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                if (AllCounter == CheckedCounter) {
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                    }
+                    var i = 0, customfieldid;
+                    for (i = 0; i < filters.customFieldIds.length; i++) {
+                        if (filters.customFieldIds[i].indexOf("_") > -1) {
+                            customfieldid = filters.customFieldIds[i].split("_")[0];
+                            if (id == customfieldid) {
+                                filters.customFieldIds.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });        ////End
 
         var Planid = filters.SelectedPlans;
         var CustomFieldId = filters.customFieldIds;
@@ -6940,20 +7010,20 @@
 
                                 }
                             });
+                            //Maintain CustomeField Count : 1952 By Maitri Gandhi
                             $("#SelectedCustomFilter_" + CustomFieldId).text(AutoSelectedCustomField);
                             AutoSelectedCustomField = 0;
 
                         }
                     }
                     else {
-                        //Code for Select All
-
+                        //Code for Select All : 1952 By Maitri Gandhi
                         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
                             $(this).attr('checked', 'checked');
                             $(this).parent().addClass("close-list");
                             AutoSelectedCustomField++;
                         });
-                        $('#ulSelectedFilter').find("li #CustomFields .sidebarliwidthSelected-right").text("All");
+                        $('#ulSelectedFilter').find("li #CustomFields .sidebarliwidthSelected-right").text(FiltersAll);
 
                     }
 
