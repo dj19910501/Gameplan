@@ -276,7 +276,7 @@ namespace RevenuePlanner.Controllers
             {
                 SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
             }
-          //End
+            //End
             var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
             if (Enums.ActiveMenu.Home.Equals(activeMenu))
             {
@@ -286,9 +286,9 @@ namespace RevenuePlanner.Controllers
                 var LastSetOfYearSelected = new List<string>();
                 var Yearlabel = Enums.FilterLabel.Year.ToString();
                 var FilterName = Sessions.FilterPresetName;
-               // var SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+                // var SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
                 Common.PlanUserSavedViews = SetOFLastViews; // Add by Nishant Sheth #1915
-            //    var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
+                //    var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
                 var SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.UserId).ToList();
                 var FinalSetOfPlanSelected = "";
                 var FinalSetOfYearsSelected = "";
@@ -365,7 +365,7 @@ namespace RevenuePlanner.Controllers
 
                 var allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
 
-               // var TempIds = activePlan.Select(id => id.PlanId).ToList();
+                // var TempIds = activePlan.Select(id => id.PlanId).ToList();
                 var YearWiseListOfPlans = activePlan.Where(list => allPlanIds.Contains(list.PlanId)).ToList();
 
                 planmodel.lstPlan = YearWiseListOfPlans.Select(plan => new PlanListModel
@@ -378,10 +378,10 @@ namespace RevenuePlanner.Controllers
                 }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
 
                 List<SelectListItem> lstYear = new List<SelectListItem>();
-              //  var SelectedYear = activePlan.Where(list => list.Checked == "checked").Select(list => list.Year).ToList();
-                
+                //  var SelectedYear = activePlan.Where(list => list.Checked == "checked").Select(list => list.Year).ToList();
+
                 // List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == published && plan.Model.ClientId == Sessions.User.ClientId).ToList();
-                
+
                 var StartYears = CampPlans.Select(camp => camp.StartYear)
              .Distinct().ToList();
 
@@ -432,11 +432,11 @@ namespace RevenuePlanner.Controllers
                     //}
                     //else
                     //{
-                       
+
                     //    ViewBag.LastSavedPlanIDs = null;
                     //}
-                   
-                   
+
+
 
                     //// Select Tactics of selected plans
                     //    var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && planmodel.PlanId == campaign.PlanId).Select(campaign => campaign.PlanCampaignId).ToList();
@@ -583,7 +583,7 @@ namespace RevenuePlanner.Controllers
 
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
             // Modified by Nishant Sheth #1915
-            List<Plan> lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();          
+            List<Plan> lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => plan).ToList();
 
             bool IsRequest = false;
             bool IsFiltered = false;
@@ -592,7 +592,7 @@ namespace RevenuePlanner.Controllers
             bool isNumeric = int.TryParse(timeFrame, out year);
             string[] listYear = timeFrame.Split('-');
             //bool isNumeric = int.TryParse(listYear[0], out year);
-            
+
             if (isNumeric)
             {
                 planYear = Convert.ToString(year);
@@ -612,7 +612,7 @@ namespace RevenuePlanner.Controllers
                 // End By Nishant Sheth
             }
 
-          
+
 
             // Modified by Nishant Sheth #1915
 
@@ -648,7 +648,7 @@ namespace RevenuePlanner.Controllers
             //// Get list of planIds from filtered plans
 
             var filteredPlanIds = lstPlans.Where(plan => plan.Year == planYear || planId.Split(',').Contains(plan.PlanId.ToString())).ToList().Select(plan => plan.PlanId).ToList();
-            
+
 
             CalendarStartDate = CalendarEndDate = DateTime.Now;
             Common.GetPlanGanttStartEndDate(planYear, timeFrame, ref CalendarStartDate, ref CalendarEndDate);
@@ -2066,9 +2066,9 @@ namespace RevenuePlanner.Controllers
             // Add By Nishant
             Common.GetPlanGanttStartEndDate(planYear, timeframe, ref CalendarStartDate, ref CalendarEndDate);
 
-           
+
             string[] listYear = timeframe.Split('-'); //PL #1960 Dashrath Prajapati
-           
+
 
             string tacticStatusSubmitted = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
@@ -2159,7 +2159,7 @@ namespace RevenuePlanner.Controllers
                 Status = objplan.Status
             }).Select(objplan => objplan).OrderBy(objplan => objplan.text);
 
-              
+
 
                 //// Finalize task data plan list for gantt chart
                 var newTaskDataPlan = taskDataPlan.Select(plan => new
@@ -2569,24 +2569,24 @@ namespace RevenuePlanner.Controllers
                                                                                                                 CalendarEndDate,
                                                                                                                 _campgn.StartDate,
                                                                                                                 _campgn.EndDate).Equals(false) && (((filterOwner.Count > 0 ? filterOwner.Contains(_campgn.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(_campgn.Status) : true)) || OwnerFilterCampaignidsMain.Contains(_campgn.PlanCampaignId))).ToList();
-               var taskDataCampaignforPlan = taskDataCampaignforPlanMain.Select(_campgn => new
-                                                        {
-                                                            id = string.Format("L{0}_C{1}", _campgn.PlanId, _campgn.PlanCampaignId),
-                                                            text = _campgn.Title,
-                                                            start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, _campgn.StartDate),
-                                                            duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                                                                      CalendarEndDate,
-                                                                                                      _campgn.StartDate,
-                                                                                                      _campgn.EndDate),
-                                                            //  progress = GetCampaignProgress( _campgn, ImprovementTacticForTaskData),//progress = 0,
-                                                            progress = GetCampaignProgress(lstTactic, _campgn, EffectiveDateListByPlanIds, _campgn.PlanId),
-                                                            open = false,
-                                                            parent = string.Format("L{0}", _campgn.PlanId),
-                                                            color = CampaignColor,
-                                                            plancampaignid = _campgn.PlanCampaignId,
-                                                            Status = _campgn.Status,
-                                                            CreatedBy = _campgn.CreatedBy
-                                                        }).Select(_campgn => _campgn).OrderBy(_campgn => _campgn.text);
+                var taskDataCampaignforPlan = taskDataCampaignforPlanMain.Select(_campgn => new
+                                                         {
+                                                             id = string.Format("L{0}_C{1}", _campgn.PlanId, _campgn.PlanCampaignId),
+                                                             text = _campgn.Title,
+                                                             start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, _campgn.StartDate),
+                                                             duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                                                                       CalendarEndDate,
+                                                                                                       _campgn.StartDate,
+                                                                                                       _campgn.EndDate),
+                                                             //  progress = GetCampaignProgress( _campgn, ImprovementTacticForTaskData),//progress = 0,
+                                                             progress = GetCampaignProgress(lstTactic, _campgn, EffectiveDateListByPlanIds, _campgn.PlanId),
+                                                             open = false,
+                                                             parent = string.Format("L{0}", _campgn.PlanId),
+                                                             color = CampaignColor,
+                                                             plancampaignid = _campgn.PlanCampaignId,
+                                                             Status = _campgn.Status,
+                                                             CreatedBy = _campgn.CreatedBy
+                                                         }).Select(_campgn => _campgn).OrderBy(_campgn => _campgn.text);
 
                 var NewtaskDataCampaignforPlan = taskDataCampaignforPlan.Select(_campgn => new
                 {
@@ -5397,7 +5397,7 @@ namespace RevenuePlanner.Controllers
             var yearlistPrevious = activePlan.Where(plan => plan.Year != currentYear && Convert.ToInt32(plan.Year) < DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
             yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
 
-            
+
 
 
             string strThisQuarter = Enums.UpcomingActivities.thisquarter.ToString(), strThisMonth = Enums.UpcomingActivities.thismonth.ToString(),
@@ -5538,7 +5538,7 @@ namespace RevenuePlanner.Controllers
 
                     // Remove old currentYear-PrevYear Timeframe value from UpcomingActivityList.
                     if (UpcomingActivityList.Any(year => year.Text.Equals(strTimeFrame)))
-                    { 
+                    {
                         var multiTimeFrame =  UpcomingActivityList.Where(year => year.Text.Equals(strTimeFrame)).FirstOrDefault();
                         UpcomingActivityList.Remove(multiTimeFrame);
                     }
@@ -5994,22 +5994,22 @@ namespace RevenuePlanner.Controllers
             //Modified for #1750 by Komal Rawal
 
             //Modified By komal Rawal for #1959 to handle last viewed data in session
-           var listofsavedviews = new List<Plan_UserSavedViews>();
+            var listofsavedviews = new List<Plan_UserSavedViews>();
             if (Sessions.PlanUserSavedViews == null || isLoadPreset == true)
             {
-                 listofsavedviews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
+                listofsavedviews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
                 Common.PlanUserSavedViews = listofsavedviews;
             }
             else
             {
-                
+
                 Common.PlanUserSavedViews = Sessions.PlanUserSavedViews;
                 listofsavedviews = Common.PlanUserSavedViews;
             }
             //ENd
             // Add By Nishant Sheth #1915
 
-          
+
             //Modified by Rahul shah on 24/12/2015 for PL#1837
             if (isLoadPreset == true)
             {
@@ -6054,23 +6054,23 @@ namespace RevenuePlanner.Controllers
                 {
                     if(Sessions.PlanUserSavedViews == null)
                     {
-                    // Add By Nishant Sheth to resolved the default view issue with update result
-                    NewListOfViews = listofsavedviews.Where(view => view.IsDefaultPreset == true).ToList();
-                    if (NewListOfViews.Count == 0)
-                    {
-                        listofsavedviews = listofsavedviews.Where(view => view.ViewName == null).ToList();
-                    }
-                    else
-                    {
-                        listofsavedviews = NewListOfViews;
-                    }
-                   
+                        // Add By Nishant Sheth to resolved the default view issue with update result
+                        NewListOfViews = listofsavedviews.Where(view => view.IsDefaultPreset == true).ToList();
+                        if (NewListOfViews.Count == 0)
+                        {
+                            listofsavedviews = listofsavedviews.Where(view => view.ViewName == null).ToList();
+                        }
+                        else
+                        {
+                            listofsavedviews = NewListOfViews;
+                        }
+
                     }
                     else
                     {
                         listofsavedviews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
                     }
-                  
+
                     // End By Nishant Sheth
                 }
                 var SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel).Select(View => View.FilterValues).ToList();
@@ -6148,7 +6148,13 @@ namespace RevenuePlanner.Controllers
 
 
             Sessions.PlanUserSavedViews = null;  //Added By komal Rawal for #1959 to handle last viewed data in session
-            List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
+            //Modified by Rahul Shah to remove ternary operator. 
+            List<int> planIds = new List<int>();
+            if (!string.IsNullOrWhiteSpace(planId))
+            {
+                planIds = planId.Split(',').Select(plan => int.Parse(plan)).ToList();
+            }
+            //List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
             List<Plan> ListofPlans = objDbMrpEntities.Plans.Where(p => planIds.Contains(p.PlanId)).ToList();
             string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
             planIds = ListofPlans.Where(plan => plan.Status.Equals(planPublishedStatus)).Select(plan => plan.PlanId).ToList();
@@ -6188,7 +6194,7 @@ namespace RevenuePlanner.Controllers
             //if (ownerIds != null && ownerIds != "") // Commented By Nishant Sheth Desc:: To resolve owner filter issue
             {
                 InsertLastViewedUserData(ownerIds, ViewName, Enums.FilterLabel.Owner.ToString(), NewCustomFieldData);
-              
+
             }
             //if (TacticTypeid != null && TacticTypeid != "") //Commented by Rahul Shah for PL #1952.
             {
@@ -6196,8 +6202,8 @@ namespace RevenuePlanner.Controllers
                 //{
                 //    TacticTypeid = null;
                 //}
-                InsertLastViewedUserData(TacticTypeid, ViewName,Enums.FilterLabel.TacticType.ToString(), NewCustomFieldData);
-              
+                InsertLastViewedUserData(TacticTypeid, ViewName, Enums.FilterLabel.TacticType.ToString(), NewCustomFieldData);
+
             }
             if (StatusIds != "AddActual" && StatusIds != "Report")
             {
@@ -6213,52 +6219,89 @@ namespace RevenuePlanner.Controllers
                 InsertLastViewedUserData(SelectedYears, ViewName, Enums.FilterLabel.Year.ToString(), NewCustomFieldData);
 
             }
-
-
+            //Modified by Rahul shah on 18/02/2016 to optimize code.
+            string[] filterValues = { };
+            string[] filteredCustomFields = { };
+            string PrefixCustom = "CF_";
+            string FilterNameTemp = "";
+            string Previousval = "";
+            var PreviousValue = "";
+            string CustomOptionvalue = string.Empty;
+            var ExistingFieldlist = new Plan_UserSavedViews();
             if (customFieldIds != "")
             {
-
-                string[] filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? null : customFieldIds.Split(',');
+                //Added and Commented by Rahul to remove ternory operator and add if..else condition                
+                if (string.IsNullOrWhiteSpace(customFieldIds))
+                {
+                    filteredCustomFields = null;
+                }
+                else
+                {
+                    filteredCustomFields = customFieldIds.Split(',');
+                }
+                //string[] filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? null : customFieldIds.Split(',');
                 if (filteredCustomFields != null)
                 {
                     Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                    //List<Plan_UserSavedViews> listLineitem = objDbMrpEntities.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.UserId).Select(a => a).ToList();
                     List<Plan_UserSavedViews> listLineitem = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
                     Plan_UserSavedViews objLineitem = new Plan_UserSavedViews();
-                    string FilterNameTemp = "";
-                    string Previousval = "";
                     foreach (string customField in filteredCustomFields)
-                    {
-                        var PreviousValue = "CF" + "_" + customField.Split('_')[0].ToString();
-                        var ExistingFieldlist = listLineitem.Where(pcpobjw => pcpobjw.FilterName.Equals(PreviousValue)).FirstOrDefault();
-                        FilterNameTemp += string.IsNullOrEmpty(FilterNameTemp) ? (ExistingFieldlist != null ? ExistingFieldlist.FilterValues : "") : "";
-                        if (FilterNameTemp == PreviousValue)
+                    {                        
+                        filterValues = customField.Split('_');
+                        if (filterValues.Count() > 1)
                         {
-
-                            Previousval += ',' + customField.Split('_')[1];
-                            objFilterValues.FilterValues = Previousval;
+                            CustomOptionvalue = filterValues[1];
                         }
-
-                        else
-                        {
-                            objFilterValues = new Plan_UserSavedViews();
-                            objFilterValues.ViewName = null;
-                            if (ViewName != null && ViewName != "")
+                        if (filterValues.Count() > 0)
+                        {                           
+                            PreviousValue = PrefixCustom + filterValues[0].ToString();
+                            ExistingFieldlist = listLineitem.Where(pcpobjw => pcpobjw.FilterName.Equals(PreviousValue)).FirstOrDefault();
+                            //Added and Commented by Rahul to remove ternary operator and add if..else condition
+                            if (string.IsNullOrEmpty(FilterNameTemp))
                             {
-                                objFilterValues.ViewName = ViewName;
+                                if (ExistingFieldlist != null)
+                                {
+                                    FilterNameTemp += ExistingFieldlist.FilterValues;
+                                }
+                                else
+                                {
+                                    FilterNameTemp += "";
+                                }
+                                //FilterNameTemp += (ExistingFieldlist != null ? ExistingFieldlist.FilterValues : "");
                             }
-                            objFilterValues.FilterName = "CF" + "_" + customField.Split('_')[0];
-                            objFilterValues.FilterValues = customField.Split('_')[1];
-                            objFilterValues.Userid = Sessions.User.UserId;
-                            objFilterValues.LastModifiedDate = DateTime.Now;
-                            objFilterValues.IsDefaultPreset = false;
-                            FilterNameTemp = "";
-                            FilterNameTemp += "CF" + "_" + customField.Split('_')[0].ToString();
-                            Previousval = "";
-                            Previousval = customField.Split('_')[1];
-                            objDbMrpEntities.Plan_UserSavedViews.Add(objFilterValues);
-                        }
+                            else
+                            {
+                                FilterNameTemp += "";
+                            }
 
+                            //FilterNameTemp += string.IsNullOrEmpty(FilterNameTemp) ? (ExistingFieldlist != null ? ExistingFieldlist.FilterValues : "") : "";
+                            if (FilterNameTemp == PreviousValue && !string.IsNullOrEmpty(CustomOptionvalue))
+                            {
+                                Previousval += ',' + CustomOptionvalue;
+                                objFilterValues.FilterValues = Previousval;
+                            }
+
+                            else
+                            {
+                                objFilterValues = new Plan_UserSavedViews();
+                                objFilterValues.ViewName = null;
+                                if (ViewName != null && ViewName != "")
+                                {
+                                    objFilterValues.ViewName = ViewName;
+                                }
+                                objFilterValues.FilterName = PrefixCustom + filterValues[0];
+                                objFilterValues.FilterValues = CustomOptionvalue;
+                                objFilterValues.Userid = Sessions.User.UserId;
+                                objFilterValues.LastModifiedDate = DateTime.Now;
+                                objFilterValues.IsDefaultPreset = false;
+                                FilterNameTemp = "";
+                                FilterNameTemp += PrefixCustom + filterValues[0].ToString();
+                                Previousval = "";
+                                Previousval = CustomOptionvalue;
+                                objDbMrpEntities.Plan_UserSavedViews.Add(objFilterValues);
+                            }
+
+                        }
                         NewCustomFieldData.Add(objFilterValues);
                     }
 
@@ -6266,47 +6309,32 @@ namespace RevenuePlanner.Controllers
                 }
             }
             else
-            {   //Added by Rahul Shah for PL #1952.
-                string[] filteredCustomFields = string.IsNullOrWhiteSpace(ParentCustomFieldsIds) ? null : ParentCustomFieldsIds.Split(',');
+            {   //Added by Rahul Shah for PL #1952. to save custom filter name when all deselect
+                if (string.IsNullOrWhiteSpace(ParentCustomFieldsIds))
+                {
+                    filteredCustomFields = null;
+                }
+                else
+                {
+                    filteredCustomFields = ParentCustomFieldsIds.Split(',');
+                }
                 if (filteredCustomFields != null)
                 {
                     Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                    //List<Plan_UserSavedViews> listLineitem = objDbMrpEntities.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.UserId).Select(a => a).ToList();
-                    List<Plan_UserSavedViews> listLineitem = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
-                    Plan_UserSavedViews objLineitem = new Plan_UserSavedViews();
-                    string FilterNameTemp = "";
-                    string Previousval = "";
                     foreach (string customField in filteredCustomFields)
                     {
-                        var PreviousValue = "CF" + "_" + customField.ToString();
-                        var ExistingFieldlist = listLineitem.Where(pcpobjw => pcpobjw.FilterName.Equals(PreviousValue)).FirstOrDefault();
-                        FilterNameTemp += string.IsNullOrEmpty(FilterNameTemp) ? (ExistingFieldlist != null ? ExistingFieldlist.FilterValues : "") : "";
-                        if (FilterNameTemp == PreviousValue)
+                        objFilterValues = new Plan_UserSavedViews();
+                        objFilterValues.ViewName = null;
+                        if (ViewName != null && ViewName != "")
                         {
-
-                            Previousval += ',' + customField.Split('_')[1];
-                            objFilterValues.FilterValues = Previousval;
+                            objFilterValues.ViewName = ViewName;
                         }
-
-                        else
-                        {
-                            objFilterValues = new Plan_UserSavedViews();
-                            objFilterValues.ViewName = null;
-                            if (ViewName != null && ViewName != "")
-                            {
-                                objFilterValues.ViewName = ViewName;
-                            }
-                            objFilterValues.FilterName = "CF" + "_" + customField;
-                            objFilterValues.FilterValues = "";
-                            objFilterValues.Userid = Sessions.User.UserId;
-                            objFilterValues.LastModifiedDate = DateTime.Now;
-                            objFilterValues.IsDefaultPreset = false;
-                            FilterNameTemp = "";
-                            FilterNameTemp += "CF" + "_" + customField;
-                            Previousval = "";
-                            //Previousval = customField.Split('_')[1];
-                            objDbMrpEntities.Plan_UserSavedViews.Add(objFilterValues);
-                        }
+                        objFilterValues.FilterName = PrefixCustom + customField;
+                        objFilterValues.FilterValues = "";
+                        objFilterValues.Userid = Sessions.User.UserId;
+                        objFilterValues.LastModifiedDate = DateTime.Now;
+                        objFilterValues.IsDefaultPreset = false;                      
+                        objDbMrpEntities.Plan_UserSavedViews.Add(objFilterValues);
                         NewCustomFieldData.Add(objFilterValues);
                     }
                 }
