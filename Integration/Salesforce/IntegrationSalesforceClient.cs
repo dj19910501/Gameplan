@@ -1252,7 +1252,8 @@ namespace Integration.Salesforce
                                 //OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
                                 //db.SaveChanges();
                                 //Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic end.");
-
+                                List<int> linkedTactics = new List<int>();
+                                List<int> lstMultiLinkedTactic = new List<int>();
                                 if (CampaignMemberList.Count > 0)
                                 {
                                     #region "Remove Actuals values"
@@ -1283,7 +1284,7 @@ namespace Integration.Salesforce
 
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic start.");
 
-                                    List<int> linkedTactics = new List<int>();
+                                   
                                     if (lstlinkedTacticMapping.Count > 0)
                                     {
                                         linkedTactics = lstlinkedTacticMapping.Select(lnkdTac => lnkdTac.Value).ToList();
@@ -1298,12 +1299,22 @@ namespace Integration.Salesforce
                                     {
                                         tblActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
                                     }
-
-                                    List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = tblActuals.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId)).ToList();
-                                    OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
-                                    
+                                    //Modification Start Viral 18Feb2016 #2006 H9_QA - SFDC integration bug
+                                    //List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = tblActuals.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId)).ToList();
+                                    //OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                    try
+                                    {
+                                        db.Configuration.AutoDetectChangesEnabled = false;
+                                        List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = tblActuals.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId)).ToList();
+                                        OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                    }
+                                    finally
+                                    {
+                                        db.Configuration.AutoDetectChangesEnabled = true;
+                                    }
+                                    //Modification End Viral 18Feb2016 #2006 H9_QA - SFDC integration bug
                                     // Remove linked Tactic's Actuals.
-                                    List<int> lstMultiLinkedTactic = new List<int>();
+                                    
                                     if (linkedTactics.Count > 0)
                                     {
 
@@ -1330,15 +1341,35 @@ namespace Integration.Salesforce
                                                     lstLinkedPeriods.Add(PeriodChar + (perdNum + i).ToString());
                                                 }
                                                 lstMultiLinkedTactic.Add(linkdTacId);
-                                                linkedactualTacticList = tblActuals.Where(actual => linkedTactics.Contains(actual.PlanTacticId) && lstLinkedPeriods.Contains(actual.Period)).ToList();
-                                                if (linkedactualTacticList != null && linkedactualTacticList.Count >0)
-                                                    linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                linkedactualTacticList = tblActuals.Where(actual => linkdTacId == actual.PlanTacticId && lstLinkedPeriods.Contains(actual.Period)).ToList();
+                                                if (linkedactualTacticList != null && linkedactualTacticList.Count > 0)
+                                                {
+                                                    try
+                                                    {
+                                                        db.Configuration.AutoDetectChangesEnabled = false;
+                                                        linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                    }
+                                                    finally
+                                                    {
+                                                        db.Configuration.AutoDetectChangesEnabled = true;
+                                                    }
+                                                }
                                             }
                                             else
                                             {
-                                                linkedactualTacticList = tblActuals.Where(actual => linkedTactics.Contains(actual.PlanTacticId)).ToList();
+                                                linkedactualTacticList = tblActuals.Where(actual => linkdTacId == actual.PlanTacticId).ToList();
                                                 if (linkedactualTacticList != null && linkedactualTacticList.Count > 0)
-                                                    linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                {
+                                                    try
+                                                    {
+                                                        db.Configuration.AutoDetectChangesEnabled = false;
+                                                        linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                    }
+                                                    finally
+                                                    {
+                                                        db.Configuration.AutoDetectChangesEnabled = true;
+                                                    }
+                                                }
                                             }
                                         }
                                         #endregion
@@ -2243,7 +2274,16 @@ namespace Integration.Salesforce
                                             List<int> lstMultiLinkedTactic = new List<int>();
                                             if (!isDoneFirstPullCW)
                                             {
-                                                OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                
+                                                try
+                                                {
+                                                    db.Configuration.AutoDetectChangesEnabled = false;
+                                                    OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                }
+                                                finally
+                                                {
+                                                    db.Configuration.AutoDetectChangesEnabled = true;
+                                                }
                                                 if (LinkedTacticActualsId != null && LinkedTacticActualsId.Count > 0)
                                                 {
                                                     LinkedActualTacticList = tblPlanActual.Where(actual => LinkedTacticActualsId.Contains(actual.PlanTacticId)).ToList();
@@ -2277,15 +2317,36 @@ namespace Integration.Salesforce
                                                                     lstLinkedPeriods.Add(PeriodChar + (perdNum + i).ToString());
                                                                 }
                                                                 lstMultiLinkedTactic.Add(linkdTacId);
-                                                                linkedactualTacticList = LinkedActualTacticList.Where(actual => linkedTactics.Contains(actual.PlanTacticId) && lstLinkedPeriods.Contains(actual.Period)).ToList();
+                                                                linkedactualTacticList = LinkedActualTacticList.Where(actual => linkdTacId == actual.PlanTacticId && lstLinkedPeriods.Contains(actual.Period)).ToList();
                                                                 if (linkedactualTacticList != null && linkedactualTacticList.Count > 0)
-                                                                    linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                                {
+                                                                    try
+                                                                    {
+                                                                        db.Configuration.AutoDetectChangesEnabled = false;
+                                                                        linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                                    }
+                                                                    finally
+                                                                    {
+                                                                        db.Configuration.AutoDetectChangesEnabled = true;
+                                                                    }
+                                                                }
+                                                                    
                                                             }
                                                             else
                                                             {
-                                                                linkedactualTacticList = LinkedActualTacticList.Where(actual => linkedTactics.Contains(actual.PlanTacticId)).ToList();
+                                                                linkedactualTacticList = LinkedActualTacticList.Where(actual => linkdTacId == actual.PlanTacticId).ToList();
                                                                 if (linkedactualTacticList != null && linkedactualTacticList.Count > 0)
-                                                                    linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                                {
+                                                                    try
+                                                                    {
+                                                                        db.Configuration.AutoDetectChangesEnabled = false;
+                                                                        linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                                    }
+                                                                    finally
+                                                                    {
+                                                                        db.Configuration.AutoDetectChangesEnabled = true;
+                                                                    }
+                                                                }
                                                             }
                                                         }
                                                         #endregion
