@@ -1345,7 +1345,7 @@ namespace RevenuePlanner.Controllers
             #region "Declare Main Variable for Model"
 
             ReportModel objReportModel = new ReportModel();
-            string[] ListYear = option.Split(',');
+            string[] ListYear;
             #endregion
             //// check planids selected or not
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
@@ -1355,13 +1355,21 @@ namespace RevenuePlanner.Controllers
                 // To avoid summary display when no published plan selected (It displays no data found message.)
 
                 string PublishedPlan = Convert.ToString(Enums.PlanStatus.Published).ToLower();
-                var plan = db.Plans.Where(p => Sessions.ReportPlanIds.Contains(p.PlanId) && p.Status.ToLower() == PublishedPlan).FirstOrDefault();
+                // Add By Nishant Sheth
+                // Desc :: To avoid double db trip for plan table in common function
+                var PlanDetails = db.Plans.Where(p => Sessions.ReportPlanIds.Contains(p.PlanId)).ToList();
+                var plan = PlanDetails.Where(p => Sessions.ReportPlanIds.Contains(p.PlanId) && p.Status.ToLower() == PublishedPlan).FirstOrDefault();
                 // End - Added by Arpita Soni for Ticket #1148 on 01/30/2015
 
                 //// set viewbag to display plan or msg
                 ViewBag.IsPlanExistToShowReport = true;
                 //Common.GetReportStartEndDate(option, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
+                // Add By Nishant Sheth 
+                // Desc :: Report should be displayed based on the plan selections - #1957
+                option = Common.GetTimeFrameOptionRevenue(option, PlanDetails);
+                ListYear = option.Split(',');
                 Common.GetselectedYearList(option, ref selectedYearList);// Add By Nishant Sheth #1839
+                // End By Nishant Sheth
                 #region "Declare Local Variables"
                 List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
                 List<int> campaignlist = new List<int>();
@@ -4860,7 +4868,7 @@ namespace RevenuePlanner.Controllers
 
             #region "Declare Local Variables"
             //Common.GetReportStartEndDate(timeframeOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
-            Common.GetselectedYearList(timeframeOption, ref selectedYearList);// Add By Nishant Sheth #1838
+
             ReportOverviewModel objReportOverviewModel = new ReportOverviewModel();
             RevenueOverviewModel objRevenueOverviewModel = new RevenueOverviewModel();
             ConversionOverviewModel objConversionOverviewModel = new ConversionOverviewModel();
@@ -4888,13 +4896,19 @@ namespace RevenuePlanner.Controllers
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             List<ActualTrendModel> ActualTacticTrendList = new List<ActualTrendModel>();
             bool IsTillCurrentMonth = true;
-            string[] ListYear = timeframeOption.Split(',');
+            string[] ListYear;
             string currentyear = DateTime.Now.Year.ToString();
             #endregion
             try
             {
                 if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(Enums.ViewByAllocated.Monthly.ToString()))
                     IsQuarterly = false;
+                // Add By Nishant Sheth 
+                // Desc :: Report should be displayed based on the plan selections - #1957
+                timeframeOption = Common.GetTimeFrameOption(timeframeOption);
+                ListYear = timeframeOption.Split(',');
+                Common.GetselectedYearList(timeframeOption, ref selectedYearList);// Add By Nishant Sheth #1838
+                // End By Nishant Sheth
                 //// get tactic list
                 List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
                 //// Calculate Value for ecah tactic
@@ -7876,7 +7890,12 @@ namespace RevenuePlanner.Controllers
             ActualStageCodeList.Add(revStageCode);
             bool IsTillCurrentMonth = true;
             //Common.GetReportStartEndDate(option, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
+            // Add By Nishant Sheth 
+            // Desc :: Report should be displayed based on the plan selections - #1957
+            option = Common.GetTimeFrameOption(option);
+            string[] ListYear = option.Split(',');
             Common.GetselectedYearList(option, ref selectedYearList);// Add By Nishant Sheth #1839
+            // End By Nishant Sheth
             List<string> includeMonth = GetMonthListForReport(option);
             List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
 
@@ -7908,7 +7927,7 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
             CardSectionModel objCardSectionModel = new CardSectionModel();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-            string[] ListYear = option.Split(',');
+
             /// End Declartion
             #endregion
 
@@ -9963,7 +9982,13 @@ namespace RevenuePlanner.Controllers
             ReportModel objReportModel = new ReportModel();
             Projected_Goal objProjectedGoal = new Projected_Goal();
             //Common.GetReportStartEndDate(timeFrameOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
+            string[] ListYear;
+            // Add By Nishant Sheth 
+            // Desc :: Report should be displayed based on the plan selections - #1957
+            timeFrameOption = Common.GetTimeFrameOption(timeFrameOption);
+            ListYear = timeFrameOption.Split(',');
             Common.GetselectedYearList(timeFrameOption, ref selectedYearList);// Add By Nishant Sheth #1840
+            // End By Nishant Sheth
             List<ActualTrendModel> ActualTacticTrendList = new List<ActualTrendModel>();
             List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
             conversion_Projected_Goal_LineChart objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
@@ -9982,7 +10007,7 @@ namespace RevenuePlanner.Controllers
             string INQStageLabel = Common.GetLabel(Common.StageModeINQ);
             string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
             string CWStageLabel = Common.GetLabel(Common.StageModeCW);
-            string[] ListYear = timeFrameOption.Split(',');
+            
             #endregion
 
             // Add BY Nishant Sheth
@@ -11041,7 +11066,13 @@ namespace RevenuePlanner.Controllers
         {
             #region "Declare Local Variables"
             //Common.GetReportStartEndDate(option, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
+            string[] ListYear;
+            // Add By Nishant Sheth 
+            // Desc :: Report should be displayed based on the plan selections - #1957
+            option = Common.GetTimeFrameOption(option);
+            ListYear = option.Split(',');
             Common.GetselectedYearList(option, ref selectedYearList);// Add By Nishant Sheth #1840
+            // End By Nishant Sheth
             List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
 
@@ -11079,7 +11110,7 @@ namespace RevenuePlanner.Controllers
                 List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
 
                 tacticlist = GetTacticForReporting();
-                string[] ListYear = option.Split(',');
+                
                 // End By Nishant Sheth
             #endregion
                 /// Declarion For Card Section 

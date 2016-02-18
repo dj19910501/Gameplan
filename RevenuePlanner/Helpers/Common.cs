@@ -6749,6 +6749,72 @@ namespace RevenuePlanner.Helpers
         // Add By Nishant Sheth #1915
         public static List<Plan_UserSavedViews> PlanUserSavedViews { get; set; }
 
+        #region GetTimeFrame For Report
+        // Add By Nishant Sheth
+        // Desc :: To get the time frame option for selected plan ticket #1957
+        public static string GetTimeFrameOption(string options)
+        {
+            if (string.IsNullOrEmpty(options))
+            {
+                options = System.DateTime.Now.Year.ToString();
+            }
+            string[] ListYear = options.Split(',');
+            MRPEntities objDbMrpEntities = new MRPEntities();
+            var ListPlanYear = objDbMrpEntities.Plans.Where(plan => Sessions.ReportPlanIds.Contains(plan.PlanId)).Select(plan => plan.Year).Distinct().ToList();// Get selectred plan's list of plan year 
+            var ListCampYear = objDbMrpEntities.Plan_Campaign.Where(camp => Sessions.ReportPlanIds.Contains(camp.PlanId)).Select(camp => camp.EndDate.Year).Distinct().ToList(); // Get selected plan's max campaign date
+            string timeframeOption = string.Empty;
+            List<string> NewListYear = new List<string>();
+            foreach (var Years in ListYear)
+            {
+                if (ListPlanYear.Contains(Years) && !NewListYear.Contains(Years))
+                {
+                    NewListYear.Add(Years);
+                }
+
+                if (ListCampYear.Contains(Convert.ToInt32(Years)) && !NewListYear.Contains(Years))
+                {
+                    NewListYear.Add(Years);
+                }
+            }
+            timeframeOption = string.Join(",", NewListYear);
+            return timeframeOption;
+        }
+
+        /// <summary>
+        ///  To get the time frame options with base plan year ticket #1957
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="Plan"></param>
+        /// <returns></returns>
+        public static string GetTimeFrameOptionRevenue(string options, List<Plan> Plan)
+        {
+            if (string.IsNullOrEmpty(options))
+            {
+                options = System.DateTime.Now.Year.ToString();
+            }
+            string[] ListYear = options.Split(',');
+            MRPEntities objDbMrpEntities = new MRPEntities();
+            var ListPlanYear = Plan.Select(plan => plan.Year).Distinct().ToList();// Get selectred plan's list of plan year 
+            var ListCampYear = objDbMrpEntities.Plan_Campaign.Where(camp => Sessions.ReportPlanIds.Contains(camp.PlanId)).Select(camp => camp.EndDate.Year).Distinct().ToList(); // Get selected plan's max campaign date
+            string timeframeOption = string.Empty;
+            List<string> NewListYear = new List<string>();
+            foreach (var Years in ListYear)
+            {
+                if (ListPlanYear.Contains(Years) && !NewListYear.Contains(Years))
+                {
+                    NewListYear.Add(Years);
+                }
+
+                if (ListCampYear.Contains(Convert.ToInt32(Years)) && !NewListYear.Contains(Years))
+                {
+                    NewListYear.Add(Years);
+                }
+            }
+            timeframeOption = string.Join(",", NewListYear);
+            return timeframeOption;
+        }
+        #endregion
+
     }
 
     /// <summary>
