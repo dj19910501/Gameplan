@@ -511,7 +511,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="currentPlanId">current selected plan Id</param>
         /// <param name="activeMenu">current active menu</param>
         /// <returns>returns partial view of PlanDropdown</returns>
-        public ActionResult HomePlan(int currentPlanId,string fltrYears)
+        public ActionResult HomePlan(string currentPlanId,string fltrYears) //modified By Komal as we pass comma separated string value in current plan id now
         {
             HomePlan objHomePlan = new HomePlan();
 

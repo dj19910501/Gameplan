@@ -112,101 +112,101 @@
 
 @section Sidebar{
     <script type="text/javascript">
-        var GetLastview = true;
-        var pageIsScroll = false;
-        var state0 = 0;
-        //Added By komal rawal for #1283
-        //  var isTacticExist = false;
-        function LoadTacticTypelist(data, tacids) {
-            if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
-                TactictypeCount = data.TacticTypelist.length;
-                if (TactictypeCount > 0) {
-                    $("#TacticTypeAllModule").css("display", "block");
-                    $("#NoTTFound").hide();
-                    $('#ulTacticType li').remove();
-                    $.each(data.TacticTypelist, function (i, TactictypeItem) {
-                        //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
-                        //var checked = "";
-                        //var checkedclass = "";
-                       
-                        var checkedclass = "";
-                        var checked = "";
-                        //if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
-                        //    checked = "checked"
-                        //    checkedclass = "close-list"
-                        //}
-                        //if (tacids.length == 0 && IsDeselectAllTactics == false) {
-                        //    checked = "checked"
-                        //    checkedclass = "close-list"
-                        //}                        
-                            checked = "checked"
-                            checkedclass = "close-list"
-                        ////Added by Maitri Gandhi for #1952
-                            if (Array.isArray(tacids) && tacids.length > 0) {                                
-                                if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
-                                    checked = ""
-                                    checkedclass = ""
-                                }
-                            }
-                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
-                    });                    
+    var GetLastview = true;
+    var pageIsScroll = false;
+    var state0 = 0;
+    //Added By komal rawal for #1283
+    //  var isTacticExist = false;
+    function LoadTacticTypelist(data, tacids) {
+        if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
+            TactictypeCount = data.TacticTypelist.length;
+            if (TactictypeCount > 0) {
+                $("#TacticTypeAllModule").css("display", "block");
+                $("#NoTTFound").hide();
+                $('#ulTacticType li').remove();
+                $.each(data.TacticTypelist, function (i, TactictypeItem) {
+                    //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
+                    //var checked = "";
+                    //var checkedclass = "";
 
-                }
-                else {
-                    $("#TacticTypeAllModule").css("display", "none");
-                    $("#NoTTFound").show();
-                }
-            }
-        }
-     	   var currentRequestforTactics = null;  //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
-        function GetTacticTypelist(Planids, async, OnPlanChange) {
-            
-            var asyncval = false;
-            if (async != undefined && async != 'undefined' && async != '' && async != null) {
-                asyncval = async;
+                    var checkedclass = "";
+                    var checked = "";
+                    //if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                    //    checked = "checked"
+                    //    checkedclass = "close-list"
+                    //}
+                    //if (tacids.length == 0 && IsDeselectAllTactics == false) {
+                    //    checked = "checked"
+                    //    checkedclass = "close-list"
+                    //}
+                    checked = "checked"
+                    checkedclass = "close-list"
+                    ////Added by Maitri Gandhi for #1952
+                    if (Array.isArray(tacids) && tacids.length > 0) {
+                        if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                            checked = ""
+                            checkedclass = ""
+                        }
+                    }
+                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                });
+
             }
             else {
-                asyncval = false;
+                $("#TacticTypeAllModule").css("display", "none");
+                $("#NoTTFound").show();
             }
-                        
-            var tacids = [];
-            $('#ulTacticType li').each(function () {
-                
-                if ($(this).hasClass("close-list") == false) {            
-                    var id = $(this).attr('id').replace('liTT', '')
-                    var Index = tacids.indexOf(id);
-                    if (Index == -1) {
-                        tacids.push(id);
-                    }
+        }
+    }
+    var currentRequestforTactics = null;  //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
+    function GetTacticTypelist(Planids, async, OnPlanChange) {
+
+        var asyncval = false;
+        if (async != undefined && async != 'undefined' && async != '' && async != null) {
+            asyncval = async;
+        }
+        else {
+            asyncval = false;
+        }
+
+        var tacids = [];
+        $('#ulTacticType li').each(function () {
+
+            if ($(this).hasClass("close-list") == false) {
+                var id = $(this).attr('id').replace('liTT', '')
+                var Index = tacids.indexOf(id);
+                if (Index == -1) {
+                    tacids.push(id);
                 }
-            });
-            $('#ulTacticType').html('');
+            }
+        });
+        $('#ulTacticType').html('');
 
-            filters.TacticTypeids = [];
+        filters.TacticTypeids = [];
 
-            currentRequestforTactics = $.ajax({
-                beforeSend: function (x) {
-                    if (!asyncval) {
-                        myApp.showPleaseWait();
-                    }
-                    //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
-                    if (currentRequestforTactics != null) {
-                        currentRequestforTactics.abort();
-                    }
-                    //End
-                },
-                type: "GET",
-                cache: false,
-                async: asyncval,
-                url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
-                data: {
-                    PlanId: Planids.toString()
-                },
-                dataType: "json",
-                success: function (data) {
+        currentRequestforTactics = $.ajax({
+            beforeSend: function (x) {
+                if (!asyncval) {
+                    myApp.showPleaseWait();
+                }
+                //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
+                if (currentRequestforTactics != null) {
+                    currentRequestforTactics.abort();
+                }
+                //End
+            },
+            type: "GET",
+            cache: false,
+            async: asyncval,
+            url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
+            data: {
+                PlanId: Planids.toString()
+            },
+            dataType: "json",
+            success: function (data) {
 
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
                     else {
                         if (data.isSuccess == true) {
@@ -267,7 +267,7 @@
             if ($(obj).is(':checked')) {
                 $("#liTT" + id).addClass("close-list");
             }
-            else {               
+            else {
                 $("#liTT" + id).removeClass("close-list");
             }
 
@@ -301,314 +301,256 @@
                 }
             });
             years = years.slice(0, -1);
-
-            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&fltrYears=' + years, function (response, status, xhr) {
-                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                    //// Call function to redirect on service unavailibility.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            //Modified By Komal Rawal on 19-02-16 to get time frame range when we log out and come back
+             var CheckedSelectedPlans = [];
+            $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+                if ($(this).attr('checked') == 'checked') {
+                    var chkid = $(this).attr("id");
+                    if (chkid != undefined && chkid != 'undefined') {
+                        CheckedSelectedPlans.push(chkid);
+                    }
                 }
-            });//activeMenu parameter added
-
-            switch ($('#ActiveMenu').val().toLowerCase()) {
-                case 'home':
-                    $("#DivButtonsHome").show();
-                    $("#DivButtonsPlanSummary").hide();
-                    break;
-                case 'plan':
-                    $("#DivButtonsHome").hide();
-                    $("#DivButtonsPlanSummary").show();
-                    break;
+            });
+          
+            if (CheckedSelectedPlans.length == 0 || CheckedSelectedPlans == null || activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()')
+            {
+                CheckedSelectedPlans = pid
             }
-            $("#modalMainContainer").hide();
+            //End
+            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + CheckedSelectedPlans + '&fltrYears=' + years, function (response, status, xhr) {
+            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });//activeMenu parameter added
 
-            //   if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
-            //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
-            $('.toggleStatus').click(function () {
-                $(this).hide();
-                $('.toggle-status div').show();
-                showTacticStatus = true;
-                RefreshCurrentTab();
-                gantt.refreshData();
-            });
+        switch ($('#ActiveMenu').val().toLowerCase()) {
+            case 'home':
+                $("#DivButtonsHome").show();
+                $("#DivButtonsPlanSummary").hide();
+                break;
+            case 'plan':
+                $("#DivButtonsHome").hide();
+                $("#DivButtonsPlanSummary").show();
+                break;
+        }
+        $("#modalMainContainer").hide();
 
-            $('.toggleStatusHide').click(function () {
-                $('.toggleStatus').show();
-                $('.toggle-status div').hide();
-                showTacticStatus = false;
-                RefreshCurrentTab();
-                gantt.refreshData();
-            });
-            //// End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
-
-            $('.gantt-padding').removeClass('padding-top0');
-            $('#DivloadPlan').removeClass('no-bottom-border');
-            // }
-            // else {
-            //      $('.gantt-padding').addClass('padding-top0');
-            //     $('#DivloadPlan').addClass('no-bottom-border');
-            // }
-
-
-            // #1780
-            // Created funtion to Select or Clear Plan/Campaign/Program/Tactic
-            // Added By Ashish Mistry On 27-11-2015
-
-            $(document).on("click", ".honeycombbox-icon-gantt", function (e) {
-                CloseClick = false;
-                var entityType = $(this).attr('id').toUpperCase().toString();
-                var task_id = $(this).attr('name1');
-                //gantt.open(task_id);
-                switch (entityType) {
-                    case 'PLAN':
-                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                            $(this).removeClass("honeycombbox-icon-gantt-Active");
-                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                            if (index >= 0) {
-                                ExportSelectedIds.TaskID.splice(index, 1);
-                                ExportSelectedIds.Title.splice(index, 1);
-                                ExportSelectedIds.OwnerName.splice(index, 1);
-                                ExportSelectedIds.TacticType.splice(index, 1);
-                                ExportSelectedIds.ColorCode.splice(index, 1);
-                                ExportSelectedIds.PlanFlag.splice(index, 1);
-                            }
-                            //var innertask = gantt.getChildren(task_id);
-                            //gantt.eachTask(function (task) {
-
-                            //    var tId = task.id;
-
-                            //    var index = innertask.indexOf(tId);
-                            //    if (index >= 0 || tId == task_id) {
-                            //        task.$open = true;
-                            //    }
-                            //});
-                            // gantt.render();
-                        }
-                        else {
-                            $(this).addClass("honeycombbox-icon-gantt-Active");
-                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                            ExportSelectedIds.PlanFlag.push('Calender');
-
-                            //var innertask = gantt.getChildren(task_id);
-                            //gantt.eachTask(function (task) {
-
-                            //    var tId = task.id;
-
-                            //    var index = innertask.indexOf(tId);
-                            //    if (index >= 0 || tId == task_id) {
-                            //        task.$open = true;
-                            //    }
-                            //});
-                            // gantt.render();
-                        }
-                        break;
-                    case 'CAMPAIGN':
-                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                            //var innertask = gantt.getChildren($(this).attr('name1'));
-                            //gantt.eachTask(function (task) {
-                            //    var tId = task.id;
-
-                            //    var index = innertask.indexOf(tId);
-                            //    if (index >= 0 || tId == task_id) {
-                            //        task.$open = true;
-                            //    }
-                            //});
-                            // gantt.render();
-                            $(this).removeClass("honeycombbox-icon-gantt-Active");
-                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                            if (index >= 0) {
-                                ExportSelectedIds.TaskID.splice(index, 1);
-                                ExportSelectedIds.Title.splice(index, 1);
-                                ExportSelectedIds.OwnerName.splice(index, 1);
-                                ExportSelectedIds.TacticType.splice(index, 1);
-                                ExportSelectedIds.ColorCode.splice(index, 1);
-                                ExportSelectedIds.PlanFlag.splice(index, 1);
-                            }
-
-                        }
-                        else {
-                            $(this).addClass("honeycombbox-icon-gantt-Active");
-                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                            ExportSelectedIds.PlanFlag.push('Calender');
-                            //var innertask = gantt.getChildren($(this).attr('name1'));
-                            //gantt.eachTask(function (task) {
-                            //    var tId = task.id;
-
-                            //    var index = innertask.indexOf(tId);
-                            //    if (index >= 0 || tId == task_id) {
-
-                            //        task.$open = true;
-                            //    }
-                            //});
-                            //  gantt.render();
-                        }
-                        break;
-                    case 'PROGRAM':
-                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                            //gantt.open($(this).attr('name1'));
-
-                            //gantt.render();
-                            $(this).removeClass("honeycombbox-icon-gantt-Active");
-                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                            if (index >= 0) {
-                                ExportSelectedIds.TaskID.splice(index, 1);
-                                ExportSelectedIds.Title.splice(index, 1);
-                                ExportSelectedIds.OwnerName.splice(index, 1);
-                                ExportSelectedIds.TacticType.splice(index, 1);
-                                ExportSelectedIds.ColorCode.splice(index, 1);
-                                ExportSelectedIds.PlanFlag.splice(index, 1);
-                            }
-                        }
-                        else {
-                            $(this).addClass("honeycombbox-icon-gantt-Active");
-                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                            ExportSelectedIds.PlanFlag.push('Calender');
-                            //gantt.open($(this).attr('name1'));
-                        }
-                        break;
-                    case 'TACTIC':
-                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
-                            $(this).removeClass("honeycombbox-icon-gantt-Active");
-                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
-                            if (index >= 0) {
-                                ExportSelectedIds.TaskID.splice(index, 1);
-                                ExportSelectedIds.Title.splice(index, 1);
-                                ExportSelectedIds.OwnerName.splice(index, 1);
-                                ExportSelectedIds.TacticType.splice(index, 1);
-                                ExportSelectedIds.ColorCode.splice(index, 1);
-                                ExportSelectedIds.PlanFlag.splice(index, 1);
-                            }
-                            $(this).addClass("honeycombbox-icon-gantt");
-                        }
-                        else {
-                            $(this).addClass("honeycombbox-icon-gantt-Active");
-                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
-                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
-                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
-                            ExportSelectedIds.PlanFlag.push('Calender');
-                        }
-                        break;
-                }
-
-                if ($('.honeycombbox-icon-gantt-Active').length == 0) {
-                    $(".honeycombbox").hide();
-                }
-                else {
-
-                    $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
-                    $(".honeycombbox").show();
-                }
-                //$("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
-            });
-
+        //   if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
+        //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+        $('.toggleStatus').click(function () {
+            $(this).hide();
+            $('.toggle-status div').show();
+            showTacticStatus = true;
+            RefreshCurrentTab();
+            gantt.refreshData();
         });
 
-        function onClickPlanTitle() {
+        $('.toggleStatusHide').click(function () {
+            $('.toggleStatus').show();
+            $('.toggle-status div').hide();
+            showTacticStatus = false;
+            RefreshCurrentTab();
+            gantt.refreshData();
+        });
+        //// End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
 
-            var IsSavedPlan = null;
-
-
-            $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-                CurrentPlanId = $(this).attr('value');
-
-                IsSavedPlan = $("#CurrentPlanId").val();
-
-                $("#CurrentPlanId").val(CurrentPlanId);
-                SelectedPlanTitle = $(this).text();
-                if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                    //Added by Rahul Shah on 22/01/2016 for PL #1898
-                    IsDropdownChange = true;
-                    //Added by Rahul Shah for PL #1898
-
-                    if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
-                        // Modified By Rahul Shah
-                        // Desc :: To resolve the #1952 code review points to mismatch customfield selection count on plan change
-                        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
-                            var id = 0, CheckedCounter = 0;
-                            $(this).find("input[type=checkbox]").each(function () {
-                                $(this).parent().addClass("close-list");
-                                $(this).attr("checked", "checked");
-                                CheckedCounter++;
-                            });
-                            id = this.id.split("-")[1];
-                            $("#SelectedCustomFilter_" + id).text(CheckedCounter);
-                        });
-
-                        $("#accordion-Year li input:checkbox:checked").each(function () {
-                            $(this).removeAttr("checked");
-                            $(this).parent().removeClass("close-list");
-                        });
-
-                        $('#ulSelectedOwner li input:checkbox').each(function () {
-                            if ($(this).attr('id') != '@Sessions.User.UserId') {
-                                $(this).removeAttr("checked");
-                                $(this).parent().removeClass("close-list");
-                            }
-                            else {
-                                $(this).attr("checked", "checked");
-                                $(this).parent().addClass("close-list");
-                            }
-
-                        });
-                        GetTacticTypelist(CurrentPlanId, false);
-                        // Modified By Rahul Shah
-                        // Desc :: To resolve the #1952 code review points to mismatch Tactic Type selection count on plan change.
-                        $('#ulTacticType li input:checkbox').each(function () {
-                            $(this).attr("checked", "checked");
-                            $(this).parent().addClass("close-list");
-                        });
-                        $('#ulStatus li input:checkbox').each(function () {
-                            $(this).attr("checked", "checked");
-                            $(this).parent().addClass("close-list");
-                        });
-                    }
+        $('.gantt-padding').removeClass('padding-top0');
+        $('#DivloadPlan').removeClass('no-bottom-border');
+        // }
+        // else {
+        //      $('.gantt-padding').addClass('padding-top0');
+        //     $('#DivloadPlan').addClass('no-bottom-border');
+        // }
 
 
-                    SaveLastSetofViews();
-                    UpdateSelectedFilters();
-                    if (CurrentPlanId > 0) {
-                        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                            //EditPlanHome();
-                            var pid = $("#CurrentPlanId").val();
+        // #1780
+        // Created funtion to Select or Clear Plan/Campaign/Program/Tactic
+        // Added By Ashish Mistry On 27-11-2015
 
-                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
-                            window.location.href = url;
+        $(document).on("click", ".honeycombbox-icon-gantt", function (e) {
+            CloseClick = false;
+            var entityType = $(this).attr('id').toUpperCase().toString();
+            var task_id = $(this).attr('name1');
+            //gantt.open(task_id);
+            switch (entityType) {
+                case 'PLAN':
+                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                        $(this).removeClass("honeycombbox-icon-gantt-Active");
+                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                        if (index >= 0) {
+                            ExportSelectedIds.TaskID.splice(index, 1);
+                            ExportSelectedIds.Title.splice(index, 1);
+                            ExportSelectedIds.OwnerName.splice(index, 1);
+                            ExportSelectedIds.TacticType.splice(index, 1);
+                            ExportSelectedIds.ColorCode.splice(index, 1);
+                            ExportSelectedIds.PlanFlag.splice(index, 1);
                         }
-                        else {
-                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
-                            window.location.href = url;
+                        //var innertask = gantt.getChildren(task_id);
+                        //gantt.eachTask(function (task) {
+
+                        //    var tId = task.id;
+
+                        //    var index = innertask.indexOf(tId);
+                        //    if (index >= 0 || tId == task_id) {
+                        //        task.$open = true;
+                        //    }
+                        //});
+                        // gantt.render();
+                    }
+                    else {
+                        $(this).addClass("honeycombbox-icon-gantt-Active");
+                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                        ExportSelectedIds.PlanFlag.push('Calender');
+
+                        //var innertask = gantt.getChildren(task_id);
+                        //gantt.eachTask(function (task) {
+
+                        //    var tId = task.id;
+
+                        //    var index = innertask.indexOf(tId);
+                        //    if (index >= 0 || tId == task_id) {
+                        //        task.$open = true;
+                        //    }
+                        //});
+                        // gantt.render();
+                    }
+                    break;
+                case 'CAMPAIGN':
+                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                        //var innertask = gantt.getChildren($(this).attr('name1'));
+                        //gantt.eachTask(function (task) {
+                        //    var tId = task.id;
+
+                        //    var index = innertask.indexOf(tId);
+                        //    if (index >= 0 || tId == task_id) {
+                        //        task.$open = true;
+                        //    }
+                        //});
+                        // gantt.render();
+                        $(this).removeClass("honeycombbox-icon-gantt-Active");
+                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                        if (index >= 0) {
+                            ExportSelectedIds.TaskID.splice(index, 1);
+                            ExportSelectedIds.Title.splice(index, 1);
+                            ExportSelectedIds.OwnerName.splice(index, 1);
+                            ExportSelectedIds.TacticType.splice(index, 1);
+                            ExportSelectedIds.ColorCode.splice(index, 1);
+                            ExportSelectedIds.PlanFlag.splice(index, 1);
+                        }
+
+                    }
+                    else {
+                        $(this).addClass("honeycombbox-icon-gantt-Active");
+                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                        ExportSelectedIds.PlanFlag.push('Calender');
+                        //var innertask = gantt.getChildren($(this).attr('name1'));
+                        //gantt.eachTask(function (task) {
+                        //    var tId = task.id;
+
+                        //    var index = innertask.indexOf(tId);
+                        //    if (index >= 0 || tId == task_id) {
+
+                        //        task.$open = true;
+                        //    }
+                        //});
+                        //  gantt.render();
+                    }
+                    break;
+                case 'PROGRAM':
+                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                        //gantt.open($(this).attr('name1'));
+
+                        //gantt.render();
+                        $(this).removeClass("honeycombbox-icon-gantt-Active");
+                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                        if (index >= 0) {
+                            ExportSelectedIds.TaskID.splice(index, 1);
+                            ExportSelectedIds.Title.splice(index, 1);
+                            ExportSelectedIds.OwnerName.splice(index, 1);
+                            ExportSelectedIds.TacticType.splice(index, 1);
+                            ExportSelectedIds.ColorCode.splice(index, 1);
+                            ExportSelectedIds.PlanFlag.splice(index, 1);
                         }
                     }
+                    else {
+                        $(this).addClass("honeycombbox-icon-gantt-Active");
+                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                        ExportSelectedIds.PlanFlag.push('Calender');
+                        //gantt.open($(this).attr('name1'));
+                    }
+                    break;
+                case 'TACTIC':
+                    if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                        $(this).removeClass("honeycombbox-icon-gantt-Active");
+                        var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                        if (index >= 0) {
+                            ExportSelectedIds.TaskID.splice(index, 1);
+                            ExportSelectedIds.Title.splice(index, 1);
+                            ExportSelectedIds.OwnerName.splice(index, 1);
+                            ExportSelectedIds.TacticType.splice(index, 1);
+                            ExportSelectedIds.ColorCode.splice(index, 1);
+                            ExportSelectedIds.PlanFlag.splice(index, 1);
+                        }
+                        $(this).addClass("honeycombbox-icon-gantt");
+                    }
+                    else {
+                        $(this).addClass("honeycombbox-icon-gantt-Active");
+                        ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                        ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                        ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                        ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                        ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                        ExportSelectedIds.PlanFlag.push('Calender');
+                    }
+                    break;
+            }
 
-                }
+            if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+                $(".honeycombbox").hide();
+            }
+            else {
 
-            });
+                $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+                $(".honeycombbox").show();
+            }
+            //$("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+        });
+
+    });
+
+    function onClickPlanTitle() {
+
+        var IsSavedPlan = null;
 
 
-            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()' && $('#IsPlanSelector').val().toLowerCase() == "true") {
+        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            CurrentPlanId = $(this).attr('value');
 
+            IsSavedPlan = $("#CurrentPlanId").val();
+
+            $("#CurrentPlanId").val(CurrentPlanId);
+            SelectedPlanTitle = $(this).text();
+            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                //Added by Rahul Shah on 22/01/2016 for PL #1898
+                IsDropdownChange = true;
                 //Added by Rahul Shah for PL #1898
 
-
-                IsSavedPlan = '@PreviousPlanID.ToString()';
-
-                if (IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) {
-
+                if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
                     // Modified By Rahul Shah
                     // Desc :: To resolve the #1952 code review points to mismatch customfield selection count on plan change
                     $("#divCustomFieldsFilter").find("div.accordion").each(function () {
@@ -616,16 +558,21 @@
                         $(this).find("input[type=checkbox]").each(function () {
                             $(this).parent().addClass("close-list");
                             $(this).attr("checked", "checked");
-                            CheckedCounter++;
                         });
-                        id = this.id.split("-")[1];
-                        $("#SelectedCustomFilter_" + id).text(CheckedCounter);
+                        //Modified to optimize the code by Maitri Gandhi
+                        CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                        id = this.id;
+                        if (id != null && id != "" && id.indexOf("-") > -1) {
+                            id = this.id.split("-")[1];
+                            $("#SelectedCustomFilter_" + id).text(CheckedCounter);
+                        }
                     });
+
                     $("#accordion-Year li input:checkbox:checked").each(function () {
                         $(this).removeAttr("checked");
                         $(this).parent().removeClass("close-list");
                     });
-                    //Modified by komal rawal Logged in owner did not come selected.
+
                     $('#ulSelectedOwner li input:checkbox').each(function () {
                         if ($(this).attr('id') != '@Sessions.User.UserId') {
                             $(this).removeAttr("checked");
@@ -644,244 +591,318 @@
                         $(this).attr("checked", "checked");
                         $(this).parent().addClass("close-list");
                     });
-
-
                     $('#ulStatus li input:checkbox').each(function () {
                         $(this).attr("checked", "checked");
                         $(this).parent().addClass("close-list");
                     });
-
                 }
-                IsPlanChange = true;
+
+
                 SaveLastSetofViews();
                 UpdateSelectedFilters();
-            }
+                if (CurrentPlanId > 0) {
+                    if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                        //EditPlanHome();
+                        var pid = $("#CurrentPlanId").val();
 
-        }
-
-        var ids = [];
-        var IsDeselectAll = false
-        var currentRequest = null;   //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
-        function GetOwnerListForFilter(Planids, async, OnPlanChange) {
-
-            var asyncval = false;
-            if (async != undefined && async != 'undefined' && async != '' && async != null) {
-                asyncval = async;
-            }
-            else {
-                asyncval = false;
-            }
-            //Modified by komal Rawal to deselect all Owners if there are no plans selected.
-            var SelectedPlanCount = 0;
-           
-            $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
-                if ($(this).attr('checked') == 'checked') {
-                    SelectedPlanCount++;
-                  
-                }
-            });
-
-           
-            if (SelectedPlanCount == 0)
-            {
-                IsDeselectAll = true;
-            }
-            else if(SelectedPlanCount > 1 && filters.OwnerIds != "")
-            {
-                IsDeselectAll = false;
-            }
-          //End
-           
-            //Added by Rahul Shah on 06/01/2016 for PL #1854
-            if (IsDeselectAll == true) {
-                ids = [];
-            }
-
-            $('#ulSelectedOwner li').each(function () {
-                if ($(this).hasClass("close-list")) {
-                    var id = $(this).attr('id').replace('liOwner', '')
-                    var Index = ids.indexOf(id);
-                    if (Index == -1) {
-                        ids.push(id);
-                    }
-                }
-
-            });
-
-            $('#ulSelectedOwner').html('');
-
-
-            if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
-
-                filters.OwnerIds = [];
-            }
-
-            currentRequest = $.ajax({
-                beforeSend: function (x) {
-                    if (!asyncval) {
-                        myApp.showPleaseWait();
-                    }
-                    //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
-                    if (currentRequest != null) {
-                        currentRequest.abort();
-                    }
-                },
-                type: "GET",
-                cache: false,
-                async: asyncval,
-                url: '@Url.Action("GetOwnerListForFilter", "Home")',
-                data: {
-                    PlanId: Planids.toString(),
-                    ViewBy: type,
-                    ActiveMenu: $('#ActiveMenu').val()
-                },
-                dataType: "json",
-                success: function (data) {
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
+                        window.location.href = url;
                     }
                     else {
-                        if (data.isSuccess == true) {
-                            var LoggedInOwner = data.LoggedInUser.OwnerId;
-                            if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
-                                OwnerCount = data.AllowedOwner.length;
-                                if (OwnerCount > 0) {
-                                    var IsOwnerPresent = false;
-                                    var checked = "";
-                                    var checkedclass = "";
-                                    $("#ulOwnerAllModule").css("display", "block");
-                                    $("#NoOwnerFound").hide();
-                                    $('#ulSelectedOwner li').remove();
-                                    $.each(data.AllowedOwner, function (i, OwnerItem) {
-                                       
-                                        //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
-                                        checked = "";
-                                        checkedclass = "";
+                        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
+                        window.location.href = url;
+                    }
+                }
 
-                                        if (OwnerItem.OwnerId == LoggedInOwner) {
+            }
 
-                                            IsOwnerPresent = true;
-                                            //Modified BY komal when logged in owner deselect and change plan it should come deselected
+        });
+
+
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()' && $('#IsPlanSelector').val().toLowerCase() == "true") {
+
+            //Added by Rahul Shah for PL #1898
+
+
+            IsSavedPlan = '@PreviousPlanID.ToString()';
+
+            if (IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null) {
+
+                // Modified By Rahul Shah
+                // Desc :: To resolve the #1952 code review points to mismatch customfield selection count on plan change
+                $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+                    var id = 0, CheckedCounter = 0;
+                    $(this).find("input[type=checkbox]").each(function () {
+                        $(this).parent().addClass("close-list");
+                        $(this).attr("checked", "checked");
+                    });
+                    //Modified to optimize the code by Maitri Gandhi
+                    CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                        $("#SelectedCustomFilter_" + id).text(CheckedCounter);
+                    }
+                });
+                $("#accordion-Year li input:checkbox:checked").each(function () {
+                    $(this).removeAttr("checked");
+                    $(this).parent().removeClass("close-list");
+                });
+                //Modified by komal rawal Logged in owner did not come selected.
+                $('#ulSelectedOwner li input:checkbox').each(function () {
+                    if ($(this).attr('id') != '@Sessions.User.UserId') {
+                        $(this).removeAttr("checked");
+                        $(this).parent().removeClass("close-list");
+                    }
+                    else {
+                        $(this).attr("checked", "checked");
+                        $(this).parent().addClass("close-list");
+                    }
+
+                });
+                GetTacticTypelist(CurrentPlanId, false);
+                // Modified By Rahul Shah
+                // Desc :: To resolve the #1952 code review points to mismatch Tactic Type selection count on plan change.
+                $('#ulTacticType li input:checkbox').each(function () {
+                    $(this).attr("checked", "checked");
+                    $(this).parent().addClass("close-list");
+                });
+
+
+                $('#ulStatus li input:checkbox').each(function () {
+                    $(this).attr("checked", "checked");
+                    $(this).parent().addClass("close-list");
+                });
+
+            }
+            IsPlanChange = true;
+            SaveLastSetofViews();
+            UpdateSelectedFilters();
+        }
+
+    }
+
+    var ids = [];
+    var IsDeselectAll = false
+    var currentRequest = null;   //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
+    function GetOwnerListForFilter(Planids, async, OnPlanChange) {
+
+        var asyncval = false;
+        if (async != undefined && async != 'undefined' && async != '' && async != null) {
+            asyncval = async;
+        }
+        else {
+            asyncval = false;
+        }
+        //Modified by komal Rawal to deselect all Owners if there are no plans selected.
+        var SelectedPlanCount = 0;
+
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                SelectedPlanCount++;
+
+            }
+        });
+
+
+        if (SelectedPlanCount == 0) {
+            IsDeselectAll = true;
+        }
+        else if (SelectedPlanCount > 1 && filters.OwnerIds != "") {
+            IsDeselectAll = false;
+        }
+        //End
+
+        //Added by Rahul Shah on 06/01/2016 for PL #1854
+        if (IsDeselectAll == true) {
+            ids = [];
+        }
+
+        $('#ulSelectedOwner li').each(function () {
+            if ($(this).hasClass("close-list")) {
+                var id = $(this).attr('id').replace('liOwner', '')
+                var Index = ids.indexOf(id);
+                if (Index == -1) {
+                    ids.push(id);
+                }
+            }
+
+        });
+
+        $('#ulSelectedOwner').html('');
+
+
+        if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
+
+            filters.OwnerIds = [];
+        }
+
+        currentRequest = $.ajax({
+            beforeSend: function (x) {
+                if (!asyncval) {
+                    myApp.showPleaseWait();
+                }
+                //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
+                if (currentRequest != null) {
+                    currentRequest.abort();
+                }
+            },
+            type: "GET",
+            cache: false,
+            async: asyncval,
+            url: '@Url.Action("GetOwnerListForFilter", "Home")',
+            data: {
+                PlanId: Planids.toString(),
+                ViewBy: type,
+                ActiveMenu: $('#ActiveMenu').val()
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
+                else {
+                    if (data.isSuccess == true) {
+                        var LoggedInOwner = data.LoggedInUser.OwnerId;
+                        if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
+                            OwnerCount = data.AllowedOwner.length;
+                            if (OwnerCount > 0) {
+                                var IsOwnerPresent = false;
+                                var checked = "";
+                                var checkedclass = "";
+                                $("#ulOwnerAllModule").css("display", "block");
+                                $("#NoOwnerFound").hide();
+                                $('#ulSelectedOwner li').remove();
+                                $.each(data.AllowedOwner, function (i, OwnerItem) {
+
+                                    //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
+                                    checked = "";
+                                    checkedclass = "";
+
+                                    if (OwnerItem.OwnerId == LoggedInOwner) {
+
+                                        IsOwnerPresent = true;
+                                        //Modified BY komal when logged in owner deselect and change plan it should come deselected
                                         if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(OwnerItem.OwnerId) >= 0) {
-                                                checked = "checked"
-                                                checkedclass = "close-list"
-                                            }
-                                        }
-                                        //Added by Rahul Shah on 06/01/2016 for PL #1854
-                                        if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
                                             checked = "checked"
                                             checkedclass = "close-list"
                                         }
-
-
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
-                                        // filters.OwnerIds.push(OwnerItem.OwnerId);
-                                    });
-
-
-                                  
-                                    //Modified by Nishant to bring the owner name in the list even if they dont own any tactic
-                                    if (IsOwnerPresent == false) {
-
-                                        // Modified By Nishant Sheth
-                                        // Desc:: To resolve the #1790 observation
-                                        //Modified by Komal rawal to check if logged in owner is deselected then dont select.
-                                        if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(LoggedInOwner) >= 0) {
-                                            checked = "checked"
-                                            checkedclass = "close-list"
-                                        }
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                    }
+                                    //Added by Rahul Shah on 06/01/2016 for PL #1854
+                                    if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
+                                        checked = "checked"
+                                        checkedclass = "close-list"
                                     }
 
-                                    //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
-                                    var OwnerIds = [];
-                                    $('#ulSelectedOwner li').each(function () {
-                                        var id = $(this).attr('id').replace('liOwner', '')
-                                        OwnerIds.push(id);
-                                    });
-                                    var listofindex = [];
-                                    for (i = 0; i < ids.length; i++) {
-                                        var index = OwnerIds.indexOf(ids[i]);
-                                        if (!(index >= 0)) {
-                                            listofindex.push(ids[i]);
 
-                                        }
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                    // filters.OwnerIds.push(OwnerItem.OwnerId);
+                                });
+
+
+
+                                //Modified by Nishant to bring the owner name in the list even if they dont own any tactic
+                                if (IsOwnerPresent == false) {
+
+                                    // Modified By Nishant Sheth
+                                    // Desc:: To resolve the #1790 observation
+                                    //Modified by Komal rawal to check if logged in owner is deselected then dont select.
+                                    if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(LoggedInOwner) >= 0) {
+                                        checked = "checked"
+                                        checkedclass = "close-list"
                                     }
-                                    $.each(listofindex, function (i) {
-                                        var Index = ids.indexOf(listofindex[i])
-                                        if (Index >= 0) {
-                                            ids.splice(Index, 1);
-                                        }
-                                    });
-
-                                    //End
-
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
                                 }
-                                else {
-                                    $("#ulOwnerAllModule").css("display", "none");
-                                    $("#NoOwnerFound").show();
+
+                                //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
+                                var OwnerIds = [];
+                                $('#ulSelectedOwner li').each(function () {
+                                    var id = $(this).attr('id').replace('liOwner', '')
+                                    OwnerIds.push(id);
+                                });
+                                var listofindex = [];
+                                for (i = 0; i < ids.length; i++) {
+                                    var index = OwnerIds.indexOf(ids[i]);
+                                    if (!(index >= 0)) {
+                                        listofindex.push(ids[i]);
+
+                                    }
                                 }
+                                $.each(listofindex, function (i) {
+                                    var Index = ids.indexOf(listofindex[i])
+                                    if (Index >= 0) {
+                                        ids.splice(Index, 1);
+                                    }
+                                });
+
+                                //End
+
                             }
                             else {
                                 $("#ulOwnerAllModule").css("display", "none");
                                 $("#NoOwnerFound").show();
                             }
-                            checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
-                            TotalOwnercount = $("#ulSelectedOwner li").length;
-                            $('#tOwnercount').text('/' + TotalOwnercount);
-                            $('#cOwnercount').text(checkedOwnercount);
                         }
-                        //if (GetLastview == true)
-                        //{
-                        //    LastSetofowners();
-                        //}
-
+                        else {
+                            $("#ulOwnerAllModule").css("display", "none");
+                            $("#NoOwnerFound").show();
+                        }
+                        checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
+                        TotalOwnercount = $("#ulSelectedOwner li").length;
+                        $('#tOwnercount').text('/' + TotalOwnercount);
+                        $('#cOwnercount').text(checkedOwnercount);
                     }
-                    async = true;
-                    currentRequest = null;
+                    //if (GetLastview == true)
+                    //{
+                    //    LastSetofowners();
+                    //}
+
                 }
-    
+                async = true;
+                currentRequest = null;
+            }
+
+        });
+    }
+
+    function populateNFActivity(items, id) {
+        var $dropdown = $("#" + id);
+        var $html = '';
+        if (items.length > 0) {
+            $.each(items, function (index, time) {
+
+                if (time.Selected) {
+                    $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
+                    Currenttime = time.Value;
+                } else {
+                    $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                }
             });
         }
+        $dropdown.append($html);
+    }
 
-        function populateNFActivity(items, id) {
-            var $dropdown = $("#" + id);
-            var $html = '';
-            if (items.length > 0) {
-                $.each(items, function (index, time) {
-
-                    if (time.Selected) {
-                        $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
-                        Currenttime = time.Value;
-                    } else {
-                        $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
-                    }
-                });
-            }
-            $dropdown.append($html);
+    function populateNF(items, id) {
+        var $dropdown = $("#" + id);
+        var $html = '';
+        if (items.length > 0) {
+            $.each(items, function (index, plan) {
+                if (plan.Selected) {
+                    SelectedPlanTitle = plan.Text;
+                    $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
+                    CurrentPlanId = plan.Value;
+                    $("#CurrentPlanId").val(CurrentPlanId);
+                } else {
+                    $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
+                }
+            });
+        } else {
+            $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
+            CurrentPlanId = 0;
+            $("#CurrentPlanId").val(CurrentPlanId);
         }
-
-        function populateNF(items, id) {
-            var $dropdown = $("#" + id);
-            var $html = '';
-            if (items.length > 0) {
-                $.each(items, function (index, plan) {
-                    if (plan.Selected) {
-                        SelectedPlanTitle = plan.Text;
-                        $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
-                        CurrentPlanId = plan.Value;
-                        $("#CurrentPlanId").val(CurrentPlanId);
-                    } else {
-                        $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
-                    }
-                });
-            } else {
-                $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
-                CurrentPlanId = 0;
-                $("#CurrentPlanId").val(CurrentPlanId);
-            }
-            $dropdown.append($html);
-        }
+        $dropdown.append($html);
+    }
 
 
     </script>
@@ -2344,7 +2365,7 @@
             GetSelectedPlanNo = 1;
         }
         $.ajax({
-            type: "GET",
+            type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
             cache: false,
             async: false,
             url: '@Url.Action("SaveLastSetofViews", "Home")',
@@ -4854,7 +4875,7 @@
         }
         if (Planid != 0) {
             $.ajax({
-                type: "GET",
+                type: "POST",//Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
                 cache: false,
                 url: '@Url.Action("GetViewControlDetail", "Home")',
                 data: {
@@ -7992,7 +8013,13 @@ function () {
         BulkOwnerOperation(false);
         //Modified By komal Rawal to solve issue of owner list function getting called twice.
         if (activeMenu.toLowerCase() == 'home') {
-        LoadPlanData(null);
+            LoadPlanData(null);
+            //Added by Maitri Gandhi to clear plan name
+            $("#ulSelectedPlans li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
         }
         else
         {

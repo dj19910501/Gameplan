@@ -155,7 +155,7 @@
                 }
     $.ajax(
     {
-        type: "GET",
+        type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
         cache: false,
         url: newUrl,
         data: {
@@ -316,7 +316,7 @@ function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam,Cid, OId,Ta
     }
     $.ajax(
     {
-        type: "GET",
+        type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
         cache: false,
         url: newUrl,
         data: {

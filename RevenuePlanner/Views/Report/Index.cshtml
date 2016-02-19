@@ -1207,7 +1207,7 @@ $('#cYearcount').text(checkedYearcount);
         var ParentCustomFieldsIds = filters.parentCustomFieldsIds;
 
         $.ajax({
-            type: "GET",
+            type: "POST",//Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
             cache: false,
             async: false,
             url: '@Url.Action("SaveLastSetofViews", "Home")',
@@ -2902,7 +2902,14 @@ $("#BtnShareReport").click(function () {
         }
 
         function ClearAllPreset() {
-            BulkPlanOperation(false);
+
+            //BulkPlanOperation(false);
+            $("#ulSelectedPlans li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+
             BulkTTOperation(false);
             //Added by kausha for ticket no #1836
             BulkOwnerOperation(false);

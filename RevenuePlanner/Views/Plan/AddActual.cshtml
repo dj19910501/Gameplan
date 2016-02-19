@@ -833,10 +833,14 @@
                     $(this).find("input[type=checkbox]").each(function () {
                         $(this).parent().addClass("close-list");
                         $(this).attr("checked", "checked");
-                        CheckedCounter++;
                     });
-                    id = this.id.split("-")[1];
-                    $("#SelectedCustomFilter_" + id).text(CheckedCounter);
+                    //Modified to optimize the code by Maitri Gandhi
+                    CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                        $("#SelectedCustomFilter_" + id).text(CheckedCounter);
+                    }
                 });
                 $("#accordion-Year li input:checkbox:checked").each(function () {
                     $(this).removeAttr("checked");
