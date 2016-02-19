@@ -40,7 +40,9 @@ namespace RevenuePlanner
                         "~/Scripts/js/jquery.slimscroll_min.js",
                         "~/Scripts/js/jquery.slidepanel_min.js",
                         "~/Scripts/js/scripts.js",
-                        "~/Scripts/summernote_min.js"
+                        "~/Scripts/summernote_min.js",
+                        "~/Scripts/js/mixpanel.init.js",
+                        "~/Scripts/js/mixpanel.login.js" //ensure this script is the last called
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/GetJS").Include(
@@ -66,7 +68,9 @@ namespace RevenuePlanner
                         "~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js",
                         "~/Scripts/js/errorhandler.js",
                         "~/Scripts/dhtmlxchart.js",
-                        "~/Scripts/js/ganttExportapi.js"
+                        "~/Scripts/js/ganttExportapi.js",
+                        "~/Scripts/js/mixpanel.init.js",
+                        "~/Scripts/js/mixpanel.layout.js"
                         ));
             bundles.Add(new ScriptBundle("~/bundles/GetJSReport").Include(
                        "~/Scripts/js/jquery.slimscroll.js",

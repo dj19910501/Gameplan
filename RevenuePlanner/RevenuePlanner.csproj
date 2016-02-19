@@ -633,6 +633,10 @@
     <Content Include="Scripts\js\DHTMLX\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\js\errorhandler.js" />
     <Content Include="Scripts\js\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\js\mixpanel.init.js" />
+    <Content Include="Scripts\js\mixpanel.inspect.js" />
+    <Content Include="Scripts\js\mixpanel.layout.js" />
+    <Content Include="Scripts\js\mixpanel.login.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
