@@ -3974,8 +3974,9 @@ namespace RevenuePlanner.Controllers
                             {
 
                                 // Added by Viral Kadiya related to PL ticket #2002: When we create a new tactic, then the integration need to look at the model. If under model integration, there are any integration mapped then the switched for these needs to be turned on as well.
-                                int sfdcInstanceId = 0, elqaInstanceId = 0;
-                                #region "Get SFDC & Elqoua InstanceId from Model by Plan"
+                                // WorkFront added 19 Feb 2016 for PL#2002. On tactic creation, look at WorkFront integration and set tactic defaults in the same manner as Salesforce and Eloqua
+                                int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
+                                #region "Get SFDC, Elqoua, & WorkFront InstanceId from Model by Plan"
                                 if(planid >0)
                                 {
                                     Model objModel = new Model();
@@ -3991,6 +3992,8 @@ namespace RevenuePlanner.Controllers
                                                 sfdcInstanceId = objModel.IntegrationInstanceId.Value;
                                             if (objModel.IntegrationInstanceEloquaId.HasValue)
                                                 elqaInstanceId = objModel.IntegrationInstanceId.Value;
+                                            if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
+                                                workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
                                         }
                                     }
                                 }
@@ -4033,6 +4036,8 @@ namespace RevenuePlanner.Controllers
                                         pcpobj.IsSyncSalesForce = true;         // Set SFDC setting to True if Salesforce instance mapped under Tactic's Model.
                                     if (elqaInstanceId > 0)
                                         pcpobj.IsSyncEloqua = true;             // Set Eloqua setting to True if Eloqua instance mapped under Tactic's Model.
+                                    if (workfrontInstanceId > 0)
+                                        pcpobj.IsSyncWorkFront = true;          // Set WorkFront setting to True if WorkFront instance mapped under Tactic's Model.
                                 }
                                 db.Entry(pcpobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
