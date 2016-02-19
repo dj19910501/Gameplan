@@ -14056,8 +14056,9 @@ left:auto !important;
 
 /*#1952,#1953,#1954*/
  #ulSelectedFilter{
-    height: 275px;
+    max-height: 275px;
     overflow: auto;
+    padding: 0 18px;
 }
 
 #ulSelectedFilter li{
@@ -14082,15 +14083,19 @@ span.filter-count{float:right;}
 
 /* #1952 */
 #accordion-SelectedFilter{
-    background: #fff none repeat scroll 0 0;
+    background: #f2f2f2 none repeat scroll 0 0;
     border-radius: 6px;
-    padding: 5px 10px;
+    /*padding: 5px 10px;*/
     margin-bottom:20px !important;
+    border: 1px solid #d3d3d3;
 }
 
 .sidebar-section #accordion-SelectedFilter .accordion-heading {
     border-bottom: 0 none !important;
+     background: #e6e6e6 none repeat scroll 0 0;
+    border-radius: 6px;
 }
+.sidebar-section #accordion-SelectedFilter .accordion-heading h2{margin: 0 10px 0 20px;}
 /*by bheru mehta 1686 09-1-2016 end*/
 
 /************************************************ Responsive css start here **********************************************************/
