@@ -3288,14 +3288,14 @@ namespace Integration.Salesforce
                             // To get Total Tactic count and insert unique record into _lstSyncError list, below list we added EntityId as PlanTactic.PlanTacticId instead of planCampaign.PlanCampaignId
                             _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Campaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             _isResultError = true;
                             string exMessage = "System error occurred while creating campaign \"" + planCampaign.Title + "\"."; //Common.GetInnermostException(e);
                             _parentId = string.Empty;
                             sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                             instanceLogCampaign.Status = StatusResult.Error.ToString();
-                            instanceLogCampaign.ErrorDescription = exMessage;
+                            instanceLogCampaign.ErrorDescription = "System error occurred while creating campaign \"" + planCampaign.Title + "\":" + Common.GetInnermostException(ex) + "\": " + ex.StackTrace;
                             // To get Total Tactic count and insert unique record into _lstSyncError list, below list we added EntityId as PlanTactic.PlanTacticId instead of planCampaign.PlanCampaignId
                             _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Campaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                         }
@@ -3354,14 +3354,14 @@ namespace Integration.Salesforce
                             // To get Total Tactic count and insert unique record into _lstSyncError list, below list we added EntityId as PlanTactic.PlanTacticId instead of planProgram.PlanProgramId
                             _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Program, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             _isResultError = true;
                             string exMessage = "System error occurred while creating program \"" + planProgram.Title + "\". ";//Common.GetInnermostException(e);
                             _parentId = string.Empty;
                             sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                             instanceLogProgram.Status = StatusResult.Error.ToString();
-                            instanceLogProgram.ErrorDescription = exMessage;
+                            instanceLogProgram.ErrorDescription = "System error occurred while creating program \"" + planProgram.Title + "\": " + Common.GetInnermostException(ex) + "\": " + ex.StackTrace;
                             // To get Total Tactic count and insert unique record into _lstSyncError list, below list we added EntityId as PlanTactic.PlanTacticId instead of planProgram.PlanProgramId
                             _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Program, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                         }
@@ -3441,14 +3441,14 @@ namespace Integration.Salesforce
                         instanceLogTactic.ErrorDescription = exMessage;
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage , Enums.SyncStatus.Error, DateTime.Now));
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         _isResultError = true;
                         string exMessage = "System error occurred while creating tactic \"" + planTactic.Title + "\".";// Common.GetInnermostException(e);
                         _parentId = string.Empty;
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = exMessage; //"System error occurred while syncing tactic \"" + planTactic.Title + "\": " + exMessage;
+                        instanceLogTactic.ErrorDescription = "System error occurred while syncing tactic \"" + planTactic.Title + "\": " + Common.GetInnermostException(ex);
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
 
@@ -3543,13 +3543,13 @@ namespace Integration.Salesforce
                         instanceLogTactic.ErrorDescription = exMessage;
                     }
                 }
-                catch (Exception )
+                catch (Exception ex)
                 {
                     _isResultError = true;
                     string exMessage = "System error occurred while updating tactic \"" + planTactic.Title + "\". ";//Common.GetInnermostException(e);
                     _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage  , Enums.SyncStatus.Error, DateTime.Now));
                     instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = exMessage;
+                    instanceLogTactic.ErrorDescription = "System error occurred while updating tactic \"" + planTactic.Title + "\": " + Common.GetInnermostException(ex) + "\": " + ex.StackTrace;
                 }
                 instanceLogTactic.CreatedBy = this._userId;
                 instanceLogTactic.CreatedDate = DateTime.Now;
@@ -3701,14 +3701,14 @@ namespace Integration.Salesforce
                             // To get Total Tactic count and insert unique record into _lstSyncError list, below list we added EntityId as planIMPTactic.ImprovementPlanTacticId instead of planIMPCampaign.ImprovementPlanCampaignId
                             _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementCampaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing improvement campaign \"" + planIMPCampaign.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             _isResultError = true;
                             string exMessage = "System error occurred while creating Improvement Campaign \"" + planIMPCampaign.Title + "\".";// Common.GetInnermostException(e);
                             _parentId = string.Empty;
                             sb.Append("Tactic: " + planIMPCampaign.ImprovementPlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                             instanceLogCampaign.Status = StatusResult.Error.ToString();
-                            instanceLogCampaign.ErrorDescription = exMessage; //"System error occurred while syncing tactic \"" + planTactic.Title + "\": " + exMessage;
+                            instanceLogCampaign.ErrorDescription = "System error occurred while creating Improvement Campaign \"" + planIMPCampaign.Title + "\":" + Common.GetInnermostException(ex) + ex.StackTrace;
                             // To get Total Tactic count and insert unique record into _lstSyncError list, below list we added EntityId as planIMPTactic.ImprovementPlanTacticId instead of planIMPCampaign.ImprovementPlanCampaignId
                             _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementCampaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                         }
@@ -3747,14 +3747,14 @@ namespace Integration.Salesforce
                             // To get Total Tactic count and insert unique record into _lstSyncError list, below list we added EntityId as planIMPTactic.ImprovementPlanTacticId instead of planIMPProgram.ImprovementPlanProgramId
                             _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementProgram, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             _isResultError = true;
                             string exMessage = "System error occurred while creating Improvement Program \"" + planIMPProgram.Title + "\".";// Common.GetInnermostException(e);
                             _parentId = string.Empty;
                             sb.Append("Tactic: " + planIMPProgram.ImprovementPlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                             instanceLogProgram.Status = StatusResult.Error.ToString();
-                            instanceLogProgram.ErrorDescription = exMessage; //"System error occurred while syncing tactic \"" + planTactic.Title + "\": " + exMessage;
+                            instanceLogProgram.ErrorDescription = "System error occurred while creating Improvement Program \"" + planIMPProgram.Title + "\":" + Common.GetInnermostException(ex) + ex.StackTrace;
                             // To get Total Tactic count and insert unique record into _lstSyncError list, below list we added EntityId as planIMPTactic.ImprovementPlanTacticId instead of planIMPProgram.ImprovementPlanProgramId
                             _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementProgram, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                         }
@@ -3815,14 +3815,14 @@ namespace Integration.Salesforce
                         instanceLogTactic.ErrorDescription = exMessage;
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementTactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         _parentId = string.Empty;
                         _isResultError = true;
                         string exMessage = "System error occurred while creating Improvement tactic \"" + planIMPTactic.Title + "\".";
                         sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = exMessage;
+                        instanceLogTactic.ErrorDescription = "System error occurred while creating Improvement tactic \"" + planIMPTactic.Title + "\":" + Common.GetInnermostException(ex) + ex.StackTrace;
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementTactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
                     instanceLogTactic.CreatedBy = this._userId;
@@ -3904,14 +3904,14 @@ namespace Integration.Salesforce
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementTactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     _parentId = string.Empty;
                     _isResultError = true;
                     string exMessage = "System error occurred while updating Improvement tactic \"" + planIMPTactic.Title + "\".";
                     sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                     instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = exMessage;
+                    instanceLogTactic.ErrorDescription = "System error occurred while updating Improvement tactic \"" + planIMPTactic.Title + "\":" + Common.GetInnermostException(ex) + ex.StackTrace;
                     _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementTactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                 }
                 instanceLogTactic.CreatedBy = this._userId;
@@ -4290,38 +4290,56 @@ namespace Integration.Salesforce
 
         private string CreateCampaign(Plan_Campaign planCampaign)
         {
-            Dictionary<string, object> campaign = GetCampaign(planCampaign);
-
-            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            if (_mappingCampaign.ContainsKey("ActivityType"))
+            string campaignId = string.Empty;
+            try
             {
-                string activityType = Enums.EntityType.Campaign.ToString();
-                string ActivityTypeMappedValue = _mappingCampaign["ActivityType"].ToString();
-                campaign.Add(ActivityTypeMappedValue, activityType);
-            }
-            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                Dictionary<string, object> campaign = GetCampaign(planCampaign);
 
-            string campaignId = _client.Create(objectName, campaign);
+                //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                if (_mappingCampaign.ContainsKey("ActivityType"))
+                {
+                    string activityType = Enums.EntityType.Campaign.ToString();
+                    string ActivityTypeMappedValue = _mappingCampaign["ActivityType"].ToString();
+                    campaign.Add(ActivityTypeMappedValue, activityType);
+                }
+                //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+
+                campaignId = _client.Create(objectName, campaign);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             return campaignId;
         }
 
         private string CreateProgram(Plan_Campaign_Program planProgram)
         {
-            Dictionary<string, object> program = GetProgram(planProgram, Enums.Mode.Create);
-
-            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            if (_mappingProgram.ContainsKey("ActivityType"))
+            Dictionary<string, object> program = new Dictionary<string, object>();
+            string programId = string.Empty;
+            try
             {
-                string activityType = Enums.EntityType.Program.ToString();
-                program.Add(_mappingProgram["ActivityType"].ToString(), activityType);
+                program = GetProgram(planProgram, Enums.Mode.Create);
+
+                //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                if (_mappingProgram.ContainsKey("ActivityType"))
+                {
+                    string activityType = Enums.EntityType.Program.ToString();
+                    program.Add(_mappingProgram["ActivityType"].ToString(), activityType);
+                }
+                //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                programId = _client.Create(objectName, program);
             }
-            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            string programId = _client.Create(objectName, program);
+            catch (Exception)
+            {
+                throw;
+            }
             return programId;
         }
 
         private string CreateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
+            string tacticId = string.Empty;
             Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
             if (_mappingTactic.ContainsKey("Title") && planTactic != null && _CustomNamingPermissionForInstance && IsClientAllowedForCustomNaming)
             {
@@ -4346,127 +4364,176 @@ namespace Integration.Salesforce
                 tactic.Add(_mappingTactic["ActivityType"].ToString(), activityType);
             }
             //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            string tacticId = _client.Create(objectName, tactic);
+            tacticId = _client.Create(objectName, tactic);
             return tacticId;
         }
 
         private string CreateImprovementCampaign(Plan_Improvement_Campaign planIMPCampaign)
         {
-            Dictionary<string, object> campaign = GetImprovementCampaign(planIMPCampaign);
-
-            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            if (_mappingTactic.ContainsKey("ActivityType"))
+            try
             {
-                string activityType = Enums.EntityType.ImprovementCampaign.ToString();
-                campaign.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+                Dictionary<string, object> campaign = GetImprovementCampaign(planIMPCampaign);
+
+                //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                if (_mappingTactic.ContainsKey("ActivityType"))
+                {
+                    string activityType = Enums.EntityType.ImprovementCampaign.ToString();
+                    campaign.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+                }
+                //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                string campaignId = _client.Create(objectName, campaign);
+                return campaignId;
             }
-            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            string campaignId = _client.Create(objectName, campaign);
-            return campaignId;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private string CreateImprovementProgram(Plan_Improvement_Campaign_Program planIMPProgram)
         {
-            Dictionary<string, object> program = GetImprovementProgram(planIMPProgram, Enums.Mode.Create);
-
-            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            if (_mappingTactic.ContainsKey("ActivityType"))
+            try
             {
-                string activityType = Enums.EntityType.ImprovementProgram.ToString();
-                program.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+                Dictionary<string, object> program = GetImprovementProgram(planIMPProgram, Enums.Mode.Create);
+
+                //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                if (_mappingTactic.ContainsKey("ActivityType"))
+                {
+                    string activityType = Enums.EntityType.ImprovementProgram.ToString();
+                    program.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+                }
+                //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                string programId = _client.Create(objectName, program);
+                return programId;
             }
-            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            string programId = _client.Create(objectName, program);
-            return programId;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private string CreateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
-            Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Create);
-
-            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            if (_mappingTactic.ContainsKey("ActivityType"))
+            try
             {
-                string activityType = Enums.EntityType.ImprovementTactic.ToString();
-                tactic.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+                Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Create);
+
+                //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                if (_mappingTactic.ContainsKey("ActivityType"))
+                {
+                    string activityType = Enums.EntityType.ImprovementTactic.ToString();
+                    tactic.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+                }
+                //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                string tacticId = _client.Create(objectName, tactic);
+                return tacticId;
             }
-            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            string tacticId = _client.Create(objectName, tactic);
-            return tacticId;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private bool UpdateCampaign(Plan_Campaign planCampaign)
         {
-            Dictionary<string, object> campaign = GetCampaign(planCampaign);
-
-            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            if (_mappingCampaign.ContainsKey("ActivityType"))
+            try
             {
-                string activityType = Enums.EntityType.Campaign.ToString();
-                string ActivityTypeMappedValue = _mappingCampaign["ActivityType"].ToString();
-                campaign.Add(ActivityTypeMappedValue, activityType);
-            }
-            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                Dictionary<string, object> campaign = GetCampaign(planCampaign);
 
-            return _client.Update(objectName, planCampaign.IntegrationInstanceCampaignId, campaign);
+                //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                if (_mappingCampaign.ContainsKey("ActivityType"))
+                {
+                    string activityType = Enums.EntityType.Campaign.ToString();
+                    string ActivityTypeMappedValue = _mappingCampaign["ActivityType"].ToString();
+                    campaign.Add(ActivityTypeMappedValue, activityType);
+                }
+                //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+
+                return _client.Update(objectName, planCampaign.IntegrationInstanceCampaignId, campaign);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private bool UpdateProgram(Plan_Campaign_Program planProgram)
         {
-            Dictionary<string, object> program = GetProgram(planProgram, Enums.Mode.Update);
-
-            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            if (_mappingProgram.ContainsKey("ActivityType"))
+            try
             {
-                string activityType = Enums.EntityType.Program.ToString();
-                program.Add(_mappingProgram["ActivityType"].ToString(), activityType);
-            }
-            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                Dictionary<string, object> program = GetProgram(planProgram, Enums.Mode.Update);
 
-            return _client.Update(objectName, planProgram.IntegrationInstanceProgramId, program);
+                //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                if (_mappingProgram.ContainsKey("ActivityType"))
+                {
+                    string activityType = Enums.EntityType.Program.ToString();
+                    program.Add(_mappingProgram["ActivityType"].ToString(), activityType);
+                }
+                //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+
+                return _client.Update(objectName, planProgram.IntegrationInstanceProgramId, program);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
-            Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
-            if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
+            try
             {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
-
-                if (tactic.ContainsKey(titleMappedValue))
+                Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
+                if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
                 {
-                    int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == titleMappedValue).FirstOrDefault().Length;
-                    string customvalue = planTactic.TacticCustomName;
-                    if (valuelength != 0)
+                    string titleMappedValue = _mappingTactic["Title"].ToString();
+
+                    if (tactic.ContainsKey(titleMappedValue))
                     {
-                        customvalue = customvalue.Length > valuelength ? customvalue.Substring(0, valuelength - 1) : customvalue;
+                        int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == titleMappedValue).FirstOrDefault().Length;
+                        string customvalue = planTactic.TacticCustomName;
+                        if (valuelength != 0)
+                        {
+                            customvalue = customvalue.Length > valuelength ? customvalue.Substring(0, valuelength - 1) : customvalue;
+                        }
+                        tactic[titleMappedValue] = customvalue;
                     }
-                    tactic[titleMappedValue] = customvalue;
                 }
+                //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                if (_mappingTactic.ContainsKey("ActivityType"))
+                {
+                    string activityType = Enums.EntityType.Tactic.ToString();
+                    tactic.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+                }
+                //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                return _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
             }
-            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            if (_mappingTactic.ContainsKey("ActivityType"))
+            catch (Exception)
             {
-                string activityType = Enums.EntityType.Tactic.ToString();
-                tactic.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+                throw;
             }
-            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            return _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
         }
 
         private bool UpdateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
-            Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Update);
-
-            //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
-            if (_mappingTactic.ContainsKey("ActivityType"))
+            try
             {
-                string activityType = Enums.EntityType.ImprovementTactic.ToString();
-                tactic.Add(_mappingTactic["ActivityType"].ToString(), activityType);
-            }
-            //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Update);
 
-            return _client.Update(objectName, planIMPTactic.IntegrationInstanceTacticId, tactic);
+                //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+                if (_mappingTactic.ContainsKey("ActivityType"))
+                {
+                    string activityType = Enums.EntityType.ImprovementTactic.ToString();
+                    tactic.Add(_mappingTactic["ActivityType"].ToString(), activityType);
+                }
+                //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
+
+                return _client.Update(objectName, planIMPTactic.IntegrationInstanceTacticId, tactic);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private bool Delete(string recordid)
@@ -4484,30 +4551,53 @@ namespace Integration.Salesforce
         private Dictionary<string, object> GetCampaign(Plan_Campaign planCampaign)
         {
             string PlanName = string.Empty;
-            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Campaign>(planCampaign, _mappingCampaign);
+            Dictionary<string, object> campaign = new Dictionary<string, object>();
+            try
+            {
+                campaign = GetTargetKeyValue<Plan_Campaign>(planCampaign, _mappingCampaign);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             return campaign;
         }
 
         private Dictionary<string, object> GetProgram(Plan_Campaign_Program planProgram, Enums.Mode mode)
         {
             string PlanName = string.Empty;
-            
-            Dictionary<string, object> program = GetTargetKeyValue<Plan_Campaign_Program>(planProgram, _mappingProgram);
-
-            if (mode.Equals(Enums.Mode.Create))
+            Dictionary<string, object> program = new Dictionary<string, object>();
+            try
             {
-                program.Add(ColumnParentId, _parentId);
+                program = GetTargetKeyValue<Plan_Campaign_Program>(planProgram, _mappingProgram);
+
+                if (mode.Equals(Enums.Mode.Create))
+                {
+                    program.Add(ColumnParentId, _parentId);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
             return program;
         }
 
         private Dictionary<string, object> GetTactic(Plan_Campaign_Program_Tactic planTactic, Enums.Mode mode)
         {
-            string PlanName = string.Empty;
-            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Campaign_Program_Tactic>(planTactic, _mappingTactic);
-            if (mode.Equals(Enums.Mode.Create))
+            Dictionary<string, object> tactic = new Dictionary<string, object>();
+            try
             {
-                tactic.Add(ColumnParentId, _parentId);
+                string PlanName = string.Empty;
+                tactic = GetTargetKeyValue<Plan_Campaign_Program_Tactic>(planTactic, _mappingTactic);
+                if (mode.Equals(Enums.Mode.Create))
+                {
+                    tactic.Add(ColumnParentId, _parentId);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
 
             return tactic;
@@ -4516,28 +4606,52 @@ namespace Integration.Salesforce
         private Dictionary<string, object> GetImprovementCampaign(Plan_Improvement_Campaign planIMPCampaign)
         {
             string PlanName = string.Empty;
-            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Improvement_Campaign>(planIMPCampaign, _mappingImprovementCampaign);
+            Dictionary<string, object> campaign = new Dictionary<string, object>();
+            try
+            {
+                campaign = GetTargetKeyValue<Plan_Improvement_Campaign>(planIMPCampaign, _mappingImprovementCampaign);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             return campaign;
         }
 
         private Dictionary<string, object> GetImprovementProgram(Plan_Improvement_Campaign_Program planIMPProgram, Enums.Mode mode)
         {
             string PlanName = string.Empty;
-            Dictionary<string, object> program = GetTargetKeyValue<Plan_Improvement_Campaign_Program>(planIMPProgram, _mappingImprovementProgram);
-
-            if (mode.Equals(Enums.Mode.Create))
+            Dictionary<string, object> program = new Dictionary<string, object>();
+            try
             {
-                program.Add(ColumnParentId, _parentId);
+                program = GetTargetKeyValue<Plan_Improvement_Campaign_Program>(planIMPProgram, _mappingImprovementProgram);
+
+                if (mode.Equals(Enums.Mode.Create))
+                {
+                    program.Add(ColumnParentId, _parentId);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
             return program;
         }
 
         private Dictionary<string, object> GetImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic, Enums.Mode mode)
         {
-            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic);
-            if (mode.Equals(Enums.Mode.Create))
+            Dictionary<string, object> tactic = new Dictionary<string, object>();
+            try
             {
-                tactic.Add(ColumnParentId, _parentId);
+                tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic);
+                if (mode.Equals(Enums.Mode.Create))
+                {
+                    tactic.Add(ColumnParentId, _parentId);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
 
             return tactic;
@@ -4554,101 +4668,108 @@ namespace Integration.Salesforce
             string costActual = "CostActual";   // Added by Sohel Pathan on 11/09/2014 for PL ticket #773
             string tacticType = "TacticType";   //// Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
             string tacticTitle = "Title";   //// Added by Viral kadiya on 02/17/2016 for PL ticket #1916
-
-            Type sourceType = ((T)obj).GetType();
-            PropertyInfo[] sourceProps = sourceType.GetProperties();
             Dictionary<string, object> keyvaluepair = new Dictionary<string, object>();
 
-            foreach (KeyValuePair<string, string> mapping in mappingDataType)
+            try
             {
-                string value = string.Empty;
-                PropertyInfo propInfo = sourceProps.FirstOrDefault(property => property.Name.Equals(mapping.Key));
-                if (propInfo != null)
+                Type sourceType = ((T)obj).GetType();
+                PropertyInfo[] sourceProps = sourceType.GetProperties();
+                foreach (KeyValuePair<string, string> mapping in mappingDataType)
                 {
-                    value = Convert.ToString(propInfo.GetValue(((T)obj), null));
-                    if (mapping.Key == status)
+                    string value = string.Empty;
+                    PropertyInfo propInfo = sourceProps.FirstOrDefault(property => property.Name.Equals(mapping.Key));
+                    if (propInfo != null)
                     {
-                        value = GetSalesForceStatus(value);
-                    }
-                    else if (mapping.Key == createdBy)
-                    {
-                        value = _mappingUser[Guid.Parse(value)];
-                        int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
-                        value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
-                    }
-                    else if (mapping.Key == statDate || mapping.Key == endDate || mapping.Key == effectiveDate)
-                    {
-                        value = Convert.ToDateTime(value).ToString("yyyy-MM-ddThh:mm:ss+hh:mm");
-                    }
-                    //// Start - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
-                    else if (mapping.Key == tacticType)
-                    {
-                        value = Convert.ToString(((Plan_Campaign_Program_Tactic)obj).TacticType.Title);
-                        int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
-                        value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
-                    }
-                    else
-                    {
-                        int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
-                        if (valuelength != 0)
+                        value = Convert.ToString(propInfo.GetValue(((T)obj), null));
+                        if (mapping.Key == status)
                         {
+                            value = GetSalesForceStatus(value);
+                        }
+                        else if (mapping.Key == createdBy)
+                        {
+                            value = _mappingUser[Guid.Parse(value)];
+                            int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
                             value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
                         }
-                    }
-                    //// End - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
+                        else if (mapping.Key == statDate || mapping.Key == endDate || mapping.Key == effectiveDate)
+                        {
+                            value = Convert.ToDateTime(value).ToString("yyyy-MM-ddThh:mm:ss+hh:mm");
+                        }
+                        //// Start - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
+                        else if (mapping.Key == tacticType)
+                        {
+                            value = Convert.ToString(((Plan_Campaign_Program_Tactic)obj).TacticType.Title);
+                            int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
+                            value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
+                        }
+                        else
+                        {
+                            int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
+                            if (valuelength != 0)
+                            {
+                                value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
+                            }
+                        }
+                        //// End - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
 
-                    //// Start - Added by Viral Kadiya on 02/16/2016 for PL ticket #1916
-                    if (mapping.Key == tacticTitle)
-                    {
-                        value = System.Web.HttpUtility.HtmlDecode(value);   
-                    }
-                    //// End - Added by Viral Kadiya on 02/16/2016 for PL ticket #1916
-                    keyvaluepair.Add(mapping.Value, value);
-                }
-                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                else
-                {
-                    if (mapping.Key == costActual)
-                    {
-                        value = GetActualCostbyPlanTacticId(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
+                        //// Start - Added by Viral Kadiya on 02/16/2016 for PL ticket #1916
+                        if (mapping.Key == tacticTitle)
+                        {
+                            value = System.Web.HttpUtility.HtmlDecode(value);
+                        }
+                        //// End - Added by Viral Kadiya on 02/16/2016 for PL ticket #1916
                         keyvaluepair.Add(mapping.Value, value);
                     }
-                    else if (mapping.Key == Enums.SFDCGlobalFields.PlanName.ToString())
-                    {
-                        value = !string.IsNullOrEmpty(PlanName) ? PlanName : string.Empty;
-                        int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
-                        value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
-                        keyvaluepair.Add(mapping.Value, value);
-                    }
+                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     else
                     {
-                        int customid;
-                        if (Int32.TryParse(mapping.Key,out customid))
+                        if (mapping.Key == costActual)
                         {
-                            int valuelength = 0;
-                            value = MapCustomField<T>(obj, sourceProps, mapping.Key);
-                            if (value != string.Empty)
+                            value = GetActualCostbyPlanTacticId(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
+                            keyvaluepair.Add(mapping.Value, value);
+                        }
+                        else if (mapping.Key == Enums.SFDCGlobalFields.PlanName.ToString())
+                        {
+                            value = !string.IsNullOrEmpty(PlanName) ? PlanName : string.Empty;
+                            int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
+                            value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
+                            keyvaluepair.Add(mapping.Value, value);
+                        }
+                        else
+                        {
+                            int customid;
+                            if (Int32.TryParse(mapping.Key, out customid))
                             {
-                                if (value.Length > 0)
+                                int valuelength = 0;
+                                value = MapCustomField<T>(obj, sourceProps, mapping.Key);
+                                if (value != string.Empty)
                                 {
-                                    valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
-                                    if (valuelength != 0)
+                                    if (value.Length > 0)
                                     {
-                                        value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
+                                        valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
+                                        if (valuelength != 0)
+                                        {
+                                            value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
+                                        }
+                                        keyvaluepair.Add(mapping.Value, value);
                                     }
-                                    keyvaluepair.Add(mapping.Value, value);
                                 }
                             }
                         }
                     }
+                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 }
-                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                //Added by Mitesh Vaishnav for PL ticket 1473
+                //All campaigns have "IsActive" flag true by default
+                if (keyvaluepair.Count > 0)
+                {
+                    keyvaluepair.Add("IsActive", true);
+                }
             }
-            //Added by Mitesh Vaishnav for PL ticket 1473
-            //All campaigns have "IsActive" flag true by default
-            if (keyvaluepair.Count > 0)
+            catch (Exception)
             {
-                keyvaluepair.Add("IsActive", true);
+                
+                throw;
             }
             return keyvaluepair;
         }

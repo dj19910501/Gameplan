@@ -1295,6 +1295,26 @@ namespace RevenuePlanner.Helpers
             Linking,
             Copying
         }
+
+        /// <summary>
+        /// Added by : Viral kadiya on 02/19/2016
+        /// sync status enum for error email
+        /// </summary>
+        public enum SyncStatus
+        {
+            Header,
+            Success,
+            Error,
+            Warning,
+            Info,
+            InProgress
+        }
+        /// Added by : Viral kadiya on 02/19/2016
+        /// Get SyncStatus values.
+        public static Dictionary<string, string> SyncStatusValues = new Dictionary<string, string>()
+        {
+             {SyncStatus.InProgress.ToString(), "In-Progress"}
+        };
     }
 
     #region Authorization

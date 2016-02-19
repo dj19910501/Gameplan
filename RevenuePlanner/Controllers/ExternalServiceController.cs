@@ -73,6 +73,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetIntegrationServiceListings()
         {
+            UpdateIntegrationInstacneLastSyncStatus();
             //// Get Integration Instance List.
             var IntegrationInstanceList = db.IntegrationInstances
                                             .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationType.IntegrationTypeId == ii.IntegrationTypeId)
@@ -90,6 +91,75 @@ namespace RevenuePlanner.Controllers
             }).OrderByDescending(intgrtn => intgrtn.Instance, new AlphaNumericComparer()).ToList();
 
             return Json(returnList, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Created By: Viral Kadiya
+        /// Created Date: 02/19/2016
+        /// Update last sync status from "In-Progress" to "Error" for those instances running continuously and not stoped.
+        /// </summary>
+        /// <returns></returns>
+        public void UpdateIntegrationInstacneLastSyncStatus()
+        {
+            try
+            {
+                string strIntegrationTimeout = System.Configuration.ConfigurationManager.AppSettings["IntegrationTimeOut"];
+                int cmprHrDiff = 0;
+                if (!string.IsNullOrEmpty(strIntegrationTimeout))
+                    cmprHrDiff = Convert.ToInt32(strIntegrationTimeout);
+                string errorDescription = "Instance stopped by system forcefully since it was runnig from long time.";
+                DateTime currentdate = System.DateTime.Now;
+                string strInProgressStatus = Enums.SyncStatusValues[Enums.SyncStatus.InProgress.ToString()].ToString(); // Get In-Progress status.
+                //// Get Integration Instance List.
+                List<IntegrationInstance> IntegrationInstanceList = db.IntegrationInstances
+                                                .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.LastSyncStatus == strInProgressStatus)
+                                                .Select(ii => ii).ToList();
+
+                if (IntegrationInstanceList != null && IntegrationInstanceList.Count > 0)
+                {
+                    #region "Declare local variables"
+                    List<int> lstInstanceIds = new List<int>();
+                    IntegrationInstanceLog objIntegrationInstancelog;
+                    TimeSpan timeDiff = new TimeSpan();
+                    bool isDataUpdated = false;
+                    #endregion
+
+                    lstInstanceIds = IntegrationInstanceList.Select(inst => inst.IntegrationInstanceId).ToList();
+                    List<IntegrationInstanceLog> tblInstanceLogs = db.IntegrationInstanceLogs.Where(log => lstInstanceIds.Contains(log.IntegrationInstanceId)).ToList();    // get IntegrationInstance logs
+
+                    foreach (IntegrationInstance instance in IntegrationInstanceList)
+                    {
+                        objIntegrationInstancelog = new IntegrationInstanceLog();
+                        // get last integration instance log from IntegrationInstanceLogs table.
+                        objIntegrationInstancelog = tblInstanceLogs.Where(log => log.IntegrationInstanceId == instance.IntegrationInstanceId).OrderByDescending(log => log.SyncStart).FirstOrDefault();
+                        if (objIntegrationInstancelog != null)
+                        {
+                            var syncstartdt = objIntegrationInstancelog.SyncStart;
+                            timeDiff = (System.DateTime.Now - syncstartdt);
+                            if (timeDiff.TotalHours > cmprHrDiff)   // if sync process running from more than 4 hrs than stop it.
+                            {
+                                //// Update last sync status for instances running from long time.
+                                objIntegrationInstancelog.SyncEnd = System.DateTime.Now;
+                                objIntegrationInstancelog.Status = Enums.SyncStatus.Error.ToString();
+                                objIntegrationInstancelog.ErrorDescription = errorDescription;
+                                db.Entry(objIntegrationInstancelog).State = EntityState.Modified;
+
+                                // Update IntegrationInstance table
+                                instance.LastSyncStatus = Enums.SyncStatus.Error.ToString();    // update last sync status.
+                                instance.LastSyncDate = System.DateTime.Now;                    // update last sync date.
+                                db.Entry(instance).State = EntityState.Modified;
+                                isDataUpdated = true;
+                            }
+                        }
+                    }
+                    if (isDataUpdated)
+                        db.SaveChanges();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
         }
 
         /// <summary>
