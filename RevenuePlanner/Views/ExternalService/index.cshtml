@@ -182,6 +182,8 @@
             //syncNow.css("style", "display:none");
             //syncNow.css("color", "red");
             var id = $(this).attr("id").replace("syncnow_", "");
+            var inprogressStatus = '@Enums.SyncStatusValues[Enums.SyncStatus.InProgress.ToString()].ToString()';
+            $('#lastSyncStatus' + id).html('<span>' + inprogressStatus + '</span>');
             alert("@Common.objCached.SynchronizationStatus");
             $.ajax({
                 type: 'GET',
