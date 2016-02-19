@@ -2167,11 +2167,40 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        public ActionResult GetBudget()
-        {
+        public ActionResult GetBudget(string CustomFieldId = "", string TactitTypeId = "", string OwnerId = "")//Modified by Rahul Shah on 19/02/2015 for PL #1975. to manage consistance behaviour of ViewBy dropdown on Home/Plan and Report. 
+        {       
             bool IsBudgetTab = true;
             string planIds = string.Join(",", Sessions.ReportPlanIds.Select(plan => plan.ToString()).ToArray());
-            List<int> TacticId = Common.GetTacticByPlanIDs(planIds);
+            //List<int> TacticId = Common.GetTacticByPlanIDs(planIds);            
+            List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+            List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+
+            List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerId) ? new List<Guid>() : OwnerId.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            List<int> filterTacticType = string.IsNullOrWhiteSpace(TactitTypeId) ? new List<int>() : TactitTypeId.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+
+            List<int> PlanIds = (planIds != "" && planIds != null) ? planIds.Split(',').Select(int.Parse).ToList() : new List<int>();
+            //MRPEntities db = new MRPEntities();
+            List<int> TacticId = db.Plan_Campaign_Program_Tactic.Where(tactic =>
+                              PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
+                              && tactic.IsDeleted.Equals(false)
+                              && (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))
+                              && (filterTacticType.Count.Equals(0) || filterTacticType.Contains(tactic.TacticType.TacticTypeId)) 
+                              ).Select(t => t.PlanTacticId).ToList();           
+
+            if (TacticId.Count > 0)
+            {
+                string[] filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldId) ? null : CustomFieldId.Split(',');
+                if (filteredCustomFields != null)
+                {                  
+                    foreach (string customField in filteredCustomFields)
+                    {
+                        string[] splittedCustomField = customField.Split('_');
+                        lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                        lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                    };
+                    TacticId = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, TacticId);                                   
+                }
+            }
 
             //// Set Viewby Dropdownlist.
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
@@ -2529,6 +2558,7 @@ namespace RevenuePlanner.Controllers
                             p.Id = p.Id.Replace(' ', '_').Replace('#', '_').Replace('-', '_');
                         }
                         ////End - Added by Mitesh Vaishnav for PL ticket #831
+                        if(TacticListInner.Count > 0){
 
                         //// Add Plan data to BudgetModelReport.
                         obj = new BudgetModelReport();
@@ -2636,6 +2666,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
+            }
             }
 
             model = SetTacticWeightage(model, IsCustomFieldViewBy);
@@ -4270,11 +4301,22 @@ namespace RevenuePlanner.Controllers
                     if (Tab.Contains(Common.TacticCustomTitle) && Sessions.ReportCustomFieldIds != null && Sessions.ReportCustomFieldIds.Count() > 0)
                     {
                         List<CustomFieldFilter> lstCustomFieldFilter = Sessions.ReportCustomFieldIds.ToList();
-                        var optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).FirstOrDefault() != "" ?
-                        lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).ToList() :
-                        cusomfieldEntity.Where(x => x.CustomFieldId == customfieldId).Select(x => x.Value).Distinct().ToList();
+                        //Modified by Rahul Shah for PL #1975 on 18/02/2015. if Some of the custom fields are selected and now user change on viewBy tab related tacticts will be display.                       
+                        if (lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).FirstOrDefault() != null)
+                        {
+                            var optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).ToList();
+                            customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldId.ToString() + "_" + option.CustomFieldOptionId.ToString())).ToList();
+                        }
+                        else {
+                            var optionIds = cusomfieldEntity.Where(x => x.CustomFieldId == customfieldId).Select(x => x.CustomFieldId.ToString() + "_" + x.Value.ToString()).Distinct().ToList();
+                            customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldId.ToString() + "_" + option.CustomFieldOptionId.ToString())).ToList();
+                        }                       
+                        //var optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).FirstOrDefault() != null ?
+                        //lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).ToList() :
+                        //cusomfieldEntity.Where(x => x.CustomFieldId == customfieldId).Select(x => x.CustomFieldId.ToString() + "_" + x.Value.ToString()).Distinct().ToList();
+
                         //customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldOptionId.ToString())).ToList();
-                        customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldId.ToString()+"_"+option.CustomFieldOptionId.ToString())).ToList();
+                        //customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldId.ToString()+"_"+option.CustomFieldOptionId.ToString())).ToList();
                     }
                     //// Retrieve CustomFieldOptions based on CustomField & Filtered CustomFieldOptionValues.
                     planobj = customfieldoptionlist.Select(p => new BudgetReportTab

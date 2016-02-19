@@ -1725,6 +1725,38 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
 
     //// Load Budget View
     function LoadBudgetView() {
+        
+    //modified by Rahul Shah on 19/02/2016 for PL #1975. for Passing the customfield,OwnerIds,TacticType for display viewBy options according to it.
+        filters.customFieldIds = [];
+        filters.OwnerIds = [];
+        //filters.TacticTypeids = [];
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.customFieldIds.push(chkid);
+                }
+            }
+        });
+
+        $("#ulSelectedOwner li input[type=checkbox]:checked").each(function () {
+            filters.OwnerIds.push($(this).attr("id"));
+
+        });
+
+    
+        $("#ulTacticType li input[type=checkbox]").each(function () {
+
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+            }
+        });
+
+        var CustomFieldId = filters.customFieldIds.toString();
+        var TactitTypeId = filters.TacticTypeids.toString();
+        var OwnerId = filters.OwnerIds.toString();
+       
         $("#BtnShareReport").hide(); //Added by Arpita Soni on 01/08/2015 for ticket #1108
         $('#budgetHeader').css('display', 'block');
         $('#conversionHeader').css('display', 'none');
@@ -1733,7 +1765,7 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
         $('#formSideFilter').css('display', 'none');
         $('#accordion-quart').css('display', 'none');
         var url = '@Url.Content("~/Report/GetBudget/")';
-            $('#divMainReportPart').load(url, function () {
+        $('#divMainReportPart').load(url + '?CustomFieldId=' + CustomFieldId + '&TactitTypeId=' + TactitTypeId + '&OwnerId=' + OwnerId, function () {
                 isAllowClick = true;
             });
         }
@@ -2237,8 +2269,9 @@ $('#liBudgetreport').click(function () {
         isAllowClick = false;
         if (leftPaneOption != '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
-            GetOwnerListForFilter(PlanIds, true);
-            GetTacticTypelist(PlanIds, true);
+            //modified by Rahul Shah on 19/02/2016 for PL #1975.
+            GetOwnerListForFilter(PlanIds, false);
+            GetTacticTypelist(PlanIds, false);
         }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
         LoadYearDropdown(leftPaneOption);
