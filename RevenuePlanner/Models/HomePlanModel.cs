@@ -281,7 +281,22 @@ namespace RevenuePlanner.Models
         public bool LinkTacticPermission { get; set; }
         public int? LinkedTacticId { get; set; }
     }
+    // Add By Nishant Sheth
+    // Desc :: Store Progess details for Plan/Campaign/Program ticket #1798
+    public class ProgressList
+    {
+        public int EntityId { get; set; }
+        public double Progress { get; set; }
+    }
 
+    // Add By Nishant Sheth
+    // Desc :: Store details for plan min date ticket #1798
+    public class StartMinDatePlan
+    {
+        public int EntityId { get; set; }
+        public string Status { get; set; }
+        public DateTime StartDate { get; set; }
+    }
     public class Plan_Tactic
     {
         public Plan_Campaign_Program_Tactic objPlanTactic { get; set; }
