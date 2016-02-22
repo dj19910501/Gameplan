@@ -1870,6 +1870,7 @@
     var checkedStatuscount = 0;
     var checkedPlancount = 0;
     var checkedYearcount = 0;
+    var linkItemId = 0;
     checkedYearcount = $('#ulSelectedYear li input:checked').length;
     $('#cYearcount').text(checkedYearcount);
     //Added By Komal Rawal for #1376
@@ -1948,6 +1949,8 @@
             $("#liplanrequest").show();
             $('.nav').removeClass('no-bottom-border');
             $("#btnPlanReport").css("display", "block");
+            //modified by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
+            scrollstate = 0;
             RefreshCurrentTab();
             // 1762
             $('#IsGridView').val("False");
@@ -2616,7 +2619,8 @@
             }
         });        ////End
         //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
-        state0 = 0;
+        //commented by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
+       // state0 = 0;
 
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
@@ -4977,8 +4981,9 @@
 
                             //GanttTaskData = data.taskData; // Add By Nishant Sheth
                             renderGantt(data.taskData);
-                            var _scrollY = scrollstate.y
-                            gantt.scrollTo(0, _scrollY);
+                            //commented by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
+                           // var _scrollY = scrollstate.y
+                           // gantt.scrollTo(0, _scrollY);
                             $("html, body").animate({ scrollTop: bodyscrollpos }, 100);
 
                             var w1 = window.innerWidth;
@@ -5460,6 +5465,11 @@
         hoverRows();
         AttachEventToTactic();
         AttachEventToonTaskRowClick();
+        //Added by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
+        setTimeout(function () {
+            var _scrollY = scrollstate.y
+            gantt.scrollTo(0, _scrollY);
+        }, 250);
 
     }
 
@@ -7978,6 +7988,18 @@ function () {
         }
     }
     function OpentCopyPopup(obj) {
+        //Added by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
+        if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+            scrollstate = gantt.getScrollState();
+        }
+        else {
+            linkItemId = $(obj).attr('entityid').replace('_', '');
+            var selectedcell = HomeGrid.findCell(linkItemId, 3, true);
+            var id = selectedcell[0];
+            var rowid = id[0];
+            ItemIndex = HomeGrid.getRowIndex(rowid);
+            state0 = ItemIndex;
+        }
         var sectionType = $(obj).attr('sectionType');
         var entityId = $(obj).attr('entityId');
         var popuptype = $(obj).attr('popupType');//Added by Rahul Shah for PL #1847
