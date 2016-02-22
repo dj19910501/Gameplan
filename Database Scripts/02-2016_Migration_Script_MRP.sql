@@ -56,3 +56,31 @@ GO
 /* --------- End Script of PL ticket #2006 --------- */
 
 
+-- Added By : Maitri Gandhi
+-- Added Date : 2/22/2016
+-- Description :Ensure versioning table exists & Update versioning table with script version
+-- ======================================================================================
+
+IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Versioning'))
+BEGIN
+CREATE TABLE [dbo].[Versioning](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Release Name] [nvarchar](50) NOT NULL,
+	[Date Applied] [datetime] NOT NULL,
+	[Version] [nvarchar](50) NOT NULL
+) ON [PRIMARY]
+END
+GO
+
+declare @version nvarchar(10)
+declare @release nvarchar(10)
+set @release = 'Feb.2016'
+set @version = 'Feb.2016.1'
+declare @date as datetime
+set @date = getutcdate()
+
+if (NOT EXISTS(SELECT * FROM [dbo].[Versioning]  WHERE Version = @version))
+BEGIN
+insert into [dbo].[Versioning] values (@release, @date, @version)
+END
+GO
