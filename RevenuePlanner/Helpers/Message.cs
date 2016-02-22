@@ -2524,7 +2524,20 @@ namespace RevenuePlanner.Helpers
             }
         }
         ////End - Added by Rahul Shah for PL ticket #1846
-
+        ////Start - Added by Rahul Shah for PL ticket #1961
+        private string _NoPlanforLinking;
+        public string NoPlanforLinking
+        {
+            get
+            {
+                return _NoPlanforLinking;
+            }
+            set
+            {
+                _NoPlanforLinking = value;
+            }
+        }
+        ////End - Added by Rahul Shah for PL ticket #1961
         private string _ExtendedProgram;
         public string ExtendedProgram
         {
@@ -3443,6 +3456,11 @@ namespace RevenuePlanner.Helpers
                                             _DifferentModel = strMsgValue;
                                             break;
                                         ////End - Added by Rahul Shah for PL ticket #1846
+                                        ////Start - Added by Rahul Shah for PL ticket #1961
+                                        case "NoPlanforLinking":
+                                            _NoPlanforLinking = strMsgValue;
+                                            break;
+                                        ////End - Added by Rahul Shah for PL ticket #1961
                                             
                                         ////Start - Added by Rahul Shah for PL ticket #1846
                                         case "LinkedTacticExtendedYear":

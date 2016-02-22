@@ -5302,7 +5302,7 @@ namespace RevenuePlanner.Controllers
                                     // Added by Viral Kadiya for Pl ticket #1970.
                                     string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
                                     return Json(new { isSuccess = false, errormsg = strReduceTacticPlannedCostMessage });
-                                   // yearlycost = totalLineitemCost;
+                                    // yearlycost = totalLineitemCost;
                                 }
 
                                 if (tacticost > yearlycost)
@@ -8844,19 +8844,19 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                 //var LastSetOfViews = Common.PlanUserSavedViews;
-                 //var Label = Enums.FilterLabel.Plan.ToString();
-                 //var SetOfPlanSelected = LastSetOfViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
-                 //var SavedPlanIds = SetOfPlanSelected.Select(view => view.FilterValues).ToList();
-                 //if (SavedPlanIds != null && SavedPlanIds.Count > 0)
-                 //{
-                 //    ViewBag.LastSavedPlanIDs = String.Join(",", SavedPlanIds);
-                 //}
-                 //else
-                 //{
+                //var LastSetOfViews = Common.PlanUserSavedViews;
+                //var Label = Enums.FilterLabel.Plan.ToString();
+                //var SetOfPlanSelected = LastSetOfViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
+                //var SavedPlanIds = SetOfPlanSelected.Select(view => view.FilterValues).ToList();
+                //if (SavedPlanIds != null && SavedPlanIds.Count > 0)
+                //{
+                //    ViewBag.LastSavedPlanIDs = String.Join(",", SavedPlanIds);
+                //}
+                //else
+                //{
 
-                 //    ViewBag.LastSavedPlanIDs = null;
-                 //}
+                //    ViewBag.LastSavedPlanIDs = null;
+                //}
                 //List<string> tacticStatus = Common.GetStatusListAfterApproved();
                 //// Tthis is inititalized as 0 bcoz to get the status for tactics.
                 //string planGanttType = PlanGanttTypes.Tactic.ToString();
@@ -10243,7 +10243,7 @@ namespace RevenuePlanner.Controllers
                                                                 lineitemdataobj = new Plandataobj();
                                                                 lineitemdataobj.value = lstUserDetails.Where(lst => lst.UserId == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault();
                                                                 // Add By Nishant Sheth #1987
-                                                                lineitemdataobj.locked = lineitem.IstactEditable; 
+                                                                lineitemdataobj.locked = lineitem.IstactEditable;
                                                                 lineitemdataobj.style = cellTextColor;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
 
@@ -12587,9 +12587,20 @@ namespace RevenuePlanner.Controllers
                 }
 
                 ViewBag.plans = lstPlans;
+                //Modified by Rahul Shah for PL #1961. display Message when NO Plan Exsit for Link tactic. 
+                ViewBag.isPlanExist = true;
+                if (lstPlans == null || lstPlans.Count == 0)
+                {
+                    ViewBag.isPlanExist = false;
+                    //return Json(true, JsonRequestBehavior.AllowGet);
+                }
                 #region "Get Model"
 
-                int selectedPlanId = lstPlans != null ? Convert.ToInt32(lstPlans.FirstOrDefault().Value) : 0;
+                //int selectedPlanId = lstPlans != null && lstPlans.Count > 0 && !string.IsNullOrEmpty(planId) ? Convert.ToInt32(lstPlans.FirstOrDefault().Value) : 0;
+                int selectedPlanId = 0;
+                if (lstPlans != null && lstPlans.Count > 0 && !string.IsNullOrEmpty(planId)) {
+                    selectedPlanId = Convert.ToInt32(lstPlans.FirstOrDefault().Value);
+                }
                 //selectedPlanId = 14832;
                 objModel = GetParentEntitySelectionList(selectedPlanId);
                 objModel.srcSectionType = section;
@@ -13165,8 +13176,9 @@ namespace RevenuePlanner.Controllers
                         isValid = false;
 
                 }
-                var startDate = db.Plan_Campaign.Where(st => st.PlanId == destPlanId).Select(st => st.StartDate).Min();
-                var endDate = db.Plan_Campaign.Where(st => st.PlanId == destPlanId).Select(st => st.EndDate).Max();
+                //Modified by Rahul Shah on 22/02/2016 for PL #1961.
+                var startDate = db.Plan_Campaign.Where(st => st.PlanId == destPlanId && st.IsDeleted == false).Select(st => st.StartDate).Min();
+                var endDate = db.Plan_Campaign.Where(st => st.PlanId == destPlanId && st.IsDeleted == false).Select(st => st.EndDate).Max();
                 if ((endDate.Year) - (startDate.Year) > 0)
                 {
                     return Json(new { msg = Common.objCached.ExtendedProgram, isSuccess = false }, JsonRequestBehavior.AllowGet);

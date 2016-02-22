@@ -972,16 +972,16 @@
 		<value>Linking process cannot proceed due to source and destination Model Integration instances are different.</value>
 	</Field>
 	<!--end Added by Rahul Shah for PL ticket #1846-->
-  <!--start Added by Rahul Shah for PL ticket #1846-->
-  <Field>
-    <Name>DifferentModel</Name>
-    <value>Linking process cannot proceed due to source and destination Models are different.</value>
-  </Field>
-  <!--end Added by Rahul Shah for PL ticket #1846-->
-  <Field>
-    <Name>ExtendedProgram</Name>
-    <value>Linking process cannot proceed due to destination program is already extended to next year.</value>
-  </Field>
+	<!--start Added by Rahul Shah for PL ticket #1846-->
+	<Field>
+		<Name>DifferentModel</Name>
+		<value>Linking process cannot proceed due to source and destination Models are different.</value>
+	</Field>
+	<!--end Added by Rahul Shah for PL ticket #1846-->
+	<Field>
+		<Name>ExtendedProgram</Name>
+		<value>Linking process cannot proceed due to destination program is already extended to next year.</value>
+	</Field>
 	<!--start Added by Rahul Shah for PL ticket #1846-->
 	<Field>
 		<Name>LinkEntitySuccessMessage</Name>
@@ -1000,6 +1000,12 @@
 		<value>Linked Tactic End Date can't move to next year</value>
 	</Field>
 	<!--end Added by Rahul Shah for PL ticket #1846-->
+	<!--start Added by Rahul Shah for PL ticket #1961-->
+	<Field>
+		<Name>NoPlanforLinking</Name>
+		<value>No Plan exists for linking selected tactic(s)</value>
+	</Field>
+	<!--end Added by Rahul Shah for PL ticket #1961-->
 	<!--start Added by Dashrath Prajapati for PL ticket #1776-->
 	<Field>
 		<Name>CloneEntityNoneSelectiontMessage</Name>
@@ -1012,12 +1018,12 @@
 		<value>Some META Data will be lost if this plan uses a different model.</value>
 	</Field>
 	<!--End Added by Dashrath Prajapati for PL ticket #1776-->
-  <!--start Added by Rahul Shah for PL ticket #1899-->
-  <Field>
-    <Name>LinkEntityInformationMessage</Name>
-    <value>Some information will be lost if this plan has a different model.</value>
-  </Field>
-  <!--End Added by Rahul Shah for PL ticket #1899-->
+	<!--start Added by Rahul Shah for PL ticket #1899-->
+	<Field>
+		<Name>LinkEntityInformationMessage</Name>
+		<value>Some information will be lost if this plan has a different model.</value>
+	</Field>
+	<!--End Added by Rahul Shah for PL ticket #1899-->
 	<!--start Added by Komal Rawal for PL ticket #1779-->
 	<Field>
 		<Name>SavePresetSuccess</Name>
@@ -1038,10 +1044,10 @@
 		<value>{0} with same title exist in the linked plan.</value>
 	</Field>
 	<!--End Added by Viral Kadiya for PL ticket #1849-->
-  <!--start Added by Viral Kadiya for PL ticket #1970-->
-  <Field>
-    <Name>TacticPlanedCostReduce</Name>
-    <value>{0} planned cost can not be less than the sum of line items. Please change the cost of line items.</value>
-  </Field>
-  <!--End Added by Viral Kadiya for PL ticket #1970-->
+	<!--start Added by Viral Kadiya for PL ticket #1970-->
+	<Field>
+		<Name>TacticPlanedCostReduce</Name>
+		<value>{0} planned cost can not be less than the sum of line items. Please change the cost of line items.</value>
+	</Field>
+	<!--End Added by Viral Kadiya for PL ticket #1970-->
 </Messages>
