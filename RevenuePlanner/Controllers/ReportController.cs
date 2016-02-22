@@ -94,20 +94,20 @@ namespace RevenuePlanner.Controllers
             //var SetOFLastViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
             //Added By komal Rawal for #1959 to handle last viewed data in session
             var SetOFLastViews = new List<Plan_UserSavedViews>();
-             if (Common.PlanUserSavedViews == null)
-             {
-                 Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
+            if (Common.PlanUserSavedViews == null)
+            {
+                Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
 
-             }
-             if (Sessions.PlanUserSavedViews == null)
-             {
-                 SetOFLastViews = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
-             }
-             else
-             {
-                 SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
-             }
-          //End
+            }
+            if (Sessions.PlanUserSavedViews == null)
+            {
+                SetOFLastViews = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
+            }
+            else
+            {
+                SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
+            }
+            //End
             var SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.UserId).ToList();
             var SetofLastYearsSelected = SetOFLastViews.Where(listview => listview.FilterName == Yearlabel && listview.Userid == Sessions.User.UserId).ToList();
             var FinalSetOfPlanSelected = "";
@@ -1366,7 +1366,7 @@ namespace RevenuePlanner.Controllers
                 //Common.GetReportStartEndDate(option, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
                 // Add By Nishant Sheth 
                 // Desc :: Report should be displayed based on the plan selections - #1957
-                option = Common.GetTimeFrameOptionRevenue(option, PlanDetails);
+                option = Common.GetTimeFrameOption(option, PlanDetails);// Change By Nishant Sheth for #1957 Codereview points
                 ListYear = option.Split(',');
                 Common.GetselectedYearList(option, ref selectedYearList);// Add By Nishant Sheth #1839
                 // End By Nishant Sheth
@@ -2168,7 +2168,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult GetBudget(string CustomFieldId = "", string TactitTypeId = "", string OwnerId = "")//Modified by Rahul Shah on 19/02/2015 for PL #1975. to manage consistance behaviour of ViewBy dropdown on Home/Plan and Report. 
-        {       
+        {
             bool IsBudgetTab = true;
             string planIds = string.Join(",", Sessions.ReportPlanIds.Select(plan => plan.ToString()).ToArray());
             //List<int> TacticId = Common.GetTacticByPlanIDs(planIds);            
@@ -2184,21 +2184,21 @@ namespace RevenuePlanner.Controllers
                               PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
                               && tactic.IsDeleted.Equals(false)
                               && (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))
-                              && (filterTacticType.Count.Equals(0) || filterTacticType.Contains(tactic.TacticType.TacticTypeId)) 
-                              ).Select(t => t.PlanTacticId).ToList();           
+                              && (filterTacticType.Count.Equals(0) || filterTacticType.Contains(tactic.TacticType.TacticTypeId))
+                              ).Select(t => t.PlanTacticId).ToList();
 
             if (TacticId.Count > 0)
             {
                 string[] filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldId) ? null : CustomFieldId.Split(',');
                 if (filteredCustomFields != null)
-                {                  
+                {
                     foreach (string customField in filteredCustomFields)
                     {
                         string[] splittedCustomField = customField.Split('_');
                         lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
                         lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
                     };
-                    TacticId = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, TacticId);                                   
+                    TacticId = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, TacticId);
                 }
             }
 
@@ -2558,115 +2558,116 @@ namespace RevenuePlanner.Controllers
                             p.Id = p.Id.Replace(' ', '_').Replace('#', '_').Replace('-', '_');
                         }
                         ////End - Added by Mitesh Vaishnav for PL ticket #831
-                        if(TacticListInner.Count > 0){
-
-                        //// Add Plan data to BudgetModelReport.
-                        obj = new BudgetModelReport();
-                        obj.Id = p.Id.ToString();
-                        obj.ActivityId = "plan_" + p.Id.ToString();
-                        obj.ActivityName = p.Title;
-                        obj.ActivityType = ActivityType.ActivityPlan;
-                        obj.ParentActivityId = parentMainId;
-                        obj.TabActivityId = p.Id.ToString();
-                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
-                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
-                        model.Add(obj);
-                        parentPlanId = "plan_" + p.Id.ToString();
-
-                        ProgramListInner = new List<Plan_Campaign_Program>();
-                        campaignObj = new List<Plan_Campaign>();
-                        ProgramListInner = ProgramList.Where(program => TacticListInner.Select(t => t.PlanProgramId).Contains(program.PlanProgramId)).ToList();
-                        campaignObj = CampaignList.Where(campaign => ProgramListInner.Select(program => program.PlanCampaignId).Contains(campaign.PlanCampaignId)).OrderBy(campaign => campaign.Title).ToList();
-
-                        foreach (var c in campaignObj)
+                        if (TacticListInner.Count > 0)
                         {
-                            //// Add Campaign data to BudgetModelReport.
+
+                            //// Add Plan data to BudgetModelReport.
                             obj = new BudgetModelReport();
-                            obj.Id = c.PlanCampaignId.ToString();
-                            obj.CustomFieldID = customfieldId;
-                            obj.ActivityId = "c_" + p.Id + c.PlanCampaignId.ToString();
-                            obj.ActivityName = c.Title;
-                            obj.ActivityType = ActivityType.ActivityCampaign;
-                            obj.ParentActivityId = parentPlanId;
+                            obj.Id = p.Id.ToString();
+                            obj.ActivityId = "plan_" + p.Id.ToString();
+                            obj.ActivityName = p.Title;
+                            obj.ActivityType = ActivityType.ActivityPlan;
+                            obj.ParentActivityId = parentMainId;
                             obj.TabActivityId = p.Id.ToString();
                             obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
                             obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                            obj = GetMonthWiseDataReport(obj, c.Plan_Campaign_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                            obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
                             model.Add(obj);
-                            parentCampaignId = "c_" + p.Id + c.PlanCampaignId.ToString();
-                            ProgramObj = new List<Plan_Campaign_Program>();
-                            ProgramObj = ProgramListInner.Where(pr => pr.PlanCampaignId == c.PlanCampaignId).OrderBy(pr => pr.Title).ToList();
-                            foreach (var pr in ProgramObj)
+                            parentPlanId = "plan_" + p.Id.ToString();
+
+                            ProgramListInner = new List<Plan_Campaign_Program>();
+                            campaignObj = new List<Plan_Campaign>();
+                            ProgramListInner = ProgramList.Where(program => TacticListInner.Select(t => t.PlanProgramId).Contains(program.PlanProgramId)).ToList();
+                            campaignObj = CampaignList.Where(campaign => ProgramListInner.Select(program => program.PlanCampaignId).Contains(campaign.PlanCampaignId)).OrderBy(campaign => campaign.Title).ToList();
+
+                            foreach (var c in campaignObj)
                             {
-                                //// Add Program data to BudgetModelReport.
+                                //// Add Campaign data to BudgetModelReport.
                                 obj = new BudgetModelReport();
-                                obj.Id = pr.PlanProgramId.ToString();
+                                obj.Id = c.PlanCampaignId.ToString();
                                 obj.CustomFieldID = customfieldId;
-                                obj.ActivityId = "cp_" + p.Id + pr.PlanProgramId.ToString();
-                                obj.ActivityName = pr.Title;
-                                obj.ActivityType = ActivityType.ActivityProgram;
-                                obj.ParentActivityId = parentCampaignId;
+                                obj.ActivityId = "c_" + p.Id + c.PlanCampaignId.ToString();
+                                obj.ActivityName = c.Title;
+                                obj.ActivityType = ActivityType.ActivityCampaign;
+                                obj.ParentActivityId = parentPlanId;
                                 obj.TabActivityId = p.Id.ToString();
                                 obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
                                 obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                                obj = GetMonthWiseDataReport(obj, pr.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                                obj = GetMonthWiseDataReport(obj, c.Plan_Campaign_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
                                 model.Add(obj);
-                                parentProgramId = "cp_" + p.Id + pr.PlanProgramId.ToString();
-                                TacticObj = new List<Plan_Campaign_Program_Tactic>();
-                                TacticObj = TacticListInner.Where(t => t.PlanProgramId == pr.PlanProgramId).OrderBy(t => t.Title).ToList();
-                                foreach (var t in TacticObj)
+                                parentCampaignId = "c_" + p.Id + c.PlanCampaignId.ToString();
+                                ProgramObj = new List<Plan_Campaign_Program>();
+                                ProgramObj = ProgramListInner.Where(pr => pr.PlanCampaignId == c.PlanCampaignId).OrderBy(pr => pr.Title).ToList();
+                                foreach (var pr in ProgramObj)
                                 {
-                                    //// Add Tactic data to BudgetModelReport.
+                                    //// Add Program data to BudgetModelReport.
                                     obj = new BudgetModelReport();
-                                    obj.Id = t.PlanTacticId.ToString();
+                                    obj.Id = pr.PlanProgramId.ToString();
                                     obj.CustomFieldID = customfieldId;
-                                    obj.ActivityId = "cpt_" + p.Id + t.PlanTacticId.ToString();
-                                    obj.ActivityName = t.Title;
-                                    obj.ActivityType = ActivityType.ActivityTactic;
-                                    obj.ParentActivityId = parentProgramId;
+                                    obj.ActivityId = "cp_" + p.Id + pr.PlanProgramId.ToString();
+                                    obj.ActivityName = pr.Title;
+                                    obj.ActivityType = ActivityType.ActivityProgram;
+                                    obj.ParentActivityId = parentCampaignId;
                                     obj.TabActivityId = p.Id.ToString();
-                                    obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
-                                    obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                                    obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
-                                    obj.CustomFieldType = customFieldType;
+                                    obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
+                                    obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                                    obj = GetMonthWiseDataReport(obj, pr.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
                                     model.Add(obj);
-                                    parentTacticId = "cpt_" + p.Id + t.PlanTacticId.ToString();
-
-                                    LineItemObj = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                                    if (FilteredLineItemList.Count != 0)
+                                    parentProgramId = "cp_" + p.Id + pr.PlanProgramId.ToString();
+                                    TacticObj = new List<Plan_Campaign_Program_Tactic>();
+                                    TacticObj = TacticListInner.Where(t => t.PlanProgramId == pr.PlanProgramId).OrderBy(t => t.Title).ToList();
+                                    foreach (var t in TacticObj)
                                     {
-                                        var FilteredLineItemIDs = FilteredLineItemList.Select(list => list.PlanLineItemId).ToList();
-                                        LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId && FilteredLineItemIDs.Contains(l.PlanLineItemId)).OrderBy(l => l.Title).ToList();
-                                    }
-                                    else
-                                    {
-                                        LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId).OrderBy(l => l.Title).ToList();
-                                    }
-                                    foreach (var l in LineItemObj)
-                                    {
-                                        //// Add LineItem data to BudgetModelReport.
+                                        //// Add Tactic data to BudgetModelReport.
                                         obj = new BudgetModelReport();
-                                        obj.Id = l.PlanLineItemId.ToString();
+                                        obj.Id = t.PlanTacticId.ToString();
                                         obj.CustomFieldID = customfieldId;
-                                        obj.ActivityId = "cptl_" + l.PlanLineItemId.ToString();
-                                        obj.ActivityName = l.Title;
-                                        obj.LineItemTypeId = l.LineItemTypeId;
-                                        obj.ActivityType = ActivityType.ActivityLineItem;
-                                        obj.ParentActivityId = parentTacticId;
+                                        obj.ActivityId = "cpt_" + p.Id + t.PlanTacticId.ToString();
+                                        obj.ActivityName = t.Title;
+                                        obj.ActivityType = ActivityType.ActivityTactic;
+                                        obj.ParentActivityId = parentProgramId;
                                         obj.TabActivityId = p.Id.ToString();
-                                        obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
-                                        obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
+                                        obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
+                                        obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                                        obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                                        obj.CustomFieldType = customFieldType;
                                         model.Add(obj);
-                                    }
+                                        parentTacticId = "cpt_" + p.Id + t.PlanTacticId.ToString();
 
+                                        LineItemObj = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                                        if (FilteredLineItemList.Count != 0)
+                                        {
+                                            var FilteredLineItemIDs = FilteredLineItemList.Select(list => list.PlanLineItemId).ToList();
+                                            LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId && FilteredLineItemIDs.Contains(l.PlanLineItemId)).OrderBy(l => l.Title).ToList();
+                                        }
+                                        else
+                                        {
+                                            LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId).OrderBy(l => l.Title).ToList();
+                                        }
+                                        foreach (var l in LineItemObj)
+                                        {
+                                            //// Add LineItem data to BudgetModelReport.
+                                            obj = new BudgetModelReport();
+                                            obj.Id = l.PlanLineItemId.ToString();
+                                            obj.CustomFieldID = customfieldId;
+                                            obj.ActivityId = "cptl_" + l.PlanLineItemId.ToString();
+                                            obj.ActivityName = l.Title;
+                                            obj.LineItemTypeId = l.LineItemTypeId;
+                                            obj.ActivityType = ActivityType.ActivityLineItem;
+                                            obj.ParentActivityId = parentTacticId;
+                                            obj.TabActivityId = p.Id.ToString();
+                                            obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
+                                            obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                                            obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
+                                            model.Add(obj);
+                                        }
+
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
             }
 
             model = SetTacticWeightage(model, IsCustomFieldViewBy);
@@ -3109,7 +3110,7 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             //Added By Maitri Gandhi #1852: Convert Finance Report Grid to DHTMLX Tree Grid
-            #region "DHTMLX Tree Grid" 
+            #region "DHTMLX Tree Grid"
             BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
             //GenerateHeader            
             objBudgetDHTMLXGrid = GenerateHeaderString(ViewBag.AllocatedBy, objBudgetDHTMLXGrid);
@@ -3223,7 +3224,7 @@ namespace RevenuePlanner.Controllers
                             TacticDataObjList.Add(TacticDataObj);
 
                             TacticDataObj = new Budgetdataobj();
-                            TacticDataObj.value =HttpUtility.HtmlEncode(bmt.ActivityName);
+                            TacticDataObj.value = HttpUtility.HtmlEncode(bmt.ActivityName);
                             TacticDataObjList.Add(TacticDataObj);
 
                             TacticDataObjList = ParentMonthReport(bmt, ActivityType.ActivityTactic, TacticDataObjList, Tab);
@@ -3267,9 +3268,9 @@ namespace RevenuePlanner.Controllers
                 }
                 gridjsonlistPlanObj.rows = CampaignRowsObjList;
                 gridjsonlist.Add(gridjsonlistPlanObj);
-            }            
+            }
             objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
-            objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;            
+            objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;
             #endregion
             return PartialView("_Budget", objBudgetDHTMLXGrid);
         }
@@ -3348,7 +3349,7 @@ namespace RevenuePlanner.Controllers
             double childAllocatedValue = 0;
             string formatThousand = "#,#0.##";
             string DivId = string.Empty;
-            string overbudget = string.Empty, cssclass = string.Empty, budgetError = " budgetError", budgetErrorCss="background:#ff1e26;";
+            string overbudget = string.Empty, cssclass = string.Empty, budgetError = " budgetError", budgetErrorCss = "background:#ff1e26;";
             double dblProgress = 0;
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             if (ViewBag.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
@@ -3440,7 +3441,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        BudgetDataObj.value = "<div id=" + DivId + (cssclass!=string.Empty?" class=" + cssclass :string.Empty)+" " + overbudget + ">" + actualValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
+                        BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + actualValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%; class=progressBar></span>" + "</div>";
                     }
                 }
                 else
@@ -3648,7 +3649,7 @@ namespace RevenuePlanner.Controllers
                             dblProgress = (plannedValue == 0 && allocatedValue == 0) ? 0 : (plannedValue > 0 && allocatedValue == 0) ? 101 : plannedValue / allocatedValue * 100;
                             if (dblProgress > 100)
                             {
-                                BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + plannedValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;"+budgetErrorCss+" class=progressBar></span>" + "</div>";
+                                BudgetDataObj.value = "<div id=" + DivId + (cssclass != string.Empty ? " class=" + cssclass : string.Empty) + " " + overbudget + ">" + plannedValue.ToString(formatThousand) + "<span style=width:" + dblProgress.ToString() + "%;" + budgetErrorCss + " class=progressBar></span>" + "</div>";
                             }
                             else
                             {
@@ -3684,7 +3685,7 @@ namespace RevenuePlanner.Controllers
                             else
                                 BudgetDataObj.value = "<div id=" + DivId + ">" + allocatedValue.ToString(formatThousand) + "</div>";
                             overbudget = string.Empty;
-                        }                        
+                        }
                     }
                     else
                     {
@@ -4307,10 +4308,11 @@ namespace RevenuePlanner.Controllers
                             var optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).ToList();
                             customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldId.ToString() + "_" + option.CustomFieldOptionId.ToString())).ToList();
                         }
-                        else {
+                        else
+                        {
                             var optionIds = cusomfieldEntity.Where(x => x.CustomFieldId == customfieldId).Select(x => x.CustomFieldId.ToString() + "_" + x.Value.ToString()).Distinct().ToList();
                             customfieldoptionlist = customfieldoptionlist.Where(option => optionIds.Contains(option.CustomFieldId.ToString() + "_" + option.CustomFieldOptionId.ToString())).ToList();
-                        }                       
+                        }
                         //var optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).FirstOrDefault() != null ?
                         //lstCustomFieldFilter.Where(x => x.CustomFieldId == customfieldId).Select(x => x.OptionId).ToList() :
                         //cusomfieldEntity.Where(x => x.CustomFieldId == customfieldId).Select(x => x.CustomFieldId.ToString() + "_" + x.Value.ToString()).Distinct().ToList();
@@ -4947,7 +4949,7 @@ namespace RevenuePlanner.Controllers
                     IsQuarterly = false;
                 // Add By Nishant Sheth 
                 // Desc :: Report should be displayed based on the plan selections - #1957
-                timeframeOption = Common.GetTimeFrameOption(timeframeOption);
+                timeframeOption = Common.GetTimeFrameOption(timeframeOption, null); // Change By Nishant Sheth for #1957 Codereview points
                 ListYear = timeframeOption.Split(',');
                 Common.GetselectedYearList(timeframeOption, ref selectedYearList);// Add By Nishant Sheth #1838
                 // End By Nishant Sheth
@@ -7366,7 +7368,7 @@ namespace RevenuePlanner.Controllers
                 }
                 // Add By Nishant Sheth
                 // Desc :: #1925 - To resolve previous year actual values display with green color.
-                    TodayValue = GetTodayPlotValue(timeframeOption, IsQuarterly, IsPadding: true);
+                TodayValue = GetTodayPlotValue(timeframeOption, IsQuarterly, IsPadding: true);
                 #endregion
 
                 #region "Get Series list"
@@ -7934,7 +7936,7 @@ namespace RevenuePlanner.Controllers
             //Common.GetReportStartEndDate(option, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
             // Add By Nishant Sheth 
             // Desc :: Report should be displayed based on the plan selections - #1957
-            option = Common.GetTimeFrameOption(option);
+            option = Common.GetTimeFrameOption(option, null);// Change By Nishant Sheth for #1957 Codereview points
             string[] ListYear = option.Split(',');
             Common.GetselectedYearList(option, ref selectedYearList);// Add By Nishant Sheth #1839
             // End By Nishant Sheth
@@ -10027,7 +10029,7 @@ namespace RevenuePlanner.Controllers
             string[] ListYear;
             // Add By Nishant Sheth 
             // Desc :: Report should be displayed based on the plan selections - #1957
-            timeFrameOption = Common.GetTimeFrameOption(timeFrameOption);
+            timeFrameOption = Common.GetTimeFrameOption(timeFrameOption, null);// Change By Nishant Sheth for #1957 Codereview points
             ListYear = timeFrameOption.Split(',');
             Common.GetselectedYearList(timeFrameOption, ref selectedYearList);// Add By Nishant Sheth #1840
             // End By Nishant Sheth
@@ -10049,7 +10051,7 @@ namespace RevenuePlanner.Controllers
             string INQStageLabel = Common.GetLabel(Common.StageModeINQ);
             string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
             string CWStageLabel = Common.GetLabel(Common.StageModeCW);
-            
+
             #endregion
 
             // Add BY Nishant Sheth
@@ -11111,7 +11113,7 @@ namespace RevenuePlanner.Controllers
             string[] ListYear;
             // Add By Nishant Sheth 
             // Desc :: Report should be displayed based on the plan selections - #1957
-            option = Common.GetTimeFrameOption(option);
+            option = Common.GetTimeFrameOption(option, null);// Change By Nishant Sheth for #1957 Codereview points
             ListYear = option.Split(',');
             Common.GetselectedYearList(option, ref selectedYearList);// Add By Nishant Sheth #1840
             // End By Nishant Sheth
@@ -11152,7 +11154,7 @@ namespace RevenuePlanner.Controllers
                 List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
 
                 tacticlist = GetTacticForReporting();
-                
+
                 // End By Nishant Sheth
             #endregion
                 /// Declarion For Card Section 

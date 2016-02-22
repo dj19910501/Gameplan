@@ -1546,7 +1546,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planId">selected plan id</param>
         /// <returns>returns  HomePlanModelHeader object</returns>
-        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false, string TabId="")
+        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false, string TabId = "")
         {
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
@@ -4728,7 +4728,7 @@ namespace RevenuePlanner.Helpers
             if (tacticids.Count > 0) // // To handle object null reference exception  - Dashrath Prajapati - 29/01/2016
             {
                 // Check tacticid exists or not then use concat
-               allentityids = tacticids.Concat(programids).Concat(campaignids).Concat(LineItemIds).ToList();
+                allentityids = tacticids.Concat(programids).Concat(campaignids).Concat(LineItemIds).ToList();
             }
             var customfieldentity = db.CustomField_Entity.Where(cfe => customfieldids.Contains(cfe.CustomFieldId)).Select(cfe => new { EntityId = cfe.EntityId, CustomFieldId = cfe.CustomFieldId }).ToList();
 
@@ -4896,7 +4896,7 @@ namespace RevenuePlanner.Helpers
                                 string entityTypeProgram = Enums.EntityType.Program.ToString();
                                 string entityTypeTactic = Enums.EntityType.Tactic.ToString();
                                 //List<CustomField_Entity> customFieldList = new List<CustomField_Entity>();
-                            //    List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
+                                //    List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
                                 var lineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false) && lineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId).ToList();
 
                                 lineItemList.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
@@ -4915,7 +4915,7 @@ namespace RevenuePlanner.Helpers
                                 }
                                 #endregion
 
-                              //  List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
+                                //  List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
 
                                 var tacticList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false && pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId).ToList();
                                 tacticList.ForEach(pcpt => { pcpt.IsDeleted = true; pcpt.ModifiedDate = System.DateTime.Now; pcpt.ModifiedBy = Sessions.User.UserId; });
@@ -4957,7 +4957,7 @@ namespace RevenuePlanner.Helpers
                                 {
                                     DefaultPlanList = PlanList.FilterValues;
                                 }
-                              
+
                                 var GetDefaultPlanList = new List<string>();
                                 if (DefaultPlanList != null && DefaultPlanList != "")
                                 {
@@ -4967,7 +4967,7 @@ namespace RevenuePlanner.Helpers
                                 {
                                     GetDefaultPlanList.Remove(PlanId.ToString());
                                     var FinalList = string.Join(",", GetDefaultPlanList.Select(user => user.ToString()));
-                                    if(FinalList != "" && FinalList != null)
+                                    if (FinalList != "" && FinalList != null)
                                     {
                                         PlanList.FilterValues = FinalList;
                                         db.Entry(PlanList).State = EntityState.Modified;
@@ -6479,7 +6479,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="PlanTacticId"></param>
         /// <returns>Actual cost of a Tactic</returns>
-        public static List<TacticActualCostModel> CalculateActualCostTacticslist(List<int> PlanTacticIds, List<TacticStageValue> Tacticdata, string timeframe="")
+        public static List<TacticActualCostModel> CalculateActualCostTacticslist(List<int> PlanTacticIds, List<TacticStageValue> Tacticdata, string timeframe = "")
         {
             Dictionary<int, string> dicTactic_ActualCost = new Dictionary<int, string>();
             List<int> lstLineItems = new List<int>();
@@ -6752,48 +6752,19 @@ namespace RevenuePlanner.Helpers
         #region GetTimeFrame For Report
         // Add By Nishant Sheth
         // Desc :: To get the time frame option for selected plan ticket #1957
-        public static string GetTimeFrameOption(string options)
+        public static string GetTimeFrameOption(string options, List<Plan> Plan)
         {
+            MRPEntities objDbMrpEntities = new MRPEntities();
             if (string.IsNullOrEmpty(options))
             {
                 options = System.DateTime.Now.Year.ToString();
             }
-            string[] ListYear = options.Split(',');
-            MRPEntities objDbMrpEntities = new MRPEntities();
-            var ListPlanYear = objDbMrpEntities.Plans.Where(plan => Sessions.ReportPlanIds.Contains(plan.PlanId)).Select(plan => plan.Year).Distinct().ToList();// Get selectred plan's list of plan year 
-            var ListCampYear = objDbMrpEntities.Plan_Campaign.Where(camp => Sessions.ReportPlanIds.Contains(camp.PlanId)).Select(camp => camp.EndDate.Year).Distinct().ToList(); // Get selected plan's max campaign date
-            string timeframeOption = string.Empty;
-            List<string> NewListYear = new List<string>();
-            foreach (var Years in ListYear)
+            if (Plan == null || !(Plan.Count > 0))
             {
-                if (ListPlanYear.Contains(Years) && !NewListYear.Contains(Years))
-                {
-                    NewListYear.Add(Years);
-                }
-
-                if (ListCampYear.Contains(Convert.ToInt32(Years)) && !NewListYear.Contains(Years))
-                {
-                    NewListYear.Add(Years);
-                }
-            }
-            timeframeOption = string.Join(",", NewListYear);
-            return timeframeOption;
-        }
-
-        /// <summary>
-        ///  To get the time frame options with base plan year ticket #1957
-        /// </summary>
-        /// <param name="options"></param>
-        /// <param name="Plan"></param>
-        /// <returns></returns>
-        public static string GetTimeFrameOptionRevenue(string options, List<Plan> Plan)
-        {
-            if (string.IsNullOrEmpty(options))
-            {
-                options = System.DateTime.Now.Year.ToString();
+                Plan = objDbMrpEntities.Plans.Where(plan => Sessions.ReportPlanIds.Contains(plan.PlanId)).Select(plan => plan).ToList();// Get selectred plan's list of plan year 
             }
             string[] ListYear = options.Split(',');
-            MRPEntities objDbMrpEntities = new MRPEntities();
+            
             var ListPlanYear = Plan.Select(plan => plan.Year).Distinct().ToList();// Get selectred plan's list of plan year 
             var ListCampYear = objDbMrpEntities.Plan_Campaign.Where(camp => Sessions.ReportPlanIds.Contains(camp.PlanId)).Select(camp => camp.EndDate.Year).Distinct().ToList(); // Get selected plan's max campaign date
             string timeframeOption = string.Empty;
@@ -6813,6 +6784,8 @@ namespace RevenuePlanner.Helpers
             timeframeOption = string.Join(",", NewListYear);
             return timeframeOption;
         }
+
+       
         #endregion
 
     }
