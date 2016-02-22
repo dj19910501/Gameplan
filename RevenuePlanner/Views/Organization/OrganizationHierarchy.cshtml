@@ -200,6 +200,12 @@
             $("html, body").animate({ scrollTop: 0 }, 1000);
         }
 
+        //Added By Maitri Gandhi For #1982 Missing Connector Lines on 22/2/2016
+        $("#treeView li ul li.collapsable").each(function () {
+            if ($(this).find("li").length() == 1)
+                $(this).find("li").css("background-repeat", "no-repeat");
+        });
+
     });
 
     function showContactDetail(userId) {

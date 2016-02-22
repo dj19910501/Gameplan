@@ -63,6 +63,26 @@
 	margin-bottom:0;
 	background: url(../images/treeview-ver-line-solid.gif) left top no-repeat;
 }
+/* #1982 */
+.treeview > li ul li{
+	padding-left:70px;
+    background: url(../images/treeview-ver-line.gif) left top repeat-y;
+	margin-left:-16px;
+}
+.treeview > li > ul > li:last-child {
+    background-repeat: no-repeat;
+}
+/* #1982 End */ 
+
+/* #1982 */
+.treeview li > ul > li > ul > li.first{
+    background-repeat:repeat-y; 
+}
+ul.treeview li:nth-child(1) > ul li:nth-child(1) > ul > li:nth-child(1) > span > ul > li.collapsable.first  {
+    background-repeat:repeat-y; 
+}
+
+/* #1982 End*/
 .treeview li > ul li ul li.first > span {
     margin-top: 15px;
 }
