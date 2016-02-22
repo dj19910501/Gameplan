@@ -772,20 +772,51 @@
             //    IsDeployedToIntegration = true;
             //}
             var PlanTacticId = $('#hdnPlanTacticId').val();
+            // Start - Added by Viral Kaidya for #2002 - Save Sync settings for Eloqua & SFDC on Sync button click
+            var isDeployToIntegration = false;
+            if ($("#t_integration_status").hasClass("icon-check-blue")) { // if Deployed To Integration True.
+                isDeployToIntegration = true;
+            }
+
+            var isSyncSF = false;
+            var isSyncEloqua = false;
+            var isSyncWorkFront = false;
+            if (isDeployToIntegration) {
+                $('.integration-SF-Eloqua-WF').each(function (key, val) {
+                    var _divToggle = $(this).find("div.integrationToggle");
+                    var _intgrtnType = $(this).attr('integrationType');
+                    if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncEloqua = true;
+                        }
+                    }
+                    if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncSF = true;
+                        }
+                    }
+                });
+            }
+            // End - Added by Viral Kaidya for #2002 - Save Sync settings for Eloqua & SFDC on Sync button click
 
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/SaveSyncToIntegration/")',
                 data: {
                     id: PlanTacticId,
-                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()" //section parameter added to save tactic comment
+                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", //section parameter added to save tactic comment
+                    isDeployToIntegration: isDeployToIntegration,
+                    isSyncSF:isSyncSF,
+                    isSyncEloqua : isSyncEloqua //section parameter added to save tactic comment
                 },
                 success: function (data) {
                     if (data.result) {
                         /*Added by Mitesh Vaishnav for PL ticket #690
                         Change of sync to don’t sync or vice versa integration section update to 'Yes' and 'No'  */
                         if ('@tacticReview.IsIntegrationInstanceExist' == 'Yes') {
-                            if (IsDeployedToIntegration) {
+                            if (isDeployToIntegration) {
                                 $('#integration-id').html('Yes')
                             }
                             else {

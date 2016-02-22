@@ -10229,7 +10229,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Plan Tactic Id.</param>
         /// <param name="section">Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <param name="IsDeployedToIntegration">bool value</param>
-        public JsonResult SaveSyncToIntegration(int id, string section)
+        public JsonResult SaveSyncToIntegration(int id, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "")
         {
             bool returnValue = false;
             string strPlanEntity = string.Empty;
@@ -10237,9 +10237,28 @@ namespace RevenuePlanner.Controllers
             {
                 if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                 {
-                    //var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(_tactic => _tactic.PlanTacticId == id); 
-	 	            //objTactic.IsDeployedToIntegration = IsDeployedToIntegration; 
-	 	            //db.Entry(objTactic).State = EntityState.Modified;
+                    //Start - Added by Viral Kadiya for PL ticket #2002 - Save integration settings on "Sync" button click.
+                    #region "Save integration settings"
+                    #region "Declare local variables"
+                    bool IsDeployedToIntegration = false, IsSyncSF = false, IsSyncEloqua = false;
+                    #endregion
+                    var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(_tactic => _tactic.PlanTacticId == id);
+                    if (objTactic != null && objTactic.PlanTacticId > 0)
+                    {
+                        if (!string.IsNullOrEmpty(isDeployToIntegration))
+                            IsDeployedToIntegration = Convert.ToBoolean(isDeployToIntegration);
+                        if (!string.IsNullOrEmpty(isSyncSF))
+                            IsSyncSF = Convert.ToBoolean(isSyncSF);
+                        if (!string.IsNullOrEmpty(isSyncEloqua))
+                            IsSyncEloqua = Convert.ToBoolean(isSyncEloqua);
+                        objTactic.IsDeployedToIntegration = IsDeployedToIntegration;
+                        objTactic.IsSyncSalesForce = IsSyncSF;
+                        objTactic.IsSyncEloqua = IsSyncEloqua;
+                        db.Entry(objTactic).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                    #endregion
+                    //End - Added by Viral Kadiya for PL ticket #2002 - Save integration settings on "Sync" button click.
 
                     #region "Sync Tactic to respective Integration Instance"
                     ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic); //Modified 1/17/2016 PL#1907 Brad Gray
