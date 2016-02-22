@@ -4519,7 +4519,7 @@ namespace RevenuePlanner.Helpers
                                 singlehover = "";
                                 trhover = "";
                                 footerclose = "";
-                                if ((item.value == null) || (item.value != null && itemvaluelist.Count <= 1))
+                                if ((item.value == null) || (item.value.Count <=1 && itemvaluelist.Count <= 1))//Modified BY komal rawal for #1962 design issue
                                 {
                                     displayCheckbox = "style=\"display:none;\"";
                                     selectionMode = "Single";
@@ -4642,8 +4642,8 @@ namespace RevenuePlanner.Helpers
                                                 {
                                                  NameList = name.Remove(name.Length - 2, 2).Split(',').ToList();
                                                 }
-                                              
-                                            if (NameList.Count <= 1 && selectionMode != "Single")
+
+                                            if (NameList.Count <= 1 && selectionMode != "Single" && item.value.Count <= 1) //Modified BY komal rawal for #1962 design issue
                                             {
 
                                                 displayCheckbox = "style=\"display:none;\"";
