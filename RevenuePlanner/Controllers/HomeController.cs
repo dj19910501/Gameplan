@@ -268,7 +268,7 @@ namespace RevenuePlanner.Controllers
 
             //Added By komal Rawal for #1959 to handle last viewed data in session
             var SetOFLastViews = new List<Plan_UserSavedViews>();
-            if(Sessions.PlanUserSavedViews == null)
+            if (Sessions.PlanUserSavedViews == null)
             {
                 SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
             }
@@ -288,7 +288,7 @@ namespace RevenuePlanner.Controllers
                 var Yearlabel = Enums.FilterLabel.Year.ToString();
                 var FilterName = Sessions.FilterPresetName;
                 // var SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-                
+
                 //    var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
                 var SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.UserId).ToList();
                 var FinalSetOfPlanSelected = "";
@@ -512,7 +512,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="currentPlanId">current selected plan Id</param>
         /// <param name="activeMenu">current active menu</param>
         /// <returns>returns partial view of PlanDropdown</returns>
-        public ActionResult HomePlan(string currentPlanId,string fltrYears) //modified By Komal as we pass comma separated string value in current plan id now
+        public ActionResult HomePlan(string currentPlanId, string fltrYears) //modified By Komal as we pass comma separated string value in current plan id now
         {
             HomePlan objHomePlan = new HomePlan();
 
@@ -1168,7 +1168,7 @@ namespace RevenuePlanner.Controllers
                     var StartMinDatePlan = StartMinDatePlanList.Where(plan => plan.EntityId == tacticPlanId && plan.Status == tacticstatus).FirstOrDefault();
                     if (StartMinDatePlan == null)
                     {
-                    MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
+                        MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
                         StartMinDatePlanList.Add(new StartMinDatePlan { EntityId = tacticPlanId, Status = tacticstatus, StartDate = MinStartDateForPlan });
 
                     }
@@ -1431,7 +1431,7 @@ namespace RevenuePlanner.Controllers
                     var StartMinDatePlan = StartMinDatePlanList.Where(plan => plan.EntityId == tacticPlanId && plan.Status == tacticstatus).FirstOrDefault();
                     if (StartMinDatePlan == null)
                     {
-                    MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
+                        MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
                         StartMinDatePlanList.Add(new StartMinDatePlan { EntityId = tacticPlanId, Status = tacticstatus, StartDate = MinStartDateForPlan });
 
                     }
@@ -2119,19 +2119,18 @@ namespace RevenuePlanner.Controllers
                       list.objPlanTactic.LinkedPlanId
                ).ToList();
 
-
-            var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
-
-
+            // Commented by nishant sheth
+            // Desc :: to avoid db trip for linked plan tactic's plan name
+            //  var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
 
             var ListOfLinkedTactics = LinkedTacticList.Select(list =>
                 new
                 {
                     TacticId = list.objPlanTactic.LinkedTacticId,
-                    PlanName = ListOfLinkedPlans.Where(l => l.PlanId == list.objPlanTactic.LinkedPlanId).Select(l => l.Title).FirstOrDefault()
+                    //PlanName = ListOfLinkedPlans.Where(l => l.PlanId == list.objPlanTactic.LinkedPlanId).Select(l => l.Title).FirstOrDefault()
+                    PlanName = lstTactic.Where(l => l.PlanId == list.objPlanTactic.LinkedPlanId).Select(l => l.objPlanTacticCampaignPlan.Title).FirstOrDefault()// Modified by nishant sheth
+                });
 
-                }
-                );
             //End
             List<int> _PlanIds = lstTaskDetails.Select(_task => _task.PlanId).Distinct().ToList();
             List<ProgressModel> _EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => _PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
@@ -5847,7 +5846,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="PlanIds">comma sepreated string plan id(s)</param>
         /// <returns>List fo SelectListItem of Upcoming activity</returns>
-        public List<SelectListItem> UpComingActivity(string PlanIds,string fltrYears)
+        public List<SelectListItem> UpComingActivity(string PlanIds, string fltrYears)
         {
             //// List of plan id(s)
             List<int> planIds = string.IsNullOrWhiteSpace(PlanIds) ? new List<int>() : PlanIds.Split(',').Select(plan => int.Parse(plan)).ToList();
@@ -6017,7 +6016,7 @@ namespace RevenuePlanner.Controllers
                     // Remove old currentYear-PrevYear Timeframe value from UpcomingActivityList.
                     if (UpcomingActivityList.Any(year => year.Text.Equals(strTimeFrame)))
                     {
-                        var multiTimeFrame =  UpcomingActivityList.Where(year => year.Text.Equals(strTimeFrame)).FirstOrDefault();
+                        var multiTimeFrame = UpcomingActivityList.Where(year => year.Text.Equals(strTimeFrame)).FirstOrDefault();
                         UpcomingActivityList.Remove(multiTimeFrame);
                     }
                     // Set currentyear - PrevYear range selected to True.
@@ -6530,7 +6529,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    if(Sessions.PlanUserSavedViews == null)
+                    if (Sessions.PlanUserSavedViews == null)
                     {
                         // Add By Nishant Sheth to resolved the default view issue with update result
                         NewListOfViews = listofsavedviews.Where(view => view.IsDefaultPreset == true).ToList();
@@ -6724,14 +6723,14 @@ namespace RevenuePlanner.Controllers
                     List<Plan_UserSavedViews> listLineitem = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
                     Plan_UserSavedViews objLineitem = new Plan_UserSavedViews();
                     foreach (string customField in filteredCustomFields)
-                    {                        
+                    {
                         filterValues = customField.Split('_');
                         if (filterValues.Count() > 1)
                         {
                             CustomOptionvalue = filterValues[1];
                         }
                         if (filterValues.Count() > 0)
-                        {                           
+                        {
                             PreviousValue = PrefixCustom + filterValues[0].ToString();
                             ExistingFieldlist = listLineitem.Where(pcpobjw => pcpobjw.FilterName.Equals(PreviousValue)).FirstOrDefault();
                             //Added and Commented by Rahul to remove ternary operator and add if..else condition
@@ -6811,7 +6810,7 @@ namespace RevenuePlanner.Controllers
                         objFilterValues.FilterValues = "";
                         objFilterValues.Userid = Sessions.User.UserId;
                         objFilterValues.LastModifiedDate = DateTime.Now;
-                        objFilterValues.IsDefaultPreset = false;                      
+                        objFilterValues.IsDefaultPreset = false;
                         objDbMrpEntities.Plan_UserSavedViews.Add(objFilterValues);
                         NewCustomFieldData.Add(objFilterValues);
                     }
