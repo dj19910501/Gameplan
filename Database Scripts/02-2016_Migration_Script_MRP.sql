@@ -14,11 +14,10 @@ END
 	FROM Plan_Campaign_Program_Tactic T
 		INNER JOIN Plan_Campaign_Program PP ON PP.PlanProgramId = T.PlanProgramId AND PP.IsDeleted = 0
 		INNER JOIN Plan_Campaign C ON C.PlanCampaignId = PP.PlanCampaignId AND C.IsDeleted = 0
-		INNER JOIN [Plan] P ON P.PlanId = C.PlanId AND P.IsDeleted = 0 AND P.Status = 'Published'
+		INNER JOIN [Plan] P ON P.PlanId = C.PlanId AND P.IsDeleted = 0 --AND P.Status = 'Published'
 		INNER JOIN Model M ON M.ModelId = P.ModelId AND M.IsDeleted = 0 AND (M.IntegrationInstanceId IS NOT NULL OR M.IntegrationInstanceEloquaId IS NOT NULL) AND M.ClientId = @ClientId
 	WHERE T.IsDeleted = 0
 	AND T.IsDeployedToIntegration = 1
-	AND T.Status IN ('In-Progress','Complete','Approved')
 )
 UPDATE Plan_Campaign_Program_Tactic 
 	SET 
