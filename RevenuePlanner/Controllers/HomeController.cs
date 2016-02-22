@@ -1057,11 +1057,110 @@ namespace RevenuePlanner.Controllers
                 List<ProgressList> CampProgresList = new List<ProgressList>();
                 List<ProgressList> ProgramProgresList = new List<ProgressList>();
                 List<StartMinDatePlan> StartMinDatePlanList = new List<StartMinDatePlan>();
-                foreach (var tacticItem in lstTactic)
+
+                // Commented By Nishant Sheth
+                // Desc :: avoid foreach loop due to performance issue ticket #1798
+                #region Old Code
+                //foreach (var tacticItem in lstTactic)
+                //{
+                //    tacticstageId = tacticItem.objPlanTactic.StageId;
+                //    tacticListByViewById = lstTacticStageMap.Where(tatic => tatic.StageId == tacticstageId).Select(tac => tac.TacticList).FirstOrDefault();
+                //    tacticPlanId = tacticItem.PlanId;
+                //    MinStartDateForCustomField = lstTacticStageMap.Where(tatic => tatic.StageId == tacticstageId).Select(tac => tac.minDate).FirstOrDefault();//GetMinStartDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById);
+
+                //    //MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
+                //    #region  Minimum start date for plan
+                //    var StartMinDatePlan = StartMinDatePlanList.Where(plan => plan.EntityId == tacticPlanId && plan.Status == tacticstatus).FirstOrDefault();
+                //    if (StartMinDatePlan == null)
+                //    {
+                //        MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
+                //        StartMinDatePlanList.Add(new StartMinDatePlan { EntityId = tacticPlanId, Status = tacticstatus, StartDate = MinStartDateForPlan });
+
+                //    }
+                //    MinStartDateForPlan = StartMinDatePlanList.Where(plan => plan.EntityId == tacticPlanId && plan.Status == tacticstatus).FirstOrDefault().StartDate;
+
+                //    #endregion
+
+                //    EffectiveDateList = new List<DateTime>();
+                //    if (EffectiveDateListByPlanIds != null && EffectiveDateListByPlanIds.Count > 0)
+                //    {
+                //        EffectiveDateList = EffectiveDateListByPlanIds.Where(_date => _date.PlanId == tacticPlanId).Select(_date => _date.EffectiveDate).ToList();
+                //        if (EffectiveDateList != null && EffectiveDateList.Count > 0)
+                //            minEffectiveDate = EffectiveDateList.Min();
+                //    }
+                //    // Add By Nishant Sheth
+                //    // Desc :: To store Plan/Campaign/Program Progress becasue with same object not call progress function again #1798
+                //    #region Plan Progress
+                //    var PlanProgress = PlanProgresList.Where(plan => plan.EntityId == tacticPlanId).FirstOrDefault();
+                //    if (PlanProgress == null)
+                //    {
+                //        PlanProgresList.Add(new ProgressList
+                //        {
+                //            EntityId = tacticPlanId,
+                //            Progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForPlan),
+                //                                    Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
+                //                                    GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
+                //                                    tacticListByViewById, lstImprovementTactic, tacticPlanId)
+                //        });
+                //    }
+                //    PlanProgress = PlanProgresList.Where(plan => plan.EntityId == tacticPlanId).FirstOrDefault();
+                //    #endregion
+
+                //    #region Campaign Progress
+                //    var CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                //    if (CampProgress == null)
+                //    {
+                //        CampProgresList.Add(new ProgressList
+                //        {
+                //            EntityId = tacticItem.objPlanTacticCampaign.PlanCampaignId,
+                //            Progress = GetCampaignProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticCampaign, minEffectiveDate)
+                //        });
+                //    }
+                //    CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                //    #endregion
+
+                //    #region Program Progress
+                //    var ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                //    if (ProgramProgress == null)
+                //    {
+                //        ProgramProgresList.Add(new ProgressList
+                //        {
+                //            EntityId = tacticItem.objPlanTacticProgram.PlanProgramId,
+                //            Progress = GetProgramProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticProgram, minEffectiveDate)
+                //        });
+                //    }
+                //    ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                //    #endregion
+                //    // End By Nishant Sheth
+                //    lstTacticTaskList.Add(new TacticTaskList()
+                //    {
+                //        Tactic = tacticItem.objPlanTactic,
+                //        PlanTactic = tacticItem,
+                //        CreatedBy = tacticItem.CreatedBy,
+                //        CustomFieldId = tacticstageId.ToString(),
+                //        CustomFieldTitle = tacticItem.objPlanTactic.Stage.Title,
+                //        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstageId, tacticPlanId, tacticItem.PlanCampaignId, tacticItem.objPlanTactic.PlanProgramId, tacticItem.objPlanTactic.PlanTacticId),
+                //        ColorCode = TacticColor,
+                //        StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
+                //        EndDate = DateTime.MaxValue,
+                //        Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForCustomField,
+                //                                                GetMaxEndDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById)),
+                //        CampaignProgress = CampProgress.Progress, // Modified by nishant sheth #1798
+                //        ProgramProgress = ProgramProgress.Progress,// Modified by nishant sheth #1798
+                //        PlanProgrss = PlanProgress.Progress,// Modified by nishant sheth #1798
+                //        LinkTacticPermission = ((tacticItem.objPlanTactic.EndDate.Year - tacticItem.objPlanTactic.StartDate.Year) > 0) ? true : false,
+                //        LinkedTacticId = tacticItem.objPlanTactic.LinkedTacticId
+                //    });
+                //}
+                #endregion
+
+                // Add By Nishant Sheth
+                // Desc :: To increase performance #1798
+                for (int i = 0; i < lstTactic.Count; i++)
                 {
-                    tacticstageId = tacticItem.objPlanTactic.StageId;
+                    tacticstageId = lstTactic[i].objPlanTactic.StageId;
                     tacticListByViewById = lstTacticStageMap.Where(tatic => tatic.StageId == tacticstageId).Select(tac => tac.TacticList).FirstOrDefault();
-                    tacticPlanId = tacticItem.PlanId;
+                    tacticPlanId = lstTactic[i].PlanId;
                     MinStartDateForCustomField = lstTacticStageMap.Where(tatic => tatic.StageId == tacticstageId).Select(tac => tac.minDate).FirstOrDefault();//GetMinStartDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById);
 
                     //MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
@@ -1103,39 +1202,39 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     #region Campaign Progress
-                    var CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                    var CampProgress = CampProgresList.Where(camp => camp.EntityId == lstTactic[i].objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
                     if (CampProgress == null)
                     {
                         CampProgresList.Add(new ProgressList
                         {
-                            EntityId = tacticItem.objPlanTacticCampaign.PlanCampaignId,
-                            Progress = GetCampaignProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticCampaign, minEffectiveDate)
+                            EntityId = lstTactic[i].objPlanTacticCampaign.PlanCampaignId,
+                            Progress = GetCampaignProgressViewBy(tacticListByViewById, lstTactic[i].objPlanTacticCampaign, minEffectiveDate)
                         });
                     }
-                    CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                    CampProgress = CampProgresList.Where(camp => camp.EntityId == lstTactic[i].objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
                     #endregion
 
                     #region Program Progress
-                    var ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                    var ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == lstTactic[i].objPlanTacticProgram.PlanProgramId).FirstOrDefault();
                     if (ProgramProgress == null)
                     {
                         ProgramProgresList.Add(new ProgressList
                         {
-                            EntityId = tacticItem.objPlanTacticProgram.PlanProgramId,
-                            Progress = GetProgramProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticProgram, minEffectiveDate)
+                            EntityId = lstTactic[i].objPlanTacticProgram.PlanProgramId,
+                            Progress = GetProgramProgressViewBy(tacticListByViewById, lstTactic[i].objPlanTacticProgram, minEffectiveDate)
                         });
                     }
-                    ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                    ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == lstTactic[i].objPlanTacticProgram.PlanProgramId).FirstOrDefault();
                     #endregion
                     // End By Nishant Sheth
                     lstTacticTaskList.Add(new TacticTaskList()
                     {
-                        Tactic = tacticItem.objPlanTactic,
-                        PlanTactic = tacticItem,
-                        CreatedBy = tacticItem.CreatedBy,
+                        Tactic = lstTactic[i].objPlanTactic,
+                        PlanTactic = lstTactic[i],
+                        CreatedBy = lstTactic[i].CreatedBy,
                         CustomFieldId = tacticstageId.ToString(),
-                        CustomFieldTitle = tacticItem.objPlanTactic.Stage.Title,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstageId, tacticPlanId, tacticItem.PlanCampaignId, tacticItem.objPlanTactic.PlanProgramId, tacticItem.objPlanTactic.PlanTacticId),
+                        CustomFieldTitle = lstTactic[i].objPlanTactic.Stage.Title,
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstageId, tacticPlanId, lstTactic[i].PlanCampaignId, lstTactic[i].objPlanTactic.PlanProgramId, lstTactic[i].objPlanTactic.PlanTacticId),
                         ColorCode = TacticColor,
                         StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
                         EndDate = DateTime.MaxValue,
@@ -1144,8 +1243,8 @@ namespace RevenuePlanner.Controllers
                         CampaignProgress = CampProgress.Progress, // Modified by nishant sheth #1798
                         ProgramProgress = ProgramProgress.Progress,// Modified by nishant sheth #1798
                         PlanProgrss = PlanProgress.Progress,// Modified by nishant sheth #1798
-                        LinkTacticPermission = ((tacticItem.objPlanTactic.EndDate.Year - tacticItem.objPlanTactic.StartDate.Year) > 0) ? true : false,
-                        LinkedTacticId = tacticItem.objPlanTactic.LinkedTacticId
+                        LinkTacticPermission = ((lstTactic[i].objPlanTactic.EndDate.Year - lstTactic[i].objPlanTactic.StartDate.Year) > 0) ? true : false,
+                        LinkedTacticId = lstTactic[i].objPlanTactic.LinkedTacticId
                     });
                 }
 
@@ -1217,11 +1316,116 @@ namespace RevenuePlanner.Controllers
                 List<ProgressList> CampProgresList = new List<ProgressList>();
                 List<ProgressList> ProgramProgresList = new List<ProgressList>();
                 List<StartMinDatePlan> StartMinDatePlanList = new List<StartMinDatePlan>();
-                foreach (var tacticItem in lstTactic)
+
+                // Commented By Nishant Sheth
+                // Desc :: avoid foreach loop due to performance issue ticket #1798
+                #region Old Code
+                //foreach (var tacticItem in lstTactic)
+                //{
+                //    tacticstatus = tacticItem.objPlanTactic.Status;
+                //    tacticListByViewById = lstTacticStageMap.Where(tatic => tatic.Status == tacticstatus).Select(tatic => tatic.TacticList).FirstOrDefault();
+                //    tacticPlanId = tacticItem.PlanId;
+                //    MinStartDateForCustomField = lstTacticStageMap.Where(tatic => tatic.Status == tacticstatus).Select(tac => tac.minDate).FirstOrDefault();//GetMinStartDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById);
+                //    #region  Minimum start date for plan
+                //    var StartMinDatePlan = StartMinDatePlanList.Where(plan => plan.EntityId == tacticPlanId && plan.Status == tacticstatus).FirstOrDefault();
+                //    if (StartMinDatePlan == null)
+                //    {
+                //        MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
+                //        StartMinDatePlanList.Add(new StartMinDatePlan { EntityId = tacticPlanId, Status = tacticstatus, StartDate = MinStartDateForPlan });
+
+                //    }
+                //    MinStartDateForPlan = StartMinDatePlanList.Where(plan => plan.EntityId == tacticPlanId && plan.Status == tacticstatus).FirstOrDefault().StartDate;
+
+                //    #endregion
+                //    EffectiveDateList = new List<DateTime>();
+                //    if (EffectiveDateListByPlanIds != null && EffectiveDateListByPlanIds.Count > 0)
+                //    {
+                //        EffectiveDateList = EffectiveDateListByPlanIds.Where(_date => _date.PlanId == tacticPlanId).Select(_date => _date.EffectiveDate).ToList();
+                //        if (EffectiveDateList != null && EffectiveDateList.Count > 0)
+                //            minEffectiveDate = EffectiveDateList.Min();
+                //    }
+
+                //    // Add By Nishant Sheth
+                //    // Desc :: To store Plan/Campaign/Program Progress becasue with same object not call progress function again #1798
+                //    #region Plan Progress
+                //    var PlanProgress = PlanProgresList.Where(plan => plan.EntityId == tacticPlanId).FirstOrDefault();
+                //    if (PlanProgress == null)
+                //    {
+                //        PlanProgresList.Add(new ProgressList
+                //        {
+                //            EntityId = tacticPlanId,
+                //            Progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForPlan),
+                //                                    Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
+                //                                    GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
+                //                                    tacticListByViewById, lstImprovementTactic, tacticPlanId)
+                //        });
+                //    }
+                //    PlanProgress = PlanProgresList.Where(plan => plan.EntityId == tacticPlanId).FirstOrDefault();
+                //    #endregion
+
+                //    #region Campaign Progress
+                //    var CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                //    if (CampProgress == null)
+                //    {
+                //        CampProgresList.Add(new ProgressList
+                //        {
+                //            EntityId = tacticItem.objPlanTacticCampaign.PlanCampaignId,
+                //            Progress = GetCampaignProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticCampaign, minEffectiveDate)
+                //        });
+                //    }
+                //    CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                //    #endregion
+
+                //    #region Program Progress
+                //    var ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                //    if (ProgramProgress == null)
+                //    {
+                //        ProgramProgresList.Add(new ProgressList
+                //        {
+                //            EntityId = tacticItem.objPlanTacticProgram.PlanProgramId,
+                //            Progress = GetProgramProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticProgram, minEffectiveDate)
+                //        });
+                //    }
+                //    ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                //    #endregion
+                //    // End By Nishant Sheth
+
+                //    lstTacticTaskList.Add(new TacticTaskList()
+                //    {
+
+                //        Tactic = tacticItem.objPlanTactic,
+                //        PlanTactic = tacticItem,
+                //        CreatedBy = tacticItem.CreatedBy,
+                //        CustomFieldId = tacticstatus,
+                //        CustomFieldTitle = tacticstatus,
+                //        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstatus, tacticPlanId, tacticItem.PlanCampaignId, tacticItem.objPlanTactic.PlanProgramId, tacticItem.objPlanTactic.PlanTacticId),
+                //        ColorCode = TacticColor,
+                //        StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
+                //        EndDate = DateTime.MaxValue,
+                //        Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForCustomField,
+                //                                                GetMaxEndDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById)),
+                //        //CampaignProgress = GetCampaignProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticCampaign, minEffectiveDate),
+                //        CampaignProgress = CampProgress.Progress, // Modified By Nishant Sheth #1798
+                //        //ProgramProgress = GetProgramProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticProgram, minEffectiveDate),
+                //        ProgramProgress = ProgramProgress.Progress,// Modified By Nishant Sheth #1798
+                //        //PlanProgrss = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForPlan),
+                //        //                            Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
+                //        //                            GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
+                //        //                            tacticListByViewById, lstImprovementTactic, tacticPlanId),
+                //        PlanProgrss = PlanProgress.Progress,// Modified By Nishant Sheth #1798
+                //        LinkTacticPermission = ((tacticItem.objPlanTactic.EndDate.Year - tacticItem.objPlanTactic.StartDate.Year) > 0) ? true : false,
+                //        LinkedTacticId = tacticItem.objPlanTactic.LinkedTacticId
+                //    });
+                //}
+                #endregion
+
+                // Add By Nishant Sheth
+                // Desc :: To increase performance #1798
+                for (int i = 0; i < lstTactic.Count; i++)
                 {
-                    tacticstatus = tacticItem.objPlanTactic.Status;
+                    tacticstatus = lstTactic[i].objPlanTactic.Status;
                     tacticListByViewById = lstTacticStageMap.Where(tatic => tatic.Status == tacticstatus).Select(tatic => tatic.TacticList).FirstOrDefault();
-                    tacticPlanId = tacticItem.PlanId;
+                    tacticPlanId = lstTactic[i].PlanId;
                     MinStartDateForCustomField = lstTacticStageMap.Where(tatic => tatic.Status == tacticstatus).Select(tac => tac.minDate).FirstOrDefault();//GetMinStartDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById);
                     #region  Minimum start date for plan
                     var StartMinDatePlan = StartMinDatePlanList.Where(plan => plan.EntityId == tacticPlanId && plan.Status == tacticstatus).FirstOrDefault();
@@ -1261,41 +1465,41 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     #region Campaign Progress
-                    var CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                    var CampProgress = CampProgresList.Where(camp => camp.EntityId == lstTactic[i].objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
                     if (CampProgress == null)
                     {
                         CampProgresList.Add(new ProgressList
                         {
-                            EntityId = tacticItem.objPlanTacticCampaign.PlanCampaignId,
-                            Progress = GetCampaignProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticCampaign, minEffectiveDate)
+                            EntityId = lstTactic[i].objPlanTacticCampaign.PlanCampaignId,
+                            Progress = GetCampaignProgressViewBy(tacticListByViewById, lstTactic[i].objPlanTacticCampaign, minEffectiveDate)
                         });
                     }
-                    CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                    CampProgress = CampProgresList.Where(camp => camp.EntityId == lstTactic[i].objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
                     #endregion
 
                     #region Program Progress
-                    var ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                    var ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == lstTactic[i].objPlanTacticProgram.PlanProgramId).FirstOrDefault();
                     if (ProgramProgress == null)
                     {
                         ProgramProgresList.Add(new ProgressList
                         {
-                            EntityId = tacticItem.objPlanTacticProgram.PlanProgramId,
-                            Progress = GetProgramProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticProgram, minEffectiveDate)
+                            EntityId = lstTactic[i].objPlanTacticProgram.PlanProgramId,
+                            Progress = GetProgramProgressViewBy(tacticListByViewById, lstTactic[i].objPlanTacticProgram, minEffectiveDate)
                         });
                     }
-                    ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                    ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == lstTactic[i].objPlanTacticProgram.PlanProgramId).FirstOrDefault();
                     #endregion
                     // End By Nishant Sheth
 
                     lstTacticTaskList.Add(new TacticTaskList()
                     {
 
-                        Tactic = tacticItem.objPlanTactic,
-                        PlanTactic = tacticItem,
-                        CreatedBy = tacticItem.CreatedBy,
+                        Tactic = lstTactic[i].objPlanTactic,
+                        PlanTactic = lstTactic[i],
+                        CreatedBy = lstTactic[i].CreatedBy,
                         CustomFieldId = tacticstatus,
                         CustomFieldTitle = tacticstatus,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstatus, tacticPlanId, tacticItem.PlanCampaignId, tacticItem.objPlanTactic.PlanProgramId, tacticItem.objPlanTactic.PlanTacticId),
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstatus, tacticPlanId, lstTactic[i].PlanCampaignId, lstTactic[i].objPlanTactic.PlanProgramId, lstTactic[i].objPlanTactic.PlanTacticId),
                         ColorCode = TacticColor,
                         StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
                         EndDate = DateTime.MaxValue,
@@ -1310,8 +1514,8 @@ namespace RevenuePlanner.Controllers
                         //                            GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
                         //                            tacticListByViewById, lstImprovementTactic, tacticPlanId),
                         PlanProgrss = PlanProgress.Progress,// Modified By Nishant Sheth #1798
-                        LinkTacticPermission = ((tacticItem.objPlanTactic.EndDate.Year - tacticItem.objPlanTactic.StartDate.Year) > 0) ? true : false,
-                        LinkedTacticId = tacticItem.objPlanTactic.LinkedTacticId
+                        LinkTacticPermission = ((lstTactic[i].objPlanTactic.EndDate.Year - lstTactic[i].objPlanTactic.StartDate.Year) > 0) ? true : false,
+                        LinkedTacticId = lstTactic[i].objPlanTactic.LinkedTacticId
                     });
                 }
 
@@ -1482,18 +1686,121 @@ namespace RevenuePlanner.Controllers
                 List<ProgressList> PlanProgresList = new List<ProgressList>();
                 List<ProgressList> CampProgresList = new List<ProgressList>();
                 List<ProgressList> ProgramProgresList = new List<ProgressList>();
+                // Commented By Nishant Sheth
+                // Desc :: avoid foreach loop due to performance issue ticket #1798
+                #region Old Code
+                //foreach (var tacticItem in lstProcessedCustomFieldTactics)
+                //{
+                //    tacticPlanId = tacticItem.tactic.PlanId;
+                //    tacticPlanCampaignId = tacticItem.tactic.PlanCampaignId;
+                //    _PlanTacticId = tacticItem.tactic.objPlanTactic.PlanTacticId;
+                //    _PlanProgramId = tacticItem.tactic.objPlanTactic.PlanProgramId;
+                //    _TypeId = IsCampaign ? tacticPlanCampaignId : (IsProgram ? _PlanProgramId : _PlanTacticId);
 
-                foreach (var tacticItem in lstProcessedCustomFieldTactics)
+                //    tacticListByViewById = lstTacticStageMap.Where(c => c.CustomFieldId == tacticItem.customFieldId).Select(c => c.TacticList).FirstOrDefault();//lstTactic.Where(tactic => tacticItem.customFieldTacticList.Contains(IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId))).Select(tactic => tactic).ToList();
+                //    planminmaxdateobj = new PlanMinMaxDate();
+                //    planminmaxdateobj = planminmaxdatelist.Where(p => p.CustomFieldId == tacticItem.customFieldId && p.PlanId == tacticPlanId).FirstOrDefault();
+                //    #region "Get CampaignIds,ProgramIds & Tactic list for Min & Max Date"
+                //    fltrTactic = new List<Plan_Tactic>();
+                //    fltrTactic = tacticListByViewById.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == _TypeId).ToList();
+
+                //    #endregion
+                //    #region "Get Tactic,Program & Campaign MaxDate"
+                //    maxDateTactic = fltrTactic.Select(tactic => tactic.objPlanTactic.EndDate).Max();
+                //    maxDateProgram = fltrTactic.Select(tactic => tactic.objPlanTacticProgram.EndDate).Max();
+                //    maxDateCampaign = fltrTactic.Select(tactic => tactic.objPlanTacticCampaign.EndDate).Max();
+                //    MaxEndDateForCustomField = new[] { maxDateTactic, maxDateProgram, maxDateCampaign }.Max();
+                //    #endregion
+                //    #region "Get Tactic,Program & Campaign MinDate"
+                //    minDateTactic = new DateTime();
+                //    minDateTactic = fltrTactic.Select(tactic => tactic.objPlanTactic.StartDate).Min();
+                //    minDateProgram = fltrTactic.Select(tactic => tactic.objPlanTacticProgram.StartDate).Min();
+                //    minDateCampaign = fltrTactic.Select(tactic => tactic.objPlanTacticCampaign.StartDate).Min();
+                //    MinStartDateForCustomField = new[] { minDateTactic, minDateProgram, minDateCampaign }.Min();
+                //    #endregion
+
+
+                //    // Add By Nishant Sheth
+                //    // Desc :: To store Plan/Campaign/Program Progress becasue with same object not call progress function again #1798
+                //    #region Plan Progress
+                //    var PlanProgress = PlanProgresList.Where(plan => plan.EntityId == tacticPlanId).FirstOrDefault();
+                //    if (PlanProgress == null)
+                //    {
+                //        PlanProgresList.Add(new ProgressList
+                //        {
+                //            EntityId = tacticPlanId,
+                //            Progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, planminmaxdateobj.minDate),
+                //                                    Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, planminmaxdateobj.minDate,
+                //                                    GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
+                //                                    tacticListByViewById, lstImprovementTactic, tacticPlanId)
+                //        });
+                //    }
+                //    PlanProgress = PlanProgresList.Where(plan => plan.EntityId == tacticPlanId).FirstOrDefault();
+                //    #endregion
+
+                //    #region Campaign Progress
+                //    var CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.tactic.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                //    if (CampProgress == null)
+                //    {
+                //        CampProgresList.Add(new ProgressList
+                //        {
+                //            EntityId = tacticItem.tactic.objPlanTacticCampaign.PlanCampaignId,
+                //            Progress = GetCampaignProgressViewBy(tacticListByViewById, tacticItem.tactic.objPlanTacticCampaign, planminmaxdateobj.minEffectiveDate)
+                //        });
+                //    }
+                //    CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.tactic.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                //    #endregion
+
+                //    #region Program Progress
+                //    var ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.tactic.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                //    if (ProgramProgress == null)
+                //    {
+                //        ProgramProgresList.Add(new ProgressList
+                //        {
+                //            EntityId = tacticItem.tactic.objPlanTacticProgram.PlanProgramId,
+                //            Progress = GetProgramProgressViewBy(tacticListByViewById, tacticItem.tactic.objPlanTacticProgram, planminmaxdateobj.minEffectiveDate)
+                //        });
+                //    }
+                //    ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.tactic.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                //    #endregion
+                //    // End By Nishant Sheth
+
+                //    lstTacticTaskList.Add(new TacticTaskList()
+                //    {
+                //        Tactic = tacticItem.tactic.objPlanTactic,
+                //        PlanTactic = tacticItem.tactic,
+                //        CustomFieldId = tacticItem.customFieldId.ToString(),
+                //        CustomFieldTitle = tacticItem.customFieldTitle,
+                //        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticItem.customFieldId, tacticPlanId, tacticPlanCampaignId, _PlanProgramId, _PlanTacticId),
+                //        ColorCode = TacticColor,
+                //        StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
+                //        EndDate = Common.GetEndDateAsPerCalendarInDateFormat(CalendarEndDate, MaxEndDateForCustomField),
+                //        Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForCustomField, MaxEndDateForCustomField),
+                //        CampaignProgress = CampProgress.Progress, // Modified By Nishant sheth #1798
+                //        ProgramProgress = ProgramProgress.Progress,// Modified By Nishant sheth #1798
+                //        PlanProgrss = PlanProgress.Progress,// Modified By Nishant sheth #1798
+                //        CreatedBy = tacticItem.CreatedBy,
+                //        PlanStartDate = planminmaxdateobj.minDate,
+                //        PlanEndDate = planminmaxdateobj.maxDate,
+                //        LinkTacticPermission = ((tacticItem.tactic.objPlanTactic.EndDate.Year - tacticItem.tactic.objPlanTactic.StartDate.Year) > 0) ? true : false,
+                //        LinkedTacticId = tacticItem.tactic.objPlanTactic.LinkedTacticId
+                //    });
+                //}
+                #endregion
+
+                // Add By Nishant Sheth
+                // Desc :: To increase performance #1798
+                for (int i = 0; i < lstProcessedCustomFieldTactics.Count; i++)
                 {
-                    tacticPlanId = tacticItem.tactic.PlanId;
-                    tacticPlanCampaignId = tacticItem.tactic.PlanCampaignId;
-                    _PlanTacticId = tacticItem.tactic.objPlanTactic.PlanTacticId;
-                    _PlanProgramId = tacticItem.tactic.objPlanTactic.PlanProgramId;
+                    tacticPlanId = lstProcessedCustomFieldTactics[i].tactic.PlanId;
+                    tacticPlanCampaignId = lstProcessedCustomFieldTactics[i].tactic.PlanCampaignId;
+                    _PlanTacticId = lstProcessedCustomFieldTactics[i].tactic.objPlanTactic.PlanTacticId;
+                    _PlanProgramId = lstProcessedCustomFieldTactics[i].tactic.objPlanTactic.PlanProgramId;
                     _TypeId = IsCampaign ? tacticPlanCampaignId : (IsProgram ? _PlanProgramId : _PlanTacticId);
 
-                    tacticListByViewById = lstTacticStageMap.Where(c => c.CustomFieldId == tacticItem.customFieldId).Select(c => c.TacticList).FirstOrDefault();//lstTactic.Where(tactic => tacticItem.customFieldTacticList.Contains(IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId))).Select(tactic => tactic).ToList();
+                    tacticListByViewById = lstTacticStageMap.Where(c => c.CustomFieldId == lstProcessedCustomFieldTactics[i].customFieldId).Select(c => c.TacticList).FirstOrDefault();//lstTactic.Where(tactic => tacticItem.customFieldTacticList.Contains(IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId))).Select(tactic => tactic).ToList();
                     planminmaxdateobj = new PlanMinMaxDate();
-                    planminmaxdateobj = planminmaxdatelist.Where(p => p.CustomFieldId == tacticItem.customFieldId && p.PlanId == tacticPlanId).FirstOrDefault();
+                    planminmaxdateobj = planminmaxdatelist.Where(p => p.CustomFieldId == lstProcessedCustomFieldTactics[i].customFieldId && p.PlanId == tacticPlanId).FirstOrDefault();
                     #region "Get CampaignIds,ProgramIds & Tactic list for Min & Max Date"
                     fltrTactic = new List<Plan_Tactic>();
                     fltrTactic = tacticListByViewById.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == _TypeId).ToList();
@@ -1533,39 +1840,39 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     #region Campaign Progress
-                    var CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.tactic.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                    var CampProgress = CampProgresList.Where(camp => camp.EntityId == lstProcessedCustomFieldTactics[i].tactic.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
                     if (CampProgress == null)
                     {
                         CampProgresList.Add(new ProgressList
                         {
-                            EntityId = tacticItem.tactic.objPlanTacticCampaign.PlanCampaignId,
-                            Progress = GetCampaignProgressViewBy(tacticListByViewById, tacticItem.tactic.objPlanTacticCampaign, planminmaxdateobj.minEffectiveDate)
+                            EntityId = lstProcessedCustomFieldTactics[i].tactic.objPlanTacticCampaign.PlanCampaignId,
+                            Progress = GetCampaignProgressViewBy(tacticListByViewById, lstProcessedCustomFieldTactics[i].tactic.objPlanTacticCampaign, planminmaxdateobj.minEffectiveDate)
                         });
                     }
-                    CampProgress = CampProgresList.Where(camp => camp.EntityId == tacticItem.tactic.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
+                    CampProgress = CampProgresList.Where(camp => camp.EntityId == lstProcessedCustomFieldTactics[i].tactic.objPlanTacticCampaign.PlanCampaignId).FirstOrDefault();
                     #endregion
 
                     #region Program Progress
-                    var ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.tactic.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                    var ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == lstProcessedCustomFieldTactics[i].tactic.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
                     if (ProgramProgress == null)
                     {
                         ProgramProgresList.Add(new ProgressList
                         {
-                            EntityId = tacticItem.tactic.objPlanTacticProgram.PlanProgramId,
-                            Progress = GetProgramProgressViewBy(tacticListByViewById, tacticItem.tactic.objPlanTacticProgram, planminmaxdateobj.minEffectiveDate)
+                            EntityId = lstProcessedCustomFieldTactics[i].tactic.objPlanTacticProgram.PlanProgramId,
+                            Progress = GetProgramProgressViewBy(tacticListByViewById, lstProcessedCustomFieldTactics[i].tactic.objPlanTacticProgram, planminmaxdateobj.minEffectiveDate)
                         });
                     }
-                    ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == tacticItem.tactic.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
+                    ProgramProgress = ProgramProgresList.Where(prog => prog.EntityId == lstProcessedCustomFieldTactics[i].tactic.objPlanTacticProgram.PlanProgramId).FirstOrDefault();
                     #endregion
                     // End By Nishant Sheth
 
                     lstTacticTaskList.Add(new TacticTaskList()
                     {
-                        Tactic = tacticItem.tactic.objPlanTactic,
-                        PlanTactic = tacticItem.tactic,
-                        CustomFieldId = tacticItem.customFieldId.ToString(),
-                        CustomFieldTitle = tacticItem.customFieldTitle,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticItem.customFieldId, tacticPlanId, tacticPlanCampaignId, _PlanProgramId, _PlanTacticId),
+                        Tactic = lstProcessedCustomFieldTactics[i].tactic.objPlanTactic,
+                        PlanTactic = lstProcessedCustomFieldTactics[i].tactic,
+                        CustomFieldId = lstProcessedCustomFieldTactics[i].customFieldId.ToString(),
+                        CustomFieldTitle = lstProcessedCustomFieldTactics[i].customFieldTitle,
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", lstProcessedCustomFieldTactics[i].customFieldId, tacticPlanId, tacticPlanCampaignId, _PlanProgramId, _PlanTacticId),
                         ColorCode = TacticColor,
                         StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
                         EndDate = Common.GetEndDateAsPerCalendarInDateFormat(CalendarEndDate, MaxEndDateForCustomField),
@@ -1573,11 +1880,11 @@ namespace RevenuePlanner.Controllers
                         CampaignProgress = CampProgress.Progress, // Modified By Nishant sheth #1798
                         ProgramProgress = ProgramProgress.Progress,// Modified By Nishant sheth #1798
                         PlanProgrss = PlanProgress.Progress,// Modified By Nishant sheth #1798
-                        CreatedBy = tacticItem.CreatedBy,
+                        CreatedBy = lstProcessedCustomFieldTactics[i].CreatedBy,
                         PlanStartDate = planminmaxdateobj.minDate,
                         PlanEndDate = planminmaxdateobj.maxDate,
-                        LinkTacticPermission = ((tacticItem.tactic.objPlanTactic.EndDate.Year - tacticItem.tactic.objPlanTactic.StartDate.Year) > 0) ? true : false,
-                        LinkedTacticId = tacticItem.tactic.objPlanTactic.LinkedTacticId
+                        LinkTacticPermission = ((lstProcessedCustomFieldTactics[i].tactic.objPlanTactic.EndDate.Year - lstProcessedCustomFieldTactics[i].tactic.objPlanTactic.StartDate.Year) > 0) ? true : false,
+                        LinkedTacticId = lstProcessedCustomFieldTactics[i].tactic.objPlanTactic.LinkedTacticId
                     });
                 }
                 //// Prepare CustomFields list for Marketting accrodian for Home screen only.
