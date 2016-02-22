@@ -142,13 +142,14 @@
                 }
                 var newUrl = '';
                 if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Home.ToString().ToLower()") {
-                newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
-            }
+                    newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
+                    selectedPlanIds = selectedPlanIds.toString()   //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic
+                     }
                 else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
                     var ligridclass=$("#liGrid").attr("class");
                     newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
-            selectedPlanIds = parseInt(CurrentPlanId);
-                }
+                    selectedPlanIds = parseInt(CurrentPlanId);
+                     }
                 if(selectedPlanIds == '')
                 {
                     return;
@@ -320,7 +321,7 @@ function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam,Cid, OId,Ta
         cache: false,
         url: newUrl,
         data: {
-            planid: selectedPlanIds,
+            planid: selectedPlanIds.toString(),   //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic.
             strparam: strParam,
             isMultiplePlan: isMultiple,
             CustomFieldId:_filters.customFieldIds.toString(),

@@ -746,6 +746,7 @@
                     $("#spanMessageSuccess").text(data.msg);
                     $("#errorMessage").css("display", "none");
                     $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                    RefershPlanHeaderCalc();   //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic.
                     return;
                 }
                 else {

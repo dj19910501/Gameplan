@@ -7158,8 +7158,73 @@
 
     function RefershPlanHeaderCalc() {
         var Currenttime = $('#ddlUpComingActivites').val();
-        var SelectedPlanIds = $('#hdnSelectedPlanIds').val();
-        GetHealderData(SelectedPlanIds);
+        //  var SelectedPlanIds = $('#hdnSelectedPlanIds').val();
+        //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic.
+        var SelectedPlanIds = [];
+        var SelectedOwners = [];
+        var SelectedCF = [];
+        var SelectedTacticType = [];
+        var SelectedStatus = [];
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    SelectedPlanIds.push(chkid);
+                }
+            }
+        });
+
+        if (SelectedPlanIds.length == 0 || SelectedPlanIds == null || SelectedPlanIds == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            SelectedPlanIds = $('#hdnSelectedPlanIds').val()
+        }
+
+        $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+            SelectedOwners.push($(this).attr("id"));
+        });
+       
+        $("#ulTacticType li input[type=checkbox]:checked").each(function () {
+
+            var chkid = $(this).attr("id");
+            SelectedTacticType.push(chkid.replace("CbTT", ""));
+            
+        });
+      
+        $('#divCustomFieldsFilter').find("input[type=checkbox]:checked").each(function () {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    SelectedCF.push(chkid);
+                }
+        });
+        //Added for "Select All" case of #1952 and #1993 By Maitri Gandhi on 16/2/2016
+        var CheckedCounter = 0, AllCounter = 0, id = null;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                if (AllCounter == CheckedCounter) {
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                    }
+                    var i = 0, customfieldid;
+                    for (i = 0; i < SelectedCF.length; i++) {
+                        if (SelectedCF[i].indexOf("_") > -1) {
+                            customfieldid = SelectedCF[i].split("_")[0];
+                            if (id == customfieldid) {
+                                SelectedCF.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });        ////End
+        $("#ulStatus li input[type=checkbox]:checked").each(function () {
+            var chkid = $(this).attr("id");
+                SelectedStatus.push(chkid);
+        });
+        //End
+        GetHealderData(SelectedPlanIds, SelectedCF, SelectedOwners, SelectedTacticType,SelectedStatus);
         GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
     }
 
@@ -7632,6 +7697,7 @@
                         window.location = '@Url.Content("~/Login/Index")';
                     }
                     else if (data.IsSuccess) {
+                        RefershPlanHeaderCalc();   //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic.
                         isCopyTactic = data.Id;
                         isCopyTacticHomeGrid = isCopyTactic;
                         RefreshCurrentTab();
