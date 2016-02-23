@@ -1975,6 +1975,7 @@ namespace Integration.Salesforce
                                 string lastSyncDate = string.Empty;
                                 if (lastsync != null)
                                 {
+                                    //lastsync = lastsync.Value.AddMinutes(-30);
                                     lastSyncDate = Convert.ToDateTime(lastsync).ToUniversalTime().ToString(Common.DateFormatForSalesforce);
                                 }
                                 string strCWStagename = string.Empty;
@@ -2186,15 +2187,18 @@ namespace Integration.Salesforce
 
                                     if (!ErrorFlag)
                                     {
+                                        //Get Contact-CampaignMember list with last responded date 
                                         ContactCampaignMemberList = (from element in ContactCampaignMemberList
-                                                                     group element by new { element.ContactId, element.CampaignId }
+                                                                     //group element by new { element.ContactId, element.CampaignId }   
+                                                                     group element by new { element.ContactId }                          // Modified by Viral kadiya - Get most recent responded CampaignMember
                                                                          into groups
                                                                          select groups.OrderByDescending(p => p.RespondedDate).First()).ToList();
 
                                         List<OpportunityMember> OpportunityMemberList = new List<OpportunityMember>();
                                         OpportunityMemberList = (from om in OpportunityMemberListInitial
                                                                  join crm in ContactRoleList on om.OpportunityId equals crm.OpportunityId
-                                                                 join ccml in ContactCampaignMemberList on crm.ContactId equals ccml.ContactId
+                                                                 join ccml in ContactCampaignMemberList on new {crm.ContactId,om.CampaignId} equals new {ccml.ContactId,ccml.CampaignId}    // Modified by Viral Kadiya - filter Opportunity member list with Campaign Id.
+                                                                 //join ccml in ContactCampaignMemberList on crm.ContactId equals ccml.ContactId
                                                                  where om.CreatedDate >= ccml.RespondedDate && om.Amount != 0
                                                                  select new OpportunityMember
                                                                  {
