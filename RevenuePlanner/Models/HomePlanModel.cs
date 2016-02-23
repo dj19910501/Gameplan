@@ -297,6 +297,40 @@ namespace RevenuePlanner.Models
         public string Status { get; set; }
         public DateTime StartDate { get; set; }
     }
+    // Add By Nishant Sheth
+    // Desc :: Store details for plan min date and duration ticket #1798
+    public class StartMin_Duration_Plan
+    {
+        public string ParentId { get; set; }
+        public string PlanId { get; set; }
+        public string MinStartDate { get; set; }
+        public double Duration { get; set; }
+    }
+    // Add By Nishant Sheth
+    // Desc :: Store details for plan min date and end date ticket #1798
+    public class StartMin_EndMax_Plan
+    {
+        public string ParentId { get; set; }
+        public string PlanId { get; set; }
+        public DateTime MinStartDate { get; set; }
+        public DateTime MaxEndDate { get; set; }
+    }
+    // Add By Nishant Sheth
+    // Desc :: Store details for plan task data #1798
+    public class TaskDataPlan
+    {
+        public string id { get; set; }
+        public string text { get; set; }
+        public string start_date { get; set; }
+        public double duration { get; set; }
+        public double progress { get; set; }
+        public bool open { get; set; }
+        public string parent { get; set; }
+        public string color { get; set; }
+        public int planid { get; set; }
+        public Guid CreatedBy { get; set; }
+        public string Status{ get; set; }
+    }
     public class Plan_Tactic
     {
         public Plan_Campaign_Program_Tactic objPlanTactic { get; set; }

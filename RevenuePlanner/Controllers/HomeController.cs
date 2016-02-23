@@ -1960,7 +1960,7 @@ namespace RevenuePlanner.Controllers
                 color = tacticTask.Color,
                 CreatedBy = tacticTask.CreatedBy
 
-            }).Distinct().OrderBy(tacticTask => tacticTask.text);
+            }).Distinct().OrderBy(tacticTask => tacticTask.text).ToList();
 
             //// Group same task for Custom Field by CustomFieldId
             var groupedCustomField = taskDataCustomeFields.GroupBy(groupedTask => new { id = groupedTask.id }).Select(groupedTask => new
@@ -1991,28 +1991,141 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             #region Prepare Plan task data
-            var taskDataPlan = lstTaskDetails.Select(taskdata => new
-            {
-                id = string.Format("Z{0}_L{1}", taskdata.MainParentId, taskdata.PlanId),
-                text = taskdata.PlanTitle,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, viewBy == "Status" ? GetMinStartDateForPlanOfCustomField(viewBy, taskdata.MainParentId,
-                            taskdata.MainParentId, taskdata.PlanId, lstCampaign, lstProgram, lstTactic, IsCampaign, IsProgram) : taskdata.PlanStartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
-                                                          viewBy == "Status" ? GetMinStartDateForPlanOfCustomField(viewBy, taskdata.MainParentId,
-                                                          taskdata.MainParentId, taskdata.PlanId, lstCampaign, lstProgram,
-                                                          lstTactic, IsCampaign, IsProgram) : taskdata.PlanStartDate,
-                                                          viewBy == "Status" ? GetMaxEndDateForPlanOfCustomFields(viewBy, taskdata.MainParentId,
-                                                          taskdata.MainParentId, taskdata.PlanId, lstCampaign, lstProgram,
-                                                          lstTactic, IsCampaign, IsProgram) : taskdata.PlanEndDate),
-                progress = taskdata.PlanProgress,
-                open = false,
-                parent = string.Format("Z{0}", taskdata.MainParentId),
-                color = PlanColor,
-                planid = taskdata.PlanId,
-                CreatedBy = taskdata.CreatedBy,
-                Status = taskdata.Status  //added by Rahul Shah on 16/12/2015 for PL #1782
+            #region Old Code
+            // Commented By Nishant Sheth
+            // Desc :: To resloved performance issue ticket #1798
 
-            }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
+            //var taskDataPlan = lstTaskDetails.Select(taskdata => new
+            //{
+            //    id = string.Format("Z{0}_L{1}", taskdata.MainParentId, taskdata.PlanId),
+            //    text = taskdata.PlanTitle,
+            //    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, viewBy == "Status" ? GetMinStartDateForPlanOfCustomField(viewBy, taskdata.MainParentId,
+            //                taskdata.MainParentId, taskdata.PlanId, lstCampaign, lstProgram, lstTactic, IsCampaign, IsProgram) : taskdata.PlanStartDate),
+            //    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
+            //                                              viewBy == "Status" ? GetMinStartDateForPlanOfCustomField(viewBy, taskdata.MainParentId,
+            //                                              taskdata.MainParentId, taskdata.PlanId, lstCampaign, lstProgram,
+            //                                              lstTactic, IsCampaign, IsProgram) : taskdata.PlanStartDate,
+            //                                              viewBy == "Status" ? GetMaxEndDateForPlanOfCustomFields(viewBy, taskdata.MainParentId,
+            //                                              taskdata.MainParentId, taskdata.PlanId, lstCampaign, lstProgram,
+            //                                              lstTactic, IsCampaign, IsProgram) : taskdata.PlanEndDate),
+            //    progress = taskdata.PlanProgress,
+            //    open = false,
+            //    parent = string.Format("Z{0}", taskdata.MainParentId),
+            //    color = PlanColor,
+            //    planid = taskdata.PlanId,
+            //    CreatedBy = taskdata.CreatedBy,
+            //    Status = taskdata.Status  //added by Rahul Shah on 16/12/2015 for PL #1782
+
+            //}).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text).ToList();
+            #endregion
+
+            // Add By Nishant Sheth
+            // Desc :: To improve performance with change view by option ticket #1798
+            List<TaskDataPlan> ListTaskDataPlan = new List<TaskDataPlan>();
+            List<StartMin_EndMax_Plan> StartMin_EndMax_Plan = new List<StartMin_EndMax_Plan>(); // Get list of Plan Minimum Start Date & Max End Date
+            List<StartMin_Duration_Plan> StartMin_Duration_Plan = new List<StartMin_Duration_Plan>();// Get list of Plan Start Date & Duration
+            if (viewBy == "Status")
+            {
+
+                for (int i = 0; i < lstTaskDetails.Count; i++)
+                {
+                    string id = string.Format("Z{0}_L{1}", lstTaskDetails[i].MainParentId, lstTaskDetails[i].PlanId);
+                    string parent = string.Format("Z{0}", lstTaskDetails[i].MainParentId);
+
+                    var StartMin_EndMax_Date = StartMin_EndMax_Plan.Where(a => a.ParentId == parent && a.PlanId == id).FirstOrDefault();
+                    if (StartMin_EndMax_Date == null)
+                    {
+                        var MinStartDate = GetMinStartDateForPlanOfCustomField(viewBy, lstTaskDetails[i].MainParentId,
+                                lstTaskDetails[i].MainParentId, lstTaskDetails[i].PlanId, lstCampaign, lstProgram, lstTactic, IsCampaign, IsProgram);
+                        var MaxEndDate = GetMaxEndDateForPlanOfCustomFields(viewBy, lstTaskDetails[i].MainParentId,
+                                                              lstTaskDetails[i].MainParentId, lstTaskDetails[i].PlanId, lstCampaign, lstProgram,
+                                                              lstTactic, IsCampaign, IsProgram);
+                        StartMin_EndMax_Plan.Add(new StartMin_EndMax_Plan { ParentId = parent, PlanId = id, MinStartDate = MinStartDate, MaxEndDate = MaxEndDate });
+                    }
+                    StartMin_EndMax_Date = StartMin_EndMax_Plan.Where(a => a.ParentId == parent && a.PlanId == id).FirstOrDefault();
+
+                    var startDuration = StartMin_Duration_Plan.Where(a => a.ParentId == parent && a.PlanId == id).FirstOrDefault();
+                    if (startDuration == null)
+                    {
+                        var MinStartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, StartMin_EndMax_Date.MinStartDate);
+                        var Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, StartMin_EndMax_Date.MinStartDate, StartMin_EndMax_Date.MaxEndDate);
+                        StartMin_Duration_Plan.Add(new StartMin_Duration_Plan { PlanId = id, ParentId = parent, MinStartDate = MinStartDate, Duration = Duration });
+                    }
+                    startDuration = StartMin_Duration_Plan.Where(a => a.ParentId == parent && a.PlanId == id).FirstOrDefault();
+                    ListTaskDataPlan.Add(new TaskDataPlan
+                    {
+                        id = id,
+                        text = lstTaskDetails[i].PlanTitle,
+                        start_date = startDuration.MinStartDate,
+                        duration = startDuration.Duration,
+                        progress = lstTaskDetails[i].PlanProgress,
+                open = false,
+                        parent = parent,
+                color = PlanColor,
+                        planid = lstTaskDetails[i].PlanId,
+                        CreatedBy = lstTaskDetails[i].CreatedBy,
+                        Status = lstTaskDetails[i].Status  //added by Rahul Shah on 16/12/2015 for PL #1782
+                    });
+
+                }
+
+            }
+            else
+            {
+                for (int i = 0; i < lstTaskDetails.Count; i++)
+                {
+                    string id = string.Format("Z{0}_L{1}", lstTaskDetails[i].MainParentId, lstTaskDetails[i].PlanId);
+                    string parent = string.Format("Z{0}", lstTaskDetails[i].MainParentId);
+                    var StartMin_EndMax_Date = StartMin_EndMax_Plan.Where(a => a.ParentId == parent && a.PlanId == id).FirstOrDefault();
+                    if (StartMin_EndMax_Date == null)
+                    {
+                        var MinStartDate = lstTaskDetails[i].PlanStartDate;
+                        var MaxEndDate = lstTaskDetails[i].PlanEndDate;
+                        StartMin_EndMax_Plan.Add(new StartMin_EndMax_Plan { ParentId = parent, PlanId = id, MinStartDate = MinStartDate, MaxEndDate = MaxEndDate });
+                    }
+                    StartMin_EndMax_Date = StartMin_EndMax_Plan.Where(a => a.ParentId == parent && a.PlanId == id).FirstOrDefault();
+
+                    var startDuration = StartMin_Duration_Plan.Where(a => a.ParentId == parent && a.PlanId == id).FirstOrDefault();
+                    if (startDuration == null)
+                    {
+                        var MinStartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, StartMin_EndMax_Date.MinStartDate);
+                        var Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, StartMin_EndMax_Date.MinStartDate, StartMin_EndMax_Date.MaxEndDate);
+                        StartMin_Duration_Plan.Add(new StartMin_Duration_Plan { PlanId = id, ParentId = parent, MinStartDate = MinStartDate, Duration = Duration });
+                    }
+                    startDuration = StartMin_Duration_Plan.Where(a => a.ParentId == parent && a.PlanId == id).FirstOrDefault();
+                    ListTaskDataPlan.Add(new TaskDataPlan
+                    {
+                        id = id,
+                        text = lstTaskDetails[i].PlanTitle,
+                        start_date = startDuration.MinStartDate,
+                        duration = startDuration.Duration,
+                        progress = lstTaskDetails[i].PlanProgress,
+                        open = false,
+                        parent = parent,
+                        color = PlanColor,
+                        planid = lstTaskDetails[i].PlanId,
+                        CreatedBy = lstTaskDetails[i].CreatedBy,
+                        Status = lstTaskDetails[i].Status  //added by Rahul Shah on 16/12/2015 for PL #1782
+                    });
+                }
+            }
+
+            var taskDataPlan = ListTaskDataPlan.Select(taskdata => new
+            {
+                id = taskdata.id,
+                text = taskdata.text,
+                start_date = taskdata.start_date,
+                duration = taskdata.duration,
+                progress = taskdata.progress,
+                open = taskdata.open,
+                parent = taskdata.parent,
+                color = taskdata.color,
+                planid = taskdata.planid,
+                CreatedBy = taskdata.CreatedBy,
+                Status = taskdata.Status
+            }).Distinct().OrderBy(taskdata => taskdata.text).ToList();
+            // End By Nishant Sheth
+
 
             //// Finalize Plan task data to be render in gantt chart
             var lstPlanTaskdata = taskDataPlan.Select(taskdata => new
@@ -2151,7 +2264,6 @@ namespace RevenuePlanner.Controllers
                 LinkTacticPermission = taskdata.LinkTacticPermission,
                 LinkedTacticId = taskdata.LinkedTacticId,
                 LinkedPlanName = ListOfLinkedTactics.Where(id => id.TacticId.Equals(taskdata.LinkedTacticId)).Select(a => a.PlanName).FirstOrDefault()
-
 
             }).Distinct().OrderBy(t => t.text);
 
