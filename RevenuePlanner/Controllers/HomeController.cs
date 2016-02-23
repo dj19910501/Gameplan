@@ -1832,8 +1832,7 @@ namespace RevenuePlanner.Controllers
                             EntityId = tacticPlanId,
                             Progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, planminmaxdateobj.minDate),
                                                     Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, planminmaxdateobj.minDate,
-                                                    GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
-                                                    tacticListByViewById, lstImprovementTactic, tacticPlanId)
+                                                    planminmaxdateobj.maxDate), tacticListByViewById, lstImprovementTactic, tacticPlanId)
                         });
                     }
                     PlanProgress = PlanProgresList.Where(plan => plan.EntityId == tacticPlanId).FirstOrDefault();
