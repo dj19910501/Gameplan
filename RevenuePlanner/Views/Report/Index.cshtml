@@ -3058,6 +3058,15 @@ function () {
     $("#content_wraper").css('width', 'calc(100% - 50px)');
     $('#sidebar.sidebar').css({ 'width': '50px', 'background': 'transparent', });
     $('.sidebar-toogle').css('border-bottom-width', '0');
+    ///Add By Nishant Sheth
+    // Desc :: To handle the gridview resize with hide toggle button #1958
+    var ganttwidth = $("#gridbox").width();
+    if (leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+        var ganttwidth = $("#gridbox").width();
+            var totalWidth = ganttwidth + 230;
+            $("#gridbox").attr("width", totalWidth);
+            HomeGrid.setSizes();
+        }
 
 }, function () {
     $('#sidebar').css({
@@ -3074,6 +3083,15 @@ function () {
     $("#content_wraper").css('width', 'calc(100% - 280px)');
     $('#sidebar.sidebar').css({ 'width': '280px', 'background': '#e9e9e9 none repeat scroll 0 0', });
     $('.sidebar-toogle').css('border-bottom-width', '1px');
+    ///Add By Nishant Sheth
+    // Desc :: To handle the gridview resize with hide toggle button #1958
+    var ganttwidth = $("#gridbox").width();
+    if (leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+        var ganttwidth = $("#gridbox").width();
+        var totalWidth = ganttwidth - 230;
+        $("#gridbox").attr("width", totalWidth);
+        HomeGrid.setSizes();
+    }
 });
     // End By Nishant Sheth
 </script>
