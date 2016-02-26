@@ -105,7 +105,15 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
+                if (FilterName != null && FilterName != "")
+                {
+                    SetOFLastViews = Sessions.PlanUserSavedViews.ToList();
+
+                }
+                else
+                {
+                    SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
+                }
             }
             //End
             var SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.UserId).ToList();
