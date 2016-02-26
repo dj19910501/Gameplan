@@ -117,7 +117,7 @@
     var state0 = 0;
     //Added By komal rawal for #1283
     //  var isTacticExist = false;
-    function LoadTacticTypelist(data, tacids) {
+    function LoadTacticTypelist(data) {
         if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
             TactictypeCount = data.TacticTypelist.length;
             if (TactictypeCount > 0) {
@@ -142,12 +142,12 @@
                     checked = "checked"
                     checkedclass = "close-list"
                     ////Added by Maitri Gandhi for #1952
-                    if (Array.isArray(tacids) && tacids.length > 0) {
-                        if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
-                            checked = ""
-                            checkedclass = ""
-                        }
-                    }
+                        //if (Array.isArray(tacids) && tacids.length > 0) {
+                        //    if (tacids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                        //        checked = ""
+                        //        checkedclass = ""
+                        //    }
+                        //}
                     $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
                 });
 
@@ -168,18 +168,18 @@
         else {
             asyncval = false;
         }
+            //Commented By Maitri Gandhi on 24/2/2016 For #2014
+            //var tacids = [];
+            //$('#ulTacticType li').each(function () {
 
-        var tacids = [];
-        $('#ulTacticType li').each(function () {
-
-            if ($(this).hasClass("close-list") == false) {
-                var id = $(this).attr('id').replace('liTT', '')
-                var Index = tacids.indexOf(id);
-                if (Index == -1) {
-                    tacids.push(id);
-                }
-            }
-        });
+            //    if ($(this).hasClass("close-list") == false) {
+            //        var id = $(this).attr('id').replace('liTT', '')
+            //        var Index = tacids.indexOf(id);
+            //        if (Index == -1) {
+            //            tacids.push(id);
+            //        }
+            //    }
+            //});
         $('#ulTacticType').html('');
 
         filters.TacticTypeids = [];
@@ -210,7 +210,7 @@
                     }
                     else {
                         if (data.isSuccess == true) {
-                            LoadTacticTypelist(data, tacids);
+                            LoadTacticTypelist(data);
                         }
                         else {
                             $("#TacticTypeAllModule").css("display", "none");
@@ -328,11 +328,11 @@
 
         switch ($('#ActiveMenu').val().toLowerCase()) {
             case 'home':
-                $("#DivButtonsHome").show();
+                //$("#DivButtonsHome").show();  //Commented By Maitri Gandhi on 23/2/2016 For #2014
                 $("#DivButtonsPlanSummary").hide();
                 break;
             case 'plan':
-                $("#DivButtonsHome").hide();
+                //$("#DivButtonsHome").hide(); // Commented By Maitri Gandhi on 23/2/2016 For #2014
                 $("#DivButtonsPlanSummary").show();
                 break;
         }
@@ -572,17 +572,17 @@
                         $(this).removeAttr("checked");
                         $(this).parent().removeClass("close-list");
                     });
-
+                        //Modified By Maitri Gandhi on 24/2/2016 For #2014
+                        GetOwnerListForFilter(CurrentPlanId, false);
                     $('#ulSelectedOwner li input:checkbox').each(function () {
-                        if ($(this).attr('id') != '@Sessions.User.UserId') {
+                        @*if ($(this).attr('id') != '@Sessions.User.UserId') {
                             $(this).removeAttr("checked");
                             $(this).parent().removeClass("close-list");
                         }
-                        else {
+                        else {*@
                             $(this).attr("checked", "checked");
                             $(this).parent().addClass("close-list");
-                        }
-
+                        //}
                     });
                     GetTacticTypelist(CurrentPlanId, false);
                     // Modified By Rahul Shah
@@ -648,17 +648,18 @@
                     $(this).removeAttr("checked");
                     $(this).parent().removeClass("close-list");
                 });
+                //Modified By Maitri Gandhi on 24/2/2016 For #2014
                 //Modified by komal rawal Logged in owner did not come selected.
+                GetOwnerListForFilter(CurrentPlanId, false);
                 $('#ulSelectedOwner li input:checkbox').each(function () {
-                    if ($(this).attr('id') != '@Sessions.User.UserId') {
+                        @*if ($(this).attr('id') != '@Sessions.User.UserId') {
                         $(this).removeAttr("checked");
                         $(this).parent().removeClass("close-list");
                     }
-                    else {
+                        else {*@
                         $(this).attr("checked", "checked");
                         $(this).parent().addClass("close-list");
-                    }
-
+                            //}
                 });
                 GetTacticTypelist(CurrentPlanId, false);
                 // Modified By Rahul Shah
@@ -694,48 +695,48 @@
         else {
             asyncval = false;
         }
+        //Commented By Maitri Gandhi on 24/2/2016 For #2014
         //Modified by komal Rawal to deselect all Owners if there are no plans selected.
-        var SelectedPlanCount = 0;
+        //var SelectedPlanCount = 0;
 
-        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
-            if ($(this).attr('checked') == 'checked') {
-                SelectedPlanCount++;
+        //$('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        SelectedPlanCount++;
 
-            }
-        });
+        //    }
+        //});
 
 
-        if (SelectedPlanCount == 0) {
-            IsDeselectAll = true;
-        }
-        else if (SelectedPlanCount > 1 && filters.OwnerIds != "") {
-            IsDeselectAll = false;
-        }
+        //if (SelectedPlanCount == 0) {
+        //    IsDeselectAll = true;
+        //}
+        //else if (SelectedPlanCount > 1 && filters.OwnerIds != "") {
+        //    IsDeselectAll = false;
+        //}
         //End
 
         //Added by Rahul Shah on 06/01/2016 for PL #1854
-        if (IsDeselectAll == true) {
-            ids = [];
-        }
+        //if (IsDeselectAll == true) {
+        //    ids = [];
+        //}
 
-        $('#ulSelectedOwner li').each(function () {
-            if ($(this).hasClass("close-list")) {
-                var id = $(this).attr('id').replace('liOwner', '')
-                var Index = ids.indexOf(id);
-                if (Index == -1) {
-                    ids.push(id);
-                }
-            }
+        //$('#ulSelectedOwner li').each(function () {
+        //    if ($(this).hasClass("close-list")) {
+        //        var id = $(this).attr('id').replace('liOwner', '')
+        //        var Index = ids.indexOf(id);
+        //        if (Index == -1) {
+        //            ids.push(id);
+        //        }
+        //    }
 
-        });
+        //});
+        //if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
 
+        //    filters.OwnerIds = [];
+        //}
+        //End
         $('#ulSelectedOwner').html('');
-
-
-        if (filters.OwnerIds != "" || OnPlanChange != true || ids != "") {
-
             filters.OwnerIds = [];
-        }
 
         currentRequest = $.ajax({
             beforeSend: function (x) {
@@ -774,25 +775,24 @@
                                 $("#NoOwnerFound").hide();
                                 $('#ulSelectedOwner li').remove();
                                 $.each(data.AllowedOwner, function (i, OwnerItem) {
-
                                     //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
-                                    checked = "";
-                                    checkedclass = "";
+                                    //checked = "";
+                                    //checkedclass = "";
 
                                     if (OwnerItem.OwnerId == LoggedInOwner) {
 
                                         IsOwnerPresent = true;
-                                        //Modified BY komal when logged in owner deselect and change plan it should come deselected
-                                        if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(OwnerItem.OwnerId) >= 0) {
-                                            checked = "checked"
-                                            checkedclass = "close-list"
-                                        }
+                                    //    //Modified BY komal when logged in owner deselect and change plan it should come deselected
+                                    //    if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(OwnerItem.OwnerId) >= 0) {
+                                    //        checked = "checked"
+                                    //        checkedclass = "close-list"
+                                    //    }
                                     }
                                     //Added by Rahul Shah on 06/01/2016 for PL #1854
-                                    if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
+                                    //if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
                                         checked = "checked"
                                         checkedclass = "close-list"
-                                    }
+                                    //}
 
 
                                     $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
@@ -807,33 +807,33 @@
                                     // Modified By Nishant Sheth
                                     // Desc:: To resolve the #1790 observation
                                     //Modified by Komal rawal to check if logged in owner is deselected then dont select.
-                                    if (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(LoggedInOwner) >= 0) {
+                                    //f (filters.OwnerIds != "" || OnPlanChange != true || ids.indexOf(LoggedInOwner) >= 0) {
                                         checked = "checked"
                                         checkedclass = "close-list"
-                                    }
+                                   // }
                                     $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
                                 }
 
                                 //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
-                                var OwnerIds = [];
-                                $('#ulSelectedOwner li').each(function () {
-                                    var id = $(this).attr('id').replace('liOwner', '')
-                                    OwnerIds.push(id);
-                                });
-                                var listofindex = [];
-                                for (i = 0; i < ids.length; i++) {
-                                    var index = OwnerIds.indexOf(ids[i]);
-                                    if (!(index >= 0)) {
-                                        listofindex.push(ids[i]);
+                                //var OwnerIds = [];
+                                //$('#ulSelectedOwner li').each(function () {
+                                //    var id = $(this).attr('id').replace('liOwner', '')
+                                //    OwnerIds.push(id);
+                                //});
+                                //var listofindex = [];
+                                //for (i = 0; i < ids.length; i++) {
+                                //    var index = OwnerIds.indexOf(ids[i]);
+                                //    if (!(index >= 0)) {
+                                //        listofindex.push(ids[i]);
 
-                                    }
-                                }
-                                $.each(listofindex, function (i) {
-                                    var Index = ids.indexOf(listofindex[i])
-                                    if (Index >= 0) {
-                                        ids.splice(Index, 1);
-                                    }
-                                });
+                                //    }
+                                //}
+                                //$.each(listofindex, function (i) {
+                                //    var Index = ids.indexOf(listofindex[i])
+                                //    if (Index >= 0) {
+                                //        ids.splice(Index, 1);
+                                //    }
+                                //});
 
                                 //End
 
@@ -936,7 +936,8 @@
                 <a href="#"><<&nbsp;<span>hide</span></a>
             </div>
         </div>
-        <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsHome">
+        @*Commented by Maitri Gandhi on 20/2/2016 For #2014*@
+        <!--<div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsHome">
 
             <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
             <div class="wraper-btns cf">
@@ -952,7 +953,7 @@
                     Export to .pdf
                 </button>
             </div>
-        </div>
+        </div>-->
 
         <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsPlanSummary">
 
@@ -1090,15 +1091,15 @@
     </div>
     <!-- Sidebar Block Starts -->
     <div id="Filtersidebar" class="span2 sidebar">
-        <div class="WelcomeMessageBorder"></div>
-
+        @*Commented By Maitri Gandhi on 23/2/2016 For #2014*@
+        @*<div class="WelcomeMessageBorder"></div>        
         <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
             <div class="wraper-btns cf">
                 <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdateResult" onclick="UpdateResult()">
                     Update Results
                 </button>
             </div>
-        </div>
+        </div>*@
         <!--success message-->
         <div class="error-msg-filter">
             <div id="successMessageSidebar" class="alert hide alert-success">
@@ -1112,7 +1113,7 @@
         <div class="sidebar-section scroll-section">
             <div class="float-left filter-preset">
                 <div class="width50 float-left filter-title ">
-                    <span class="filter-header">Filters</span>
+                    <span class="filter-header">@Enums.FilterLabel.Filters.ToString()</span> @*Edited By Maitri Gandhi on 23/2/2016 For #2014*@
                 </div>
                 <div class="dropdown" style="float:right;">
                     <button id="dropdownMenu1" class="btn btn-default dropdown-toggle" aria-expanded="true" data-toggle="dropdown" type="button">
@@ -1137,15 +1138,190 @@
                             </button>
                     </div>*@
             </div>
+            @* Modified By Maitri Gandhi on 23/2/2016 For #2014 *@
+
+
             <div style="clear: both;"></div>
+            @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+            {
+                <div id="accordion-SelectedPlanFilter" class="dropdown-section accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <h2 id="PlanFilterHeader" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedPlanFilter" href="#accordion-element-SelectedPlanFilter">@Enums.FilterLabel.Active_Plans.ToString().Replace("_", " ")<i class="indicator fa fa-angle-up pull-right"></i>@*<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i> tkt#1951 *@</h2>
+                        </div>
+                        <div id="accordion-element-SelectedPlanFilter" class="accordion-body in collapse">
+                            <ul class="scroll-list singleselect" id="ulSelectedPlanFilter">
+                                @{
+                List<string> SelectedYearText = new List<string>();
+                List<string> SelectedPlanTitle = new List<string>();
+                                }
+                                @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+                                {
+
+                                    <li class="accordion-inner" title="Year">
+                                        <span class="sidebarliwidthSelected-left">Year - </span>
+                                        @{
+                                    foreach (SelectListItem item in ViewYearList)
+                                    {
+                                        if (item.Selected == true)
+                                        {
+                                            SelectedYearText.Add(item.Text);
+                                        }
+                                    }
+                                    if (ViewYearList.Count == SelectedYearText.Count())
+                                    {
+                                        SelectedYearText.Clear();
+                                        SelectedYearText.Add("All");
+                                    }
+                                        }
+                                        <span id="lstYearActive" class="sidebarliwidthSelected-right">@string.Join(", ", SelectedYearText).ToString()</span>
+                                    </li>
+
+                                    <li class="accordion-inner" title="Plan">
+                                        <span class="sidebarliwidthSelected-left">Plan -  </span>
+                                        @{
+                                    foreach (var objplan in planList)
+                                    {
+                                        if (objplan.Checked == "checked")
+                                        {
+                                            SelectedPlanTitle.Add(objplan.Title);
+                                        }
+                                    }
+                                    if (planList.Count == SelectedPlanTitle.Count())
+                                    {
+                                        SelectedPlanTitle.Clear();
+                                        SelectedPlanTitle.Add("All");
+                                    }
+
+                                        }
+                                        <span id="lstPlanActive" class="sidebarliwidthSelected-right">@string.Join(", ", SelectedPlanTitle).ToString()</span>
+
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
+                    <div class="wraper-btns cf">
+                        <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdatePlan" onclick="UpdatePlan()">
+                            @Enums.FilterLabel.Update_Plans.ToString().Replace("_"," ")
+                        </button>
+                    </div>
+                </div>
+
+             
+                                //Modified By komal Rawal for 1911 add year filter on home page
+                <div id="accordion-Year" class="dropdown-section accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year">Year<i class="indicator fa fa-angle-down pull-right"></i><span id="tYearcount" class="filter-count">/@ViewYearList.Count</span><span id="cYearcount" class="filter-count"></span></h2>
+                        </div>
+                        <div id="accordion-element-Year" class="accordion-body collapse">
+                            <ul class="scroll-list singleselect" id="ulSelectedYear">
+                                @{
+                                string ddlYearId, YearText;
+                                ddlYearId = YearText = string.Empty;
+                                foreach (SelectListItem item in ViewYearList)
+                                {
+                                    ddlYearId = "liYear" + item.Value;
+                                    YearText = item.Text;
+
+                                    if (item.Selected == true)
+                                    {
+
+                                    <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
+                                        <span class="sidebarliwidth">@YearText</span>
+                                        <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input>
+                                        @*<span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span>  @*#1951 - sidebar design  checkbox styling*@
+                                    </li>
+                                    }
+                                    else
+                                    {
+                                    <li class="accordion-inner" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
+                                        <span class="sidebarliwidth">@YearText</span>
+                                        <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input>
+                                        @*<span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span> @*#1951 - sidebar design  checkbox styling*@
+                                    </li>
+                                    }
+                                }
+                                }
+                            </ul>
+                             @if (ViewYearList == null)
+                                {
+                            <div class="list-tab">
+                                    <div id="NoYearFound" class="NoDataFoundFilter">No Year Found</div>
+                            </div>
+                             }
+                        </div>
+                    </div>
+                </div>
+                                //End
+                <div id="accordion-2" class="dropdown-section accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan
+                                <i class="indicator fa fa-angle-down pull-right"></i>
+                                <span id="tPlancount" class="filter-count"></span><span id="cPlancount" class="filter-count">/@planList.Count()</span></h2>
+                        </div>
+                        <div id="accordion-element-Plan" class="accordion-body collapse">
+                            <ul class="scroll-list" id="ulSelectedPlans">
+                                @{
+                                string liPlanid;
+                                foreach (var objplan in planList)
+                                {
+                                    liPlanid = "liPlan" + objplan.PlanId;
+                                    if (objplan.Checked == "checked")
+                                    // if(objplan.PlanId == CurrentPlanId)
+                                    {
+                                    <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span>
+                                        <input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked">
+                                        </input>
+                                        @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@ </li>
+                                    }
+                                    else
+                                    {
+                                    <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input>
+                                        @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@ </li>
+                                    }
+                                }
+                                }
+
+                            </ul>
+                            <div class="list-tab">
+                                @if (planList != null && planList.Count > 0)
+                                {
+                                    <ul id="PlanAllModule">
+                                        <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                        <li>|</li>
+                                        <li><a onclick="BulkPlanOperation(false)">@*deselect all*@clear</a></li>
+                                    </ul>
+                                    <div id="NoPlanFound" class="NoDataFoundFilter" style="display: none;">No Plan Found</div>
+                                }
+                                else
+                                {
+                                    <ul id="PlanAllModule" style="display: none;">
+                                        <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                        <li>|</li>
+                                        <li><a onclick="BulkPlanOperation(false)">@*deselect all*@clear</a></li>
+                                    </ul>
+                                    <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
             <div id="accordion-SelectedFilter" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@*View Selected *@Active Filters<i class="indicator fa fa-angle-up pull-right"></i>@*<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i> tkt#1951 *@</h2>
+                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@Enums.FilterLabel.Active_Attributes.ToString().Replace("_", " ")<i class="indicator fa fa-angle-up pull-right"></i>@*<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i> tkt#1951 *@</h2>
                     </div>
                     <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
                         <ul class="scroll-list singleselect" id="ulSelectedFilter">
-                            @{
+                           @* @{
                                 List<string> YearText1 = new List<string>();
                                 List<string> PlanTitle = new List<string>();
                                 List<string> OwnerName = new List<string>();
@@ -1193,7 +1369,7 @@
                                     <span id="lstPlan" class="sidebarliwidthSelected-right">@string.Join(", ", PlanTitle).ToString()</span>
 
                                 </li>
-                            }
+                            }*@
                             @{
                                 foreach (var custField in customfiledList)
                                 {
@@ -1225,107 +1401,13 @@
                 </div>
             </div>
 
-            @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
-            {
-                //Modified By komal Rawal for 1911 add year filter on home page
-                <div id="accordion-Year" class="dropdown-section accordion">
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year">Year<i class="indicator fa fa-angle-down pull-right"></i><span id="tYearcount" class="filter-count">/@ViewYearList.Count</span><span id="cYearcount" class="filter-count"></span></h2>
+            <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
+                <div class="wraper-btns cf">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="ApplyFilters" onclick="ApplyFilters()">
+                       @Enums.FilterLabel.Update_Attributes.ToString().Replace("_"," ")
+                    </button>
                         </div>
-                        <div id="accordion-element-Year" class="accordion-body collapse">
-                            <ul class="scroll-list singleselect" id="ulSelectedYear">
-                                @{
-                string ddlYearId, YearText;
-                ddlYearId = YearText = string.Empty;
-                foreach (SelectListItem item in ViewYearList)
-                {
-                    ddlYearId = "liYear" + item.Value;
-                    YearText = item.Text;
-
-                    if (item.Selected == true)
-                    {
-
-                        <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
-                            <span class="sidebarliwidth">@YearText</span>
-                            <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input> 
-                            @*<span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span>  @*#1951 - sidebar design  checkbox styling*@                                
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="accordion-inner" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
-                            <span class="sidebarliwidth">@YearText</span>
-                            <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input>
-                            @*<span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span> @*#1951 - sidebar design  checkbox styling*@    
-                        </li>
-                    }
-                }
-                                }
-                            </ul>
-                            <div class="list-tab">
-                                @if (ViewYearList == null)
-                                {
-                                    <div id="NoYearFound" class="NoDataFoundFilter">No Year Found</div>
-                                }
                             </div>
-                        </div>
-                    </div>
-                </div>
-                                //End
-                                <div id="accordion-2" class="dropdown-section accordion">
-                                    <div class="accordion-group">
-                                        <div class="accordion-heading">
-                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan
-                                <i class="indicator fa fa-angle-down pull-right"></i>                            
-                            <span id="tPlancount" class="filter-count"></span> <span id="cPlancount" class="filter-count">/@planList.Count()</span></h2>
-                                        </div>
-                                        <div id="accordion-element-Plan" class="accordion-body collapse">
-                                            <ul class="scroll-list" id="ulSelectedPlans">
-                                                @{
-                                string liPlanid;
-                                foreach (var objplan in planList)
-                                {
-                                    liPlanid = "liPlan" + objplan.PlanId;
-                                    if (objplan.Checked == "checked")
-                                    // if(objplan.PlanId == CurrentPlanId)
-                                    {
-                                        <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span>
-                                <input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked">
-                                </input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@ </li>
-                                    }
-                                    else
-                                    {
-    <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@ </li>
-                                    }
-                                }
-                                                }
-
-                                            </ul>
-                                            <div class="list-tab">
-                                                @if (planList != null && planList.Count > 0)
-                                                {
-                                                    <ul id="PlanAllModule">
-                                                        <li><a onclick="BulkPlanOperation(true)">select all</a></li>
-                                                        <li>|</li>
-                                        <li><a onclick="BulkPlanOperation(false)">@*deselect all*@clear</a></li>
-                                                    </ul>
-                                                    <div id="NoPlanFound" class="NoDataFoundFilter" style="display: none;">No Plan Found</div>
-                                                }
-                                                else
-                                                {
-                                                    <ul id="PlanAllModule" style="display: none;">
-                                                        <li><a onclick="BulkPlanOperation(true)">select all</a></li>
-                                                        <li>|</li>
-                                        <li><a onclick="BulkPlanOperation(false)">@*deselect all*@clear</a></li>
-                                                    </ul>
-                                                    <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-            }
             <div id="divCustomFieldsFilter">
                 @{
                     string acordionId, acordionParentId, acordionElementId, acordionElementHref, liCustom, ulCustom, allCustom, noCustom, cutomoptioninputid;
@@ -1816,6 +1898,7 @@
     var InspectSuccMsg = "";
     var SelectedPlanTitle = "";
     var isCalenderView = true;
+    //Added By Komal Rawal on 25/2/2016 For #2013
     var GridId = "liGrid";
     var CalendarId = "liCalender";
     var filters = {
@@ -2110,7 +2193,40 @@
         }
         SavePresetValue = false;
     }
+    //Added By Maitri Gandhi on 23/2/2016 For #2014
+    var isFiltered = false;
+    var IsUpdate = false;
+    var SavePresetValue = false;
+    function UpdatePlan() {        
+        IsUpdate = true;
+        isRequest = false;
 
+        //Checked All Filters and Load Owner nd tactic type
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            $(this).attr('checked', 'checked');
+            $(this).parent().addClass("close-list");
+        });
+        var planids = [];
+        $('#ulSelectedPlans').find("input[type=checkbox]:checked").each(function () {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    planids.push(chkid);
+            }
+        });
+        GetTacticTypelist(planids, false);
+        GetOwnerListForFilter(planids, false);
+        $('#accordion-Status').find("input[type=checkbox]").each(function () {
+            $(this).attr('checked', 'checked');
+            $(this).parent().addClass("close-list");
+        });
+        UpdateSelectedFilters();
+        
+        UpdateResult();
+    }
+    //Added By Maitri Gandhi on 24/2/2016 For #2014
+    function ApplyFilters() {
+        UpdateResult();
+    }
     ////Added to set filters count and selected filters name : 1952 By Maitri Gandhi
     function UpdateSelectedFilters() {        
         //Set Custom Field Filters
@@ -2126,13 +2242,13 @@
                     CurrentText = CurrentText + ", " + $($(this).parent()).find("span.sidebarliwidth").text();
                 });
             }
-            
             id = this.id;
             if (id != null && id != "" && id.indexOf("-") > -1) {
                 id = this.id.split("-")[1];
             }
             if (CheckedCounter == AllCounter) {
                 $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text(FiltersAll);
+                $("#SelectedCustomFilter_" + id).text(CheckedCounter);
             }
             else {
                 if (CheckedCounter == 0) {
@@ -2143,6 +2259,7 @@
                 else {
                     CurrentText = CurrentText.substring(1);
                     $("#ulSelectedFilter").find("#lstCustomFieldSelected_" + id).text(CurrentText);
+                    $("#SelectedCustomFilter_" + id).text(CheckedCounter);
                 }
             }
         });
@@ -2159,14 +2276,17 @@
             selectedFilters.yearIds.push($(this).attr("yearvalue"));
         });
         if (selectedFilters.yearIds.length == 0) {
-            $('#lstYear').text(FiltersNone);
+            //$('#lstYear').text(FiltersNone);
+            $('#lstYearActive').text(FiltersNone);
         }
         else if ($("#ulSelectedYear li").length == selectedFilters.yearIds.length) {
-            $('#lstYear').text(FiltersAll);
+            //$('#lstYear').text(FiltersAll);
+            $('#lstYearActive').text(FiltersAll);
         }
 
         else {
-            $('#lstYear').text(selectedFilters.yearIds.join(", "));
+            //$('#lstYear').text(selectedFilters.yearIds.join(", "));
+            $('#lstYearActive').text(selectedFilters.yearIds.join(", "));
         }
 
         $("#ulSelectedPlans li input[type=checkbox]:checked").each(function () {
@@ -2174,16 +2294,16 @@
         });
 
         if (selectedFilters.planName.length == 0) {
-            $('#lstPlan').text(FiltersNone);
-            //$('#cPlancount').text("0");
-            //if($("#ulSelectedPlans li").length == 0)
-            //    $('#tPlancount').text("/0");
+            //$('#lstPlan').text(FiltersNone);
+            $('#lstPlanActive').text(FiltersNone);
         }
         else if ($("#ulSelectedPlans li").length == selectedFilters.planName.length) {
-            $('#lstPlan').text(FiltersAll);
+            //$('#lstPlan').text(FiltersAll);
+            $('#lstPlanActive').text(FiltersAll);
         }
         else {
-            $('#lstPlan').text(selectedFilters.planName.join(", "));
+            //$('#lstPlan').text(selectedFilters.planName.join(", "));
+            $('#lstPlanActive').text(selectedFilters.planName.join(", "));
         }
         checkedYearcount = selectedFilters.yearIds.length;
         $('#cYearcount').text(checkedYearcount);
@@ -2218,11 +2338,11 @@
         else {
             $('#lstOwner').text(selectedFilters.ownerName.join(", "));
         }
-
         $("#ulTacticType li input[type=checkbox]:checked").each(function () {
 
             selectedFilters.tacticTypeTitle.push($(this).attr('tactictypetitle').toString());
         });
+        
         if (selectedFilters.tacticTypeTitle.length == 0) {
             $('#lstTType').text(FiltersNone);
         }
@@ -2764,8 +2884,8 @@
                         }
                     }
                 });
-                GetTacticTypelist(planids, true, true);
-                GetOwnerListForFilter(planids, true, true);
+                //GetTacticTypelist(planids, true, true);
+                //GetOwnerListForFilter(planids, true, true);
             }
         });
     }
@@ -2803,8 +2923,9 @@
         //    }
         //});
         if (!IsLstPlan) {
-            GetTacticTypelist(planids, true, true);
-            GetOwnerListForFilter(planids, true, true);
+            //Commented By Maitri Gandhi on 23/2/2016 For #2014
+            //GetTacticTypelist(planids, true, true);
+            //GetOwnerListForFilter(planids, true, true);
         }
     }
 
@@ -2835,10 +2956,10 @@
         }
         else {
             $("#liOwner" + id).removeClass("close-list");
-            var Index = ids.indexOf(id)
-            if (Index >= 0) {
-                ids.splice(Index, 1);
-            }
+            //var Index = ids.indexOf(id)
+            //if (Index >= 0) {
+            //    ids.splice(Index, 1);
+            //}
         }
         filters.OwnerIds = [];
         $("#ulSelectedOwner li input[type=checkbox]").each(function () {
@@ -3110,10 +3231,10 @@
         //    }
         //});
 
-        if (activeMenu.toLowerCase() == 'home') {
-            GetOwnerListForFilter(planids, true, true);
-            GetTacticTypelist(planids, true, true);
-        }
+        //if (activeMenu.toLowerCase() == 'home') {
+        //    GetOwnerListForFilter(planids, true, true);
+        //    GetTacticTypelist(planids, true, true);
+        //}
 
     }
 
@@ -3177,13 +3298,15 @@
         var currentplanid = $("#CurrentPlanId").val();// Add By Nishant Sheth #1981 export pdf issue for plan tab.
         $("#lblMarkringActivitiesTitle").hide();
         $("#nl-form2").show();
-        $("#DivButtonsHome").hide();
+        //$("#DivButtonsHome").hide();  //Commented By Maitri Gandhi on 23/2/2016 For #2014
         $("#DivButtonsPlanSummary").show();
         $('#ActiveMenu').val("@Enums.ActiveMenu.Plan");
         activeMenu = $('#ActiveMenu').val().toLowerCase();
         //$("#divcalenderandgridtab").css("display", "block");
         $("#accordion-2").css("display", "none");
         $("#accordion-Year").css("display", "none");
+        $("#accordion-SelectedPlanFilter").css("display", "none"); //Added By Maitri Gandhi on 24/2/2016 For #2014
+        $("#UpdatePlan").css("display", "none"); //Added By Maitri Gandhi on 24/2/2016 For #2014
         $("#CalenderView").hide();
         $("#dropdown-plan-title").val(currentplanid);// Add By Nishant Sheth #1981 export pdf issue for plan tab.
         $("#nl-form2 .nl-dd-checked").removeClass("nl-dd-checked");

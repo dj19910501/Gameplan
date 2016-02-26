@@ -638,7 +638,7 @@ namespace RevenuePlanner.Controllers
             var SetOfPlanSelected = Common.PlanUserSavedViews;// Add by Nishant Sheth #1915
             // Add By Nishant Sheth
             // Desc :: To resolve the select and deselct all owner issues
-            string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
+          //  string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
             // End By Nishant Sheth
             bool issetofplan = false;
             if (SetOfPlanSelected.Where(view => (view.FilterName != Enums.FilterLabel.Owner.ToString() && view.FilterName != Enums.FilterLabel.Status.ToString())).ToList().Count > 0)
@@ -681,10 +681,10 @@ namespace RevenuePlanner.Controllers
             List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<Guid>() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
             // Add By Nishant Sheth
             // Desc :: To resolve the select and deselct all owner issues
-            if (planselectedowner == null)
-            {
-                filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
-            }
+            //if (planselectedowner == null)
+            //{
+            //    filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            //}
             // End By Nishant Sheth
             //List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
 

@@ -1275,13 +1275,20 @@ namespace RevenuePlanner.Helpers
             };
         #endregion
 
+        //Modified By Maitri Gandhi on 23/2/2016 For #2014
         public enum FilterLabel
         {
             Plan,
             Owner,
             TacticType,
             Status,
-            Year
+            Year,
+            Filters,   
+            Active_Attributes,
+            Active_Plans,
+            Update_Attributes,
+            Update_Plans,
+            Active_Tactic_Attributes
         }
 
         //Added by Rahul Shah for PL #1847

@@ -561,11 +561,12 @@ namespace RevenuePlanner.Controllers
                 var Label = Enums.FilterLabel.Plan.ToString();
                 //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
                 var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
-                string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
-                if (planselectedowner == null)
-                {
-                    tacticList = tacticList.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).ToList();
-                }
+                /*Commented By Komal Rawal on 25/2/2016 to get data for all owners*/
+                //string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
+                //if (planselectedowner == null)
+                //{
+                //    tacticList = tacticList.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).ToList();
+                //}
                 // End By Nishant sheth
 
             }

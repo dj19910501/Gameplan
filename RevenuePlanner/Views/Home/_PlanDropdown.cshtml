@@ -27,11 +27,11 @@
     <li style="padding-top:5px;" id="liplanrequest">
         <div class="request-icons hide" id="BtnTabIcons">
 
-            <div class="request-icon-block" id="divPlanButton"><a href="#" class="new-btn-plan request-btn-active"><i class="fa fa-calendar"></i></a></div>
-            <div class="request-icon-block" id="divPlanEditButtonHome"><a href="#" class="request-icon-link" id="btngrid"><i class="fa fa-table"></i></a></div>
-            <div class="request-icon-block" id="BudgetIcon" style="display:none" onclick="CallBudget()"><a href=" #" class="request-icon-link"><i class="fa fa-money"></i></a></div>
+            <div class="request-icon-block" id="divPlanButton" title="Calendar View"><a href="#" class="new-btn-plan request-btn-active"><i class="fa fa-calendar"></i></a></div>
+            <div class="request-icon-block" id="divPlanEditButtonHome" title="Grid View"><a href="#" class="request-icon-link" id="btngrid"><i class="fa fa-table"></i></a></div>
+            <div class="request-icon-block" id="BudgetIcon" title="View Budget and Cost" style="display:none" onclick="CallBudget()"><a href=" #" class="request-icon-link"><i class="fa fa-money"></i></a></div>
 
-            <div class="request-icon-block" id="RequestTab"><a href="#" class="request"><i class="fa fa-thumbs-o-up"></i><span class="counter badge"></a></span></div>
+            <div class="request-icon-block" id="RequestTab"><a href="#" class="request" title="Requests"><i class="fa fa-thumbs-o-up"></i><span class="counter badge"></a></span></div>
 	    </div>
     </li>
     
@@ -122,6 +122,30 @@
           
         }
         $('.request-icons').show();
+        //Added for the case of "Select All" custom field By Maitri Gandhi on 26/2/2016
+        var CheckedCounter = 0, AllCounter = 0, id = null;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                if (AllCounter == CheckedCounter) {
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                    }
+                    var i = 0, customfieldid;
+                    for (i = 0; i < filters.customFieldIds.length; i++) {
+                        if (filters.customFieldIds[i].indexOf("_") > -1) {
+                            customfieldid = filters.customFieldIds[i].split("_")[0];
+                            if (id == customfieldid) {
+                                filters.customFieldIds.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });        ////End
         GetHealderData(SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, Tabid);// Modified By Nishant Sheth Desc header value wrong with plan tab
         GetNumberOfActivityPerMonByPlanId(SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
     });

@@ -76,12 +76,9 @@
     </div>
 @*modified by Rahul Shah for Pl #1837*@
     <div id="Filtersidebar" class="span2 sidebar">
-        <div class="WelcomeMessageBorder"></div>
-        <div class="wraper-btns cf update-result">
-            <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="btnUpdateResultFilters" onclick="UpdateResult()">
-                        Update Results
-                    </button>
-                </div>
+        @*Commented By Maitri Gandhi on 25/2/2016 For #2014*@
+        @*<div class="WelcomeMessageBorder"></div>*@
+        
         <!--success message-->
         <div class="error-msg-filter">
             <div id="successMessageSidebar" class="alert hide alert-success">
@@ -122,7 +119,7 @@
              <div id="accordion-SelectedFilter" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@*View Selected*@Active Filters<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i></h2>
+                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@Enums.FilterLabel.Active_Attributes.ToString().Replace("_"," ")<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
                         <ul class="scroll-list singleselect" id="ulSelectedFilter">
@@ -132,10 +129,10 @@
                                 List<string> OwnerName = new List<string>();
                                 List<string> StatusTitle = new List<string>();
                                 }                                                       
-                                <li class="accordion-inner" title="Plane">
+                               @* <li class="accordion-inner" title="Plane">
                                 <span class="sidebarliwidthSelected-left">Plan - </span>
                                 <span id="lstPlanSelected" class="sidebarliwidthSelected-right"></span>
-                            </li>                                               
+                            </li> *@                                              
                             @{
                                 foreach (var custField in Model.lstCustomFields)
                                 {
@@ -161,7 +158,13 @@
                     </div>
                 </div>
             </div>
-            
+            <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
+                <div class="wraper-btns cf">
+            <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="btnUpdateResultFilters" onclick="UpdateResult()">
+                       @Enums.FilterLabel.Update_Attributes.ToString().Replace("_"," ")
+                    </button>
+                </div>
+                </div>
              <div id="divCustomFieldsFilter">
             @if (Model.lstCustomFields.Count > 0)
             {
@@ -532,11 +535,15 @@
                                 var LoggedInOwner = data.LoggedInUser.OwnerId;
                                 var checked = "";
                                 var checkedclass = "";
+                                //Modified By Maitri Gandhi on 24/2/2016 For #2014
                                 if (OwnerItem.OwnerId == LoggedInOwner) {
                                     IsOwnerPresent = true;
+                                    //checked = "checked"
+                                    //checkedclass = "close-list"
+                                }
                                     checked = "checked"
                                     checkedclass = "close-list"
-                                }
+
                                 //Modify by Rahul Shah on 28/10/2015 for PL #1438
                                 //if (ifexists &&  filters.OwnerIds.indexOf(OwnerItem.OwnerId)>= 0) {
                                 //checked = "checked";
@@ -847,19 +854,20 @@
                     $(this).removeAttr("checked");
                     $(this).parent().removeClass("close-list");
                 });
-
+                //Modified By Maitri Gandhi on 24/2/2016 For #2014
+                GetOwnerListForFilter(CurrentPlanId, false);
                 $('#ulSelectedOwner li input:checkbox').each(function () {
-                    if ($(this).attr('id') != '@Sessions.User.UserId') {
+                    @*if ($(this).attr('id') != '@Sessions.User.UserId') {
 
                         $(this).removeAttr("checked");
                         $(this).parent().removeClass("close-list");
                     }
-                    else {
+                    else {*@
 
                         $(this).attr('checked', 'checked')
                         $(this).parent().addClass("close-list");
 
-                    }
+                    //}
 
                 });
                 // Modified By Rahul Shah
@@ -1889,7 +1897,7 @@
             }
         });
         //Set Static-Default Field Filters
-        $("#lstPlanSelected").text($(".plantitle div a").text());
+        //$("#lstPlanSelected").text($(".plantitle div a").text());
         selectedFilters.StatusIds = [];
         selectedFilters.ownerName = [];
         selectedFilters.tacticTypeTitle = [];

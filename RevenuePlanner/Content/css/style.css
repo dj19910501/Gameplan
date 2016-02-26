@@ -10530,9 +10530,10 @@ li.close-list {
 {
     left:60%;
 }
+/*Modified By Bhumika on 25/2/2016 For #2015*/
  .update-btn button{
-     margin-top:20px;
-     margin-bottom:0;
+      margin-top:0;
+     margin-bottom: 10px;
  }
 /*by bheru mehta 09-12-2015 for #1762*/
 /*by bheru mehta 28-12-2015 for #1747 start*/
@@ -12273,10 +12274,10 @@ div.clue-bottom-default .cluetip-arrows {
     width: 100%;
     margin-bottom: 20px;
 }
-
+/*Modified By Bhumika on 25/2/2016 For #2015*/
 .accordion,
 .accordion-group {
-    margin-bottom: 0 !important;
+    margin-bottom: 0;
 }
 
 .modal-table table thead tr th {
@@ -14056,13 +14057,13 @@ left:auto !important;
 }
 
 /*#1952,#1953,#1954*/
- #ulSelectedFilter{
+ #ulSelectedFilter, #ulSelectedPlanFilter{
     max-height: 275px;
     overflow: auto;
     padding: 0 18px;
 }
 
-#ulSelectedFilter li{
+#ulSelectedFilter li, #ulSelectedPlanFilter li{
     line-height: 5px;
     margin: 5px 2px 10px;
     height:auto;
@@ -14083,20 +14084,30 @@ span.filter-count, span.filter-count > span {
 span.filter-count{float:right;}
 
 /* #1952 */
-#accordion-SelectedFilter{
+/*Modified by Bhumika Chakravarti on 23/2/2016 For #2014*/
+#accordion-SelectedFilter, #accordion-SelectedPlanFilter{
     background: #f2f2f2 none repeat scroll 0 0;
     border-radius: 6px;
     /*padding: 5px 10px;*/
-    margin-bottom:20px !important;
+     margin-bottom:20px; /*#2015*/
     border: 1px solid #d3d3d3;
 }
 
-.sidebar-section #accordion-SelectedFilter .accordion-heading {
+.sidebar-section #accordion-SelectedFilter .accordion-heading, .sidebar-section #accordion-SelectedPlanFilter .accordion-heading {
     border-bottom: 0 none !important;
      background: #e6e6e6 none repeat scroll 0 0;
     border-radius: 6px;
 }
-.sidebar-section #accordion-SelectedFilter .accordion-heading h2{margin: 0 10px 0 20px;}
+.sidebar-section #accordion-SelectedFilter .accordion-heading h2, .sidebar-section #accordion-SelectedPlanFilter .accordion-heading h2{margin: 0 10px 0 20px;}
+
+/*Added By Bhumika on 25/2/2016 For #2015*/
+#accordion-SelectedFilter .accordion-group,#accordion-SelectedPlanFilter .accordion-group {
+        margin-bottom: 0 !important;
+}
+#accordion-2{margin-bottom: 35px;}
+
+
+
 /*by bheru mehta 1686 09-1-2016 end*/
 
 /************************************************ Responsive css start here **********************************************************/
