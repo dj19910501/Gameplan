@@ -146,7 +146,7 @@
                     selectedPlanIds = selectedPlanIds.toString()   //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic
                      }
                 else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
-                    var ligridclass=$("#liGrid").attr("class");
+                    // var ligridclass=$("#liGrid").attr("class");
                     newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
                     selectedPlanIds = parseInt(CurrentPlanId);
                      }

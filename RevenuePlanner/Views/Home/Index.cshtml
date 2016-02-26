@@ -601,7 +601,7 @@
                 SaveLastSetofViews();
                 UpdateSelectedFilters();
                 if (CurrentPlanId > 0) {
-                    if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                    if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                         //EditPlanHome();
                         var pid = $("#CurrentPlanId").val();
 
@@ -945,7 +945,7 @@
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("CreatePlan", "Plan")'" style="min-width:90%">Create New Plan</button>
                     </div>*@
 
-                <div id="divPlanEditButtonHome">
+                <div >
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlanHome()" style="min-width: 90%">Edit Plan</button>
                 </div>
                 <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%" id="btnHomeReport" onclick='CallPDF()'>
@@ -975,12 +975,13 @@
                             Edit Plan Definition
                         </button>
                     }
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="CallBudget()" style="min-width:90%">
+                    @*Modified by Komal Rawal for 2013 Home/Plan Layout changes*@
+                    @*<button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="CallBudget()" style="min-width:90%">
                         Edit Plan Budget & Cost
                     </button>
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%" id="btnPlanReport" onclick='CallPDF()'>
                         Export to .pdf
-                    </button>
+                    </button>*@
                 </div>
             </div>
         </div>
@@ -1576,8 +1577,8 @@
     var GanttTaskData;// Added By Nishant Sheth #1533 for color bar
 </script>
 
-
-<div class="calender-view-nav" style="display:none;" id="divcalenderandgridtab">
+@*Commented by Komal Rawal for 2013 Home/Plan Layout changes*@
+@*<div class="calender-view-nav" style="display:none;" id="divcalenderandgridtab">
     <ul class="nav nav-tabs new-margin no-position" id="PlanTab">
         <li class="active pull-left" id="liCalender">
             <a>CALENDAR VIEW</a>
@@ -1586,7 +1587,7 @@
             <a>GRID VIEW</a>
         </li>
     </ul>
-</div>
+</div>*@
 
 <div id="DivloadPlan" class="no-bottom-border margin-top">
 </div>
@@ -1627,6 +1628,7 @@
                     <span class="status-rejected">Declined</span>
                 </div>
                 <a href="#" class="toggleStatus">Show Status</a>
+                <a href="#" onclick='CallPDF()' class="pdfExport"><i class="fa fa-external-link"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Export.pdf</span></a> @*Modified by Komal Rawal for 2013 Home/Plan Layout changes*@
             </div>
             @* End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
 
@@ -1814,6 +1816,8 @@
     var InspectSuccMsg = "";
     var SelectedPlanTitle = "";
     var isCalenderView = true;
+    var GridId = "liGrid";
+    var CalendarId = "liCalender";
     var filters = {
         parentCustomFieldsIds: [],
         customFieldIds: [],
@@ -1921,7 +1925,9 @@
     TotalStatus = $("#ulStatus li").length;
     $('#tStatuscount').text('/' + TotalStatus);
     $('#cStatuscount').text(checkedStatuscount);
-    $("#liGrid,#liCalender").click(function () {
+   // $("#liGrid,#liCalender").click(function (){
+    //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+    function ChangeTabView(TabName) {
         ExportSelectedIds = {
             TaskID: [],
             Title: [],
@@ -1940,15 +1946,15 @@
         $('#' + activeTab).removeClass("active");
         $(this).removeClass("pull-left");
         $(this).addClass("active pull-left");
-        var id = $(this).attr('id');
-        if (id == "liCalender") {
+        //   var id = $(this).attr('id');
+        if (TabName == "liCalender") {
             $("#CalenderView").show();
             $("#divgridview").hide();
             $("#ImprovementGrid").hide();
             $("#divupcomingact").show();
             $("#liplanrequest").show();
             $('.nav').removeClass('no-bottom-border');
-            $("#btnPlanReport").css("display", "block");
+     //       $("#btnPlanReport").css("display", "block");
             //modified by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
             scrollstate = 0;
             RefreshCurrentTab();
@@ -1960,13 +1966,15 @@
             GetCollaborators(CurrentPlanId);
         }
         else {
+            $('#btngrid').addClass('request-btn-active');
+            $('.new-btn-plan').removeClass('request-btn-active');
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
             $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
             $('#IsGridView').val("True");
             $("#CalenderView").hide();
             $("#divgridview").show();
             $("#ImprovementGrid").show();
-            $("#btnPlanReport").css("display", "none");
+       //     $("#btnPlanReport").css("display", "none");
             //Call the function for grid view
             isCopyTactic = 0;
             isEditTactic = 0;
@@ -1978,7 +1986,7 @@
         // Modified By Nishant Sheth Desc header value wrong with plan tab
         GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, $(this).attr('id'));
 
-    });
+    };
 
     //End
     //Added by Komal Rawal for new homepage UI to publish plan
@@ -2036,7 +2044,7 @@
         isRequest = false;
         // added by devanshi for #1431
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+            if ($('#IsGridView').val().toLowerCase() == "true") {
 
                 var SelectedPlanIds = CurrentPlanId;
 
@@ -2085,7 +2093,7 @@
                 $("#ImprovementGrid").show();
                 LoadPlanGrid();
                 //Modified By Komal Rawal for #1447 - to Change the header data according to the filter selected.
-                GetHealderData(SelectedPlanIds, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, 'liGrid');// Modified By Nishant Sheth Desc header value wrong with plan tab
+                GetHealderData(SelectedPlanIds, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId);// Modified By Nishant Sheth Desc header value wrong with plan tab
                 GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime, CustomFieldId, OwnerIds, TacticTypeids, StatusIds);
                 //End
             }
@@ -2563,7 +2571,7 @@
 
     // modify by devanshi
     function LoadPlanGrid() {
-        $("#btnPlanReport").css("display", "none");// Add By Nishant Sheth
+      //  $("#btnPlanReport").css("display", "none");// Add By Nishant Sheth
         filters.SelectedPlans = [];
         $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
@@ -3173,7 +3181,7 @@
         $("#DivButtonsPlanSummary").show();
         $('#ActiveMenu').val("@Enums.ActiveMenu.Plan");
         activeMenu = $('#ActiveMenu').val().toLowerCase();
-        $("#divcalenderandgridtab").css("display", "block");
+        //$("#divcalenderandgridtab").css("display", "block");
         $("#accordion-2").css("display", "none");
         $("#accordion-Year").css("display", "none");
         $("#CalenderView").hide();
@@ -3184,7 +3192,7 @@
         $('.plan').addClass('active');
         $('.home').removeClass('active');
         $('html head title').html("Plan");
-        $("#liGrid").click();
+        ChangeTabView(GridId); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
     }
 
     function CallPDF() {
@@ -4126,13 +4134,13 @@
     //End
     function AddActuals() {
         var pid = $("#CurrentPlanId").val();
-        var url = '@Url.Content("~/Plan/AddActual?PlanId=")' + pid;
+        var url = '@Url.Content("~/Plan/AddActual?PlanId=")' + pid + '&isGridView=' + $('#IsGridView').val().toLowerCase(); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
         window.location.href = url;
     }
 
     function CallBudget() {
         var pid = $("#CurrentPlanId").val();
-        var url = '@Url.Content("~/Plan/Budgeting?PlanId=")' + pid;
+        var url = '@Url.Content("~/Plan/Budgeting?PlanId=")' + pid + '&isGridView=' + $('#IsGridView').val().toLowerCase(); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
         window.location.href = url;
     }
 
@@ -4142,7 +4150,7 @@
     /*added by Nirav for plan consistency on 14 apr 2014*/
     function EditPlan() {
         var pid = $("#CurrentPlanId").val();
-        var url = '@Url.Content("~/Plan/CreatePlan?id=")' + pid;
+        var url = '@Url.Content("~/Plan/CreatePlan?id=")' + pid + '&isGridView=' + $('#IsGridView').val().toLowerCase(); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
         window.location.href = url;
     }
     $(".selectBox select").selectbox();
@@ -4181,9 +4189,10 @@
     var Successmsgduplicate = '@Successmsgduplicate';
     var Errormsgduplicate = '@errormsgduplicate';
     var isError = false;
-    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+    //Commented by Komal Rawal for 2013 Home/Plan Layout changes
+    @*if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
         $("#divcalenderandgridtab").css("display", "block");
-    }
+    }*@
     function SetPlanButtons() {
 
         //Added : By Kalpesh Sharma Ticket #638 Cloning icon for plans, campaigns, programs and tactics
@@ -4225,6 +4234,7 @@
 
     $(document).ready(function () {
         //// Global variable to hold filters
+      
         DuplicatePlanMessage();
         SetPlanButtons();
         var flg = false;
@@ -4294,7 +4304,8 @@
 
         if ($('#IsGridView').val() == "True") {
             $("#CalenderView").hide();
-            $("#liGrid").click();
+            ChangeTabView(GridId); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+          
         }
         // LastSetofowners();
     });
@@ -4778,6 +4789,7 @@
     //// Modified By Maninder Singh Wadhva to Address PL#203
     //// Function to make ajax request.
     function AjaxRequest() {
+      
         //// Start - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
         if (IsUpdate) {
             filters.customFieldIds = [];
@@ -4939,7 +4951,7 @@
                             }
 
                             // To hide/show current plan edit button based on user plan edit permission
-                            if (CurrentPlanId > 0 && GetSelectedPlanNo == 1 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                            if ((CurrentPlanId > 0 && GetSelectedPlanNo == 1) || activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                                 $("#divPlanEditButtonHome").show();
                                 $('.WelcomeMessageBorder').show();
                                 GetCurrentPlanPermissionDetail();
@@ -5893,7 +5905,7 @@
             addDefaultModalPopupBackgroungColor();
             $('body').removeClass('bodyOverflow');
             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                if ($('#IsGridView').val().toLowerCase() == "true") {
 
                     if (isDataModified) {
                         if (gridSearchFlag == 1) {
@@ -5937,7 +5949,7 @@
 
             //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
             //// display popup based on type and name and title.
-            if (activeMenu != '@Enums.ActiveMenu.Plan.ToString().ToLower()' || document.getElementById("liGrid").className.indexOf("active") < 0) {
+            if (activeMenu != '@Enums.ActiveMenu.Plan.ToString().ToLower()' || $('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                 $(".gantt_last_cell").dblclick(function (e) {
                     e.stopPropagation();
                 });
@@ -7530,7 +7542,7 @@
 
         ////Copy Campaign.
         $('#CloneCampaign1').click(function () {
-            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+            if ($('#IsGridView').val().toLowerCase() == "false") {
                 scrollstate = gantt.getScrollState();
                 bodyscrollpos = $(window).scrollTop();
             }
@@ -7561,7 +7573,7 @@
 
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                             if (CurrentPlanId > 0) {
-                                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                if ($('#IsGridView').val().toLowerCase() == "true") {
                                     LoadPlanGrid();
                                 }
 
@@ -7581,7 +7593,7 @@
 
         //Child Program
         $('#ChildProgram').click(function () {
-            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+            if ($('#IsGridView').val().toLowerCase() == "false") {
                 scrollstate = gantt.getScrollState();
                 bodyscrollpos = $(window).scrollTop();
             }
@@ -7599,7 +7611,7 @@
 
         //Copy Program
         $('#CloneProgram1').click(function () {
-            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+            if ($('#IsGridView').val().toLowerCase() == "false") {
                 scrollstate = gantt.getScrollState();
                 bodyscrollpos = $(window).scrollTop();
             }
@@ -7628,7 +7640,7 @@
                         ShowMessage(isError, data.msg);
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                             if (CurrentPlanId > 0) {
-                                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                if ($('#IsGridView').val().toLowerCase() == "true") {
                                     LoadPlanGrid();
                                 }
                             }
@@ -7646,7 +7658,7 @@
 
         //Child Tactic
         $("#ChildTactic").on("click", function () {
-            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+            if ($('#IsGridView').val().toLowerCase() == "false") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                 scrollstate = gantt.getScrollState();
                 bodyscrollpos = $(window).scrollTop();
             }
@@ -7661,7 +7673,7 @@
         //New Tactic
         $("#NewTactic1").on("click", function () {
 
-            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+            if ($('#IsGridView').val().toLowerCase() == "false") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                 scrollstate = gantt.getScrollState();
                 bodyscrollpos = $(window).scrollTop();
             }
@@ -7675,7 +7687,8 @@
 
         //Copy Tactic
         $('#CloneTactic1').click(function () {
-            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+            
+            if ($('#IsGridView').val().toLowerCase() == "false") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                 scrollstate = gantt.getScrollState();
                 bodyscrollpos = $(window).scrollTop();
             }
@@ -7705,7 +7718,7 @@
                         ShowMessage(isError, data.msg);
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                             if (CurrentPlanId > 0) {
-                                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                                     LoadPlanGrid();
                                 }
                                 //Added by kausha somaiya on 09/01/2015 for ticket no #1869
@@ -7756,7 +7769,7 @@
 
         //Copy Line Item
         $('#CloneLineItem').click(function () {
-            if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+            if ($('#IsGridView').val().toLowerCase() == "false") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                 scrollstate = gantt.getScrollState();
                 bodyscrollpos = $(window).scrollTop();
             }
@@ -7785,7 +7798,7 @@
                         ShowMessage(isError, data.msg);
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                             if (CurrentPlanId > 0) {
-                                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                                     LoadPlanGrid();
                                 }
                             }
@@ -7915,7 +7928,7 @@ function () {
     var ganttwidth = $("#gantt_here").width();
     var totalWidth = ganttwidth - 230;
     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+        if ($('#IsGridView').val().toLowerCase() == "true") {
             var ganttwidth = $("#gridbox").width();
             var totalWidth = ganttwidth + 230;
             ResizeGrid(totalWidth);
@@ -8026,7 +8039,7 @@ function () {
 
     $('.gantt_hor_scroll').hide();
     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+        if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
             var ganttwidth = $("#gridbox").width();
             var totalWidth = ganttwidth - 230;
             ResizeGrid(totalWidth);
@@ -8055,7 +8068,7 @@ function () {
     }
     function OpentCopyPopup(obj) {
         //Added by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
-        if (document.getElementById("liCalender").className.indexOf("active") >= 0) {
+        if ($('#IsGridView').val().toLowerCase() == "false") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
             scrollstate = gantt.getScrollState();
         }
         else {

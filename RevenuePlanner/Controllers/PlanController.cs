@@ -64,7 +64,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         /// added By Komal rawal for new homePage Ui of Plan
         /// 
-        public ActionResult CreatePlan(int id = 0, bool isPlanSelecter = false)
+        public ActionResult CreatePlan(int id = 0, bool isPlanSelecter = false, bool isGridView = false)// Added by Komal Rawal for 2013 to identify grid view
         {
             /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
             if (isPlanSelecter == true)
@@ -77,7 +77,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
 
             bool IsPlanCreateAll = false;
-
+            ViewBag.GridView = isGridView; // Added by Komal Rawal for 2013 to identify grid view
 
             try
             {
@@ -6621,7 +6621,7 @@ namespace RevenuePlanner.Controllers
         /// View fro the initial render page 
         /// </summary>
         /// <returns></returns>
-        public ActionResult Budgeting(int PlanId)
+        public ActionResult Budgeting(int PlanId, bool isGridView = false) // Added by Komal Rawal for 2013 to identify grid view
         {
             ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
             HomePlanModel planmodel = new Models.HomePlanModel();
@@ -6632,6 +6632,7 @@ namespace RevenuePlanner.Controllers
                 var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == PlanId);
                 var IsQuarter = objPlan.Year;
                 ViewBag.PlanId = PlanId;
+                ViewBag.GridView = isGridView; // Added by Komal Rawal for 2013 to identify grid view
 
                 bool IsPlanCreateAll = false;
                 if (IsPlanCreateAuthorized)
@@ -8838,12 +8839,13 @@ namespace RevenuePlanner.Controllers
         /// Action method to return AddActual view
         /// </summary>
         /// <returns>returns AddActual view</returns>
-        public ActionResult AddActual(int Planid)
+        public ActionResult AddActual(int Planid, bool isGridView = false) // Added by Komal Rawal for 2013 to identify grid view
         {
             HomePlanModel planmodel = new Models.HomePlanModel();
 
             try
             {
+                ViewBag.GridView = isGridView; // Added by Komal Rawal for 2013 to identify grid view
                 //var LastSetOfViews = Common.PlanUserSavedViews;
                 //var Label = Enums.FilterLabel.Plan.ToString();
                 //var SetOfPlanSelected = LastSetOfViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();

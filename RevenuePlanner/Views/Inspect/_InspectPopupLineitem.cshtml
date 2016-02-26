@@ -624,7 +624,7 @@
                         if (data.IsSuccess && data.opt != 'undefined') {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
                                 SaveMessageOnParent(data.msg);
-                                if (document.getElementById("liGrid") != null && document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                                     LoadPlanGrid();
                                     gridSearchFlag = 0;
                                 }

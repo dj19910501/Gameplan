@@ -83,7 +83,11 @@
 
     $(document).ready(function () {
         $("#divupcomingact").hide();
-        $("#liplanrequest").hide();
+        //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+        $("#RequestTab").hide();
+        $("#BudgetIcon").show();
+        $("#BtnTabIcons").addClass("bdrRadius");
+        //End
         $('.nav').addClass('no-bottom-border');
         BindHomeGrid();
         $("input[name='useless']").click(doIt);
@@ -1581,7 +1585,8 @@
                                         //state0=ItemIndex;
                                      
                                     }
-                                    $('#liGrid').click();
+                                    //$('#liGrid').click();
+                                    ChangeTabView('liGrid'); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                                     ItemIndex=HomeGrid.getRowIndex(tactid);
                                     state0=ItemIndex;
                                     HomeGrid.cells(rowId, 6).setValue((nValue));
@@ -1785,7 +1790,8 @@
                                         //state0=ItemIndex;
                                       
                                     }
-                                    $('#liGrid').click();
+                                    //$('#liGrid').click();
+                                    ChangeTabView('liGrid'); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                                     ItemIndex=HomeGrid.getRowIndex(rowId);
                                     state0=ItemIndex;
                                 }

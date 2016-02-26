@@ -1,7 +1,7 @@
 ﻿@model RevenuePlanner.Models.HomePlan
 @using RevenuePlanner.Helpers;
 
-<ul class="nav nav-tabs home-content-header" style="margin-left:25px;">
+<ul class="nav nav-tabs home-content-header" style="margin-left:24px;">
     <li class="title-header source-sans-proregular bold font-size25px" style="padding-top:5px;">
       @* @if (Model.plans != null && Model.plans.Count > 0)
        {
@@ -20,18 +20,22 @@
 
         </form>
        }*@
-         <h2 id="lblMarkringActivitiestitle" style="font-size: 23px;display:none;">Marketing Activities</h2>
+        @*<h2 id="lblMarkringActivitiestitle" style="font-size: 23px;display:none;">Marketing Activities</h2>*@
     </li>
    
-
+    @*Modified by Komal Rawal for 2013 Home/Plan Layout changes*@
     <li style="padding-top:5px;" id="liplanrequest">
-        <div class="request-icons hide">
-		     <div class="request-icon-block"><a href="#" class="request">Request<span class="counter badge"></a></span></div>
-            <div class="request-icon-block"><a href="#" class="new-btn-plan request-btn-active">Plan</a></div>
+        <div class="request-icons hide" id="BtnTabIcons">
+
+            <div class="request-icon-block" id="divPlanButton"><a href="#" class="new-btn-plan request-btn-active"><i class="fa fa-calendar"></i></a></div>
+            <div class="request-icon-block" id="divPlanEditButtonHome"><a href="#" class="request-icon-link" id="btngrid"><i class="fa fa-table"></i></a></div>
+            <div class="request-icon-block" id="BudgetIcon" style="display:none" onclick="CallBudget()"><a href=" #" class="request-icon-link"><i class="fa fa-money"></i></a></div>
+
+            <div class="request-icon-block" id="RequestTab"><a href="#" class="request"><i class="fa fa-thumbs-o-up"></i><span class="counter badge"></a></span></div>
 	    </div>
     </li>
     
-         <div style="float: right;margin-bottom: 10px; margin-right: -15px;" id="divupcomingact">
+    <div style="float: right;margin-bottom: 10px; margin-right: -15px" id="divupcomingact">
                 @Html.Label("Time Frame:", new { id = "lblUpcoming_Activies" })    @* Modified by : Sohel Pathan on 29/10/2014 for PL ticket #899 *@
             <span class="selectBox" id="ddlUpComingActivitesSelectBox" style="width: 127px;">
                 @*Modified by nishant sheth : to avoid double server trip and to select dfault range for time frame option*@
@@ -97,15 +101,24 @@
         else {
             RefreshCurrentTab();
         }
+
+        //Modified by Komal Rawal for 2013 Home/Plan Layout changes
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             if ($('#IsGridView').val() != "True") {
                 GetCollaborators(CurrentPlanId);
             }
-            $("#lblMarkringActivitiestitle").show();
+            else
+            {
+                $("#RequestTab").hide();
+            }
+          //  $("#lblMarkringActivitiestitle").show();
            // $("#nl-form2").show();
+            $("#BudgetIcon").show();
+            $("#BtnTabIcons").addClass("bdrRadius");
         }
         else {
           //  $("#nl-form2").hide();
+            $("#BudgetIcon").hide();
           
         }
         $('.request-icons').show();
@@ -127,6 +140,14 @@
         RefreshCurrentTab();
     });
     $('.new-btn-plan').click(function () {
+
+        //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+        $("#RequestTab").show();
+        if ($('#IsGridView').val() == "True") {
+            ChangeTabView(CalendarId);
+            requestPlanActiveTab(false);
+        }
+        else {
         isRequest = false;
         $("#ddlTabViewBy").find("option[value= @PlanGanttTypes.Tactic.ToString()]").prop("selected", "selected");
         $("#ddlTabViewBy").multiselect('refresh');
@@ -137,6 +158,7 @@
             var oldvalue = $(this).attr("Previousvalue");
             var setvalue = $(this).html(oldvalue);
     });
+        }
     });
     $('.request').click(function () {
         ExportSelectedIds = {
@@ -201,11 +223,31 @@
         if (isRequestTab) {
             $('.new-btn-plan').removeClass('request-btn-active');
             $('.request').addClass('request-btn-active');
+            $('#btngrid').removeClass('request-btn-active');
         }
         else {
             $('.new-btn-plan').addClass('request-btn-active');
             $('.request').removeClass('request-btn-active');
+            $('#btngrid').removeClass('request-btn-active');
         }
     }
+    //Added by Komal Rawal for 2013 Home/Plan Layout changes
+    $('#divPlanEditButtonHome').click(function () {
+        $("#divupcomingact").hide();
+        $("#RequestTab").hide();
+        $("#BudgetIcon").show();
+        $("#BtnTabIcons").addClass("bdrRadius");
+        $('.new-btn-plan').removeClass('request-btn-active');
+        $('.request').removeClass('request-btn-active');
+        $('#btngrid').addClass('request-btn-active');
+        if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+            EditPlanHome();
+        }
+        else
+        {
+            ChangeTabView(GridId);
+        }
+    });
+    //End
 </script>
 

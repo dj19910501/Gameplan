@@ -24,6 +24,7 @@
         isPlanEdit = true;
     }
     var ListBudgetingPlan = Model.objplanhomemodelheader.plans;
+    var IsGridView = (bool)ViewBag.GridView; //Added by Komal Rawal for 2013 Home/Plan Layout changes
 }
 
 @section nlFormContent{
@@ -57,7 +58,7 @@
             else
             {
                 <div>
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId = strPlanId})');" style="min-width:90%">< Back to Plan</button>
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId = strPlanId, isGridView = IsGridView })');" style="min-width:90%">< Back to Plan</button>
                 </div>
             }
 

@@ -667,7 +667,7 @@ else {
                                 SaveMessageOnParent(data.msg);
                                 RefershPlanHeaderCalc();
                                  //Added By : Kalpesh Sharma Internal review points 18/11/2014
-                                 if (document.getElementById("liGrid") != null && document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                                      LoadPlanGrid();
                                      gridSearchFlag = 0;
                                  }

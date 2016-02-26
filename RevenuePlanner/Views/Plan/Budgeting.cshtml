@@ -32,6 +32,7 @@
    var BudgetingBussinessUnitId = 0;
    var BudgetingCurrentTab = "aAllocated";
    var BudgetingCurrentPlanId = 0;
+   var IsGridView = (bool)ViewBag.GridView; //Added by Komal Rawal for 2013 Home/Plan Layout changes
 }
 
 @section PlanHeader{
@@ -614,8 +615,9 @@ function onClickPlanTitle() {
 }
 
 function BackToPlan() {
+       
     var pid = $("#CurrentPlanId").val();
-    var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&IsPlanSelector=' + "true" + '&PreviousPlanID=' + '@Sessions.PlanId';
+        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&IsPlanSelector=' + "true" + '&PreviousPlanID=' + '@Sessions.PlanId' + '&isGridView=' + '@IsGridView'; //Modified by Komal Rawal for 2013 Home/Plan Layout changes
         window.location.href = url;
     }
 

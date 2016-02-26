@@ -1571,14 +1571,15 @@ span.requests-logo-icon {
     margin-bottom: 18px;
     padding-bottom: 0;
     padding-top: 0;
- background:background: rgba(61,167,241,1);
+    background:#2384b8 none repeat scroll 0 0;
+ /*background:background: rgba(61,167,241,1);
 background: -moz-linear-gradient(top, rgba(61,167,241,1) 0%, rgba(61,167,241,1) 39%, rgba(44,119,174,1) 100%);
 background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(61,167,241,1)), color-stop(39%, rgba(61,167,241,1)), color-stop(100%, rgba(44,119,174,1)));
 background: -webkit-linear-gradient(top, rgba(61,167,241,1) 0%, rgba(61,167,241,1) 39%, rgba(44,119,174,1) 100%);
 background: -o-linear-gradient(top, rgba(61,167,241,1) 0%, rgba(61,167,241,1) 39%, rgba(44,119,174,1) 100%);
 background: -ms-linear-gradient(top, rgba(61,167,241,1) 0%, rgba(61,167,241,1) 39%, rgba(44,119,174,1) 100%);
 background: linear-gradient(to bottom, rgba(61,167,241,1) 0%, rgba(61,167,241,1) 39%, rgba(44,119,174,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3da7f1', endColorstr='#2c77ae', GradientType=0 );
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3da7f1', endColorstr='#2c77ae', GradientType=0 );*/
 }
 
 .btn.btn-blue.text-shadow-blue.source-sans-proregular.margin-top23.popup_button_save {
@@ -7602,11 +7603,11 @@ input.icon-check-blue {
 }
 
 .nav-tabs li a {
-    color: grey !important;
+    color: grey ; /*#2015 Bhumika*/
 }
 
     .nav-tabs li a:hover {
-        color: #a3a3a3 !important;
+        color: #a3a3a3 ;/*#2015 Bhumika*/
     }
 
 .nav-tabs > .active > a,
@@ -9739,7 +9740,7 @@ li.close-list {
 }
 
     .request-icon-block .request {
-        background: left center no-repeat #efefef;
+        background: left center no-repeat #fff;
         border: 1px solid #c6c6c6;
         border-radius: 5px 0 0 5px;
         color: #6d6d6d !important;
@@ -11393,10 +11394,10 @@ font-size: 20px;
 }
 
 .new-btn-plan {
-    background: left center no-repeat #efefef;
+    background: left center no-repeat #fff;
     border: 1px solid #c6c6c6;
     border-radius: 0 5px 5px 0;
-    color: #6d6d6d !important;
+    color: #000;  /* #2015 Bhumika*/
     font-family: source_sans_proregular;
     font-size: 13px;
     height: 32px;
@@ -11410,7 +11411,7 @@ font-size: 20px;
         border: 1px solid #2d6e91;
         color: #fff !important;
     }
-
+.nav-tabs li .new-btn-plan:hover{color:#000 !important}
 #loadmetrue > h3 {
     margin: 0;
     font-size: 14px;
@@ -15912,3 +15913,60 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
  .lickSuccessMsg{
     font-weight:bold;
     }
+
+/* #2015 new style Icons  Start Add by bhumika*/
+
+#BtnTabIcons{margin-left:0}
+.request-icon-block a {padding:8px 18px}
+
+.request-icon-block .request-icon-link {
+    background: #fff none no-repeat scroll left center;
+    border: 1px solid #c6c6c6;
+    border-radius: 0 5px 5px 0;
+    font-family: source_sans_proregular;
+    font-size: 13px;
+    height: 32px;
+    line-height: 33px;
+    padding:8px 18px;
+    color: #000 !important;
+}
+
+.nav-tabs li .request .badge, .nav-tabs li .request-icon-block a,.nav-tabs li .request-icon-block a:hover, .nav-tabs li .request-icon-block a:focus{color: #000;}
+.new-btn-plan{ border-radius: 5px 0 0 5px;}
+
+#RequestTab .request{border-radius: 5px; margin-left: 25px;padding: 8px 10px;}
+
+#RequestTab .fa-thumbs-o-up::before {
+    left: 0;
+    position: absolute;
+    top: -10px;
+}
+.nav-tabs .fa.fa-thumbs-o-up {
+    font-size: 15px;
+    position: relative;
+    width: 14px;
+    color: #000;
+}
+.nav-tabs .request-icons.bdrRadius #divPlanEditButtonHome .request-icon-link {
+    border-radius: 0 ;border-left:0; border-right:0
+}
+.nav-tabs li .request-icon-block a.request-btn-active {
+    background-color: #2384b8 !important; color:#fff !important;
+}
+.nav-tabs a.request-btn-active .fa.fa-thumbs-o-up, .nav-tabs a.request-btn-active .badge{color:#ffffff }
+
+.nav-tabs {
+    border-bottom:0px solid #ddd;
+}
+.toggle-status a{text-decoration:underline; font-size:inherit;color: #005580;}
+.toggle-status .toggleStatus{border:0 none;color: #005580;}
+.pdfExport{padding-left:10px}
+.pdfExport .fa.fa-external-link {
+    position: relative;
+}
+.pdfExport .fa-external-link::before {
+    left: 0;
+    position: absolute;
+    top: -11px;
+}
+/* #2015 new style Icons  End*/
