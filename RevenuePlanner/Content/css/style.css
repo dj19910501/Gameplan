@@ -9135,7 +9135,7 @@ footer {
 }
 
 .sidebar-section {
-    padding: 22px 15px 22px 20px;
+    padding: 18px 15px 22px 20px;
     color: #000;
 }
 
@@ -10559,7 +10559,7 @@ li.close-list {
 
 /*By Bheru mehta 24-12-2015 for #1749 start*/
 .filter-preset{
-    margin-bottom:25px;
+    margin-bottom:20px;
     width:100%;
 }
 .filter-preset button{
@@ -11414,7 +11414,7 @@ font-size: 20px;
     border-radius: 0 5px 5px 0;
     color: #000;  /* #2015 Bhumika*/
     font-family: source_sans_proregular;
-    font-size: 13px;
+    font-size: 14px;
     height: 32px;
     line-height: 33px;
     padding: 6px 25px 4px 26px;
@@ -12413,7 +12413,7 @@ li.accordion-inner.close-list {
 
 .sidebar-section .accordion-group {
     /*border-bottom: 1px solid #b3b3b3 !important;*/ /* #1951 - sidebar design */
-    margin-bottom: 14px !important;
+    margin-bottom: 8px !important;
 }
 
 .sidebar-section .accordion-heading {
@@ -12446,8 +12446,8 @@ border-bottom: 0 solid #d3d3d3 !important;
 }
 
     .sidebar-section ul li {
-        height: 30px;
-        line-height: 28px;
+        height: auto;
+        line-height: 20px;/*#2015 change by Bhumika*/
         background: 0 0;
         margin: 2px 0 2px 2px; /* #1951 - sidebar design */
     }
@@ -14079,7 +14079,7 @@ left:auto !important;
 
 #ulSelectedFilter li, #ulSelectedPlanFilter li{
     line-height: 5px;
-    margin: 5px 2px 10px;
+    margin: 2px 2px 6px;
     height:auto;
 }
 
@@ -15949,7 +15949,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     border: 1px solid #c6c6c6;
     border-radius: 0 5px 5px 0;
     font-family: source_sans_proregular;
-    font-size: 13px;
+    font-size: 14px;
     height: 32px;
     line-height: 33px;
     padding:8px 18px;
@@ -15964,7 +15964,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 #RequestTab .fa-thumbs-o-up::before {
     left: 0;
     position: absolute;
-    top: -10px;
+    top: -11px;
 }
 .nav-tabs .fa.fa-thumbs-o-up {
     font-size: 15px;
