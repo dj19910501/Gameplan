@@ -1999,10 +1999,7 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
 
     function UpdatePlan() {
         //Checked All Filters and Load Owner nd tactic type
-        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
-            $(this).attr('checked', 'checked');
-            $(this).parent().addClass("close-list");
-        });
+
         var planids = [];
         $('#ulSelectedPlans').find("input[type=checkbox]:checked").each(function () {
             var chkid = $(this).attr("id");
@@ -2011,7 +2008,17 @@ function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {
                 planids.push(chkid);
             }
         });
-       
+        if (planids.length > 0) {
+            $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                $(this).attr('checked', 'checked');
+                $(this).parent().addClass("close-list");
+            });
+        } else {
+            $('#divCustomFieldsFilter').find("input[type=checkbox]:checked").each(function () {
+                $(this).removeAttr('checked');
+                $(this).parent().removeClass("close-list");
+            });
+        }
         GetTacticTypelist(planids, false);
         GetOwnerListForFilter(planids, false);
         UpdateSelectedFilters();

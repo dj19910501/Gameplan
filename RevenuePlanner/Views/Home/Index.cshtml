@@ -2198,30 +2198,40 @@
     var isFiltered = false;
     var IsUpdate = false;
     var SavePresetValue = false;
-    function UpdatePlan() {        
+    function UpdatePlan() {
         IsUpdate = true;
         isRequest = false;
 
         //Checked All Filters and Load Owner nd tactic type
-        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
-            $(this).attr('checked', 'checked');
-            $(this).parent().addClass("close-list");
-        });
         var planids = [];
         $('#ulSelectedPlans').find("input[type=checkbox]:checked").each(function () {
-                var chkid = $(this).attr("id");
-                if (chkid != undefined && chkid != 'undefined') {
-                    planids.push(chkid);
+            var chkid = $(this).attr("id");
+            if (chkid != undefined && chkid != 'undefined') {
+                planids.push(chkid);
             }
         });
+        if (planids.length > 0) {
+            $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                $(this).attr('checked', 'checked');
+                $(this).parent().addClass("close-list");
+            });
+            $('#accordion-Status').find("input[type=checkbox]").each(function () {
+                $(this).attr('checked', 'checked');
+                $(this).parent().addClass("close-list");
+            });
+        } else {
+            $('#divCustomFieldsFilter').find("input[type=checkbox]:checked").each(function () {
+                $(this).removeAttr('checked');
+                $(this).parent().removeClass("close-list");
+            });           
+            $('#accordion-Status').find("input[type=checkbox]:checked").each(function () {
+                $(this).removeAttr('checked');
+                $(this).parent().removeClass("close-list");
+            });
+        }
         GetTacticTypelist(planids, false);
         GetOwnerListForFilter(planids, false);
-        $('#accordion-Status').find("input[type=checkbox]").each(function () {
-            $(this).attr('checked', 'checked');
-            $(this).parent().addClass("close-list");
-        });
         UpdateSelectedFilters();
-        
         UpdateResult();
     }
     //Added By Maitri Gandhi on 24/2/2016 For #2014
