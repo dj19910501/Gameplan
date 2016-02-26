@@ -234,9 +234,10 @@
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
             sb.append('</div>');
 
-
-            sb.append('<div id="' + _linechartDivId + '" style="height:100%; width:35%;float:left;">');
+            sb.append('<div id="' + _linechartDivId + '_parent" style="height:100%; float:left;width:35%;">');// Add By Nishant Sheth // Desc :: To resolve console error for card highchart width=-1 errror
+            sb.append('<div id="' + _linechartDivId + '" style="height:100%;"> ');
             //_cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:419px;float:left;">';
+            sb.append('</div>');
             sb.append('</div>');
 
             sb.append('</div>');
