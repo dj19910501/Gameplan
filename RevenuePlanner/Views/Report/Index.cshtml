@@ -96,7 +96,7 @@
 </div>
     @*Add By Nishant Sheth 
     // Desc :: #1958 Add hide icon to hide side bar*@
-<div class="padding-content padding-bottom0 sidebar-toogle-wrapper">
+<div class="padding-content padding-bottom0 sidebar-toogle-wrapper" id="divsidebartoggle">
     <div class="sidebar-toogle">
         <a href="#"><<&nbsp;<span>hide</span></a>
     </div>
@@ -1269,6 +1269,7 @@ $('#cYearcount').text(checkedYearcount);
 
                     if (data.ViewName != null && data.ViewName != "" && data.ViewName != undefined) {
                         $("#content_SaveFilters").css("display", "none");
+                        $('#divsidebartoggle').css('display', 'block');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
                         $("#btnreportSection").css("display", "block");
                         $("#Filtersidebar").css("display", "block");
                         $("#errorMessageMainSidebar").css("display", "none");
@@ -3003,6 +3004,7 @@ $("#BtnShareReport").click(function () {
             }
             else {
                 $("#content_SaveFilters").css("display", "block");
+                $('#divsidebartoggle').css('display', 'none');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
                 $("#btnreportSection").css("display", "none");
                 $("#Filtersidebar").css("display", "none");
 
@@ -3053,10 +3055,11 @@ $("#BtnShareReport").click(function () {
                     if (data != null) {
                         $('#DefaultFilters').css('display', 'block');
                         $('#DefaultFilters').html(data);
-
+                        $('#divsidebartoggle').css('display', 'none');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
                     }
                     else {
                         $('#DefaultFilters').css('display', 'none');
+                        $('#divsidebartoggle').css('display', 'block');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
                     }
 
 
@@ -3065,6 +3068,7 @@ $("#BtnShareReport").click(function () {
             });
             $("#successMessageSidebar").css("display", "none");
             $("#DefaultFilters").css("display", "block");
+            $('#divsidebartoggle').css('display', 'none');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
             $("#btnreportSection").css("display", "none");
             $("#Filtersidebar").css("display", "none");
             //  $("#displaydata").css("display", "none");
@@ -3104,6 +3108,7 @@ $("#BtnShareReport").click(function () {
         $("#successMessageLoadPreset").css("display", "none");
             $("#content_SaveFilters").css("display", "none");
             $("#DefaultFilters").css("display", "none");
+            $('#divsidebartoggle').css('display', 'block');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
             $("#btnreportSection").css("display", "block");
             $("#Filtersidebar").css("display", "block");
         }
