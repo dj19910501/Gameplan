@@ -12,7 +12,8 @@
 }
 .treeview > li ul li{
 	padding-left:70px;
-	background: url(../images/treeview-ver-line.gif) left top no-repeat;
+	/*background: url(../images/treeview-ver-line.gif) left top no-repeat; */	    /*Commented by Bhumika for #1982*/
+    background: url(../images/treeview-ver-line.gif) left top repeat-y;
 	margin-left:-16px;
 }
 .treeview .hitarea {
@@ -37,8 +38,9 @@
     padding-left: 66px;
 }
 .treeview > li ul li.lastExpandable, .treeview > li ul li.lastCollapsable {
+    /*Commented by Bhumika for #1982*/
     /*background-position: 0 -689px;*/
-    background-position: 0 -325px;
+   /*background-position: 0 -325px;*/   
 }
 
 /* fix for IE6 */
@@ -61,28 +63,9 @@
 }
 .treeview li > ul li ul li{
 	margin-bottom:0;
-	background: url(../images/treeview-ver-line-solid.gif) left top no-repeat;
+	/*background: url(../images/treeview-ver-line-solid.gif) left top no-repeat;*/   /*Commented by Bhumika for #1982*/
+    background: url(../images/treeview-ver-line-solid.gif) left top repeat-y;
 }
-/* #1982 */
-.treeview > li ul li{
-	padding-left:70px;
-    background: url(../images/treeview-ver-line.gif) left top repeat-y;
-	margin-left:-16px;
-}
-.treeview > li > ul > li:last-child {
-    background-repeat: no-repeat;
-}
-/* #1982 End */ 
-
-/* #1982 */
-.treeview li > ul > li > ul > li.first{
-    background-repeat:repeat-y; 
-}
-ul.treeview li:nth-child(1) > ul li:nth-child(1) > ul > li:nth-child(1) > span > ul > li.collapsable.first  {
-    background-repeat:repeat-y; 
-}
-
-/* #1982 End*/
 .treeview li > ul li ul li.first > span {
     margin-top: 15px;
 }
@@ -108,17 +91,32 @@ ul.treeview li:nth-child(1) > ul li:nth-child(1) > ul > li:nth-child(1) > span >
 .hitarea{font-family: 'source_sans_proregular', Arial, "sans-serif" !important;}
 .treeview .hover { color: #333; cursor: pointer; }
 .treeview .expandable-hitarea { background-position: left top; }
-.treeview li.last { background-position: 0 -2475px}
+.treeview ul li.last {
+     /*background-position: 0 -2475px*/  /*Commented by Bhumika for #1982*/
+      background: url(../images/treeview-ver-line-solid.gif) left top no-repeat;
+      background-size:9px  25px !important;
+}
 .treeview .collapsable.lastCollapsable.first {
-background-position: 0 -2460px;
+    /*background-position: 0 -2460px;*/ /*Commented by Bhumika for #1982*/
+    background: url(../images/treeview-ver-line-solid.gif) left top no-repeat;
+    background-size:9px  40px !important;
 }
+
 .treeview > li > ul > li:last-child {
-    background-position: 0 -2472px;
+    /*background-position: 0 -2472px;*/     /*Commented by Bhumika for #1982*/
+	background: url(../images/treeview-ver-line.gif) 0 -40px no-repeat !important;
+    /*background-size:9px  25px !important;*/   /*Commented by Bhumika for #1982*/
 }
+
+
 .treeview .no-nesting.last.first {
-    background-position: 0 -2460px;
+    /*background-position: 0 -2460px;*/     /*Commented by Bhumika for #1982*/
+     background: url(../images/treeview-ver-line-solid.gif) left top no-repeat;
+        background-size:9px 40px !important;
 }
 
 .treeview li ul li ul li.collapsable.lastCollapsable {
-    background-position: 0 -2475px;
+    /*background-position: 0 -2475px;*/     /*Commented by Bhumika for #1982*/
+        background: url(../images/treeview-ver-line-solid.gif) left top no-repeat;
+        background-size:9px  25px !important;
 }
