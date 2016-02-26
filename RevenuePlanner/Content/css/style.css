@@ -8719,7 +8719,8 @@ footer {
     border-bottom: 1px solid #a8a8a8;
 }
 
-#frmRevenueDataMapping .messages {
+#frmRevenueDataMapping .messages,
+#frmSalesForceMQLDataMapping .messages {
     width: 82%;
     float: left;
     margin: 10px 0;
@@ -8748,7 +8749,8 @@ footer {
 .integrationAccordion #accordion #extServer,
 .integrationAccordion #accordion #frmDataMapping,
 .integrationAccordion #accordion #frmRevenueDataMapping,
-.integrationAccordion #accordion #integrationForm {
+.integrationAccordion #accordion #integrationForm,
+.integrationAccordion #accordion #frmSalesForceMQLDataMapping {
     border-bottom: 1px solid #ccc;
 }
 
@@ -13394,7 +13396,9 @@ border-bottom: 0 solid #d3d3d3 !important;
         margin: 0 17px;
         width: auto;
     }
-
+#Filtersidebar .sidebar-toogle-wrapper .wraper-btns {
+    margin: 0;
+} 
 #content_wraper {
     -webkit-box-shadow: -2px 0 3px 0 #999;
     box-shadow: -2px 0 3px 0 #999;
