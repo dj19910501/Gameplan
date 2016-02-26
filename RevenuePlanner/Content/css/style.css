@@ -7359,13 +7359,15 @@ input.icon-check-blue {
 .toggleStatus,
 .toggleStatusHide {
     height: 20px;
-    border: 1px solid #e5e5e5;
-    background: #f2f2f2;
-    font-size: 12px;
+    /*border: 1px solid #e5e5e5;
+    background: #f2f2f2;*/ /*#2015 Bhumika*/
+    font-size: 14px;
     padding: 0 5px;
     text-decoration: underline;
     display: inline-block;
     outline: 0;
+    color: #005580;
+    text-decoration: underline;
 }
 
     .toggleStatus:hover,
@@ -7373,14 +7375,26 @@ input.icon-check-blue {
     .toggleStatusHide:hover,
     .toggleStatusHide:visited {
         text-decoration: none;
-        color: #08c;
     }
 
 .toggle-status div {
     display: none;
 }
+ /*#2015 Bhumika Start*/
+.toggle-status a, .export-link {text-decoration:underline; color: #005580; font-size:14px}
 
-.toggle-status .pull-right > span {
+.pdfExport{padding-left:10px}
+.pdfExport .fa.fa-external-link, .export-link  .fa.fa-external-link{
+    position: relative;
+}
+.pdfExport .fa-external-link::before, .export-link .fa-external-link::before {
+    left: 0;
+    position: absolute;
+    top: -11px;
+}
+ /*#2015 Bhumika End*/
+/*.toggle-status .pull-right > span {*/ /*#2015 Bhumika*/
+.toggle-status .pull-left > span {
     height: 20px;
     border: 1px solid #e5e5e5;
     font-size: 12px;
@@ -15969,15 +15983,11 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .nav-tabs {
     border-bottom:0px solid #ddd;
 }
-.toggle-status a{text-decoration:underline; font-size:inherit;color: #005580;}
-.toggle-status .toggleStatus{border:0 none;color: #005580;}
-.pdfExport{padding-left:10px}
-.pdfExport .fa.fa-external-link {
-    position: relative;
+#exportcsv {
+    margin: 0 10px 0 0; float:right;cursor:pointer;
 }
-.pdfExport .fa-external-link::before {
-    left: 0;
-    position: absolute;
-    top: -11px;
+#exportcsv > span {
+    margin: 0;
+    padding: 0;
 }
 /* #2015 new style Icons  End*/
