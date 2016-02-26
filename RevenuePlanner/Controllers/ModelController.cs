@@ -2744,13 +2744,15 @@ namespace RevenuePlanner.Controllers
             }
 
             //// List of integration instance of model
-            var lstInstance = objDbMrpEntities.IntegrationInstances.Where(instance => instance.ClientId == Sessions.User.ClientId && instance.IsDeleted == false).Select(instance => new
+            //Modified by Rahul Shah on 26/02/2016 for PL #2017 
+            List<lstInstance> lstInstance = objDbMrpEntities.IntegrationInstances.Where(instance => instance.ClientId == Sessions.User.ClientId && instance.IsDeleted == false)
+                .Select(instance => new lstInstance
             {
                 InstanceName = instance.Instance,
                 InstanceId = instance.IntegrationInstanceId,
                 Type = instance.IntegrationType.Title,
                 Code = instance.IntegrationType.Code
-            }).ToList().OrderBy(ins => ins.InstanceName, new AlphaNumericComparer());
+                }).OrderBy(ins => ins.InstanceName).ToList();
 
 
             ViewData["IntegrationInstances"] = lstInstance;
@@ -2766,11 +2768,46 @@ namespace RevenuePlanner.Controllers
             #region "Filtered MQL Eloqua Integration Instances based on Client Integration Permisssion"
             Guid clientId = Sessions.User.ClientId;
             string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
-            var eloquaIntegrationType = objDbMrpEntities.IntegrationTypes.Where(type => type.Code == "Eloqua" && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
+            //Modified by Rahul Shah on 26/02/2016 for PL #2017. to bind mql list for SFDC depending on Permission.
+            var IntegrationTypeList = objDbMrpEntities.IntegrationTypes.Where(type => type.Code == elqType || type.Code == insType && type.IsDeleted == false).ToList();
+            var eloquaIntegrationType = IntegrationTypeList.Where(type => type.Code == elqType).Select(type => type.IntegrationTypeId).FirstOrDefault();
+            var salesforceIntegrationType = IntegrationTypeList.Where(type => type.Code == insType).Select(type => type.IntegrationTypeId).FirstOrDefault();
+            //var eloquaIntegrationType = objDbMrpEntities.IntegrationTypes.Where(type => type.Code == elqType && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
             int eloquaIntegrationTypeId = Convert.ToInt32(eloquaIntegrationType);
+            int salesforceIntegrationTypeId = Convert.ToInt32(salesforceIntegrationType);
 
-            if (objDbMrpEntities.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(eloquaIntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
-                ViewData["MQLFilteredEloquaIntegrationInstances"] = lstInstance.Where(instance => instance.Code == elqType);
+            List<lstInstance> lstInstancefilter = new List<lstInstance>();
+            var clientPermission = objDbMrpEntities.Client_Integration_Permission.Where(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(eloquaIntegrationTypeId) || intPermission.IntegrationTypeId.Equals(salesforceIntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))).ToList();
+            var isEloquaOrSfdc = clientPermission.Where(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(eloquaIntegrationTypeId) || intPermission.IntegrationTypeId.Equals(salesforceIntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))).Any();
+            var isEloqua = clientPermission.Where(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(eloquaIntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))).Any();
+            var isSFDC = clientPermission.Where(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(salesforceIntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))).Any();
+            if (isEloquaOrSfdc)
+            {                
+                if (isEloqua)
+                {
+                    var lstInstanceEloqua = lstInstance.Where(instance => instance.Code == elqType).ToList();
+                        if (lstInstanceEloqua != null && lstInstanceEloqua.Count > 0)
+                    {
+                        lstInstancefilter.AddRange(lstInstanceEloqua);
+                    }                    
+                }
+                if (isSFDC)
+                {
+                    var lstInstanceSFDC = lstInstance.Where(instance => instance.Code == insType).ToList();
+                    if (lstInstanceSFDC != null && lstInstanceSFDC.Count > 0)
+                    {
+                        lstInstancefilter.AddRange(lstInstanceSFDC);
+                    }
+                }
+                if (lstInstancefilter != null && lstInstancefilter.Count > 0)
+                {
+                    lstInstancefilter = lstInstancefilter.OrderBy(ins => ins.InstanceName).ToList();
+                    ViewData["MQLFilteredEloquaIntegrationInstances"] = lstInstancefilter;
+                }
+                else {
+                    ViewData["MQLFilteredEloquaIntegrationInstances"] = Enumerable.Empty<entIntegrationInstance>();
+                }                
+            }
             else
                 ViewData["MQLFilteredEloquaIntegrationInstances"] = Enumerable.Empty<entIntegrationInstance>();
             #endregion

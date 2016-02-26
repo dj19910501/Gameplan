@@ -1,0 +1,209 @@
+﻿@model IList<RevenuePlanner.Models.GameplanDataTypePullModel>
+@using RevenuePlanner.Helpers
+@{
+    var IntegrationInstanceIds = ViewBag.IntegrationInstanceId != null ? ViewBag.IntegrationInstanceId : string.Empty;
+}
+
+<div class="accordion-group">
+    <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseSalforceMQL" style="position:static;">Pull MQL<span href="javascript:void(0)">+ Expand</span></a>
+    </div>
+    <div class="accordion-body collapse out" id="collapseSalforceMQL">
+        @using (Html.BeginForm("SaveSalesForceMQLDataMapping", "ExternalService", FormMethod.Post, new { name = "frmSalesForceMQLDataMapping", id = "frmSalesForceMQLDataMapping" }))
+        {
+            @Html.Hidden("SalesForceMQLInvalidMsg", TempData["ClosedDealInvalidMsg"])
+            <div class="row">
+                @if (Model.Count > 0)
+                {
+                    <div class="tblFieldMapping padding-bottom10">
+                        <h5 class="CloseDealHeader title-header padding-right5">MQL - Data Mapping</h5>
+                    </div>
+                    <div class="content-colum-mapDataTypes width100 float-left">
+                        <table id="tblDataMapping" class="tblFieldMapping">
+                            <tbody>
+                                @for (var i = 0; i < Model.Count; i++)
+                                {
+                                    @Html.HiddenFor(x => x[i].GameplanDataTypePullId)
+                                    @Html.HiddenFor(x => x[i].IntegrationTypeId)
+                                    @Html.HiddenFor(x => x[i].ActualFieldName)
+                                    @Html.HiddenFor(x => x[i].DisplayFieldName)
+                                    @Html.HiddenFor(x => x[i].IntegrationInstanceDataTypeMappingPullId)
+                                    @Html.HiddenFor(x => x[i].IntegrationInstanceId)
+                                    @Html.HiddenFor(x => x[i].Type)
+                                    <tr class="fieldRow">
+                                        <td class="title1 width40">
+                                            @Html.DisplayFor(x => x[i].DisplayFieldName)
+                                        </td>
+                                        <td class="width60">
+                                            <span class="simpleSelectBox" style="  margin-left: -2px;">
+                                                @if (ViewData["ExternalFieldListPulling"] != null)
+                                                {
+                                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPulling"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle hide", id = i.ToString(), tabindex = ((int)(300 + i)).ToString() })
+                                                }
+                                                else
+                                                {
+                                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)"", null), "Select", null)
+                                                }
+                                            </span>
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!--success message-->
+                    <div id="SalesForceMQLSuccessMessage" class="alert hide alert-success messages">
+                        <a class="close">×</a>
+                        <strong>Success!</strong> <span id="spanMessageSuccess"></span>
+                    </div>
+                    <!--success message-->
+
+                    <!--error message-->
+                    <div id="SalesForceMQLErrorMessage" class="alert hide alert-error messages">
+                        <a class="close">×</a>
+                        <strong>Error!</strong> <span id="spanMessageError">@TempData["DataMappingPullErrorMessage"]</span>
+                    </div>
+                    <!--error message-->
+
+                    <div class="margin-left40per">
+                        <span class="span5 margin-top10">
+                            <button id="btnSaveSalesForceMQLMappings" type="button" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" name="button-save">Save</button>
+                        </span>
+                        <span class="span5 margin-top10">
+                            <button id="btnCancelSalesForceMQLMapping" type="button" class="close-form btn-link source-sans-proregular">Cancel</button>
+                        </span>
+                    </div>
+
+                }
+                else
+                {
+                    <h5 style="border-bottom:none;" class="CloseDealHeader">@RevenuePlanner.Helpers.Common.objCached.NoDataTypeMappingFieldsForEloqua</h5>
+                }
+            </div>
+        }
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(".simpleSelectBox select").selectbox();
+        $('#frmSalesForceMQLDataMapping .ddlStyle').each(function () {
+            if ($(this).next('.sbHolder').hasClass("error")) {
+                $(this).next('.sbHolder').removeClass("error");
+            }
+        });
+
+        AssignDefaultValueSalesForceMQLMapping();
+    });
+
+    $('#frmSalesForceMQLDataMapping .ddlStyle').change(function () {
+        var sbValue = $(this).attr('sb');
+        var selValue = $('#sbSelector_' + $(this).attr('sb')).html();
+        $('select[sb="' + sbValue + '"]').val(selValue);
+    });
+
+    $("#btnSaveSalesForceMQLMappings").click(function (e) {
+        var isError = false;
+        AssignSelectedValueToSelectBoxOptionSalesForceMQL();
+        isError = CheckTargetFieldMappingSalesforceMQL();
+        if (isError) {
+            $('#SalesForceMQLErrorMessage').find('#spanMessageError').html($('#SalesForceMQLInvalidMsg').val());
+            $("#SalesForceMQLErrorMessage").slideDown(400);
+            $('#SalesForceMQLSuccessMessage').find('#spanMessageSuccess').html('');
+            $("#SalesForceMQLSuccessMessage").hide()
+            e.preventDefault();
+            return false;
+        }
+
+        var formData = $("#frmSalesForceMQLDataMapping").serialize();
+        var IntegrationInstanceId = '@IntegrationInstanceIds';
+        var uId = $(window).attr('name');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/ExternalService/SaveDataMappingPulling")',
+            data: formData + '&IntegrationInstanceId=' + parseInt(IntegrationInstanceId) + '&UserId=' + uId,
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data.status == 0) {
+                        $('#SalesForceMQLSuccessMessage').find('#spanMessageSuccess').html('');
+                        $("#SalesForceMQLSuccessMessage").hide();
+                        $('#SalesForceMQLErrorMessage').find('#spanMessageError').html(data.Message);
+                        $("#SalesForceMQLErrorMessage").slideDown(400);
+                        return false;
+                    }
+                    else if (data.status == 1) {
+                        $('#SalesForceMQLErrorMessage').find('#spanMessageError').html('');
+                        $("#SalesForceMQLErrorMessage").hide();
+                        $('#SalesForceMQLSuccessMessage').find('#spanMessageSuccess').html(data.Message);
+                        $("#SalesForceMQLSuccessMessage").slideDown(400);
+                        AssignDefaultValueSalesForceMQLMapping();
+                        return true;
+                    }
+                }
+            }
+        });
+    });
+
+    $("#frmDataMapping").find(".alert").find(".close").click(function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest(".alert").slideUp(400);
+    });
+    function AssignDefaultValueSalesForceMQLMapping() {
+        $('#frmSalesForceMQLDataMapping').find("input[type=text],textarea,select,input[type=password]").each(function () {
+            $(this).attr("myValue", $(this).val());
+        });
+    }
+    function CheckTargetFieldMappingSalesforceMQL() {
+        var isFieldMappingError = false;
+        $('#frmSalesForceMQLDataMapping .ddlStyle').each(function () {
+            var isError = false;
+            var currentDdl = this;
+            var currentTargetValue = $(this).val();
+            if (currentTargetValue != null) {
+                if (currentTargetValue.toLowerCase() != 'select' || currentTargetValue.toLowerCase() != '') {
+                    $('#frmSalesForceMQLDataMapping .ddlStyle').each(function () {
+                        var SourceTargetValue = $(this).val();
+
+                        if (currentDdl.id != this.id) {
+                            if (currentTargetValue == SourceTargetValue && SourceTargetValue.toLowerCase() != 'select' && SourceTargetValue != '') {
+
+                                $(currentDdl).next('.sbHolder').addClass("error");
+                                $(this).next('.sbHolder').addClass("error");
+                                isError = true;
+                                isFieldMappingError = true;
+                            }
+                        }
+                        if (!isError) {
+                            $(currentDdl).next('.sbHolder').removeClass("error");
+                        }
+                    });
+                }
+                else {
+                    $(currentDdl).next('.sbHolder').removeClass("error");
+                }
+            }
+            else {
+                $(currentDdl).next('.sbHolder').removeClass("error");
+            }
+        });
+        return isFieldMappingError;
+    }
+    function AssignSelectedValueToSelectBoxOptionSalesForceMQL() {
+        $("#frmSalesForceMQLDataMapping").find('.ddlStyle').each(function () {
+            var currentSelectedValue = $(this).next().find('.sbSelector').html();
+            var currentSelectedOption = $(this).find('option:selected').html();
+            if (currentSelectedValue != currentSelectedOption) {
+                $(this).find('option:selected').removeAttr("selected");
+                $(this).val(currentSelectedValue);
+                $(this).attr("myValue", currentSelectedValue);
+            }
+        });
+    }
+
+</script>

@@ -756,7 +756,13 @@ namespace RevenuePlanner.Controllers
                 // Dharmraj Start : #680: Integration - UI - Pull responses from Salesforce
                 if (objIntegrationTypeModel.Code.Equals(Enums.IntegrationType.Salesforce.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    objView.GameplanDataTypePullRevenueModelList = GetGameplanDataTypePullingList(id, Enums.IntegrationType.Salesforce.ToString());
+                    //Modified by Rahul Shah on 26/02/2016 for PL #2017
+                    objView.GameplanDataTypePullRevenueModelList = GetGameplanDataTypePullingList(id, Enums.IntegrationType.Salesforce.ToString(),IsMQLShow);
+                    if (objView.GameplanDataTypePullRevenueModelList != null && objView.GameplanDataTypePullRevenueModelList.Count > 0 && IsMQLShow) {
+                        objView.GameplanDataTypePullMQLModelList = objView.GameplanDataTypePullRevenueModelList.Where(temp => temp.Type == Enums.GameplanDatatypePullType.MQL.ToString()).ToList();
+                        objView.GameplanDataTypePullRevenueModelList = objView.GameplanDataTypePullRevenueModelList.Where(temp => temp.Type == Enums.GameplanDatatypePullType.INQ.ToString()).ToList();
+                    }
+                    
                 }
                 // Dharmraj End : #680: Integration - UI - Pull responses from Salesforce
                 //// Start - Added by Sohel Pathan on 22/12/2014 for PL ticket #1061
@@ -1452,10 +1458,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Integration Instance Id</param>
         /// <param name="integrationType">integration type code</param>
         /// <returns>Returns GameplanDataTypePullModel List</returns>
-        public IList<GameplanDataTypePullModel> GetGameplanDataTypePullingList(int id, string integrationType)
+        public IList<GameplanDataTypePullModel> GetGameplanDataTypePullingList(int id, string integrationType, bool isMQLShow = false)//Modified by Rahul Shah on 26/02/2016 for PL #2017
         {
             List<GameplanDataTypePullModel> listGameplanDataTypePulling = new List<GameplanDataTypePullModel>();
-
+            bool isSalesForce = false;
             try
             {
                 ExternalIntegration objEx = new ExternalIntegration(id, Sessions.ApplicationId);
@@ -1480,7 +1486,8 @@ namespace RevenuePlanner.Controllers
             {
                 if (integrationType.Equals(Enums.IntegrationType.Salesforce.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    listGameplanDataTypePulling = GetGameplanDataTypePullListFromDB(id, Enums.GameplanDatatypePullType.INQ);
+                    isSalesForce = true;
+                    listGameplanDataTypePulling = GetGameplanDataTypePullListFromDB(id, Enums.GameplanDatatypePullType.INQ,isSalesForce,isMQLShow);
                 }
                 else if (integrationType.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
@@ -1622,7 +1629,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">ID of Integration instance</param>
         /// <param name="gameplanDatatypePullType"></param>
         /// <returns>Returns list of GameplanDataTypePullModel objects</returns>
-        public List<GameplanDataTypePullModel> GetGameplanDataTypePullListFromDB(int id, Enums.GameplanDatatypePullType gameplanDatatypePullType)
+        public List<GameplanDataTypePullModel> GetGameplanDataTypePullListFromDB(int id, Enums.GameplanDatatypePullType gameplanDatatypePullType, bool isSalesForce = false, bool isMQLShow = false)//Modified by Rahul Shah on 26/02/2016 for PL #2017
         {
             try
             {
@@ -1648,12 +1655,18 @@ namespace RevenuePlanner.Controllers
                 if (integrationTypeCode.Equals(Enums.IntegrationType.Salesforce.ToString(), StringComparison.OrdinalIgnoreCase) || integrationTypeCode.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     //// Get list of All GameplanDataTypePullModel from DB by IntegrationInstance ID
-                    string strGameplanDatatypePullType = gameplanDatatypePullType.ToString();
+                    //Modified by Rahul Shah on 26/02/2016 for PL #2017
+                    List<string> strGameplanDatatypePullType = new List<string>();
+                    strGameplanDatatypePullType.Add(gameplanDatatypePullType.ToString());
+                    if (isSalesForce && isMQLShow) {
+                        strGameplanDatatypePullType.Add(Enums.GameplanDatatypePullType.MQL.ToString());
+                    }
+                        
                     listGameplanDataTypePullZero = (from II in db.IntegrationInstances
                                                     join GDP in db.GameplanDataTypePulls on II.IntegrationTypeId equals GDP.IntegrationTypeId
                                                     join IIDMP in db.IntegrationInstanceDataTypeMappingPulls on GDP.GameplanDataTypePullId equals IIDMP.GameplanDataTypePullId into mapping
                                                     from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                    where II.IntegrationInstanceId == id && GDP.Type == strGameplanDatatypePullType && GDP.IsDeleted == false
+                                                    where II.IntegrationInstanceId == id && strGameplanDatatypePullType.Contains(GDP.Type) && GDP.IsDeleted == false
                                                     select new GameplanDataTypePullModel
                                                     {
                                                         GameplanDataTypePullId = GDP.GameplanDataTypePullId,

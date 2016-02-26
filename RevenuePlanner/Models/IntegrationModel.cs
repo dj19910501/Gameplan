@@ -112,4 +112,13 @@ namespace RevenuePlanner.Models
         public Guid BUId { get; set; }
     }
     //End :Added by Pratik for PL ticket #998
+    //Start :Added by Rahul for PL ticket #2017
+    public class lstInstance
+    {
+        public string InstanceName { get; set; }
+        public int InstanceId { get; set; }
+        public string Type { get; set; }
+        public string Code { get; set; }
+    }
+    //End :Added by Rahul for PL ticket #2017
 }

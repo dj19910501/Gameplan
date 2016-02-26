@@ -73,6 +73,10 @@
                     else if (Model.IntegrationType.Code == Enums.IntegrationType.Salesforce.ToString())
                     {
                     @Html.Partial("~/Views/ExternalService/_Responses.cshtml", Model.GameplanDataTypePullRevenueModelList)
+                        if (IsMQLShow)
+                        {
+                            @Html.Partial("~/Views/ExternalService/_PullSalesforceMQL.cshtml", Model.GameplanDataTypePullMQLModelList)
+                        }
                     }
 
                     @* Modified by Brad Gray on 07/22/2015 for PL ticket #1453*@
@@ -380,6 +384,12 @@
     $('#btnCancelRevenueMappins').click(function () {
         checkForDataLose('accordion', url, ErrorMessage);
     });
+    //Added by Rahul Shah on 26/02/2016 for PL #2017
+    $('#btnCancelSalesForceMQLMapping').click(function () {
+        $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLSuccessMessage").hide();
+        $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLErrorMessage").hide();
+        checkForDataLose('accordion', url, ErrorMessage);
+    });
 
     $('#btnCancelCloseDealMappins').click(function () {
         checkForDataLose('accordion', url, ErrorMessage);
@@ -415,6 +425,11 @@
         $("#frmRevenueDataMapping").find("#RevenueSuccessMessage").hide();
         $("#frmRevenueDataMapping").find('#RevenueErrorMessage').find('#spanMessageError').html('');
         $("#frmRevenueDataMapping").find("#RevenueErrorMessage").hide();
+        //Added by Rahul Shah on 26/02/2016 for PL #2017
+        $("#frmSalesForceMQLDataMapping").find('#SalesForceMQLSuccessMessage').find('#spanMessageSuccess').html('');
+        $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLSuccessMessage").hide();
+        $("#frmSalesForceMQLDataMapping").find('#SalesForceMQLErrorMessage').find('#spanMessageError').html('');
+        $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLErrorMessage").hide();
 
         $("#frmClosedDealDataMapping").find('#ClosedDealErrorMessage').find('#spanMessageError').html('');
         $("#frmClosedDealDataMapping").find("#ClosedDealErrorMessage").hide();
