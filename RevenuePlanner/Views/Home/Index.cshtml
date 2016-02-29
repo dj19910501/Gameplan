@@ -5087,11 +5087,13 @@
                             // To hide/show current plan edit button based on user plan edit permission
                             if ((CurrentPlanId > 0 && GetSelectedPlanNo == 1) || activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                                 $("#divPlanEditButtonHome").show();
+                                $("#divPlanButton").removeClass('full-radius');// Added for single button with radius all corner #2015
                                 $('.WelcomeMessageBorder').show();
                                 GetCurrentPlanPermissionDetail();
                             }
                             else {
                                 $("#divPlanEditButtonHome").hide();
+                                $("#divPlanButton").addClass('full-radius');// Added for single button with radius all corner #2015
                                 $('.WelcomeMessageBorder').show();
                                 //  $("#divAddActuals").hide();
                             }

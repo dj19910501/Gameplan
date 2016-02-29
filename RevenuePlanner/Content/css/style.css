@@ -15970,6 +15970,9 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     position: absolute;
     top: -11px;
 }
+#divPlanButton.full-radius .new-btn-plan {
+    border-radius: 5px;
+}
 .nav-tabs .fa.fa-thumbs-o-up {
     font-size: 15px;
     position: relative;
@@ -15994,4 +15997,6 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     margin: 0;
     padding: 0;
 }
+
+
 /* #2015 new style Icons  End*/
