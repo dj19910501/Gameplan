@@ -15963,7 +15963,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .nav-tabs li .request .badge, .nav-tabs li .request-icon-block a,.nav-tabs li .request-icon-block a:hover, .nav-tabs li .request-icon-block a:focus{color: #000;}
 .new-btn-plan{ border-radius: 5px 0 0 5px;}
 
-#RequestTab .request{border-radius: 5px; margin-left: 25px;padding: 8px 10px;}
+#RequestTab .request{border-radius: 5px; margin-left: 10px;padding: 8px 10px;}
 
 #RequestTab .fa-thumbs-o-up::before {
     left: 0;
