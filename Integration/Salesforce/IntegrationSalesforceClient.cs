@@ -2187,8 +2187,8 @@ namespace Integration.Salesforce
                                     if (!ErrorFlag)
                                     {
                                         ContactCampaignMemberList = (from element in ContactCampaignMemberList
-                                                                     group element by new { element.ContactId, element.CampaignId }
-                                                                     //group element by new { element.ContactId }                          // Modified by Viral kadiya for PL ticket #2018 - Get most recent responded CampaignMember
+                                                                     //group element by new { element.ContactId, element.CampaignId }
+                                                                     group element by new { element.ContactId }                          // Modified for PL ticket #2026 - Get most recent responded CampaignMember
                                                                          into groups
                                                                          select groups.OrderByDescending(p => p.RespondedDate).First()).ToList();
 
