@@ -54,6 +54,51 @@ END
 GO
 /* --------- End Script of PL ticket #2006 --------- */
 
+/* --------- Start Script of PL ticket #2022 --------- */
+-- Added by Rahul Shah on 02/29/2016
+-- insert 'Pull MQL' Data For SFDC in GameplanDataTypePull  
+IF OBJECT_ID('tempdb..#TempIntegrationTypeType') IS NOT NULL
+    DROP TABLE #TempIntegrationTypeType
+--Please do not make any change below variables and its values.    
+DECLARE @IntegrationRow int=0
+DECLARE @RowCount as int=1
+DECLARE @IntegrationTypeIdValue int
+DECLARE @Code nvarchar (50) = 'Salesforce'
+DECLARE @Type nvarchar (50) = 'MQL'
+DECLARE @FieldNameStatus nvarchar (50) = 'Status'
+DECLARE @FieldNameTimeStamp nvarchar (50) = 'Timestamp'
+DECLARE @FieldNameCampaignID nvarchar (50) = 'CampaignID'
+DECLARE @DisplayFieldNameCampaignID nvarchar (50) = 'Campaign ID'
+SELECT IntegrationTypeId,ROW_NUMBER() OVER(ORDER BY IntegrationTypeId) AS ROWID into #TempIntegrationTypeType FROM IntegrationType WHERE Code=@Code
+SELECT @IntegrationRow = Count(*) FROM #TempIntegrationTypeType 
+While(@RowCount <= @IntegrationRow )
+BEGIN
+	SELECT  @IntegrationTypeIdValue=IntegrationTypeId FROM #TempIntegrationTypeType Where ROWID=@RowCount
+	IF NOT EXISTS (SELECT * FROM GameplanDataTypePull WHERE IntegrationTypeId = @IntegrationTypeIdValue AND Type = @Type AND ActualFieldName = @FieldNameStatus AND DisplayFieldName = @FieldNameStatus AND isDeleted = 0)
+	BEGIN
+
+    INSERT INTO [GameplanDataTypePull](IntegrationTypeId,ActualFieldName,DisplayFieldName,Type,IsDeleted) 
+         VALUES(@IntegrationTypeIdValue,@FieldNameStatus,@FieldNameStatus,@Type,0)
+	END
+	
+	IF NOT EXISTS (SELECT * FROM GameplanDataTypePull WHERE IntegrationTypeId = @IntegrationTypeIdValue AND Type = @Type AND ActualFieldName = @FieldNameTimeStamp AND DisplayFieldName = @FieldNameTimeStamp AND isDeleted = 0)
+	BEGIN
+
+    INSERT INTO [GameplanDataTypePull](IntegrationTypeId,ActualFieldName,DisplayFieldName,Type,IsDeleted) 
+         VALUES(@IntegrationTypeIdValue,@FieldNameTimeStamp,@FieldNameTimeStamp,@Type,0)
+	END
+	
+	IF NOT EXISTS (SELECT * FROM GameplanDataTypePull WHERE IntegrationTypeId = @IntegrationTypeIdValue AND Type = @Type AND ActualFieldName = @FieldNameCampaignID AND DisplayFieldName = @DisplayFieldNameCampaignID AND isDeleted = 0)
+	BEGIN
+
+    INSERT INTO [GameplanDataTypePull](IntegrationTypeId,ActualFieldName,DisplayFieldName,Type,IsDeleted) 
+         VALUES(@IntegrationTypeIdValue,@FieldNameCampaignID,@DisplayFieldNameCampaignID,@Type,0)
+	END
+     
+SET @RowCount=@RowCount+1;
+END
+GO
+/* --------- End Script of PL ticket #2022 --------- */
 
 -- Added By : Maitri Gandhi
 -- Added Date : 2/22/2016
