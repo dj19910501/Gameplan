@@ -692,6 +692,10 @@
                         });
 
                     }
+                    //Added by Maitri Gandhi for #2014 on 29/2/2016 to maintain selected preset
+                    if (presetName != 'undefined' && presetName != null && presetName != "") {
+                        SaveLastSetofViews();
+                    }
                     UpdateSelectedFilters();
                 }
             }
