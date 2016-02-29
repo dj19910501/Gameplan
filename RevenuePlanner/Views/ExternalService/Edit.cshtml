@@ -100,7 +100,7 @@
                         </div>
                     </div>
                     }
-                    if (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString())
+                    if (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString() || Model.IntegrationType.Code == Enums.IntegrationType.Salesforce.ToString()) //modified by Rahul Shah on 29/02/2016 for PL #2017. display "Pull MQL" section when add new integration for SFDC.
                     {
                     <div class="accordion-group">
                         <div class="accordion-heading">
