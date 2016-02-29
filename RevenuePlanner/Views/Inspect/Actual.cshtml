@@ -537,9 +537,18 @@
             //Added By : Kalpesh Sharma Functional and code Review changes 
             $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble:true });
             $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
-
-            document.getElementById('inqP').innerHTML = FormatCommas(document.getElementById('inqP').innerHTML, false);
-            document.getElementById('lblTotalProjectedStageValue').innerHTML = FormatCommas(document.getElementById('lblTotalProjectedStageValue').innerHTML, false);
+            var inqP = document.getElementById('inqP');
+            if (inqP != null && inqP != 'undefined' && inqP != '') {
+                inqP = inqP.innerHTML;
+                document.getElementById('inqP').innerHTML = FormatCommas(inqP, false);
+            }
+            
+            
+            var projStageValue = document.getElementById('lblTotalProjectedStageValue');
+            if (projStageValue != null && projStageValue != 'undefined' && projStageValue != '') {
+                projStageValue = projStageValue.innerHTML;
+                document.getElementById('lblTotalProjectedStageValue').innerHTML = FormatCommas(projStageValue, false);
+            }
 
             if (document.getElementById('mqlP') != null)
             document.getElementById('mqlP').innerHTML = FormatCommas(document.getElementById('mqlP').innerHTML, false);

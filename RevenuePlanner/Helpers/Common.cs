@@ -3002,7 +3002,7 @@ namespace RevenuePlanner.Helpers
             }
             else if (tacticStageLevel == levelMQL)
             {
-                lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString());
+                lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString());
             }
             else if (tacticStageLevel > levelMQL)
             {
