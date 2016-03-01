@@ -748,19 +748,38 @@ namespace Integration
             }
             if (isImport)
             {
+                #region "Get Client wise MQL Permission"
+		        int IntegrationTypeId=0;
+                Guid ClientId = new Guid();
+                IntegrationInstance objInstance = db.IntegrationInstances.Where(inst => inst.IntegrationInstanceId == _integrationInstanceId.Value).FirstOrDefault();
+                bool isMQLPermission = false;
+                if(objInstance != null && objInstance.IntegrationInstanceId >0)
+                {
+                    string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
+                    IntegrationTypeId= objInstance.IntegrationTypeId;
+                    ClientId = objInstance.ClientId;
+                    if (db.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(ClientId)) && (intPermission.IntegrationTypeId.Equals(IntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
+                    {
+                        isMQLPermission = true;
+                    }
+                } 
+	            #endregion
 
                 if (integrationInstanceType.Equals(Enums.IntegrationType.Eloqua.ToString()))
                 {
                     #region "Pull MQL Status"
-                    bool PullMQLError = false;
-                    PullMQLError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullMQL.ToString()).Any();
-                    if (PullMQLError)
+                    if (isMQLPermission) // if client has MQL permission then render MQL status to Email
                     {
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
-                    }
-                    else
-                    {
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                        bool PullMQLError = false;
+                        PullMQLError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullMQL.ToString()).Any();
+                        if (PullMQLError)
+                        {
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+                        }
+                        else
+                        {
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                        }
                     }
                     #endregion
 
@@ -806,15 +825,18 @@ namespace Integration
                     #endregion
 
                     #region "Pull MQL Status"
-                    bool PullMQLError = false;
-                    PullMQLError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullMQL.ToString()).Any();
-                    if (PullMQLError)
+                    if (isMQLPermission) // if client has MQL permission then render MQL status to Email
                     {
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
-                    }
-                    else
-                    {
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                        bool PullMQLError = false;
+                        PullMQLError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullMQL.ToString()).Any();
+                        if (PullMQLError)
+                        {
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+                        }
+                        else
+                        {
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                        } 
                     }
                     #endregion
                 }

@@ -6,6 +6,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Net.Configuration;
 
 namespace IntegrationWinService
 {
@@ -38,11 +39,11 @@ namespace IntegrationWinService
             int retval = 0;
             MailMessage objEmail = new MailMessage();
 
-            string host = System.Configuration.ConfigurationManager.AppSettings["host"].ToString();
-            int port = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["port"]);
-            string username = System.Configuration.ConfigurationManager.AppSettings["username"].ToString();
-            string password = System.Configuration.ConfigurationManager.AppSettings["password"].ToString();
-
+            //string host = System.Configuration.ConfigurationManager.AppSettings["host"].ToString();
+            //int port = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["port"]);
+            //string username = System.Configuration.ConfigurationManager.AppSettings["username"].ToString();
+            //string password = System.Configuration.ConfigurationManager.AppSettings["password"].ToString();
+            bool isSupportEmail = false; // For Integration Email send from Other.
 
             try
             {
@@ -54,11 +55,12 @@ namespace IntegrationWinService
                 objEmail.Priority = MailPriority.Normal;
 
                 //Get appropriate SmtpSection for mail sending
-                SmtpClient smtpClient = new SmtpClient(host, port);
-                smtpClient.Credentials = new NetworkCredential(username, password);
-
-                smtpClient.EnableSsl = true;
+                SmtpSection smtpSection = GetSmtpSection(isSupportEmail);
+                SmtpClient smtpClient = new SmtpClient(smtpSection.Network.Host, smtpSection.Network.Port);
+                smtpClient.Credentials = new NetworkCredential(smtpSection.Network.UserName, smtpSection.Network.Password);
+                smtpClient.EnableSsl = smtpSection.Network.EnableSsl;
                 smtpClient.Send(objEmail);
+
                 retval = 1;
                 return retval;
             }
@@ -72,5 +74,25 @@ namespace IntegrationWinService
                 objEmail.Dispose();
             }
         }
+
+        /// <summary>
+        /// To get appropriate SmtpSection for mail sending
+        /// </summary>
+        /// <param name="isSupportMail"></param>
+        /// <returns>SmtpSection</returns>
+        public static SmtpSection GetSmtpSection(bool isSupportMail)
+        {
+            SmtpSection smtpSection = new SmtpSection();
+            if (isSupportMail)
+            {
+                smtpSection = (SmtpSection)System.Configuration.ConfigurationManager.GetSection("mailSettings/smtp_support");
+            }
+            else
+            {
+                smtpSection = (SmtpSection)System.Configuration.ConfigurationManager.GetSection("mailSettings/smtp_other");
+            }
+            return smtpSection;
+        }
+
     }
 }
