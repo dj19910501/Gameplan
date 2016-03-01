@@ -10,7 +10,7 @@
     string FilterName = Sessions.FilterPresetName;
     var PageTitle = "Add Actuals";
     var IsGridView = (bool)ViewBag.GridView; //Modified by Komal Rawal for 2013 Home/Plan Layout changes
-   // var IsSavedPlan = (string)ViewBag.IsLastSavedPlan;
+    // var IsSavedPlan = (string)ViewBag.IsLastSavedPlan;
 }
 @Html.Hidden("PageTitle", PageTitle)
 @Html.Hidden("FilterName", FilterName)
@@ -34,51 +34,55 @@
 @section Sidebar
 {
     <style type="text/css">
-        .chkbxfilter {
+        .chkbxfilter
+        {
             float: right;
             margin: 7px 0 0 0 !important;
         }
+
         #accordion-SelectedFilter .accordion-group
-    {
-        margin-bottom:0 !important;
-    }
+        {
+            margin-bottom: 0 !important;
+        }
+
+        
     </style>
     @*modified by Rahul Shah for Pl #1837*@
-      <!--success message-->
-<div class="save-filter">
-    <!--error message-->
-    <div id="errorMessageMainSidebar" class="alert hide alert-error">
-        <a class="close">×</a>
-        <strong></strong><span id="spanErrorMessageRole"></span>
-    </div>
+    <!--success message-->
+    <div class="save-filter">
+        <!--error message-->
+        <div id="errorMessageMainSidebar" class="alert hide alert-error">
+            <a class="close">×</a>
+            <strong></strong><span id="spanErrorMessageRole"></span>
+        </div>
 
-    <!--error message-->
-    <div id="successMessageLoadPreset" class="alert hide alert-success">
-        <a class="close">×</a>
-        <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
+        <!--error message-->
+        <div id="successMessageLoadPreset" class="alert hide alert-success">
+            <a class="close">×</a>
+            <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
+        </div>
+        <div id="content_SaveFilters" class="sidebar-preset scroll-section" style="height: 456.85px; display: none">
+            <h2>Save As Preset</h2>
+            <label for="Preset">Please enter a name for preset</label>
+            <input type="text" id="txtPresetName" />
+            <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular" title="Proceed" value="Proceed" id="btnSaveProceed" onclick="javascript: SavePreset()" />
+            <input type="button" class="btn btn-link" title="Cancel" value="Cancel" id="btnSaveCancel" onclick="javascript: CancelSavePreset()" />
+        </div>
+        <div id="DefaultFilters" style="display: none"></div>
     </div>
-    <div id="content_SaveFilters" class="sidebar-preset scroll-section" style="height: 456.85px; display:none">
-        <h2>Save As Preset</h2>
-        <label for="Preset">Please enter a name for preset</label>
-        <input type="text" id="txtPresetName" />
-        <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular" title="Proceed" value="Proceed" id="btnSaveProceed" onclick="javascript: SavePreset()" />
-        <input type="button" class="btn btn-link" title="Cancel" value="Cancel" id="btnSaveCancel" onclick="javascript: CancelSavePreset()" />
-    </div>
-    <div id="DefaultFilters" style="display:none"></div>
-</div>
     <div class="padding-content padding-bottom0" id="DivButtonsHome">
         <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
         <div class="wraper-btns cf">
-            <div >
-                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId = CurrentPlanId, isGridView = IsGridView})');" style="min-width:90%">< Back to Plan</button>
+            <div>
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId = CurrentPlanId, isGridView = IsGridView })');" style="min-width:90%">< Back to Plan</button>
             </div>
         </div>
     </div>
-@*modified by Rahul Shah for Pl #1837*@
+    @*modified by Rahul Shah for Pl #1837*@
     <div id="Filtersidebar" class="span2 sidebar">
         @*Commented By Maitri Gandhi on 25/2/2016 For #2014*@
         @*<div class="WelcomeMessageBorder"></div>*@
-        
+
         <!--success message-->
         <div class="error-msg-filter">
             <div id="successMessageSidebar" class="alert hide alert-success">
@@ -93,7 +97,7 @@
                 <div class="width50 float-left filter-title ">
                     <span class="filter-header">Filters</span>
                 </div>
-                <div class="dropdown" style="float:right;">
+                <div class="dropdown" style="float: right;">
                     <button id="dropdownMenu1" class="btn btn-default dropdown-toggle" aria-expanded="true" data-toggle="dropdown" type="button">
                         <i class="fa fa-bars"></i>
                         <span class="caret"></span>
@@ -102,9 +106,10 @@
                         <li onclick="SaveAsPreset()" role="presentation">
                             <a id="saveaslink" tabindex="-1" role="menuitem">Save Current Filters</a>
                         </li>
-                        <li onclick="LoadPreset()" role="presentation">
+                        @*Commented by Maitri Gandhi on 1/3/2016 to resolve the scenario of more than one plan in saved preset*@
+                        @*<li onclick="LoadPreset()" role="presentation">
                             <a tabindex="-1" role="menuitem">Load Saved Filters</a>
-                        </li>
+                        </li>*@
                         <li onclick="ClearAllPreset()" role="presentation">
                             <a tabindex="-1" role="menuitem">Clear All</a>
                         </li>
@@ -112,36 +117,36 @@
                 </div>
             </div>
 
-               
+
             <div style="clear: both;"></div>
-            
-             @*View Selected Filter Section - #1953 - Added By: Maitri Gandhi *@
-             <div id="accordion-SelectedFilter" class="dropdown-section accordion">
+
+            @*View Selected Filter Section - #1953 - Added By: Maitri Gandhi *@
+            <div id="accordion-SelectedFilter" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@Enums.FilterLabel.Active_Attributes.ToString().Replace("_"," ")<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i></h2>
+                        <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@Enums.FilterLabel.Active_Attributes.ToString().Replace("_", " ")<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
                         <ul class="scroll-list singleselect" id="ulSelectedFilter">
-                                                        @{
+                            @{
                                 List<string> YearText1 = new List<string>();
                                 List<string> PlanTitle = new List<string>();
                                 List<string> OwnerName = new List<string>();
                                 List<string> StatusTitle = new List<string>();
-                                }                                                       
-                               @* <li class="accordion-inner" title="Plane">
+                            }
+                            @* <li class="accordion-inner" title="Plane">
                                 <span class="sidebarliwidthSelected-left">Plan - </span>
                                 <span id="lstPlanSelected" class="sidebarliwidthSelected-right"></span>
-                            </li> *@                                              
+                            </li> *@
                             @{
                                 foreach (var custField in Model.lstCustomFields)
                                 {
                                 <li class="accordion-inner" title='@custField.Title'>
                                     <div id="CustomFields">
-                                    <span class="sidebarliwidthSelected-left">@custField.Title - </span>
-                                    <span id="lstCustomFieldSelected_@custField.CustomFieldId" class="sidebarliwidthSelected-right">All</span>
+                                        <span class="sidebarliwidthSelected-left">@custField.Title - </span>
+                                        <span id="lstCustomFieldSelected_@custField.CustomFieldId" class="sidebarliwidthSelected-right">All</span>
                                     </div>
-                            </li>
+                                </li>
                                 }
                             }
 
@@ -152,60 +157,61 @@
                             <li class="accordion-inner" title="TacticType">
                                 <span class="sidebarliwidthSelected-left">Tactic Type - </span>
                                 <span id="lstTType" class="sidebarliwidthSelected-right"></span>
-                            </li> 
-                                                    
+                            </li>
+
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
                 <div class="wraper-btns cf">
-            <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="btnUpdateResultFilters" onclick="UpdateResult()">
-                       @Enums.FilterLabel.Update_Attributes.ToString().Replace("_"," ")
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="btnUpdateResultFilters" onclick="UpdateResult()">
+                        @Enums.FilterLabel.Update_Attributes.ToString().Replace("_", " ")
                     </button>
                 </div>
-                </div>
-             <div id="divCustomFieldsFilter">
-            @if (Model.lstCustomFields.Count > 0)
-            {
-                int custFieldCount = 0;
-                foreach (var CustomField in Model.lstCustomFields)
+            </div>
+            <div id="divCustomFieldsFilter">
+                @if (Model.lstCustomFields.Count > 0)
                 {
+                    int custFieldCount = 0;
+                    foreach (var CustomField in Model.lstCustomFields)
+                    {
                     <div id="accordion-@CustomField.CustomFieldId" class="dropdown-section accordion CustomFieldAccordian">
                         <div class="accordion-group">
-                                @{ var currentCustomFieldOptions = Model.lstCustomFieldOptions.Where(option => option.CustomFieldId == CustomField.CustomFieldId).ToList(); }
+                            @{ var currentCustomFieldOptions = Model.lstCustomFieldOptions.Where(option => option.CustomFieldId == CustomField.CustomFieldId).ToList(); }
                             <div class="accordion-heading">
                                 <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-@CustomField.CustomFieldId" href="#accordion-element-@CustomField.CustomFieldId"><span class="sidebar_label tipsyclassTitle">@CustomField.Title</span>@*<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i> #1951 *@<i class="indicator fa fa-angle-down pull-right"></i><span class="filter-count"><span id="SelectedCustomFilter_@CustomField.CustomFieldId">@currentCustomFieldOptions.Count()</span>/@currentCustomFieldOptions.Count()</span></h2>
                             </div>
-                            <div id="accordion-element-@CustomField.CustomFieldId" class="accordion-body collapse">                                
+                            <div id="accordion-element-@CustomField.CustomFieldId" class="accordion-body collapse">
                                 <ul class="scroll-list" id='ulSelected-@CustomField.CustomFieldId'>
-                                @foreach (var customFieldOption in currentCustomFieldOptions)
-                                {
-                                    string id = "li_" + customFieldOption.CustomFieldId.ToString() + "_" + customFieldOption.CustomFieldOptionId.ToString();
-                                    <li class="accordion-inner" id="@id" title="@customFieldOption.Title"><span class="sidebarliwidth">@customFieldOption.Title</span><input type="checkbox" class="chkbxfilter" id="@customFieldOption.CustomFieldId.ToString()_@customFieldOption.CustomFieldOptionId.ToString()" onchange="toggleCustomFields(this,@CustomField.CustomFieldId,@custFieldCount)" /> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@</li>
-                                }
+                                    @foreach (var customFieldOption in currentCustomFieldOptions)
+                                    {
+                                        string id = "li_" + customFieldOption.CustomFieldId.ToString() + "_" + customFieldOption.CustomFieldOptionId.ToString();
+                                        <li class="accordion-inner" id="@id" title="@customFieldOption.Title"><span class="sidebarliwidth">@customFieldOption.Title</span><input type="checkbox" class="chkbxfilter" id="@customFieldOption.CustomFieldId.ToString()_@customFieldOption.CustomFieldOptionId.ToString()" onchange="toggleCustomFields(this,@CustomField.CustomFieldId,@custFieldCount)" />
+                                            @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@</li>
+                                    }
                                 </ul>
                                 <div class="list-tab">
-                                @if (currentCustomFieldOptions.Count() > 0)
-                                {
-                                    <ul id="@CustomField.CustomFieldId-AllModule">
-                                        <li><a onclick="BulkCustomFieldOperation(true, @CustomField.CustomFieldId,'@currentCustomFieldOptions.Count()')">select all</a></li>
-                                        <li>|</li>
-                                        <li><a onclick="BulkCustomFieldOperation(false, @CustomField.CustomFieldId,'@currentCustomFieldOptions.Count()')">@*deselect all*@clear</a></li>
-                                    </ul>
-                                }
-                                else
-                                {
-                                    <div id="No'@CustomField.Title'Found" class="NoDataFoundFilter">No @CustomField.Title Found</div>
-                                }
+                                    @if (currentCustomFieldOptions.Count() > 0)
+                                    {
+                                        <ul id="@CustomField.CustomFieldId-AllModule">
+                                            <li><a onclick="BulkCustomFieldOperation(true, @CustomField.CustomFieldId,'@currentCustomFieldOptions.Count()')">select all</a></li>
+                                            <li>|</li>
+                                            <li><a onclick="BulkCustomFieldOperation(false, @CustomField.CustomFieldId,'@currentCustomFieldOptions.Count()')">@*deselect all*@clear</a></li>
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <div id="No'@CustomField.Title'Found" class="NoDataFoundFilter">No @CustomField.Title Found</div>
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>   
-                    custFieldCount++; 
+                                    custFieldCount++;
+                    }
                 }
-            }
-</div>
+            </div>
             <div id="accordion-Owner" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
@@ -213,7 +219,7 @@
                     </div>
                     <div id="accordion-element-Owner" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulSelectedOwner">
-                           @* @if (Model.objIndividuals.Count > 0)
+                            @* @if (Model.objIndividuals.Count > 0)
                             {
                                 foreach (var item in Model.objIndividuals)
                                 {
@@ -296,7 +302,7 @@
         </div>
     </div>
     <!--End Second Accordion-->
-    <div style="clear:both;"></div>
+    <div style="clear: both;"></div>
 }
 
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
@@ -324,7 +330,7 @@
             <a href="#">All Tactics</a>
         </li>
     </ul>
-    <div class="div-user-Note" id="div-user-Note" style="display:none;">
+    <div class="div-user-Note" id="div-user-Note" style="display: none;">
         <span>Note that imported values override user-generated values.</span>
     </div>
     <div class="padding-content cf source-sans-proregular">
@@ -381,10 +387,10 @@
         });
 
         $(document).on("click", "#calendar-link-home-actuals", function (e) {
-            displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan ,currentPlanId = @RevenuePlanner.Helpers.Sessions.PlanId})');
+            displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId = @RevenuePlanner.Helpers.Sessions.PlanId })');
         });
-        
-     
+
+
 
         $("#liOpen a").click(function () {
             displayConfirmCommon('liOpenTabClick();');
@@ -422,26 +428,26 @@
         GetOwnerListForFilter(CurrentPlanId, false);
         GetTacticTypelist(CurrentPlanId, false);
         GetLastSetofViews($('#FilterName').val());
-         CallAjax();
+        CallAjax();
     });//document ready
 
-    function GetTacticTypelist(Planids, ifexists) {
-        var asyncval = false;
-        if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
-            asyncval = ifexists;
-        }
+        function GetTacticTypelist(Planids, ifexists) {
+            var asyncval = false;
+            if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
+                asyncval = ifexists;
+            }
 
-        $('#ulTacticType').html('');
-        if (!ifexists) {
-            filters.TacticTypeids = [];
-        }
-        $.ajax({
-            beforeSend: function (x) {
-                myApp.hidePleaseWait();
-            },
-            type: "GET",
-            cache: false,
-            async: asyncval,
+            $('#ulTacticType').html('');
+            if (!ifexists) {
+                filters.TacticTypeids = [];
+            }
+            $.ajax({
+                beforeSend: function (x) {
+                    myApp.hidePleaseWait();
+                },
+                type: "GET",
+                cache: false,
+                async: asyncval,
                 @*           url: '@Url.Action("GetTacticTypeListForFilter", "Report")',*@
             url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
             data: {
@@ -451,141 +457,141 @@
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                    }
-                    else {
-                        if (data.isSuccess == true) {
-                            if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
-                                TactictypeCount = data.TacticTypelist.length;
-                                if (TactictypeCount > 0) {
+                }
+                else {
+                    if (data.isSuccess == true) {
+                        if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
+                            TactictypeCount = data.TacticTypelist.length;
+                            if (TactictypeCount > 0) {
 
-                                    $("#TacticTypeAllModule").css("display", "block");
-                                    $("#NoTTFound").hide();
-                                    $.each(data.TacticTypelist, function (i, TactictypeItem) {
-                                        var checked = "";
-                                        var checkedclass = "";
-                                        //Modify by Rahul Shah on 28/10/2015 for PL #1438
+                                $("#TacticTypeAllModule").css("display", "block");
+                                $("#NoTTFound").hide();
+                                $.each(data.TacticTypelist, function (i, TactictypeItem) {
+                                    var checked = "";
+                                    var checkedclass = "";
+                                    //Modify by Rahul Shah on 28/10/2015 for PL #1438
 
                                     checked = "checked";
                                     checkedclass = "close-list";
-                                        //}
+                                    //}
                                     $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span> #1951*/
-                                    });
-                                }
-                                else {
-                                    $("#TacticTypeAllModule").css("display", "none");
-                                    $("#NoTTFound").show();
-                                }
+                                });
                             }
                             else {
                                 $("#TacticTypeAllModule").css("display", "none");
                                 $("#NoTTFound").show();
                             }
+                        }
+                        else {
+                            $("#TacticTypeAllModule").css("display", "none");
+                            $("#NoTTFound").show();
+                        }
                         TactictypeCount = $("#ulTacticType li").length;
                         checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
                         $('#tTTcount').text('/' + TactictypeCount);
                         $('#cTTcount').text(checkedTTcount);
-                        }
                     }
                 }
+            }
         });
 
-        }
+    }
 
-        function GetOwnerListForFilter(Planids, ifexists) {
-            var type = '@PlanGanttTypes.Tactic.ToString()';
-        var asyncval = false;
-        if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
-            asyncval = ifexists;
-        }
-        $('#ulSelectedOwner').html('');
-        if (!ifexists) {
-            filters.OwnerIds = [];
-        }
-        $.ajax({
-            beforeSend: function (x) {
-                myApp.hidePleaseWait();
-            },
-            type: "GET",
-            cache: false,
-            async: asyncval,
-        @*url: '@Url.Action("GetOwnerListForFilter", "Report")',*@
-                url: '@Url.Action("GetOwnerListForFilter", "Home")',
-                data: {
-                    PlanId: Planids.toString(),
-                    ViewBy: type,
-                    ActiveMenu: '@RevenuePlanner.Helpers.Enums.ActiveMenu.Home'
-        },
-                dataType: "json",
-                success: function (data) {
-
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+    function GetOwnerListForFilter(Planids, ifexists) {
+        var type = '@PlanGanttTypes.Tactic.ToString()';
+            var asyncval = false;
+            if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
+                asyncval = ifexists;
             }
-            else {
-                if (data.isSuccess == true) {
-                    if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
+            $('#ulSelectedOwner').html('');
+            if (!ifexists) {
+                filters.OwnerIds = [];
+            }
+            $.ajax({
+                beforeSend: function (x) {
+                    myApp.hidePleaseWait();
+                },
+                type: "GET",
+                cache: false,
+                async: asyncval,
+        @*url: '@Url.Action("GetOwnerListForFilter", "Report")',*@
+            url: '@Url.Action("GetOwnerListForFilter", "Home")',
+            data: {
+                PlanId: Planids.toString(),
+                ViewBy: type,
+                ActiveMenu: '@RevenuePlanner.Helpers.Enums.ActiveMenu.Home'
+                },
+            dataType: "json",
+            success: function (data) {
 
-                        OwnerCount = data.AllowedOwner.length;
-                        if (OwnerCount > 0) {
-                            var IsOwnerPresent = false;
-                            $("#ulOwnerAllModule").css("display", "block");
-                            $("#NoOwnerFound").hide();
-                            $.each(data.AllowedOwner, function (i, OwnerItem) {
-
-                                var LoggedInOwner = data.LoggedInUser.OwnerId;
-                                var checked = "";
-                                var checkedclass = "";
-                                //Modified By Maitri Gandhi on 24/2/2016 For #2014
-                                if (OwnerItem.OwnerId == LoggedInOwner) {
-                                    IsOwnerPresent = true;
-                                    //checked = "checked"
-                                    //checkedclass = "close-list"
-                                }
-                                    checked = "checked"
-                                    checkedclass = "close-list"
-
-                                //Modify by Rahul Shah on 28/10/2015 for PL #1438
-                                //if (ifexists &&  filters.OwnerIds.indexOf(OwnerItem.OwnerId)>= 0) {
-                                //checked = "checked";
-                                //checkedclass = "close-list";
-                                //}
-
-                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span> #1951*/
-                            });
-                            if (IsOwnerPresent == false) {
-
-                                // Modified By Nishant Sheth
-                                // Desc:: To resolve the #1790 observation
-                                checked = "checked"
-                                checkedclass = "close-list"
-                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
-                            }
-                        }
-                        else {
-                            $("#ulOwnerAllModule").css("display", "none");
-                            $("#NoOwnerFound").show();
-                        }
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
                     else {
-                        $("#ulOwnerAllModule").css("display", "none");
-                        $("#NoOwnerFound").show();
-                    }
+                        if (data.isSuccess == true) {
+                            if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
+
+                                OwnerCount = data.AllowedOwner.length;
+                                if (OwnerCount > 0) {
+                                    var IsOwnerPresent = false;
+                                    $("#ulOwnerAllModule").css("display", "block");
+                                    $("#NoOwnerFound").hide();
+                                    $.each(data.AllowedOwner, function (i, OwnerItem) {
+
+                                        var LoggedInOwner = data.LoggedInUser.OwnerId;
+                                        var checked = "";
+                                        var checkedclass = "";
+                                        //Modified By Maitri Gandhi on 24/2/2016 For #2014
+                                        if (OwnerItem.OwnerId == LoggedInOwner) {
+                                            IsOwnerPresent = true;
+                                            //checked = "checked"
+                                            //checkedclass = "close-list"
+                                        }
+                                        checked = "checked"
+                                        checkedclass = "close-list"
+
+                                        //Modify by Rahul Shah on 28/10/2015 for PL #1438
+                                        //if (ifexists &&  filters.OwnerIds.indexOf(OwnerItem.OwnerId)>= 0) {
+                                        //checked = "checked";
+                                        //checkedclass = "close-list";
+                                        //}
+
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span> #1951*/
+                                    });
+                                    if (IsOwnerPresent == false) {
+
+                                        // Modified By Nishant Sheth
+                                        // Desc:: To resolve the #1790 observation
+                                        checked = "checked"
+                                        checkedclass = "close-list"
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                    }
+                                }
+                                else {
+                                    $("#ulOwnerAllModule").css("display", "none");
+                                    $("#NoOwnerFound").show();
+                                }
+                            }
+                            else {
+                                $("#ulOwnerAllModule").css("display", "none");
+                                $("#NoOwnerFound").show();
+                            }
                             checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
                             TotalOwnercount = $("#ulSelectedOwner li").length;
                             $('#tOwnercount').text('/' + TotalOwnercount);
                             $('#cOwnercount').text(checkedOwnercount);
+                        }
+                    }
                 }
-            }
+        });
         }
-            });
-}
 
 
-    function GetLastSetofViews(presetName) {
+        function GetLastSetofViews(presetName) {
 
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Action("LastSetOfViews", "Home")',
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("LastSetOfViews", "Home")',
             data: { PresetName: presetName },
             dataType: "json",
             async: false,
@@ -737,17 +743,17 @@
         //        }
         //    }
         //});
-     
+
         //if (filters.SelectedPlans.length == 1) {
         //    CurrentPlanId = filters.SelectedPlans[0].toString();
         //    $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
         //}
         //End
-        
+
         //if (filters.SelectedPlans.length == 0) {
         //    filters.SelectedPlans.push($("#CurrentPlanId").val());
         //}
-     
+
         //if (TacticDeselectAll) {
         //    filters.TacticTypeids.push(0);
         //}
@@ -759,7 +765,7 @@
             }
         });
 
-   
+
         var Planid = CurrentPlanId;   //Modified By Komal Rawal on 17-02-2016 to resolve issue of Saving last viewed Plan on dropdown change.
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
@@ -795,8 +801,8 @@
                             if ($(this).parent().is(':visible')) {
                                 $(this).show();
                                 $(this).find("span[id=spanSuccessMessageRole]").text('@Common.objCached.SavePresetSuccess');
-                               // $(this).slideDown(600);
-                               //$(this).slideDown(600).delay(3000).slideUp(600);
+                                // $(this).slideDown(600);
+                                //$(this).slideDown(600).delay(3000).slideUp(600);
                             }
                         });
 
@@ -809,7 +815,7 @@
                         if ($(this).parent().is(':visible')) {
                             $(this).show();
                             $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
-                           // $(this).slideDown(600);
+                            // $(this).slideDown(600);
                             //$(this).slideDown(600).delay(3000).slideUp(600);
                         }
                     });
@@ -823,17 +829,17 @@
 
     //Added by komal rawal for new homepage UI
     function LoadPlan() {
-       var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
-       populateNF(plans, "dropdown-plan-title");
-       var nlform = new NLForm(document.getElementById('nl-form2'));
-       GetHealderData(CurrentPlanId);
-       GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+        var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
+        populateNF(plans, "dropdown-plan-title");
+        var nlform = new NLForm(document.getElementById('nl-form2'));
+        GetHealderData(CurrentPlanId);
+        GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
     }
 
     function onClickPlanTitle() {
         var IsSavedPlan = null;
-        
-             //Added by Rahul Shah for PL #1898
+
+        //Added by Rahul Shah for PL #1898
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
             CurrentPlanId = $(this).attr('value');
             IsSavedPlan = $("#CurrentPlanId").val();
@@ -868,8 +874,8 @@
                     }
                     else {*@
 
-                        $(this).attr('checked', 'checked')
-                        $(this).parent().addClass("close-list");
+                    $(this).attr('checked', 'checked')
+                    $(this).parent().addClass("close-list");
 
                     //}
 
@@ -886,10 +892,10 @@
                     $(this).parent().addClass("close-list");
                 });
             }
-          
+
             SaveLastSetofViews();
             $("#CurrentPlanId").val(CurrentPlanId);
-            if (CurrentPlanId > 0) {  
+            if (CurrentPlanId > 0) {
                 GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
                 GetList(CurrentPlanId);
@@ -902,14 +908,14 @@
         window.location = url + "?PlanId=" + Planid;
     }
     //End
-   
+
     function liOpenTabClick() {
         Status = 0;
         ShowOwnerList(); //Added by Arpita Soni on 01/13/2015 for ticket #1090
         $("#liOpen").addClass('active');
         $("#liAll").removeClass('active');
         $("#errorMsg").css("display", "none");
-         $("#SuccessMsg").css("display", "none");
+        $("#SuccessMsg").css("display", "none");
         //Added By : Kalpesh Sharma Functional Review Point #76
         $("#div-user-Note").show();
         CallAjax();
@@ -1021,7 +1027,7 @@
             if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
                 AllCounter = $(this).find("input[type=checkbox]").length;
                 CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-                if (AllCounter == CheckedCounter) {                    
+                if (AllCounter == CheckedCounter) {
                     id = this.id;
                     if (id != null && id != "" && id.indexOf("-") > -1) {
                         id = this.id.split("-")[1];
@@ -1048,7 +1054,7 @@
                 tacticTypeId: tacticTypeIds.toString(),
                 customFieldId: customFieldIds.toString(),
                 ownerId: ownerIds.toString(),
-                PlanId : $("#CurrentPlanId").val(),
+                PlanId: $("#CurrentPlanId").val(),
                 UserId: uId
             },
             success: function (r) {
@@ -1068,289 +1074,289 @@
                 }
             }
         });
+}
+function LoadPage() {
+    fillActualsTable();
+    NumberFormatterTipsyTitle(".actualtipsyclassTitle", 24);
+    maskWidht();
+
+    /*if a toogle is open the first time page loads, change css of mask*/
+    $(".accordion-actuals .accordion-group .in").prev()
+                                                .find(".table-actual-mask")
+                                                    .css({ "height": "254px" });
+
+    ///*change left titles from header if toogle  is open*/
+    $(".accordion-actuals .accordion-group .in").prev().
+                                                 find(".table-titles-actual-left")
+                                                         .css({ "color": "#908D88" });
+
+
+
+
+    /*change mask if toogle is open*/
+    $(".accordion-actuals .accordion-heading a").click(function () {
+        /*set mask shadows width*/
+        $('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
+        $('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
+        /*set mask height*/
+        $('.table-actual-mask').css({ "height": "0px" });
+        /*set left titles from header if toogle  is open*/
+        $(".accordion-actuals .accordion-group .in").prev().
+                                                find(".table-titles-actual-left")
+                                                        .css({ "color": "#ffffff" });
+        /*set glass icon from header if toogle  is open*/
+        $(".accordion-actuals .accordion-group .in").prev().
+                                                        find(".glass-icon")
+                                                                .css({ "visibility": "hidden" });
+        /*set visibility on scroll over mask*/
+        $(".table-actual-mask").css({ "overflow-x": "hidden" });
+
+        $('.shadow-scroll-table-mask-right').each(function () {
+            //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+            $(this).removeClass("resetVisibility");
+        });
+
+        $('.shadow-scroll-table-mask-left').each(function () {
+            //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+            $(this).removeClass("resetVisibility");
+        });
+
+        //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+        $(".accordion-actuals .accordion-group .in").prev().
+                                         find(".shadow-scroll-table-mask-right").addClass("resetVisibility");
+
+        //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+        $(".accordion-actuals .accordion-group .in").prev().
+                         find(".shadow-scroll-table-mask-left").addClass("resetVisibility");
+
+
+        var that = this,
+            mask = $(that).next().find(".table-actual-mask"),
+            titles = $(that).find(".table-titles-actual-left"),
+            glassIcon = $(that).find(".glass-icon"),
+            shadowRight = $(that).next().find(".shadow-scroll-table-mask-right"),
+            shadowLeft = $(that).next().find(".shadow-scroll-table-mask-left");
+        var styles = { visibility: "hidden", width: "0px", height: "0px" };
+
+        if ($(that).parent().parent().parent().next().hasClass("in")) {
+            /*set mask shadows width*/
+            $('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
+            $('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
+            glassIcon.css({ "visibility": "hidden" });
+            titles.css({ "color": "#ffffff" });
+            mask.css({ "overflow-x": "hidden" });
+            shadowRight.css(styles);
+            shadowLeft.css(styles);
+            animateMask($(mask), 0);
+        } else {
+            /*set mask shadows width*/
+            glassIcon.css({ "visibility": "visible" });
+            titles.css({ "color": "#908D88" });
+            mask.css({ "height": "0px" });
+            mask.css({ "overflow-x": "scroll" });
+            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+            var CurrentID = $(this).attr('href');
+            var heights = ($(CurrentID).find(".accordion-inner").height()) + 10;
+            animateMask($(mask), heights);
+        }
+
+
+    });
+
+    /*click event on mask*/
+    /*change mask if toogle is open*/
+    $(".table-actual-mask").click(function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    });
+
+    /*shadow on table*/
+    $(".accordion-actuals .accordion-heading").find('.table-actual-mask').scroll(function () {
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        var TacticSideBorderHeight = ($($(this).parent().prev().attr("href")).find(".accordion-inner").height()) + 10 + "px";
+        var styles = { visibility: "visible", widht: "15px", height: TacticSideBorderHeight };
+        var styles1 = { visibility: "hidden", widht: "15px", height: TacticSideBorderHeight };
+        if ($(this).scrollLeft() > 0) {
+            /*set shadows*/
+            $(this).prev().css(styles);
+            $(this).next().css(styles);
+            $(this).next().css({ "margin-left": $(".table-actual-mask").width() });
+        }
+        if ($(this).scrollLeft() == 0) {
+            $(this).prev().css(styles1);
+        }
+        if ($(this).scrollLeft() == 1800 - $(".table-actual-mask").width()) {
+            $(this).next().css(styles1);
+        }
+
+    });
+
+    window.onresize = function () {
+        function maskWidht() {
+            var widthHeader = $("#accordion2").width(),
+
+           //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
+           widthRigth = widthHeader - 662;
+
+            $(".header-toogle-actual-right").width(widthRigth);
+            $(".table-actual-mask").width(widthRigth);
+            $('.table-actual-mask').scrollLeft(0);
+            $(".accordion-actuals .accordion-heading").find('.table-actual-mask').next().css({ "margin-left": widthRigth });
+
+            return this;
+        };
+        maskWidht();
+
     }
-    function LoadPage() {
-            fillActualsTable();
-            NumberFormatterTipsyTitle(".actualtipsyclassTitle", 24);
-            maskWidht();
 
-            /*if a toogle is open the first time page loads, change css of mask*/
-            $(".accordion-actuals .accordion-group .in").prev()
-                                                        .find(".table-actual-mask")
-                                                            .css({ "height": "254px" });
+    // For Format Price & Total Input
+    $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+    $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
 
-            ///*change left titles from header if toogle  is open*/
-            $(".accordion-actuals .accordion-group .in").prev().
-                                                         find(".table-titles-actual-left")
-                                                                 .css({ "color": "#908D88" });
+    $('.currency_dollarCost').each(function () {
+        var txtvalue = $(this).val();
+        $(this).attr('title', txtvalue);
+    });
 
+    $('.priceValue').each(function () {
+        var txtvalue = $(this).val();
+        $(this).attr('title', txtvalue);//uday 2-7-2014 internal poinmt to add tooltip title...
+    });
 
+    $('.currency_dollar').each(function () {
+        var txtvalue = $(this).val();
+        $(this).attr('title', txtvalue);//uday 3-7-2014 internal poinmt to add tooltip title...
+    });
 
+    $('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
+    $('.accordion').find('input').each(function () {
 
-            /*change mask if toogle is open*/
-            $(".accordion-actuals .accordion-heading a").click(function () {
-                /*set mask shadows width*/
-                $('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
-                $('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
-                /*set mask height*/
-                $('.table-actual-mask').css({ "height": "0px" });
-                /*set left titles from header if toogle  is open*/
-                $(".accordion-actuals .accordion-group .in").prev().
-                                                        find(".table-titles-actual-left")
-                                                                .css({ "color": "#ffffff" });
-                /*set glass icon from header if toogle  is open*/
-                $(".accordion-actuals .accordion-group .in").prev().
-                                                                find(".glass-icon")
-                                                                        .css({ "visibility": "hidden" });
-                /*set visibility on scroll over mask*/
-                $(".table-actual-mask").css({ "overflow-x": "hidden" });
-
-                $('.shadow-scroll-table-mask-right').each(function () {
-                    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-                    $(this).removeClass("resetVisibility");
-                });
-
-                $('.shadow-scroll-table-mask-left').each(function () {
-                    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-                    $(this).removeClass("resetVisibility");
-                });
-
-                //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-                $(".accordion-actuals .accordion-group .in").prev().
-                                                 find(".shadow-scroll-table-mask-right").addClass("resetVisibility");
-
-                //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-                $(".accordion-actuals .accordion-group .in").prev().
-                                 find(".shadow-scroll-table-mask-left").addClass("resetVisibility");
-
-
-                var that = this,
-                    mask = $(that).next().find(".table-actual-mask"),
-                    titles = $(that).find(".table-titles-actual-left"),
-                    glassIcon = $(that).find(".glass-icon"),
-                    shadowRight = $(that).next().find(".shadow-scroll-table-mask-right"),
-                    shadowLeft = $(that).next().find(".shadow-scroll-table-mask-left");
-                var styles = { visibility: "hidden", width: "0px", height: "0px" };
-
-                if ($(that).parent().parent().parent().next().hasClass("in")) {
-                    /*set mask shadows width*/
-                    $('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
-                    $('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
-                    glassIcon.css({ "visibility": "hidden" });
-                    titles.css({ "color": "#ffffff" });
-                    mask.css({ "overflow-x": "hidden" });
-                    shadowRight.css(styles);
-                    shadowLeft.css(styles);
-                    animateMask($(mask), 0);
-                } else {
-                    /*set mask shadows width*/
-                    glassIcon.css({ "visibility": "visible" });
-                    titles.css({ "color": "#908D88" });
-                    mask.css({ "height": "0px" });
-                    mask.css({ "overflow-x": "scroll" });
-                    //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-                    var CurrentID = $(this).attr('href');
-                    var heights = ($(CurrentID).find(".accordion-inner").height()) + 10;
-                    animateMask($(mask), heights);
-                }
-
-
-            });
-
-            /*click event on mask*/
-            /*change mask if toogle is open*/
-            $(".table-actual-mask").click(function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            });
-
-            /*shadow on table*/
-            $(".accordion-actuals .accordion-heading").find('.table-actual-mask').scroll(function () {
-                //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-                var TacticSideBorderHeight = ($($(this).parent().prev().attr("href")).find(".accordion-inner").height()) + 10 + "px";
-                var styles = { visibility: "visible", widht: "15px", height: TacticSideBorderHeight };
-                var styles1 = { visibility: "hidden", widht: "15px", height: TacticSideBorderHeight };
-                if ($(this).scrollLeft() > 0) {
-                    /*set shadows*/
-                    $(this).prev().css(styles);
-                    $(this).next().css(styles);
-                    $(this).next().css({ "margin-left": $(".table-actual-mask").width() });
-                }
-                if ($(this).scrollLeft() == 0) {
-                    $(this).prev().css(styles1);
-                }
-                if ($(this).scrollLeft() == 1800 - $(".table-actual-mask").width()) {
-                    $(this).next().css(styles1);
-                }
-
-            });
-
-            window.onresize = function () {
-                function maskWidht() {
-                    var widthHeader = $("#accordion2").width(),
-
-                   //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
-                   widthRigth = widthHeader - 662;
-
-                    $(".header-toogle-actual-right").width(widthRigth);
-                    $(".table-actual-mask").width(widthRigth);
-                    $('.table-actual-mask').scrollLeft(0);
-                    $(".accordion-actuals .accordion-heading").find('.table-actual-mask').next().css({ "margin-left": widthRigth });
-
-                    return this;
-                };
-                maskWidht();
-
-            }
-
-            // For Format Price & Total Input
-            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
-            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
-
-            $('.currency_dollarCost').each(function () {
-                var txtvalue = $(this).val();
-                $(this).attr('title', txtvalue);
-            });
-
-            $('.priceValue').each(function () {
-                var txtvalue = $(this).val();
-                $(this).attr('title', txtvalue);//uday 2-7-2014 internal poinmt to add tooltip title...
-            });
-
-            $('.currency_dollar').each(function () {
-                var txtvalue = $(this).val();
-                $(this).attr('title', txtvalue);//uday 3-7-2014 internal poinmt to add tooltip title...
-            });
-
-            $('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
-            $('.accordion').find('input').each(function () {
-
-                $(this).keyup(function () {
-                        var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
-                        currentValue = currentValue == '' ? "0" : currentValue; // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
-                    //if (currentValue.match('^(0|[1-9][0-9]*)$')) {
-                        if (currentValue.match(_decmlRegex)) {
-                            var costlbl = (this).id.replace('ActuallblCCost', '');
-                            if ((this).id.replace(costlbl, '') != "ActuallblCCost") {
-                                var arr = (this).id.split('-');
-                                costlbl = arr[0];
-                                var formatValue = "P";
-                                if (arr[1] == 'Revenue') {
-                                    formatValue = "C";
-                                }
-                                var ida = "Actuallbl" + formatValue + arr[1] + arr[0];
-                                var totalvalue = 0;
-                                $('#tr' + arr[0] + arr[1]).find('input').each(function () {
-                                    var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
-                                    if (!isNaN(cvalue)) {
-                                        totalvalue = cvalue + parseFloat(totalvalue);
-                                    }
-                                });
-
-                                if (arr[1] == 'Revenue') {
-                                    document.getElementById(ida).innerHTML = totalvalue;
-                                    document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
-                                    //SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
-                                    $('#' + ida).attr('orignal-value', totalvalue);
-                                }
-
-                            //If Tactic has not any line item at that time application will update the Actual cost and Projected Cost.
-                            else if (arr[1] == 'Cost') {
-                                    costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
-                                    var updateActalCost = "ActuallblCCost" + costlbl;
-                                    document.getElementById(updateActalCost).innerHTML = totalvalue;
-                                    document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, true);
-                                    //SetBudget('#' + updateActalCost);
-                                    $('#' + updateActalCost).attr('orignal-value', totalvalue);
-                                }
-                                else if (arr[1] != 'Revenue' && arr[1] != 'Cost' && arr[1] != 'ProjectedStageValue' && arr[1] != 'MQL' &&
-                                    arr[1] != 'CW' && arr[1] != 'INQ') {
-                                    //Update the Actual Cost and apply currency format.
-                                    document.getElementById(ida).innerHTML = totalvalue;
-                                    document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
-                                    //SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
-
-                                    costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
-
-                                    //Update the line item for the appropriate Period (Y1,Y2....Y12)
-                                    var ActualsName = 'ActuallblP' + arr[1] + arr[0];
-                                    $('#' + ActualsName).attr('linevalue', totalvalue);
-                                    var lineItemTotal = 0;
-                                    var LineClassName = costlbl+'Line-' + arr[2];
-                                    $('.' + LineClassName).each(function () {
-                                        var lineItemvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', '').replace(/!/g,"_"));
-                                        if (!isNaN(lineItemvalue)) {
-                                            lineItemTotal = lineItemvalue + parseFloat(lineItemTotal);
-                                        }
-                                    });
-
-                                    var lineId = costlbl+"Cost-" + arr[2];
-                                    document.getElementById(lineId).innerHTML = lineItemTotal;
-                                    document.getElementById(lineId).innerHTML = FormatCurrency(document.getElementById(lineId).innerHTML, true);
-                                    //SetBudget('#' + lineId);
-
-                                    //Update the Actual cost value based upon Line item actual sum.
-                                    
-                                    var updateActalCost = "ActuallblCCost" + costlbl;
-                                    var updateActalCostValueTotal = 0;
-                                    var currentTacticLineItemsDv = '.lineItemActualsValues' + costlbl;
-                                    $(currentTacticLineItemsDv).each(function () {
-                                        var updateActalCostValue = parseFloat($(this).attr('linevalue').trim().replace(/,/g, '').replace('$', ''));
-                                        if (!isNaN(updateActalCostValue)) {
-                                            updateActalCostValueTotal = updateActalCostValue + parseFloat(updateActalCostValueTotal);
-                                        }
-                                    });
-
-                                    //Update the value and apply currency formatter on it .
-                                    document.getElementById(updateActalCost).innerHTML = updateActalCostValueTotal;
-                                    document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, true);
-                                    //SetBudget('#' + updateActalCost);
-                                    $('#' + updateActalCost).attr('orignal-value', updateActalCostValueTotal);
-                                }
-                                else {
-                                    $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
-                                    document.getElementById(ida).innerHTML = totalvalue;
-                                    document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
-                                    SetPriceValue(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
-                                }
-                            }
-                            calculateRIO(costlbl);
+        $(this).keyup(function () {
+            var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+            currentValue = currentValue == '' ? "0" : currentValue; // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
+            //if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+            if (currentValue.match(_decmlRegex)) {
+                var costlbl = (this).id.replace('ActuallblCCost', '');
+                if ((this).id.replace(costlbl, '') != "ActuallblCCost") {
+                    var arr = (this).id.split('-');
+                    costlbl = arr[0];
+                    var formatValue = "P";
+                    if (arr[1] == 'Revenue') {
+                        formatValue = "C";
+                    }
+                    var ida = "Actuallbl" + formatValue + arr[1] + arr[0];
+                    var totalvalue = 0;
+                    $('#tr' + arr[0] + arr[1]).find('input').each(function () {
+                        var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                        if (!isNaN(cvalue)) {
+                            totalvalue = cvalue + parseFloat(totalvalue);
                         }
-                });
-            });
+                    });
 
-            // Modified by dharmraj for implement new formula to calculate ROI, #533
-            function calculateRIO(id) {
-                var pcost = $("#hdnProjectedlblCCost" + id).val();  // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
-                if (pcost != 0 && !isNaN(pcost)) {
-                    var prevenue = $("#hdnProjectedlblValueRevenue" + id).val();    // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
-                    var roip = (prevenue - pcost) / pcost;
-                    $("#ProjectedROI" + id).text(FormatCommas(roip.toFixed(2).toString()));
-                }
+                    if (arr[1] == 'Revenue') {
+                        document.getElementById(ida).innerHTML = totalvalue;
+                        document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
+                        //SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                        $('#' + ida).attr('orignal-value', totalvalue);
+                    }
 
-                //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-                pcost = parseFloat(ReplaceCC($("#ActuallblCCost" + id).attr("orignal-value")));
-                if (pcost != 0 && !isNaN(pcost)) {
-                    var prevenue = parseFloat(ReplaceCC($("#ActuallblCRevenue" + id).attr("orignal-value")));
-                    var roiT = (prevenue - pcost) / pcost;
-                    $("#ActualROI" + id).text(FormatCommas(roiT.toFixed(2).toString()));
+                        //If Tactic has not any line item at that time application will update the Actual cost and Projected Cost.
+                    else if (arr[1] == 'Cost') {
+                        costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
+                        var updateActalCost = "ActuallblCCost" + costlbl;
+                        document.getElementById(updateActalCost).innerHTML = totalvalue;
+                        document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, true);
+                        //SetBudget('#' + updateActalCost);
+                        $('#' + updateActalCost).attr('orignal-value', totalvalue);
+                    }
+                    else if (arr[1] != 'Revenue' && arr[1] != 'Cost' && arr[1] != 'ProjectedStageValue' && arr[1] != 'MQL' &&
+                        arr[1] != 'CW' && arr[1] != 'INQ') {
+                        //Update the Actual Cost and apply currency format.
+                        document.getElementById(ida).innerHTML = totalvalue;
+                        document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
+                        //SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+
+                        costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
+
+                        //Update the line item for the appropriate Period (Y1,Y2....Y12)
+                        var ActualsName = 'ActuallblP' + arr[1] + arr[0];
+                        $('#' + ActualsName).attr('linevalue', totalvalue);
+                        var lineItemTotal = 0;
+                        var LineClassName = costlbl + 'Line-' + arr[2];
+                        $('.' + LineClassName).each(function () {
+                            var lineItemvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', '').replace(/!/g, "_"));
+                            if (!isNaN(lineItemvalue)) {
+                                lineItemTotal = lineItemvalue + parseFloat(lineItemTotal);
+                            }
+                        });
+
+                        var lineId = costlbl + "Cost-" + arr[2];
+                        document.getElementById(lineId).innerHTML = lineItemTotal;
+                        document.getElementById(lineId).innerHTML = FormatCurrency(document.getElementById(lineId).innerHTML, true);
+                        //SetBudget('#' + lineId);
+
+                        //Update the Actual cost value based upon Line item actual sum.
+
+                        var updateActalCost = "ActuallblCCost" + costlbl;
+                        var updateActalCostValueTotal = 0;
+                        var currentTacticLineItemsDv = '.lineItemActualsValues' + costlbl;
+                        $(currentTacticLineItemsDv).each(function () {
+                            var updateActalCostValue = parseFloat($(this).attr('linevalue').trim().replace(/,/g, '').replace('$', ''));
+                            if (!isNaN(updateActalCostValue)) {
+                                updateActalCostValueTotal = updateActalCostValue + parseFloat(updateActalCostValueTotal);
+                            }
+                        });
+
+                        //Update the value and apply currency formatter on it .
+                        document.getElementById(updateActalCost).innerHTML = updateActalCostValueTotal;
+                        document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, true);
+                        //SetBudget('#' + updateActalCost);
+                        $('#' + updateActalCost).attr('orignal-value', updateActalCostValueTotal);
+                    }
+                    else {
+                        $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
+                        document.getElementById(ida).innerHTML = totalvalue;
+                        document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
+                        SetPriceValue(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                    }
                 }
+                calculateRIO(costlbl);
             }
+        });
+    });
 
-            $("[id^='BtnShareTactic']").click(function () {
-                $("#errorMsg").css("display", "none");
-                $("#SuccessMsg").css("display", "none");
-                $("#DivPartialShareTactic").empty();
-                var url = '@Url.Content("~/Inspect/ShowShareTactic/")';
+    // Modified by dharmraj for implement new formula to calculate ROI, #533
+    function calculateRIO(id) {
+        var pcost = $("#hdnProjectedlblCCost" + id).val();  // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
+        if (pcost != 0 && !isNaN(pcost)) {
+            var prevenue = $("#hdnProjectedlblValueRevenue" + id).val();    // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
+            var roip = (prevenue - pcost) / pcost;
+            $("#ProjectedROI" + id).text(FormatCommas(roip.toFixed(2).toString()));
+        }
+
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        pcost = parseFloat(ReplaceCC($("#ActuallblCCost" + id).attr("orignal-value")));
+        if (pcost != 0 && !isNaN(pcost)) {
+            var prevenue = parseFloat(ReplaceCC($("#ActuallblCRevenue" + id).attr("orignal-value")));
+            var roiT = (prevenue - pcost) / pcost;
+            $("#ActualROI" + id).text(FormatCommas(roiT.toFixed(2).toString()));
+        }
+    }
+
+    $("[id^='BtnShareTactic']").click(function () {
+        $("#errorMsg").css("display", "none");
+        $("#SuccessMsg").css("display", "none");
+        $("#DivPartialShareTactic").empty();
+        var url = '@Url.Content("~/Inspect/ShowShareTactic/")';
                 $("#DivPartialShareTactic").load(url + '?planTacticId=' + $(this).attr('tacticId') + '&section=@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()');
             });
 
 
-        $("[id^='UpdateResult']").click(function () {
-            $("#errorMsg").css("display", "none");
-            $("#SuccessMsg").css("display", "none");
-            var _LineItems = [];
-            var title = htmlEncode($('#txtTacticTitle').val());
+            $("[id^='UpdateResult']").click(function () {
+                $("#errorMsg").css("display", "none");
+                $("#SuccessMsg").css("display", "none");
+                var _LineItems = [];
+                var title = htmlEncode($('#txtTacticTitle').val());
                 var _tactic = []
                 var tacticId = $(this).attr('tacticId');
                 var stageId = $(this).attr('stageId');
@@ -1371,7 +1377,7 @@
                 else {
                     totalCostActual = ReplaceCC($("#ActuallblCCost" + tacticId).text());
                 }
-                
+
                 var totalROI = ReplaceCC($("#ProjectedROI" + tacticId).text());
                 var totalROIActual = ReplaceCC($("#ActualROI" + tacticId).text());
                 var tableId = "#divTable" + tacticId;
@@ -1393,24 +1399,24 @@
                         if (thisValue != '') {
                             var lineitemclass = tacticId + '_Line';
                             if (!$(this).hasClass(lineitemclass)) {
-                            _tactic.push({
-                                PlanTacticId: tacticId,
-                                StageTitle: arr[1],
-                                Period: arr[2],
-                                ActualValue: thisValue,
-                                TotalProjectedStageValueActual: totalProjectedStageValueActual,
-                                TotalMQLActual: totalMQLActual,
-                                TotalCWActual: totalCWActual,
-                                TotalRevenueActual: totalRevenueActual,
-                                TotalCostActual: totalCostActual,
-                                ROI: totalROI,
-                                ROIActual: totalROIActual,
-                                IsActual: true,
+                                _tactic.push({
+                                    PlanTacticId: tacticId,
+                                    StageTitle: arr[1],
+                                    Period: arr[2],
+                                    ActualValue: thisValue,
+                                    TotalProjectedStageValueActual: totalProjectedStageValueActual,
+                                    TotalMQLActual: totalMQLActual,
+                                    TotalCWActual: totalCWActual,
+                                    TotalRevenueActual: totalRevenueActual,
+                                    TotalCostActual: totalCostActual,
+                                    ROI: totalROI,
+                                    ROIActual: totalROIActual,
+                                    IsActual: true,
                                     StageId: stageId
                                     //PlanLineItemId: arr[0]
-                            });
-                            isData = true;
-                        }
+                                });
+                                isData = true;
+                            }
                             else {
                                 _LineItems.push({
                                     PlanLineItemId: arr[0],
@@ -1433,86 +1439,86 @@
                 }
             if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
                 isError = true;
-                    var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ" 
-                    var msgdisplay = msg.replace('{0}', FormatCommas(totalMQLActual.toString())).replace('{1}', ProjectedStageValueTitle).replace('{3}', ProjectedStageValueTitle).replace('{2}', FormatCommas(totalProjectedStageValueActual.toString())).replace(/{4\}/g, MQlTitle);
-                    //$("#spanMessageError").text(msgdisplay);
-                    //$("#errorMessage").css("display", "block");
-                    ShowMessage(isError, msgdisplay)
-                    return false;
-                }
-                if (!isData) {
-                    _tactic.push({
-                        PlanTacticId: tacticId,
-                        StageTitle: 0,
-                        Period: 0,
-                        ActualValue: 0,
-                        TotalProjectedStageValueActual: totalProjectedStageValueActual,
-                        TotalMQLActual: totalMQLActual,
-                        TotalCWActual: totalCWActual,
-                        TotalRevenueActual: totalRevenueActual,
-                        TotalCostActual: totalCostActual,
-                        ROI: totalROI,
-                        ROIActual: totalROIActual,
-                        IsActual: false,
-                        StageId: stageId
-                    });
-                }
-                $("#errorMsg").css("display", "none");
+                var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
+                var msgdisplay = msg.replace('{0}', FormatCommas(totalMQLActual.toString())).replace('{1}', ProjectedStageValueTitle).replace('{3}', ProjectedStageValueTitle).replace('{2}', FormatCommas(totalProjectedStageValueActual.toString())).replace(/{4\}/g, MQlTitle);
+                //$("#spanMessageError").text(msgdisplay);
+                //$("#errorMessage").css("display", "block");
+                ShowMessage(isError, msgdisplay)
+                return false;
+            }
+            if (!isData) {
+                _tactic.push({
+                    PlanTacticId: tacticId,
+                    StageTitle: 0,
+                    Period: 0,
+                    ActualValue: 0,
+                    TotalProjectedStageValueActual: totalProjectedStageValueActual,
+                    TotalMQLActual: totalMQLActual,
+                    TotalCWActual: totalCWActual,
+                    TotalRevenueActual: totalRevenueActual,
+                    TotalCostActual: totalCostActual,
+                    ROI: totalROI,
+                    ROIActual: totalROIActual,
+                    IsActual: false,
+                    StageId: stageId
+                });
+            }
+            $("#errorMsg").css("display", "none");
             //_tactic = JSON.stringify({ 'tacticactual': _tactic });
 
-                var Tactic_title = $(".colTitle" + tacticId).attr('Tactitle');
-                $.ajax({
-                    contentType: 'application/json; charset=utf-8',
-                    dataType: 'json',
-                    async:false,
-                    type: 'POST',
-                    //url: '@Url.Content("~/Inspect/UploadResult/")?UserId=' + $(window).attr('name'),
+            var Tactic_title = $(".colTitle" + tacticId).attr('Tactitle');
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                async: false,
+                type: 'POST',
+                //url: '@Url.Content("~/Inspect/UploadResult/")?UserId=' + $(window).attr('name'),
                     url: '@Url.Content("~/Inspect/UploadResult/")',
                     //data: _tactic,
                     data: JSON.stringify({ tacticactual: _tactic, lineItemActual: _LineItems, tactictitle: Tactic_title }),
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {
                             window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data != 'undefined') {
+                        if (data.id != 0) {
+                            CallAjax();
+                            //$("#successMessage").css("display", "block");
+                            //$("#spanMessageSuccess").empty();
+                            //$("#spanMessageSuccess").text(data.msg);
+                            ShowMessage(isError, data.msg)
                         }
-                        else {
-                            if (data != 'undefined') {
-                                if (data.id != 0) {
-                                    CallAjax();
-                                    //$("#successMessage").css("display", "block");
-                                    //$("#spanMessageSuccess").empty();
-                                    //$("#spanMessageSuccess").text(data.msg);
-                                    ShowMessage(isError, data.msg)
-                                }
-                            }
-                        }
+                    }
+                }
                     }
                 });
 
 
-            });
-        }
-
-    function AssignDefaultValue() {
-        $('.accordion-actuals').find("input,input[type=text],textarea,select").each(function () {
-            $(this).attr("myValue", $(this).val());
-            $(this).attr("title", $(this).val());//uday 2-7-2014
         });
-    }
+}
 
-    function fillActualsTable() {
-        if (typeof actuals != 'undefined') {
-            $('.accordion-actuals').empty();
-            var $html = '';
-            var isFilterFound = false;
-            if (actuals.length) {
-                var indexValue = 0;
-                for (i in actuals) {
-                    indexValue = indexValue + 1;
-                    isFilterFound = true;
-                    addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle, actuals[i].IsTacticEditable, actuals[i].LineItemsData, actuals[i].costActualData, actuals[i].YearDiffrence, actuals[i].StartYear);
-                }
-                if (!isFilterFound) {
-                    $html += '@RevenuePlanner.Helpers.Common.objCached.NoTacticFound';
+function AssignDefaultValue() {
+    $('.accordion-actuals').find("input,input[type=text],textarea,select").each(function () {
+        $(this).attr("myValue", $(this).val());
+        $(this).attr("title", $(this).val());//uday 2-7-2014
+    });
+}
+
+function fillActualsTable() {
+    if (typeof actuals != 'undefined') {
+        $('.accordion-actuals').empty();
+        var $html = '';
+        var isFilterFound = false;
+        if (actuals.length) {
+            var indexValue = 0;
+            for (i in actuals) {
+                indexValue = indexValue + 1;
+                isFilterFound = true;
+                addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle, actuals[i].IsTacticEditable, actuals[i].LineItemsData, actuals[i].costActualData, actuals[i].YearDiffrence, actuals[i].StartYear);
+            }
+            if (!isFilterFound) {
+                $html += '@RevenuePlanner.Helpers.Common.objCached.NoTacticFound';
                     var $tableActuals = $('.accordion-actuals');
                     $tableActuals.append($html);
                 }
@@ -1522,7 +1528,7 @@
             }
             else {
                 if (Status == 0) {
-                    $html += '@RevenuePlanner.Helpers.Common.objCached.NoOpenTacticExists';                    
+                    $html += '@RevenuePlanner.Helpers.Common.objCached.NoOpenTacticExists';
                     //Added by Arpita Soni on 01/13/2015 for ticket #1090
                     //$('#ulSelectedOwner li').hide();
                     //$('#ulOwnerAllModule ').hide();
@@ -1561,33 +1567,33 @@
             // End - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
         }
     }
-        //add row in actuals table
-        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+    //add row in actuals table
+    //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
     function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData, _YearDiffrence, _StartYear) {
-            var $tableActuals = $('.accordion-actuals');
-            var num = parseInt(_index);
-            var $html = '<div class="accordion-group">' +
-                            '<div class="accordion-heading">' +
-                            '<div class="accordion-toggle">' +
-                                        '<div class="header-toogle-actual">' +
-                                         '<a data-toggle="collapse" class="chevron-right" data-parent="#accordion2" href="#collapse' + _id + '">' +
-                                            '<div class="header-toogle-actual-left">' +
-                                            '<span class="font-black">' + num + '.</span><span class="actualtipsyclassTitle">' + _title +
-                                            '</span><span class="glass-icon"></span>' +
-                                                '<div class="table-titles-actual-left">' +
-                                                    '<label>Projected</label>' +
-                                                    '<label style="padding-left:50px">Actual</label>' +
-                                                '</div>' +
+        var $tableActuals = $('.accordion-actuals');
+        var num = parseInt(_index);
+        var $html = '<div class="accordion-group">' +
+                        '<div class="accordion-heading">' +
+                        '<div class="accordion-toggle">' +
+                                    '<div class="header-toogle-actual">' +
+                                     '<a data-toggle="collapse" class="chevron-right" data-parent="#accordion2" href="#collapse' + _id + '">' +
+                                        '<div class="header-toogle-actual-left">' +
+                                        '<span class="font-black">' + num + '.</span><span class="actualtipsyclassTitle">' + _title +
+                                        '</span><span class="glass-icon"></span>' +
+                                            '<div class="table-titles-actual-left">' +
+                                                '<label>Projected</label>' +
+                                                '<label style="padding-left:50px">Actual</label>' +
                                             '</div>' +
-                                        '</a>';
+                                        '</div>' +
+                                    '</a>';
 
-            $html += '<div class="header-toogle-actual-right">' +
-            '<div class="shadow-scroll-table-mask-left"></div>' +
-            '<div class="table-actual-mask">' +
-            '<div id="divTable' + _id + '">' +
-               '<table id="table_actuals" class="table" tableTacticId="tableActual' + _id + '">' +
-                '<thead>' +
-                '<tr>';
+        $html += '<div class="header-toogle-actual-right">' +
+        '<div class="shadow-scroll-table-mask-left"></div>' +
+        '<div class="table-actual-mask">' +
+        '<div id="divTable' + _id + '">' +
+           '<table id="table_actuals" class="table" tableTacticId="tableActual' + _id + '">' +
+            '<thead>' +
+            '<tr>';
         for (var i = 0; i < parseInt(_YearDiffrence + 1) ; i++) {
 
             $html += '<th>Jan - ' + (parseInt(_StartYear) + i) + '  </th>' +
@@ -1603,19 +1609,19 @@
                         '<th>Nov - ' + (parseInt(_StartYear) + i) + '  </th>' +
                         '<th>Dec - ' + (parseInt(_StartYear) + i) + '  </th>'
         }
-        
+
         $html += '</tr>' +
                 '</thead>' +
                 '<tbody>';
-            var arrStage = stageTitle;
-            for (var p = 0; p < arrStage.length; p = p + 1) {
-                var idtr = "tr" + _id + arrStage[p];
-                $html += '<tr id=' + idtr + '>';
+        var arrStage = stageTitle;
+        for (var p = 0; p < arrStage.length; p = p + 1) {
+            var idtr = "tr" + _id + arrStage[p];
+            $html += '<tr id=' + idtr + '>';
             for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
-                    var tdId = _id + "-" + arrStage[p] + "-Y" + j;
-                    $html += '<td><input id="' + tdId + '" placeholder="---" ';     // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
-                    if (arrStage[p] == 'Revenue') {
-                        $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
+                var tdId = _id + "-" + arrStage[p] + "-Y" + j;
+                $html += '<td><input id="' + tdId + '" placeholder="---" ';     // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
+                if (arrStage[p] == 'Revenue') {
+                    $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
                     }
                     else {
                         $html += ' class="priceValue"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
@@ -1635,12 +1641,12 @@
                 $html += '</tr>';
             }
 
-            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
             $html += '<tr id=' + "tr" + _id + "Cost" + ' TacticId=' + _id + '>';
-        for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
+            for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
                 var newCounterTactic = j - 1;
                 var tdId = _id + "-" + "Cost" + "-Y" + j;
-                var divId = _id+"Cost-Y" + j;
+                var divId = _id + "Cost-Y" + j;
                 $html += '<td>';
                 if (_LineItemsData.length <= 0) {
                     $html += '<input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
@@ -1653,21 +1659,21 @@
                 }
                 $html += '</td>';
             }
-                $html += '</tr>';
+            $html += '</tr>';
 
-            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-                for (var p = 0; p < _LineItemsData.length; p = p + 1) {
-                    //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
-                    var TacticId = _id;
-                    var idtr = "tr" + _LineItemsData[p].id + TacticId;
-                $html += '<tr id=' + idtr + ' TacticId='+_id +'>';
-            for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+            for (var p = 0; p < _LineItemsData.length; p = p + 1) {
+                //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
+                var TacticId = _id;
+                var idtr = "tr" + _LineItemsData[p].id + TacticId;
+                $html += '<tr id=' + idtr + ' TacticId=' + _id + '>';
+                for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
                     var tdId = _LineItemsData[p].id + "-" + TacticId + "-Y" + j;
-                    var ClassName = "currency_dollar" + " "+_id+"Line-Y" + j;
-                    ClassName = _id+"_Line "+ ClassName;
+                    var ClassName = "currency_dollar" + " " + _id + "Line-Y" + j;
+                    ClassName = _id + "_Line " + ClassName;
                     $html += '<td><input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                     $html += ' class="' + ClassName + '"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
-                    
+
                     var newCounter = j - 1;
                     var Data = _LineItemsData[p].LineItemActual[newCounter];
 
@@ -1696,7 +1702,7 @@
                 '</div>' +
             '</div>' +
         '</div>' +
-        '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" Tactitle="'+_title+'">' +
+        '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" Tactitle="' + _title + '">' +
           '<div class="accordion-inner">';
 
             for (var i = 0; i < arrStage.length; i++) {
@@ -1714,7 +1720,7 @@
                 }
                 else if (arrStage[i].toLowerCase() == '@Common.StageCodeMQL') {
                     MQlTitle = '@Html.LabelForMQL("MQL")';
-                    $html += '<div class="body-toogle-actual">'+MQlTitle+'<div class="table-info-actual-left-wraper">' +
+                    $html += '<div class="body-toogle-actual">' + MQlTitle + '<div class="table-info-actual-left-wraper">' +
                                                     '<div class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblPMQL' + _id + '">' +
                                                         _mqlProjected +
                                                     '</div>' +
@@ -1725,105 +1731,105 @@
                                                 '</div>' +
                                             '</div>';
                 }
-            }
+        }
 
-            $html += '<div class="body-toogle-actual">@Html.LabelForCW("CW")<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblValueCW' + _id + '">' +
-                                                number_format(_cwProjected, 0, 0, ',') +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                            '</div>' +
-                                            '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPCW' + _id + '">' +
-                                                _cwActual +
-                                            '</div>' +
+        $html += '<div class="body-toogle-actual">@Html.LabelForCW("CW")<div class="table-info-actual-left-wraper">' +
+                                        '<div class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblValueCW' + _id + '">' +
+                                            number_format(_cwProjected, 0, 0, ',') +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                         '</div>' +
-                                    '</div>';
-
-            $html += '<div class="body-toogle-actual">Revenue<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left truncate setBudget" id="ProjectedlblValueRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                                FormatCurrency(_revenueProjected, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                            '</div>' +
-                                            '<div orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate setBudget" id="ActuallblCRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                                FormatCurrency(_revenueActual, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                            '</div>' +
-                                            '<input type="hidden" id="hdnProjectedlblValueRevenue' + _id + '" value=" ' + _revenueProjected + ' " />' +       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
-                                        '</div>' +
-                                    '</div>';
-
-            $html += '<div class="body-toogle-actual">Cost' +
-                                '<div id="border-right" class="table-info-actual-left-wraper">' +
-                                    '<div class="table-info-actual-left truncate setBudget" id="ProjectedlblCCost' + _id + '">' +   // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
-                                        FormatCurrency(_costProjected, true) +  // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
-                                    '</div>' ;
-
-            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-            $html += '<div orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(_costActual, true) + '</div>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-            $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + _costProjected + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
-            $html+=     '</div>' +
-                            '</div>';
-
-            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-            for (line in _LineItemsData) {
-                //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
-                var TacticId = _id;
-                $html += '<div class="body-toogle-actual"><span class="inner-lineItem truncate" style="width:28% !important;display:block;" title="' + _LineItemsData[line].Title + '">' + _LineItemsData[line].Title +
-                                             '</span><div id="border-right" class="table-info-actual-left-wraper">' +
-                                                 '<div class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                                     FormatCurrency(_LineItemsData[line].LineItemCost, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                                 '</div>' +
-                                                 '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues' + TacticId + '" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
-                                                  FormatCurrency(_LineItemsData[line].LineItemActualCost, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                    '</div>' +
-                                '</div>' +
-                            '</div>';
-            }
-
-            $html += '<div class="body-toogle-actual">ROI' +
-                                    '<div id="border-right" class="table-info-actual-left-wraper">' +
-                                        '<div class="table-info-actual-left truncate" id="ProjectedROI' + _id + '">' +
-                                            _roiProjected.toFixed(2) +
-                                        '</div>' +
-                                        '<div class="table-info-actual-left table-info-actual-width truncate " id="ActualROI' + _id + '">' +
-                                            _roiActual.toFixed(2) +
+                                        '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPCW' + _id + '">' +
+                                            _cwActual +
                                         '</div>' +
                                     '</div>' +
                                 '</div>';
 
-            $html += '<div class="body-toogle-actual">' +
-                            '<div class="wrapper-toogle-actual-buttons">' +
-                            '<div class="pull-left" style="width:315px;">' +
-                            '<label id="last-synced" class="pull-left margin-top6 margin-bottom0" style="line-height:10px;">' + _LastSync + '</label>' +
-                            '<label id="last-updated" class="pull-left margin-bottom0">' + _modifiedBy + '</label></div>';
+        $html += '<div class="body-toogle-actual">Revenue<div class="table-info-actual-left-wraper">' +
+                                        '<div class="table-info-actual-left truncate setBudget" id="ProjectedlblValueRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                            FormatCurrency(_revenueProjected, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                        '</div>' +
+                                        '<div orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate setBudget" id="ActuallblCRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                            FormatCurrency(_revenueActual, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                        '</div>' +
+                                        '<input type="hidden" id="hdnProjectedlblValueRevenue' + _id + '" value=" ' + _revenueProjected + ' " />' +       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
+                                    '</div>' +
+                                '</div>';
 
-            if (IsTacticEditable) {
-                $html += '<button id="BtnShareTactic' + _id + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>' +
-                         '<button id="UpdateResult" stageId="' + tacticStageId + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-right20" type="button"><span class="flag-icon"></span>Update Actuals</button>';
-            }
+        $html += '<div class="body-toogle-actual">Cost' +
+                            '<div id="border-right" class="table-info-actual-left-wraper">' +
+                                '<div class="table-info-actual-left truncate setBudget" id="ProjectedlblCCost' + _id + '">' +   // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
+                                    FormatCurrency(_costProjected, true) +  // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
+                                '</div>';
 
-            $html += '</div>' +
-                       '</div>' +
-                       '</div>' +
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        $html += '<div orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(_costActual, true) + '</div>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+        $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + _costProjected + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
+        $html += '</div>' +
+                        '</div>';
+
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        for (line in _LineItemsData) {
+            //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
+            var TacticId = _id;
+            $html += '<div class="body-toogle-actual"><span class="inner-lineItem truncate" style="width:28% !important;display:block;" title="' + _LineItemsData[line].Title + '">' + _LineItemsData[line].Title +
+                                         '</span><div id="border-right" class="table-info-actual-left-wraper">' +
+                                             '<div class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                                 FormatCurrency(_LineItemsData[line].LineItemCost, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                             '</div>' +
+                                             '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues' + TacticId + '" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
+                                              FormatCurrency(_LineItemsData[line].LineItemActualCost, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+        }
+
+        $html += '<div class="body-toogle-actual">ROI' +
+                                '<div id="border-right" class="table-info-actual-left-wraper">' +
+                                    '<div class="table-info-actual-left truncate" id="ProjectedROI' + _id + '">' +
+                                        _roiProjected.toFixed(2) +
+                                    '</div>' +
+                                    '<div class="table-info-actual-left table-info-actual-width truncate " id="ActualROI' + _id + '">' +
+                                        _roiActual.toFixed(2) +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>';
+
+        $html += '<div class="body-toogle-actual">' +
+                        '<div class="wrapper-toogle-actual-buttons">' +
+                        '<div class="pull-left" style="width:315px;">' +
+                        '<label id="last-synced" class="pull-left margin-top6 margin-bottom0" style="line-height:10px;">' + _LastSync + '</label>' +
+                        '<label id="last-updated" class="pull-left margin-bottom0">' + _modifiedBy + '</label></div>';
+
+        if (IsTacticEditable) {
+            $html += '<button id="BtnShareTactic' + _id + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>' +
+                     '<button id="UpdateResult" stageId="' + tacticStageId + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-right20" type="button"><span class="flag-icon"></span>Update Actuals</button>';
+        }
+
+        $html += '</div>' +
                    '</div>' +
-                 '</div>';
-            $tableActuals.append($html);
+                   '</div>' +
+               '</div>' +
+             '</div>';
+        $tableActuals.append($html);
 
-        }//addRowActual
-        function maskWidht() {
-            var widthHeader = $("#accordion2").width(),
-                //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
-                widthRigth = widthHeader - 662;
+    }//addRowActual
+    function maskWidht() {
+        var widthHeader = $("#accordion2").width(),
+            //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
+            widthRigth = widthHeader - 662;
 
-            $(".header-toogle-actual-right").width(widthRigth);
-            $(".table-actual-mask").width(widthRigth);
-            $('.table-actual-mask').scrollLeft(0);
-            $(".accordion-actuals .accordion-heading").find('.table-actual-mask').next().css({ "margin-left": widthRigth });
-            return this;
-        };
-        function animateMask(mask, value) {
-            $(mask).animate({
-                height: value
-            }, 300, function () {
-                // Animation complete
+        $(".header-toogle-actual-right").width(widthRigth);
+        $(".table-actual-mask").width(widthRigth);
+        $('.table-actual-mask').scrollLeft(0);
+        $(".accordion-actuals .accordion-heading").find('.table-actual-mask').next().css({ "margin-left": widthRigth });
+        return this;
+    };
+    function animateMask(mask, value) {
+        $(mask).animate({
+            height: value
+        }, 300, function () {
+            // Animation complete
         });
-        };
+    };
 
     //Added by Mitesh Vaishnav for PL ticket #972 - Add Actuals - Filter section formatting
     var SelectedCustomFieldOption;
@@ -1857,9 +1863,8 @@
 
     var SavePresetValue = false;
     function UpdateResult() {
-        if (SavePresetValue == false)
-        {
-        SaveLastSetofViews();
+        if (SavePresetValue == false) {
+            SaveLastSetofViews();
         }
         displayConfirmCommon("CallAjax();");
         SavePresetValue = false;
@@ -1872,7 +1877,7 @@
         $("#ulSelectedFilter").find("li #CustomFields .sidebarliwidthSelected-right").text("");
         var CheckedCounter = 0, AllCounter = 0, CurrentText = "", id = null;
         $("#divCustomFieldsFilter").find("div.accordion").each(function () {
-            CheckedCounter = 0; AllCounter = 0; CurrentText = ""; id = null; 
+            CheckedCounter = 0; AllCounter = 0; CurrentText = ""; id = null;
             if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
                 AllCounter = $(this).find("input[type=checkbox]").length;
                 CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
@@ -1987,10 +1992,10 @@
             });
         }
         else {
-                $("#ulSelectedOwner li").each(function (i) {
-                    $(this).removeClass("close-list");
-                    var chkid = $(this).find("input[type=checkbox]").attr("id");
-                    $("#" + chkid).removeAttr("checked");
+            $("#ulSelectedOwner li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
             });
         }
         checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
@@ -1999,7 +2004,7 @@
 
     function BulkCustomFieldOperation(selection, customFieldId, TotalCount) {
         if (selection) {
-            $('#ulSelected-' + customFieldId +' li').each(function () {
+            $('#ulSelected-' + customFieldId + ' li').each(function () {
                 $(this).addClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
                 $("#" + chkid).attr("checked", "checked");
@@ -2007,7 +2012,7 @@
             $("#SelectedCustomFilter_" + customFieldId).text(TotalCount);
         }
         else {
-            $('#ulSelected-' +customFieldId +' li').each(function (i) {
+            $('#ulSelected-' + customFieldId + ' li').each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
                 $("#" + chkid).removeAttr("checked");
@@ -2015,7 +2020,7 @@
             $("#SelectedCustomFilter_" + customFieldId).text("0");
         }
     }
-  //  var TacticDeselectAll = false;
+    //  var TacticDeselectAll = false;
     function BulkTTOperation(selection) {
         if (selection) {
             $("#ulTacticType li").each(function (i) {
@@ -2025,7 +2030,7 @@
             });
         }
         else {
-        //    TacticDeselectAll = true;
+            //    TacticDeselectAll = true;
             $("#ulTacticType li").each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -2037,7 +2042,7 @@
     }
 
     function SaveAsPreset() {
-       
+
         var IsAnyPlanSelected = $('#ulSelectedPlans').find("li").hasClass("close-list");
         var IsAnyCustomFieldSelected = $('#divCustomFieldsFilter').find("li").hasClass("close-list");
         var IsAnyTTSelected = $('#ulTacticType').find("li").hasClass("close-list");
@@ -2116,7 +2121,7 @@
                 if ($(this).parent().is(':visible')) {
                     $(this).show();
                     $(this).find("span[id=spanErrorMessageRole]").text('@Common.objCached.ProvidePresetName');
-                   // $(this).slideDown(600);
+                    // $(this).slideDown(600);
                     //$(this).slideDown(600).delay(3000).slideUp(600);
                 }
             });
@@ -2132,7 +2137,7 @@
     }
 
     function CancelSavePreset() {
-        $("#txtPresetName").val("");  
+        $("#txtPresetName").val("");
         $("#errorMessageMainSidebar").css("display", "none");
         $("#successMessageSidebar").css("display", "none");
         $("#successMessageLoadPreset").css("display", "none");

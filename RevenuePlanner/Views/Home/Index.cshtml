@@ -1124,9 +1124,13 @@
                         <li onclick="SaveAsPreset()" role="presentation">
                             <a id="saveaslink" tabindex="-1" role="menuitem">Save Current Filters</a>
                         </li>
-                        <li onclick="LoadPreset()" role="presentation">
-                            <a tabindex="-1" role="menuitem">Load Saved Filters</a>
-                        </li>
+                        @*Modified by Maitri Gandhi on 1/3/2016 to resolve the scenario of more than one plan in saved preset*@
+                        @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+                        {                            
+                            <li onclick="LoadPreset()" role="presentation">
+                                <a tabindex="-1" role="menuitem">Load Saved Filters</a>
+                            </li>
+                        }
                         <li onclick="ClearAllPreset()" role="presentation">
                             <a tabindex="-1" role="menuitem">Clear All</a>
                         </li>
@@ -3327,6 +3331,12 @@
         $('.home').removeClass('active');
         $('html head title').html("Plan");
         ChangeTabView(GridId); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+         @*Added by Maitri Gandhi on 1/3/2016 to resolve the scenario of more than one plan in saved preset*@
+        $(".dropdown ul li").each(function () {
+            if ($(this).find("a").text() == "Load Saved Filters") {
+                $(this).css("display", "none");
+            }
+        });
     }
 
     function CallPDF() {
