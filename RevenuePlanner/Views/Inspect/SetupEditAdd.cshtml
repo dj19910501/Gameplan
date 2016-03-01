@@ -1446,9 +1446,16 @@
                         }
                     });
                     if (waightage != 100 && waightage > 0) {
-                        var labelTitle = $(this).parents(".dropdown-wrapper").parents().eq(1).find('.ellipsis-left').attr('title').toString();
-                        if (isError.indexOf(labelTitle) <= -1) {
-                            isError.push(labelTitle);
+                        //Modified by Komal rawal for internal issue to handle undefined while checking weightage and give error if not sum up to 100
+                        var labelTitle = $(this).parents(".dropdown-wrapper").parents().eq(1).find('.ellipsis-left').attr('title');
+                        if (labelTitle == undefined){
+                            labelTitle = $(this).parents(".dropdown-wrapper").parents().eq(1).find('.ellipsis').attr('title');
+                        }
+                        if (labelTitle != undefined) {
+                            labelTitle = labelTitle.toString();
+                            if (isError.indexOf(labelTitle) <= -1) {
+                                isError.push(labelTitle);
+                            }
                         }
                     }
                     else if (waightage == 0) {

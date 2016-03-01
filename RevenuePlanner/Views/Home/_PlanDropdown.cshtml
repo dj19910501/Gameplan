@@ -96,6 +96,8 @@
         var Tabid = 'liCalender';
         if ($('#IsGridView').val() == "True") {
             $("#CalenderView").hide();
+            $('#btngrid').addClass('request-btn-active');
+            $('.new-btn-plan').removeClass('request-btn-active');
             Tabid = 'liGrid';// Add By Nishant Sheth Desc header value wrong with plan tab
         }
         else {
