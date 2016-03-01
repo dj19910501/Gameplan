@@ -2243,14 +2243,15 @@ namespace RevenuePlanner.Controllers
 
             // Commented by nishant sheth
             // Desc :: to avoid db trip for linked plan tactic's plan name
-            //  var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
+            // Modidfied By Komal Rawal for wrong data
+            var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
 
             var ListOfLinkedTactics = LinkedTacticList.Select(list =>
                 new
                 {
                     TacticId = list.objPlanTactic.LinkedTacticId,
-                    //PlanName = ListOfLinkedPlans.Where(l => l.PlanId == list.objPlanTactic.LinkedPlanId).Select(l => l.Title).FirstOrDefault()
-                    PlanName = lstTactic.Where(l => l.PlanId == list.objPlanTactic.LinkedPlanId).Select(l => l.objPlanTacticCampaignPlan.Title).FirstOrDefault()// Modified by nishant sheth
+                    PlanName = ListOfLinkedPlans.Where(l => l.PlanId == list.objPlanTactic.LinkedPlanId).Select(l => l.Title).FirstOrDefault()
+                  //  PlanName = lstTactic.Where(l => l.PlanId == list.objPlanTactic.LinkedPlanId).Select(l => l.objPlanTacticCampaignPlan.Title).FirstOrDefault()// Modified by nishant sheth
                 });
 
             //End

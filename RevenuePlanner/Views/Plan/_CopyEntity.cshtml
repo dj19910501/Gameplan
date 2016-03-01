@@ -45,7 +45,7 @@
                 </div>
                 <button id="btncopySubmit" type="button" class="btn btn-blue text-shadow-blue source-sans-proregular pull-left" data-dismiss="modal" onclick="CopyEntity()">Confirm</button>
                 <button type="button" class="btn btn-grey without-text-shadow source-sans-proregular btnEdit pull-left closeCopyEntity">Cancel</button>
-                <button class="close-x-big-icon hide" data-dismiss="modal" aria-hidden="true"></button>
+                <button id="btnCloseLinkTactic" class="close-x-big-icon hide" data-dismiss="modal" aria-hidden="true"></button>
             </div>
         </div>
     </div>
@@ -181,8 +181,8 @@
 
         //alert(selectedRowId);
     }
-    //Added by Rahul Shah on 30/12/2015 for PL #1847
-    function LinkEntityToOtherPlan(destEntityId, destPlanId) {
+        //Added by Rahul Shah on 30/12/2015 for PL #1847
+        function LinkEntityToOtherPlan(destEntityId, destPlanId) {
         var srcEntityID = '@srcEntityId';
         var srcPlanID = '@srcPlanId';
         var cloneType = '@srcSectionType';
@@ -215,7 +215,10 @@
                         $("#errorMessage1").css("display", "none");
                         $("#successMessage1").css("display", "none");
                         isDataModified = true;
-                        $('.close-x-big-icon').trigger('click');
+                        //Modified By Komal RAwal for #2001 remove multiple request of same method
+                       // $('.close-x-big-icon').trigger('click');
+                         ConfirmLinkTactic();
+                        //End
 
                     }
                     else {
@@ -225,7 +228,7 @@
                 }
             }
         });
-    }
+        }
     function CloneEntityToOtherPlan(destEntityId, destPlanId) {
         var srcEntityID = '@srcEntityId';
         var srcPlanID = '@srcPlanId';

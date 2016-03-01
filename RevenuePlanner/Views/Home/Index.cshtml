@@ -6130,6 +6130,91 @@
             });
         });
     }
+    //Added By Komal RAwal for #2001
+    function ConfirmLinkTactic() {
+        $("#modal-container-186470").addClass("transition-close");
+        $("#modal-container-186470").removeClass("transition_y");
+        addDefaultModalPopupBackgroungColor();
+        $('body').removeClass('bodyOverflow');
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            if ($('#IsGridView').val().toLowerCase() == "true") {
+
+                if (isDataModified) {
+                    if (gridSearchFlag == 1) {
+                        isCopyTacticHomeGrid = isCopyTactic;
+                        isEditTacticHomeGrid = isEditTactic;
+                        LoadPlanGrid();
+                        gridSearchFlag = 0;
+                    }
+                    else {
+                        var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
+                        $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
+
+                    }
+                }
+                if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
+                    $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
+                }
+                return true;
+
+            }
+            else {
+                if (isDataModified) {
+                    RefreshCurrentTab();
+                }
+                else {
+                    gantt.refreshData();
+                }
+            }
+        }
+        else {
+            if (isDataModified) {
+                RefreshCurrentTab();
+            }
+            else {
+                gantt.refreshData();
+            }
+        }
+        $(".datepicker.dropdown-menu").each(function () {
+            $(this).remove();
+        });
+
+        //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
+        //// display popup based on type and name and title.
+        if (activeMenu != '@Enums.ActiveMenu.Plan.ToString().ToLower()' || $('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+            $(".gantt_last_cell").dblclick(function (e) {
+                e.stopPropagation();
+            });
+
+            $(".gantt_add").click(function (e) {
+                var type = $(this).attr('id');
+                var name = $(this).attr('Name');
+                var title = $(this).attr('aria-label');
+                var permission = $(this).attr('Permission');
+                var linetype = $(this).attr('lineitemtype');
+                var LinkTacticPermission = $(this).attr('linktacticpermission');
+                var LinkedTacticId = $(this).attr('linkedtacticid');
+                DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
+            });
+
+            var $doc = $(document);
+            $doc.click(function () {
+                $('#popupType').css('display', 'none');
+            });
+
+            $(document).mouseup(function (e) {
+                $('#popupType').css("display", "none");
+            });
+            $(".gantt_ver_scroll").scroll(function () {
+                $('#popupType').css('display', 'none');
+            });
+        }
+
+        $("div[id^='LinkIcon']").each(function () {
+
+            bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+        });
+    };
 
     //Scrip Addded By Bhavesh for Inspect Popup
 
