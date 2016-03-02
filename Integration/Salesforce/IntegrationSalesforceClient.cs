@@ -3466,21 +3466,25 @@ namespace Integration.Salesforce
                     instanceLogCampaign.Status = StatusResult.Success.ToString();
 
                     #region "Add Campaign Synced comment to Plan_Campaign_Program_Tactic_Comment table"
+                    //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                    if (!Common.IsAutoSync)
+                    {
                     Plan_Campaign_Program_Tactic_Comment objCampaignComment = new Plan_Campaign_Program_Tactic_Comment();
                     objCampaignComment.PlanCampaignId = planCampaign.PlanCampaignId;
                     objCampaignComment.Comment = Common.CampaignSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                     objCampaignComment.CreatedDate = DateTime.Now;
                     ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                    if (Common.IsAutoSync)
-                    {
-                        objCampaignComment.CreatedBy = new Guid();
-                    }
-                    else
-                    {
+                        //if (Common.IsAutoSync)
+                        //{
+                        //    objCampaignComment.CreatedBy = new Guid();
+                        //}
+                        //else
+                        //{
                         objCampaignComment.CreatedBy = this._userId;
-                    }
+                        //}
                     db.Entry(objCampaignComment).State = EntityState.Added;
                     db.Plan_Campaign_Program_Tactic_Comment.Add(objCampaignComment);
+                    }
                     #endregion
 
                     sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -3527,21 +3531,25 @@ namespace Integration.Salesforce
                         instanceLogCampaign.Status = StatusResult.Success.ToString();
 
                         #region "Add Campaign Synced comment to Plan_Campaign_Program_Tactic_Comment table"
+                        //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                        if (!Common.IsAutoSync)
+                        {
                         Plan_Campaign_Program_Tactic_Comment objCampaignComment = new Plan_Campaign_Program_Tactic_Comment();
                         objCampaignComment.PlanCampaignId = planCampaign.PlanCampaignId;
                         objCampaignComment.Comment = Common.CampaignUpdatedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                         objCampaignComment.CreatedDate = DateTime.Now;
                         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                        if (Common.IsAutoSync)
-                        {
-                            objCampaignComment.CreatedBy = new Guid();
-                        }
-                        else
-                        {
+                            //if (Common.IsAutoSync)
+                            //{
+                            //    objCampaignComment.CreatedBy = new Guid();
+                            //}
+                            //else
+                            //{
                             objCampaignComment.CreatedBy = this._userId;
-                        }
+                            //}
                         db.Entry(objCampaignComment).State = EntityState.Added;
                         db.Plan_Campaign_Program_Tactic_Comment.Add(objCampaignComment);
+                        }
                         #endregion
 
                         sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -3624,21 +3632,25 @@ namespace Integration.Salesforce
                         instanceLogCampaign.Status = StatusResult.Success.ToString();
 
                         #region "Add Campaign Synced comment to Plan_Campaign_Program_Tactic_Comment table"
+                        //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                        if (!Common.IsAutoSync)
+                        {
                         Plan_Campaign_Program_Tactic_Comment objCampaignComment = new Plan_Campaign_Program_Tactic_Comment();
                         objCampaignComment.PlanCampaignId = planCampaign.PlanCampaignId;
                         objCampaignComment.Comment = Common.CampaignSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                         objCampaignComment.CreatedDate = DateTime.Now;
                         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                        if (Common.IsAutoSync)
-                        {
-                            objCampaignComment.CreatedBy = new Guid();
-                        }
-                        else
-                        {
+                            //if (Common.IsAutoSync)
+                            //{
+                            //    objCampaignComment.CreatedBy = new Guid();
+                            //}
+                            //else
+                            //{
                             objCampaignComment.CreatedBy = this._userId;
-                        }
+                            //}
                         db.Entry(objCampaignComment).State = EntityState.Added;
                         db.Plan_Campaign_Program_Tactic_Comment.Add(objCampaignComment);
+                        }
                         #endregion
 
                         sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -3684,21 +3696,25 @@ namespace Integration.Salesforce
                         instanceLogProgram.Status = StatusResult.Success.ToString();
 
                         #region "Add Program Synced with Salesforce comment to Plan_Campaign_Program_Tactic_Comment table"
+                        //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                        if (!Common.IsAutoSync)
+                        {
                         Plan_Campaign_Program_Tactic_Comment objProgramComment = new Plan_Campaign_Program_Tactic_Comment();
                         objProgramComment.PlanProgramId = planProgram.PlanProgramId;
                         objProgramComment.Comment = Common.ProgramSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                         objProgramComment.CreatedDate = DateTime.Now;
                         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                        if (Common.IsAutoSync)
-                        {
-                            objProgramComment.CreatedBy = new Guid();
-                        }
-                        else
-                        {
+                            //if (Common.IsAutoSync)
+                            //{
+                            //    objProgramComment.CreatedBy = new Guid();
+                            //}
+                            //else
+                            //{
                             objProgramComment.CreatedBy = this._userId;
-                        }
+                            //}
                         db.Entry(objProgramComment).State = EntityState.Added;
                         db.Plan_Campaign_Program_Tactic_Comment.Add(objProgramComment); 
+                        }
                         #endregion
 
                         sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -3747,21 +3763,25 @@ namespace Integration.Salesforce
                         instanceLogProgram.Status = StatusResult.Success.ToString();
 
                         #region "Add Program Synced with Salesforce comment to Plan_Campaign_Program_Tactic_Comment table"
+                        //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                        if (!Common.IsAutoSync)
+                        {
                         Plan_Campaign_Program_Tactic_Comment objProgramComment = new Plan_Campaign_Program_Tactic_Comment();
                         objProgramComment.PlanProgramId = planProgram.PlanProgramId;
                         objProgramComment.Comment = Common.ProgramUpdatedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                         objProgramComment.CreatedDate = DateTime.Now;
                         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                        if (Common.IsAutoSync)
-                        {
-                            objProgramComment.CreatedBy = new Guid();
-                        }
-                        else
-                        {
+                            //if (Common.IsAutoSync)
+                            // {
+                            //objProgramComment.CreatedBy = new Guid();
+                            //}
+                            //else
+                            //{
                             objProgramComment.CreatedBy = this._userId;
-                        }
+                            // }
                         db.Entry(objProgramComment).State = EntityState.Added;
                         db.Plan_Campaign_Program_Tactic_Comment.Add(objProgramComment);
+                        }
                         #endregion
 
                         sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -3878,21 +3898,25 @@ namespace Integration.Salesforce
                             instanceLogCampaign.Status = StatusResult.Success.ToString();
 
                             #region "Add Campaign Synced comment to Plan_Campaign_Program_Tactic_Comment table"
+                            //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                            if (!Common.IsAutoSync)
+                            {
                             Plan_Campaign_Program_Tactic_Comment objCampaignComment = new Plan_Campaign_Program_Tactic_Comment();
                             objCampaignComment.PlanCampaignId = planCampaign.PlanCampaignId;
                             objCampaignComment.Comment = Common.CampaignSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                             objCampaignComment.CreatedDate = DateTime.Now;
                             ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                            if (Common.IsAutoSync)
-                            {
-                                objCampaignComment.CreatedBy = new Guid();
-                            }
-                            else
-                            {
+                                //if (Common.IsAutoSync)
+                                //{
+                                //    objCampaignComment.CreatedBy = new Guid();
+                                //}
+                                //else
+                                //{
                                 objCampaignComment.CreatedBy = this._userId;
-                            }
+                                //}
                             db.Entry(objCampaignComment).State = EntityState.Added;
                             db.Plan_Campaign_Program_Tactic_Comment.Add(objCampaignComment); 
+                            }
                             #endregion
 
                             sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -3944,21 +3968,25 @@ namespace Integration.Salesforce
                             instanceLogProgram.Status = StatusResult.Success.ToString();
 
                             #region "Add Program Synced comment to Plan_Campaign_Program_Tactic_Comment table"
+                            //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                            if (!Common.IsAutoSync)
+                            {
                             Plan_Campaign_Program_Tactic_Comment objProgramComment = new Plan_Campaign_Program_Tactic_Comment();
                             objProgramComment.PlanProgramId = planProgram.PlanProgramId;
                             objProgramComment.Comment = Common.ProgramSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                             objProgramComment.CreatedDate = DateTime.Now;
                             ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                            if (Common.IsAutoSync)
-                            {
-                                objProgramComment.CreatedBy = new Guid();
-                            }
-                            else
-                            {
+                                //if (Common.IsAutoSync)
+                                //{
+                                //    objProgramComment.CreatedBy = new Guid();
+                                //}
+                                //else
+                                //{
                                 objProgramComment.CreatedBy = this._userId;
-                            }
+                                //}
                             db.Entry(objProgramComment).State = EntityState.Added;
                             db.Plan_Campaign_Program_Tactic_Comment.Add(objProgramComment); 
+                            }
                             #endregion
 
                             sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -4009,19 +4037,22 @@ namespace Integration.Salesforce
                         instanceLogTactic.Status = StatusResult.Success.ToString();
                         //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
                         #region "Add Tactic Synced comment to Plan_Campaign_Program_Tactic_Comment table"
+                        //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                        if (!Common.IsAutoSync)
+                        {
                         Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
                         objTacticComment.PlanTacticId = planTactic.PlanTacticId;
                         objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                         objTacticComment.CreatedDate = DateTime.Now;
                         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                        if (Common.IsAutoSync)
-                        {
-                            objTacticComment.CreatedBy = new Guid();
-                        }
-                        else
-                        {
+                            //if (Common.IsAutoSync)
+                            //{
+                            //    objTacticComment.CreatedBy = new Guid();
+                            //}
+                            //else
+                            //{
                             objTacticComment.CreatedBy = this._userId;
-                        }
+                            //}
                         db.Entry(objTacticComment).State = EntityState.Added;
                         db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment); 
                         #endregion
@@ -4047,7 +4078,7 @@ namespace Integration.Salesforce
 
                         }
                         #endregion
-
+                        }
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
                         _lstSyncError.Add(Common.PrepareSyncErrorList(Convert.ToInt32(planTactic.PlanTacticId), Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), Enums.Mode.Create.ToString(), Enums.SyncStatus.Success, DateTime.Now));
                     }
@@ -4097,19 +4128,22 @@ namespace Integration.Salesforce
                         instanceLogTactic.Status = StatusResult.Success.ToString();
 
                         #region "Add Tactic Update comment to Plan_Campaign_Program_Tactic_Comment table"
+                        //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                        if (!Common.IsAutoSync)
+                        {
                         Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
                         objTacticComment.PlanTacticId = planTactic.PlanTacticId;
                         objTacticComment.Comment = Common.TacticUpdatedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                         objTacticComment.CreatedDate = DateTime.Now;
                         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                        if (Common.IsAutoSync)
-                        {
-                            objTacticComment.CreatedBy = new Guid();
-                        }
-                        else
-                        {
+                            //if (Common.IsAutoSync)
+                            //{
+                            //    objTacticComment.CreatedBy = new Guid();
+                            //}
+                            //else
+                            //{
                             objTacticComment.CreatedBy = this._userId;
-                        }
+                            //}
                         db.Entry(objTacticComment).State = EntityState.Added;
                         db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment); 
                         #endregion
@@ -4132,7 +4166,7 @@ namespace Integration.Salesforce
                             db.Plan_Campaign_Program_Tactic_Comment.Add(objLinkedTacticComment);
                         }
                         #endregion
-
+                        }
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + "); ");
                         _lstSyncError.Add(Common.PrepareSyncErrorList(Convert.ToInt32(planTactic.PlanTacticId), Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), Enums.Mode.Update.ToString(), Enums.SyncStatus.Success, DateTime.Now));
                     }
