@@ -2036,12 +2036,17 @@ span.link-blue:hover {
     background: url(../images/arrow-down-white.png) right center no-repeat;
     padding-right: 17px;
 }
-
+/* Changed By Bhumika #1996 start*/
 .plantitle .nl-field-toggle {
-    background: url(../images/drop-down-logo.png) right center no-repeat;
+    /*background: url(../images/drop-down-logo.png) right center no-repeat;*/
+    background: url(../images/drop-down-logo-black.png) right 3px no-repeat;
     padding-right: 17px;
 }
-
+.plantitle .nl-field-toggle,
+.plantitle .nl-field-toggle:hover {
+    color: #000;
+}
+/* Changed By Bhumika #1996 End*/
 .nl-field-toggle,
 .nl-field-toggle:hover {
     display: inline;
@@ -2059,7 +2064,7 @@ span.link-blue:hover {
     transform: translateY(18%) translateX(40px) scale(1.3) !important;
 }
 
-*/ .nl-form ul {
+.nl-form ul {
     list-style: none;
     margin: 0;
     padding: 0;
