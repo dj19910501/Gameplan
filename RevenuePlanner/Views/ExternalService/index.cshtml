@@ -89,7 +89,7 @@
         <tbody>
             <tr id="trNewService" index="-1">
                 <td>
-                    <div id="nl-form" class="nl-form-plan-title without-margin">
+                    <div id="nl-form" class="nl-form-plan-title without-margin integration-form">
                         @Html.DropDownList("ddlIntegrationTypes", new SelectList((System.Collections.IEnumerable)TempData["ExternalFieldList"], "Value", "Text"), "Add New Integration", new { require = "true", Id = "lstIntegration", @class = "hide" })
                         <div class="nl-overlay"></div>
                     </div>
@@ -171,6 +171,25 @@
                 }
             }
 
+        });
+        $('.integration-form .nl-field-toggle').click(function () {
+            // get the scollTop (distance scrolled from top)
+            var scrollTop = $(window).scrollTop();
+            // get the top offset of the dropdown (distance from top of the page)
+            var topOffset = $(".nl-field").offset().top;
+            // calculate the dropdown offset relative to window position
+            var relativeOffset = topOffset - scrollTop;
+            // get the window height
+            var windowHeight = $(window).height();
+            // if the relative offset is greater than half the window height,
+            // reverse the dropdown.
+            if (relativeOffset > windowHeight / 2) {
+                $(".integration-form .nl-field ul").addClass("drop-up");
+            }
+            else {
+                $(".integration-form .nl-field ul").removeClass("drop-up");
+            }
+            scrollTop = 0;
         });
 
         $(document).on('click', '.sync_service', function (e) {

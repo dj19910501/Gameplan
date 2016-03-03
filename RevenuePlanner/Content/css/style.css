@@ -2112,16 +2112,36 @@ span.link-blue:hover {
         display: block;
     }
 
-.nl-field ul {
+/*.nl-field ul {
     background: #C6EBF3;
     font-size: 80%;
     left: -.5em;
     opacity: 0;
     position: absolute;
     top: 50%;
+
+    transform: translateY(-40%) scale(.9);
+    transition: visibility 0s ease .3s, opacity .3s ease 0s, transform .3s ease 0s;
+}*/
+.nl-field ul {
+    /*modify by bhumika to resolve nlForm dropdown design issue in Add integration*/
+    background: #C6EBF3;
+    font-size: 80%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 80%; 
+    bottom: auto;
     transform: translateY(-40%) scale(.9);
     transition: visibility 0s ease .3s, opacity .3s ease 0s, transform .3s ease 0s;
 }
+/*added by bhumika to resolve nlForm dropdown design issue in Add integration*/
+.integration-form .nl-field > ul.drop-up {     
+   top: auto;
+   bottom: 100px;   
+   left: -8px;
+}
+
 
 .nl-dd ul li.nl-dd-checked {
     color: #1A638A !important;
