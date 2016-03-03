@@ -10722,6 +10722,17 @@ font-size: 20px;
 .error-msg-filter .alert .close{
     top:2px;
 }
+/* Added By Bhumika #1951 title and icon add in saved filter view*/
+#DefaultFilters ul .ulFilterPreset-title{
+    color: #000;
+    display: block;
+    font-size: 12px;
+    padding-bottom: 3px;
+    width: 100%;
+}
+.ulFilterPreset-title .fa.fa-long-arrow-down {
+    padding: 0 10px 0 6px;
+}
 /*By Bheru mehta 24-12-2015 for #1749 end*/
 /*By Bheru mehta 30-12-2015 for #1843 start*/
 .unlink-icon {
