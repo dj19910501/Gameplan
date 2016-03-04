@@ -2034,6 +2034,7 @@
         $('#' + activeTab).removeClass("active");
         $(this).removeClass("pull-left");
         $(this).addClass("active pull-left");
+        var ID = CalendarId;
         //   var id = $(this).attr('id');
         if (TabName == "liCalender") {
             $("#CalenderView").show();
@@ -2054,6 +2055,7 @@
             GetCollaborators(CurrentPlanId);
         }
         else {
+            ID = GridId;
             $('#btngrid').addClass('request-btn-active');
             $('.new-btn-plan').removeClass('request-btn-active');
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
@@ -2067,13 +2069,15 @@
             isCopyTactic = 0;
             isEditTactic = 0;
             LoadPlanGrid();
+            $("#divupcomingact").hide();
 
         }
         // Add by Nishant Sheth
         // Desc:: To resolve the header data issue
         // Modified By Nishant Sheth Desc header value wrong with plan tab
-        GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, $(this).attr('id'));
-
+        GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, ID);
+        GetNumberOfActivityPerMonByPlanId(filters.SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, ID); //Added BY Komal rawal for #1929 proper Hud chart and count
+       
     };
 
     //End
@@ -2182,7 +2186,7 @@
                 LoadPlanGrid();
                 //Modified By Komal Rawal for #1447 - to Change the header data according to the filter selected.
                 GetHealderData(SelectedPlanIds, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId);// Modified By Nishant Sheth Desc header value wrong with plan tab
-                GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime, CustomFieldId, OwnerIds, TacticTypeids, StatusIds);
+                GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId); //Modified BY Komal rawal for #1929 proper Hud chart and count
                 //End
             }
             else {
@@ -4933,7 +4937,6 @@
     //// Modified By Maninder Singh Wadhva to Address PL#203
     //// Function to make ajax request.
     function AjaxRequest() {
-      
         //// Start - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
         if (IsUpdate) {
             filters.customFieldIds = [];
@@ -7471,7 +7474,12 @@
                 SelectedStatus.push(chkid);
         });
         //End
-        GetHealderData(SelectedPlanIds, SelectedCF, SelectedOwners, SelectedTacticType,SelectedStatus);
+        //Modified BY Komal rawal for #1929 proper Hud chart and count
+        var ID = CalendarId;
+        if ($('#IsGridView').val().toLowerCase() == "true") {
+            ID = GridId;
+        }
+        GetHealderData(SelectedPlanIds, SelectedCF, SelectedOwners, SelectedTacticType,SelectedStatus,ID);
         GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
     }
 
@@ -7800,6 +7808,7 @@
                         window.location = '@Url.Content("~/Login/Index")';
                     }
                     else if (data.IsSuccess) {
+                        RefershPlanHeaderCalc();   //Modified By Komal Rawal on 04-03-16 to get proper value in header according to filter on add or copy Campaign.
                         isCopyTactic = data.Id;
                         isCopyTacticHomeGrid = isCopyTactic;
                         RefreshCurrentTab();
@@ -7868,6 +7877,7 @@
                         window.location = '@Url.Content("~/Login/Index")';
                     }
                     else if (data.IsSuccess) {
+                        RefershPlanHeaderCalc();   //Modified By Komal Rawal on 04-03-16 to get proper value in header according to filter on add or copy program.
                         isCopyTactic = data.Id;
                         isCopyTacticHomeGrid = isCopyTactic;
                         RefreshCurrentTab();

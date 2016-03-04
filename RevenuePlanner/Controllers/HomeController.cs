@@ -4238,7 +4238,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="strPlanIds">Comma separated string of Plan Ids</param>
         /// <param name="strparam">Upcoming Activity dropdown selected option e.g. planyear, thisyear</param>
         /// <returns>returns Activity Chart object as jsonresult</returns>
-        public async Task<JsonResult> GetNumberOfActivityPerMonth(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public async Task<JsonResult> GetNumberOfActivityPerMonth(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
         {
             List<int> filteredPlanIds = new List<int>();
             string planYear = string.Empty;
@@ -4247,15 +4247,7 @@ namespace RevenuePlanner.Controllers
             List<int> campplanid = new List<int>();
             CalendarStartDate = DateTime.Now;
             CalendarEndDate = DateTime.Now;
-            //// Get planyear of the selected Plan
-            if (strparam.Contains("-"))
-            {
-                List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
-                lstActivityChartyears = getmultipleyearActivityChart(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan);
-                return Json(new { lstchart = lstActivityChartyears.ToList() }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
+          
                 isNumeric = int.TryParse(strparam, out Planyear);
                 if (isNumeric)
                 {
@@ -4265,9 +4257,11 @@ namespace RevenuePlanner.Controllers
                 {
                     planYear = DateTime.Now.Year.ToString();
                 }
-            }
+        
             //// Set start and end date for calender
             Common.GetPlanGanttStartEndDate(planYear, strparam, ref CalendarStartDate, ref CalendarEndDate);
+            //Modified BY Komal rawal for #1929 proper Hud chart and count
+            bool IsMultiYearPlan = false;
             if (isMultiplePlan)
             {
 
@@ -4275,7 +4269,8 @@ namespace RevenuePlanner.Controllers
                 List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(plan => int.Parse(plan)).ToList();
                 // Add By Nishant Sheth
                 // Desc :: for multiple extend plan #1750/#1761
-                var planData = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a).ToList();
+               var  planData = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a).ToList();
+               // var CampaignList = planData.Select(ids => ids.Plan_Campaign).ToList();
                 var planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
 
                 if (planList.Count == 0)
@@ -4290,44 +4285,51 @@ namespace RevenuePlanner.Controllers
             {
                 int PlanId = !string.IsNullOrEmpty(planid) ? int.Parse(planid) : 0;
                 //// Get planyear of the selected Plan
-                planYear = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId)).Year;
+                var Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId));
+                planYear = Plan.Year;
+               var  CampaignList = Plan.Plan_Campaign.ToList();
 
+
+               if (CampaignList.Count > 0)
+               {
+                   // Added By komal Rawal for #1929 if plan is multiyear then activity distribution chart should nbe according to that in grid view
+                   if (TabId == "liGrid")
+                   {
+                       int StartYear = CampaignList.Select(camp => camp.StartDate.Year).Min();
+                       int EndYear = CampaignList.Select(camp => camp.EndDate.Year).Max();
+
+                       if (EndYear != StartYear)
+                       {
+                           strparam = StartYear + "-" + EndYear;
+                           IsMultiYearPlan = true;
+                       }
+                       else
+                       {
+                           strparam = Convert.ToString(StartYear);
+                           Common.GetPlanGanttStartEndDate(planYear, strparam, ref CalendarStartDate, ref CalendarEndDate);
+                       }
+
+
+                   }
+               }
                 /// if strparam value null then set planYear as default value.
                 if (string.IsNullOrEmpty(strparam))
                     strparam = planYear;
                 isNumeric = int.TryParse(strparam, out Planyear);
                 if (!string.IsNullOrEmpty(planid))
                     filteredPlanIds.Add(int.Parse(planid));
+
             }
 
-
-            //Start Maninder Singh Wadhva : 11/15/2013 - Getting list of tactic for view control for plan version id.
-            //// Select campaign(s) of plan whose IsDelete=false.
-            //var lstCampaign = objDbMrpEntities.Plan_Campaign.Where(campaign => filteredPlanIds.Contains(campaign.PlanId) && campaign.IsDeleted.Equals(false)).ToList()
-            //                                                .Where(campaign => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate, CalendarEndDate, campaign.StartDate, campaign.EndDate).Equals(false));
-
-            ////// Select campaignIds.
-            //List<int> lstCampaignId = lstCampaign.Select(campaign => campaign.PlanCampaignId).ToList<int>();
-
-            //// Select program(s) of campaignIds whose IsDelete=false.
-            //var lstProgram = objDbMrpEntities.Plan_Campaign_Program.Where(program => lstCampaignId.Contains(program.PlanCampaignId) && program.IsDeleted.Equals(false))
-            //                                                          .Select(program => program)
-            //                                                          .ToList()
-            //                                                          .Where(program => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
-            //                                                                                                CalendarEndDate,
-            //                                                                                                program.StartDate,
-            //                                                                                                program.EndDate).Equals(false));
-
-            //// Select programIds.
-            //List<int> lstProgramId = lstProgram.Select(program => program.PlanProgramId).ToList<int>();
-
-            //// Selecte tactic(s) from selected programs
-            //var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
-            //                             campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
-
-            //var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
-            //                                        campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
-
+            //// Get planyear of the selected Plan
+            if (strparam.Contains("-") || IsMultiYearPlan)
+            {
+                List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
+                lstActivityChartyears = getmultipleyearActivityChart(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan);
+                return Json(new { lstchart = lstActivityChartyears.ToList(), strparam = strparam }, JsonRequestBehavior.AllowGet);
+            }
+            //End
+         
             var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic =>
                                                    campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted }).ToList();
 
@@ -4489,6 +4491,10 @@ namespace RevenuePlanner.Controllers
                                     {
                                         monthArray[0] = monthArray[0] + 1;
                                     }
+                                    else
+                                    {
+                                        monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                    }
                                 }
                                 else
                                 {
@@ -4574,7 +4580,7 @@ namespace RevenuePlanner.Controllers
             }
             await Task.Delay(1);
             //// return Activity Chart list as Json Result object
-            return Json(new { lstchart = lstActivityChart.ToList() }, JsonRequestBehavior.AllowGet);
+            return Json(new { lstchart = lstActivityChart.ToList(), strparam = strparam }, JsonRequestBehavior.AllowGet); //Modified BY Komal rawal for #1929 proper Hud chart and count
         }
 
         private List<ActivityChart> getmultipleyearActivityChart(string strParam, string planid, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, bool isMultiplePlan)

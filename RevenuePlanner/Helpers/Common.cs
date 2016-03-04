@@ -1598,8 +1598,29 @@ namespace RevenuePlanner.Helpers
                 //List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Commented By Rahul Shah on 16/09/2015 for PL #1610
                 List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
                 // Add By Nishant Sheth for Plan Year
-
+                //Modified BY Komal rawal for #1929 proper Hud chart and count
+                var CampaignList = planTacticIds.Select(ids => ids.Plan_Campaign_Program.Plan_Campaign).ToList();
                 // End By Nishant Sheth
+                if (CampaignList.Count > 0)
+                {
+                    // Add By Nishant Sheth Desc header value wrong with plan tab
+                    if (TabId == "liGrid")
+                    {
+                        int StartYear = CampaignList.Select(camp => camp.StartDate.Year).Min();
+                        int EndYear = CampaignList.Select(camp => camp.EndDate.Year).Max();
+
+                        if (EndYear != StartYear)
+                        {
+                            year = StartYear + "-" + EndYear;
+                        }
+                        else
+                        {
+                            year = Convert.ToString(StartYear);
+
+                        }
+                    }
+                }
+                //End
                 if (year != "" && year != null)
                 {
                     int Year;
@@ -1627,28 +1648,14 @@ namespace RevenuePlanner.Helpers
                         }
                         // End By Nishant Sheth
                     }
-                    if (planTacticIds.Count > 0)
-                    {
-                        // Add By Nishant Sheth Desc header value wrong with plan tab
-                        if (TabId == "liGrid")
-                        {
-                            int StartYear = planTacticIds.Select(tac => tac.StartDate.Year).Min();
-                            int EndYear = planTacticIds.Select(tac => tac.EndDate.Year).Max();
-                            if (EndYear != StartYear)
-                            {
-                                year = StartYear + "-" + EndYear;
-                            }
-                            else
-                            {
-                                year = Convert.ToString(StartYear);
-                            }
-                        }
-                    }
+                   
                     DateTime StartDate;
                     DateTime EndDate;
                     StartDate = EndDate = DateTime.Now;
                     Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
-                    planTacticIds = planTacticIds.Where(t => (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
+                   
+                        planTacticIds = planTacticIds.Where(t => (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
+                
 
 
                 }
