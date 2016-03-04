@@ -10288,7 +10288,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Plan Tactic Id.</param>
         /// <param name="section">Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <param name="IsDeployedToIntegration">bool value</param>
-        public JsonResult SaveSyncToIntegration(int id, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "")
+        public JsonResult SaveSyncToIntegration(int id, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
         {
             bool returnValue = false;
             string strPlanEntity = string.Empty;
@@ -10299,7 +10299,7 @@ namespace RevenuePlanner.Controllers
                     //Start - Added by Viral Kadiya for PL ticket #2002 - Save integration settings on "Sync" button click.
                     #region "Save integration settings"
                     #region "Declare local variables"
-                    bool IsDeployedToIntegration = false, IsSyncSF = false, IsSyncEloqua = false;
+                    bool IsDeployedToIntegration = false, IsSyncSF = false, IsSyncEloqua = false, IsSyncWorkFront = false;
                     #endregion
                     var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(_tactic => _tactic.PlanTacticId == id);
                     if (objTactic != null && objTactic.PlanTacticId > 0)
@@ -10310,10 +10310,40 @@ namespace RevenuePlanner.Controllers
                             IsSyncSF = Convert.ToBoolean(isSyncSF);
                         if (!string.IsNullOrEmpty(isSyncEloqua))
                             IsSyncEloqua = Convert.ToBoolean(isSyncEloqua);
+                        if (!string.IsNullOrEmpty(isSyncWorkFront))
+                            IsSyncWorkFront = Convert.ToBoolean(isSyncWorkFront);
+                        if (IsSyncWorkFront)
+                        {
+                            SaveWorkFrontTacticReviewSettings(objTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+                        }
                         objTactic.IsDeployedToIntegration = IsDeployedToIntegration;
                         objTactic.IsSyncSalesForce = IsSyncSF;
                         objTactic.IsSyncEloqua = IsSyncEloqua;
+                        objTactic.IsSyncWorkFront = IsSyncWorkFront;
                         db.Entry(objTactic).State = EntityState.Modified;
+
+
+                        #region "Update settings for linked tactic"
+                        var LinkedTacticId = objTactic.LinkedTacticId;
+                        if (LinkedTacticId.HasValue && LinkedTacticId.Value > 0)
+                        {
+                            Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(tacid => tacid.PlanTacticId == LinkedTacticId.Value).FirstOrDefault();
+                            objLinkedTactic.IsDeployedToIntegration = IsDeployedToIntegration;
+                            objLinkedTactic.IsSyncEloqua = IsSyncEloqua;
+                            objLinkedTactic.IsSyncSalesForce = IsSyncSF;
+                            objLinkedTactic.IsSyncWorkFront = IsSyncWorkFront;
+                            objLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                            objLinkedTactic.ModifiedDate = DateTime.Now;
+
+                            if (IsSyncWorkFront)
+                            {
+                                SaveWorkFrontTacticReviewSettings(objLinkedTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+                            }
+
+                            db.Entry(objLinkedTactic).State = EntityState.Modified;
+                        }
+                        #endregion
+
                         db.SaveChanges();
                     } 
                     #endregion
