@@ -1256,7 +1256,7 @@ function LoadPage() {
                     if (arr[1] == 'Revenue') {
                         document.getElementById(ida).innerHTML = totalvalue;
                         document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
-                        //SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                        SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in # 1755
                         $('#' + ida).attr('orignal-value', totalvalue);
                     }
 
@@ -1266,7 +1266,7 @@ function LoadPage() {
                         var updateActalCost = "ActuallblCCost" + costlbl;
                         document.getElementById(updateActalCost).innerHTML = totalvalue;
                         document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, true);
-                        //SetBudget('#' + updateActalCost);
+                        SetBudget('#' + updateActalCost);   //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
                         $('#' + updateActalCost).attr('orignal-value', totalvalue);
                     }
                     else if (arr[1] != 'Revenue' && arr[1] != 'Cost' && arr[1] != 'ProjectedStageValue' && arr[1] != 'MQL' &&
@@ -1274,7 +1274,7 @@ function LoadPage() {
                         //Update the Actual Cost and apply currency format.
                         document.getElementById(ida).innerHTML = totalvalue;
                         document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
-                        //SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                        SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points //AdUncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
 
                         costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
 
@@ -1293,7 +1293,7 @@ function LoadPage() {
                         var lineId = costlbl + "Cost-" + arr[2];
                         document.getElementById(lineId).innerHTML = lineItemTotal;
                         document.getElementById(lineId).innerHTML = FormatCurrency(document.getElementById(lineId).innerHTML, true);
-                        //SetBudget('#' + lineId);
+                        SetBudget('#' + lineId);    //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
 
                         //Update the Actual cost value based upon Line item actual sum.
 
@@ -1310,7 +1310,7 @@ function LoadPage() {
                         //Update the value and apply currency formatter on it .
                         document.getElementById(updateActalCost).innerHTML = updateActalCostValueTotal;
                         document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, true);
-                        //SetBudget('#' + updateActalCost);
+                        SetBudget('#' + updateActalCost);   //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
                         $('#' + updateActalCost).attr('orignal-value', updateActalCostValueTotal);
                     }
                     else {
@@ -1340,6 +1340,7 @@ function LoadPage() {
             var prevenue = parseFloat(ReplaceCC($("#ActuallblCRevenue" + id).attr("orignal-value")));
             var roiT = (prevenue - pcost) / pcost;
             $("#ActualROI" + id).text(FormatCommas(roiT.toFixed(2).toString()));
+            SetPriceValue($("#ActualROI" + id));  //Added By Maitri for #1755 on 2/3/2016
         }
     }
 
@@ -1547,13 +1548,13 @@ function fillActualsTable() {
 
                 $tableActuals.append($html);
             }
-
-            //$('.addFormatterActualCurrency').each(function () {
-            //    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-            //    //SetBudget($(this)); // Modfified by Sohel Pathan on 10/09/2014 for Internal Review Points
-            //    //debugger;
-            //    //FormatCurrency($(this).innerHTML, true);
-            //});
+            //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
+            $('.addFormatterActualCurrency').each(function () {
+                //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+                SetBudget($(this)); // Modfified by Sohel Pathan on 10/09/2014 for Internal Review Points  
+                //debugger;
+                //FormatCurrency($(this).innerHTML, true);
+            });
 
             $('.addFormatterActualNumber').each(function () {
                 //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
@@ -1580,10 +1581,10 @@ function fillActualsTable() {
                                         '<div class="header-toogle-actual-left">' +
                                         '<span class="font-black">' + num + '.</span><span class="actualtipsyclassTitle">' + _title +
                                         '</span><span class="glass-icon"></span>' +
-                                            '<div class="table-titles-actual-left">' +
+                                            '<span class="table-titles-actual-left">' +
                                                 '<label>Projected</label>' +
-                                                '<label style="padding-left:50px">Actual</label>' +
-                                            '</div>' +
+                                                '<label>Actual</label>' +
+                                            '</span>' +
                                         '</div>' +
                                     '</a>';
 
@@ -1704,94 +1705,94 @@ function fillActualsTable() {
         '</div>' +
         '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" Tactitle="' + _title + '">' +
           '<div class="accordion-inner">';
-
+            //Modified by Bhumika for #1755 on 4/3/2016 for UI issues.
             for (var i = 0; i < arrStage.length; i++) {
                 if (arrStage[i] == '@Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()') {
-                    $html += '<div class="body-toogle-actual">' + tacticStageTitle + '<input type="hidden" id="hdnProjectedStageValueTitle' + _id + '" value="' + tacticStageTitle + '" /><div class="table-info-actual-left-wraper">' +
-                                                                      '<div class="table-info-actual-left truncate addFormatterActualNumber" id="lblProjectedStageValue' + _id + '">' +
+                    $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">' + tacticStageTitle + '</span><input type="hidden" id="hdnProjectedStageValueTitle' + _id + '" value="' + tacticStageTitle + '" /><span class="table-info-actual-left-wraper">' +
+                                                                      '<span class="table-info-actual-left truncate addFormatterActualNumber" id="lblProjectedStageValue' + _id + '">' +
                                                     _projectedStageValue +
-                                            '</div>' +
-                                                '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPProjectedStageValue' + _id + '">' +
+                                            '</span>' +
+                                                '<span class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPProjectedStageValue' + _id + '">' +
                                                     _projectedStageValueActual +
-                                            '</div>' +
+                                            '</span>' +
                                             '<input type="hidden" id="hdnActuallblPProjectedStageValue' + _id + '" value=" ' + _projectedStageValueActual + ' " />' +   //// Added by Sohel Pathan on 27/08/2014 for Internal Review Points
-                                        '</div>' +
-                                    '</div>';
+                                        '</span>' +
+                                    '</div></div>';
                 }
                 else if (arrStage[i].toLowerCase() == '@Common.StageCodeMQL') {
                     MQlTitle = '@Html.LabelForMQL("MQL")';
-                    $html += '<div class="body-toogle-actual">' + MQlTitle + '<div class="table-info-actual-left-wraper">' +
-                                                    '<div class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblPMQL' + _id + '">' +
+                    $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">' + MQlTitle + '</span><span class="table-info-actual-left-wraper">' +
+                                                    '<span class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblPMQL' + _id + '">' +
                                                         _mqlProjected +
-                                                    '</div>' +
-                                                    '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPMQL' + _id + '">' +
+                                                    '</span>' +
+                                                    '<span class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPMQL' + _id + '">' +
                                                         _mqlActual +
-                                                    '</div>' +
+                                                    '</span>' +
                                                     '<input type="hidden" id="hdnActuallblPMQL' + _id + '" value=" ' + _mqlActual + ' " />' +       //// Added by Sohel Pathan on 27/08/2014 for Internal Review Points
-                                                '</div>' +
-                                            '</div>';
+                                                '</span>' +
+                                            '</div></div>';
                 }
         }
 
-        $html += '<div class="body-toogle-actual">@Html.LabelForCW("CW")<div class="table-info-actual-left-wraper">' +
-                                        '<div class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblValueCW' + _id + '">' +
+        $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">@Html.LabelForCW("CW")</span><span class="table-info-actual-left-wraper">' +
+                                        '<span class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblValueCW' + _id + '">' +
                                             number_format(_cwProjected, 0, 0, ',') +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                        '</div>' +
-                                        '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPCW' + _id + '">' +
+                                        '</span>' +
+                                        '<span class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPCW' + _id + '">' +
                                             _cwActual +
-                                        '</div>' +
-                                    '</div>' +
-                                '</div>';
+                                        '</span>' +
+                                    '</span>' +
+                                '</div></div>';
 
-        $html += '<div class="body-toogle-actual">Revenue<div class="table-info-actual-left-wraper">' +
-                                        '<div class="table-info-actual-left truncate setBudget" id="ProjectedlblValueRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+        $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">Revenue</span><span class="table-info-actual-left-wraper">' +
+                                        '<span class="table-info-actual-left truncate setBudget" id="ProjectedlblValueRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                             FormatCurrency(_revenueProjected, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                        '</div>' +
-                                        '<div orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate setBudget" id="ActuallblCRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                        '</span>' +
+                                        '<span orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate setBudget" id="ActuallblCRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                             FormatCurrency(_revenueActual, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                        '</div>' +
+                                        '</span>' +
                                         '<input type="hidden" id="hdnProjectedlblValueRevenue' + _id + '" value=" ' + _revenueProjected + ' " />' +       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
-                                    '</div>' +
-                                '</div>';
+                                    '</span>' +
+                                '</div></div>';
 
-        $html += '<div class="body-toogle-actual">Cost' +
-                            '<div id="border-right" class="table-info-actual-left-wraper">' +
-                                '<div class="table-info-actual-left truncate setBudget" id="ProjectedlblCCost' + _id + '">' +   // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
+        $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">Cost</span>' +
+                            '<span id="border-right" class="table-info-actual-left-wraper">' +
+                                '<span class="table-info-actual-left truncate setBudget" id="ProjectedlblCCost' + _id + '">' +   // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
                                     FormatCurrency(_costProjected, true) +  // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
-                                '</div>';
+                                '</span>';
 
         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-        $html += '<div orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(_costActual, true) + '</div>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+        $html += '<span orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(_costActual, true) + '</span>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
         $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + _costProjected + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
-        $html += '</div>' +
-                        '</div>';
+        $html += '</span>' +
+                        '</div></div>';
 
         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
         for (line in _LineItemsData) {
             //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
             var TacticId = _id;
-            $html += '<div class="body-toogle-actual"><span class="inner-lineItem truncate" style="width:28% !important;display:block;" title="' + _LineItemsData[line].Title + '">' + _LineItemsData[line].Title +
-                                         '</span><div id="border-right" class="table-info-actual-left-wraper">' +
-                                             '<div class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+            $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="inner-lineItem truncate testTacticTitle"  title="' + _LineItemsData[line].Title + '">' + _LineItemsData[line].Title +
+                                         '</span><span id="border-right" class="table-info-actual-left-wraper">' +
+                                             '<span class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                                  FormatCurrency(_LineItemsData[line].LineItemCost, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                             '</div>' +
-                                             '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues' + TacticId + '" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
+                                             '</span>' +
+                                             '<span lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues' + TacticId + '" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
                                               FormatCurrency(_LineItemsData[line].LineItemActualCost, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                '</div>' +
-                            '</div>' +
-                        '</div>';
+                                '</span>' +
+                            '</span>' +
+                        '</div></div>';
         }
 
-        $html += '<div class="body-toogle-actual">ROI' +
-                                '<div id="border-right" class="table-info-actual-left-wraper">' +
-                                    '<div class="table-info-actual-left truncate" id="ProjectedROI' + _id + '">' +
+        $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">ROI</span>' +
+                                '<span id="border-right" class="table-info-actual-left-wraper">' +
+                                    '<span class="table-info-actual-left truncate" id="ProjectedROI' + _id + '">' +
                                         _roiProjected.toFixed(2) +
-                                    '</div>' +
-                                    '<div class="table-info-actual-left table-info-actual-width truncate " id="ActualROI' + _id + '">' +
+                                    '</span>' +
+                                    '<span class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber " id="ActualROI' + _id + '">' +
                                         _roiActual.toFixed(2) +
-                                    '</div>' +
-                                '</div>' +
-                            '</div>';
+                                    '</span>' +
+                                '</span>' +
+                            '</div></div>';
 
         $html += '<div class="body-toogle-actual">' +
                         '<div class="wrapper-toogle-actual-buttons">' +

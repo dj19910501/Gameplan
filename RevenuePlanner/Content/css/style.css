@@ -5344,7 +5344,47 @@ span.left-arrow {
     width: 287px;
     color: #908D88;
 }
+/* Added  by Bhumika 3-3-2016 for #1755 Start  */
+.accordion-body > .accordion-inner .body-toogle-actual{clear:both; display:block}
+.accordion-toggle > div .table-titles-actual-left {
+    display: inline-block;
+    float: right;
+    font-size: 14px;
+    height: 44px ;
+    margin: 0;
+    padding-bottom: 0;
+    padding: 0;
+    width: 200px ;
+}
+.accordion-toggle > div  .table-titles-actual-left > label {
+    line-height: 43px;
+    padding-right: 10px;
+    width: 45%;
+    text-align:right;
+}
 
+.body-toogle-left .table-info-actual-left-wraper {
+    display: inline;
+    float: right;
+    margin: 0;
+    padding: 0;
+    width: 210px;
+}
+.body-toogle-left .table-info-actual-left {
+    display: inline-block;
+    float: none;
+    margin-right: 0;
+    padding-right: 10px;
+    text-align: right;
+    width: 45%;
+}
+.body-toogle-left{
+    max-width: 575px;
+}
+.truncate.testTacticTitle{width: 321px; display: inline-block; float: left;}
+.accordion-toggle .header-toogle-actual-right .shadow-scroll-table-mask-right{display:none}
+
+/* Added  by Bhumika 3-3-2016 for Tactic table  End*/
 .green-value {
     color: #559659 !important;
 }

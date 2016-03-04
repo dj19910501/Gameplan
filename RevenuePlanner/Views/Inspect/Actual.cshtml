@@ -238,12 +238,12 @@
                     <tr class="height42">
                         <th id="rP" class="text-align-right projected font3F3F3F setBudget border-none">@tacticActual.Revenues</th> @* Modified by Sohel Pathan on 10/09/2014 for Internal Review Points *@
                         <input type="hidden" id="hdnRp" value="@tacticActual.Revenues" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
-                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right border-none" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th> @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@
+                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right setBudget border-none" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th> @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@
                     </tr>
                     <tr class="height42" id="tr_rightCost">
                         <th id="cP" class="text-align-right projected font3F3F3F setBudget border-none">@tacticActual.Cost</th> @* Modified by Sohel Pathan on 15/09/2014 for PL ticket #760 *@
                         <input type="hidden" id="hdnCp" value="@tacticActual.Cost" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
-                        <th class="border-r font3F3F3F text-align-right border-none" id="lblTotalCost">0</th>
+                        <th class="border-r font3F3F3F text-align-right setBudget border-none" id="lblTotalCost">0</th>
                             @*<input id="lblTotalCost" class="backgroundC6EBF3 font3F3F3F text-align-right width75px currency_dollar" placeholder="- - -" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" value="@tacticActual.CostActual"></th>*@
                     </tr>
                      @if (lineItemList.Count > 0)
@@ -261,7 +261,7 @@
                     }
                     <tr class="height42">
                         <th id="roiP" class="text-align-right height22 projected padding-bottom9 font3F3F3F border-none">@tacticActual.ROI</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
-                        <th id="roiT" class="border-r font3F3F3F text-align-right border-none">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                        <th id="roiT" class="border-r font3F3F3F text-align-right addFormatterActualNumber border-none">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                    
                 </tbody>
@@ -383,7 +383,7 @@
                         $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(),true));
                         //$("#Cost-" + LineItemActual[i].Period).text(finalCost.toString());
                         $("#Cost-" + LineItemActual[i].Period).attr('ov', finalCost.toString());
-                        //SetBudget("#Cost-" + LineItemActual[i].Period);
+                        SetBudget("#Cost-" + LineItemActual[i].Period); //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
                        
                     }
                     else {
@@ -391,7 +391,7 @@
                         $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(), true));
                         //$("#Cost-" + LineItemActual[i].Period).text(finalCost.toString());
                         $("#Cost-" + LineItemActual[i].Period).attr('ov', finalCost.toString());
-                        //SetBudget("#Cost-" + LineItemActual[i].Period);
+                        SetBudget("#Cost-" + LineItemActual[i].Period); //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
                     }
                     
                 }
@@ -419,6 +419,7 @@
                             document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = FormatCurrency(totalLineCost.toString(), true);
                             //SetBudget("#lblTotal-" + ids[i].toString());
                             $("#lblTotal-" + ids[i].toString()).attr('ov', parseFloat(totalLineCost.toString()));
+                            SetBudget("#lblTotal-" + ids[i].toString());    //Added by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
 
                             // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
                             var lblProjected = ReplaceCC(document.getElementById("lblProjected-" + ids[i].toString()).innerHTML);
@@ -461,7 +462,7 @@
                         totalcost = (oldMonthTotalCost + parseFloat(currentValue)) - oldValue;
                         
                         $("#Cost-" + arr[1]).text(FormatCurrency(totalcost.toString(),true));
-                        //SetBudget("#Cost-" + arr[1]);
+                        SetBudget("#Cost-" + arr[1]);   //UnCommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
                         $("#Cost-" + arr[1]).attr('ov', totalcost.toString());
                         /*End - Total of line item actuals for month*/
 
@@ -473,7 +474,7 @@
                         
                         $("#lblTotalCost").html(FormatCurrency(parentTotalCost.toString(), true));
                         $("#lblTotalCost").attr('ov', parseFloat(parentTotalCost.toString()));
-                        //SetBudget('#lblTotalCost');
+                        SetBudget('#lblTotalCost'); //UnCommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
                         /*End - Total actual cost*/
                         /*start Particular line item actual cost*/
                         var oldLineItemTotal = 0;
@@ -485,7 +486,7 @@
                         $("#lblTotal-" + arr[0]).text(FormatCurrency(TotalLineItemValue.toString(),true));
                         $("#lblTotal-" + arr[0]).attr('ov', TotalLineItemValue.toString());
                         var _val = $("#lblTotal-" + arr[0]).html();
-                        //SetBudget("#lblTotal-" + arr[0]);
+                        SetBudget("#lblTotal-" + arr[0]);   //UnCommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
                         /*End Particular line item actual cost*/
                         //calculateRIO();
                         //$(this).text(FormatCurrency(currentValue, true));
@@ -519,7 +520,7 @@
                 });
             }
             $("#lblTotalCost").html(FormatCurrency(cost.toString(), true));
-            //SetBudget("#lblTotalCost");
+            SetBudget("#lblTotalCost"); //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
             $("#lblTotalCost").attr('ov', parseFloat(cost.toString())).toString();
             calculateRIO();
         }
@@ -624,7 +625,7 @@
                         if (arr[0] == 'Revenue' || arr[0] == 'Cost') {
                             document.getElementById(ida).innerHTML = totalvalue;
                             document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
-                            //SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                            SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                             $("#" + ida).attr('ov', totalvalue.toString());
                         }
                         //else {
@@ -652,11 +653,9 @@
                 var prevenue = parseFloat(ReplaceCC($("#lblTotalRevenue").attr('ov')));
                 var roiT = (prevenue - pcost) / pcost;
                 $("#roiT").text(FormatCommas(roiT.toFixed(2).toString()));
-                
+                SetPriceValue($("#roiT"));		   // Added by Maitri Gandhi for #1755 on 2/3/2016
             }
-        }
-
-       
+        }   
 
 
         
