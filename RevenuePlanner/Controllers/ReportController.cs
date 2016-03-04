@@ -554,30 +554,31 @@ namespace RevenuePlanner.Controllers
                                                                   .Where(tactic => selectedYearList.Contains(tactic.StartDate.Year.ToString()) || selectedYearList.Contains(tactic.EndDate.Year.ToString())).ToList();// Add By Nishant Sheth #1838;
             }
 
+            //Commented by Maitri Gandhi on 4/3/2016 
             //Added by Komal Rawal
-            if (Sessions.ReportOwnerIds != null && Sessions.ReportOwnerIds.Count > 0)
-            {
-                ownerIds = Sessions.ReportOwnerIds.Select(owner => new Guid(owner)).ToList();
-                tacticList = tacticList.Where(tactic => ownerIds.Contains(tactic.CreatedBy)
-                                                              ).ToList();
-            }
-            else
-            {
-                // Add By Nishant Sheth 
-                // Desc :: #1839 code review points - Tactic list is different 
-                // Desc :: To Reslove owner filter issue
-                var Label = Enums.FilterLabel.Plan.ToString();
-                //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
-                var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
-                /*Commented By Komal Rawal on 25/2/2016 to get data for all owners*/
-                //string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
-                //if (planselectedowner == null)
-                //{
-                //    tacticList = tacticList.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).ToList();
-                //}
-                // End By Nishant sheth
+            //if (Sessions.ReportOwnerIds != null && Sessions.ReportOwnerIds.Count > 0)
+            //{
+            //    ownerIds = Sessions.ReportOwnerIds.Select(owner => new Guid(owner)).ToList();
+            //    tacticList = tacticList.Where(tactic => ownerIds.Contains(tactic.CreatedBy)
+            //                                                  ).ToList();
+            //}
+            //else
+            //{
+            //    // Add By Nishant Sheth 
+            //    // Desc :: #1839 code review points - Tactic list is different 
+            //    // Desc :: To Reslove owner filter issue
+            //    var Label = Enums.FilterLabel.Plan.ToString();
+            //    //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+            //    var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
+            //    /*Commented By Komal Rawal on 25/2/2016 to get data for all owners*/
+            //    //string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
+            //    //if (planselectedowner == null)
+            //    //{
+            //    //    tacticList = tacticList.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).ToList();
+            //    //}
+            //    // End By Nishant sheth
 
-            }
+            //}
 
 
             if (Sessions.ReportTacticTypeIds != null && Sessions.ReportTacticTypeIds.Count > 0)

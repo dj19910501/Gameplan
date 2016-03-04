@@ -3117,10 +3117,11 @@ namespace RevenuePlanner.Controllers
                 List<int> OwnerFilterProgramidsMain = OwnerFilterProgramids.Concat(taskDataTacticforPlanMain.Select(t => t.objPlanTactic.PlanProgramId).ToList()).ToList();
 
                 #region Prepare Program Task Data for Plan
+                //Modified by Maitri Gandhi for #2037, on 4/3/2016
                 var taskDataProgramforPlanMain = lstProgram.Where(prgrm => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                     CalendarEndDate,
                                                                                                                     prgrm.StartDate,
-                                                                                                                    prgrm.EndDate).Equals(false) && (((filterOwner.Count > 0 ? filterOwner.Contains(prgrm.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(prgrm.Status) : true)) || OwnerFilterProgramidsMain.Contains(prgrm.PlanProgramId))).ToList();
+                                                                                                                    prgrm.EndDate).Equals(false)).ToList(); //&& (((filterOwner.Count > 0 ? filterOwner.Contains(prgrm.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(prgrm.Status) : true)) || OwnerFilterProgramidsMain.Contains(prgrm.PlanProgramId))
                 var taskDataProgramforPlan = taskDataProgramforPlanMain.Select(prgrm => new
                                                             {
                                                                 id = string.Format("L{0}_C{1}_P{2}", prgrm.Plan_Campaign.PlanId, prgrm.PlanCampaignId, prgrm.PlanProgramId),
@@ -3164,10 +3165,11 @@ namespace RevenuePlanner.Controllers
                 List<int> OwnerFilterCampaignidsMain = OwnerFilterCampaignIds.Concat(taskDataProgramforPlanMain.Select(p => p.PlanCampaignId).ToList()).ToList();
 
                 #region Prepare Campaign Task Data for PLan
+                //Modified by Maitri Gandhi for #2037, on 4/3/2016
                 var taskDataCampaignforPlanMain = lstCampaign.Where(_campgn => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                 CalendarEndDate,
                                                                                                                 _campgn.StartDate,
-                                                                                                                _campgn.EndDate).Equals(false) && (((filterOwner.Count > 0 ? filterOwner.Contains(_campgn.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(_campgn.Status) : true)) || OwnerFilterCampaignidsMain.Contains(_campgn.PlanCampaignId))).ToList();
+                                                                                                                _campgn.EndDate).Equals(false)).ToList();// && (((filterOwner.Count > 0 ? filterOwner.Contains(_campgn.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(_campgn.Status) : true)) || OwnerFilterCampaignidsMain.Contains(_campgn.PlanCampaignId))
                 var taskDataCampaignforPlan = taskDataCampaignforPlanMain.Select(_campgn => new
                                                          {
                                                              id = string.Format("L{0}_C{1}", _campgn.PlanId, _campgn.PlanCampaignId),

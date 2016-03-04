@@ -9708,7 +9708,8 @@ namespace RevenuePlanner.Controllers
                         plandataobjlist.Add(plandataobj);
 
                         gridjsonlistplanobj.data = plandataobjlist;
-                        Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false && (((filterOwner.Count > 0 ? filterOwner.Contains(campaign.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(campaign.Status) : true)) || ownercampaignids.Contains(campaign.PlanCampaignId))).OrderBy(c => c.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Campaign title
+                        //Modified by Maitri Gandhi for #2037, on 4/3/2016
+                        Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).OrderBy(c => c.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Campaign title   // && (((filterOwner.Count > 0 ? filterOwner.Contains(campaign.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(campaign.Status) : true)) || ownercampaignids.Contains(campaign.PlanCampaignId))
                         CampCnt = 1;
                         if (Campaignfilterlst.Count > 0)
                         {
@@ -9864,8 +9865,8 @@ namespace RevenuePlanner.Controllers
 
                                     campaignrowsobj.data = campaigndataobjlist;
 
-
-                                    Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false && (((filterOwner.Count > 0 ? filterOwner.Contains(prog.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(prog.Status) : true)) || ownerProgramids.Contains(prog.PlanProgramId))).OrderBy(p => p.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Program title
+                                    //Modified by Maitri Gandhi for #2037 on 4/3/2016
+                                    Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).OrderBy(p => p.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Program title    //&& (((filterOwner.Count > 0 ? filterOwner.Contains(prog.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(prog.Status) : true)) || ownerProgramids.Contains(prog.PlanProgramId))
                                     if (Programfilterlst != null && Programfilterlst.Count > 0)
                                     {
                                         Startdate = Programfilterlst.Min(r => r.StartDate).ToString("MM/dd/yyyy");
@@ -10570,7 +10571,7 @@ namespace RevenuePlanner.Controllers
             int oldCampaignId = 0;
             UpdateColumn = UpdateColumn.Trim();
             int yearDiff = 0, perdNum = 12, cntr = 0;
-            bool isMultiYearlinkedTactic = false, IsError = false ;
+            bool isMultiYearlinkedTactic = false, IsError = false;
             List<string> lstLinkedPeriods = new List<string>();
             try
             {
@@ -12601,7 +12602,8 @@ namespace RevenuePlanner.Controllers
 
                 //int selectedPlanId = lstPlans != null && lstPlans.Count > 0 && !string.IsNullOrEmpty(planId) ? Convert.ToInt32(lstPlans.FirstOrDefault().Value) : 0;
                 int selectedPlanId = 0;
-                if (lstPlans != null && lstPlans.Count > 0 && !string.IsNullOrEmpty(planId)) {
+                if (lstPlans != null && lstPlans.Count > 0 && !string.IsNullOrEmpty(planId))
+                {
                     selectedPlanId = Convert.ToInt32(lstPlans.FirstOrDefault().Value);
                 }
                 //selectedPlanId = 14832;

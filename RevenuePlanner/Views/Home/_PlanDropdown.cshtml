@@ -94,7 +94,7 @@
         SetAttributeData();
 
         var Tabid = 'liCalender';
-        if ($('#IsGridView').val() == "True") {
+        if ($('#IsGridView').val() == "True") {            
             $("#CalenderView").hide();
             $('#btngrid').addClass('request-btn-active');
             $('.new-btn-plan').removeClass('request-btn-active');
@@ -245,16 +245,25 @@
         $('#ddlTabViewBy').multiselect("close");
     });
     // End - Added by Sohel Pathan on 06/11/2014 for PL ticket #934
-    function requestPlanActiveTab(isRequestTab) {
+    function requestPlanActiveTab(isRequestTab) {        
         if (isRequestTab) {
             $('.new-btn-plan').removeClass('request-btn-active');
             $('.request').addClass('request-btn-active');
             $('#btngrid').removeClass('request-btn-active');
         }
         else {
-            $('.new-btn-plan').addClass('request-btn-active');
+            //Modified by Maitri Gandhi to maintain tab focus on 4/3/2016
+            if ($('#IsGridView').val() == "True")
+            {
+                $('#btngrid').addClass('request-btn-active');
+                $('.new-btn-plan').removeClass('request-btn-active');
+            }
+            else {
+                $('.new-btn-plan').addClass('request-btn-active');
+                $('#btngrid').removeClass('request-btn-active');
+            }
             $('.request').removeClass('request-btn-active');
-            $('#btngrid').removeClass('request-btn-active');
+            
         }
     }
     //Added by Komal Rawal for 2013 Home/Plan Layout changes
