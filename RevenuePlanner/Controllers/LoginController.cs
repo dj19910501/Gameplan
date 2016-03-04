@@ -559,6 +559,8 @@ namespace RevenuePlanner.Controllers
         {
             //LoginSession l = new LoginSession();
             //l.RemoveSession(Session.SessionID, Sessions.User.UserId.ToString());
+            CacheObject objCache= new CacheObject();
+            objCache.RemoveAllCurrentUserCache();
             Sessions.Clear();
             //Start Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
             System.Web.Security.FormsAuthentication.SignOut();

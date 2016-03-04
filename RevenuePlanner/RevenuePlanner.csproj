@@ -239,6 +239,7 @@
     <Compile Include="Models\OrganizationModel.cs" />
     <Compile Include="Models\PermissionModel.cs" />
     <Compile Include="Models\PlanModel.cs" />
+    <Compile Include="Models\SpModel.cs" />
     <Compile Include="Models\SummaryReportModel.cs" />
     <Compile Include="Models\SyncFrequencyModel.cs" />
     <Compile Include="Models\Tactic_TypeModel.cs" />

@@ -3644,7 +3644,7 @@ namespace RevenuePlanner.Controllers
 
 
             ippctm.IsCreated = false;
-            System.Diagnostics.Debug.WriteLine("Step 2.4:" + DateTime.Now.ToString("o"));
+            
             if (RedirectType == "Assortment")
             {
 
@@ -3858,7 +3858,7 @@ namespace RevenuePlanner.Controllers
 
             ippctm.PlanCampaignList = campaignList.Select(c => new SelectListValue { Id = c.PlanCampaignId, Title = c.Title }).ToList();
             ippctm.CampaignProgramList = programList.Select(p => new SelectListValue { Id = p.PlanProgramId, Title = p.Title }).ToList();
-            System.Diagnostics.Debug.WriteLine("Step 13.2:" + DateTime.Now.ToString("o"));
+            
             try
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();

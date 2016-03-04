@@ -1060,7 +1060,9 @@
                                 }
                                 else if (RedirectType == "@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()") {
                                     var _planId = $('#PlanId').val();  //// Get PlanId value from ApplyToCalendar page.
-                                    GetHealderData(_planId);    //// Called HeaderData function exist in ApplyToCalendar Page.
+                                    // Commented By Nishant Sheth
+                                    // Desc :: For performance issue
+                                    //GetHealderData(_planId);    //// Called HeaderData function exist in ApplyToCalendar Page.
                                     GetNumberOfActivityPerMonByPlanId(_planId, ''); //// Called HeaderData function exist in ApplyToCalendar Page.
                                 }
                             }

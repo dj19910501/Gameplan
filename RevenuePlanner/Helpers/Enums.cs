@@ -1322,6 +1322,23 @@ namespace RevenuePlanner.Helpers
         {
              {SyncStatus.InProgress.ToString(), "In-Progress"}
         };
+
+        // Add By Nishant Sheth
+        // Desc :: For cache object name (Table names)
+        public enum CacheObject
+        {
+            Plan,
+            Campaign,
+            Program,
+            Tactic,
+            CustomTactic,
+            LinkedTactic,
+            ImprovementTactic,
+            dsPlanCampProgTac,
+            CustomField,
+            CustomFieldEntity,
+            CustomFieldOption
+        }
     }
 
     #region Authorization

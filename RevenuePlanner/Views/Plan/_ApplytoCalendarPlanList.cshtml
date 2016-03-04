@@ -39,7 +39,9 @@
             //// Modified By Maninder Singh Wadhva to Address PL#203
            // GetCollaborators(CurrentPlanId);
             RefreshCalendar();
-            GetHealderData(CurrentPlanId);
+            // Commented By Nishant Sheth
+            // Desc :: For performance issue
+            //GetHealderData(CurrentPlanId);
             GetNumberOfActivityPerMonByPlanId(CurrentPlanId, "");
             ShowChangeLog();
             $('#Notabcontent').hide();

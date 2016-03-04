@@ -457,5 +457,104 @@
         }
 
         //ENd
+        function GetHealderDataPer(selectedPlanIds,Cid, OId,Tacticids,StatusId,Tabid) {
+            
+            // Modified By Nishant Sheth add tab id as argument:  Desc header value wrong with plan tab 
+            var CustomId = "";
+            var OwnerIds = "";
+            var TacticTypeids = "";
+            var StatusIds = "";
 
+            if( typeof Cid  != "undefined" || typeof OId  != "undefined" ||typeof Tacticids  != "undefined" ||typeof StatusId  != "undefined" )
+            {
+                CustomId = Cid;
+                OwnerIds = OId;
+                TacticTypeids = Tacticids;
+                StatusIds = StatusId;
+            }
+            var newUrl = '';
+            if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Home.ToString().ToLower()") {
+                newUrl = '@Url.Action("GetPlanByMultiplePlanIDsPer", "Plan")';
+                selectedPlanIds = selectedPlanIds.toString()   //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic
+            }
+            else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
+                // var ligridclass=$("#liGrid").attr("class");
+                newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
+                selectedPlanIds = parseInt(CurrentPlanId);
+            }
+            if(selectedPlanIds == '')
+            {
+                return;
+            }
+            $.ajax(
+            {
+                type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
+                cache: false,
+                url: newUrl,
+                data: {
+                    planid: selectedPlanIds,
+                    activeMenu: $('#ActiveMenu').val().toLowerCase(),
+                    year: isQuater,
+                    CustomFieldId:CustomId.toString(),
+                    OwnerIds:OwnerIds.toString(),
+                    TacticTypeids:TacticTypeids.toString(),
+                    StatusIds:StatusIds.toString(),
+                    TabId:Tabid
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data != null) {
+
+                        $.each(data.lstHomePlanModelHeader, function (index, obj) {
+                            if (index == "MQLs") {
+                                $("#pMQLs").html(obj);
+                                SetPriceValue("#pMQLs");
+                            }
+                            else if (index == "Budget") {
+                                $("#pbudget").html(obj);
+                                SetBudget("#pbudget");
+                            }
+                            else if (index == "TacticCount") {
+                                $("#ptacticcount").html(obj);
+                            }
+                            else if (index == "mqlLabel") {
+                                $("#pmqlLabel").html(obj);
+                            }
+                            else if (index == "costLabel") {
+                                $("#pcostLabel").html(obj);
+                            }
+                            else if (index == "PercentageMQLImproved") {
+                                /// Added By: Maninder Singh Wadhva
+                                /// Addressed PL Ticket: 37,38,47,49
+
+                                var pMQLImproved = $("#pMQLImproved");
+                                pMQLImproved.removeClass("greenfont");
+                                pMQLImproved.removeClass("redfont");
+
+                                var divBullhornbg = $('#DivBullhornbg');
+                                divBullhornbg.removeClass("bullhorn-bg-disabled");
+                                divBullhornbg.removeClass("bullhorn-bg");
+                                if (obj != null) {
+                                    divBullhornbg.addClass("bullhorn-bg");
+                                    if (obj < 0) {
+                                        pMQLImproved.html(FormatNumber(obj, true))
+                                        pMQLImproved.addClass("redfont");
+                                    }
+                                    else {
+                                        pMQLImproved.html("+" + FormatNumber(obj, true))
+                                        pMQLImproved.addClass("greenfont");
+                                    }
+                                }
+                                else {
+                                    divBullhornbg.addClass("bullhorn-bg-disabled");
+                                    pMQLImproved.html('---');
+                                }
+                            }
+
+                        });
+
+                    }
+                }
+            });
+        }
 </script>
