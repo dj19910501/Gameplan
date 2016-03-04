@@ -94,7 +94,8 @@
         SetAttributeData();
 
         var Tabid = 'liCalender';
-        if ($('#IsGridView').val() == "True") {            
+        if ($('#IsGridView').val() == "True") {
+            $("#divupcomingact").hide();
             $("#CalenderView").hide();
             $('#btngrid').addClass('request-btn-active');
             $('.new-btn-plan').removeClass('request-btn-active');
