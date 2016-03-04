@@ -559,6 +559,8 @@ namespace RevenuePlanner.Controllers
         {
             //LoginSession l = new LoginSession();
             //l.RemoveSession(Session.SessionID, Sessions.User.UserId.ToString());
+            // Add By Nishant Sheth
+            // Desc:: Remove user cache memory
             CacheObject objCache= new CacheObject();
             objCache.RemoveAllCurrentUserCache();
             Sessions.Clear();
