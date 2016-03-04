@@ -14200,9 +14200,14 @@ span.filter-count{float:right;}
 }
 #accordion-2{margin-bottom: 35px;}
 
-
-
 /*by bheru mehta 1686 09-1-2016 end*/
+
+.btn-group.open .btn.dropdown-toggle.newModelhover{
+    background-color:#2384b8 !important;
+box-shadow: 1px 0 0 rgba(255, 255, 255, 0.125) inset, 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+    padding-left: 8px;
+    padding-right: 8px;
+}
 
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {
@@ -16014,6 +16019,8 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
   height: 23px !important;
   line-height: 23px !important;
 }
+
+
 
  .lickSuccessMsg{
     font-weight:bold;
