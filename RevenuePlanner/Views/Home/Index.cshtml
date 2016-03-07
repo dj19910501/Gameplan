@@ -2073,6 +2073,8 @@
             GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, ID); //Modified by Nishant Sheth for perfomance to make it call only for grid view
 
         }
+   
+        Currenttime = $('#ddlUpComingActivites').val(); //Modified by Komal Rawal for proper HuD when we change tab
         // Add by Nishant Sheth
         // Desc:: To resolve the header data issue
         // Modified By Nishant Sheth Desc header value wrong with plan tab
@@ -3190,7 +3192,8 @@
         });
         years = years.slice(0, -1);
         // End - #1942
-
+        //Modified by Komal Rawal for maintaining time fram when we change time frame and add a tactic
+        var currentval = $("#ddlUpComingActivites").val();
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Home/BindUpcomingActivitesValues/")',
@@ -3201,6 +3204,19 @@
             },
             success: function (data) {
                 BindUpcomingActivies(data);
+                var upcomingvalues = [];
+                $.each($("#ddlUpComingActivites option"), function () {
+                    upcomingvalues.push(this.value.toString());
+                });
+                if (upcomingvalues.indexOf(currentval) > 0) {
+                    $.each($("#ddlUpComingActivites option"), function () {
+                        $(this).removeAttr('selected');
+                    });
+                    $("#ddlUpComingActivites option[value='"+currentval+"']").attr('selected', 'selected');
+                    $("#ddlUpComingActivites").selectbox('detach');
+                    $("#ddlUpComingActivites").selectbox("attach");
+                }
+    //End
             }
         });
     }
