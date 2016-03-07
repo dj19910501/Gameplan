@@ -4340,7 +4340,7 @@ namespace RevenuePlanner.Controllers
                 //// Get planyear of the selected Plan
                 var Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId));
                 planYear = Plan.Year;
-               var  CampaignList = Plan.Plan_Campaign.ToList();
+               var  CampaignList = Plan.Plan_Campaign.Where(Camp=> Camp.IsDeleted == false).ToList(); //Modified by komal to check is deleted flag
 
 
                if (CampaignList.Count > 0)
