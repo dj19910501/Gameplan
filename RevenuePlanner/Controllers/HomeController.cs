@@ -614,7 +614,7 @@ namespace RevenuePlanner.Controllers
                 IsActive = Convert.ToBoolean(Convert.ToString(row["IsActive"])),
                 IsDeleted = Convert.ToBoolean(Convert.ToString(row["IsDeleted"])),
                 ModelId = int.Parse(Convert.ToString(row["ModelId"])),
-                ModifiedBy = Guid.Parse(Convert.ToString(row["ModifiedBy"])),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanId = int.Parse(Convert.ToString(row["PlanId"])),
                 Status = Convert.ToString(row["Status"]),
