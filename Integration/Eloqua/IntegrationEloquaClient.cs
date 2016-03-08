@@ -1261,7 +1261,7 @@ namespace Integration.Eloqua
 
                         #region "Add update Tactic comment to Plan_Campaign_Program_Tactic_Comment table"
                         //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
-                        if (Common.IsAutoSync)
+                        if (!Common.IsAutoSync)
                         {
                             //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
                             Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
