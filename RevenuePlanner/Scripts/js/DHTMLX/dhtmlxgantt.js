@@ -9173,78 +9173,57 @@ gantt.render = function(){
 	this.callEvent("onGanttRender", []);
 };
 
-
-gantt._set_scroll_events = function(){
-    dhtmlxEvent(this.$scroll_hor, "scroll", function() {
-    	//in safari we can catch previous onscroll after setting new value from mouse-wheel event
-    	//set delay to prevent value drifiting
-    	if ((new Date()) - ( gantt._wheel_time || 0 ) < 100) return true; 
-        if (gantt._touch_scroll_active) return;
-        var left = gantt.$scroll_hor.scrollLeft;
-        gantt.scrollTo(left);
+//Modified by Komal Rawal for #2004 caanot scroll back up on the calendar till top of the page.
+gantt._set_scroll_events = function () {
+    function t(t) {
+        var n = gantt._get_resize_options();
+        gantt._wheel_time = new Date;
+        var a = e ? -20 * t.deltaX : 2 * t.wheelDeltaX,
+            i = e ? -40 * t.deltaY : t.wheelDelta;
+        if (a && Math.abs(a) > Math.abs(i)) {
+            if (n.x) return !0;
+            if (!gantt.$scroll_hor || !gantt.$scroll_hor.offsetWidth) return !0;
+            var s = a / -40,
+                r = gantt.$task.scrollLeft,
+                o = r + 30 * s;
+            if (gantt.scrollTo(o, null), gantt.$scroll_hor.scrollLeft = o, r == gantt.$task.scrollLeft) return !0
+        } else {
+            if (n.y) return !0;
+            if (!gantt.$scroll_ver || !gantt.$scroll_ver.offsetHeight) return !0;
+            var s = i / -40;
+            "undefined" == typeof i && (s = t.detail);
+            var _ = gantt.$scroll_ver.scrollTop,
+                d = gantt.$scroll_ver.scrollTop + 30 * s;
+            if (!gantt.config.prevent_default_scroll && gantt._cached_scroll_pos && (gantt._cached_scroll_pos.y == d || gantt._cached_scroll_pos.y <= 0 && 0 >= d)) return !0;
+            if (gantt.scrollTo(null, d),
+                gantt.$scroll_ver.scrollTop = d, _ == gantt.$scroll_ver.scrollTop) return !0
+        }
+        return t.preventDefault && t.preventDefault(), t.cancelBubble = !0, !1
+    }
+    dhtmlxEvent(this.$scroll_hor, "scroll", function () {
+        if (new Date - (gantt._wheel_time || 0) < 100) return !0;
+        if (!gantt._touch_scroll_active) {
+            var t = gantt.$scroll_hor.scrollLeft;
+            gantt.scrollTo(t)
+        }
+    }), dhtmlxEvent(this.$scroll_ver, "scroll", function () {
+        if (!gantt._touch_scroll_active) {
+            var t = gantt.$scroll_ver.scrollTop;
+            gantt.$grid_data.scrollTop = t, gantt.scrollTo(null, t)
+        }
+    }), dhtmlxEvent(this.$task, "scroll", function () {
+        var t = gantt.$task.scrollLeft,
+            e = gantt.$scroll_hor.scrollLeft;
+        e != t && (gantt.$scroll_hor.scrollLeft = t)
+    }), dhtmlxEvent(this.$task_data, "scroll", function () {
+        var t = gantt.$task_data.scrollTop,
+            e = gantt.$scroll_ver.scrollTop;
+        e != t && (gantt.$scroll_ver.scrollTop = t)
     });
-    dhtmlxEvent(this.$scroll_ver, "scroll", function() {
-        if (gantt._touch_scroll_active) return;
-        var top = gantt.$scroll_ver.scrollTop;
-        gantt.$grid_data.scrollTop = top;
-        gantt.scrollTo(null, top);
-    });
-    dhtmlxEvent(this.$task, "scroll", function() {
-        var left = gantt.$task.scrollLeft,
-			barLeft = gantt.$scroll_hor.scrollLeft;
-		if(barLeft != left)
-        	gantt.$scroll_hor.scrollLeft = left;
-    });
-    dhtmlxEvent(this.$task_data, "scroll", function() {
-        var top = gantt.$task_data.scrollTop,
-			barTop = gantt.$scroll_ver.scrollTop;
-		if(barTop != top)
-        	gantt.$scroll_ver.scrollTop = top;
-    });
-
-    var ff = _isFF && !window._KHTMLrv;
-	function onMouseWheel(e){
-		var res = gantt._get_resize_options();
-		gantt._wheel_time = new Date();
-
-        var wx = ff ? (e.deltaX*-20) : e.wheelDeltaX*2;
-        var wy = ff ? (e.deltaY*-40) : e.wheelDelta;
-
-		if (wx && Math.abs(wx) > Math.abs(wy)){
-			if(res.x) return true;//no horisontal scroll, must not block scrolling
-
-			var dir  = wx/-40;
-			var left = gantt.$task.scrollLeft+dir*30;
-			gantt.scrollTo(left, null);
-			gantt.$scroll_hor.scrollTop = top;
-		} else {
-			if(res.y) return true;//no vertical scroll, must not block scrolling
-
-			var dir  = wy/-40;
-			if (typeof wy == "undefined")
-				dir = e.detail;
-
-			var top = gantt.$scroll_ver.scrollTop+dir*30;
-			if(!gantt.config.prevent_default_scroll && gantt._cached_scroll_pos && gantt._cached_scroll_pos.y == top) return true;
-
-			gantt.scrollTo(null, top);
-			gantt.$scroll_ver.scrollTop = top;
-		}
-
-		if (e.preventDefault)
-			e.preventDefault();
-		e.cancelBubble=true;
-		return false;
-	}
-
-    if (ff)
-        dhtmlxEvent(gantt.$container, "wheel", onMouseWheel);
-    else
-        dhtmlxEvent(gantt.$container, "mousewheel", onMouseWheel);
-
+    var e = gantt.env.isFF;
+    e ? dhtmlxEvent(gantt.$container, "wheel", t) : dhtmlxEvent(gantt.$container, "mousewheel", t)
 };
-
-
+//End
 gantt._scroll_resize = function() {
     if (this._x < 20 || this._y < 20) return;
 
@@ -9486,8 +9465,20 @@ gantt.batchUpdate = function (callback) {
 		this._dp.sendData();
 	}
 };
-
-
+//Added by Komal Rawal for #2004 caanot scroll back up on the calendar till top of the page.
+gantt.env = {
+    isIE: navigator.userAgent.indexOf("MSIE") >= 0 || navigator.userAgent.indexOf("Trident") >= 0,
+    isIE6: !window.XMLHttpRequest && navigator.userAgent.indexOf("MSIE") >= 0,
+    isIE7: navigator.userAgent.indexOf("MSIE 7.0") >= 0 && navigator.userAgent.indexOf("Trident") < 0,
+    isIE8: navigator.userAgent.indexOf("MSIE 8.0") >= 0 && navigator.userAgent.indexOf("Trident") >= 0,
+    isOpera: navigator.userAgent.indexOf("Opera") >= 0,
+    isChrome: navigator.userAgent.indexOf("Chrome") >= 0,
+    isKHTML: navigator.userAgent.indexOf("Safari") >= 0 || navigator.userAgent.indexOf("Konqueror") >= 0,
+    isFF: navigator.userAgent.indexOf("Firefox") >= 0,
+    isIPad: navigator.userAgent.search(/iPad/gi) >= 0,
+    isEdge: -1 != navigator.userAgent.indexOf("Edge")
+},
+//End
 gantt.date={
 	init:function(){
 		var s = gantt.locale.date.month_short;
