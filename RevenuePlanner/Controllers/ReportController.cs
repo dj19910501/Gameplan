@@ -11716,6 +11716,37 @@ namespace RevenuePlanner.Controllers
                                 EndDate = tact.EndDate
                             }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                         }
+                        // Add By Nishant Sheth
+                        // Desc :: #2047 Zeros in Waterfall Report Drill Down
+                        ActualTacticTrendList = ActualTacticTrendList.Select(tac => new
+                        {
+                            Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                            TacticId = tac.PlanTacticId,
+                            Value = tac.Value,
+                            StartYear = tac.StartDate.Year,
+                            StageCode = tac.StageCode,
+                            StartDate = tac.StartDate,
+                            EndDate = tac.EndDate
+                        }).ToList().Select(tac => new
+                        {
+                            Period = tac.Period,
+                            NumPeriod = (tac.Period / 13),
+                            TacticId = tac.TacticId,
+                            Value = tac.Value,
+                            StartYear = tac.StartYear,
+                            StageCode = tac.StageCode,
+                            StartDate = tac.StartDate,
+                            EndDate = tac.EndDate
+                        }).ToList().Select(tact => new ActualTrendModel
+                        {
+                            Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                            Year = tact.StartYear + tact.NumPeriod,
+                            PlanTacticId = tact.TacticId,
+                            Value = tact.Value,
+                            StageCode = tact.StageCode,
+                            StartDate = tact.StartDate,
+                            EndDate = tact.EndDate
+                        }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                         #endregion
                         //cmplete
                         if (_customfieldOptionId > 0)
