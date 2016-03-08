@@ -12716,8 +12716,12 @@ border-bottom: 0 solid #d3d3d3 !important;
 .headefix {
     margin: 0 auto;
     position: relative;
-    width: 1045px;
+    /*width: 1045px;*/
+    max-width: 1050px; /*Added by Bhumika for #2012 7-3-2016*/ 
+    width: 70%; 
 }
+.headerfix-wraper .headefix .title-simple{margin-left: 0;display: table;width: 100%;} /*Added by Bhumika for #2012 7-3-2016*/ 
+
 .clue-tip-message-orange, .clue-tip-message-red {
     margin: 0 0 10px 10px;
     padding: 12px;
@@ -12789,6 +12793,7 @@ border-bottom: 0 solid #d3d3d3 !important;
     position: absolute;
     right: 6px;
     top: 6px;
+   border: 0 none;  /*Added by Bhumika for #2012 7-3-2016*/
 }
 
 .pop-body-wraper {
