@@ -12518,7 +12518,7 @@ border-bottom: 0 solid #d3d3d3 !important;
 
 .sidebar-section ul,
 .sidebar-section ul li {
-    margin: 0;
+    margin: 5px 0 0; /*Modified by Bhumika #2055*/
     padding: 0;
     list-style:none/*by bheru 24-12-2015 #1749*/
 }
@@ -12563,10 +12563,11 @@ border-bottom: 0 solid #d3d3d3 !important;
     border: 1px solid #c8c6c6;
     border-radius: 2px;
     height: 15px;
-    margin: 0 5px 0 0;
+    margin: 0 5px 0 0; /*Modified by Bhumika #2055*/
     opacity: 1;
     width: 15px;
-    z-index: 2;   
+    z-index: 2;  
+    float: right; 
 }
 /*.sidebar-section li.accordion-inner span.chkbx-icon {
     display: inline-block;
