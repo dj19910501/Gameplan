@@ -572,18 +572,7 @@
                         $(this).removeAttr("checked");
                         $(this).parent().removeClass("close-list");
                     });
-                        //Modified By Maitri Gandhi on 24/2/2016 For #2014
-                        GetOwnerListForFilter(CurrentPlanId, false);
-                    $('#ulSelectedOwner li input:checkbox').each(function () {
-                        @*if ($(this).attr('id') != '@Sessions.User.UserId') {
-                            $(this).removeAttr("checked");
-                            $(this).parent().removeClass("close-list");
-                        }
-                        else {*@
-                            $(this).attr("checked", "checked");
-                            $(this).parent().addClass("close-list");
-                        //}
-                    });
+                                            
                     GetTacticTypelist(CurrentPlanId, false);
                     // Modified By Rahul Shah
                     // Desc :: To resolve the #1952 code review points to mismatch Tactic Type selection count on plan change.
@@ -591,6 +580,8 @@
                         $(this).attr("checked", "checked");
                         $(this).parent().addClass("close-list");
                     });
+                    //Modified By Maitri Gandhi on 24/2/2016 For #2014
+                    GetOwnerListForFilter(CurrentPlanId, false);
                     $('#ulStatus li input:checkbox').each(function () {
                         $(this).attr("checked", "checked");
                         $(this).parent().addClass("close-list");
@@ -647,20 +638,8 @@
                 $("#accordion-Year li input:checkbox:checked").each(function () {
                     $(this).removeAttr("checked");
                     $(this).parent().removeClass("close-list");
-                });
-                //Modified By Maitri Gandhi on 24/2/2016 For #2014
-                //Modified by komal rawal Logged in owner did not come selected.
-                GetOwnerListForFilter(CurrentPlanId, false);
-                $('#ulSelectedOwner li input:checkbox').each(function () {
-                        @*if ($(this).attr('id') != '@Sessions.User.UserId') {
-                        $(this).removeAttr("checked");
-                        $(this).parent().removeClass("close-list");
-                    }
-                        else {*@
-                        $(this).attr("checked", "checked");
-                        $(this).parent().addClass("close-list");
-                            //}
-                });
+                });               
+                
                 GetTacticTypelist(CurrentPlanId, false);
                 // Modified By Rahul Shah
                 // Desc :: To resolve the #1952 code review points to mismatch Tactic Type selection count on plan change.
@@ -668,7 +647,8 @@
                     $(this).attr("checked", "checked");
                     $(this).parent().addClass("close-list");
                 });
-
+                //Modified By Maitri Gandhi on 24/2/2016 For #2014                
+                GetOwnerListForFilter(CurrentPlanId, false);
 
                 $('#ulStatus li input:checkbox').each(function () {
                     $(this).attr("checked", "checked");
