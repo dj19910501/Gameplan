@@ -632,6 +632,8 @@
     <Content Include="Content\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <Content Include="RevenuePlanner.wpp.targets" />
+    <Content Include="Scripts\js\bootstrap2-toggle.min.js.map" />
+    <Content Include="Scripts\js\jquery-2.2.1.min.map" />
     <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Scripts\js\bootstrap-notify.min.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.js" />
@@ -639,6 +641,7 @@
     <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid_min.js" />
     <Content Include="Scripts\js\DHTMLX\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\js\errorhandler.js" />
+    <Content Include="Scripts\js\jquery-2.2.1.js" />
     <Content Include="Scripts\js\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\js\mixpanel.init.js" />
     <Content Include="Scripts\js\mixpanel.inspect.js" />
