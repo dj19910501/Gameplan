@@ -89,6 +89,32 @@ namespace RevenuePlanner.Controllers
             else if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
             {
                 ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
+                //Added by Rahul Shah on 09/03/2016 for PL #1939
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); // PL #1532 Dashrath Prajapati
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+                if (lstClientUsers.Count() > 0)
+                {
+
+                    ViewBag.IsServiceUnavailable = false;
+                    string strUserList = string.Join(",", lstClientUsers);                   
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati                   
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        ViewBag.OwnerList = lstPreparedOwners;
+                    }
+                    else
+                    {
+                        ViewBag.OwnerList = new List<User>();
+                    }
+                }
+                else
+                {
+                    ViewBag.OwnerList = new List<User>();
+                }
             }
             else
             {
@@ -213,11 +239,13 @@ namespace RevenuePlanner.Controllers
                     {
                         //// Get Plan list by PlanId.
                         plan = db.Plans.Where(_plan => _plan.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
-
+                        //Modified by Rahul Shah on 09/03/2016 for PL #1939
+                        plan.CreatedBy = objPlanModel.OwnerId;
+                        Guid oldOwnerId = plan.CreatedBy;
                         plan.Title = objPlanModel.Title.Trim();
                         plan.ModifiedBy = Sessions.User.UserId;
                         plan.ModifiedDate = System.DateTime.Now;
-
+                        
                         if (BudgetInputValues == "" && planBudget.ToString() == "") //// Setup Tab
                         {
                             plan.Description = objPlanModel.Description;
@@ -388,29 +416,75 @@ namespace RevenuePlanner.Controllers
                         }
                         db.Entry(plan).State = EntityState.Modified;
                         Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                    }
-
-                    int result = db.SaveChanges();
-                    if (result > 0)
-                    {
-                        if (RedirectType.ToLower() == "budgeting")
+                        //Modified by Rahul Shah on 09/03/2016 for PL #1939
+                        int result = db.SaveChanges();
+                        if (result > 0)
                         {
-                            TempData["SuccessMessage"] = Common.objCached.PlanSaved;
-                            return Json(new { id = plan.PlanId, redirect = Url.Action("Budgeting", new { PlanId = plan.PlanId }) });
-                        }
-                        else if (RedirectType.ToLower() == "")
-                        {
+                            #region "Send Email Notification For Owner changed"
 
-                            return Json(new { id = plan.PlanId, succmsg = strMessage, redirect = "" });
+                            //Send Email Notification For Owner changed.
+                            if (objPlanModel.OwnerId != oldOwnerId && objPlanModel.OwnerId != Guid.Empty)
+                            {
+                                if (Sessions.User != null)
+                                {
+                                    List<string> lstRecepientEmail = new List<string>();
+                                    List<User> UsersDetails = new List<BDSService.User>();
+                                    var csv = string.Concat(objPlanModel.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+
+                                    try
+                                    {
+                                        UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        ErrorSignal.FromCurrentContext().Raise(e);
+
+                                        //To handle unavailability of BDSService
+                                        if (e is System.ServiceModel.EndpointNotFoundException)
+                                        {
+                                            //// Flag to indicate unavailability of web service.
+                                            return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                                        }
+                                    }
+
+                                    var NewOwner = UsersDetails.Where(u => u.UserId == objPlanModel.OwnerId).Select(u => u).FirstOrDefault();
+                                    var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                                    if (NewOwner.Email != string.Empty)
+                                    {
+                                        lstRecepientEmail.Add(NewOwner.Email);
+                                    }
+                                    string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                    string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                    string PlanTitle = plan.Title.ToString();
+                                    //string CampaignTitle = pcobj.Title.ToString();
+                                    //string ProgramTitle = pcobj.Title.ToString();
+                                    if (lstRecepientEmail.Count > 0)
+                                    {
+                                        string strURL = GetNotificationURLbyStatus(plan.PlanId, plan.PlanId, Enums.Section.Plan.ToString().ToLower());
+                                        Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, PlanTitle, PlanTitle, PlanTitle, PlanTitle, Enums.Section.Plan.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                    }
+                                }
+                            }
+                            #endregion
+                            if (RedirectType.ToLower() == "budgeting")
+                            {
+                                TempData["SuccessMessage"] = Common.objCached.PlanSaved;
+                                return Json(new { id = plan.PlanId, redirect = Url.Action("Budgeting", new { PlanId = plan.PlanId }) });
+                            }
+                            else if (RedirectType.ToLower() == "")
+                            {
+
+                                return Json(new { id = plan.PlanId, succmsg = strMessage, redirect = "" });
+                            }
+                            else
+                            {
+                                return Json(new { id = plan.PlanId, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) });
+                            }                            
                         }
                         else
                         {
-                            return Json(new { id = plan.PlanId, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) });
+                            return Json(new { id = 0, errormsg = Common.objCached.ErrorOccured.ToString() });
                         }
-                    }
-                    else
-                    {
-                        return Json(new { id = 0, errormsg = Common.objCached.ErrorOccured.ToString() });
                     }
                 }
             }
@@ -12104,6 +12178,10 @@ namespace RevenuePlanner.Controllers
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planCampaignId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
                 else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planTacticId = planTacticId, isImprovement = true, activeMenu = "Plan" }, Request.Url.Scheme);
+                //modified by Rahul Shah on 09/03/2016 for PL #1939
+                else if (section == Convert.ToString(Enums.Section.Plan).ToLower()) {
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, activeMenu = "Plan" }, Request.Url.Scheme);
+                }
 
             }
             catch (Exception e)

@@ -596,7 +596,6 @@ namespace RevenuePlanner.Helpers
             string emailBody, OwnerChanged, email;
             MRPEntities db = new MRPEntities();
             OwnerChanged = Enums.Custom_Notification.TacticOwnerChanged.ToString();
-
             if (Enums.Section.Program.ToString().ToLower() == Section)
             {
                 OwnerChanged = Enums.Custom_Notification.ProgramOwnerChanged.ToString();
@@ -604,6 +603,11 @@ namespace RevenuePlanner.Helpers
             else if (Enums.Section.Campaign.ToString().ToLower() == Section)
             {
                 OwnerChanged = Enums.Custom_Notification.CampaignOwnerChanged.ToString();
+            }
+            //Added by Rahul Shah on 09/03/2016 for PL #1939
+            else if (Enums.Section.Plan.ToString().ToLower() == Section)
+            {
+                OwnerChanged = Enums.Custom_Notification.PlanOwnerChanged.ToString();
             }
 
             Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(OwnerChanged));

@@ -1784,6 +1784,28 @@
             }
         });
 
+        // modified by Rahul Shah "Viewby" dropdown of Report->Finance tab not filled customfields when all customfields of left pane are selected.
+        var CheckedCounter = 0, AllCounter = 0, id = null;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                if (AllCounter == CheckedCounter) {
+                    //id = this.id;
+                    id = this.id.replace('accordion', '');                    
+                    var i = 0, customfieldid;
+                    for (i = 0; i < filters.customFieldIds.length; i++) {
+                        if (filters.customFieldIds[i].indexOf("_") > -1) {
+                            customfieldid = filters.customFieldIds[i].split("_")[0];
+                            if (id == customfieldid) {
+                                filters.customFieldIds.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });
         $("#ulSelectedOwner li input[type=checkbox]:checked").each(function () {
             filters.OwnerIds.push($(this).attr("id"));
 

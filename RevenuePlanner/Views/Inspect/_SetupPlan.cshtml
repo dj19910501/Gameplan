@@ -5,6 +5,16 @@
     var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
 }
 @using RevenuePlanner.Helpers
+<style type="text/css">
+    #multipleselect_ddlOwner {
+        left: -3px !important;
+        top: 29px !important;
+        min-width: 205px;
+    }
+    #divPartial .ui-multiselect {
+    background: none repeat scroll 0 0 #dff0f8 !important;
+    }
+</style>
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanId)
@@ -13,69 +23,94 @@
     @Html.HiddenFor(model => model.GoalType)
     @Html.HiddenFor(model => model.GoalValue)
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })  // Added by Viral Kadiya on 11/15/2014 for PL ticket #794
-    
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent" style="margin-bottom:0px;">
-        <div class="span6" id="inspect-modal-left-column1">
-            <p>Description</p>
-            @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
-            {
-                 @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
-                <div class="description-content">
-                    <div class="description-content-area" id = "txtDescription">
-                        @Html.Raw(HttpUtility.HtmlDecode(_editdescription))
-                    </div>
-                </div>
-            }
-            else if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
-            {
-                @Html.TextArea("Description", HttpUtility.HtmlDecode(Model.Description), new { id = "txtDescription", @class = "span12 text-area-size light-blue-background", style = "height:93px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@ 
-            }
-        </div>
-        <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left:  6px !important;">
-            <p>Model</p>
-            @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString() || InspectMode == Enums.InspectPopupMode.Edit.ToString())
-            {
-                @Html.TextBoxFor(model => model.ModelTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.ModelTitle })
 
-                <p>Owner</p>
-                @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Owner })
-            }
-        </div>
-        <div class="span3" id="inspect-modal-left-column3">
-            @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString() || InspectMode == Enums.InspectPopupMode.Edit.ToString())
-            {
-                <div style="width:50%; float:left;">
-                    <p title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</p>
-                    @Html.TextBox("txtINQ", "", new { placeholder = "$0", id = "txtINQ", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })    
-                </div>
-                <div style="width:50%; float:left;">
-                    <p title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</p>
-                    @Html.TextBox("txtMQL", "", new { placeholder = "$0", id = "txtMQL", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })    
-                </div>
-                <div style="width:50%; float:left;">
-                    <p>Revenue</p>
-                    @Html.TextBox("txtRevenue", "", new { placeholder = "$0", id = "txtRevenue", @class = "span5 input-small truncate width96px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })    
-                </div>
-            }
-        </div>
-    </div>  
-    @* if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
-    {
-        <div class="wraper-btns cf border-top-div" style="width: 100%; clear: both">
-            <div style="width: 80px" class="span2 btn-save">
-                <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save</button>
-            </div>
-            <div class="span2">
-                <button id="btnEditCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" type="button" style="float: left; margin-top: 30px; color:gray;">Cancel</button>
-            </div>
-        </div>
-    }*@                        
-    <span class="flag-icon"></span>
+ <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent" style="margin-bottom:0px;">
+     <div class="span6" id="inspect-modal-left-column1">
+         <p>Description</p>
+         @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+         {
+             @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+             <div class="description-content">
+                 <div class="description-content-area" id = "txtDescription">
+                     @Html.Raw(HttpUtility.HtmlDecode(_editdescription))
+                 </div>
+             </div>
+         }
+         else if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+         {
+             @Html.TextArea("Description", HttpUtility.HtmlDecode(Model.Description), new { id = "txtDescription", @class = "span12 text-area-size light-blue-background", style = "height:93px;" })     @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+         }
+     </div>
+     <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left:  6px !important;">
+         @*Modified by Rahul Shah on 09/03/2016 for PL #1939*@
+         <p>Model</p>
+         @Html.TextBoxFor(model => model.ModelTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.ModelTitle })                 
+         
+         @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+         {
+             <p>Owner</p>
+             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Owner })
+         }
+         else if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+         {
+             <p>Owner</p>
+             <span style="min-width: 100%; position: relative;display:block;">
+                 @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+             </span>
+         }
+
+     </div>
+     <div class="span3" id="inspect-modal-left-column3">
+         @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString() || InspectMode == Enums.InspectPopupMode.Edit.ToString())
+         {
+             <div style="width:50%; float:left;">
+                 <p title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</p>
+                 @Html.TextBox("txtINQ", "", new { placeholder = "$0", id = "txtINQ", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+             </div>
+             <div style="width:50%; float:left;">
+                 <p title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</p>
+                 @Html.TextBox("txtMQL", "", new { placeholder = "$0", id = "txtMQL", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+             </div>
+             <div style="width:50%; float:left;">
+                 <p>Revenue</p>
+                 @Html.TextBox("txtRevenue", "", new { placeholder = "$0", id = "txtRevenue", @class = "span5 input-small truncate width96px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+             </div>
+         }
+     </div>
+ </div>
+ @* if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+     {
+         <div class="wraper-btns cf border-top-div" style="width: 100%; clear: both">
+             <div style="width: 80px" class="span2 btn-save">
+                 <button id="btnEditSave" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save</button>
+             </div>
+             <div class="span2">
+                 <button id="btnEditCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" type="button" style="float: left; margin-top: 30px; color:gray;">Cancel</button>
+             </div>
+         </div>
+     }*@
+ <span class="flag-icon"></span>
 }
 
 <script type="text/javascript">
     var requestedModule = $("#hdnRequestedModule").val();
     $(document).ready(function () {
+        //Modified by Rahul Shah on 09/03/2016 for PL #1939
+        $('#ddlOwner').multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1,
+            CustomName: '@Common.CustomTitle'
+        }).multiselectfilter();       
+        $('#ddlOwner').next().css('width', '95%');
+        $('#ddlOwner').next().css('min-height', '30px');
+        var spanOwner = $('#multipleselect_ddlOwner');
+        $('#btnMultiselect_ddlOwner').after(spanOwner);        
+        $('.dropdown_new_btn').each(function () {
+            $(this).multiselectWeight(
+            );
+        });        
+        $('#hdnOwner').val($('#ddlOwner').val());
 
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
@@ -111,10 +146,10 @@
         });
     }
 
-    //Modified by Komal Rawal for #1327    
+    //Modified by Komal Rawal for #1327
     function SetupPlanSave() {
         var returnparameter = false;
-      //  $("#btnEditSave").click(function () {
+        //  $("#btnEditSave").click(function () {
         var iserror = false;
         $('form').find('input[type=text], select').each(function () {
             if ($(this).attr('require') == 'true') {
@@ -127,7 +162,14 @@
                 }
             }
         });
-
+        //Modified by Rahul Shah on 09/03/2016 for PL #1939
+        var OwnerValue = $('#btnMultiselect_ddlOwner').find('span:first').html();
+        if (OwnerValue == "") {
+            $('#btnMultiselect_ddlOwner').addClass("error");
+        }
+        else {
+            $('#btnMultiselect_ddlOwner').removeClass("error");
+        }
         //sbSelector
         $('form').find('.sbSelector').each(function () {
             if ($(this).parent().prev().attr('require') == 'true') {
@@ -162,88 +204,88 @@
                 var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
                 if (lstAllocInputs.length > 0) {
                     var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
-                        var inputLength = lstAllocInputs.length;
-                        var removeLength = 0;
-                        for (var i = 0; i < lstAllocInputs.length; i++) {
-                            if (inputLength == 1) {
-                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
-                            }
-                            else if (inputLength == 2) {
+                    var inputLength = lstAllocInputs.length;
+                    var removeLength = 0;
+                    for (var i = 0; i < lstAllocInputs.length; i++) {
+                        if (inputLength == 1) {
+                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
+                        }
+                        else if (inputLength == 2) {
+                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                            removeLength = 4;
+                        }
+                        else if (inputLength > 2) {
+                            if (i == inputLength - 2) {
                                 errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
                                 removeLength = 4;
                             }
-                            else if (inputLength > 2) {
-                                if (i == inputLength - 2) {
-                                    errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
-                                    removeLength = 4;
-                                }
-                                else {
-                                    errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
-                                    removeLength = 2;
-                                }
+                            else {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
+                                removeLength = 2;
                             }
                         }
-
-                        errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
-                        errorMsg += '.';
-
-                        ShowBudgetError(errorMsg);
-                        return false;
                     }
-                    
+
+                    errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
+                    errorMsg += '.';
+
+                    ShowBudgetError(errorMsg);
+                    return false;
                 }
 
-                var allocationValue = [];
-                $("#txtTitle").value = htmlEncode($('#txtTitle').val());
-                $("#Description").value = htmlEncode($('#Description').val());
-                document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584 
-                document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
-                $('#Title').val($('#txtTitle').val());
-                var formData = $("form").serialize();
-                var RedirectType = "";
-                var uId = $(window).attr('name');
-                $.ajax({
-                    type: 'POST',
-                    async : false,
-                    url: '@Url.Content("~/Inspect/SavePlanDetails")',
-                    data: formData + '&BudgetInputValues=' + '' + '&RedirectType=' + RedirectType + '&UserId=' + uId,
-                    success: function (data) {
-                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                            window.location = '@Url.Content("~/Login/Index")';
-                        }
-                        else {
-                            if (data.succmsg != "") {
-                                if (data.redirect != "") {
+            }
+
+            var allocationValue = [];
+            $("#txtTitle").value = htmlEncode($('#txtTitle').val());
+            $("#Description").value = htmlEncode($('#Description').val());
+            document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
+            $('#Title').val($('#txtTitle').val());
+            var formData = $("form").serialize();
+            var RedirectType = "";
+            var uId = $(window).attr('name');
+            $.ajax({
+                type: 'POST',
+                async : false,
+                url: '@Url.Content("~/Inspect/SavePlanDetails")',
+                data: formData + '&BudgetInputValues=' + '' + '&RedirectType=' + RedirectType + '&UserId=' + uId,
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                        if (data.succmsg != "") {
+                            if (data.redirect != "") {
+                            }
+                            else {
+                                isDataModified = true;
+                                $("#successMessage").css("display", "block");
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(data.succmsg);
+                                //   returnToReadOnlyMode(data.id);
+                                if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                                    $("#hdnBudgetingIsSave").val("true");
+                                    $("#hdnBudgetingExpandId").val("0");
                                 }
-                                else {
-                                    isDataModified = true;
-                                    $("#successMessage").css("display", "block");
-                                    $("#spanMessageSuccess").empty();
-                                    $("#spanMessageSuccess").text(data.succmsg);
-                                 //   returnToReadOnlyMode(data.id);
-                                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
-                                        $("#hdnBudgetingIsSave").val("true");
-                                        $("#hdnBudgetingExpandId").val("0");
-                                    }
-                                    //else {
-                                    //    RefreshCurrentTab(requestedModule, 0, 0, 0);
-                                    //}
-                                    isDataModified = true;
-                                    returnparameter = true;
-                                }
+                                //else {
+                                //    RefreshCurrentTab(requestedModule, 0, 0, 0);
+                                //}
+                                isDataModified = true;
                                 returnparameter = true;
                             }
-                            if (data.errormsg != "" && data.errormsg != undefined) {
-                                $("#txtTitle").value = htmlDecode($('#txtTitle').val());
-                                $("#Description").value = htmlDecode($('#Description').val());
-                                ShowError(data.errormsg);
-                                returnparameter = false;
-                            }
+                            returnparameter = true;
+                        }
+                        if (data.errormsg != "" && data.errormsg != undefined) {
+                            $("#txtTitle").value = htmlDecode($('#txtTitle').val());
+                            $("#Description").value = htmlDecode($('#Description').val());
+                            ShowError(data.errormsg);
+                            returnparameter = false;
                         }
                     }
-                });
-            }
-       
+                }
+            });
+        }
+
         return returnparameter;
     }
 

@@ -9703,13 +9703,20 @@ namespace RevenuePlanner.Controllers
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
-                        plandataobj.value = doubledesh;
+                        plandataobj.value = doubledesh;                        
                         plandataobj.type = typero;
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
                         plandataobj.value = Common.GetUserName(planitem.CreatedBy.ToString());
-                        plandataobj.type = typero;
+                        //Modified by Rahul Shah on 09/03/2016 for PL #1939                       
+                        if (IsPlanEditable)
+                        {
+                            plandataobj.locked = lockedstatezero;
+                        }
+                        else {
+                            plandataobj.locked = lockedstateone;
+                        }                        
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
@@ -10603,10 +10610,29 @@ namespace RevenuePlanner.Controllers
                     {
                         plan.Title = UpdateVal.Trim();
                     }
+                    else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    {
+                        oldOwnerId = plan.CreatedBy;
+                        plan.CreatedBy = new Guid(UpdateVal);
+                    }
 
                     db.Entry(plan).State = EntityState.Modified;
                     db.SaveChanges();
-                    Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    //Modified by Rahul Shah on 09/03/2016 for PL #1939
+                    int result = Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    if (result > 0)
+                    {
+                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                            SendEmailnotification(plan.PlanId, id, oldOwnerId, new Guid(UpdateVal), plan.Title, plan.Title, plan.Title, plan.Title, Enums.Section.Plan.ToString().ToLower());
+
+                    }
+                   
+                    var OwnerName = "";
+                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    {
+                        OwnerName = GetOwnerName(UpdateVal);
+                    }
+                    return Json(new { OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
 
@@ -11988,6 +12014,11 @@ namespace RevenuePlanner.Controllers
                             {
                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);
                             }
+                            else if (Enums.Section.Plan.ToString().ToLower() == section)
+                            {
+                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, PlanTitle, PlanTitle, PlanTitle, Enums.Section.Plan.ToString().ToLower(), strURL);
+                            }
+                            
                             else
                             {
                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);
@@ -12025,6 +12056,9 @@ namespace RevenuePlanner.Controllers
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planCampaignId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
                 else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planTacticId = planTacticId, isImprovement = true, activeMenu = "Plan" }, Request.Url.Scheme);
+                else if (section == Convert.ToString(Enums.Section.Plan).ToLower())                
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
+                
 
             }
             catch (Exception e)
@@ -12254,6 +12288,7 @@ namespace RevenuePlanner.Controllers
                 }
                 List<Guid> lstSubordinatesIds = new List<Guid>();
                 bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 if (IsTacticAllowForSubordinates)
                 {
                     lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
@@ -12276,6 +12311,22 @@ namespace RevenuePlanner.Controllers
                     else if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.campaign.ToString())
                     {
                         CustomTacticids = TacticfilterList.Where(tact => tact.Plan_Campaign_Program.PlanCampaignId == updatedid).Select(tact => tact.PlanTacticId).ToList();
+                        //CellBackGroundcolor = "background-color:#E4F1E1;";
+                    }
+                    else if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.plan.ToString())
+                    {
+                        //Modified by Rahul Shah on 09/03/2016 for PL #1939
+                        if (OwnerID == Sessions.User.UserId) {
+                            IsEditable = true;
+                        }
+                        else if (IsPlanEditAllAuthorized)
+                        {
+                            IsEditable = true;
+                        }
+                        else if (IsTacticAllowForSubordinates)
+                        {
+                            IsEditable = false;
+                        }
                         //CellBackGroundcolor = "background-color:#E4F1E1;";
                     }
                     if (IsEditable == false)
@@ -12305,6 +12356,10 @@ namespace RevenuePlanner.Controllers
                     {
                         cellTextColor = "style='color:#000; " + CellBackGroundcolor + "'";
                         IsLocked = "0";
+                    }
+                    if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.plan.ToString()) {
+                        //Modified by Rahul Shah on 09/03/2016 for PL #1939
+                        cellTextColor = "color:#000; " + CellBackGroundcolor + "";
                     }
                 }
 

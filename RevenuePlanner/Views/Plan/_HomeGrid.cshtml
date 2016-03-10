@@ -1267,7 +1267,7 @@
     var value;
 
     var TacticName;
-    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {        
         var updatetype = rowId.split(".")[0];
         var Id;
         var UpdateColumn;
@@ -1388,7 +1388,12 @@
                 var NewValue = htmlDecode(nValue);
                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                 var TaskID = HomeGrid.cells(rowId,3).getValue();
-                updatePlanNameDrp(TaskID,NewValue);
+                //Modified by Rahul Shah on 09/03/2016 for PL #1939
+                if (UpdateColumn == "" || UpdateColumn == null)
+                    UpdateColumn = HomeGrid.getColLabel(Colind, 0);
+                if(UpdateColumn == "Task Name"){
+                    updatePlanNameDrp(TaskID,NewValue);
+                }                
                 if(cellInd == 1)
                 {
                     $("div[taskId='" + TaskID + "']").attr('taskname',NewValue);
@@ -1410,8 +1415,8 @@
                 var costindex = HomeGrid.getColIndexById('plannedcost');
                 var stageindex = HomeGrid.getColIndexById('inq');
 
-                if (UpdateColumn == "" || UpdateColumn == null)
-                    UpdateColumn = HomeGrid.getColLabel(Colind, 0);
+                //if (UpdateColumn == "" || UpdateColumn == null)
+                //    UpdateColumn = HomeGrid.getColLabel(Colind, 0);
                 Id = HomeGrid.cells(rowId, idindex).getValue();
 
                 if (UpdateColumn == "Start Date") {
