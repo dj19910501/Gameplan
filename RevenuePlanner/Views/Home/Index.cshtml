@@ -2070,6 +2070,7 @@
             isEditTactic = 0;
             LoadPlanGrid();
             $("#divupcomingact").hide(); 
+            $("#RequestTab").hide();
             GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, ID); //Modified by Nishant Sheth for perfomance to make it call only for grid view
 
         }
@@ -2676,7 +2677,7 @@
                     if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                         BindUpcomingActivites(SelectedPlanIds);
                     }
-                    //Currenttime = $('#ddlUpComingActivites').val(); // Comment By Bhavesh
+                    Currenttime = $('#ddlUpComingActivites').val(); // Comment By Bhavesh //Uncomment By Komal as on update result takes wrong time frame.
                     isQuater = Currenttime;
                     SetBudget("#pbudget");
                     SetPriceValue("#pMQLs");
