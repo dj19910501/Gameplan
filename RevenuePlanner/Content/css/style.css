@@ -12793,9 +12793,10 @@ border-bottom: 0 solid #d3d3d3 !important;
     position: absolute;
     right: 6px;
     top: 6px;
-   border: 0 none;  /*Added by Bhumika for #2012 7-3-2016*/
+   border: 0 none;
+   outline: none !important;  /*Added by Bhumika for #2012 7-3-2016*/
 }
-
+.headefix .close-x-big-icon:hover, .headefix .close-x-big-icon:focus{outline: none !important;}
 .pop-body-wraper {
     float: left;
     overflow: auto;
