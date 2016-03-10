@@ -10330,7 +10330,8 @@ namespace RevenuePlanner.Controllers
                         gridjsonlist.Add(gridjsonlistplanobj);
                     }
                 }
-
+                objPlanMainDHTMLXGrid.rows = gridjsonlist;
+                objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
             }
             catch (Exception objException)
             {
@@ -10342,8 +10343,7 @@ namespace RevenuePlanner.Controllers
                     return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
                 }
             }
-            objPlanMainDHTMLXGrid.rows = gridjsonlist;
-            objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
+           
             await Task.Delay(1);
             return PartialView("_HomeGrid", objplangrid);
         }
