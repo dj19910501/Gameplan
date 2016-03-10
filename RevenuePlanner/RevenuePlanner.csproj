@@ -313,6 +313,12 @@
     <Content Include="Content\css\bootstrap.min.css" />
     <Content Include="Content\css\bootstrap2-toggle.css" />
     <Content Include="Content\css\bootstrap2-toggle.min.css" />
+    <Content Include="Content\css\DHTMLX\imgs\dhxcalendar_skyblue\dhxcalendar_arrow_left.gif" />
+    <Content Include="Content\css\DHTMLX\imgs\dhxcalendar_skyblue\dhxcalendar_arrow_right.gif" />
+    <Content Include="Content\css\DHTMLX\imgs\dhxcalendar_skyblue\dhxcalendar_clock.gif" />
+    <Content Include="Content\css\DHTMLX\imgs\dhxcalendar_skyblue\dhxcalendar_mark.gif" />
+    <Content Include="Content\css\DHTMLX\imgs\dhxcalendar_skyblue\dhxcalendar_selector_bottom.gif" />
+    <Content Include="Content\css\DHTMLX\imgs\dhxcalendar_skyblue\dhxcalendar_selector_top.gif" />
     <Content Include="Content\css\style_min_March2.css" />
     <Content Include="Content\css\style_extended_min_Oct1.css" />
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_desc.gif" />
@@ -954,7 +960,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>53103</DevelopmentServerPort>
+          <DevelopmentServerPort>52863</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
