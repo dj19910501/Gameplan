@@ -318,6 +318,8 @@
 
         });
         }
+        ItemIdForFocus = myTreeGrid.getRowIndex($(checkbox).attr('row-id').toString());    //Added by Maitri Gandhi for #2049 on 10/3/2016
+        Maintained = ItemIdForFocus - 1; //decremented to focus previous row.       
       
     }
    
