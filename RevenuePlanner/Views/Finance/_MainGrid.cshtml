@@ -9,6 +9,7 @@
     var IsForecastCreateEdit = ViewBag.IsForecastCreateEditView;
 }
 <style>
+    /*Commented By Maitri Gandhi on 9/3/2016 for #2049
     div.xhdr {
         width: 100.7% !important;
     }
@@ -23,6 +24,10 @@
 
     div.gridbox {
         height: 100% !important;
+    }*/
+        div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+        text-align: center;
+        padding-left: 0px !important;
     }
         div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
         width: 100% !important;
@@ -32,7 +37,7 @@
         width: 100% !important;
     }
 </style>
-<div id="gridbox" style="width:100%; height:500px; background-color:white;"></div>
+<div id="divgridview" class="task-tbl" style=""><div id="gridbox" style="width:100%; background-color:white;" class="gridViewGrid" ></div></div>@*class="gridViewGrid"*@
 @Html.Hidden("hdnBudgetId", BudgetId, new { id = "hdnBudgetId", name = "hdnBudgetId", value = BudgetId })
 @Html.Hidden("hdnNewItemType", string.Empty, new { id = "hdnNewItemType", name = "hdnNewItemType", value = "" })
 <script type="text/javascript">
@@ -182,7 +187,17 @@
             ValidOldValue = "";
             IsValid = true;
         });
-        myTreeGrid.init();
+        myTreeGrid.init();	 
+//Added by Maitri Gandhi for #2049 on 8/3/2016        
+        myTreeGrid.attachEvent("onDistributedEnd", function () {
+            if (Maintained != 0) {
+                var ID = myTreeGrid.getRowId(Maintained);
+                if (ID !=   undefined || ID == '') {
+                        myTreeGrid.showRow(ID.toString());
+                        //Maintained = 0;
+                }
+            }
+        });
         myTreeGrid.enableDistributedParsing(true, 10, 300);
         
 
@@ -207,7 +222,8 @@
             myTreeGrid.setCellTextStyle(rowid, titleIndex, "border-right:0px solid #d4d4d4;");
         });
 
-        myTreeGrid.enableAutoHeight(true);
+            //myTreeGrid.enableAutoHeight(true);
+        myTreeGrid.enableAutoHeight(false);
         myTreeGrid.enableAutoWidth(false);
 
         myTreeGrid.expandAll();
@@ -408,7 +424,8 @@
         if (_isNewRowAdd == false) {
              $("#hdnNewItemType").val(itemType);
             var row_id = $(cntrl).attr('row-id');
-
+            ItemIdForFocus = myTreeGrid.getRowIndex(row_id.toString());    //Added by Maitri Gandhi for #2049 on 8/3/2016
+            Maintained = ItemIdForFocus;
             //var rowId = myTreeGrid.getSelectedId();
             //var rowindex = myTreeGrid.getRowIndex(row_id.toString());
 
@@ -516,11 +533,11 @@
         if (stage == 0) {
             ValidOldValue = myTreeGrid.cells(id, index).getValue();
         }
-
         ValidParentId = myTreeGrid.getParentId(id);
         ValidColumnId = index;
         ValidRowId = id;
-
+        ItemIdForFocus = myTreeGrid.getRowIndex(ValidRowId);    //Added by Maitri Gandhi for #2049 on 8/3/2016        
+        Maintained = ItemIdForFocus;        
         var selectIndex = myTreeGrid.getColIndexById('SelectBox');
         if (stage == 1) {
             AddNewrow = false;

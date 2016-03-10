@@ -3,6 +3,7 @@
 @model RevenuePlanner.Models.FinanceModel
 
 <style type="text/css">
+    /*Commented By Maitri Gandhi on 9/3/2016 for #2049
     div.xhdr {
         height: auto !important;
         width: 100.7% !important;
@@ -11,19 +12,18 @@
     div.objbox {
         width: 100.7% !important;
     }
-
-    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
-        text-align: center;
-        padding-left: 0px !important;
-        padding-right: 7px !important;
-    }
-
     div.objbox {
         height: 100% !important;
     }
 
     div.gridbox {
         height: 100% !important;
+    }*/
+
+    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+        text-align: center;
+        padding-left: 0px !important;
+        /*padding-right: 7px !important;*/
     }
 
     div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
@@ -34,7 +34,7 @@
         width: 100% !important;
     }
 </style>
-<div id="gridbox" style="width:100%; background-color:white;"></div>
+<div id="gridbox" style="width:100%; background-color:white;" class="gridViewGrid"></div>
 <script type="text/javascript">
     var RowIDs = {
         IDs: []
@@ -215,7 +215,16 @@
         myTreeGrid.setColumnsVisibility(GridData.setColumnsVisibility);
 
 
-        myTreeGrid.init();
+        myTreeGrid.init(); 
+//Added by Maitri Gandhi for #2049 on 8/3/2016        
+        myTreeGrid.attachEvent("onDistributedEnd", function () {
+            if (Maintained != 0) {
+                var ID = myTreeGrid.getRowId(Maintained);
+                if (ID != undefined || ID == '') {
+                    myTreeGrid.showRow(ID.toString());                    
+                }
+            }
+        });
         myTreeGrid.enableDistributedParsing(true, 10, 300);
         myTreeGrid.setImageSize(1, 1);
         myTreeGrid.setSkin("dhx_skyblue");
@@ -323,7 +332,7 @@
         //    $("#gridbox").find("table").css("width", GridWidth);
         //});
         //IsValid = true;
-        myTreeGrid.enableAutoHeight(true);
+        myTreeGrid.enableAutoHeight(false); //Modified By Maitri Gandhi on 9/3/2016 for #2049
         myTreeGrid.enableAutoWidth(false);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
 
@@ -334,6 +343,9 @@
             ValidParentId = myTreeGrid.getParentId(rId);
             ValidColumnId = cInd;
             ValidRowId = rId;
+            //Added by Maitri Gandhi for #2049 on 8/3/2016
+            ItemIdForFocus = myTreeGrid.getRowIndex(ValidRowId);    
+            Maintained = ItemIdForFocus;
             var ColumnName = myTreeGrid.getColLabel(cInd, 1);
             if (stage == 1) {
                 if (ColumnName != "Task Name") {
@@ -906,7 +918,9 @@
             //    AllocatedBy = false;
             //}
             var row_id = $(cntrl).attr('row-id');
-
+            //Added by Maitri Gandhi for #2049 on 8/3/2016
+            ItemIdForFocus = myTreeGrid.getRowIndex(row_id.toString());   
+            Maintained = ItemIdForFocus;
             //var rowId = myTreeGrid.getSelectedId();
             //var rowindex = myTreeGrid.getRowIndex(row_id.toString());
 
