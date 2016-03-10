@@ -1177,13 +1177,13 @@ namespace Integration.Eloqua
                     planTactic.ModifiedDate = DateTime.Now;
                     planTactic.ModifiedBy = _userId;
                     instanceLogTactic.Status = StatusResult.Success.ToString();
+                    Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                    
+                    #region "Add synced Tactic comment to Plan_Campaign_Program_Tactic_Comment table"
                     //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
                     if (!Common.IsAutoSync)
                     {
-                        #region "Add synced Tactic comment to Plan_Campaign_Program_Tactic_Comment table"
-
                         //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
-                        Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
                         objTacticComment.PlanTacticId = planTactic.PlanTacticId;
                         objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Eloqua.ToString();
                         objTacticComment.CreatedDate = DateTime.Now;
@@ -1199,18 +1199,21 @@ namespace Integration.Eloqua
 
                         db.Entry(objTacticComment).State = EntityState.Added;
                         db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
-                        // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic 
-                        #endregion
+                    }
+                    // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic 
+                    #endregion
 
-                        #region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
-                        if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
+                    #region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
+                    if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
+                    {
+                        lnkdTactic.IntegrationInstanceEloquaId = planTactic.IntegrationInstanceEloquaId;
+                        lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
+                        lnkdTactic.LastSyncDate = DateTime.Now;
+                        lnkdTactic.ModifiedDate = DateTime.Now;
+                        lnkdTactic.ModifiedBy = _userId;
+
+                        if (!Common.IsAutoSync)
                         {
-                            lnkdTactic.IntegrationInstanceEloquaId = planTactic.IntegrationInstanceEloquaId;
-                            lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
-                            lnkdTactic.LastSyncDate = DateTime.Now;
-                            lnkdTactic.ModifiedDate = DateTime.Now;
-                            lnkdTactic.ModifiedBy = _userId;
-
                             // Add linked tactic comment
                             Plan_Campaign_Program_Tactic_Comment objLinkedTacticComment = new Plan_Campaign_Program_Tactic_Comment();
                             objLinkedTacticComment.PlanTacticId = lnkdTactic.PlanTacticId;
@@ -1219,10 +1222,9 @@ namespace Integration.Eloqua
                             objLinkedTacticComment.CreatedBy = objTacticComment.CreatedBy;
                             db.Entry(objLinkedTacticComment).State = EntityState.Added;
                             db.Plan_Campaign_Program_Tactic_Comment.Add(objLinkedTacticComment);
-
                         }
-                        #endregion
                     }
+                    #endregion
                     sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
                 }
                 catch (Exception)
@@ -1260,11 +1262,11 @@ namespace Integration.Eloqua
                         planTactic.ModifiedBy = _userId;
 
                         #region "Add update Tactic comment to Plan_Campaign_Program_Tactic_Comment table"
+                        Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
                         //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
                         if (!Common.IsAutoSync)
                         {
                             //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
-                            Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
                             objTacticComment.PlanTacticId = planTactic.PlanTacticId;
                             objTacticComment.Comment = Common.TacticUpdatedComment + Integration.Helper.Enums.IntegrationType.Eloqua.ToString();
                             objTacticComment.CreatedDate = DateTime.Now;
@@ -1281,16 +1283,18 @@ namespace Integration.Eloqua
                             db.Entry(objTacticComment).State = EntityState.Added;
                             db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
                             // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic 
+                        }
                         #endregion
 
-                            #region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
-                            if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
+                        #region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
+                        if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
+                        {
+                            lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
+                            lnkdTactic.LastSyncDate = DateTime.Now;
+                            lnkdTactic.ModifiedDate = DateTime.Now;
+                            lnkdTactic.ModifiedBy = _userId;
+                            if (!Common.IsAutoSync)
                             {
-                                lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
-                                lnkdTactic.LastSyncDate = DateTime.Now;
-                                lnkdTactic.ModifiedDate = DateTime.Now;
-                                lnkdTactic.ModifiedBy = _userId;
-
                                 // Add linked tactic comment
                                 Plan_Campaign_Program_Tactic_Comment objLinkedTacticComment = new Plan_Campaign_Program_Tactic_Comment();
                                 objLinkedTacticComment.PlanTacticId = lnkdTactic.PlanTacticId;
@@ -1300,8 +1304,8 @@ namespace Integration.Eloqua
                                 db.Entry(objLinkedTacticComment).State = EntityState.Added;
                                 db.Plan_Campaign_Program_Tactic_Comment.Add(objLinkedTacticComment);
                             }
-                            #endregion
                         }
+                        #endregion
                         instanceLogTactic.Status = StatusResult.Success.ToString();
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + "); ");
                     }

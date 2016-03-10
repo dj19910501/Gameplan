@@ -11265,14 +11265,13 @@ namespace RevenuePlanner.Controllers
                                         {
                                             Addcomment = true;
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString();
-                                            db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
-                                            db.SaveChanges();
+                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
                                             AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
                                             result = Common.InsertChangeLog(planid, null, planTacticId, program.Title.ToString(), Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
 
                                             if (program.IsDeployedToIntegration == true)
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.Program);
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Program);
                                                 externalIntegration.Sync();
                                             }
                                         }
@@ -11280,8 +11279,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             Addcomment = true;
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                            db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
-                                            db.SaveChanges();
+                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
                                             AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
 
                                         }
@@ -11289,8 +11287,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             Addcomment = true;
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString();
-                                            db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
-                                            db.SaveChanges();
+                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
                                             AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
                                             Common.InsertChangeLog(program.Plan_Campaign.PlanId, 0, program.PlanProgramId, program.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
 
@@ -11329,32 +11326,26 @@ namespace RevenuePlanner.Controllers
                                         if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                         {
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString();
-                                            db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId == planTacticId).ToList().ForEach(pcp => pcp.Status = strstatus);
-                                            db.Plan_Campaign_Program_Tactic.Where(pcp => pcp.Plan_Campaign_Program.PlanCampaignId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
-                                            db.SaveChanges();
+                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
                                             AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
                                             result = Common.InsertChangeLog(campaign.PlanId, null, planTacticId, campaign.Title.ToString(), Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
                                             if (campaign.IsDeployedToIntegration == true)
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.Campaign);
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Campaign);
                                                 externalIntegration.Sync();
                                             }
                                         }
                                         else if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
                                         {
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                            db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId == planTacticId).ToList().ForEach(pcp => pcp.Status = strstatus);
-                                            db.Plan_Campaign_Program_Tactic.Where(pcp => pcp.Plan_Campaign_Program.PlanCampaignId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
-                                            db.SaveChanges();
+                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
                                             AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
 
                                         }
                                         else if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                                         {
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString();
-                                            db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId == planTacticId).ToList().ForEach(pcp => pcp.Status = strstatus);
-                                            db.Plan_Campaign_Program_Tactic.Where(pcp => pcp.Plan_Campaign_Program.PlanCampaignId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
-                                            db.SaveChanges();
+                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
                                             AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
                                             Common.InsertChangeLog(campaign.PlanId, 0, campaign.PlanCampaignId, campaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
 
@@ -11400,6 +11391,69 @@ namespace RevenuePlanner.Controllers
             }
 
             return Json(new { id = 0 });
+        }
+
+        /// <summary>
+        /// Update child entity status on Approving parent entity.
+        /// </summary>
+        /// <param name="section"></param>
+        /// <param name="status"></param>
+        /// <param name="prntEntityIds"></param>
+        /// <returns></returns>
+        public void UpdateChildEntityStatusByParent(string section, string status, List<int> prntEntityIds)
+        {
+            try
+            {
+                if (section == Convert.ToString(Enums.Section.Program).ToLower())
+                {
+                    if (prntEntityIds != null && prntEntityIds.Count > 0)
+                    {
+                        List<Plan_Campaign_Program_Tactic> lstTactics = db.Plan_Campaign_Program_Tactic.Where(pcpt => prntEntityIds.Contains(pcpt.PlanProgramId)).ToList();
+                        #region "Get LinkedTactic list"
+                        if (lstTactics != null && lstTactics.Count > 0)
+                        {
+                            List<int> LinkedtacIds = lstTactics.Where(tac => tac.LinkedTacticId.HasValue).Select(tac => tac.LinkedTacticId.Value).ToList();
+                            if (LinkedtacIds != null && LinkedtacIds.Count > 0)
+                            {
+                                List<Plan_Campaign_Program_Tactic> lstLinkedTactics = db.Plan_Campaign_Program_Tactic.Where(tac => LinkedtacIds.Contains(tac.PlanTacticId)).ToList();
+                                lstTactics.AddRange(lstLinkedTactics);
+                            }
+                        }
+                        #endregion
+
+                        #region "Update Tactic Status"
+                        try
+                        {
+                            db.Configuration.AutoDetectChangesEnabled = false;
+                            lstTactics.ForEach(pcpt => pcpt.Status = status);
+                        }
+                        finally
+                        {
+                            db.Configuration.AutoDetectChangesEnabled = true;
+                        }
+                        db.SaveChanges();
+                        #endregion
+                    }
+                }
+                else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                {
+                    if (prntEntityIds != null && prntEntityIds.Count > 0)
+                    {
+                        List<Plan_Campaign_Program> lstPrograms = db.Plan_Campaign_Program.Where(pcp => prntEntityIds.Contains(pcp.PlanCampaignId)).ToList();
+                        if (lstPrograms != null && lstPrograms.Count > 0)
+                        {
+                            lstPrograms.ForEach(pcp => pcp.Status = status);
+                            List<int> programIds = lstPrograms.Select(prg => prg.PlanProgramId).ToList();
+                            UpdateChildEntityStatusByParent(Enums.Section.Program.ToString(), status, programIds); // update child tactic status.
+                            //db.SaveChanges();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
         }
 
         /// <summary>
