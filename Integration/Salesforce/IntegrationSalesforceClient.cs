@@ -2341,7 +2341,7 @@ namespace Integration.Salesforce
                                                 instanceTactic.CreatedBy = _userId;
                                                 db.Entry(instanceTactic).State = EntityState.Added;
                                             }
-                                            catch (Exception)
+                                            catch (Exception ex)
                                             {
                                                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Error occurred on insert MQL on Actual table : TacticId-" + tactic.PlanTacticId.ToString() + Common.GetInnermostException(ex));
                                             }
