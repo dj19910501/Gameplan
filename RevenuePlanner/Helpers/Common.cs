@@ -6902,9 +6902,13 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-
-                            var lstPlanTacticsActuals = Tacticdata.Where(pta => pta.TacticObj.PlanTacticId.Equals(keyTactic)).Select(pta => pta.ActualTacticList).FirstOrDefault()
-                                .Select(tac => new
+                            // Modified By Nishant Sheth
+                            // Desc :: #2052 To Resolve Actual value show 0
+                            var lstPlanTacticsActualsData = Tacticdata.Where(pta => pta.TacticObj.PlanTacticId.Equals(keyTactic)).Select(pta => pta.ActualTacticList).FirstOrDefault();
+                            List<BudgetedValue> lstPlanTacticsActuals = new List<BudgetedValue>();
+                            if (lstPlanTacticsActualsData != null)
+                            {
+                                lstPlanTacticsActuals = lstPlanTacticsActualsData.ToList().Select(tac => new
                                 {
                                     Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
                                     TacticId = tac.PlanTacticId,
@@ -6917,17 +6921,19 @@ namespace RevenuePlanner.Helpers
                                     TacticId = tac.TacticId,
                                     Value = tac.Value,
                                     StartYear = tac.StartYear
-                                }).ToList().Select(tact => new
+                                }).ToList().Select(tact => new BudgetedValue
                                 {
                                     Period = "Y" + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
                                     Year = tact.StartYear + tact.NumPeriod,
-                                    TacticId = tact.TacticId,
+                                    //TacticId = tact.TacticId,
                                     Value = tact.Value
-                                }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
+                                }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year.ToString()))).ToList();
+                            }
+
                             lstActulalValue = new List<BudgetedValue>();
-                            if (lstPlanTacticsActuals.Any())
+                            if (lstPlanTacticsActuals != null)
                             {
-                                lstActulalValue = lstPlanTacticsActuals.Select(actual => new BudgetedValue { Period = actual.Period, Value = actual.Value, Year = actual.Year }).ToList();
+                                lstActulalValue = lstPlanTacticsActuals.ToList();
                             }
                         }
                         objTacticActualCost.ActualList = lstActulalValue;

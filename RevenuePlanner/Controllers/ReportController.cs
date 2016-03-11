@@ -5641,9 +5641,16 @@ namespace RevenuePlanner.Controllers
                                     periodlist.Add(PeriodPrefix + k);
                                 }
 
+                                //_PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
+                                //    && plancost.Year == Convert.ToInt32(Year))
+                                //    .Select(plancost => plancost.Value).FirstOrDefault();
+
+                                // Modified By Nishant Sheth
+                                // Desc :: #2052 finance calulation wrong with quarters and monthly
                                 _PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
                                     && plancost.Year == Convert.ToInt32(Year))
-                                    .Select(plancost => plancost.Value).FirstOrDefault();
+                                    .Sum(plancost => plancost.Value);
+
                                 TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
                                 _BudgetCostValue = _tacBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
                                     && budgtcost.Year == Convert.ToInt32(Year)).Sum(budgtcost => budgtcost.Value);
@@ -5692,11 +5699,13 @@ namespace RevenuePlanner.Controllers
                                 year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : Convert.ToInt32(ListYear.Min());
                                 for (int k = 1; k <= 12; k++)
                                 {
+                                    _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0; // Add By Nishant Sheth // #2052 observation for diffrent value with quarter and month
+
                                     curntPeriod = PeriodPrefix + k;
 
-                                    _PlannedCostValue = tacCostListData.Where(plancost => plancost.Period.Equals(curntPeriod) && plancost.Year == year).Select(plancost => plancost.Value).FirstOrDefault();
+                                    _PlannedCostValue = tacCostListData.Where(plancost => plancost.Period.Equals(curntPeriod) && plancost.Year == year).Sum(plancost => plancost.Value);// Modified by nishant sheth #2052
                                     TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod) && actual.Year == year).Sum(actual => actual.Value));
-                                    _BudgetCostValue = _tacBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod) && budgtcost.Year == year).Select(budgtcost => budgtcost.Value).FirstOrDefault();
+                                    _BudgetCostValue = _tacBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod) && budgtcost.Year == year).Sum(budgtcost => budgtcost.Value);// Modified by nishant sheth #2052
 
                                     serPlannedData.Add(_PlannedCostValue);
                                     serBudgetData.Add(_BudgetCostValue);
@@ -5725,10 +5734,17 @@ namespace RevenuePlanner.Controllers
                                 {
                                     periodlist.Add(PeriodPrefix + k);
                                 }
+                                _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0; // Add By Nishant Sheth // #2052 observation for diffrent value with quarter and month
 
+                                //_PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
+                                //    && plancost.Year == Convert.ToInt32(Year))
+                                //    .Select(plancost => plancost.Value).FirstOrDefault();
+
+                                // Modified By Nishant Sheth
+                                // Desc :: #2052 finance calulation wrong with quarters and monthly
                                 _PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
                                     && plancost.Year == Convert.ToInt32(Year))
-                                    .Select(plancost => plancost.Value).FirstOrDefault();
+                                    .Sum(plancost => plancost.Value);
                                 TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
                                 _BudgetCostValue = _tacBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
                                     && budgtcost.Year == Convert.ToInt32(Year)).Sum(budgtcost => budgtcost.Value);
