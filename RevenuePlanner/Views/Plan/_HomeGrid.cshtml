@@ -322,23 +322,24 @@
             //    gridSearchFlag = 1;
             //    DisplayEditablePopup(id, type);
             //});
-            $(".grid_add").click(function (e) {
-                $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-                gridSearchFlag = 1;
-                var type = $(this).attr('id');
-                var name = $(this).attr('alt');
-                var title = $(this).parent().prev().attr('title');
-                /*Modified by Mitesh for PL ticket 1570
-                combination of title and permission conflict when title has "\" separator*/
-                var permission = $(this).attr('per');
-                //title = chk_permission[0];
-                //var permission = chk_permission[1];
-                var linetype = $(this).attr('lt');
-                var LinkTacticPermission = $(this).attr('linktacticper');
-                var LinkedTacticId = $(this).attr('linkedtacticid');
-                DisplayPopUpMenu(type, name, title, permission,linetype,LinkTacticPermission,LinkedTacticId, e);
+            //Commented BY Komal Rawal for 2056 to remove unresponsive error
+            //$(".grid_add").click(function (e) {
+            //    $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+            //    gridSearchFlag = 1;
+            //    var type = $(this).attr('id');
+            //    var name = $(this).attr('alt');
+            //    var title = $(this).parent().prev().attr('title');
+            //    /*Modified by Mitesh for PL ticket 1570
+            //    combination of title and permission conflict when title has "\" separator*/
+            //    var permission = $(this).attr('per');
+            //    //title = chk_permission[0];
+            //    //var permission = chk_permission[1];
+            //    var linetype = $(this).attr('lt');
+            //    var LinkTacticPermission = $(this).attr('linktacticper');
+            //    var LinkedTacticId = $(this).attr('linkedtacticid');
+            //    DisplayPopUpMenu(type, name, title, permission,linetype,LinkTacticPermission,LinkedTacticId, e);
 
-            });
+            //});
 
         }
         else {
@@ -607,20 +608,21 @@
             });
             return false;
         });
-        $("#divgridview").find(".grid_add").each(function () {
-            $(this).click(function (e) {
-                $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-                gridSearchFlag = 1;
-                var type = $(this).attr('id');
-                var name = $(this).attr('alt');
-                var title = $(this).parent().prev().attr('title');
-                var permission = $(this).attr('per');
-                var linetype = $(this).attr('lt');
-                var LinkTacticPermission = $(this).attr('linktacticper');
-                var LinkedTacticId = $(this).attr('linkedtacticid');
-                DisplayPopUpMenu(type, name, title, permission,linetype,LinkTacticPermission,LinkedTacticId, e);
-            });
-        });
+        //Commented BY Komal Rawal for 2056 to remove unresponsive error
+        //$("#divgridview").find(".grid_add").each(function () {
+        //    $(this).click(function (e) {
+        //        $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+        //        gridSearchFlag = 1;
+        //        var type = $(this).attr('id');
+        //        var name = $(this).attr('alt');
+        //        var title = $(this).parent().prev().attr('title');
+        //        var permission = $(this).attr('per');
+        //        var linetype = $(this).attr('lt');
+        //        var LinkTacticPermission = $(this).attr('linktacticper');
+        //        var LinkedTacticId = $(this).attr('linkedtacticid');
+        //        DisplayPopUpMenu(type, name, title, permission,linetype,LinkTacticPermission,LinkedTacticId, e);
+        //    });
+        //});
         $('#gridbox').find('tbody tr').each(function () {
             var spnerror = $(this).find("#tacticIsRequired");
             if (typeof spnerror != 'undefined' && spnerror != null) {
@@ -1020,23 +1022,24 @@
             gridSearchFlag = 1;
             DisplayEditablePopup(id, type);
         });
-        $(".grid_add").click(function (e) {
-            $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-            gridSearchFlag = 1;
-            var type = $(this).attr('id');
-            var name = $(this).attr('alt');
-            var title = $(this).parent().prev().attr('title');
-            /*Modified by Mitesh for PL ticket 1570
-            combination of title and permission conflict when title has "\" separator*/
-            var permission = $(this).attr('per');
-            //title = chk_permission[0];
-            //var permission = chk_permission[1];
-            var linetype = $(this).attr('lt');
-            var LinkTacticPermission = $(this).attr('linktacticper');
-            var LinkedTacticId = $(this).attr('linkedtacticid');
-            DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
+        //Commented BY Komal Rawal for 2056 to remove unresponsive error
+        //$(".grid_add").click(function (e) {
+        //    $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+        //    gridSearchFlag = 1;
+        //    var type = $(this).attr('id');
+        //    var name = $(this).attr('alt');
+        //    var title = $(this).parent().prev().attr('title');
+        //    /*Modified by Mitesh for PL ticket 1570
+        //    combination of title and permission conflict when title has "\" separator*/
+        //    var permission = $(this).attr('per');
+        //    //title = chk_permission[0];
+        //    //var permission = chk_permission[1];
+        //    var linetype = $(this).attr('lt');
+        //    var LinkTacticPermission = $(this).attr('linktacticper');
+        //    var LinkedTacticId = $(this).attr('linkedtacticid');
+        //    DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
-        });
+        //});
         if (isCopyTacticHomeGrid != 0) {
             var selectedcell = HomeGrid.findCell(isCopyTacticHomeGrid, 3, true);
             var id = selectedcell[0];
@@ -1087,24 +1090,24 @@
                 DisplayEditablePopup(id, type);
 
             });
+            //Commented BY Komal Rawal for 2056 to remove unresponsive error
+            //$(".grid_add").click(function (e) {
+            //    $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+            //    gridSearchFlag = 1;
+            //    var type = $(this).attr('id');
+            //    var name = $(this).attr('alt');
+            //    var title = $(this).parent().prev().attr('title');
+            //    /*Modified by Mitesh for PL ticket 1570
+            //    combination of title and permission conflict when title has "\" separator*/
+            //    var permission = $(this).attr('per');
+            //    //title = chk_permission[0];
+            //    //var permission = chk_permission[1];
+            //    var linetype = $(this).attr('lt');
+            //    var LinkTacticPermission = $(this).attr('linktacticper');
+            //    var LinkedTacticId = $(this).attr('linkedtacticid');
+            //    DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
-            $(".grid_add").click(function (e) {
-                $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-                gridSearchFlag = 1;
-                var type = $(this).attr('id');
-                var name = $(this).attr('alt');
-                var title = $(this).parent().prev().attr('title');
-                /*Modified by Mitesh for PL ticket 1570
-                combination of title and permission conflict when title has "\" separator*/
-                var permission = $(this).attr('per');
-                //title = chk_permission[0];
-                //var permission = chk_permission[1];
-                var linetype = $(this).attr('lt');
-                var LinkTacticPermission = $(this).attr('linktacticper');
-                var LinkedTacticId = $(this).attr('linkedtacticid');
-                DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
-
-            });
+            //});
 
         });
 
@@ -2170,23 +2173,24 @@
             SaveMoveTactic();
             $('#divMovetacticPopup').modal("hide");
         });
-        $(".grid_add").click(function (e) {
-            $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-            gridSearchFlag = 1;
-            var type = $(this).attr('id');
-            var name = $(this).attr('alt');
-            var title = $(this).parent().prev().attr('title');
-            /*Modified by Mitesh for PL ticket 1570
-            combination of title and permission conflict when title has "\" separator*/
-            var permission = $(this).attr('per');
-            //title = chk_permission[0];
-            //var permission = chk_permission[1];
-            var linetype = $(this).attr('lt');
-            var LinkTacticPermission = $(this).attr('linktacticper');
-            var LinkedTacticId = $(this).attr('linkedtacticid');
-            DisplayPopUpMenu(type, name, title, permission,linetype,LinkTacticPermission,LinkedTacticId, e);
+        //Commented BY Komal Rawal for 2056 to remove unresponsive error
+        //$(".grid_add").click(function (e) {
+        //    $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+        //    gridSearchFlag = 1;
+        //    var type = $(this).attr('id');
+        //    var name = $(this).attr('alt');
+        //    var title = $(this).parent().prev().attr('title');
+        //    /*Modified by Mitesh for PL ticket 1570
+        //    combination of title and permission conflict when title has "\" separator*/
+        //    var permission = $(this).attr('per');
+        //    //title = chk_permission[0];
+        //    //var permission = chk_permission[1];
+        //    var linetype = $(this).attr('lt');
+        //    var LinkTacticPermission = $(this).attr('linktacticper');
+        //    var LinkedTacticId = $(this).attr('linkedtacticid');
+        //    DisplayPopUpMenu(type, name, title, permission,linetype,LinkTacticPermission,LinkedTacticId, e);
 
-        });
+        //});
     });
     x = 0;
     $('#useless').click(function () {

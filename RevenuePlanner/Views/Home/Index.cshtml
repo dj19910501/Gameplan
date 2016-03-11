@@ -7564,9 +7564,28 @@
         var title = $(obj).attr('aria-label');
         //var permission = permission;
         var permission = $(obj).attr('Permission');
-        var name_Id = name.split("_");
+    
         //var LineType = linetype;
         var LineType = $(obj).attr('lineitemtype');
+        //Modified BY Komal Rawal for 2056
+        if($('#IsGridView').val().toLowerCase() == "true")
+        {
+            LinkTacticPermission = $(obj).attr('linktacticper');
+            LinkedTacticId = $(obj).attr('linkedtacticid');
+             type = $(obj).attr('id');
+            //var name = nameVal;
+             name = $(obj).attr('alt');
+            // var chk_permission = titleVal.split("/");
+            //var title = titleVal;
+             title = $(obj).parent().prev().attr('title');
+            //var permission = permission;
+             permission = $(obj).attr('per');
+
+            //var LineType = linetype;
+             LineType = $(obj).attr('lt');
+
+        } //End
+        var name_Id = name.split("_");
         var PlanId;
         var CampaignId;
         var ProgramId;
