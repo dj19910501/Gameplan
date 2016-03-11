@@ -5173,15 +5173,16 @@
                             }
                             gantt.refreshData();
 
+                            // Commented By Nishant Sheth
+                            // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+                            //$("div[id^='LinkIcon']").each(function () {
 
-                            $("div[id^='LinkIcon']").each(function () {
+                            //    bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+                            //});
+                            //$(".gantt_container .gantt_tree_content").each(function (index, element) {
 
-                                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
-                            });
-                            $(".gantt_container .gantt_tree_content").each(function (index, element) {
-
-                                $(element).attr("title", htmlDecode(element.innerHTML));
-                            });
+                            //    $(element).attr("title", htmlDecode(element.innerHTML));
+                            //});
 
                             //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
                             //// display popup based on type and name and title.
@@ -5190,18 +5191,20 @@
                                 e.stopPropagation();
                             });
 
-                            $(".gantt_add").click(function (e) {
+                            // Commented By Nishant Sheth
+                            // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+                            //$(".gantt_add").click(function (e) {
 
-                                var type = $(this).attr('id');
-                                var name = $(this).attr('Name');
-                                var title = $(this).attr('aria-label');
-                                var permission = $(this).attr('Permission');
-                                var linetype = $(this).attr('lineitemtype');
-                                var LinkTacticPermission = $(this).attr('linktacticpermission');
-                                var LinkedTacticId = $(this).attr('linkedtacticid');
-                                DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
+                            //    var type = $(this).attr('id');
+                            //    var name = $(this).attr('Name');
+                            //    var title = $(this).attr('aria-label');
+                            //    var permission = $(this).attr('Permission');
+                            //    var linetype = $(this).attr('lineitemtype');
+                            //    var LinkTacticPermission = $(this).attr('linktacticpermission');
+                            //    var LinkedTacticId = $(this).attr('linkedtacticid');
+                            //    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
-                            });
+                            //});
 
                             var $doc = $(document);
                             $doc.click(function () {
@@ -5421,8 +5424,9 @@
                                        }
                                      );
             var filteredTasks = { data: filteredData };
-
+            gantt.config.static_background = true; // Add By Nishant Sheth //#2056
             gantt.init("gantt_here");
+            gantt.config.branch_loading = true; // Add By Nishant Sheth // #2056
 
             var json_length = filteredTasks.data.length;
             var gantt_div = document.getElementById("gantt_here");
@@ -5443,18 +5447,20 @@
                 e.stopPropagation();
             });
 
-            $(".gantt_add").click(function (e) {
+            // Commented By Nishant Sheth
+            // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+            //$(".gantt_add").click(function (e) {
 
-                var type = $(this).attr('id');
-                var name = $(this).attr('Name');
-                var title = $(this).attr('aria-label');
-                var permission = $(this).attr('Permission');
-                var linetype = $(this).attr('lineitemtype');
-                var LinkTacticPermission = $(this).attr('linktacticpermission');
-                var LinkedTacticId = $(this).attr('linkedtacticid');
-                DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
+            //    var type = $(this).attr('id');
+            //    var name = $(this).attr('Name');
+            //    var title = $(this).attr('aria-label');
+            //    var permission = $(this).attr('Permission');
+            //    var linetype = $(this).attr('lineitemtype');
+            //    var LinkTacticPermission = $(this).attr('linktacticpermission');
+            //    var LinkedTacticId = $(this).attr('linkedtacticid');
+            //    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
-            });
+            //});
 
             var $doc = $(document);
             $doc.click(function () {
@@ -5511,18 +5517,20 @@
                 e.stopPropagation();
             });
 
-            $(".gantt_add").click(function (e) {
+            // Commented By Nishant Sheth
+            // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+            //$(".gantt_add").click(function (e) {
 
-                var type = $(this).attr('id');
-                var name = $(this).attr('Name');
-                var title = $(this).attr('aria-label');
-                var permission = $(this).attr('Permission');
-                var linetype = $(this).attr('lineitemtype');
-                var LinkTacticPermission = $(this).attr('linktacticpermission');
-                var LinkedTacticId = $(this).attr('linkedtacticid');
-                DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
+            //    var type = $(this).attr('id');
+            //    var name = $(this).attr('Name');
+            //    var title = $(this).attr('aria-label');
+            //    var permission = $(this).attr('Permission');
+            //    var linetype = $(this).attr('lineitemtype');
+            //    var LinkTacticPermission = $(this).attr('linktacticpermission');
+            //    var LinkedTacticId = $(this).attr('linkedtacticid');
+            //    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
-            });
+            //});
 
             var $doc = $(document);
             $doc.click(function () {
@@ -5625,7 +5633,7 @@
         });
 
         //// Modified by :- Maninder Singh for PL ticket #203 	Performance issue - Home screen taking too long to load.
-        gantt.refreshData();
+       // gantt.refreshData(); 
 
         isRender = false;
         ////
@@ -6108,17 +6116,18 @@
                 $(".gantt_last_cell").dblclick(function (e) {
                     e.stopPropagation();
                 });
-
-                $(".gantt_add").click(function (e) {
-                    var type = $(this).attr('id');
-                    var name = $(this).attr('Name');
-                    var title = $(this).attr('aria-label');
-                    var permission = $(this).attr('Permission');
-                    var linetype = $(this).attr('lineitemtype');
-                    var LinkTacticPermission = $(this).attr('linktacticpermission');
-                    var LinkedTacticId = $(this).attr('linkedtacticid');
-                    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
-                });
+                // Commented By Nishant Sheth
+                // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+                //$(".gantt_add").click(function (e) {
+                //    var type = $(this).attr('id');
+                //    var name = $(this).attr('Name');
+                //    var title = $(this).attr('aria-label');
+                //    var permission = $(this).attr('Permission');
+                //    var linetype = $(this).attr('lineitemtype');
+                //    var LinkTacticPermission = $(this).attr('linktacticpermission');
+                //    var LinkedTacticId = $(this).attr('linkedtacticid');
+                //    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
+                //});
 
                 var $doc = $(document);
                 $doc.click(function () {
@@ -6132,11 +6141,12 @@
                     $('#popupType').css('display', 'none');
                 });
             }
+            // Commented By Nishant Sheth
+            // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+            //$("div[id^='LinkIcon']").each(function () {
 
-            $("div[id^='LinkIcon']").each(function () {
-
-                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
-            });
+            //    bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+            //});
         });
     }
     //Added By Komal RAwal for #2001
@@ -6195,16 +6205,18 @@
                 e.stopPropagation();
             });
 
-            $(".gantt_add").click(function (e) {
-                var type = $(this).attr('id');
-                var name = $(this).attr('Name');
-                var title = $(this).attr('aria-label');
-                var permission = $(this).attr('Permission');
-                var linetype = $(this).attr('lineitemtype');
-                var LinkTacticPermission = $(this).attr('linktacticpermission');
-                var LinkedTacticId = $(this).attr('linkedtacticid');
-                DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
-            });
+            // Commented By Nishant Sheth
+            // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+            //$(".gantt_add").click(function (e) {
+            //    var type = $(this).attr('id');
+            //    var name = $(this).attr('Name');
+            //    var title = $(this).attr('aria-label');
+            //    var permission = $(this).attr('Permission');
+            //    var linetype = $(this).attr('lineitemtype');
+            //    var LinkTacticPermission = $(this).attr('linktacticpermission');
+            //    var LinkedTacticId = $(this).attr('linkedtacticid');
+            //    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
+            //});
 
             var $doc = $(document);
             $doc.click(function () {
@@ -6477,18 +6489,19 @@
         $(".gantt_last_cell").dblclick(function (e) {
             e.stopPropagation();
         });
+        // Commented By Nishant Sheth
+        // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+        //$(".gantt_add").click(function (e) {
+        //    var type = $(this).attr('id');
+        //    var name = $(this).attr('Name');
+        //    var title = $(this).attr('aria-label');
+        //    var permission = $(this).attr('Permission');
+        //    var linetype = $(this).attr('lineitemtype');
+        //    var LinkTacticPermission = $(this).attr('linktacticpermission');
+        //    var LinkedTacticId = $(this).attr('linkedtacticid');
+        //    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
-        $(".gantt_add").click(function (e) {
-            var type = $(this).attr('id');
-            var name = $(this).attr('Name');
-            var title = $(this).attr('aria-label');
-            var permission = $(this).attr('Permission');
-            var linetype = $(this).attr('lineitemtype');
-            var LinkTacticPermission = $(this).attr('linktacticpermission');
-            var LinkedTacticId = $(this).attr('linkedtacticid');
-            DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
-
-        });
+        //});
 
         var $doc = $(document);
         $doc.click(function () {
@@ -6814,18 +6827,19 @@
         $(".gantt_last_cell").dblclick(function (e) {
             e.stopPropagation();
         });
+        // Commented By Nishant Sheth
+        // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+        //$(".gantt_add").click(function (e) {
+        //    var type = $(this).attr('id');
+        //    var name = $(this).attr('Name');
+        //    var title = $(this).attr('aria-label');
+        //    var permission = $(this).attr('Permission');
+        //    var linetype = $(this).attr('lineitemtype');
+        //    var LinkTacticPermission = $(this).attr('linktacticpermission');
+        //    var LinkedTacticId = $(this).attr('linkedtacticid');
+        //    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
-        $(".gantt_add").click(function (e) {
-            var type = $(this).attr('id');
-            var name = $(this).attr('Name');
-            var title = $(this).attr('aria-label');
-            var permission = $(this).attr('Permission');
-            var linetype = $(this).attr('lineitemtype');
-            var LinkTacticPermission = $(this).attr('linktacticpermission');
-            var LinkedTacticId = $(this).attr('linkedtacticid');
-            DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
-
-        });
+        //});
 
         var $doc = $(document);
         $doc.click(function () {
@@ -7142,19 +7156,20 @@
 
     //Added By Rahul Shah on 23/09/2015 for PL #1613
     gantt.attachEvent("onDataRender", function (id, e) {
+        // Commented By Nishant Sheth
+        // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+        //$(".gantt_add").click(function (e) {
 
-        $(".gantt_add").click(function (e) {
+        //    var type = $(this).attr('id');
+        //    var name = $(this).attr('Name');
+        //    var title = $(this).attr('aria-label');
+        //    var permission = $(this).attr('Permission');
+        //    var linetype = $(this).attr('lineitemtype');
+        //    var LinkTacticPermission = $(this).attr('linktacticpermission');
+        //    var LinkedTacticId = $(this).attr('linkedtacticid');
+        //    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
-            var type = $(this).attr('id');
-            var name = $(this).attr('Name');
-            var title = $(this).attr('aria-label');
-            var permission = $(this).attr('Permission');
-            var linetype = $(this).attr('lineitemtype');
-            var LinkTacticPermission = $(this).attr('linktacticpermission');
-            var LinkedTacticId = $(this).attr('linkedtacticid');
-            DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
-
-        });
+        //});
     });
 
     gantt.attachEvent("onTaskSelected", function (id, item) {
@@ -7534,15 +7549,24 @@
 
 
 
-    function DisplayPopUpMenu(typeVal, nameVal, titleVal, permission, linetype, LinkTacticPermission, LinkedTacticId, e) {
+    function DisplayPopUpMenu(obj,e) {
+        // Modified By Nishant Sheth
+        // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+        var LinkTacticPermission = $(obj).attr('linktacticpermission');
+        var LinkedTacticId = $(obj).attr('linkedtacticid');
 
-        var type = typeVal;
-        var name = nameVal;
+        //var type = typeVal;
+        var type = $(obj).attr('id');
+        //var name = nameVal;
+        var name = $(obj).attr('Name');
         // var chk_permission = titleVal.split("/");
-        var title = titleVal;
-        var permission = permission;
+        //var title = titleVal;
+        var title = $(obj).attr('aria-label');
+        //var permission = permission;
+        var permission = $(obj).attr('Permission');
         var name_Id = name.split("_");
-        var LineType = linetype;
+        //var LineType = linetype;
+        var LineType = $(obj).attr('lineitemtype');
         var PlanId;
         var CampaignId;
         var ProgramId;
@@ -7702,6 +7726,7 @@
             $('#popupType').css('display', 'block');
         }
         $('#popupType').html(ul);
+        
         var left = e.pageX;
         var target = $(e.target);
         var targetOffset = target.offset().top;
@@ -8205,19 +8230,20 @@ function () {
     $(".gantt_last_cell").click(function (e) {
         e.stopPropagation();
     });
+    // Commented By Nishant Sheth
+    // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
+    //$(".gantt_add").click(function (e) {
 
-    $(".gantt_add").click(function (e) {
+    //    var type = $(this).attr('id');
+    //    var name = $(this).attr('Name');
+    //    var title = $(this).attr('aria-label');
+    //    var permission = $(this).attr('Permission');
+    //    var linetype = $(this).attr('lineitemtype');
+    //    var LinkTacticPermission = $(this).attr('linktacticpermission');
+    //    var LinkedTacticId = $(this).attr('linkedtacticid');
+    //    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
-        var type = $(this).attr('id');
-        var name = $(this).attr('Name');
-        var title = $(this).attr('aria-label');
-        var permission = $(this).attr('Permission');
-        var linetype = $(this).attr('lineitemtype');
-        var LinkTacticPermission = $(this).attr('linktacticpermission');
-        var LinkedTacticId = $(this).attr('linkedtacticid');
-        DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
-
-    });
+    //});
 
     var $doc = $(document);
     $doc.click(function () {
@@ -8272,18 +8298,18 @@ function () {
         e.stopPropagation();
     });
 
-    $(".gantt_add").click(function (e) {
+    //$(".gantt_add").click(function (e) {
 
-        var type = $(this).attr('id');
-        var name = $(this).attr('Name');
-        var title = $(this).attr('aria-label');
-        var permission = $(this).attr('Permission');
-        var linetype = $(this).attr('lineitemtype');
-        var LinkTacticPermission = $(this).attr('linktacticpermission');
-        var LinkedTacticId = $(this).attr('linkedtacticid');
-        DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
+    //    var type = $(this).attr('id');
+    //    var name = $(this).attr('Name');
+    //    var title = $(this).attr('aria-label');
+    //    var permission = $(this).attr('Permission');
+    //    var linetype = $(this).attr('lineitemtype');
+    //    var LinkTacticPermission = $(this).attr('linktacticpermission');
+    //    var LinkedTacticId = $(this).attr('linkedtacticid');
+    //    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
-    });
+    //});
 
     var $doc = $(document);
     $doc.click(function () {
