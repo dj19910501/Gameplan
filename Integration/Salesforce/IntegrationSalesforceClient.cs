@@ -2275,7 +2275,7 @@ namespace Integration.Salesforce
                                                     ProcessedResponsesCount = ProcessedResponsesCount + objCampaignMember.Count;
 
                                                     // Add linked Tacitc Actual Values.
-                                                    if (linkedTacId > 0) // check whether linkedTactics exist or not.
+                                                    if (linkedTacId > 0 && objLinkedTactic != null) // check whether linkedTactics exist or not.
                                                     {
                                                         yearDiff = objLinkedTactic.EndDate.Year - objLinkedTactic.StartDate.Year;
                                                         isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
@@ -2321,7 +2321,7 @@ namespace Integration.Salesforce
                                                 tactic.ModifiedBy = _userId;
 
                                                 // Update linked Tactic lastSync Date,ModifiedDate & ModifiedBy.
-                                                if (linkedTacId > 0) // check whether linkedTactics exist or not.
+                                                if (linkedTacId > 0 && objLinkedTactic != null) // check whether linkedTactics exist or not.
                                                 {
 
                                                     objLinkedTactic.LastSyncDate = DateTime.Now;
