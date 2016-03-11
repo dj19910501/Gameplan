@@ -1402,9 +1402,8 @@ namespace Integration.Salesforce
                                     }
 
                                     db.SaveChanges();
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic end.");
-
                                     }
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic end.");
                                     #endregion
 
                                     var CampaignMemberListGroup = CampaignMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.FirstRespondedDate.ToString("MM/yyyy") }).Select(cl =>
@@ -2129,6 +2128,8 @@ namespace Integration.Salesforce
                                     //Modification Start Viral 18Feb2016 #2006 H9_QA - SFDC integration bug
                                     //List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = tblActuals.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId)).ToList();
                                     //OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                    if (tblActuals != null && tblActuals.Count > 0)
+                                    {
                                     try
                                     {
                                         db.Configuration.AutoDetectChangesEnabled = false;
@@ -2152,9 +2153,13 @@ namespace Integration.Salesforce
                                         List<string> lstLinkedPeriods = new List<string>();
                                         foreach (int linkdTacId in linkedTactics)
                                         {
+                                                try
+                                                {
                                             objLnkTac = new Plan_Campaign_Program_Tactic();
                                             objLnkTac = tblPlanTactic.Where(tac => tac.PlanTacticId == linkdTacId).FirstOrDefault();
 
+                                                    if (objLnkTac != null)
+                                                    {
                                             yeardiff = objLnkTac.EndDate.Year - objLnkTac.StartDate.Year;
                                             isMultilinkedTactic = yeardiff > 0 ? true : false;
                                             linkedactualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
@@ -2199,6 +2204,12 @@ namespace Integration.Salesforce
                                                 }
                                             }
                                         }
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Error occurred on remove linked tactic : Linked TacticId-" + linkdTacId.ToString() + Common.GetInnermostException(ex));
+                                                }
+                                            }
                                         #endregion
 
                                         //List<Plan_Campaign_Program_Tactic_Actual> linkedactualTacticList = tblActuals.Where(actual => linkedTactics.Contains(actual.PlanTacticId)).ToList();
@@ -2206,6 +2217,8 @@ namespace Integration.Salesforce
                                     }
 
                                     db.SaveChanges();
+                                        
+                                    }
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic end.");
 
                                     #endregion
@@ -2232,7 +2245,12 @@ namespace Integration.Salesforce
                                     bool isMultiYearlinkedTactic = false;
                                     int yearDiff = 0;
 
+                                    try
+                                    {
+                                        db.Configuration.AutoDetectChangesEnabled = false;
                                     foreach (var tactic in lstMergedTactics)
+                                        {
+                                            try
                                     {
                                         var innerCampaignMember = CampaignMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
                                         if (linkedTactics != null && linkedTactics.Count > 0) // check whether linkedTactics exist or not.
@@ -2257,7 +2275,7 @@ namespace Integration.Salesforce
                                             ProcessedResponsesCount = ProcessedResponsesCount + objCampaignMember.Count;
 
                                             // Add linked Tacitc Actual Values.
-                                            if (linkedTacId > 0) // check whether linkedTactics exist or not.
+                                                    if (linkedTacId > 0 && objLinkedTactic != null) // check whether linkedTactics exist or not.
                                             {
                                                 yearDiff = objLinkedTactic.EndDate.Year - objLinkedTactic.StartDate.Year;
                                                 isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
@@ -2303,7 +2321,7 @@ namespace Integration.Salesforce
                                         tactic.ModifiedBy = _userId;
 
                                         // Update linked Tactic lastSync Date,ModifiedDate & ModifiedBy.
-                                        if (linkedTacId > 0) // check whether linkedTactics exist or not.
+                                                if (linkedTacId > 0 && objLinkedTactic != null) // check whether linkedTactics exist or not.
                                         {
 
                                             objLinkedTactic.LastSyncDate = DateTime.Now;
@@ -2322,6 +2340,16 @@ namespace Integration.Salesforce
                                         instanceTactic.CreatedDate = DateTime.Now;
                                         instanceTactic.CreatedBy = _userId;
                                         db.Entry(instanceTactic).State = EntityState.Added;
+                                    }
+                                            catch (Exception ex)
+                                            {
+                                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Error occurred on insert MQL on Actual table : TacticId-" + tactic.PlanTacticId.ToString() + Common.GetInnermostException(ex));
+                                            }
+                                        }
+                                    }
+                                    finally
+                                    {
+                                        db.Configuration.AutoDetectChangesEnabled = true;
                                     }
 
                                     db.SaveChanges();
@@ -2920,7 +2948,7 @@ namespace Integration.Salesforce
                                             List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = tblPlanActual.Where(actual => tacticidactual.Contains(actual.PlanTacticId)).ToList();
                                             List<Plan_Campaign_Program_Tactic_Actual> LinkedActualTacticList = null;
                                             List<int> lstMultiLinkedTactic = new List<int>();
-                                            if (!isDoneFirstPullCW)
+                                            if (!isDoneFirstPullCW && tblPlanActual != null && tblPlanActual.Count >0)
                                             {
                                                 
                                                 try
@@ -2949,9 +2977,12 @@ namespace Integration.Salesforce
                                                         List<string> lstLinkedPeriods = new List<string>();
                                                         foreach (int linkdTacId in linkedTactics)
                                                         {
+                                                            try
+                                                            {
                                                             objLnkTac = new Plan_Campaign_Program_Tactic();
                                                             objLnkTac = tblPlanTactic.Where(tac => tac.PlanTacticId == linkdTacId).FirstOrDefault();
-
+                                                                if (objLnkTac != null)
+                                                                {
                                                             yeardiff = objLnkTac.EndDate.Year - objLnkTac.StartDate.Year;
                                                             isMultilinkedTactic = yeardiff > 0 ? true : false;
                                                             linkedactualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
@@ -2997,6 +3028,12 @@ namespace Integration.Salesforce
                                                                 }
                                                             }
                                                         }
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                               Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Error occurred on remove linked tactic : Linked TacticId-" + linkdTacId.ToString() + Common.GetInnermostException(ex));
+                                                            }
+                                                        }
                                                         #endregion
 
                                                         //List<Plan_Campaign_Program_Tactic_Actual> linkedactualTacticList = tblActuals.Where(actual => linkedTactics.Contains(actual.PlanTacticId)).ToList();
@@ -3008,7 +3045,12 @@ namespace Integration.Salesforce
 
                                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Create PlanTacticActual list and insert Tactic log.");
                                             lstMergedTactics = lstMergedTactics.Where(lstmerge => tacticidactual.Contains(lstmerge.PlanTacticId)).Distinct().ToList();
+                                            try
+                                            {
+                                                db.Configuration.AutoDetectChangesEnabled = false;
                                             foreach (var tactic in lstMergedTactics)
+                                                {
+                                                    try
                                             {
                                                 var innerOpportunityMember = OpportunityMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
                                                 int lnkdTacId = 0;
@@ -3138,10 +3180,13 @@ namespace Integration.Salesforce
                                                 {
                                                     Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
                                                     objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == lnkdTacId).FirstOrDefault();
+                                                            if (objLinkedTactic != null)
+                                                            {
                                                     objLinkedTactic.LastSyncDate = DateTime.Now;
                                                     objLinkedTactic.ModifiedDate = DateTime.Now;
                                                     objLinkedTactic.ModifiedBy = _userId;
                                                 }
+                                                        }
 
                                                 IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
                                                 instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
@@ -3154,6 +3199,16 @@ namespace Integration.Salesforce
                                                 instanceTactic.CreatedDate = DateTime.Now;
                                                 instanceTactic.CreatedBy = _userId;
                                                 db.Entry(instanceTactic).State = EntityState.Added;
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Error occurred on insert CW on Actual table : TacticId-" + tactic.PlanTacticId.ToString() + Common.GetInnermostException(ex));
+                                                    }
+                                                }
+                                            }
+                                            finally
+                                            {
+                                                db.Configuration.AutoDetectChangesEnabled = true;
                                             }
                                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Create or Modified PlanTacticActual record and insert Tactic log.");
                                         }
