@@ -11739,7 +11739,7 @@ namespace RevenuePlanner.Controllers
                             EndDate = tac.EndDate
                         }).ToList().Select(tact => new ActualTrendModel
                         {
-                            Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                            Month = PeriodPrefix + Common.ReportMultiyearMonth(tact.Period, tact.NumPeriod),
                             Year = tact.StartYear + tact.NumPeriod,
                             PlanTacticId = tact.TacticId,
                             Value = tact.Value,

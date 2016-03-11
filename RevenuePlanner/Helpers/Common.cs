@@ -1565,7 +1565,7 @@ namespace RevenuePlanner.Helpers
             string PlanLabel = Enums.FilterLabel.Plan.ToString();
             //var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
             var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
-            
+
             /*Commented By Komal Rawal on 25/2/2016 to get data for all owners*/
             //string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
             filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
@@ -1655,14 +1655,14 @@ namespace RevenuePlanner.Helpers
                         }
                         // End By Nishant Sheth
                     }
-                   
+
                     DateTime StartDate;
                     DateTime EndDate;
                     StartDate = EndDate = DateTime.Now;
                     Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
-                   
-                        planTacticIds = planTacticIds.Where(t => (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
-                
+
+                    planTacticIds = planTacticIds.Where(t => (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
+
 
 
                 }
@@ -5328,7 +5328,7 @@ namespace RevenuePlanner.Helpers
                             else if (section == Enums.Section.Campaign.ToString() && id != 0)
                             {
 
-                               // List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
+                                // List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
 
                                 var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == id && a.IsDeleted.Equals(false)).ToList();
                                 plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
@@ -5344,7 +5344,7 @@ namespace RevenuePlanner.Helpers
                                 }
                                 #endregion
 
-                             //   List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
+                                //   List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
 
                                 var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == id && a.IsDeleted == false).ToList();
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
@@ -5386,7 +5386,7 @@ namespace RevenuePlanner.Helpers
                             }
                             else if (section == Enums.Section.Program.ToString() && id != 0)
                             {
-                              //  List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
+                                //  List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
 
                                 var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId == id && a.IsDeleted.Equals(false)).ToList();
                                 plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
@@ -5401,7 +5401,7 @@ namespace RevenuePlanner.Helpers
                                     linkedActualList.ForEach(lnkd => db.Entry(lnkd).State = EntityState.Deleted);
                                 }
                                 #endregion
-                               // List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
+                                // List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
 
                                 var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.PlanProgramId == id && a.IsDeleted == false).ToList();
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
@@ -5439,7 +5439,7 @@ namespace RevenuePlanner.Helpers
                             }
                             else if (section == Enums.Section.Tactic.ToString() && id != 0)
                             {
-                             //   List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
+                                //   List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
                                 var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.PlanTacticId == id && a.IsDeleted.Equals(false)).ToList();
                                 plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
@@ -5454,7 +5454,7 @@ namespace RevenuePlanner.Helpers
                                 }
                                 #endregion
 
-                              //  List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
+                                //  List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
                                 var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
@@ -7130,7 +7130,7 @@ namespace RevenuePlanner.Helpers
                 Plan = objDbMrpEntities.Plans.Where(plan => Sessions.ReportPlanIds.Contains(plan.PlanId)).Select(plan => plan).ToList();// Get selectred plan's list of plan year 
             }
             string[] ListYear = options.Split(',');
-            
+
             var ListPlanYear = Plan.Select(plan => plan.Year).Distinct().ToList();// Get selectred plan's list of plan year 
             var ListCampYear = objDbMrpEntities.Plan_Campaign.Where(camp => Sessions.ReportPlanIds.Contains(camp.PlanId)).Select(camp => camp.EndDate.Year).Distinct().ToList(); // Get selected plan's max campaign date
             string timeframeOption = string.Empty;
@@ -7151,9 +7151,26 @@ namespace RevenuePlanner.Helpers
             return timeframeOption;
         }
 
-       
+
         #endregion
 
+        #region Get Report Month for multi year
+        // Add By Nishant Sheth
+        // Desc :: #2047 To avoid terneary operator as per code review
+        public static int ReportMultiyearMonth(int Period, int NumPeriod)
+        {
+            int returnvalue = 0;
+            if (Period > 12)
+            {
+                returnvalue = ((Period + 1) - (13 * NumPeriod));
+            }
+            else
+            {
+                returnvalue = ((Period) - (13 * NumPeriod));
+            }
+            return returnvalue;
+        }
+        #endregion
     }
 
     /// <summary>
