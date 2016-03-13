@@ -664,13 +664,13 @@
                     onstyle:"success",
                     style:"integrationToggle"
                 });
-                eleToggle.bootstrapToggle('off');                           // Set all integration toggle button to OFF.   
+                eleToggle.bootstrapToggle('off');                           // Set all integration toggle button to OFF.
             });
         }
         //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
 
 
-        if(isSyncWorkFront.toLowerCase()=='true')
+        if('@ViewBag.IsModelIntegratedWorkFront'=='True' && isSyncWorkFront.toLowerCase()=='true')
         {
 
             var tacticStatus = '@tacticReview.Status';
@@ -681,10 +681,10 @@
             if(tacticStatus==complete || tacticStatus==approved || tacticStatus == inprogress || tacticStatus == inprogress2)
             {
 
-              var wfP = document.getElementById("workFrontProjectOnApproval");
-              var wfR = document.getElementById("workFrontRequestOnApproval");
-              wfP.disabled=true;
-              wfR.disabled=true;
+                var wfP = document.getElementById("workFrontProjectOnApproval");
+                var wfR = document.getElementById("workFrontRequestOnApproval");
+                wfP.disabled=true;
+                wfR.disabled=true;
             }
         }
 
@@ -805,24 +805,24 @@
                     var _divToggle = $(this).find("div.integrationToggle");
                     var _intgrtnType = $(this).attr('integrationType');
                     if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()') {
-                    var isOff = _divToggle.hasClass('off');
-                    if (!isOff) {
-                        isSyncEloqua = true;
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncEloqua = true;
+                        }
                     }
-                }
-                if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()') {
-                    var isOff = _divToggle.hasClass('off');
-                    if (!isOff) {
-                        isSyncSF = true;
+                    if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncSF = true;
+                        }
                     }
-                }
-                if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()') {
-                    var isOff = _divToggle.hasClass('off');
-                    if (!isOff) {
-                        isSyncWorkFront = true;
+                    if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncWorkFront = true;
+                        }
                     }
-                }
-            });
+                });
             }
             // End - Added by Viral Kaidya for #2002 - Save Sync settings for Eloqua & SFDC on Sync button click
 
@@ -1317,7 +1317,7 @@
 
         if( isDeployed == 'true' ) //don't validate these at all if the tactic isn't deployed
         {
-            if( '@IsSyncWorkFront'=='True' || (wfToggle!=null && wfToggle.checked == true) ) //Update for PL#1935 Brad Gray 28 Jan 2016
+            if( '@ViewBag.IsModelIntegratedWorkFront'=='True' && '@IsSyncWorkFront'=='True' || (wfToggle!=null && wfToggle.checked == true) ) //Update for PL#1935 Brad Gray 28 Jan 2016
             {
                 var wfR = document.getElementById("workFrontRequestOnApproval");
                 if(wfR.checked==true)
