@@ -29,15 +29,17 @@
         text-align: center;
         padding-left: 0px !important;
     }
+   
         div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
-        width: 100% !important;
+        width: 100% !important; 
     }
 
     div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
-        width: 100% !important;
+        width: 100%!important;
     }
+    
 </style>
-<div id="divgridview" class="task-tbl" style=""><div id="gridbox" style="width:100%; background-color:white;" class="gridViewGrid" ></div></div>@*class="gridViewGrid"*@
+<div  class="grid-full-view"><div id="gridbox" style="width:100%; background-color:white;" class="gridViewGrid" ></div></div>@*class="gridViewGrid"*@
 @Html.Hidden("hdnBudgetId", BudgetId, new { id = "hdnBudgetId", name = "hdnBudgetId", value = BudgetId })
 @Html.Hidden("hdnNewItemType", string.Empty, new { id = "hdnNewItemType", name = "hdnNewItemType", value = "" })
 <script type="text/javascript">
@@ -187,7 +189,8 @@
             ValidOldValue = "";
             IsValid = true;
         });
-        myTreeGrid.init();	 
+        myTreeGrid.init();
+        
 //Added by Maitri Gandhi for #2049 on 8/3/2016        
         myTreeGrid.attachEvent("onDistributedEnd", function () {
             if (Maintained != 0) {
@@ -196,7 +199,7 @@
                         myTreeGrid.showRow(ID.toString());
                         //Maintained = 0;
                 }
-            }
+            }           
         });
         myTreeGrid.enableDistributedParsing(true, 10, 300);
         
