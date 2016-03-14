@@ -11444,7 +11444,7 @@ namespace RevenuePlanner.Controllers
                         {
                             lstPrograms.ForEach(pcp => pcp.Status = status);
                             List<int> programIds = lstPrograms.Select(prg => prg.PlanProgramId).ToList();
-                            UpdateChildEntityStatusByParent(Enums.Section.Program.ToString(), status, programIds); // update child tactic status.
+                            UpdateChildEntityStatusByParent(Enums.Section.Program.ToString().ToLower(), status, programIds); // update child tactic status.
                             //db.SaveChanges();
                         }
                     }
