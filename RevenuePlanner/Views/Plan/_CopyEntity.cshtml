@@ -203,6 +203,7 @@
             async: true,
             success: function (result) {
                 if (result != null && result != undefined) {
+                    gridSearchFlag = 1;
                     var issuccess = result.isSuccess;
                     if (issuccess != null && issuccess != 'undefined' && issuccess) {
                         $('#copytactic').hide();

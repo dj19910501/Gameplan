@@ -30,6 +30,8 @@ namespace RevenuePlanner.Controllers
         private BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
         private string DefaultLineItemTitle = "Line Item";
         private string PeriodChar = "Y";
+        CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
+        StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
         #endregion
 
         #region "Inspect Index"
@@ -418,6 +420,11 @@ namespace RevenuePlanner.Controllers
                         Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                         //Modified by Rahul Shah on 09/03/2016 for PL #1939
                         int result = db.SaveChanges();
+                        // Add By Nishant Sheth
+                        // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                        DataSet dsPlanCampProgTac = new DataSet();
+                        dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(plan.PlanId.ToString());
+                        objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
                         if (result > 0)
                         {
                             #region "Send Email Notification For Owner changed"

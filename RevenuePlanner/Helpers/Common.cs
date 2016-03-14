@@ -1311,7 +1311,28 @@ namespace RevenuePlanner.Helpers
         public static List<string> GetCollaboratorId(int planId)
         {
             MRPEntities db = new MRPEntities();
-            var plan = db.Plans.FirstOrDefault(p => p.PlanId.Equals(planId) && p.IsDeleted.Equals(false));
+
+            // Add By Nishant Sheth
+            // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+            CacheObject dataCache = new CacheObject();
+            StoredProcedure objSp = new StoredProcedure();
+            DataSet dsPlanCampProgTac = new DataSet();
+            dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(planId.ToString());
+            dataCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+            //var plan = db.Plans.FirstOrDefault(p => p.PlanId.Equals(planId) && p.IsDeleted.Equals(false));
+
+            var plan = dsPlanCampProgTac.Tables[0].AsEnumerable().Select(row => new Plan
+            {
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(Convert.ToString(row["CreatedDate"])),
+                IsActive = Convert.ToBoolean(Convert.ToString(row["IsActive"])),
+                IsDeleted = Convert.ToBoolean(Convert.ToString(row["IsDeleted"])),
+                ModelId = int.Parse(Convert.ToString(row["ModelId"])),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                PlanId = int.Parse(Convert.ToString(row["PlanId"]))
+            }).FirstOrDefault();
 
             List<string> collaboratorId = new List<string>();
             if (plan.ModifiedBy != null)
@@ -1324,18 +1345,55 @@ namespace RevenuePlanner.Helpers
                 collaboratorId.Add(plan.CreatedBy.ToString());
             }
 
-            List<Plan_Campaign_Program_Tactic> planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) && t.IsDeleted.Equals(false)).Select(t => t).ToList();
-
-            if (planTactic != null && planTactic.Any())
+            var campaignList = dsPlanCampProgTac.Tables[1].AsEnumerable().Select(row => new Plan_Campaign
             {
-                var planTacticModifiedBy = planTactic.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-                var planTacticCreatedBy = planTactic.Select(t => t.CreatedBy.ToString()).ToList();
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
+                PlanId = Convert.ToInt32(row["PlanId"])
+            }).ToList();
 
-                var planProgramModifiedBy = planTactic.Where(t => t.Plan_Campaign_Program.ModifiedBy != null).Select(t => t.Plan_Campaign_Program.ModifiedBy.ToString()).ToList();
-                var planProgramCreatedBy = planTactic.Select(t => t.Plan_Campaign_Program.CreatedBy.ToString()).ToList();
+            var programList = dsPlanCampProgTac.Tables[2].AsEnumerable().Select(row => new Plan_Campaign_Program
+            {
 
-                var planCampaignModifiedBy = planTactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedBy != null).Select(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedBy.ToString()).ToList();
-                var planCampaignCreatedBy = planTactic.Select(t => t.Plan_Campaign_Program.Plan_Campaign.CreatedBy.ToString()).ToList();
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
+                PlanProgramId = Convert.ToInt32(row["PlanProgramId"])
+            }).ToList();
+
+            var tacticList = dsPlanCampProgTac.Tables[3].AsEnumerable().Select(row => new Custom_Plan_Campaign_Program_Tactic
+            {
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                LinkedPlanId = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : row["LinkedPlanId"]),
+                LinkedTacticId = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : row["LinkedTacticId"]),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
+                PlanTacticId = Convert.ToInt32(row["PlanTacticId"]),
+                PlanId = Convert.ToInt32(row["PlanId"])
+            }).ToList();
+
+            //List<Plan_Campaign_Program_Tactic> planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) && t.IsDeleted.Equals(false)).Select(t => t).ToList();
+
+            if (tacticList != null && tacticList.Any())
+            {
+                var planTacticModifiedBy = tacticList.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+                var planTacticCreatedBy = tacticList.Select(t => t.CreatedBy.ToString()).ToList();
+
+                var planProgramModifiedBy = programList.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+                var planProgramCreatedBy = programList.Select(t => t.CreatedBy.ToString()).ToList();
+
+                var planCampaignModifiedBy = campaignList.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+                var planCampaignCreatedBy = campaignList.Select(t => t.CreatedBy.ToString()).ToList();
 
                 collaboratorId.AddRange(planTacticCreatedBy);
                 collaboratorId.AddRange(planTacticModifiedBy);

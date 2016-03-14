@@ -2026,13 +2026,14 @@
      //       $("#btnPlanReport").css("display", "block");
             //modified by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
             scrollstate = 0;
+            GetCollaborators(CurrentPlanId);
             RefreshCurrentTab();
             // 1762
             $('#IsGridView').val("False");
 
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
             $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
-            GetCollaborators(CurrentPlanId);
+            
         }
         else {
             ID = GridId;
@@ -2989,6 +2990,7 @@
                 url: '@Url.Action("GetCollaboratorDetails", "Plan")',
                 data: { currentPlanId: planId },
                 dataType: "json",
+                async:false,
                 success: function (data) {
                     if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                         window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
