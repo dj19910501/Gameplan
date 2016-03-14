@@ -701,6 +701,11 @@ namespace Integration.WorkFront
             bool tacticError = false;
             if (tactic.IsSyncWorkFront == false) { return tacticError; }  //setting at tactic level determining if the tactic should be synced - Added by Brad Gray 24 Jan 2016 PL#1921
             IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
+            //moved syncerror out of catch block & renamed; 14 March 2016 by Brad Gray - PL#1941
+            SyncError syncResult = new SyncError();
+            syncResult.EntityId = tactic.PlanTacticId;
+            syncResult.EntityType = Enums.EntityType.Tactic;
+            syncResult.SectionName = "Sync Tactic Data";
 
             try
             {
@@ -748,24 +753,28 @@ namespace Integration.WorkFront
                 {
                     instanceLogTactic.Status = StatusResult.Error.ToString();
                 }
+
+                //update errorlist with success 
+                //added 14 March 2016 by Brad Gray - PL#1941
+                syncResult.Message = "In tactic " + tactic.Title + " : Success";
+                syncResult.SyncStatus = Enums.SyncStatus.Success;
             }
             catch(Exception ex)
             {
+                //updated 14 March 2016 by Brad Gray - PL#1941
                 tacticError = true;
                 instanceLogTactic.Status = StatusResult.Error.ToString();
                 instanceLogTactic.ErrorDescription = ex.Message;
-                SyncError error = new SyncError();
-                error.EntityId = tactic.PlanTacticId;
-                error.EntityType = Enums.EntityType.Tactic;
-                error.SectionName = "Sync Tactic Data";
-                error.Message = "In tactic " + tactic.Title + " : " + ex.Message;
-                error.SyncStatus = Enums.SyncStatus.Error;
-                error.TimeStamp = DateTime.Now;
-                SyncErrors.Add(error);
+                syncResult.Message = "In tactic " + tactic.Title + " : " + ex.Message;
+                syncResult.SyncStatus = Enums.SyncStatus.Error;
+                syncResult.TimeStamp = DateTime.Now;
+                
             }
             finally
             {
                 db.Entry(instanceLogTactic).State = EntityState.Added;
+                //moved from catch block 14 March 2016 by Brad Gray - PL#1941 
+                SyncErrors.Add(syncResult);
             }
             return tacticError;
         }
