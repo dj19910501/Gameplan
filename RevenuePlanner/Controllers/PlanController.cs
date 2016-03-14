@@ -9666,7 +9666,7 @@ namespace RevenuePlanner.Controllers
                         // Declare Data List and Object variable
                         List<Plandataobj> plandataobjlist = new List<Plandataobj>();
                         Plandataobj plandataobj = new Plandataobj();
-                        cellTextColor = IsPlanEditable ? stylecolorgray : stylecolorblack; // Modified By Nishant Sheth #1987
+                        cellTextColor = IsPlanEditable ? stylecolorblack : stylecolorgray; // Modified By Nishant Sheth #1987
 
                         plandataobj.value = "Plan";
                         plandataobjlist.Add(plandataobj);
@@ -9674,6 +9674,7 @@ namespace RevenuePlanner.Controllers
                         plandataobj = new Plandataobj();
                         plandataobj.value = HttpUtility.HtmlEncode(planitem.Title);
                         plandataobj.locked = IsPlanEditable ? lockedstatezero : lockedstateone;
+                        plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
@@ -9690,25 +9691,30 @@ namespace RevenuePlanner.Controllers
                         plandataobj = new Plandataobj();
                         plandataobj.value = Startdate;
                         plandataobj.locked = lockedstateone;
+                        plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
                         plandataobj.value = Enddate;
                         plandataobj.locked = lockedstateone;
+                        plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
                         plandataobj.value = totalcost.ToString();
                         plandataobj.actval = totalcost.ToString();
+                        plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
                         plandataobj.value = doubledesh;                        
                         plandataobj.type = typero;
+                        plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
                         plandataobj.value = Common.GetUserName(planitem.CreatedBy.ToString());
+                        plandataobj.style = cellTextColor;
                         //Modified by Rahul Shah on 09/03/2016 for PL #1939                       
                         if (IsPlanEditable)
                         {
@@ -9721,17 +9727,20 @@ namespace RevenuePlanner.Controllers
 
                         plandataobj = new Plandataobj();
                         plandataobj.value = doubledesh;
+                        plandataobj.style = cellTextColor;
                         plandataobj.type = typero;
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
                         plandataobj.value = ConvertNumberToRoundFormate(totalmql).ToString();
                         plandataobj.actval = totalmql.ToString();
+                        plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
                         plandataobj.value = dollarsymbol + ConvertNumberToRoundFormate(totalrevenue).ToString();
                         plandataobj.actval = totalrevenue.ToString();
+                        plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
                         gridjsonlistplanobj.data = plandataobjlist;
@@ -12357,10 +12366,10 @@ namespace RevenuePlanner.Controllers
                         cellTextColor = "style='color:#000; " + CellBackGroundcolor + "'";
                         IsLocked = "0";
                     }
-                    if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.plan.ToString()) {
-                        //Modified by Rahul Shah on 09/03/2016 for PL #1939
-                        cellTextColor = "color:#000; " + CellBackGroundcolor + "";
-                    }
+                    //if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.plan.ToString()) {
+                    //    //Modified by Rahul Shah on 09/03/2016 for PL #1939
+                    //    cellTextColor = "color:#000; " + CellBackGroundcolor + "";
+                    //}
                 }
 
 

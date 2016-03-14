@@ -242,14 +242,14 @@ namespace RevenuePlanner.Controllers
                         //// Get Plan list by PlanId.
                         plan = db.Plans.Where(_plan => _plan.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
                         //Modified by Rahul Shah on 09/03/2016 for PL #1939
-                        plan.CreatedBy = objPlanModel.OwnerId;
-                        Guid oldOwnerId = plan.CreatedBy;
+                        Guid oldOwnerId = plan.CreatedBy;                        
                         plan.Title = objPlanModel.Title.Trim();
                         plan.ModifiedBy = Sessions.User.UserId;
                         plan.ModifiedDate = System.DateTime.Now;
                         
                         if (BudgetInputValues == "" && planBudget.ToString() == "") //// Setup Tab
                         {
+                            plan.CreatedBy = objPlanModel.OwnerId;                        
                             plan.Description = objPlanModel.Description;
                         }
                         else   //// Budget Tab
