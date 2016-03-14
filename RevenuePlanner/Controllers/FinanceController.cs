@@ -703,8 +703,9 @@ namespace RevenuePlanner.Controllers
             List<DhtmlxGridRowDataModel> children = new List<DhtmlxGridRowDataModel>();
             IEnumerable<DataRow> lstChildren = null;
             lstChildren = GetChildren(dataTable, id);
-            if (lstChildren != null && lstChildren.Count() > 0)
-                lstChildren = lstChildren.OrderBy(child => child.Field<String>("Name"), new AlphaNumericComparer()).ToList();
+            //Commented By Maitri Gandhi on 14/3/2016
+            //if (lstChildren != null && lstChildren.Count() > 0)
+            //    lstChildren = lstChildren.OrderBy(child => child.Field<String>("Name"), new AlphaNumericComparer()).ToList();
             if (!Convert.ToBoolean(IsForcast))
             {
                 children = lstChildren
@@ -1727,6 +1728,7 @@ namespace RevenuePlanner.Controllers
                     headObj.align = "left";
                     headObj.type = "tree";
                     headObj.id = "Title";
+                    
                 }
                 if (i == 1)
                 {
@@ -2637,8 +2639,9 @@ namespace RevenuePlanner.Controllers
             List<int> lstLineItemIds = row.Field<List<int>>("lstLineItemIds");
 
             var lstChildren = GetChildren(dataTable, id);
-            if (lstChildren != null && lstChildren.Count() > 0)
-                lstChildren = lstChildren.OrderBy(child => child.Field<String>("Name")).ToList();
+            //Commented By Maitri Gandhi on 14/3/2016
+            //if (lstChildren != null && lstChildren.Count() > 0)
+            //    lstChildren = lstChildren.OrderBy(child => child.Field<String>("Name")).ToList();
             var children = lstChildren
               .Select(r => CreateItem(dataTable, r, EditLevel, DataTablecolumnNames, objColumns, ListOfCustomFieldOpt))
               .ToList();
