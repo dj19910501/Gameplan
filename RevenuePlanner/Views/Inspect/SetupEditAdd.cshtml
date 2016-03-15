@@ -1160,8 +1160,8 @@
                             //Modified BY Komal for #2058 tactic not displayed
                           
                             var PlanId = data.PlanId;
-                            var PreviousTacticListlength = $("#ulTacticType li").length;
-                            var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
+                            //var PreviousTacticListlength = $("#ulTacticType li").length;
+                            //var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
                             $("#ulTacticType li input[type=checkbox]").each(function () {
                                 var chkid = $(this).attr("id");
 
@@ -1183,12 +1183,12 @@
                                 GetOwnerListForFilter(PlanId, false);
                             }
 
-                            var TacticListLength = $("#ulTacticType li").length;
-                            var OwnerListLength = $("#ulSelectedOwner li").length;
+                            //var TacticListLength = $("#ulTacticType li").length;
+                            //var OwnerListLength = $("#ulSelectedOwner li").length;
 
-                            if (((PreviousTacticListlength != TacticListLength) && PreviousTacticListlength != 0) || ((PreviousOwnerListlength != OwnerListLength) && PreviousOwnerListlength != 0)) {
+                            //if (((PreviousTacticListlength != TacticListLength) && PreviousTacticListlength != 0) || ((PreviousOwnerListlength != OwnerListLength) && PreviousOwnerListlength != 0)) {
                                 SaveLastSetofViews();
-                            }
+                            //}
                             // Add by Komal RAwal
                             // Desc ::  to resolve the owner filter issue
                             filters.OwnerIds = [];

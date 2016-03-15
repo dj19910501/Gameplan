@@ -1660,7 +1660,7 @@
                                 if(OldValue.toString() != states.OwnerName.toString())
                                 {
                                     var PlanID = HomeGrid.cells(planid,3).getValue();
-                                    var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
+                                    //var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
                                     $("#ulSelectedOwner li input[type=checkbox]").each(function () {
                                         if ($(this).attr('checked') != 'checked') {
                                             filters.tempOwnerIds.push($(this).attr("id"));
@@ -1668,10 +1668,10 @@
                                     });
                                     GetTacticTypelist(PlanID, false); //Called to manage Data in cache
                                     GetOwnerListForFilter(PlanID, false);
-                                    var OwnerListLength = $("#ulSelectedOwner li").length;
-                                    if (( PreviousOwnerListlength != OwnerListLength && PreviousOwnerListlength != 0)) {
+                                    //var OwnerListLength = $("#ulSelectedOwner li").length;
+                                    //if (( PreviousOwnerListlength != OwnerListLength && PreviousOwnerListlength != 0)) {
                                         SaveLastSetofViews();
-                                    }
+                                    //}
                                   
                                 }
                                 //End
@@ -2167,22 +2167,19 @@
                             HomeGrid.cells(rowid, 9).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
                         }
                         //added by Rahul Shah for PL #2058 on 15/03/2016.
-                        if (UpdateColumn == "Type") {                            
+                        if (UpdateColumn == "Type") {     
+                            
                             var PlanIds = HomeGrid.cells(planid,3).getValue()
                             $("#ulTacticType li input[type=checkbox]").each(function () {
                                 var chkid = $(this).attr("id");
                                 if ($(this).attr('checked') != 'checked') {
                                     filters.tempTacticTypeIds.push(chkid.replace("CbTT", ""));                                    
-                                }
-                            });
-                            var PreviousTactlength =  $("#ulTacticType li input[type=checkbox]:checked").length;
-                            GetTacticTypelist(PlanIds, false);
+                                }                             
+
+                            });                           
                             
-                            var Tactlength =  $("#ulTacticType li input[type=checkbox]:checked").length;
-                            if(PreviousTactlength != Tactlength){                                
-                                SaveLastSetofViews();
-                            }
-                               
+                            GetTacticTypelist(PlanIds, false);
+                            SaveLastSetofViews();
                         }
                     }
                 });
