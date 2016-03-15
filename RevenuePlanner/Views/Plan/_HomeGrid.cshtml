@@ -1043,7 +1043,12 @@
         if (isCopyTacticHomeGrid != 0) {
             var selectedcell = HomeGrid.findCell(isCopyTacticHomeGrid, 3, true);
             var id = selectedcell[0];
-            var rowid = id[0];
+            var rowid;
+            if(id != undefined && id != 'undefined')
+            {
+                rowid = id[0];
+            
+           
             var SourcePtype = (rowid).split(".")[0];
             // if (SourcePtype == "line") {
             // HomeGrid.openItem(HomeGrid.getParentId(rowid));
@@ -1053,7 +1058,7 @@
             ItemIndex=HomeGrid.getRowIndex(rowid);
             state0=ItemIndex;
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
-
+            }
             isCopyTacticHomeGrid = 0;
             isCopyTactic = 0;
         }
@@ -1063,13 +1068,17 @@
 
             //  HomeGrid.openItem(id[0]);
 
-            var id = selectedcell[0];
-            var rowid = id[0];
+            var id = selectedcell[0];  
+            var rowid;
+            if(id != undefined && id != 'undefined')
+            {
+                rowid = id[0];
             HomeGrid.openItem(HomeGrid.getParentId(rowid));
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
            
             ItemIndex=HomeGrid.getRowIndex(rowid);
             state0=ItemIndex;
+            }
             //var scrolltop = $(".rowselected").offset().top;
             //  $(window).scrollTop(scrolltop - 100);
             isEditTacticHomeGrid = 0;
@@ -1629,9 +1638,11 @@
 
                                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                                 var TaskID = HomeGrid.cells(rowId,3).getValue();
+                                    var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
+
                                 if(ExportSelectedIds.TaskID.length > 0)
                                 {
-                                    var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
+                                 
                                     var OwnerNameIndex = ExportSelectedIds.OwnerName.indexOf(OldValue);
 
                                     if(OwnerNameIndex >= 0 && states.OwnerName != "" )
@@ -1645,6 +1656,25 @@
                                     $("div[taskId='" + TaskID + "']").attr('ownername',states.OwnerName);
                                 }
 
+                                //Added By Komal Rawal for 2058 
+                                if(OldValue.toString() != states.OwnerName.toString())
+                                {
+                                    var PlanID = HomeGrid.cells(planid,3).getValue();
+                                    var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
+                                    $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+                                        if ($(this).attr('checked') != 'checked') {
+                                            filters.tempOwnerIds.push($(this).attr("id"));
+                                        }
+                                    });
+                                    GetTacticTypelist(PlanID, false); //Called to manage Data in cache
+                                    GetOwnerListForFilter(PlanID, false);
+                                    var OwnerListLength = $("#ulSelectedOwner li").length;
+                                    if (( PreviousOwnerListlength != OwnerListLength && PreviousOwnerListlength != 0)) {
+                                        SaveLastSetofViews();
+                                    }
+                                  
+                                }
+                                //End
                                 if (states.errormsg != null && states.errormsg.trim() != "") {
                                     alert(states.errormsg.trim());
                                     HomeGrid.cells(rowId, cellInd).setValue(oValue);
@@ -2135,6 +2165,24 @@
                             var psv = HomeGrid.getUserData(rowid, "stage");
                             //var psv = HomeGrid.cells(rowid, 9).getAttribute("stage");
                             HomeGrid.cells(rowid, 9).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
+                        }
+                        //added by Rahul Shah for PL #2058 on 15/03/2016.
+                        if (UpdateColumn == "Type") {                            
+                            var PlanIds = HomeGrid.cells(planid,3).getValue()
+                            $("#ulTacticType li input[type=checkbox]").each(function () {
+                                var chkid = $(this).attr("id");
+                                if ($(this).attr('checked') != 'checked') {
+                                    filters.tempTacticTypeIds.push(chkid.replace("CbTT", ""));                                    
+                                }
+                            });
+                            var PreviousTactlength =  $("#ulTacticType li input[type=checkbox]:checked").length;
+                            GetTacticTypelist(PlanIds, false);
+                            
+                            var Tactlength =  $("#ulTacticType li input[type=checkbox]:checked").length;
+                            if(PreviousTactlength != Tactlength){                                
+                                SaveLastSetofViews();
+                            }
+                               
                         }
                     }
                 });

@@ -35,7 +35,7 @@ namespace RevenuePlanner
                   ));
 
             bundles.Add(new ScriptBundle("~/bundles/GetJSForLogin").Include(
-                        "~/Scripts/js/jquery.js",
+                        "~/Scripts/js/jquery-2.2.1.js",
                         "~/Scripts/js/bootstrap.js",
                         "~/Scripts/js/jquery.slimscroll_min.js",
                         "~/Scripts/js/jquery.slidepanel_min.js",
@@ -47,7 +47,7 @@ namespace RevenuePlanner
 
             bundles.Add(new ScriptBundle("~/bundles/GetJS").Include(
                         "~/Scripts/js/DHTMLX/dhtmlxgantt.js",
-                        "~/Scripts/js/jquery.js",
+                        "~/Scripts/js/jquery-2.2.1.js",
                         "~/Scripts/js/jquery-migrate-1.2.1.js",
                         "~/Scripts/js/jquery.slimscroll_min.js",
                         "~/Scripts/js/jquery.slidepanel_min.js",

@@ -148,9 +148,45 @@
                         //        checkedclass = ""
                         //    }
                         //}
+                    //Modified BY Komal for #2058 tactic not displayed
+                    if (filters.tempTacticTypeIds.length > 0) {
+                        if (filters.tempTacticTypeIds.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                            checked = "";
+                            checkedclass = "";
                     $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                        }
+                        else {
+                            $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                        }
+
+                    }
+                    else {
+                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                    }
+                    
                 });
 
+              
+                selectedFilters.tacticTypeTitle = [];
+                $("#ulTacticType li input[type=checkbox]:checked").each(function () {
+                  
+                    if (selectedFilters.tacticTypeTitle.indexOf($(this).attr('tactictypetitle').toString()) == -1)
+                    {
+                        selectedFilters.tacticTypeTitle.push($(this).attr('tactictypetitle').toString());
+                    }
+                });
+              
+                if (selectedFilters.tacticTypeTitle.length == 0) {
+                    $('#lstTType').text(FiltersNone);
+                }
+                else if ($("#ulTacticType li").length == selectedFilters.tacticTypeTitle.length) {
+
+                    $('#lstTType').text(FiltersAll);
+                }
+                else {
+                    $('#lstTType').text(selectedFilters.tacticTypeTitle.join(", "));
+                }
+                //End
             }
             else {
                 $("#TacticTypeAllModule").css("display", "none");
@@ -168,6 +204,8 @@
         else {
             asyncval = false;
         }
+
+    
             //Commented By Maitri Gandhi on 24/2/2016 For #2014
             //var tacids = [];
             //$('#ulTacticType li').each(function () {
@@ -220,13 +258,14 @@
                         checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
                         $('#tTTcount').text('/' + TactictypeCount);
                         $('#cTTcount').text(checkedTTcount);
+
+                        filters.tempTacticTypeIds = [];
                         //if (GetLastview == true) {
                         //    LastSetofTT();
                         //}
 
                         async = true;
                         currentRequestforTactics = null; //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
-
                     }
                 }
             });
@@ -667,7 +706,6 @@
     var IsDeselectAll = false
     var currentRequest = null;   //Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
     function GetOwnerListForFilter(Planids, async, OnPlanChange) {
-
         var asyncval = false;
         if (async != undefined && async != 'undefined' && async != '' && async != null) {
             asyncval = async;
@@ -773,9 +811,22 @@
                                         checked = "checked"
                                         checkedclass = "close-list"
                                     //}
-
-
+                                    //Modified BY Komal for #2058 tactic not displayed
+                                        if (filters.tempOwnerIds.length > 0) {
+                                            if (filters.tempOwnerIds.indexOf(OwnerItem.OwnerId.toString()) >= 0) {
+                                                checked = "";
+                                                checkedclass = "";
                                     $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                            }
+                                            else {
+                                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                            }
+
+                                        }
+                                        else {
+                                            $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                        }
+                                 
                                     // filters.OwnerIds.push(OwnerItem.OwnerId);
                                 });
 
@@ -791,7 +842,16 @@
                                         checked = "checked"
                                         checkedclass = "close-list"
                                    // }
+                                       //Modified BY Komal for #2058 tactic not displayed
+                                        if (filters.tempOwnerIds.indexOf(LoggedInOwner.toString()) >= 0) {
+                                            checked = "";
+                                            checkedclass = "";
                                     $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                        }
+                                        else {
+                                            $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                        }
+
                                 }
 
                                 //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
@@ -832,10 +892,27 @@
                         $('#tOwnercount').text('/' + TotalOwnercount);
                         $('#cOwnercount').text(checkedOwnercount);
                     }
+
+                    //Modified BY Komal for #2058 tactic not displayed
+                    selectedFilters.ownerName = [];
+                    $("#ulSelectedOwner li input[type=checkbox]:checked").each(function () {
+                        selectedFilters.ownerName.push($(this).attr('ownertitle').toString());
+
+                    });
+                    if (selectedFilters.ownerName.length == 0) {
+                        $('#lstOwner').text(FiltersNone);
+                    }
+                    else if ($("#ulSelectedOwner li").length == selectedFilters.ownerName.length) {
+                        $('#lstOwner').text(FiltersAll);
+                    }
+                    else {
+                        $('#lstOwner').text(selectedFilters.ownerName.join(", "));
+                    }
                     //if (GetLastview == true)
                     //{
                     //    LastSetofowners();
                     //}
+                    filters.tempOwnerIds = [];
 
                 }
                 async = true;
@@ -1894,6 +1971,8 @@
         PlanTitles: [],
         OwnerIds: [],
         TacticTypeids: [],
+        tempTacticTypeIds: [],
+        tempOwnerIds:[],
         StatusIds: [],
         SelectedYears: []
 
@@ -7552,6 +7631,7 @@
 
 
     function DisplayPopUpMenu(obj,e) {
+        gridSearchFlag = 1;
         // Modified By Nishant Sheth
         // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
         var LinkTacticPermission = $(obj).attr('linktacticpermission');
@@ -8355,6 +8435,7 @@ function () {
 })
 
     function DisplayEditablePopup(id, type) {
+        gridSearchFlag = 1;
         isEditTactic = id;
         isDataModified = false;
         if (type == "Plan") {

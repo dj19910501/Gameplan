@@ -1156,13 +1156,63 @@
                             $("#Description").val(txtDescriptionValue);                            
                             //// if new record save then set Refresh flag to true.
                             var _planTacticId = $("#hdnPlanTacticId").val(data.planTacticId);
+                           
+                            //Modified BY Komal for #2058 tactic not displayed
+                          
+                            var PlanId = data.PlanId;
+                            var PreviousTacticListlength = $("#ulTacticType li").length;
+                            var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
+                            $("#ulTacticType li input[type=checkbox]").each(function () {
+                                var chkid = $(this).attr("id");
+
+                                if ($(this).attr('checked') != 'checked') {
+                                    filters.tempTacticTypeIds.push(chkid.replace("CbTT", ""));
+                                }
+
+
+                            });
+                            GetTacticTypelist(PlanId, false);
+
+                            if ($("#hdnInspectMode").val() != '@Enums.InspectPopupMode.Add.ToString()') {
+                                $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+                                    if ($(this).attr('checked') != 'checked') {
+                                        filters.tempOwnerIds.push($(this).attr("id"));
+                                    }
+                                });
+
+                                GetOwnerListForFilter(PlanId, false);
+                            }
+
+                            var TacticListLength = $("#ulTacticType li").length;
+                            var OwnerListLength = $("#ulSelectedOwner li").length;
+
+                            if (((PreviousTacticListlength != TacticListLength) && PreviousTacticListlength != 0) || ((PreviousOwnerListlength != OwnerListLength) && PreviousOwnerListlength != 0)) {
+                                SaveLastSetofViews();
+                            }
+                            // Add by Komal RAwal
+                            // Desc ::  to resolve the owner filter issue
+                            filters.OwnerIds = [];
+                            $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+                                filters.OwnerIds.push($(this).attr("id"));
+                            });
+
+                            // Add by Komal RAwal
+                            // Desc :: To resolve the 2058 filter issues
+                            filters.TacticTypeids = [];
+                            $("#ulTacticType li input:checkbox:checked").map(function () {
+                                filters.TacticTypeids.push($(this).attr("id").replace("CbTT", ""));
+                            });
+                            //End
                             //Modified by Maitri Gandhi : modified condition to refresh the headers on the creation of tactic
                             if (_planTacticId == '' || _planTacticId == null || _planTacticId == '0' || _planTacticId == 'undefined' || ($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
                                 $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
                                 if (requestedModule == '@Enums.InspectPopupRequestedModules.Index.ToString()' || requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()') {
+
                                     RefershPlanHeaderCalc();
+
                                 }
                             }
+                          
                             returnparameter = true;
                             
                             //}
