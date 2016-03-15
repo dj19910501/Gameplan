@@ -36,6 +36,12 @@
 
     div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
         width: 100%!important;
+    }    
+    /*Added By Maitri*/
+    .dhxgrid_sort_desc, .dhxgrid_sort_asc
+    {/*Only for this page*/
+        margin-left:-77px;
+        margin-top:8px;
     }
     
 </style>
@@ -128,6 +134,10 @@
             if (GridProperties.setHeader != null) {
                 myTreeGrid.setHeader(GridProperties.setHeader, null, GridProperties.HeaderStyle.split(','));
             }
+            //Added by Maitri Gandhi on 15-03-2016 for #2049
+            if (GridProperties.setColSorting != null) {
+                myTreeGrid.setColSorting(GridProperties.setColSorting);
+            }
             if (GridProperties.setInitWidths != null) {
                 myTreeGrid.setInitWidths(GridProperties.setInitWidths);
             }
@@ -189,6 +199,7 @@
             ValidOldValue = "";
             IsValid = true;
         });
+        //myTreeGrid.sortRows(1,"str","asc");
         myTreeGrid.init();
         
 //Added by Maitri Gandhi for #2049 on 8/3/2016        

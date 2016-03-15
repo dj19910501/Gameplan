@@ -81,6 +81,7 @@ namespace RevenuePlanner.Models
         public string ActualColName { get; set; }
         public string HeaderStyle { get; set; }
         public List<Head> head { get; set; }
+        public string setColSorting { get; set; } //Added by Maitri Gandhi on 15-03-2016 for #2049 [to include soring in the finance grid]
     }
     public class DhtmlxGridRowDataModel
     {
@@ -101,6 +102,7 @@ namespace RevenuePlanner.Models
         public string align { get; set; }
         public string type { get; set; }
         public string id { get; set; }
+        public string sort { get; set; }    //Added by Maitri Gandhi on 15-03-2016 for #2049 [For EditBudget page]
     }
     public class Options
     {

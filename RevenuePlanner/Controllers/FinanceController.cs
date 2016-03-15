@@ -378,6 +378,7 @@ namespace RevenuePlanner.Controllers
                 StringBuilder setColTypes = new StringBuilder();
                 StringBuilder setColumnsVisibility = new StringBuilder();
                 StringBuilder HeaderStyle = new StringBuilder();
+                StringBuilder setColSorting = new StringBuilder(); //Added by Maitri Gandhi on 15-03-2016 for #2049
                 #region Set coulmn base on columnset
                 List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
                                                    join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
@@ -421,11 +422,12 @@ namespace RevenuePlanner.Controllers
                 #region Set Tree Grid Properties and methods
 
                 setHeader.Append("Task Name,,,");// Default 1st 4 columns header
+                setColSorting.Append("str,na,na,");     //Added by Maitri Gandhi on 15-03-2016 for #2049
                 setInitWidths.Append("200,100,50,");
                 setColAlign.Append("left,center,center,");
                 setColTypes.Append("tree,ro,ro,");
                 setColValidators.Append("CustomNameValid,,,");
-                setColumnIds.Append("title,action,addrow,");
+                setColumnIds.Append("title,action,addrow,");                
                 HeaderStyle.Append("text-align:center;border-right:0px solid #d4d4d4;,border-left:0px solid #d4d4d4;,,");
                 if (!_IsBudgetCreate_Edit && !_IsForecastCreate_Edit)
                 {
@@ -438,6 +440,7 @@ namespace RevenuePlanner.Controllers
                 foreach (var columns in objColumns)
                 {
                     setHeader.Append(columns.CustomField.Name + ",");
+                    setColSorting.Append("na,");    //Added by Maitri Gandhi on 15-03-2016 for #2049
                     setInitWidths.Append("100,");
                     setColAlign.Append("center,");
                     setColTypes.Append("ro,");
@@ -454,6 +457,7 @@ namespace RevenuePlanner.Controllers
                     HeaderStyle.Append("text-align:center;,");
                 }
                 setHeader.Append("User,Line Items,Owner");
+                setColSorting.Append("na,na,na");   //Added by Maitri Gandhi on 15-03-2016 for #2049
                 setInitWidths.Append("100,100,100");
                 setColAlign.Append("center,center,center");
                 setColTypes.Append("ro,ro,ro");
@@ -462,6 +466,7 @@ namespace RevenuePlanner.Controllers
                 HeaderStyle.Append("text-align:center;,text-align:center;,text-align:center;");
 
                 string trimSetheader = setHeader.ToString().TrimEnd(',');
+                string trimSetColSorting = setColSorting.ToString().TrimEnd(',');
                 string trimAttachheader = attachHeader.ToString().TrimEnd(',');
                 string trimSetInitWidths = setInitWidths.ToString().TrimEnd(',');
                 string trimSetColAlign = setColAlign.ToString().TrimEnd(',');
@@ -650,6 +655,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 mainGridData.setHeader = trimSetheader;
+                mainGridData.setColSorting = trimSetColSorting; //Added by Maitri Gandhi on 15-03-2016 for #2049
                 mainGridData.attachHeader = trimAttachheader;
                 mainGridData.setInitWidths = trimSetInitWidths;
                 mainGridData.setColAlign = trimSetColAlign;
@@ -1487,7 +1493,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult EditBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string EditLevel = "", string BudgetCreateEdit = "", string ForecastCreateEdit = "", string ListofCheckedColums = "", string EditPermission = "")
         {
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
-            StringBuilder attachHeader = new StringBuilder();
+            StringBuilder attachHeader = new StringBuilder();   
             StringBuilder setColValidators = new StringBuilder();
             StringBuilder setColumnIds = new StringBuilder();
             StringBuilder setColumnsVisibility = new StringBuilder();
@@ -1728,6 +1734,7 @@ namespace RevenuePlanner.Controllers
                     headObj.align = "left";
                     headObj.type = "tree";
                     headObj.id = "Title";
+                    headObj.sort = "str";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                     
                 }
                 if (i == 1)
@@ -1737,6 +1744,7 @@ namespace RevenuePlanner.Controllers
                     headObj.align = "center";
                     headObj.type = "ro";
                     headObj.id = "";
+                    headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                 }
                 if (i == 2)
                 {
@@ -1745,6 +1753,7 @@ namespace RevenuePlanner.Controllers
                     headObj.align = "center";
                     headObj.type = "ro";
                     headObj.id = "LineItems";
+                    headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                 }
                 ListHead.Add(headObj);
 
@@ -1803,6 +1812,7 @@ namespace RevenuePlanner.Controllers
                             headObj.value = HeaderPerfix;
                             headObj.width = 65;
                             headObj.align = "center";
+                            headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
 
                             attachHeader.Append(Convert.ToString(objTimeFrameColumns[i].CustomField.Name + ",")); // set attach header or column title
                            // setColAlign.Append("center,"); //set column allignment
@@ -1910,6 +1920,7 @@ namespace RevenuePlanner.Controllers
                             headObj.value = HeaderPerfix + j;
                             headObj.width = 65;
                             headObj.align = "center";
+                            headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                             headObj.id = objTimeFrameColumns[i].CustomField.Name + "Q" + j;
 
                             if (EditLevel == "Budget")
@@ -2027,6 +2038,7 @@ namespace RevenuePlanner.Controllers
                     headObj = new Head();
                     headObj.value = "Total";
                     headObj.align = "center";
+                    headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                     headObj.type = "ro";
                     headObj.width = 65;
                     headObj.id = objTimeFrameColumns[i].CustomField.Name + "Total";
@@ -2050,6 +2062,7 @@ namespace RevenuePlanner.Controllers
 
                     headObj.value = "";
                     headObj.align = "center";
+                    headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                     headObj.width = 65;
                     headObj.id = custcol.CustomField.Name;
 
@@ -2101,6 +2114,7 @@ namespace RevenuePlanner.Controllers
                             }
                             headObj.width = 65;
                             headObj.align = "center";
+                            headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                         }
                     }
                     else
@@ -2111,6 +2125,7 @@ namespace RevenuePlanner.Controllers
 
                             headObj.value = "";
                             headObj.align = "center";
+                            headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                             headObj.width = 65;
 
                             if (custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && _IsForecastCreate_Edit)
@@ -2157,6 +2172,7 @@ namespace RevenuePlanner.Controllers
                             }
                             headObj.width = 65;
                             headObj.align = "center";
+                            headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                         }
                     }
 
