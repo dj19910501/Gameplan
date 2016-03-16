@@ -651,22 +651,30 @@ namespace Integration
                     IntegrationInstance integrationInstance = new IntegrationInstance();
                     integrationInstance = dbouter.IntegrationInstances.SingleOrDefault(instance => instance.IntegrationInstanceId == integrationinstanceId);
                         
-                if (_isResultError)
-                {
-                            LogEndStatus = StatusResult.Error.ToString();
-                    integrationInstance.LastSyncStatus = StatusResult.Error.ToString();
-                    if (!IsAuthenticationError)
+                    if (_isResultError)
                     {
-                                string errorSections = string.Join(", ", dbouter.IntegrationInstanceSections.Where(integrationSection => integrationSection.IntegrationInstanceLogId == integrationinstanceLogId && integrationSection.Status == "Error").Select(integrationSection => integrationSection.SectionName).ToList());
-                                LogEndErrorDescription = "Error in section(s): " + errorSections;
+                                LogEndStatus = StatusResult.Error.ToString();
+                        integrationInstance.LastSyncStatus = StatusResult.Error.ToString();
+                        if (!IsAuthenticationError)
+                        {
+                                    string errorSections = string.Join(", ", dbouter.IntegrationInstanceSections.Where(integrationSection => integrationSection.IntegrationInstanceLogId == integrationinstanceLogId && integrationSection.Status == "Error").Select(integrationSection => integrationSection.SectionName).ToList());
+                                    LogEndErrorDescription = "Error in section(s): " + errorSections;
+                        }
                     }
-                }
-                else
-                {
-                            LogEndStatus = StatusResult.Success.ToString();
-                    integrationInstance.LastSyncStatus = StatusResult.Success.ToString();
-                }
-                    integrationInstance.LastSyncDate = DateTime.Now;
+                    else
+                    {
+                                LogEndStatus = StatusResult.Success.ToString();
+                        integrationInstance.LastSyncStatus = StatusResult.Success.ToString();
+                    }
+
+                    // Modified by Viral Kadiya related to PL ticket #1449 - Display Last Auto Sync Date, Last Force Sync Date & Last Force Sync User.
+                    if (!Common.IsAutoSync)
+                    {
+                        integrationInstance.LastSyncDate = DateTime.Now;
+                        integrationInstance.ForceSyncUser = _userId;
+                    }
+                    else
+                        integrationInstance.LastAutoSyncDate = DateTime.Now;
                     dbouter.Entry(integrationInstance).State = EntityState.Modified;
                     dbouter.SaveChanges();
                 }

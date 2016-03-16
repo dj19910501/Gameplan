@@ -121,4 +121,17 @@ namespace RevenuePlanner.Models
         public string Code { get; set; }
     }
     //End :Added by Rahul for PL ticket #2017
+    //Start :Added by Viral for PL ticket #1449
+    public class IntegrationInstanceListing
+    {
+        public int IntegrationInstanceId { get; set; }
+        public int IntegrationTypeId { get; set; }
+        public string Instance { get; set; }
+        public string Provider { get; set; }
+        public string LastSyncStatus { get; set; }
+        public string LastSyncDate { get; set; }
+        public string AutoLastSyncDate { get; set; }
+        public string ForceSyncUser { get; set; }
+    }
+    //End :Added by Pratik for PL ticket #998
 }

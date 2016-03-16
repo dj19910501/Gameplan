@@ -787,6 +787,8 @@
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="CustomNamingPermission" Type="bit" Nullable="false" />
           <Property Name="IsFirstPullCW" Type="bit" Nullable="false" />
+          <Property Name="LastAutoSyncDate" Type="datetime" />
+          <Property Name="ForceSyncUser" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -885,7 +887,7 @@
           <Property Name="SyncTimeStamp" Type="datetime" Nullable="false" />
           <Property Name="Operation" Type="varchar" MaxLength="50" />
           <Property Name="Status" Type="nvarchar" MaxLength="255" />
-          <Property Name="ErrorDescription" Type="nvarchar" />
+          <Property Name="ErrorDescription" Type="nvarchar(max)" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
           <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
@@ -3398,6 +3400,8 @@
           <NavigationProperty Name="IntegrationWorkFrontRequestQueues" Relationship="MRPModel.FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequestQueue" />
           <NavigationProperty Name="IntegrationWorkFrontUsers" Relationship="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontUser" />
           <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequest" />
+          <Property Type="DateTime" Name="LastAutoSyncDate" Precision="3" />
+          <Property Type="Guid" Name="ForceSyncUser" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -3484,7 +3488,7 @@
           <Property Type="DateTime" Name="SyncTimeStamp" Nullable="false" Precision="3" />
           <Property Type="String" Name="Operation" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="Status" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="ErrorDescription" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ErrorDescription" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="CreatedDate" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" />
           <Property Type="Int32" Name="IntegrationInstanceSectionId" Nullable="false" />
@@ -5781,6 +5785,8 @@
           <EntitySetMapping Name="IntegrationInstances">
             <EntityTypeMapping TypeName="MRPModel.IntegrationInstance">
               <MappingFragment StoreEntitySet="IntegrationInstance">
+                <ScalarProperty Name="ForceSyncUser" ColumnName="ForceSyncUser" />
+                <ScalarProperty Name="LastAutoSyncDate" ColumnName="LastAutoSyncDate" />
                 <ScalarProperty Name="IsFirstPullCW" ColumnName="IsFirstPullCW" />
                 <ScalarProperty Name="CustomNamingPermission" ColumnName="CustomNamingPermission" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />

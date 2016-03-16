@@ -53,6 +53,8 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public bool CustomNamingPermission { get; set; }
         public bool IsFirstPullCW { get; set; }
+        public Nullable<System.DateTime> LastAutoSyncDate { get; set; }
+        public Nullable<System.Guid> ForceSyncUser { get; set; }
     
         public virtual ICollection<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
         public virtual IntegrationType IntegrationType { get; set; }

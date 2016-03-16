@@ -82,7 +82,9 @@
                 <th class="idth390">Instance Name</th>
                 <th class="idth390">Provider</th>
                 <th class="width75">Status</th>
-                <th class="width86">Last Sync</th>
+                <th class="width86">Last Auto Sync</th>
+                <th class="width86">Last Force Sync</th>
+                <th class="width86">Force Sync User</th>
                 <th class="width86">Force Sync</th>
             </tr>
         </thead>
@@ -217,6 +219,7 @@
                     else {
                         if (data != null) {
                             $('#lastSyncDate' + id).html(data.lastSync);
+                            $('#ForceSyncUser' + id).html(data.forceSyncUser);
                             if (data.status.toString().toLowerCase() == "error") {
                                 $('#lastSyncStatus' + id).html('<span style="color:red;">' + data.status + '</span>');
                             } else {
@@ -274,13 +277,13 @@
                 data = baselinesModels;
                 //$('#table_baseline tr').not(function () { if ($(this).has('th').length || $(this).has('#trNewService').length) { return true } }).remove(); //clear table
                 for (i in baselinesModels) {
-                    addRowIntegration(i, baselinesModels[i].IntegrationInstanceId, baselinesModels[i].IntegrationTypeId, baselinesModels[i].Instance, baselinesModels[i].Provider, baselinesModels[i].LastSyncStatus, baselinesModels[i].LastSyncDate);
+                    addRowIntegration(i, baselinesModels[i].IntegrationInstanceId, baselinesModels[i].IntegrationTypeId, baselinesModels[i].Instance, baselinesModels[i].Provider, baselinesModels[i].LastSyncStatus, baselinesModels[i].LastSyncDate, baselinesModels[i].AutoLastSyncDate, baselinesModels[i].ForceSyncUser);
                 }
             }
         }
     }
 
-    function addRowIntegration(_index, _integrationInstanceId, _integrationTypeId, _instance, _provider, _lastSyncStatus, _lastSyncData) {
+    function addRowIntegration(_index, _integrationInstanceId, _integrationTypeId, _instance, _provider, _lastSyncStatus, _lastSyncData,_AutoLastSyncDate,_ForceSyncUser) {
         var $baselineTable = $('#table_baseline > tbody'); //tr:first
         var $html = "";
         $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model truncate">' + htmlEncode(_instance) + '</span><span class="search-icon"></span></td>' +
@@ -299,7 +302,7 @@
         else {
             syncing_visible = 'style="display:none;"';
         }
-        $html += '<td id="lastSyncDate' + _integrationInstanceId + '">' + _lastSyncData + '</td>' +
+        $html += '<td id="lastAutoSyncDate' + _integrationInstanceId + '">' + _AutoLastSyncDate + '</td>' + '<td id="lastSyncDate' + _integrationInstanceId + '">' + _lastSyncData + '</td>' + '<td id="ForceSyncUser' + _integrationInstanceId + '">' + _ForceSyncUser + '</td>' +
             '<td><a id="syncnow_' + _integrationInstanceId + '" href="#" class="sync_service" ' + syncNow_visible + '>Sync Now</a><span ' + syncing_visible + '>Syncing...</span></td>' +
         '</tr>';
         //$baselineTable.append($html);

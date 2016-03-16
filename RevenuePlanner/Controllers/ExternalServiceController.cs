@@ -79,17 +79,39 @@ namespace RevenuePlanner.Controllers
                                             .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationType.IntegrationTypeId == ii.IntegrationTypeId)
                                             .Select(ii => ii).ToList();
 
+            List<BDSService.User> lstUser = null;
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            lstUser = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId).ToList();
+            List<IntegrationInstanceListing> returnList = new List<IntegrationInstanceListing>();
+            IntegrationInstanceListing objInst = null;
+            string strForceSyncUser;
             //// Return IntegrationInstance list with specific fields.
-            var returnList = IntegrationInstanceList.Select(intgrtn => new
+            foreach (var inst in IntegrationInstanceList)
             {
-                IntegrationInstanceId = intgrtn.IntegrationInstanceId,
-                IntegrationTypeId = intgrtn.IntegrationTypeId,
-                Instance = (intgrtn.Instance == null || intgrtn.Instance.ToString() == "null") ? "" : intgrtn.Instance.ToString(),
-                Provider = (intgrtn.IntegrationType.Title == null || intgrtn.IntegrationType.Title.ToString() == "null") ? "" : intgrtn.IntegrationType.Title.ToString(),
-                LastSyncStatus = string.IsNullOrWhiteSpace(intgrtn.LastSyncStatus) ? Common.TextForModelIntegrationInstanceTypeOrLastSyncNull : intgrtn.LastSyncStatus.ToString(),
-                LastSyncDate = (intgrtn.LastSyncDate.HasValue ? Convert.ToDateTime(intgrtn.LastSyncDate).ToString(DateFormat) : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull),
-            }).OrderByDescending(intgrtn => intgrtn.Instance, new AlphaNumericComparer()).ToList();
+                objInst = new IntegrationInstanceListing();
 
+                objInst.IntegrationInstanceId = inst.IntegrationInstanceId;
+                objInst.IntegrationTypeId = inst.IntegrationTypeId;
+                objInst.Instance = (inst.Instance == null || inst.Instance.ToString() == "null") ? "" : inst.Instance;
+                objInst.Provider = (inst.IntegrationType == null || string.IsNullOrEmpty(inst.IntegrationType.Title)) ? "" : inst.IntegrationType.Title;
+                objInst.LastSyncStatus = string.IsNullOrWhiteSpace(inst.LastSyncStatus) ? Common.TextForModelIntegrationInstanceTypeOrLastSyncNull : inst.LastSyncStatus;
+                objInst.LastSyncDate = (inst.LastSyncDate.HasValue ? Convert.ToDateTime(inst.LastSyncDate).ToString(DateFormat) : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull);  // Last Force Sync Date
+                objInst.AutoLastSyncDate = (inst.LastAutoSyncDate.HasValue ? Convert.ToDateTime(inst.LastAutoSyncDate.Value).ToString(DateFormat) : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull); // Last Sync Date of Win Service.
+
+                #region "Get Force Sync User"
+                strForceSyncUser = string.Empty;
+                if (inst.ForceSyncUser.HasValue && lstUser != null && lstUser.Count > 0)
+                    strForceSyncUser = lstUser.Where(a => a.UserId == inst.ForceSyncUser.Value).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
+                else
+                    strForceSyncUser = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                objInst.ForceSyncUser = strForceSyncUser; 
+                #endregion
+                returnList.Add(objInst);
+            }
+            if (returnList != null && returnList.Count > 0)
+            {
+                returnList = returnList.OrderByDescending(intgrtn => intgrtn.Instance, new AlphaNumericComparer()).ToList();
+            }
             return Json(returnList, JsonRequestBehavior.AllowGet);
         }
         /// <summary>
@@ -1014,7 +1036,22 @@ namespace RevenuePlanner.Controllers
                 string status = integrationInstance.LastSyncStatus;
                 if (integrationInstance.LastSyncDate.HasValue)
                 {
-                    return Json(new { status = integrationInstance.LastSyncStatus, lastSync = Convert.ToDateTime(integrationInstance.LastSyncDate).ToString(DateFormat) }, JsonRequestBehavior.AllowGet);
+                    #region "Get ForceSync User"
+                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                    string strForceUser = string.Empty;
+                    if (integrationInstance.ForceSyncUser.HasValue)
+                    {
+                        var ForceUser = objBDSServiceClient.GetTeamMemberDetails(integrationInstance.ForceSyncUser.Value, Sessions.ApplicationId);
+                        if (ForceUser != null)
+                        {
+                            strForceUser = ForceUser.FirstName + " " + ForceUser.LastName;
+                        }
+                    }
+                    else
+                        strForceUser = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull; 
+                    #endregion
+                    
+                    return Json(new { status = integrationInstance.LastSyncStatus, lastSync = Convert.ToDateTime(integrationInstance.LastSyncDate).ToString(DateFormat), forceSyncUser = strForceUser }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
