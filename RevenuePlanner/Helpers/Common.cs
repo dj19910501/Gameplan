@@ -4936,7 +4936,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="id">Plan Tactic Id or Plan Campaign Id or Plan Program Id</param>
         /// <param name="section">Perameter contains value from enum like Campaign or Program or Tactic Section</param>
         /// <returns></returns>
-        public static List<CustomFieldModel> GetCustomFields(int id, string section)
+        public static List<CustomFieldModel> GetCustomFields(int id, string section, string Status)
         {
             MRPEntities db = new MRPEntities();
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
@@ -4953,7 +4953,9 @@ namespace RevenuePlanner.Helpers
                 isChild = DependencyList.Select(list => list.ChildCustomFieldId).ToList().Contains(a.CustomFieldId) ? true : false,
                 ParentId = DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault() == null ? 0 : DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault(),
                 ParentOptionId = DependencyList.Where(list => list.ChildCustomFieldId == a.CustomFieldId && list.ChildOptionId == null).Select(list => list.ParentOptionId).ToList(),
-                option = a.CustomFieldOptions.Where(Option => Option.IsDeleted == false).ToList().Select(o => new CustomFieldOptionModel
+
+                //Modified By Komal Rawal for #1292 dont apply isdeleted flag for tactics that are completed.
+                option = GetCustomFieldOptions(Status, a.CustomFieldOptions).Select(o => new CustomFieldOptionModel
                 {
                     ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
                     ParentOptionId = DependencyList.Where(b => b.ChildOptionId == o.CustomFieldOptionId).Select(b => b.ParentOptionId).ToList(),
@@ -4996,6 +4998,21 @@ namespace RevenuePlanner.Helpers
 
             return finalList;
         }
+
+        //Added By Komal Rawal for #1292 dont apply isdeleted flag for tactics that are completed.
+        public static List<CustomFieldOption> GetCustomFieldOptions(string Status, ICollection<CustomFieldOption> Customfieldoptionlist)
+        {
+            if (Status == Enums.TacticStatus.Complete.ToString())
+            {
+                return Customfieldoptionlist.ToList();
+            }
+            else
+            {
+                return Customfieldoptionlist.Where(a => a.IsDeleted == false).ToList();
+              
+            }
+        }
+        //End
 
         public static void setCustomFieldHierarchy(int parentId, List<CustomFieldModel> lstCustomField, ref List<CustomFieldModel> finalList)
         {
@@ -7451,6 +7468,8 @@ namespace RevenuePlanner.Helpers
             var customViewBy = db.Database.SqlQuery<ViewByModel>("spViewByDropDownList @PlanId,@ClientId", para).ToList();
             return viewByListResult = viewByListResult.Concat(customViewBy).ToList();
         }
+
+      
     }
     #endregion
 

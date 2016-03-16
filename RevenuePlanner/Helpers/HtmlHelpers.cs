@@ -4293,10 +4293,11 @@ namespace RevenuePlanner.Helpers
         /// <param name="id">Plan Tactic Id or Plan Campaign Id or Plan Program Id</param>
         /// <param name="section">Parameter contains value from enum EntityType like Campaign or Program or Tactic.</param>
         /// <returns>If Plan Tactic or Plan Campaign or Plan Program contains custom fields than returns html string else empty string</returns>
-        public static MvcHtmlString GenerateCustomFieldsForInspectPopup(int id, string section,DateTime EntityStartDate, int fieldCounter = 0, string mode = "ReadOnly")
+        public static MvcHtmlString GenerateCustomFieldsForInspectPopup(int id, string section,string Status, int fieldCounter = 0, string mode = "ReadOnly")
         {
             //list of custom fields for particular campaign or Program or Tactic
-            List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
+            //Modified By Komal Rawal for #1292 dont apply isdeleted flag for tactics that are completed.
+            List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section,Status);
             StringBuilder sb = new StringBuilder(string.Empty);
 
 

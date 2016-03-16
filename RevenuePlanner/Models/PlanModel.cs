@@ -78,6 +78,7 @@ namespace RevenuePlanner.Models
         public double Revenue { get; set; }
         //Added by Mitesh Vaishnav for PL ticket #718
         public MvcHtmlString CustomFieldHtmlContent { get; set; }
+        public string Status { get; set; }      //Added By Komal Rawal for #1292 dont apply isdeleted flag for tactics that are completed.
     }
 
     public class Plan_Campaign_ProgramModel
@@ -105,6 +106,7 @@ namespace RevenuePlanner.Models
         public double ProgramBudget { get; set; }
         public string AllocatedBy { get; set; }
         public double Revenue { get; set; }
+        public string Status { get; set; }      //Added By Komal Rawal for #1292 dont apply isdeleted flag for tactics that are completed.
     }
 
     public class Plan_Campaign_Program_TacticModel
@@ -200,6 +202,7 @@ namespace RevenuePlanner.Models
         public List<SelectListValue> CampaignProgramList { get; set; }
         public List<SelectListUser> OwnerList { get; set; }
         public bool IsLinkedTactic { get; set; }
+        public string Status { get; set; }      //Added By Komal Rawal for #1292 dont apply isdeleted flag for tactics that are completed.
 
     }
 

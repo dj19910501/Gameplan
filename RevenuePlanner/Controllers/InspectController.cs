@@ -865,6 +865,7 @@ namespace RevenuePlanner.Controllers
             pcm.StartDate = pc.StartDate;
             pcm.EndDate = pc.EndDate;
             pcm.OwnerId = pc.CreatedBy;
+            pcm.Status = pc.Status;
 
 
 
@@ -1594,6 +1595,7 @@ namespace RevenuePlanner.Controllers
             pcpm.EndDate = pcp.EndDate;
             pcpm.CStartDate = pcp.Plan_Campaign.StartDate;
             pcpm.CEndDate = pcp.Plan_Campaign.EndDate;
+            pcpm.Status = pcp.Status;
             List<Plan_Campaign_Program_Tactic> lstTactic = (from tac in db.Plan_Campaign_Program_Tactic where tac.PlanProgramId == id && tac.IsDeleted.Equals(false) select tac).ToList();
             if (lstTactic != null && lstTactic.Count() > 0)
             {
@@ -3798,6 +3800,8 @@ namespace RevenuePlanner.Controllers
             ippctm.PEndDate = planprogramobj.EndDate;
             ippctm.CStartDate = plancampaignobj.StartDate;
             ippctm.CEndDate = plancampaignobj.EndDate;
+            ippctm.Status = pcpt.Status;
+       
             //User userName = new User();
             try
             {
@@ -5139,6 +5143,7 @@ namespace RevenuePlanner.Controllers
             if (tactics.ToList().Count == 1)
             {
                 pcptm.TacticTypeId = tactics.FirstOrDefault().TacticTypeId;
+                
             }
 
             return PartialView("SetupEditAdd", pcptm);
