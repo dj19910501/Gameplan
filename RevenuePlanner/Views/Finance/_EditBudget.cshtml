@@ -26,21 +26,16 @@
         /*padding-right: 7px !important;*/
     }
 
-    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
+   div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
         width: 100% !important;
     }
 
     div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
         width: 100% !important;
-    }
-    /*Added by Maitri*/
-    .dhxgrid_sort_desc, .dhxgrid_sort_asc
-    { /*Only for this page*/
-        margin-left:-48px;
-        margin-top:9px;
-    }
+    }   
+    
 </style>
-<div  class="grid-full-view"><div id="gridbox" style="width:100%; background-color:white;" class="gridViewGrid"></div></div>
+<div id="gridbox" style="width:100%; background-color:white;"></div>
 <script type="text/javascript">
     var RowIDs = {
         IDs: []
@@ -112,6 +107,7 @@
         //$("#btnMultiselect_ddlChildFinance").find("span").text(htmlDecode($("#btnMultiselect_ddlChildFinance").find("span").text()));
 
     });
+
 
     function LoadBudgetGrid(AllocatedBy) {
 
@@ -220,14 +216,19 @@
 
         myTreeGrid.setColumnsVisibility(GridData.setColumnsVisibility);
 
-
+        //myTreeGrid.attachEvent("onXLE", function (grid_obj, count) {
+        //    alert("onXLE");
+        //});
         myTreeGrid.init(); 
-//Added by Maitri Gandhi for #2049 on 8/3/2016        
+        //Modified by Maitri Gandhi for #2066 on 17/3/2016          
         myTreeGrid.attachEvent("onDistributedEnd", function () {
             if (Maintained != 0) {
                 var ID = myTreeGrid.getRowId(Maintained);
                 if (ID != undefined || ID == '') {
-                    myTreeGrid.showRow(ID.toString());                    
+                    var divname = "#dv" + ID;
+                    $('html, body').animate({
+                        scrollTop: $(divname).offset().top
+                    }, 0);
                 }
             }
         });
@@ -302,7 +303,8 @@
         //myTreeGrid.setUserData("id");
         $("#gridbox").find("table").first().find("tr").next().last().find("td").first().css("text-align", "center");
 
-        var IsValid = true;
+        var IsValid = true;        
+
 
         myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
             ValidOldValue = "";
@@ -338,7 +340,7 @@
         //    $("#gridbox").find("table").css("width", GridWidth);
         //});
         //IsValid = true;
-        myTreeGrid.enableAutoHeight(false); //Modified By Maitri Gandhi on 9/3/2016 for #2049
+        myTreeGrid.enableAutoHeight(true); //Modified By Maitri Gandhi on 17/3/2016 for #2066
         myTreeGrid.enableAutoWidth(false);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
 
@@ -725,16 +727,26 @@
         //});
         myTreeGrid.attachEvent("onOpenEnd", function () {
 
-            //$("#gridbox").find("table").css("width", "100%");
-            //var tableheight = $(".objbox").find("table").height();
+            $("#gridbox").find("table").css("width", "100%");
+            var tableheight = $(".objbox").find("table").height();
+
+            var tableheight = $(".objbox").height();
+            var gridheight = $("#gridbox").height();
+
+            if (tableheight > gridheight) {
+                $(".hdr").css('padding-right', '70px');
+            }
+            else {
+                $(".hdr").css('padding-right', '0px');
+            }
 
             //$("#gridbox").css("height", tableheight + 100);
             //myTreeGrid.setSizes();
 
-            //$("#gridbox").find("table").css("width", GridWidth);
+           // $("#gridbox").find("table").css("width", GridWidth);
 
 
-            //return true;
+            return true;
         });
 
         myTreeGrid.expandAll();
@@ -1057,5 +1069,4 @@
             return RollupFinanceValue(parentid, 0, colIndex);
         }
     }
-
 </script>

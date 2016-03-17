@@ -2742,10 +2742,3 @@ div.dhx_modal_cover {
 
 /* #1948 IE-11 only */
 .finance-tbl .gridbox.gridbox_dhx_skyblue.isIE div.objbox{padding-bottom:18px !important}
-
-/* Added by Bhumika for resolving Gridview full table padding issue in FF #2049 */
-.grid-full-view table{border-collapse: separate;}
-
-.grid-full-view *,.grid-full-view *::after,.grid-full-view  *::before {
-    box-sizing: border-box !important;
-}
