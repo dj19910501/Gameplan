@@ -32,15 +32,9 @@
 
     div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
         width: 100% !important;
-    }
-    /*Added by Maitri*/
-    .dhxgrid_sort_desc, .dhxgrid_sort_asc
-    { /*Only for this page*/
-        margin-left:-48px;
-        margin-top:9px;
-    }
+    }    
 </style>
-<div  class="grid-full-view"><div id="gridbox" style="width:100%; background-color:white;" class="gridViewGrid"></div></div>
+<div id="gridbox" style="width:100%; background-color:white;"></div>
 <script type="text/javascript">
     var RowIDs = {
         IDs: []
@@ -222,12 +216,15 @@
 
 
         myTreeGrid.init(); 
-//Added by Maitri Gandhi for #2049 on 8/3/2016        
+        //Modified by Maitri Gandhi for #2066 on 17/3/2016          
         myTreeGrid.attachEvent("onDistributedEnd", function () {
             if (Maintained != 0) {
                 var ID = myTreeGrid.getRowId(Maintained);
                 if (ID != undefined || ID == '') {
-                    myTreeGrid.showRow(ID.toString());                    
+                    var divname = "#dv" + ID;
+                    $('html, body').animate({
+                        scrollTop: $(divname).offset().top
+                    }, 0);
                 }
             }
         });
@@ -338,7 +335,7 @@
         //    $("#gridbox").find("table").css("width", GridWidth);
         //});
         //IsValid = true;
-        myTreeGrid.enableAutoHeight(false); //Modified By Maitri Gandhi on 9/3/2016 for #2049
+        myTreeGrid.enableAutoHeight(true); //Modified By Maitri Gandhi on 17/3/2016 for #2066
         myTreeGrid.enableAutoWidth(false);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
 

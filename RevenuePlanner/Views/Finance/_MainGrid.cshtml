@@ -36,16 +36,10 @@
 
     div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
         width: 100%!important;
-    }    
-    /*Added By Maitri*/
-    .dhxgrid_sort_desc, .dhxgrid_sort_asc
-    {/*Only for this page*/
-        margin-left:-77px;
-        margin-top:8px;
-    }
+    }      
     
 </style>
-<div  class="grid-full-view"><div id="gridbox" style="width:100%; background-color:white;" class="gridViewGrid" ></div></div>@*class="gridViewGrid"*@
+<div id="gridbox" style="width:100%; background-color:white;" ></div>
 @Html.Hidden("hdnBudgetId", BudgetId, new { id = "hdnBudgetId", name = "hdnBudgetId", value = BudgetId })
 @Html.Hidden("hdnNewItemType", string.Empty, new { id = "hdnNewItemType", name = "hdnNewItemType", value = "" })
 <script type="text/javascript">
@@ -202,15 +196,18 @@
         //myTreeGrid.sortRows(1,"str","asc");
         myTreeGrid.init();
         
-//Added by Maitri Gandhi for #2049 on 8/3/2016        
+        //Modified by Maitri Gandhi for #2066 on 17/3/2016        
         myTreeGrid.attachEvent("onDistributedEnd", function () {
             if (Maintained != 0) {
                 var ID = myTreeGrid.getRowId(Maintained);
-                if (ID !=   undefined || ID == '') {
-                        myTreeGrid.showRow(ID.toString());
-                        //Maintained = 0;
+                if (ID != undefined || ID == '') {
+                    var divname = "#dv" + ID;
+                    $('html, body').animate({
+                        scrollTop: $(divname).offset().top
+                    }, 0);
                 }
-            }           
+            }
+
         });
         myTreeGrid.enableDistributedParsing(true, 10, 300);
         
@@ -237,7 +234,7 @@
         });
 
             //myTreeGrid.enableAutoHeight(true);
-        myTreeGrid.enableAutoHeight(false);
+        myTreeGrid.enableAutoHeight(true);
         myTreeGrid.enableAutoWidth(false);
 
         myTreeGrid.expandAll();
