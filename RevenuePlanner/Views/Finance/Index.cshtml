@@ -280,6 +280,7 @@
         //var testitem = "option[text=Budget3]";
         //$("#ddlParentFinance").find(testitem).attr("selected", "selected");
         //var budgetID = $("#ddlParentFinance").val();
+
         RefreshMainGridData(_budgetIdMain);
 
         GetFinanceHeaderValue(_budgetIdMain, true, _mainTimeFrame);
@@ -304,6 +305,7 @@
                 $("#ddlParentFinanceMain").val(budgetIDMain);
                 $('#hdn_BudgetId').val(budgetIDMain);
                 if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
+                    Maintained = 0; //Added By Maitri Gandhi for #2066
                     RefreshMainGridData(budgetIDMain);
                     GetFinanceHeaderValue(budgetIDMain, true, _mainTimeFrame);
                 }
@@ -524,7 +526,7 @@
         $("#divGridView").show();
         $("#dvNoData").hide();
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
-        $('#divGridView').load(url + '?budgetId=' + BudgetId + '&mainTimeFrame=' + _mainTimeFrame+'&ListofCheckedColums='+CheckedColumns);
+        $('#divGridView').load(url + '?budgetId=' + BudgetId + '&mainTimeFrame=' + _mainTimeFrame+'&ListofCheckedColums='+CheckedColumns);        
     }
 
     function BindTimeFrameForChild(Period) {
@@ -1063,6 +1065,7 @@
         $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel + '&FlagCondition=' + _flagCondition);
     }
     function EditBudget(BudgetId, childChange, level,EditPermission) {
+        Maintained = 0;
         myTreeGrid.editStop();
         $('#btnSettings').css('display', 'none')
         $('#errorMsg').css('display', 'none');
@@ -1438,10 +1441,12 @@
         $('#SuccessMsg').css('display', 'none');
         _mainTimeFrame = $('#ddlMainGridTimeFrame').val();
         var _budgetIdMain = $('#ddlParentFinanceMain').val();
+        Maintained = 0; //Added By Maitri Gandhi
         RefreshMainGridData(_budgetIdMain);
         GetFinanceHeaderValue(_budgetIdMain, true, _mainTimeFrame);
     });
     $("#ddlRevenueTimeFrame").change(function () {
+        
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
         //
@@ -1635,6 +1640,7 @@
                 $("#dvNoData").hide();
                 var parentbudgetDetailID = $(this).attr('value');
                 $("#hdn_BudgetDetailId").val(parentbudgetDetailID);
+                Maintained = 0; //Added By Maitri Gandhi
                 if (pageName == "LineItemGrid") {
                     $("#ddlChildFinance").val(0);
                     BindChildLineItemDropdown(0);
@@ -1720,6 +1726,7 @@
 
                 var ChildbudgetID = $(this).attr('value');
                 var parentid = $('#nl-formParentFinance .nl-dd-checked ').attr('value');
+                Maintained = 0; //Added By Maitri Gandhi
 
                 if (pageName == "LineItemGrid") {
                     var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
