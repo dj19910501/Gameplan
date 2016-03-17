@@ -8332,7 +8332,17 @@ tbody.column4 {
 .campaign-row {
     background: #DFF0F8;
 }
+/* --- #1389 Changed and added by Bhumika 16-3-2016 --- */
+.budget-table .event-row {background: #E6E6E6;}
+.budget-table .campaign-row {background: #C6EBF3;} 
+.budget-table .programLevel {
+    background: #DFF0F8  none repeat scroll 0 0;
+} 
+.budget-table .tacticLevel {
+    background: #E4F1E1 none repeat scroll 0 0;
+}
 
+/* --------------- */
 .accordionClick {
     text-decoration: none;
     float: left;
@@ -12794,9 +12804,9 @@ border-bottom: 0 solid #d3d3d3 !important;
     right: 6px;
     top: 6px;
    border: 0 none;
-   outline: none !important;  /*Added by Bhumika for #2012 7-3-2016*/
+   outline:0 none !important;  /*Added by Bhumika for #2012 7-3-2016*/
 }
-.headefix .close-x-big-icon:hover, .headefix .close-x-big-icon:focus{outline: none !important;}
+.headefix .close-x-big-icon:hover, .headefix .close-x-big-icon:focus{outline:0 none !important;}
 .pop-body-wraper {
     float: left;
     overflow: auto;
