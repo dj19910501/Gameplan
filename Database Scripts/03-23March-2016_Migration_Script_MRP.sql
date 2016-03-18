@@ -4,11 +4,19 @@ Created Date: 03/16/2016
 Description: Add Columns 'LastAutoSyncDate' & 'ForceSyncUser' in table IntegrationInstance
 */
 
-IF NOT EXISTS(SELECT * FROM sys.columns
+IF EXISTS(SELECT * FROM sys.columns
 WHERE Name = N'LastAutoSyncDate' AND OBJECT_ID = OBJECT_ID(N'[IntegrationInstance]'))
 BEGIN
 Alter Table [dbo].[IntegrationInstance] 
-ADD  LastAutoSyncDate DateTime
+DROP COLUMN  LastAutoSyncDate
+END 
+GO
+
+IF NOT EXISTS(SELECT * FROM sys.columns
+WHERE Name = N'IsAutoSync' AND OBJECT_ID = OBJECT_ID(N'[IntegrationInstanceLog]'))
+BEGIN
+Alter Table [dbo].[IntegrationInstanceLog] 
+ADD  IsAutoSync bit
 END 
 GO
 

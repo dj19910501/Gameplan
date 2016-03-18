@@ -787,7 +787,6 @@
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="CustomNamingPermission" Type="bit" Nullable="false" />
           <Property Name="IsFirstPullCW" Type="bit" Nullable="false" />
-          <Property Name="LastAutoSyncDate" Type="datetime" />
           <Property Name="ForceSyncUser" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
@@ -866,6 +865,7 @@
           <Property Name="ErrorDescription" Type="nvarchar" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="IsAutoSync" Type="bit" />
         </EntityType>
         <EntityType Name="IntegrationInstanceLogDetails">
           <Key>
@@ -3477,6 +3477,7 @@
           <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" FromRole="IntegrationInstanceLog" ToRole="IntegrationInstance" />
           <NavigationProperty Name="IntegrationInstanceSections" Relationship="MRPModel.FK_IntegrationInstanceSection_IntegrationInstanceLog" FromRole="IntegrationInstanceLog" ToRole="IntegrationInstanceSection" />
           <NavigationProperty Name="IntegrationInstanceLogDetails" Relationship="MRPModel.FK_IntegrationInstanceLogID" FromRole="IntegrationInstanceLog" ToRole="IntegrationInstanceLogDetail" />
+          <Property Type="Boolean" Name="IsAutoSync" />
         </EntityType>
         <EntityType Name="IntegrationInstancePlanEntityLog">
           <Key>
@@ -5786,7 +5787,6 @@
             <EntityTypeMapping TypeName="MRPModel.IntegrationInstance">
               <MappingFragment StoreEntitySet="IntegrationInstance">
                 <ScalarProperty Name="ForceSyncUser" ColumnName="ForceSyncUser" />
-                <ScalarProperty Name="LastAutoSyncDate" ColumnName="LastAutoSyncDate" />
                 <ScalarProperty Name="IsFirstPullCW" ColumnName="IsFirstPullCW" />
                 <ScalarProperty Name="CustomNamingPermission" ColumnName="CustomNamingPermission" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
@@ -5864,6 +5864,7 @@
           <EntitySetMapping Name="IntegrationInstanceLogs">
             <EntityTypeMapping TypeName="MRPModel.IntegrationInstanceLog">
               <MappingFragment StoreEntitySet="IntegrationInstanceLog">
+                <ScalarProperty Name="IsAutoSync" ColumnName="IsAutoSync" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="ErrorDescription" ColumnName="ErrorDescription" />

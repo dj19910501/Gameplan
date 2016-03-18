@@ -666,23 +666,21 @@ namespace Integration
                                 LogEndStatus = StatusResult.Success.ToString();
                         integrationInstance.LastSyncStatus = StatusResult.Success.ToString();
                     }
+                    integrationInstance.LastSyncDate = DateTime.Now;
 
                     // Modified by Viral Kadiya related to PL ticket #1449 - Display Last Auto Sync Date, Last Force Sync Date & Last Force Sync User.
                     if (!Common.IsAutoSync)
-                    {
-                        integrationInstance.LastSyncDate = DateTime.Now;
                         integrationInstance.ForceSyncUser = _userId;
-                    }
-                    else
-                        integrationInstance.LastAutoSyncDate = DateTime.Now;
+                    
                     dbouter.Entry(integrationInstance).State = EntityState.Modified;
                     dbouter.SaveChanges();
                 }
 
-                    IntegrationInstanceLog instanceLogEnd = db.IntegrationInstanceLogs.SingleOrDefault(instance => instance.IntegrationInstanceLogId == integrationinstanceLogId);
-                    instanceLogEnd.Status = LogEndStatus;
-                    instanceLogEnd.ErrorDescription = LogEndErrorDescription;
-                    db.Entry(instanceLogEnd).State = EntityState.Modified;
+                IntegrationInstanceLog instanceLogEnd = db.IntegrationInstanceLogs.SingleOrDefault(instance => instance.IntegrationInstanceLogId == integrationinstanceLogId);
+                instanceLogEnd.Status = LogEndStatus;
+                instanceLogEnd.ErrorDescription = LogEndErrorDescription;
+                instanceLogEnd.IsAutoSync = Common.IsAutoSync;      // PL ticket #1449: Update IntegrationInstanceLog that Sync process by Auth or Manual.
+                db.Entry(instanceLogEnd).State = EntityState.Modified;
 
                 instanceLogStart.SyncEnd = DateTime.Now;
                 db.Entry(instanceLogStart).State = EntityState.Modified;

@@ -76,7 +76,7 @@ namespace RevenuePlanner.Controllers
             UpdateIntegrationInstacneLastSyncStatus();
             //// Get Integration Instance List.
             var IntegrationInstanceList = db.IntegrationInstances
-                                            .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationType.IntegrationTypeId == ii.IntegrationTypeId)
+                                            .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId)
                                             .Select(ii => ii).ToList();
 
             List<BDSService.User> lstUser = null;
@@ -86,31 +86,83 @@ namespace RevenuePlanner.Controllers
             IntegrationInstanceListing objInst = null;
             string strForceSyncUser;
             //// Return IntegrationInstance list with specific fields.
-            foreach (var inst in IntegrationInstanceList)
+            if (IntegrationInstanceList != null  && IntegrationInstanceList.Count >0)
             {
-                objInst = new IntegrationInstanceListing();
+                List<int> lstIntegrationInstanceIds = IntegrationInstanceList.Select(ii => ii.IntegrationInstanceId).ToList();
+                var lstAutoSyncInstanceLog = (from log in db.IntegrationInstanceLogs
+                                             where lstIntegrationInstanceIds.Contains(log.IntegrationInstanceId) && log.IsAutoSync == true
+                                             group log by new { log.IntegrationInstanceId} into logdtls
+                                             select logdtls.OrderByDescending(l => l.SyncEnd).FirstOrDefault()).ToList().
+                                             Select(log => new
+                {
+                    IntegrationInstanceId = log.IntegrationInstanceId,
+                    SyncStart = log.SyncStart,
+                    SyncEnd = log.SyncEnd,
+                    IsAutoSync = log.IsAutoSync
+                });
 
-                objInst.IntegrationInstanceId = inst.IntegrationInstanceId;
-                objInst.IntegrationTypeId = inst.IntegrationTypeId;
-                objInst.Instance = (inst.Instance == null || inst.Instance.ToString() == "null") ? "" : inst.Instance;
-                objInst.Provider = (inst.IntegrationType == null || string.IsNullOrEmpty(inst.IntegrationType.Title)) ? "" : inst.IntegrationType.Title;
-                objInst.LastSyncStatus = string.IsNullOrWhiteSpace(inst.LastSyncStatus) ? Common.TextForModelIntegrationInstanceTypeOrLastSyncNull : inst.LastSyncStatus;
-                objInst.LastSyncDate = (inst.LastSyncDate.HasValue ? Convert.ToDateTime(inst.LastSyncDate).ToString(DateFormat) : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull);  // Last Force Sync Date
-                objInst.AutoLastSyncDate = (inst.LastAutoSyncDate.HasValue ? Convert.ToDateTime(inst.LastAutoSyncDate.Value).ToString(DateFormat) : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull); // Last Sync Date of Win Service.
+                var lstForceSyncInstanceLog = (from log in db.IntegrationInstanceLogs
+                                              where lstIntegrationInstanceIds.Contains(log.IntegrationInstanceId) && (log.IsAutoSync == false || log.IsAutoSync == null)
+                                              group log by new { log.IntegrationInstanceId } into logdtls
+                                               select logdtls.OrderByDescending(l => l.SyncEnd).FirstOrDefault()).ToList().
+                                             Select(log => new
+                                             {
+                                                 IntegrationInstanceId = log.IntegrationInstanceId,
+                                                 SyncStart = log.SyncStart,
+                                                 SyncEnd = log.SyncEnd,
+                                                 IsAutoSync = log.IsAutoSync
+                                             });
 
-                #region "Get Force Sync User"
-                strForceSyncUser = string.Empty;
-                if (inst.ForceSyncUser.HasValue && lstUser != null && lstUser.Count > 0)
-                    strForceSyncUser = lstUser.Where(a => a.UserId == inst.ForceSyncUser.Value).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
-                else
-                    strForceSyncUser = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
-                objInst.ForceSyncUser = strForceSyncUser; 
-                #endregion
-                returnList.Add(objInst);
-            }
-            if (returnList != null && returnList.Count > 0)
-            {
-                returnList = returnList.OrderByDescending(intgrtn => intgrtn.Instance, new AlphaNumericComparer()).ToList();
+                foreach (var inst in IntegrationInstanceList)
+                {
+                    objInst = new IntegrationInstanceListing();
+
+                    #region "Get last force sync date"
+                    string strForceSyncDate = string.Empty;
+                    if(lstForceSyncInstanceLog != null && lstForceSyncInstanceLog.Count() >0)
+                    {
+                        var ForceSynclog = lstForceSyncInstanceLog.Where(log => log.IntegrationInstanceId == inst.IntegrationInstanceId).FirstOrDefault();
+                        if (ForceSynclog != null && ForceSynclog.SyncEnd.HasValue)
+                            strForceSyncDate = Convert.ToDateTime(ForceSynclog.SyncEnd.Value).ToString(DateFormat);
+                        else
+                            strForceSyncDate = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                    }
+                    #endregion
+
+                    #region "Get last Auto sync date"
+                    string strAutoSyncDate = string.Empty;
+                    if (lstAutoSyncInstanceLog != null && lstAutoSyncInstanceLog.Count() > 0)
+                    {
+                        var AutoSynclog = lstAutoSyncInstanceLog.Where(log => log.IntegrationInstanceId == inst.IntegrationInstanceId).FirstOrDefault();
+                        if (AutoSynclog != null && AutoSynclog.SyncEnd.HasValue)
+                            strAutoSyncDate = Convert.ToDateTime(AutoSynclog.SyncEnd.Value).ToString(DateFormat);
+                        else
+                            strAutoSyncDate = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                    }
+                    #endregion
+
+                    objInst.IntegrationInstanceId = inst.IntegrationInstanceId;
+                    objInst.IntegrationTypeId = inst.IntegrationTypeId;
+                    objInst.Instance = (inst.Instance == null || inst.Instance.ToString() == "null") ? "" : inst.Instance;
+                    objInst.Provider = (inst.IntegrationType == null || string.IsNullOrEmpty(inst.IntegrationType.Title)) ? "" : inst.IntegrationType.Title;
+                    objInst.LastSyncStatus = string.IsNullOrWhiteSpace(inst.LastSyncStatus) ? Common.TextForModelIntegrationInstanceTypeOrLastSyncNull : inst.LastSyncStatus;
+                    objInst.LastSyncDate = strForceSyncDate;  // Last Force Sync Date
+                    objInst.AutoLastSyncDate = strAutoSyncDate; // Last Sync Date of Win Service.
+
+                    #region "Get Force Sync User"
+                    strForceSyncUser = string.Empty;
+                    if (inst.ForceSyncUser.HasValue && lstUser != null && lstUser.Count > 0)
+                        strForceSyncUser = lstUser.Where(a => a.UserId == inst.ForceSyncUser.Value).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
+                    else
+                        strForceSyncUser = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                    objInst.ForceSyncUser = strForceSyncUser;
+                    #endregion
+                    returnList.Add(objInst);
+                }
+                if (returnList != null && returnList.Count > 0)
+                {
+                    returnList = returnList.OrderByDescending(intgrtn => intgrtn.Instance, new AlphaNumericComparer()).ToList();
+                } 
             }
             return Json(returnList, JsonRequestBehavior.AllowGet);
         }
