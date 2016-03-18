@@ -5523,10 +5523,10 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Get Owners by planID Method
-
-        public List<OwnerModel> GetOwnerList(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, List<Guid> otherownerids)
+        public List<OwnerModel> GetOwnerList(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds)               //modified by rahul shah for PL #2032. display only tactic owner in left pane
         {
-            var lstOwners = GetIndividualsByPlanId(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds, otherownerids);
+            var lstOwners = GetIndividualsByPlanId(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds);
+            //var lstOwners = GetIndividualsByPlanId(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds, otherownerids);
             List<OwnerModel> lstAllowedOwners = lstOwners.Select(owner => new OwnerModel
             {
                 OwnerId = Convert.ToString(owner.UserId),
@@ -5549,6 +5549,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ViewBy">ViewBy option selected from dropdown</param>
         /// <param name="ActiveMenu">current active menu</param>
         /// <returns>returns list of owners in json format</returns>
+        /// modified by rahul shah for PL #2032. display only tactic owner in left pane
         public async Task<JsonResult> GetOwnerListForFilter(string PlanId, string ViewBy, string ActiveMenu)
         {
             try
@@ -5559,7 +5560,7 @@ namespace RevenuePlanner.Controllers
                 // Desc :: Get records from Stored procedure for plan,campaign,program and tactic
                 DataSet dsPlanCampProgTac = new DataSet();
                 dsPlanCampProgTac = (DataSet)objCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
-                List<Guid> planownerids = objDbMrpEntities.Plans.Where(plan => PlanIds.Contains(plan.PlanId)).Select(plan => plan.CreatedBy).Distinct().ToList<Guid>();
+                //List<Guid> planownerids = objDbMrpEntities.Plans.Where(plan => PlanIds.Contains(plan.PlanId)).Select(plan => plan.CreatedBy).Distinct().ToList<Guid>();
                 //// Select Tactics of selected plans
                 //var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && PlanIds.Contains(campaign.PlanId)).ToList();
                 // Add By Nishant Sheth
@@ -5587,7 +5588,7 @@ namespace RevenuePlanner.Controllers
                 objCache.AddCache(Enums.CacheObject.Campaign.ToString(), campaignList);
 
                 var campaignListids = campaignList.Select(campaign => campaign.PlanCampaignId).ToList();
-                List<Guid> campaignownerids = campaignList.Select(campaign => campaign.CreatedBy).Distinct().ToList();
+                //List<Guid> campaignownerids = campaignList.Select(campaign => campaign.CreatedBy).Distinct().ToList();
                 //var programList = objDbMrpEntities.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && campaignListids.Contains(program.PlanCampaignId)).ToList();
                 // Add By Nishant Sheth
                 // Desc :: get preogram records from stored procedure results
@@ -5614,7 +5615,7 @@ namespace RevenuePlanner.Controllers
                 objCache.AddCache(Enums.CacheObject.Program.ToString(), programList);
 
                 var programListids = programList.Select(program => program.PlanProgramId).ToList();
-                List<Guid> programownerids = programList.Select(program => program.CreatedBy).Distinct().ToList();
+                //List<Guid> programownerids = programList.Select(program => program.CreatedBy).Distinct().ToList();
                 // Add By Nishant Sheth
                 // Get Records from cache memory
                 List<Custom_Plan_Campaign_Program_Tactic> customtacticList = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.CustomTactic.ToString());
@@ -5634,7 +5635,8 @@ namespace RevenuePlanner.Controllers
                 //var lstAllTacticCustomFieldEntitiesanony = objSp.GetCustomFieldEntityList(string.Join(",", customfieldidlist));
                 objCache.AddCache(Enums.CacheObject.CustomFieldEntity.ToString(), lstAllTacticCustomFieldEntitiesanony);
                 // Get owner of all entity
-                List<Guid> otherownerids = planownerids.Concat(campaignownerids).Concat(programownerids).Distinct().ToList();
+                //Commented by Rahul Shah for PL #2032 on 16/03/2016
+                //List<Guid> otherownerids = planownerids.Concat(campaignownerids).Concat(programownerids).Distinct().ToList();
 
                 //foreach (var pId in PlanIds)
                 //{
@@ -5682,7 +5684,8 @@ namespace RevenuePlanner.Controllers
                     Title = Convert.ToString(Sessions.User.FirstName + " " + Sessions.User.LastName),
                 };
                 await Task.Delay(1);
-                return Json(new { isSuccess = true, AllowedOwner = GetOwnerList(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds, otherownerids), LoggedInUser = LoggedInUser }, JsonRequestBehavior.AllowGet);
+                //return Json(new { isSuccess = true, AllowedOwner = GetOwnerList(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds, otherownerids), LoggedInUser = LoggedInUser }, JsonRequestBehavior.AllowGet);
+                return Json(new { isSuccess = true, AllowedOwner = GetOwnerList(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds), LoggedInUser = LoggedInUser }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception objException)
             {
@@ -5709,7 +5712,8 @@ namespace RevenuePlanner.Controllers
         /// <param name="ActiveMenu">current active menu</param>
         /// <param name="IsForAddActuals">flag to check call from Add Actual screen</param>
         /// <returns>returns list of users</returns>
-        private List<User> GetIndividualsByPlanId(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, List<Guid> otherownerids)
+        //modified by rahul shah for PL #2032. display only tactic owner in left pane
+        private List<User> GetIndividualsByPlanId(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds)
         {
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
 
@@ -5728,8 +5732,9 @@ namespace RevenuePlanner.Controllers
                 {
                     //// Custom Restrictions applied
                     TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).ToList();
-                }
-                var useridslist = otherownerids.Concat(TacticUserList.Select(tactic => tactic.CreatedBy)).Distinct().ToList();
+                }              
+                var useridslist = TacticUserList.Select(tactic => tactic.CreatedBy).Distinct().ToList();
+                //var useridslist = otherownerids.Concat(TacticUserList.Select(tactic => tactic.CreatedBy)).Distinct().ToList();
                 string strContatedIndividualList = string.Join(",", useridslist.Select(tactic => tactic.ToString()));
                 //var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
                 var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId); //PL 1569 Dashrath Prajapati
@@ -5760,8 +5765,9 @@ namespace RevenuePlanner.Controllers
                 {
                     // Custom Restrictions applied
                     TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).ToList();
-                }
-                var useridslist = otherownerids.Concat(TacticUserList.Select(tactic => tactic.CreatedBy)).Distinct().ToList();
+                }               
+                var useridslist = TacticUserList.Select(tactic => tactic.CreatedBy).Distinct().ToList();
+                //var useridslist = otherownerids.Concat(TacticUserList.Select(tactic => tactic.CreatedBy)).Distinct().ToList();
                 string strContatedIndividualList = string.Join(",", useridslist.Select(tactic => tactic.ToString()));
                 // var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
                 var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId); //PL 1569 Dashrath Prajapati

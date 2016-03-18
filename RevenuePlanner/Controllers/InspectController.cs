@@ -774,7 +774,8 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id">Plan Id</param>
         /// <returns>Returns Partial View Of Campaign.</returns>
-        public PartialViewResult CreateCampaign(int id)
+        /// modified by Rahul Shah on 17/03/2016 for PL #2032 
+        public ActionResult CreateCampaign(int id) 
         {
             //// Get Plan by Id.
             int planId = id;
@@ -802,7 +803,7 @@ namespace RevenuePlanner.Controllers
             pc.EndDate = GetCurrentDateBasedOnPlan(true, planId);
             pc.CampaignBudget = 0;
             pc.AllocatedBy = objPlan.AllocatedBy;
-
+            pc.OwnerId = Sessions.User.UserId;
             #region "Calculate Plan remaining budget by plan Id"
             var lstAllCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanId == planId && campaign.IsDeleted == false).ToList();
             double allCampaignBudget = lstAllCampaign.Sum(campaign => campaign.CampaignBudget);
@@ -810,7 +811,47 @@ namespace RevenuePlanner.Controllers
             double planRemainingBudget = planBudget - allCampaignBudget;
             ViewBag.planRemainingBudget = planRemainingBudget;
             #endregion
-
+            // Added by Rahul Shah on 17/03/2016 for PL #2032 
+            ViewBag.IsCampaignEdit = true;
+            #region "Owner List"
+            try
+            {
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); 
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+                if (lstClientUsers.Count() > 0)
+                {
+                    ViewBag.IsServiceUnavailable = false;
+                    string strUserList = string.Join(",", lstClientUsers);                   
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati                   
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        ViewBag.OwnerList = lstPreparedOwners;
+                    }
+                    else
+                    {
+                        ViewBag.OwnerList = new List<User>();
+                    }
+                }
+                else
+                {
+                    ViewBag.OwnerList = new List<User>();
+                }
+            }
+            catch (Exception e)            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    ViewBag.IsServiceUnavailable = true;
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            #endregion
             return PartialView("_EditSetupCampaign", pc);
         }
 
@@ -1037,7 +1078,8 @@ namespace RevenuePlanner.Controllers
                                 pcobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 pcobj.StartDate = form.StartDate;
                                 pcobj.EndDate = form.EndDate;
-                                pcobj.CreatedBy = Sessions.User.UserId;
+                                //pcobj.CreatedBy = Sessions.User.UserId; // Commented by Rahul Shah on 17/03/2016 for PL #2032 
+                                pcobj.CreatedBy = form.OwnerId; // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                 pcobj.CreatedDate = DateTime.Now;
                                 pcobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign table 
                                 pcobj.CampaignBudget = form.CampaignBudget;
@@ -1047,7 +1089,57 @@ namespace RevenuePlanner.Controllers
 
                                 int campaignid = pcobj.PlanCampaignId;
                                 result = Common.InsertChangeLog(form.PlanId, null, campaignid, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                                Plan pcp = db.Plans.Where(pcobj1 => pcobj1.PlanId.Equals(pcobj.PlanId) && pcobj1.IsDeleted.Equals(false)).FirstOrDefault();
+                               
+                                #region "Send Email Notification For Owner changed"
+                                if (result > 0)
+                                {
+                                    //Send Email Notification For Owner changed.
+                                    if (form.OwnerId != Sessions.User.UserId && form.OwnerId != Guid.Empty)
+                                    {
+                                        if (Sessions.User != null)
+                                        {
+                                            List<string> lstRecepientEmail = new List<string>();
+                                            List<User> UsersDetails = new List<BDSService.User>();
+                                            var csv = string.Concat(form.OwnerId.ToString(), ",", Sessions.User.UserId.ToString(), ",", Sessions.User.UserId.ToString());
 
+                                            try
+                                            {
+                                                UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                ErrorSignal.FromCurrentContext().Raise(e);
+
+                                                //To handle unavailability of BDSService
+                                                if (e is System.ServiceModel.EndpointNotFoundException)
+                                                {
+                                                    //// Flag to indicate unavailability of web service.
+                                                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                                                }
+                                            }
+
+                                            var NewOwner = UsersDetails.Where(u => u.UserId == form.OwnerId).Select(u => u).FirstOrDefault();
+                                            var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                                            if (NewOwner.Email != string.Empty)
+                                            {
+                                                lstRecepientEmail.Add(NewOwner.Email);
+                                            }
+                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                            string PlanTitle = pcobj.Plan.Title.ToString();
+                                            string CampaignTitle = pcobj.Title.ToString();
+                                            string ProgramTitle = pcobj.Title.ToString();
+                                            if (lstRecepientEmail.Count > 0)
+                                            {
+                                                string strURL = GetNotificationURLbyStatus(pcobj.PlanId, form.PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
+                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                            }
+                                        }
+                                    }
+                                }
+
+                                #endregion
                                 #region "Save custom field to CustomField_Entity table"
                                 if (customFields.Count != 0)
                                 {
@@ -1058,14 +1150,15 @@ namespace RevenuePlanner.Controllers
                                         objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;                                        
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
 
                                     }
                                 }
-                                db.SaveChanges();
+                                db.SaveChanges();                                
                                 #endregion
-
+                                // Added by Rahul Shah on 17/03/2016 for PL #2032 
+                                
                                 scope.Complete();
                                 string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                 return Json(new { isSaved = true, msg = strMessage, CampaignID = campaignid });
@@ -1763,7 +1856,8 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.Description = form.Description;
                                 pcpobj.StartDate = form.StartDate;
                                 pcpobj.EndDate = form.EndDate;
-                                pcpobj.CreatedBy = Sessions.User.UserId;
+                                //pcpobj.CreatedBy = Sessions.User.UserId;  // Commented by Rahul Shah on 17/03/2016 for PL #2032 
+                                pcpobj.CreatedBy = form.OwnerId;            // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                 pcpobj.CreatedDate = DateTime.Now;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); //status field added for Plan_Campaign_Program table
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
@@ -1810,6 +1904,57 @@ namespace RevenuePlanner.Controllers
                                 #endregion
 
                                 result = Common.InsertChangeLog(planid, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                                // Added by Rahul Shah on 17/03/2016 for PL #2032 
+                                #region "Send Email Notification For Owner changed"
+                                if (result > 0)
+                                {
+                                    //Send Email Notification For Owner changed.
+                                    if (form.OwnerId != Sessions.User.UserId && form.OwnerId != Guid.Empty)
+                                    {
+                                        if (Sessions.User != null)
+                                        {
+                                            List<string> lstRecepientEmail = new List<string>();
+                                            List<User> UsersDetails = new List<BDSService.User>();
+                                            var csv = string.Concat(form.OwnerId.ToString(), ",", Sessions.User.UserId.ToString(), ",", Sessions.User.UserId.ToString());
+
+                                            try
+                                            {
+                                                UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                ErrorSignal.FromCurrentContext().Raise(e);
+
+                                                //To handle unavailability of BDSService
+                                                if (e is System.ServiceModel.EndpointNotFoundException)
+                                                {
+                                                    //// Flag to indicate unavailability of web service.
+                                                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                                    //// Ticket: 942 Exception handeling in Gameplan.
+                                                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                                                }
+                                            }
+
+                                            var NewOwner = UsersDetails.Where(u => u.UserId == form.OwnerId).Select(u => u).FirstOrDefault();
+                                            var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                                            if (NewOwner.Email != string.Empty)
+                                            {
+                                                lstRecepientEmail.Add(NewOwner.Email);
+                                            }
+                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                            string PlanTitle = pcpobj.Plan_Campaign.Plan.Title.ToString();
+                                            string CampaignTitle = pcpobj.Plan_Campaign.Title.ToString();
+                                            string ProgramTitle = pcpobj.Title.ToString();
+                                            if (lstRecepientEmail.Count > 0)
+                                            {
+                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign.PlanId, form.PlanProgramId, Enums.Section.Program.ToString().ToLower());
+                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Program.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                            }
+                                        }
+                                    }
+                                }
+                                #endregion
                                 Common.ChangeCampaignStatus(pcpobj.PlanCampaignId, false);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
@@ -2466,7 +2611,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Returns Partial View Of Program.</returns>
-        public PartialViewResult CreateProgram(int id = 0)
+        public ActionResult CreateProgram(int id = 0)
         {
             Plan_Campaign pcp = db.Plan_Campaign.Where(pcpobj => pcpobj.PlanCampaignId.Equals(id) && pcpobj.IsDeleted.Equals(false)).FirstOrDefault();
             if (pcp == null)
@@ -2494,6 +2639,7 @@ namespace RevenuePlanner.Controllers
             pcpm.CEndDate = pcp.EndDate;
             pcpm.ProgramBudget = 0;
             pcpm.AllocatedBy = objPlan.AllocatedBy;
+            pcpm.OwnerId=Sessions.User.UserId;
             #endregion
 
             ViewBag.IsOwner = true;
@@ -2506,7 +2652,48 @@ namespace RevenuePlanner.Controllers
             double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
             ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
             #endregion
-
+            // Added by Rahul Shah on 17/03/2016 for PL #2032 
+            ViewBag.IsProgramEdit = true;
+            #region "Owner list"
+            try
+            {
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); //PL #1532 Dashrath Prajapati
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+                if (lstClientUsers.Count() > 0)
+                {
+                    ViewBag.IsServiceUnavailable = false;
+                    ViewBag.OwnerName = Common.GetUserName(pcp.CreatedBy.ToString());
+                    string strUserList = string.Join(",", lstClientUsers);                   
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        ViewBag.OwnerList = lstPreparedOwners;
+                    }
+                    else
+                    {
+                        ViewBag.OwnerList = new List<User>();
+                    }
+                }
+                else
+                {
+                    ViewBag.OwnerList = new List<User>();
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    ViewBag.IsServiceUnavailable = true;
+                }
+            }
+            #endregion
             return PartialView("_EditSetupProgram", pcpm);
         }
         #endregion
@@ -4112,7 +4299,8 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.IsDeployedToIntegration = isDeployedToIntegration;
                                 pcpobj.StageId = form.StageId;
                                 pcpobj.ProjectedStageValue = form.ProjectedStageValue;
-                                pcpobj.CreatedBy = Sessions.User.UserId;
+                                //pcpobj.CreatedBy = Sessions.User.UserId;   // commented by Rahul Shah on 17/03/2016 for PL #2032 
+                                pcpobj.CreatedBy = form.OwnerId;             // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                 pcpobj.CreatedDate = DateTime.Now;
                                 pcpobj.TacticBudget = form.Cost; //modified for 1229
                                 if (isDeployedToIntegration)
@@ -4228,6 +4416,55 @@ namespace RevenuePlanner.Controllers
 
                                 if (result >= 1)
                                 {
+                                    // Added by Rahul Shah on 17/03/2016 for PL #2032 
+                                    #region "Send Email Notification For Owner changed"
+                                    //Send Email Notification For Owner changed.
+                                    if (form.OwnerId != Sessions.User.UserId && form.OwnerId != Guid.Empty)
+                                    {
+                                        if (Sessions.User != null)
+                                        {
+                                            List<string> lstRecepientEmail = new List<string>();
+                                            List<User> UsersDetails = new List<BDSService.User>();
+                                            var csv = string.Concat(form.OwnerId.ToString(), ",", Sessions.User.UserId.ToString(), ",", Sessions.User.UserId.ToString());
+
+                                            try
+                                            {
+                                                UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                ErrorSignal.FromCurrentContext().Raise(e);
+
+                                                //To handle unavailability of BDSService
+                                                if (e is System.ServiceModel.EndpointNotFoundException)
+                                                {
+                                                    //// Flag to indicate unavailability of web service.
+                                                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                                    //// Ticket: 942 Exception handeling in Gameplan.
+                                                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                                                }
+                                            }
+
+                                            var NewOwner = UsersDetails.Where(u => u.UserId == form.OwnerId).Select(u => u).FirstOrDefault();
+                                            var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                                            if (NewOwner.Email != string.Empty)
+                                            {
+                                                lstRecepientEmail.Add(NewOwner.Email);
+                                            }
+                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                            string PlanTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString();
+                                            string CampaignTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString();
+                                            string ProgramTitle = pcpobj.Plan_Campaign_Program.Title.ToString();
+                                            if (lstRecepientEmail.Count > 0)
+                                            {
+                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
+                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                            }
+                                        }
+
+                                    }
+                                    #endregion
                                     Common.ChangeProgramStatus(pcpobj.PlanProgramId, false);
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcpobj.PlanProgramId).Select(a => a.PlanCampaignId).Single();
                                     Common.ChangeCampaignStatus(PlanCampaignId, false);
@@ -5086,12 +5323,13 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id">Plan Program Id</param>
         /// <returns>Returns Partial View Of Tactic.</returns>
-        public PartialViewResult CreateTactic(int id = 0)
+        /// modified by Rahul Shah on 17/03/2016 for PL #2032 
+        public ActionResult CreateTactic(int id = 0) 
         {
 
             Plan_Campaign_Program pcpt = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id)).FirstOrDefault();
             //// Get PlanId by PlanCampaignId.
-
+            Inspect_Popup_Plan_Campaign_Program_TacticModel pcptm = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
             var objPlan = pcpt.Plan_Campaign.Plan;
             int PlanId = objPlan.PlanId;
             //// Get those Tactic types whose ModelId exist in Plan table and IsDeployedToModel = true.
@@ -5113,7 +5351,6 @@ namespace RevenuePlanner.Controllers
 
 
             #region "Set Inspect_Popup_Plan_Campaign_Program_TacticModel to pass into Partialview"
-            Inspect_Popup_Plan_Campaign_Program_TacticModel pcptm = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
             pcptm.PlanProgramId = id;
             pcptm.IsDeployedToIntegration = false;
             pcptm.StageId = 0;
@@ -5136,16 +5373,58 @@ namespace RevenuePlanner.Controllers
             pcptm.IsOwner = true;
             pcptm.RedirectType = false;
             pcptm.Year = db.Plans.Single(p => p.PlanId.Equals(PlanId)).Year;
-
+            pcptm.OwnerId = Sessions.User.UserId;
 
             #endregion
 
             if (tactics.ToList().Count == 1)
             {
                 pcptm.TacticTypeId = tactics.FirstOrDefault().TacticTypeId;
-                
             }
+            // Added by Rahul Shah on 17/03/2016 for PL #2032 
+            pcptm.IsTackticAddEdit = true;
+            #region "Owner List"
+            try
+            {
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); // PL #1532 Dashrath Prajapati
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
 
+                if (lstClientUsers.Count() > 0)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    ViewBag.IsServiceUnavailable = false;
+                    string strUserList = string.Join(",", lstClientUsers);
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); 
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        pcptm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
+                    }
+                    else
+                    {
+                        pcptm.OwnerList = new List<SelectListUser>();
+                    }
+                }
+                else
+                {
+                    pcptm.OwnerList = new List<SelectListUser>();
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    ViewBag.IsServiceUnavailable = true;
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            #endregion
             return PartialView("SetupEditAdd", pcptm);
         }
 
@@ -7362,6 +7641,7 @@ namespace RevenuePlanner.Controllers
                                     LinkedobjLineitem.EndDate = null;
                                     // LinkedobjLineitem.Cost = form.Cost;
                                     LinkedobjLineitem.CreatedBy = Sessions.User.UserId;
+                                    //LinkedobjLineitem.CreatedBy = form.OwnerId;
                                     LinkedobjLineitem.CreatedDate = DateTime.Now;
                                     db.Entry(LinkedobjLineitem).State = EntityState.Added;
                                     int Finalresult = db.SaveChanges();
@@ -7380,11 +7660,62 @@ namespace RevenuePlanner.Controllers
                                 objLineitem.StartDate = null;
                                 objLineitem.EndDate = null;
                                 objLineitem.Cost = form.Cost;
-                                objLineitem.CreatedBy = Sessions.User.UserId;
+                                //objLineitem.CreatedBy = Sessions.User.UserId;  //commented by Rahul Shah on 17/03/2016 for PL #2032
+                                objLineitem.CreatedBy = form.OwnerId;            //added by Rahul Shah on 17/03/2016 for PL #2032
                                 objLineitem.CreatedDate = DateTime.Now;
                                 objLineitem.LinkedLineItemId = NewLinkLineItemID == 0 ? null : NewLinkLineItemID;
                                 db.Entry(objLineitem).State = EntityState.Added;
                                 int result = db.SaveChanges();
+                                //Added by Rahul Shah on 17/03/2016 for PL #2068
+                                if (result > 0) {
+                                    #region "Send Email Notification For Owner changed"
+                                    //Send Email Notification For Owner changed.
+                                    if (form.OwnerId != Sessions.User.UserId && form.OwnerId != Guid.Empty)
+                                    {
+                                        if (Sessions.User != null)
+                                        {
+                                            List<string> lstRecepientEmail = new List<string>();
+                                            List<User> UsersDetails = new List<BDSService.User>();
+                                            var csv = string.Concat(form.OwnerId.ToString(), ",", Sessions.User.UserId.ToString(), ",", Sessions.User.UserId.ToString());
+
+                                            try
+                                            {
+                                                UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                ErrorSignal.FromCurrentContext().Raise(e);
+
+                                                //To handle unavailability of BDSService
+                                                if (e is System.ServiceModel.EndpointNotFoundException)
+                                                {
+                                                    //// Flag to indicate unavailability of web service.                                                    
+                                                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                                                }
+                                            }
+
+                                            var NewOwner = UsersDetails.Where(u => u.UserId == form.OwnerId).Select(u => u).FirstOrDefault();
+                                            var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                                            if (NewOwner.Email != string.Empty)
+                                            {
+                                                lstRecepientEmail.Add(NewOwner.Email);
+                                            }
+                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                            string PlanTitle = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString();
+                                            string CampaignTitle = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString();
+                                            string ProgramTitle = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString();
+                                            string TacticTitle = objLineitem.Plan_Campaign_Program_Tactic.Title.ToString();
+                                            if (lstRecepientEmail.Count > 0)
+                                            {
+                                                string strURL = GetNotificationURLbyStatus(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanLineItemId, Enums.Section.LineItem.ToString().ToLower());
+                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, TacticTitle, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL,objLineitem.Title);
+                                            }
+                                        }
+
+                                    }
+                                    #endregion
+                                }
                                 lineItemId = objLineitem.PlanLineItemId;
                                 #endregion
 
@@ -7420,7 +7751,7 @@ namespace RevenuePlanner.Controllers
                                         LineitemBudgetMapping = new LineItem_Budget();
                                         LineitemBudgetMapping.BudgetDetailId = item.Id;
                                         LineitemBudgetMapping.PlanLineItemId = lineItemId;
-                                        LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
+                                        LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;                                       
                                         LineitemBudgetMapping.CreatedDate = DateTime.Now;
                                         LineitemBudgetMapping.Weightage = (byte)item.Weightage;
                                         db.Entry(LineitemBudgetMapping).State = EntityState.Added;
@@ -7533,7 +7864,8 @@ namespace RevenuePlanner.Controllers
                                             objLinkedNewLineitem.Cost = 0;
                                         }
                                         objLinkedNewLineitem.Description = string.Empty;
-                                        objLinkedNewLineitem.CreatedBy = Sessions.User.UserId;
+                                        //objLinkedNewLineitem.CreatedBy = Sessions.User.UserId;  // commented by Rahul Shah on 17/03/2016 for PL #2032 
+                                        objLinkedNewLineitem.CreatedBy = form.OwnerId;            // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                         objLinkedNewLineitem.CreatedDate = DateTime.Now;
                                         db.Entry(objLinkedNewLineitem).State = EntityState.Added;
                                         db.SaveChanges();
@@ -7550,7 +7882,8 @@ namespace RevenuePlanner.Controllers
                                         objNewLineitem.Cost = 0;
                                     }
                                     objNewLineitem.Description = string.Empty;
-                                    objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                    //objNewLineitem.CreatedBy = Sessions.User.UserId;  // commented by Rahul Shah on 17/03/2016 for PL #2032 
+                                    objNewLineitem.CreatedBy = form.OwnerId;            // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                     objNewLineitem.CreatedDate = DateTime.Now;
                                     objNewLineitem.LinkedLineItemId = objLinkedNewLineitem.PlanLineItemId;
                                     db.Entry(objNewLineitem).State = EntityState.Added;
@@ -7948,6 +8281,7 @@ namespace RevenuePlanner.Controllers
                                     //End
                                 }
 
+                                Guid oldOwnerId = objLineitem.CreatedBy;  //Added by Rahul Shah on 17/03/2016 for PL #2068 
                                 objLineitem.ModifiedBy = Sessions.User.UserId;
                                 objLineitem.CreatedBy = form.OwnerId;
                                 objLineitem.ModifiedDate = DateTime.Now;
@@ -8022,7 +8356,58 @@ namespace RevenuePlanner.Controllers
 
                                 int result;
                                 result = Common.InsertChangeLog(planid, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                                result = db.SaveChanges();
+                                db.SaveChanges();
+                                //Added by Rahul Shah on 17/03/2016 for PL #2068 
+                                if (result > 0)
+                                {
+                                    #region "Send Email Notification For Owner changed"
+                                    //Send Email Notification For Owner changed.
+                                    if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                    {
+                                        if (Sessions.User != null)
+                                        {
+                                            List<string> lstRecepientEmail = new List<string>();
+                                            List<User> UsersDetails = new List<BDSService.User>();
+                                            var csv = string.Concat(form.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+
+                                            try
+                                            {
+                                                UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                ErrorSignal.FromCurrentContext().Raise(e);
+
+                                                //To handle unavailability of BDSService
+                                                if (e is System.ServiceModel.EndpointNotFoundException)
+                                                {
+                                                    //// Flag to indicate unavailability of web service.                                                    
+                                                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                                                }
+                                            }
+
+                                            var NewOwner = UsersDetails.Where(u => u.UserId == form.OwnerId).Select(u => u).FirstOrDefault();
+                                            var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                                            if (NewOwner.Email != string.Empty)
+                                            {
+                                                lstRecepientEmail.Add(NewOwner.Email);
+                                            }
+                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                            string PlanTitle = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString();
+                                            string CampaignTitle = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString();
+                                            string ProgramTitle = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString();
+                                            string TacticTitle = objLineitem.Plan_Campaign_Program_Tactic.Title.ToString();
+                                            if (lstRecepientEmail.Count > 0)
+                                            {
+                                                string strURL = GetNotificationURLbyStatus(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanLineItemId, Enums.Section.LineItem.ToString().ToLower());
+                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, TacticTitle, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL, objLineitem.Title);
+                                            }
+                                        }
+
+                                    }
+                                    #endregion
+                                }
                                 if (LinkedLineitemId != null)
                                 {
                                     if (isMultiYearlinkedTactic)
@@ -9441,7 +9826,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id">Tactic Id</param>
         /// <returns>Returns Partial View Of Campaign.</returns>
-        public PartialViewResult createLineitem(int id)
+        public ActionResult createLineitem(int id)
         {
             int tacticId = id;
             var pcpt = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId.Equals(tacticId) && _tactic.IsDeleted == false).FirstOrDefault();
@@ -9477,9 +9862,54 @@ namespace RevenuePlanner.Controllers
             pc.AllocatedBy = objPlan.AllocatedBy;
             pc.IsOtherLineItem = false;
             pc.AllocatedBy = objPlan.AllocatedBy;
-            pc.IsLineItemAddEdit = false;
+            pc.IsLineItemAddEdit = true;//modified by Rahul Shah on 17/03/2016 for PL #2032 
+            pc.OwnerId = Sessions.User.UserId;
             #endregion
+            //Added by Rahul Shah on 17/03/2016 for PL #2032 
+            #region "Owner List"
+            try
+            {  
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); // PL #1532 Dashrath Prajapati
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
 
+                if (lstClientUsers.Count() > 0)
+                {
+                    //// Flag to indicate unavailability of web service.                   
+                    ViewBag.IsServiceUnavailable = false;
+                    string strUserList = string.Join(",", lstClientUsers);                    
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                        pc.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
+                    }
+                    else
+                    {
+
+                        pc.OwnerList = new List<SelectListUser>();
+                    }
+                }
+                else
+                {
+
+                    pc.OwnerList = new List<SelectListUser>();
+                }                
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.                  
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            #endregion
             return PartialView("_EditSetupLineitem", pc);
         }
         #endregion
@@ -12247,6 +12677,11 @@ namespace RevenuePlanner.Controllers
                 //modified by Rahul Shah on 09/03/2016 for PL #1939
                 else if (section == Convert.ToString(Enums.Section.Plan).ToLower()) {
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, activeMenu = "Plan" }, Request.Url.Scheme);
+                }
+                //Added by Rahul Shah on 17/03/2016 for PL #2068
+                else if (section == Convert.ToString(Enums.Section.LineItem).ToLower())
+                {
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planLineItemId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
                 }
 
             }
