@@ -2975,7 +2975,12 @@ ul.welcome-sprite {
         font-size: 22px;
         border-bottom: 1px solid #c7ced1;
     }
-
+#table_baseline tbody tr{
+        font-size: 16px; /* Added by Bhumika #1449*/
+}
+.integration-form .nl-field .nl-field-toggle {
+        font-size: 20px; /* Added by Bhumika #1449*/
+}
 span.circle-check-icon,
 span.circle-check-icon-blue,
 span.circle-check-icon-gray-integration,
@@ -10436,9 +10441,9 @@ li.close-list {
   float: left;
   line-height: normal;
   margin-left: 2px;
-    margin-top: 0;
-  width: 20px;
-  height:21px;
+  margin-top: 0;
+  width: 19px; /*20px changed by Bhumika #1997 18-3-2016 */
+  height:20px;
   cursor:pointer;
 }
    /*.honeycombbox-icon-gantt  .st1 {
@@ -10449,13 +10454,13 @@ li.close-list {
    
  .honeycombbox-icon-gantt-Active {
   background: rgba(0, 0, 0, 0) url("../images/honeycomb-icon-active.png") no-repeat scroll center center / 100% auto;
-    float: left;
-  height: 21px;
+  float: left;
   line-height: normal;
   margin-left: 2px;
-    margin-top: 0;
-  width: 20px;
-    cursor:pointer;
+  margin-top: 0;
+  height: 20px;
+  width: 19px; /*20px changed by Bhumika #1997 18-3-2016 */
+  cursor:pointer;
 }
    /*.honeycombbox-icon-gantt-Active  .st1 {
      fill: transparent;
@@ -10608,7 +10613,7 @@ li.close-list {
 }
 .calender-view-honeycomb
 {
-    margin-top:6px;
+    margin-top:7px; /*Changed by bhumika #1997 */
 }
 .home-content-header .sbHolder,.home-content-header  .ui-multiselect .ui-icon
 {
@@ -13368,7 +13373,7 @@ border-bottom: 0 solid #d3d3d3 !important;
     height: 22px;
     opacity: 1;
     position: relative;
-    width: 22px;
+    width: 20px; /* 22px; changed on 17-3-2016 #1997 Invisible Honeycomb on zooming 90%*/
     /*margin: 6px auto 0;*/
     margin: 6px 0 0; /*modified by Rahul on 03/12/2015 for PL #1780*/
 }
