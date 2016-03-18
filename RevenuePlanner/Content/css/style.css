@@ -2490,8 +2490,11 @@ ul.welcome-sprite {
     background: url(../images/close-x.png) no-repeat !important;
     float: right;
     cursor: pointer;
+    border:0; /*added by bhumika to remove border on close button*/
 }
 
+button, button:hover, button:focus{outline:0 none !important} /*added by bhumika to remove outline on close button*/
+ 
 .gradient-div-inspect-review {
     border-left: 40px solid #39B54A !important;
     margin-left: -20px !important;
@@ -2975,10 +2978,10 @@ ul.welcome-sprite {
         font-size: 22px;
         border-bottom: 1px solid #c7ced1;
     }
-#table_baseline tbody tr{
+#table_baseline.tbl-external-service tbody tr{
         font-size: 16px; /* Added by Bhumika #1449*/
 }
-.integration-form .nl-field .nl-field-toggle {
+.tbl-external-service .nl-field .nl-field-toggle {
         font-size: 20px; /* Added by Bhumika #1449*/
 }
 span.circle-check-icon,
@@ -8325,7 +8328,7 @@ tbody.column4 {
 .column4 div {
     min-width: 88px;
 }
-
+.budget-table .column2 div{min-width:94px} /* to adjust column width #2065 18-3-2016 */
 .column2 tr td:last-child {
     border-right: none;
 }
@@ -8393,7 +8396,9 @@ div.sub {
 .lineitemLevel {
     background: #F2F2F2;
 }
-
+.budget-table .lineitemLevel {
+    background: #fff;
+}
 .column1 .campaignLevel,
 .column1 .campaignLevelReport,
 .column1 .event-row div,
@@ -16084,7 +16089,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 /* #2015 new style Icons  Start Add by bhumika*/
 
 #BtnTabIcons{margin-left:0}
-.request-icon-block a {padding:8px 18px}
+#BtnTabIcons .request-icon-block a {padding:8px 18px}
 
 .request-icon-block .request-icon-link {
     background: #fff none no-repeat scroll left center;
@@ -16099,7 +16104,9 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 }
 
 .nav-tabs li .request .badge, .nav-tabs li .request-icon-block a,.nav-tabs li .request-icon-block a:hover, .nav-tabs li .request-icon-block a:focus{color: #000;}
-.new-btn-plan{ border-radius: 5px 0 0 5px;}
+#BtnTabIcons .new-btn-plan{ border-radius: 5px 0 0 5px;}
+#divCostBudget  #aonCost.new-btn-plan{border-radius: 5px 0 0 5px;} /*Added by Bhumika #2065 18-3-2016*/ 
+
 
 #RequestTab .request{border-radius: 5px; margin-left: 10px;padding: 8px 10px;}
 

@@ -78,6 +78,7 @@
     .margin-top-50 {
         margin-top: 50px;
     }
+    
 </style>
 
 @Html.Hidden("hdnBudgetingBussinessUnitId", BudgetingBussinessUnitId)
@@ -119,7 +120,8 @@
     </div>
  <div id="divCostBudget">
       <label for="Cost_By:" id="lblCostBudget" style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important;font-size:13px; float:left; margin-right:10px; font-weight:bold; top:0px; padding-top:5px;">Cost vs Budget:</label>
-		     <div class="request-icon-block" style="top:0px; cursor:pointer;"><a id="aonCost" class="request" style="padding: 6px 27px 4px;">ON</a></div>
+		     @*<div class="request-icon-block" style="top:0px; cursor:pointer;"><a id="aonCost" class="request" style="padding: 6px 27px 4px;">ON</a></div>*@
+            <div class="request-icon-block" style="top:0px; cursor:pointer;"><a id="aonCost" class="new-btn-plan">ON</a></div>
             <div class="request-icon-block" style="top:0px; cursor:pointer;"><a id="aoffCost" class="new-btn-plan request-btn-active">OFF</a></div>
 </div>
 </div>
