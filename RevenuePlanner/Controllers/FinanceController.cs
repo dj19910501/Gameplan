@@ -492,6 +492,22 @@ namespace RevenuePlanner.Controllers
 
                 LineItemidBudgetList = LineItemidBudgetList.Where(lnBudget => tblPlanLineItemIds.Contains(lnBudget.PlanLineItemId)).ToList();
 
+                //Added By Maitri Gandhi on 18/03/2016 for #1888 
+                if (LineItemidBudgetList.Count() >= 0)
+                {
+                    LineItem_Budget LinkedTactic;
+                    for (int i = 0; i < LineItemidBudgetList.Count();i++ )
+                    {
+                        LinkedTactic = new LineItem_Budget();
+                        LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
+                        if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                        {
+                            LineItemidBudgetList.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                }
+
                 // Change By Nishant Sheth
                 List<int> PlanLineItemBudgetDetail = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
                 List<int> LineItemids = tblPlanLineItemIds.Where(a => PlanLineItemBudgetDetail.Contains(a)).ToList();
