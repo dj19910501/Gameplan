@@ -114,6 +114,12 @@
         @*var BackHeadTitle = '@Convert.ToString(TempData["ConvBackParentLabel"])';*@
         var iscard = '@IsCard';
         var elemString;
+        //Modified by Komal Rawal for #2067 to set display none for back button on first page 
+        if (BackHeadTitle == '' || BackHeadTitle == null) {
+            $("#BtnBack").css('display', 'none');
+            $("#div-mareketing-drp").css('display', 'block');
+           
+        }
         if (iscard.toLowerCase() != "false") {
 
             var HeadTitle = document.getElementById('head-title');
@@ -289,7 +295,7 @@
             $(_lblPercentage).html(_formtPercentage);
         });
     }
-
+    var BackRequest = null;
     function BtnBackClick() {
         myApp.showPleaseWait(); //New
         BackFwdConverstionList.splice(BackFwdConverstionList.length - 1, 1);
@@ -311,9 +317,40 @@
                 InnerBackchildLabel = '@RevenuePlanner.Helpers.Common.RevenueCampaign';
             }
         }*@
-        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code + "&IsBackClick=" + true + "&marsterCustomField=" + marsterCustomField;
-        $("#dvConversionToPlan").load(_url);
+        //Commented by Komal to convert to ajax request
+        @*var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code + "&IsBackClick=" + true + "&marsterCustomField=" + marsterCustomField;
+        $("#dvConversionToPlan").load(_url);*@
+        var url = '@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")'
 
+        BackRequest = $.ajax({
+            beforeSend: function (x) {
+
+                //Added By Komal Rawal for #2067 to abort previous ajax if any request is called before completion of previou request.
+                if (BackRequest != null) {
+                    BackRequest.abort();
+                }
+            },
+            type: 'POST',
+            url: url,
+            async: true,
+            data: {
+                ParentLabel: BackParentLabel,
+                childlabelType: InnerBackchildLabel,
+                childId: BackId,
+                option: OptionMain,
+                IsQuarterly: Qurt_Month,
+                marsterCustomField: marsterCustomField,
+                code: code,
+                IsBackClick: true
+            },
+            success: function (response) {
+                $('#dvConversionToPlan').html('');
+                $('#dvConversionToPlan').html(response);
+                LoadPagination();
+                BackRequest = null
+                //   isAllowClick = true;
+            }
+        });
 
         if (marsterCustomField == '@RevenuePlanner.Helpers.Common.RevenueCampaign' && BackChildLabel == '') {
             $("#ddlCampaignConversionToPlan").css('display', 'none');
