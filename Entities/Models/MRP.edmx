@@ -3400,7 +3400,6 @@
           <NavigationProperty Name="IntegrationWorkFrontRequestQueues" Relationship="MRPModel.FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequestQueue" />
           <NavigationProperty Name="IntegrationWorkFrontUsers" Relationship="MRPModel.FK_IntegrationWorkFrontUsers_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontUser" />
           <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequest" />
-          <Property Type="DateTime" Name="LastAutoSyncDate" Precision="3" />
           <Property Type="Guid" Name="ForceSyncUser" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">

@@ -3,7 +3,16 @@
 @using RevenuePlanner.Helpers
 @using Newtonsoft.Json;
 @{
-    var cardsectionList = Model.CardSectionListModel != null ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
+  //  var cardsectionList = Model.CardSectionListModel != null ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
+
+  //Modified By komal RAwal for #2067 to handle null Model values.
+
+    var cardsectionList = string.Empty;
+
+    if (Model != null && Model.CardSectionListModel != null)
+    {
+        cardsectionList = JsonConvert.SerializeObject(Model.CardSectionListModel);
+    }
     // Add By Nishant Sheth For pagination dropdwon with Enums
     List<RevenuePlanner.Models.ViewByModel> ListPageSize = new List<RevenuePlanner.Models.ViewByModel>();
     foreach (var PerPage in Enums.PerPageSize)
@@ -27,8 +36,18 @@
       // ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
     //}
     // End By Nishant Sheth
-    var TotalRecords = Model.TotalRecords;
-    var CurrentPageNum = Model.CuurentPageNum;
+    
+    //var TotalRecords = Model.TotalRecords;
+    //var CurrentPageNum = Model.CuurentPageNum;
+
+    var TotalRecords = 0;
+    var CurrentPageNum = 0;
+    if (Model != null)
+    {
+        TotalRecords = Model.TotalRecords;
+        CurrentPageNum = Model.CuurentPageNum;
+    }
+    
 }
 <style>
     .carvdval-block {
@@ -133,7 +152,7 @@
         // End By Nishant Sheth
         var Strbundle = "";
         var sb = getStringBuilder();
-       $.each(_CardData, function (key, value) {
+        $.each(_CardData, function (key, value) {
 
             // Add By Nishant Sheth
             _btnDetailsId = 'buttonDtls_' + _fieldId;
@@ -207,11 +226,11 @@
             }
             //alert("key: " + key + ", Value: " + value.title);
             //_cardhtml = _cardhtml + '<div class="region-content">';
-           sb.append('<div class="region-content" inqval="' + _Inq_proj + '" tqlval="' + _Tql_proj + '" cwval="' + _Cw_proj + '" id="carddiv_' + divid + '" title="' + _title + '">');
-           sb.append('<div>');
-           sb.append('<div class="report-btn-group">');
-           sb.append('<div>');
-           sb.append('<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>');
+            sb.append('<div class="region-content" inqval="' + _Inq_proj + '" tqlval="' + _Tql_proj + '" cwval="' + _Cw_proj + '" id="carddiv_' + divid + '" title="' + _title + '">');
+            sb.append('<div>');
+            sb.append('<div class="report-btn-group">');
+            sb.append('<div>');
+            sb.append('<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>');
             //_cardhtml = _cardhtml + '<button id="" class="btn btn-blue text-shadow-blue source-sans-proregular" name="">Details</button>';
             var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
@@ -298,7 +317,7 @@
         CheckData();
     });
 
-      
+
     function getStringBuilder() {
         var data = [];
         var counter = 0;
@@ -504,7 +523,7 @@
             $(_lblPercentage).html(_formtPercentage);
         });
     }
-
+    var Request = null;
     function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _MqlActualProj, _MqlGoal, _MqlPercentage, _MqlisNegativePercntg) {
         IsCardDetailsClick = true;
         var _BackFwdVar = {
@@ -539,9 +558,43 @@
         var Qurt_Month = AllocatedBy;
         var Code = $("#ddlINQToPlan").val();
         //myApp.showPleaseWait();// New
+        var url = '@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")'
+        //Commented By Komal Rawal for #2067 to convert to ajax.
+        @*var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
+        $("#dvConversionToPlan").load(_url);*@
 
-        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
-        $("#dvConversionToPlan").load(_url);
+        Request = $.ajax({
+            beforeSend: function (x) {
+              
+                //Modified By komal RAwal for #2067 to handle null Model values by aborting previous requests.
+                if (Request != null) {
+                    Request.abort();
+                }
+            },
+            type: 'POST',
+            url: url,
+            async: true,
+            data: {
+                ParentLabel: parentlabel,
+                childlabelType: Type,
+                childId: id,
+                option: OptionMain,
+                IsQuarterly: Qurt_Month,
+                BackHeadTitle: HeadTitleval,
+                code: Code,
+                isDetails : true
+            },
+            success: function (response) {
+                $('#dvConversionToPlan').html('');
+                $('#dvConversionToPlan').html(response);
+                LoadPagination();
+                Request = null;
+                //   isAllowClick = true;
+            }
+        });
+
+
+
         // formatHeaderValues(_MqlActualProj, _MqlGoal, _MqlPercentage, _MqlisNegativePercntg);
         if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
@@ -605,7 +658,7 @@
             }
         }
         else if (masterlabel == '@Common.ProgramCustomTitle') {
-           // masterCustomFieldOptionId = id;
+            // masterCustomFieldOptionId = id;
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 $("#CampaignChildDDL").css('display', '');
                 $("#CustomFieldChildDDL").css('display', 'none');
@@ -703,7 +756,7 @@
                 id: id,
                 marsterCustomField: marsterCustomField,
                 masterCustomFieldOptionId: masteroptionid,
-                selectOption:optionmain
+                selectOption: optionmain
             },
             success: function (data) {
                 $("#ddlProgramConversionToPlan").empty();
@@ -746,7 +799,7 @@
                 type: Type,
                 marsterCustomField: marsterCustomField,
                 masterCustomFieldOptionId: masteroptionid,
-                selectOption:optionmain
+                selectOption: optionmain
             },
             success: function (data) {
                 $("#ddlTacticConversionToPlan").empty();
@@ -774,7 +827,6 @@
     /// Add By Nishant Sheth For Pagination and sorting: 03-Jul-2015
 
     function LoadPagination() {
-
         //how much items per page to show
         var show_per_page = $('#Itemsperpage :selected').text();
         // var show_per_page = 1;
@@ -1041,7 +1093,7 @@
         var sortBy = $("#ddlSortby :selected").val(); //#PL 1482 changed byDashrath Prajapati
         //myApp.showPleaseWait();
         //var SearchString = $('#txtSearch').val();
-        var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString)+ "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
         //myApp.hidePleaseWait();
         //LoadPagination();
@@ -1094,7 +1146,7 @@
 
     function PrevNextDotButtons(pageNumber, button) {
 
-        
+
         var show_per_page = $('#Itemsperpage :selected').text();
         // var show_per_page = 1;
         //getting the amount of elements inside content div
@@ -1186,7 +1238,7 @@
                     var minimum = Array.min(PageSeries);
                     var maximum = Array.max(PageSeries);
                     if (i == 0) {
-                        
+
                         for (var j = minimum; j <= maximum; j++) {
                             if (j <= number_of_pages) {
                                 $('.page_link[longdesc=' + j + ']').css('display', 'block');
@@ -1210,7 +1262,7 @@
                                 $('.page_link[longdesc=' + j + ']').css('display', 'block');
                             }
                         }
-                        
+
                         $("#nextmore").css("display", "block");
                         $("#lastnum").css("display", "block");
 
@@ -1224,7 +1276,7 @@
                         $("#prevmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(minimum) - 1) + ",'prev');");
                     }
                     else {
-                        
+
                         for (var j = (number_of_pages - 6) ; j <= number_of_pages; j++) {
                             if (j <= number_of_pages) {
                                 $('.page_link[longdesc=' + j + ']').css('display', 'block');
@@ -1365,15 +1417,15 @@
     //    }
     //});
     /// End By Nishant Sheth
-    //PL #1399 added by dashrath prajapati 
+    //PL #1399 added by dashrath prajapati
     function CheckData() {
-        var totRec = '@Model.TotalRecords';
-           if (totRec == '0') {
-               $("#NorecordfoundMsg").css("display", "block");
+        var totRec = '@TotalRecords';
+        if (totRec == '0') {
+            $("#NorecordfoundMsg").css("display", "block");
         }
         else {
-               $("#NorecordfoundMsg").css("display", "none");
+            $("#NorecordfoundMsg").css("display", "none");
         }
     }
-    //END PL #1399 added by dashrath prajapati 
+    //END PL #1399 added by dashrath prajapati
 </script>

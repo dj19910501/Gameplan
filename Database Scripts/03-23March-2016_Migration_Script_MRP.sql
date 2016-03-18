@@ -28,6 +28,32 @@ ADD  ForceSyncUser uniqueidentifier
 END 
 GO
 
+/* ------------- Start - Related to PL ticket #2068 ------------- 
+Created By: Rahul
+Created Date: 03/18/2016
+Description: Add Email Template for line Item
+*/
+GO
+DECLARE @NotificationInternalUseOnly nvarchar (max) = 'LineItemOwnerChanged'
+DECLARE @Title nvarchar (50) = 'Line Item Owner Changed'
+DECLARE @Description nvarchar (50) = 'When owner of Line Item changed'
+DECLARE @NotificationType nvarchar (10) = 'CM'
+DECLARE @EmailContent nvarchar (max) = 'Dear [NameToBeReplaced],<br><br>[ModifierName] has made you the owner of following Line Item.<br><br><table><tr><td>Line Item</td><td>:</td><td>[lineitemname]</td></tr><tr><td>Tactic</td><td>:</td><td>[tacticname]</td></tr><tr><td>Program</td><td>:</td><td>[programname]</td></tr><tr><td>Campaign</td><td>:</td><td>[campaignname]</td></tr><tr><td>Plan</td><td>:</td><td>[planname]</td></tr><tr><td>URL</td><td>:</td><td>[URL]</td></tr></table><br>Thank You,<br>Hive9 Plan Admin'
+DECLARE @isDeleted bit = 0
+DECLARE @CreatedBy nvarchar (50) 
+DECLARE @ModifiedBy nvarchar (50)
+DECLARE @Subject nvarchar (50) = 'Plan : Line Item owner has been changed'
+
+select @CreatedBy = CreatedBy from [Notification] where NotificationId = (select max(NotificationId) from [Notification])
+select @ModifiedBy = ModifiedBy from [Notification] where NotificationId = (select max(NotificationId) from [Notification])
+
+IF NOT EXISTS (SELECT * FROM [Notification] WHERE  NotificationInternalUseOnly= @NotificationInternalUseOnly AND isDeleted = @isDeleted)
+BEGIN
+    INSERT INTO [Notification](NotificationInternalUseOnly,Title,Description,NotificationType,EmailContent,IsDeleted,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,Subject) 
+         VALUES(@NotificationInternalUseOnly,@Title,@Description,@NotificationType,@EmailContent,@isDeleted,getdate(),@CreatedBy,getdate(),@ModifiedBy,@Subject)
+END
+GO
+
 /* ------------- End - Related to PL ticket #1449 ------------- */
 
 -- Added By : Maitri Gandhi

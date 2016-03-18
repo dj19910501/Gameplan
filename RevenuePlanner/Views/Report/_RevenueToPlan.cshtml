@@ -38,7 +38,7 @@
     var SearchString = '';
     var revcategories, revbarseries, revbarchartDivId, revlineseries, revtodayValue, revpointLabelWidth, revisDisplay, revActualList;
     $(document).ready(function () {
-         @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
+        @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
         var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
         var _revProjected = '@revenue_Projected_Goal.Projected';
         @*var _revPercentage = '@revenue_Projected_Goal.Percentage';
@@ -68,7 +68,7 @@
         @*BackParentLabel = '@TempData["BackParentLabel"]';
         BackChildLabel = '@TempData["BackChildLabel"]';
         BackId = '@TempData["BackId"]';*@
-        
+
         if (typeof BackFwdRevenueList !== 'undefined' && BackFwdRevenueList.length > 0) {
             var _backfwdvar = BackFwdRevenueList[BackFwdRevenueList.length - 1];
             BackParentLabel = _backfwdvar.BackParentLabel;
@@ -88,7 +88,7 @@
         var _barchartdata = "@revenue_barchartModel";
         var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
         _BarChartdata = JSON.parse(_BarChartdata);
-        
+
         $('#_BarChartdata').val(JSON.stringify(_BarChartdata));
         var barchartDivId = "#dvRevenuePlanBarChart";
         //End: Get BarChart Model
@@ -105,16 +105,16 @@
         _DatatTooltip = JSON.parse(_DatatTooltip);
         $('#_DatatTooltip').val(JSON.stringify(_DatatTooltip));
         //up to here
-        revcategories= _BarChartdata.categories;
-        revbarseries= _BarChartdata.series;
+        revcategories = _BarChartdata.categories;
+        revbarseries = _BarChartdata.series;
         revbarchartDivId = barchartDivId;
-        revlineseries= _LineChartdata.series;
+        revlineseries = _LineChartdata.series;
         revtodayValue = _LineChartdata.todayValue;
         revpointLabelWidth = _LineChartdata.pointLabelWidth;
         revisDisplay = _LineChartdata.isDisplay;
         revActualList = _DatatTooltip.ActualList;
         //BindRevenueBarChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId);
-        BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth, _LineChartdata.isDisplay,_DatatTooltip.ActualList);
+        BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth, _LineChartdata.isDisplay, _DatatTooltip.ActualList);
         // End:- Revenue To Plan BarChart script
 
         // Start:- Revenue To Plan DataTable script
@@ -127,6 +127,11 @@
         // Nishant
         var elemString;
         var iscard = '@IsCard';
+        //Modified BY Komal Rawal to hide back button on First page
+        if (BackHeadTitle == '' || BackHeadTitle == null) {
+            $("#BtnBack").css('display', 'none');
+            $("#div-mareketing-drp").css('display', 'block');
+        }
         if (iscard.toLowerCase() != "false") {
 
             var HeadTitle = document.getElementById('head-title');
@@ -166,7 +171,7 @@
 
             var _cardUrl = "@Url.Content("~/Report/LoadReportCardSectionPartial")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + childlabeltype + "&childId=" + childid + "&option=" + optionmain;
             $("#dvRevenueCardSection").load(_cardUrl);
-            
+
         }
 
     });
@@ -188,11 +193,11 @@
             var YearName = '';
             var d = new Date();
             var n = d.getFullYear();
-            
+
             if (parseInt(_categories[_cat], 10)) {
                 YearName = _categories[_cat];
             } else {
-               
+
                 var ListYears = _lblTimeFrame.split(',');
                 if (ListYears.indexOf(n.toString()) >= 0) {
                     YearName = n.toString();
@@ -353,9 +358,10 @@
         });
     }
     // Add By Nishant Sheth
+    var BackRequestRevenue = null;
     function BtnBackClick() {
         myApp.showPleaseWait();
-        
+
         BackFwdRevenueList.splice(BackFwdRevenueList.length - 1, 1);
         var _BackFwdVar = BackFwdRevenueList[BackFwdRevenueList.length - 1];
 
@@ -374,8 +380,40 @@
                 InnerBackchildLabel = '@RevenuePlanner.Helpers.Common.RevenueCampaign';
             }
         }*@
-        var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&IsBackClick=" + true + "&marsterCustomField=" + marsterCustomField;
-        $("#dvRevenueToPlan").load(_url);
+
+        var url = '@Url.Content("~/Report/GetRevenueToPlanByFilter/")'
+        //Commented by Komal rAwal for 2067 to convert to ajax
+        @*var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&IsBackClick=" + true + "&marsterCustomField=" + marsterCustomField;
+        $("#dvRevenueToPlan").load(_url);*@
+
+        BackRequestRevenue = $.ajax({
+            beforeSend: function (x) {
+
+                //Added By Komal Rawal for #2067 to abort previous ajax if any request is called before completion of previou request.
+                if (BackRequestRevenue != null) {
+                    BackRequestRevenue.abort();
+                }
+            },
+            type: 'POST',
+            url: url,
+            async: true,
+            data: {
+                ParentLabel: BackParentLabel,
+                childlabelType: InnerBackchildLabel,
+                childId: BackId,
+                option: OptionMain,
+                IsQuarterly: Qurt_Month,
+                IsBackClick: true,
+                marsterCustomField: marsterCustomField
+            },
+            success: function (response) {
+                $('#dvRevenueToPlan').html('');
+                $('#dvRevenueToPlan').html(response);
+                LoadPagination();
+                BackRequestRevenue = null;
+                //   isAllowClick = true;
+            }
+        });
 
         tempRevenueHeader.splice(tempRevenueHeader.length - 1, 1); // Remove last value from Temep Header global variable.
         var _headerValue = tempRevenueHeader[tempRevenueHeader.length - 1]; // Get last value from global variable.
@@ -531,7 +569,7 @@
         setBootstrapTooltip("#revProjected", _revProjected, 5, true);
         setBootstrapTooltip("#revGoalYTD", _revGoalYTD, 5, true);
         setBootstrapTooltip("#revGoalYear", _revGoalYear, 5, true);
-        
+
         if (_revActualPercentage == null || _revActualPercentage == 'undefined' || _revActualPercentage == '' || _revActualPercentage == 'NaN' || _revActualPercentage == '-NaN') {
             _formtPercentage = "0";
             $("#revActualPercentage").removeClass("greenLabel").removeClass("redLabel");

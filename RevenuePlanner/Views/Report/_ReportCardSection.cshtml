@@ -3,7 +3,15 @@
 @using RevenuePlanner.Helpers
 @using Newtonsoft.Json;
 @{
-    var cardsectionList = Model.CardSectionListModel != null ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
+    //var cardsectionList = (Model != null && Model.CardSectionListModel != null) ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
+
+    //modified By Komal RAwal for #2067 to handle null values
+    var cardsectionList = string.Empty;
+
+    if (Model != null && Model.CardSectionListModel != null)
+    {
+        cardsectionList = JsonConvert.SerializeObject(Model.CardSectionListModel);
+    }
 
     // Add By Nishant Sheth For pagination dropdwon with Enums
     List<RevenuePlanner.Models.ViewByModel> ListPageSize = new List<RevenuePlanner.Models.ViewByModel>();
@@ -17,8 +25,16 @@
     {
         ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
     }
-    var TotalRecords = Model.TotalRecords;
-    var CurrentPageNum = Model.CuurentPageNum;
+   
+
+    var TotalRecords = 0;
+    var CurrentPageNum = 0;
+     if(Model != null)
+     {
+          TotalRecords = Model.TotalRecords;
+          CurrentPageNum = Model.CuurentPageNum;
+     }
+    
 
                     // End By Nishant Sheth
 }
@@ -102,7 +118,10 @@
         var _CardData = (_carddata.toString().replace(/&amp;lt;/g, '<').replace(/&amp;gt;/g, '>').replace(/amp;/g, ''));
         //Commented by Rahul Shah on 11/11/2015 for PL #1741
         //var _CardData = (_carddata.toString().replace(/&quot;/g, '"'));
+   
         _CardData = JSON.parse(_CardData);
+      
+
         var _cardhtml = '';
         var _masterParentLabel = '', _title = '', _Revact_proj = '', _Revgoal = '', _Revpercentange = '', _Costact_proj = '', _Costgoal = '', _Costpercentange = '', _ROIact_proj = '', _ROIgoal = '', _ROIpercentange = '';
         var _Revdata = '', _Costdata = '', _ROIdata = '', _lineChartData = '';
@@ -327,7 +346,7 @@
             //_type = $(_Id).attr('add-sep');
             if (text != null && text != 'undefined' && text != 'NaN') {
                 if (_Id.indexOf("ROI") > 0) {
-                    
+
                     //_formatednumber = setBootstrapTooltip(_Id, text, 5, false);
                     if (text < 0) {
                         _formatednumber = '-' + FormatNumber(Math.abs(parseFloat(text)), true);
@@ -373,6 +392,7 @@
 
     /// Add By Nishant Sheth
     /// Desc: For card details section
+    var CurrentRequestRevenue = null;
     function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative) {
         IsCardDetailsClick = true;
         var _BackFwdVar = {
@@ -408,10 +428,38 @@
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
         myApp.showPleaseWait();
+        var url = '@Url.Content("~/Report/GetRevenueToPlanByFilter/")'
+        @*var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
+        $("#dvRevenueToPlan").load(_url);*@
 
-        var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
-        $("#dvRevenueToPlan").load(_url);
+        CurrentRequestRevenue = $.ajax({
+            beforeSend: function (x) {
 
+                //Added By Komal Rawal for #2067 to abort previous ajax if any request is called before completion of previou request.
+                if (CurrentRequestRevenue != null) {
+                    CurrentRequestRevenue.abort();
+                }
+            },
+            type: 'POST',
+            url: url,
+            async:true,
+            data: {
+                ParentLabel: parentlabel,
+                childlabelType: Type,
+                childId: id,
+                option: OptionMain,
+                IsQuarterly: Qurt_Month,
+                BackHeadTitle: HeadTitleval,
+                isDetails :  true
+            },
+            success: function (response) {
+                $('#dvRevenueToPlan').html('');
+                $('#dvRevenueToPlan').html(response);
+                LoadPagination();
+                CurrentRequestRevenue = null;
+             //   isAllowClick = true;
+            }
+        });
         //formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
         //formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
 
@@ -477,7 +525,7 @@
             }
         }
         else if (masterlabel == '@Common.ProgramCustomTitle') {
-           // masterCustomFieldOptionId = id;
+            // masterCustomFieldOptionId = id;
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 $("#CampaignChildDDL").css('display', '');
                 $("#CustomFieldChildDDL").css('display', 'none');
@@ -514,74 +562,74 @@
             masterCustomFieldOptionId = id;
         }
         //myApp.hidePleaseWait();
-}
-
-function fillCardCampaignDropDown(campaignId, type) {
-
-    var id = '';
-    var masteroptionid = masterCustomFieldOptionId;
-    //campaignId = $('#ddlCampaignRevenueToPlan').val();
-    if (campaignId > 0) {
-        if (type == '') {
-            masteroptionid = parseInt(campaignId);
-        }
-        else {
-            id = campaignId.toString();
-        }
     }
-    $.ajax({
-        type: 'POST',
-        url: '@Url.Content("~/Report/LoadCampaignDropDownDynamic/")',
-        data: {
-            marsterCustomField: marsterCustomField,
-            masterCustomFieldOptionId: masteroptionid,
-            selectOption: optionmain
-        },
-        success: function (data) {
-            $("#ddlCampaignRevenueToPlan").empty();
-            $("#ddlCampaignRevenueToPlan").append("<option value='0'>All Campaigns</option>");
-            $.each(data, function (index, optionData) {
-                $("#ddlCampaignRevenueToPlan").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
-            });
-            if (parseInt(id) == 0) {
 
-                $('#ddlCampaignRevenueToPlan').val('0');
+    function fillCardCampaignDropDown(campaignId, type) {
+
+        var id = '';
+        var masteroptionid = masterCustomFieldOptionId;
+        //campaignId = $('#ddlCampaignRevenueToPlan').val();
+        if (campaignId > 0) {
+            if (type == '') {
+                masteroptionid = parseInt(campaignId);
             }
-            marsterCustomField = marsterCustomField;
-            masterCustomFieldOptionId = masteroptionid;
-            fillCardProgramDropDown("0", type);
-            $('#ddlCampaignRevenueToPlan').multiselect("refresh");
-        },
-        error: function () {
+            else {
+                id = campaignId.toString();
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadCampaignDropDownDynamic/")',
+            data: {
+                marsterCustomField: marsterCustomField,
+                masterCustomFieldOptionId: masteroptionid,
+                selectOption: optionmain
+            },
+            success: function (data) {
+                $("#ddlCampaignRevenueToPlan").empty();
+                $("#ddlCampaignRevenueToPlan").append("<option value='0'>All Campaigns</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlCampaignRevenueToPlan").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
+                });
+                if (parseInt(id) == 0) {
 
-            $("#ddlCampaignRevenueToPlan").empty();
-            $("#ddlCampaignRevenueToPlan").append("<option value='0'>All Programs</option>");
-            fillCardProgramDropDown("0", type);
-            $('#ddlCampaignRevenueToPlan').multiselect("refresh");
-            GoToLogin();
-        }
-    });
-}
+                    $('#ddlCampaignRevenueToPlan').val('0');
+                }
+                marsterCustomField = marsterCustomField;
+                masterCustomFieldOptionId = masteroptionid;
+                fillCardProgramDropDown("0", type);
+                $('#ddlCampaignRevenueToPlan').multiselect("refresh");
+            },
+            error: function () {
 
-function fillCardProgramDropDown(campaignId, type) {
-    var id = '';
-    var masteroptionid = masterCustomFieldOptionId;
-    if (campaignId > 0) {
-        if (type === undefined || type == null || type.length <= 0) {
-            masteroptionid = parseInt(campaignId);
-        }
-        else {
-            id = campaignId.toString();
-        }
+                $("#ddlCampaignRevenueToPlan").empty();
+                $("#ddlCampaignRevenueToPlan").append("<option value='0'>All Programs</option>");
+                fillCardProgramDropDown("0", type);
+                $('#ddlCampaignRevenueToPlan').multiselect("refresh");
+                GoToLogin();
+            }
+        });
     }
-    $.ajax({
-        type: 'POST',
-        url: '@Url.Content("~/Report/LoadProgramDropDownDynamic/")',
+
+    function fillCardProgramDropDown(campaignId, type) {
+        var id = '';
+        var masteroptionid = masterCustomFieldOptionId;
+        if (campaignId > 0) {
+            if (type === undefined || type == null || type.length <= 0) {
+                masteroptionid = parseInt(campaignId);
+            }
+            else {
+                id = campaignId.toString();
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadProgramDropDownDynamic/")',
             data: {
                 id: id,
                 marsterCustomField: marsterCustomField,
                 masterCustomFieldOptionId: masteroptionid,
-                selectOption:optionmain
+                selectOption: optionmain
             },
             success: function (data) {
                 $("#ddlProgramRevenueToPlan").empty();
@@ -655,7 +703,6 @@ function fillCardProgramDropDown(campaignId, type) {
     /// Add By Nishant Sheth For Pagination and sorting: 03-Jul-2015
 
     function LoadPagination() {
-
         //how much items per page to show
         var show_per_page = $('#Itemsperpage :selected').text();
         // var show_per_page = 1;
@@ -846,7 +893,6 @@ function fillCardProgramDropDown(campaignId, type) {
 
     function previous() {
 
-        //alert('Previous');
         //var pageNumber = parseInt($('#current_page').val());
         var pageNumber = '@CurrentPageNum';
         //new_page = parseInt($('#current_page').val()) - 1;
@@ -863,7 +909,7 @@ function fillCardProgramDropDown(campaignId, type) {
     }
 
     function next() {
-        
+
         //alert('Next');
 
         //var pageNumber = parseInt($('#current_page').val());
@@ -881,7 +927,6 @@ function fillCardProgramDropDown(campaignId, type) {
 
     }
     function go_to_page(page_num) {
-
         var tempPage = page_num;
         if (parseInt(tempPage + 1) == number_of_pages) {
             PrevNextDotButtons(page_num, 'prev');
@@ -915,7 +960,7 @@ function fillCardProgramDropDown(campaignId, type) {
         var sortBy = $("#ddlSortby :selected").text();
         //myApp.showPleaseWait();
         //var SearchString = $('#txtSearch').val();
-        
+
         var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=" + page_num + "&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
 
@@ -925,7 +970,6 @@ function fillCardProgramDropDown(campaignId, type) {
     }
 
     function ItemsPerPagefunction() {
-        
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").text();
         //myApp.showPleaseWait();
@@ -1206,14 +1250,14 @@ function fillCardProgramDropDown(campaignId, type) {
     }
 
     function SortByFunction() {
-        
+      //  alert(3);
         //SortCardSection($("#ddlSortby :selected").val());
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").text();
         //alert(sortBy);
         //myApp.showPleaseWait();
         var SearchString = $('#txtSearch').val();
-       
+
         var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain; //PL #1399 Dashrath Prajapati
         $("#dvCardSectionData").load(_url);
         //myApp.hidePleaseWait();
@@ -1221,7 +1265,6 @@ function fillCardProgramDropDown(campaignId, type) {
     }
 
     function SearchByTitle(TitleVal) {
-      
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").text();
         SearchString = $('#txtSearch').val();
@@ -1246,9 +1289,9 @@ function fillCardProgramDropDown(campaignId, type) {
     //    }
     //});
     /// End By Nishant Sheth
-    //PL #1399 added by dashrath prajapati 
+    //PL #1399 added by dashrath prajapati
     function CheckData() {
-        var totRec = '@Model.TotalRecords';
+        var totRec = '@TotalRecords';
         if (totRec == '0') {
             NorecordfoundMsg
             $("#NorecordfoundMsg").css("display", "block");
@@ -1258,5 +1301,5 @@ function fillCardProgramDropDown(campaignId, type) {
         }
     }
 
-    //END PL #1399 added by dashrath prajapati 
+    //END PL #1399 added by dashrath prajapati
 </script>
