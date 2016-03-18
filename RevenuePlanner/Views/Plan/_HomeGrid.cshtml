@@ -1620,7 +1620,9 @@
                     }
                     return true;
                 }
-                if (htmlDecode(nValue) != oValue) {  //Modified by Rahul Shah on 30/11/2015 for PL #1778. here in special character nValue data carry with Extra character.
+                if (htmlDecode(nValue) != oValue) {//Modified by Rahul Shah on 30/11/2015 for PL #1778. here in special character nValue data carry with Extra character.
+                    debugger;
+
                     if (UpdateColumn != "Type" && UpdateColumn.toString().trim() != "Target Stage Goal") {
                         progid = HomeGrid.getParentId(rowId);
                         campid = HomeGrid.getParentId(progid);
@@ -1635,7 +1637,7 @@
                             data: { UpdateType: GetItemType(updatetype), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
                             dataType: 'json',
                             success: function (states) {
-
+                                debugger;
                                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                                 var TaskID = HomeGrid.cells(rowId,3).getValue();
                                     var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
@@ -1659,7 +1661,15 @@
                                 //Added By Komal Rawal for 2058 
                                 if(OldValue.toString() != states.OwnerName.toString())
                                 {
-                                    var PlanID = HomeGrid.cells(planid,3).getValue();
+                                    if (planid > 0 && planid != null && planid != undefined) {
+                                        var PlanID = HomeGrid.cells(planid,3).getValue();
+                                    }
+                                    else if(campid > 0 && campid != null && campid != undefined) {
+                                        var PlanID = HomeGrid.cells(campid,3).getValue();
+                                    }
+                                    else{
+                                        var PlanID = HomeGrid.cells(progid,3).getValue();
+                                    }
                                     //var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
                                     $("#ulSelectedOwner li input[type=checkbox]").each(function () {
                                         if ($(this).attr('checked') != 'checked') {

@@ -100,7 +100,7 @@
                 @Html.TextArea("Description", Model.Description, new { id = "Description", @class = "span12 text-area-size input-setup", placeholder = "Optional", rows = "3" })  @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
             </div>
         <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left: 10px;">
-                <p>@Html.Raw("Owner")</p>
+                <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>         
 
                 @if (IsProgramEdit)
                 {

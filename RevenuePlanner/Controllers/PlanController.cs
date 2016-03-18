@@ -11727,7 +11727,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
-
+                        oldOwnerId = objLineitem.CreatedBy; //Added by Rahul Shah on 17/03/2016 for PL #2068
                         objLineitem.CreatedBy = new Guid(UpdateVal);
 
                     }
@@ -11748,8 +11748,12 @@ namespace RevenuePlanner.Controllers
                     }
                     #endregion
                     int result = Common.InsertChangeLog(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
-                    result = db.SaveChanges();
-
+                    db.SaveChanges();
+                    //Added by Rahul Shah on 17/03/2016 for PL #2068
+                    if (result > 0) {
+                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                            SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, oldOwnerId, new Guid(UpdateVal), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString());
+                    }
                     //// Calculate TotalLineItemCost.
                     double totalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
 
@@ -11976,7 +11980,7 @@ namespace RevenuePlanner.Controllers
         }
 
         #region "Send Email Notification For Owner changed"
-        public void SendEmailnotification(int PlanID, int ChangeID, Guid oldOwnerID, Guid NewOwnerID, string PlanTitle, string CampaignTitle, string ProgramTitle, string Title, string section)
+        public void SendEmailnotification(int PlanID, int ChangeID, Guid oldOwnerID, Guid NewOwnerID, string PlanTitle, string CampaignTitle, string ProgramTitle, string Title, string section, string LineItemTitle = "") //modified by Rahul Shah on 17/03/2016 for PL #2068 to add line item email notification
         {
 
             try
@@ -12027,7 +12031,11 @@ namespace RevenuePlanner.Controllers
                             {
                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, PlanTitle, PlanTitle, PlanTitle, Enums.Section.Plan.ToString().ToLower(), strURL);
                             }
-                            
+                            //Added by Rahul Shah on 17/03/2016 for PL #2068
+                            else if (Enums.Section.LineItem.ToString().ToLower() == section)
+                            {
+                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL,LineItemTitle);
+                            }                            
                             else
                             {
                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);
@@ -12067,6 +12075,9 @@ namespace RevenuePlanner.Controllers
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planTacticId = planTacticId, isImprovement = true, activeMenu = "Plan" }, Request.Url.Scheme);
                 else if (section == Convert.ToString(Enums.Section.Plan).ToLower())                
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
+                //Added by Rahul Shah on 17/03/2016 for PL #2068
+                else if (section == Convert.ToString(Enums.Section.LineItem).ToLower())
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planLineItemId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
                 
 
             }

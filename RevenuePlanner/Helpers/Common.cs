@@ -591,7 +591,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ProgramName">Program name of tactic for which owner has been changed</param>
         /// <param name="CampaignName">Campaign name of tactic for which owner has been changed</param>
         /// <param name="PlanName">Plan name of tactic for which owner has been changed</param>
-        public static void SendNotificationMailForOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName, string Section, string URL) //Modified by Rahul Shah on 03/09/2015 fo PL Ticket #1521. passed URL
+        public static void SendNotificationMailForOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName, string Section, string URL,string LineItemName = "") //Modified by Rahul Shah on 03/09/2015 fo PL Ticket #1521. passed URL
         {
             string emailBody, OwnerChanged, email;
             MRPEntities db = new MRPEntities();
@@ -609,6 +609,9 @@ namespace RevenuePlanner.Helpers
             {
                 OwnerChanged = Enums.Custom_Notification.PlanOwnerChanged.ToString();
             }
+            else if (Enums.Section.LineItem.ToString().ToLower() == Section) {
+                OwnerChanged = Enums.Custom_Notification.LineItemOwnerChanged.ToString();
+            }
 
             Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(OwnerChanged));
 
@@ -622,16 +625,18 @@ namespace RevenuePlanner.Helpers
                 emailBody = emailBody.Replace("[planname]", PlanName);
                 emailBody = emailBody.Replace("[URL]", URL);
 
-                if (Enums.Section.Program.ToString().ToLower() == Section || Enums.Section.Tactic.ToString().ToLower() == Section)
+                if (Enums.Section.Program.ToString().ToLower() == Section || Enums.Section.Tactic.ToString().ToLower() == Section || Enums.Section.LineItem.ToString().ToLower() == Section)
                 {
                     emailBody = emailBody.Replace("[programname]", ProgramName);
                 }
 
-                if (Enums.Section.Tactic.ToString().ToLower() == Section)
+                if (Enums.Section.Tactic.ToString().ToLower() == Section || Enums.Section.LineItem.ToString().ToLower() == Section)
                 {
                     emailBody = emailBody.Replace("[tacticname]", TacticName);
                 }
-
+                if (Enums.Section.LineItem.ToString().ToLower() == Section) {
+                    emailBody = emailBody.Replace("[lineitemname]", LineItemName);
+                }
                 email = EmailIds.ElementAt(i);
                 ThreadStart threadStart = delegate() { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
                 Thread thread = new Thread(threadStart);

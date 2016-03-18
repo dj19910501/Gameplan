@@ -454,7 +454,8 @@ namespace RevenuePlanner.Helpers
             SyncIntegrationError,    //// Added by : Sohel Pathan on 02/01/2015 for PL ticket #1068
             ProgramOwnerChanged,  // Added by : Pratik on 03/03/2014 for PL ticket #711
             CampaignOwnerChanged,  // Added by : Pratik on 03/03/2014 for PL ticket #711            
-            PlanOwnerChanged     //Added by Rahul Shah on 09/03/2016 for PL #1939
+            PlanOwnerChanged,     //Added by Rahul Shah on 09/03/2016 for PL #1939
+            LineItemOwnerChanged, //Added by Rahul Shah on 18/03/2016 for PL #2068 
         }
         #endregion
 
