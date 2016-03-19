@@ -3801,10 +3801,12 @@ namespace RevenuePlanner.Controllers
         /// Get Empty Month List
         /// </summary>
         /// <returns></returns>
-        private List<BudgetedValue> GetEmptyList()
+        /// Modified By Nishant Sheth
+        /// Desc :: For Multi year support add length argument
+        private List<BudgetedValue> GetEmptyList(int length = 13)
         {
             List<BudgetedValue> emptyList = new List<BudgetedValue>();
-            for (int i = 1; i < 13; i++)
+            for (int i = 1; i < length; i++)
             {
                 BudgetedValue month = new BudgetedValue();
                 month.Period = PeriodPrefix + i;
@@ -5362,8 +5364,11 @@ namespace RevenuePlanner.Controllers
                     #region "Calculate Total Allocated/UnAllocated Budget for All Selected Plans"
 
                     lstPlanIds = (List<int>)Sessions.ReportPlanIds;
-
-                    _tacList = GetTacticForReporting(true);
+                    // Modified By Nishant Sheth
+                    // Desc :: #1541 // Get Approved, In-Progress, Complete status tactic 
+                    _tacList = tacticlist.Select(a => a).ToList();
+                    // Get All Tactic list 
+                    var _tacticCostIdList = GetTacticForReporting(true).Select(a=>a.PlanTacticId).ToList();
                     _TacticIds = _tacList.Select(tac => tac.PlanTacticId).ToList();
 
 
@@ -5389,7 +5394,29 @@ namespace RevenuePlanner.Controllers
                              Value = tact.Value
                          }).ToList();
 
-
+                    // Add By Nishant Sheth
+                    // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+                    var _planBudgetList = db.Plan_Budget.Where(plan => lstPlanIds.Contains(plan.PlanId)).ToList()
+                                         .Select(tac => new
+                                         {
+                                             Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
+                                             TacticId = tac.PlanId,
+                                             Value = tac.Value,
+                                             StartYear = tac.Plan.Year
+                                         }).ToList().Select(tac => new
+                                        {
+                                            Period = tac.Period,
+                                            NumPeriod = (tac.Period / 13),
+                                            TacticId = tac.TacticId,
+                                            Value = tac.Value,
+                                            StartYear = int.Parse(tac.StartYear.ToString())
+                                        }).ToList().Select(tact => new
+                                        {
+                                            Period = PeriodPrefix + Common.ReportMultiyearMonth(tact.Period, tact.NumPeriod),
+                                            Year = tact.StartYear + tact.NumPeriod,
+                                            TacticId = tact.TacticId,
+                                            Value = tact.Value
+                                        }).ToList();
 
                     _TacticTotalBudget = _tacBudgetList != null && _tacBudgetList.Count > 0 ? _tacBudgetList.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(budget => budget.Value) : 0;
 
@@ -5404,7 +5431,9 @@ namespace RevenuePlanner.Controllers
                     #region "PlannedCost vs Budget Calculation"
 
                     //_tacCostList = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => _TacticIds.Contains(tacCost.PlanTacticId)).ToList();
-                    var tacCostListData = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => _TacticIds.Contains(tacCost.PlanTacticId))
+                    // Modified By Nishant Sheth 
+                    // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+                    var tacCostListData = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => _tacticCostIdList.Contains(tacCost.PlanTacticId))
                          .ToList().Select(tac => new
                          {
                              Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
@@ -5501,7 +5530,7 @@ namespace RevenuePlanner.Controllers
                         List<double> ActualCostList = new List<double>();
                         List<double> BudgetCostList = new List<double>();
 
-
+                        #region Old Code
                         //#region "Quarter 1 Calculation"
 
                         //PlannedCostList = _tacCostList.Where(plancost => Q1.Contains(plancost.Period)).Select(plancost => plancost.Value).ToList();
@@ -5587,6 +5616,8 @@ namespace RevenuePlanner.Controllers
                         //btmBudgetCostList.Add(_BudgetCostValue);
                         //#endregion
                         // Add By Nishant Sheth #1838
+                        #endregion
+
                         bool isMonthList = false;
                         var Quarterbase = 1;
                         for (int i = 1; i <= categories.Count; i++)
@@ -5608,7 +5639,9 @@ namespace RevenuePlanner.Controllers
                                     PlannedCostList = tacCostListData.Where(plancost => Quarters.Contains(plancost.Period)
                                         && plancost.Year == year).Select(plancost => plancost.Value).ToList();
                                     TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Quarters.Contains(actual.Period) && actual.Year == year).Sum(actual => actual.Value));
-                                    BudgetCostList = _tacBudgetList.Where(budgtcost => Quarters.Contains(budgtcost.Period)
+                                    // Modified By Nishant Sheth
+                                    // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+                                    BudgetCostList = _planBudgetList.Where(budgtcost => Quarters.Contains(budgtcost.Period)
                                         && budgtcost.Year == year).Select(budgtcost => budgtcost.Value).ToList();
 
                                     _PlannedCostValue = PlannedCostList.Sum(val => val);
@@ -5652,7 +5685,9 @@ namespace RevenuePlanner.Controllers
                                     .Sum(plancost => plancost.Value);
 
                                 TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
-                                _BudgetCostValue = _tacBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
+                                // Modified By Nishant Sheth
+                                // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+                                _BudgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
                                     && budgtcost.Year == Convert.ToInt32(Year)).Sum(budgtcost => budgtcost.Value);
 
                                 serPlannedData.Add(_PlannedCostValue);
@@ -5705,7 +5740,9 @@ namespace RevenuePlanner.Controllers
 
                                     _PlannedCostValue = tacCostListData.Where(plancost => plancost.Period.Equals(curntPeriod) && plancost.Year == year).Sum(plancost => plancost.Value);// Modified by nishant sheth #2052
                                     TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod) && actual.Year == year).Sum(actual => actual.Value));
-                                    _BudgetCostValue = _tacBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod) && budgtcost.Year == year).Sum(budgtcost => budgtcost.Value);// Modified by nishant sheth #2052
+                                    // Modified By Nishant Sheth
+                                    // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+                                    _BudgetCostValue = _planBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod) && budgtcost.Year == year).Sum(budgtcost => budgtcost.Value);// Modified by nishant sheth #2052
 
                                     serPlannedData.Add(_PlannedCostValue);
                                     serBudgetData.Add(_BudgetCostValue);
@@ -5746,7 +5783,9 @@ namespace RevenuePlanner.Controllers
                                     && plancost.Year == Convert.ToInt32(Year))
                                     .Sum(plancost => plancost.Value);
                                 TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
-                                _BudgetCostValue = _tacBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
+                                // Modified By Nishant Sheth
+                                // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+                                _BudgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
                                     && budgtcost.Year == Convert.ToInt32(Year)).Sum(budgtcost => budgtcost.Value);
 
                                 serPlannedData.Add(_PlannedCostValue);

@@ -14,6 +14,10 @@
 
     double ActualCostPercent = 0;
     ActualCostPercent = (Model.ActualCostvsBudet == 0 && Model.TotalBudgetAllocated == 0) ? 0 : (Model.ActualCostvsBudet > 0 && Model.TotalBudgetAllocated == 0) ? 101 : Model.ActualCostvsBudet / Model.TotalBudgetAllocated * 100;
+    // Add By Nishant Sheth
+    // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+    double PlannedTotalAllocatedBudegt = 0;
+    PlannedTotalAllocatedBudegt = Model.MainBudgetCostList.Sum(a => a);
 }
 
 <div class="report-btn-group">
@@ -43,7 +47,7 @@
                     <div id="divPlannedCostProgress" class="financial_progress"></div>
                 </div>
             </div>
-            <p class="chartinfo financial-chartinfo" id=""><span id="lblPlannedCostBudget">@Model.PlannedCostvsBudget</span>/<span id="lblPlannedTotalBudget">@Model.TotalBudgetAllocated</span></p>
+            <p class="chartinfo financial-chartinfo" id=""><span id="lblPlannedCostBudget">@Model.PlannedCostvsBudget</span>/<span id="lblPlannedTotalBudget">@PlannedTotalAllocatedBudegt</span></p>
 
         </div>
         <div class="budgeting-graph-info noborder-right">
@@ -54,7 +58,7 @@
                     <div id="divActualCostProgress" class="financial_progress"></div>
                 </div>
             </div>
-            <p class="chartinfo financial-chartinfo" id=""><span id="lblActualCostBudget">@Model.ActualCostvsBudet</span>/<span id="lblActualTotalBudget">@Model.TotalBudgetAllocated</span></p>
+            <p class="chartinfo financial-chartinfo" id=""><span id="lblActualCostBudget">@Model.ActualCostvsBudet</span>/<span id="lblActualTotalBudget">@PlannedTotalAllocatedBudegt</span></p>
         </div>
     </div>
     <div class="row noborder">
@@ -109,6 +113,7 @@
         var _totalBudgetUnAllocated = '@Model.TotalBudgetUnAllocated';
         var _plannedCostBudget = '@Model.PlannedCostvsBudget';
         var _actualCostBudget = '@Model.ActualCostvsBudet';
+        var _toalPlanBudgetAllocated = '@PlannedTotalAllocatedBudegt';// Add By Nishant Sheth //  #1541
         var _formtTotalBudgetAllocated = '', _formtTotalBudgetUnAllocated = '', _formtPlannedCostBudget = '', _formtActualCostBudget = '', _frmtPlannedTotalBudget = '', _frmtActualTotalBudget = '';
         var _lblTotalBudgetAllocated = "#lblTotalBudgetAllocated", _lblTotalBudgetUnAllocated = "#lblTotalBudgetUnAllocated", _lblPlannedCostBudget = "#lblPlannedCostBudget", _lblActualCostBudget = "#lblActualCostBudget", _lblPlannedTotalBudget = "#lblPlannedTotalBudget", _lblActualTotalBudget = "#lblActualTotalBudget";
 
@@ -117,8 +122,8 @@
             _formtTotalBudgetAllocated = "0";
         else {
             setBootstrapTooltip(_lblTotalBudgetAllocated, _totalBudgetAllocated, 8, true);
-            setBootstrapTooltip(_lblPlannedTotalBudget, _totalBudgetAllocated, 3, true);
-            setBootstrapTooltip(_lblActualTotalBudget, _totalBudgetAllocated, 3, true);
+            setBootstrapTooltip(_lblPlannedTotalBudget, _toalPlanBudgetAllocated, 3, true);// Add By Nishant Sheth //  #1541
+            setBootstrapTooltip(_lblActualTotalBudget, _toalPlanBudgetAllocated, 3, true);// Add By Nishant Sheth //  #1541
             _formtTotalBudgetAllocated = $(_lblTotalBudgetAllocated).text();
             _frmtPlannedTotalBudget = $(_lblPlannedTotalBudget).text();
             _frmtActualTotalBudget = $(_lblActualTotalBudget).text();
