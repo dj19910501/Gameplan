@@ -493,7 +493,7 @@ namespace RevenuePlanner.Controllers
                 LineItemidBudgetList = LineItemidBudgetList.Where(lnBudget => tblPlanLineItemIds.Contains(lnBudget.PlanLineItemId)).ToList();
 
                 //Added By Maitri Gandhi on 18/03/2016 for #1888 
-                if (LineItemidBudgetList.Count() >= 0)
+                if (LineItemidBudgetList.Count() > 0)
                 {
                     LineItem_Budget LinkedTactic;
                     for (int i = 0; i < LineItemidBudgetList.Count();i++ )
