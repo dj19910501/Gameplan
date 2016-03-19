@@ -54,6 +54,28 @@ BEGIN
 END
 GO
 
+/* ------------- Start------------- 
+Created By: Maitri Gandhi
+Created Date: 03/19/2016
+Description: To change the size of Version table column
+*/
+IF EXISTS(SELECT * FROM sys.columns
+WHERE Name = N'Release Name' AND OBJECT_ID = OBJECT_ID(N'[Versioning]'))
+BEGIN
+ALTER TABLE [Versioning]
+ALTER COLUMN [Release Name] nvarchar(255)
+END
+GO
+
+IF EXISTS(SELECT * FROM sys.columns
+WHERE Name = N'Version' AND OBJECT_ID = OBJECT_ID(N'[Versioning]'))
+BEGIN
+ALTER TABLE [Versioning]
+ALTER COLUMN [Version] nvarchar(255)
+END
+GO
+
+
 /* ------------- End - Related to PL ticket #1449 ------------- */
 
 -- Added By : Maitri Gandhi
@@ -65,15 +87,15 @@ IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Vers
 BEGIN
 CREATE TABLE [dbo].[Versioning](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Release Name] [nvarchar](50) NOT NULL,
+	[Release Name] [nvarchar](255) NOT NULL,
 	[Date Applied] [datetime] NOT NULL,
-	[Version] [nvarchar](50) NOT NULL
+	[Version] [nvarchar](255) NOT NULL
 ) ON [PRIMARY]
 END
 GO
 
-declare @version nvarchar(10)
-declare @release nvarchar(10)
+declare @version nvarchar(255)
+declare @release nvarchar(255)
 set @release = 'Mar23.2016'
 set @version = 'Mar23.2016.1'
 declare @date as datetime
