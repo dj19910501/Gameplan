@@ -502,8 +502,11 @@ namespace RevenuePlanner.Controllers
                         LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
                         if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
                         {
-                            LineItemidBudgetList.RemoveAt(i);
-                            i--;
+                            if (LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.StartDate <= LinkedTactic.Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.StartDate)
+                            {
+                                LineItemidBudgetList.RemoveAt(i);
+                                i--;
+                            }
                         }
                     }
                 }
@@ -2238,6 +2241,25 @@ namespace RevenuePlanner.Controllers
             List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
             List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
 
+            //Added By Maitri Gandhi on 21/03/2016 for #1888 Observation : 1
+            if (LineItemidBudgetList.Count() > 0)
+            {
+                LineItem_Budget LinkedTactic;
+                for (int i = 0; i < LineItemidBudgetList.Count(); i++)
+                {
+                    LinkedTactic = new LineItem_Budget();
+                    LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
+                    if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                    {
+                        if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                        {
+                            LineItemidBudgetList.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                }
+            }
+
             // Change By Nishant Sheth
             List<int> PlanLineItemBudgetDetail = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
             List<int> LineItemids = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => PlanLineItemBudgetDetail.Contains(a.PlanLineItemId) && a.IsDeleted == false).Select(a => a.PlanLineItemId).ToList(); ;
@@ -3600,6 +3622,24 @@ namespace RevenuePlanner.Controllers
                 objBudgetDetail = new Budget_Detail();
 
             LineItemidBudgetList = db.LineItem_Budget.Where(a => objBudgetDetail.Id == a.BudgetDetailId).Select(a => a).ToList();
+            //Added By Maitri Gandhi on 21/03/2016 for #1888 Observation : 1
+            if (LineItemidBudgetList.Count() > 0)
+            {
+                LineItem_Budget LinkedTactic;
+                for (int i = 0; i < LineItemidBudgetList.Count(); i++)
+                {
+                    LinkedTactic = new LineItem_Budget();
+                    LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
+                    if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                    {
+                        if (LinkedTactic != null && LineItemidBudgetList.Any(l => l == LinkedTactic))
+                        {
+                            LineItemidBudgetList.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                }
+            }
             //// Change By Nishant Sheth
             List<int> PlanLineItemBudgetDetail = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
             List<Plan_Campaign_Program_Tactic_LineItem> lstPlanLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => PlanLineItemBudgetDetail.Contains(a.PlanLineItemId) && a.IsDeleted == false).ToList();

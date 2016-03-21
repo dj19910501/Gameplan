@@ -8519,7 +8519,7 @@ namespace RevenuePlanner.Controllers
 
                                 }
                                 //Modified By Komal Rawal for #1853
-                                if (LinkedLineitemId != null && LinkedLineitemId.HasValue)
+                                if (LinkedLineitemId != null && LinkedLineitemId.HasValue && LinkedLineitemId > 0)  //Modified by Maitri Gandhi for #1888 Observation 2 on 21/03/2016
                                 {
                                     #region "Update record to Plan_Campaign_Program_Tactic_LineItem table."
 
