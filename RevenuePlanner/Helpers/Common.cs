@@ -5007,15 +5007,15 @@ namespace RevenuePlanner.Helpers
         //Added By Komal Rawal for #1292 dont apply isdeleted flag for tactics that are completed.
         public static List<CustomFieldOption> GetCustomFieldOptions(string Status, ICollection<CustomFieldOption> Customfieldoptionlist)
         {
-            if (Status == Enums.TacticStatus.Complete.ToString())
-            {
-                return Customfieldoptionlist.ToList();
-            }
-            else
-            {
+            //if (Status == Enums.TacticStatus.Complete.ToString())
+            //{
+            //    return Customfieldoptionlist.ToList();
+            //}
+            //else
+            //{
                 return Customfieldoptionlist.Where(a => a.IsDeleted == false).ToList();
               
-            }
+          //  }
         }
         //End
 
