@@ -234,7 +234,7 @@
             //_cardhtml = _cardhtml + '<button id="" class="btn btn-blue text-shadow-blue source-sans-proregular" name="">Details</button>';
             var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
-                sb.append('<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_Tqlact_proj) + '","' + String(_Tqlgoal) + '","' + String(_Tqlpercentange) + '","' + String(_TqlIsNegative) + '")>Details</button>');
+                sb.append('<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + encodeURIComponent(_name) + '","' + String(_Tqlact_proj) + '","' + String(_Tqlgoal) + '","' + String(_Tqlpercentange) + '","' + String(_TqlIsNegative) + '")>Details</button>'); //Modified by Komal Rawal for #2067 special character issue
             }
             sb.append('</div>');
             sb.append('<div>');
