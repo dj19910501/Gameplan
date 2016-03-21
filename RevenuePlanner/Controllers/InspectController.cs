@@ -1132,7 +1132,7 @@ namespace RevenuePlanner.Controllers
                                             string ProgramTitle = pcobj.Title.ToString();
                                             if (lstRecepientEmail.Count > 0)
                                             {
-                                                string strURL = GetNotificationURLbyStatus(pcobj.PlanId, form.PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
+                                                string strURL = GetNotificationURLbyStatus(pcobj.PlanId, campaignid, Enums.Section.Campaign.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                             }
                                         }
@@ -1948,7 +1948,7 @@ namespace RevenuePlanner.Controllers
                                             string ProgramTitle = pcpobj.Title.ToString();
                                             if (lstRecepientEmail.Count > 0)
                                             {
-                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign.PlanId, form.PlanProgramId, Enums.Section.Program.ToString().ToLower());
+                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign.PlanId, programid, Enums.Section.Program.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Program.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                             }
                                         }
@@ -4335,7 +4335,8 @@ namespace RevenuePlanner.Controllers
                                     objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
                                     objNewLineitem.Cost = pcpobj.Cost;
                                     objNewLineitem.Description = string.Empty;
-                                    objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                    //objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                    objNewLineitem.CreatedBy = form.OwnerId;//modified by Rahul Shah on 21/03/2016 for PL #2032 observation.
                                     objNewLineitem.CreatedDate = DateTime.Now;
                                     db.Entry(objNewLineitem).State = EntityState.Added;
 
@@ -4458,7 +4459,7 @@ namespace RevenuePlanner.Controllers
                                             string ProgramTitle = pcpobj.Plan_Campaign_Program.Title.ToString();
                                             if (lstRecepientEmail.Count > 0)
                                             {
-                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
+                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, tacticId, Enums.Section.Tactic.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                             }
                                         }
@@ -7666,6 +7667,7 @@ namespace RevenuePlanner.Controllers
                                 objLineitem.LinkedLineItemId = NewLinkLineItemID == 0 ? null : NewLinkLineItemID;
                                 db.Entry(objLineitem).State = EntityState.Added;
                                 int result = db.SaveChanges();
+                                lineItemId = objLineitem.PlanLineItemId;
                                 //Added by Rahul Shah on 17/03/2016 for PL #2068
                                 if (result > 0) {
                                     #region "Send Email Notification For Owner changed"
@@ -7708,15 +7710,14 @@ namespace RevenuePlanner.Controllers
                                             string TacticTitle = objLineitem.Plan_Campaign_Program_Tactic.Title.ToString();
                                             if (lstRecepientEmail.Count > 0)
                                             {
-                                                string strURL = GetNotificationURLbyStatus(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanLineItemId, Enums.Section.LineItem.ToString().ToLower());
+                                                string strURL = GetNotificationURLbyStatus(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, lineItemId, Enums.Section.LineItem.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, TacticTitle, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL,objLineitem.Title);
                                             }
                                         }
 
                                     }
                                     #endregion
-                                }
-                                lineItemId = objLineitem.PlanLineItemId;
+                                }                                
                                 #endregion
 
                                 if (LinkedobjLineitem != null)

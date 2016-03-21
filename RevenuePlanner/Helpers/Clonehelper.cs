@@ -1573,6 +1573,9 @@ namespace RevenuePlanner.Helpers
                     planid = objPlanTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                     objPlanTactic.Plan_Campaign_Program = null;
                     objPlanTactic.Plan_Campaign_Program_Tactic_Comment = objPlanTactic.Plan_Campaign_Program_Tactic_Comment.ToList();
+                    //modified by Rahul Shah on 21/03/2016 for PL #2032 observation.
+                    objPlanTactic.CreatedBy = UserId;
+                    objPlanTactic.CreatedDate = DateTime.Now;
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Actual = objPlanTactic.Plan_Campaign_Program_Tactic_Actual.ToList();
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
@@ -1600,7 +1603,7 @@ namespace RevenuePlanner.Helpers
                                     int rem = int.Parse(period) % 12;
                                     int div = int.Parse(period) / 12;
                                     period = PeriodChar + (div > 1 ? "12" : rem.ToString());
-                                    actual.Period = period;
+                                    actual.Period = period;                                   
                                 }
                             }
                         }
@@ -1619,7 +1622,7 @@ namespace RevenuePlanner.Helpers
                                     int rem = int.Parse(period) % 12;
                                     int div = int.Parse(period) / 12;
                                     period = PeriodChar + (div > 1 ? "12" : rem.ToString());
-                                    cost.Period = period;
+                                    cost.Period = period;                                   
                                 }
                             }
                         }
@@ -1639,7 +1642,7 @@ namespace RevenuePlanner.Helpers
                                     int rem = int.Parse(period) % 12;
                                     int div = int.Parse(period) / 12;
                                     period = PeriodChar + (div > 1 ? "12" : rem.ToString());
-                                    budget.Period = period;
+                                    budget.Period = period;                                    
                                 }
                             }
                         }
@@ -1650,6 +1653,9 @@ namespace RevenuePlanner.Helpers
                         {
                             pcptl.LineItemType = null;
                             pcptl.Cost = 0;
+                            //modified by Rahul Shah on 21/03/2016 for PL #2032 observation.
+                            pcptl.CreatedBy = UserId;
+                            pcptl.CreatedDate = DateTime.Now;
                             pcptl.LinkedLineItemId = pcptl.PlanLineItemId;
                             pcptl.LineItem_Budget = pcptl.LineItem_Budget;
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
@@ -1666,7 +1672,7 @@ namespace RevenuePlanner.Helpers
                                              int rem = int.Parse(period) % 12;
                                              int div = int.Parse(period) / 12;
                                              period = PeriodChar + (div > 1 ? "12" : rem.ToString());
-                                             cost.Period = period;
+                                             cost.Period = period;                                             
                                          }
                                      }
                                  }
