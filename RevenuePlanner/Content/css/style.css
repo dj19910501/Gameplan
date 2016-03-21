@@ -12738,8 +12738,9 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
     margin: 0 auto;
     position: relative;
     /*width: 1045px;*/
-    max-width: 1050px; /*Added by Bhumika for #2012 7-3-2016*/ 
-    width: 70%; 
+    width: 1050px;
+   /* max-width: 1050px; Added by Bhumika for #2012 7-3-2016 
+    width: 70%; */
 }
 .headerfix-wraper .headefix .title-simple{margin-left: 0;display: table;width: 100%;} /*Added by Bhumika for #2012 7-3-2016*/ 
 
@@ -12834,6 +12835,10 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
     max-width: 1050px;
     width: 70%;
 }
+.pop-body-wraper .PopupDiv { /*#2012  Added by Bhumika 21-3-2016 */
+    width: 1050px;
+}
+
 .financial_progressPlanned {
     background: #ccc;
     float: left;
@@ -14488,11 +14493,11 @@ box-shadow: 1px 0 0 rgba(255, 255, 255, 0.125) inset, 0 1px 0 rgba(255, 255, 255
 .report-btn-group {
  padding: 1% 0 0 2%;
 }
- .headefix {
+ /*.headefix {
  float: left;
  left: 163px;
  position: relative;
-}
+}*/ /*#2012 Bhumika 21-3-2016 */
  .revenue-graph-info .viewfullscreen {
  margin-right: 16px;
  padding-top: 0;
@@ -14585,12 +14590,12 @@ html, body {
 .report-btn-group {
  padding: 1% 0 0 2%;
 }
- .headefix {
+ /*.headefix {
  float: left;
  left: 120px;
  position: relative;
  width: 1050px;
-}
+}*/ /* #2012 Bhumika 21-3-2016 */
  .reveanue-table .top-revenue:nth-child(2n) {
  padding: 10px 10px 10px 58px;
 }
@@ -14865,10 +14870,10 @@ font-size:23px;
 .monthContainerBudget {
 width:54%;
 }
-.headefix {
+/*.headefix {
 width:92%;
 left: 20px;
-}
+}*/ /* #2012 Bhumika 23-3-2016 */
 .modal-inspect-review .title-simple {
 margin-top:16px;
 }
@@ -15077,7 +15082,7 @@ padding-right: 0px;
 }
 .headefix {
  width: 100%;
- left: 0px;
+ left: 15px;
 }
 .budget-section {
  width:87%;
