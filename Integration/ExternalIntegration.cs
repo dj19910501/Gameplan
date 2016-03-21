@@ -938,10 +938,10 @@ namespace Integration
                     return integrationEloquaClient.GetTargetDataType();
                 }
             }
-            //Added by Brad Gray for ticket # 1367
+            //Added by Brad Gray for ticket # 1367, Modified y Brad Gray 20 March 2016 PL#2070
             else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.WorkFront.ToString()))
             {
-                IntegrationWorkFrontSession integrationWorkFrontClient = new IntegrationWorkFrontSession();
+                IntegrationWorkFrontSession integrationWorkFrontClient = new IntegrationWorkFrontSession(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 return integrationWorkFrontClient.getWorkFrontFields();
             }
 

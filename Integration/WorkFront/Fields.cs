@@ -183,12 +183,23 @@ namespace Integration.WorkFront
         {
             public static readonly GameplanField TITLE = new GameplanField("Title", "Title");
             public static readonly GameplanField DESCRIPTION = new GameplanField("Description", "Description");
+            public static readonly GameplanField START_DATE = new GameplanField("StartDate", "Start Date");
+            public static readonly GameplanField END_DATE = new GameplanField("EndDate", "End Date");
+            public static readonly GameplanField PARENT_PROGRAM = new GameplanField("ParentProgram", "Parent Program");
+            public static readonly GameplanField PARENT_CAMPAIGN = new GameplanField("ParentCampaign", "Parent Campaign");
+            public static readonly GameplanField PROGRAM_OWNER = new GameplanField("ProgramOwner", "Program Owner");
+            public static readonly GameplanField CAMPAIGN_OWNER = new GameplanField("CampaignOwner", "Campaign Owner");
+            public static readonly GameplanField CAMPAIGN_START = new GameplanField("CampaignStartDate", "Campaign Start Date");
+            public static readonly GameplanField CAMPAIGN_END = new GameplanField("CampaignEndDate", "Campaign End Date");
+            public static readonly GameplanField PROGRAM_START = new GameplanField("ProgramStartDate", "Program Start Date");
+            public static readonly GameplanField PROGRAM_END = new GameplanField("ProgramEndDate", "Program End Date");
+
 
             /// <summary>
             /// String representation of the Fields
             /// </summary>
-            public string apiString { get; private set; }
-            public string value { get; private set; }
+            private string apiString { get;  set; }
+            private string value { get;  set; }
 
             /// <summary>
             /// Creates a new Fields with the given value

@@ -11,6 +11,7 @@ using System.Text;
 using System.Data;
 using System.Data.Common;
 
+
 namespace Integration.WorkFront
 {
 
@@ -678,6 +679,76 @@ namespace Integration.WorkFront
             return syncError;
         }
 
+        ///Retrieve Users from WorkFront and store in Plan. Any users deactivated in WorkFront are marked as deleted in Plan db
+        ///Currently retrieves only user name and WorkFront ID.
+        ///Users from WorkFront are tied to the integration instance. Users do not have to exist in Plan, nor is a user currently tied to any Plan user
+        ///Added 1/13/2016 by Brad Gray for PL#1895
+        ///<param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
+        /// <returns>
+        /// Bool: true if sync error, false otherwise
+        /// </returns>
+        private bool SyncInstanceCustomFields(ref List<SyncError> SyncErrors)
+        {
+            bool syncError = false;
+            //update WorkFront users for the instance
+            try
+            {
+                JToken usersFromWorkFront = client.Search(ObjCode.USER, new { fields = "name,ID,isActive", isActive = "true" });
+                //Get the list of WorkFront users in the database
+                List<IntegrationWorkFrontUser> usersFromDB = db.IntegrationWorkFrontUsers.Where(user => user.IntegrationInstanceId == _integrationInstanceId && user.IsDeleted == false).ToList();
+                List<string> userIdsFromDB = usersFromDB.Select(q => q.WorkFrontUserId).ToList();
+                //For comparison purposes, create a list of users from WorkFront
+                List<string> usersInWorkFront = new List<string>();
+
+                foreach (var user in usersFromWorkFront["data"])
+                {
+                    string userID = user["ID"].ToString().Trim();
+                    usersInWorkFront.Add(userID);
+
+                    if (!userIdsFromDB.Contains(userID)) //found a user in WorkFront that isn't in the database. add it to database
+                    {
+                        IntegrationWorkFrontUser newUser = new IntegrationWorkFrontUser();
+                        newUser.WorkFrontUserId = userID;
+                        newUser.WorkFrontUserName = user["name"].ToString();
+                        newUser.IsDeleted = false;
+                        newUser.IntegrationInstanceId = _integrationInstanceId;
+                        db.Entry(newUser).State = EntityState.Added;
+                    }
+                    else
+                    {
+                        IntegrationWorkFrontUser userToEdit = db.IntegrationWorkFrontUsers.Where(u => u.WorkFrontUserId == userID && u.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
+                        userToEdit.WorkFrontUserName = user["name"].ToString(); //update the name in the database
+                        db.Entry(userToEdit).State = EntityState.Modified;
+                    }
+                }
+
+                //users in the database that are not in WorkFront or are set to deactivated in Workfront need to be set to deleted in database 
+                List<string> inDatabaseButNotInWorkFront = userIdsFromDB.Except(usersInWorkFront).ToList();
+                List<IntegrationWorkFrontUser> userToDelete = db.IntegrationWorkFrontUsers.Where(user => inDatabaseButNotInWorkFront.Contains(user.WorkFrontUserId)).ToList(); //userID could be duplicated in Plan - set all of them to deleted
+                if (userToDelete.Count > 0)
+                {
+                    userToDelete.Select(c => { c.IsDeleted = true; return c; }).ToList();
+                    db.Entry(userToDelete).State = EntityState.Modified;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                syncError = true;
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.SectionName = "Sync WorkFront Users";
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
+            }
+            return syncError;
+        }
+
         /// <summary>
         /// Tactic Level sync method 
         /// sets up tactic integration logs
@@ -1086,54 +1157,10 @@ namespace Integration.WorkFront
                 //---------End Portfolio Organization -----------------------//
 
                 //Begin push to WorkFront only sync
-                int notUsedFieldCount = 0;
-                var last = _mappingTactic.Last();
-                foreach (var tacticField in _mappingTactic) //create JSON for editing
-                {
-                    if (tacticField.Key == Fields.ToStringEnums(Fields.GamePlanFields.TITLE))
-                    {
-                        updateList.Append(tacticField.Value + ":'" + tactic.Title + "'");
-                    }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.DESCRIPTION))
-                    {
-                        updateList.Append(tacticField.Value + ":'" + tactic.Description + "'");
-                    }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.START_DATE) )
-                    {
-                        updateList.Append(tacticField.Value + ":'" + tactic.StartDate + "'");
-                    }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.END_DATE))
-                    {
-                        updateList.Append(tacticField.Value + ":'" + tactic.EndDate + "'");
-                    }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.COST))
-                    {
-                        updateList.Append(tacticField.Value + ":'" + tactic.Cost + "'");
-                    }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.TACTIC_BUDGET))
-                    {
-                        updateList.Append(tacticField.Value + ":'" + tactic.TacticBudget + "'");
-                    }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.STATUS))
-                    {
-                        updateList.Append(tacticField.Value + ":'" + tactic.Status + "'");
-                    }
-                    else if (_customFieldIds.Contains(tacticField.Key))
-                    {
-                        int keyAsInt;
-                        if (!Int32.TryParse(tacticField.Key, out keyAsInt)) { throw new ClientException("Error converting Custom Field ID to integer"); }
-                        CustomField_Entity cfe = db.CustomField_Entity.Where(field => field.CustomFieldId == keyAsInt && tactic.PlanTacticId == field.EntityId && field.CustomField.IsGet == false).FirstOrDefault();
-                        if ( !(cfe == null) )
-                        {
-                            updateList.Append(tacticField.Value + ":'" + cfe.Value + "'");
-                        }else { notUsedFieldCount++; }
-                    }
-                    else { notUsedFieldCount++; }
-                    updateList.Append(",");
-                }
+                //Modified by Brad Gray 20 March 2016 PL#2070
 
-                updateList.Remove(updateList.Length - (notUsedFieldCount+1), notUsedFieldCount+1); //remove the final comma(s) - there will always be at least one final comma
-                updateList.Append("}");
+                var last = _mappingTactic.Last();
+                updateList.Append(GenerateUpdateData(tactic));
                 JToken jUpdates = JToken.FromObject(updateList.ToString());
                 JToken project = client.Update(ObjCode.PROJECT, new { id = tactic.IntegrationWorkFrontProjectID, updates = jUpdates });
                 if (project == null) { throw new ClientException("Update not completed on " + tactic.Title + "."); }
@@ -1189,6 +1216,100 @@ namespace Integration.WorkFront
         }
 
         /// <summary>
+        /// Method to create an update string for use with API JSON update
+        /// Used for updating existing tactics.
+        /// Originally part of UpdateTactic method. Separated out as it started growing
+        /// Brad Gray 20 March 2016 PL#2071
+        /// </summary>
+        ///  <param name="tactic">
+        /// the tactic to by synced
+        /// </param>
+        /// <returns>
+        /// StringBuilder - fields for JSON update
+        /// </returns>
+        private StringBuilder GenerateUpdateData(Plan_Campaign_Program_Tactic tactic)
+        {
+            int notUsedFieldCount = 0;
+            var last = _mappingTactic.Last();
+            StringBuilder updateList = new StringBuilder();
+            foreach (KeyValuePair<String, String> tacticField in _mappingTactic) //create JSON for editing
+            {
+           
+                if (tacticField.Key == Fields.GameplanField.TITLE.ToString())
+                {
+                    updateList.Append(tacticField.Value + ":'" + tactic.Title + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.DESCRIPTION.ToString())
+                {
+                    updateList.Append(tacticField.Value + ":'" + tactic.Description + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.START_DATE.ToAPIString())
+                {
+                    updateList.Append(tacticField.Value + ":'" + tactic.StartDate + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.END_DATE.ToAPIString())
+                {
+                    updateList.Append(tacticField.Value + ":'" + tactic.EndDate + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.PARENT_PROGRAM.ToAPIString())
+                {
+                    updateList.Append(tacticField.Value + ":'" + tactic.Plan_Campaign_Program.Title + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.PARENT_CAMPAIGN.ToAPIString())
+                {
+                    updateList.Append(tacticField.Value + ":'" + tactic.Plan_Campaign_Program.Plan_Campaign.Title + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.PROGRAM_END.ToAPIString())
+                {
+                    updateList.Append(tacticField.Value + ":'" + tactic.Plan_Campaign_Program.EndDate + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.PROGRAM_OWNER.ToAPIString())
+                {
+                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                    BDSService.User user = objBDSServiceClient.GetTeamMemberDetails(tactic.Plan_Campaign_Program.Plan_Campaign.CreatedBy, _applicationId);
+                    updateList.Append(tacticField.Value + ":'" + user.Email + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.PROGRAM_START.ToAPIString())
+                {
+                    updateList.Append(tacticField.Value + ":'" + tactic.Plan_Campaign_Program.StartDate + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.CAMPAIGN_END.ToAPIString())
+                {
+                    updateList.Append(tacticField.Value + ":'" + tactic.Plan_Campaign_Program.Plan_Campaign.EndDate + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.CAMPAIGN_OWNER.ToAPIString())
+                {
+                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                    BDSService.User user = objBDSServiceClient.GetTeamMemberDetails(tactic.Plan_Campaign_Program.Plan_Campaign.CreatedBy, _applicationId);
+                    updateList.Append(tacticField.Value + ":'" + user.Email + "'");
+                }
+                else if (tacticField.Key == Fields.GameplanField.CAMPAIGN_START.ToAPIString())
+                {
+                    updateList.Append(tacticField.Value + ":'" + tactic.Plan_Campaign_Program.Plan_Campaign.StartDate + "'");
+                }
+                else if (_customFieldIds.Contains(tacticField.Key))
+                {
+                     int keyAsInt;
+                     if (!Int32.TryParse(tacticField.Key, out keyAsInt)) { throw new ClientException("Error converting Custom Field ID to integer"); }
+                            CustomField_Entity cfe = db.CustomField_Entity.Where(field => field.CustomFieldId == keyAsInt && tactic.PlanTacticId == field.EntityId && field.CustomField.IsGet == false).FirstOrDefault();
+                            if (!(cfe == null))
+                            {
+                                updateList.Append(tacticField.Value + ":'" + cfe.Value + "'");
+                            }
+                            else { notUsedFieldCount++; }
+                 }
+                     else { notUsedFieldCount++; }
+                 updateList.Append(",");
+           }
+
+           updateList.Remove(updateList.Length - (notUsedFieldCount+1), notUsedFieldCount+1); //remove the final comma(s) - there will always be at least one final comma
+           updateList.Append("}");
+           return updateList;
+        }
+
+
+
+        /// <summary>
         /// Function to set mapping details.
         /// </summary>
         /// <param name="SyncErrors">
@@ -1205,12 +1326,15 @@ namespace Integration.WorkFront
             {
                 string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
                 string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
+                string Plan_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString();
+                string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString();
                 string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
                 string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
                 List<Fields.WorkFrontField> wfFields = Fields.GetWorkFrontFieldDetails();
                 List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
                 _mappingTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
-                                                    || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Tactic_EntityType) &&
+                                                    || gameplandata.GameplanDataType.TableName == Global || gameplandata.GameplanDataType.TableName == Plan_Campaign_Program 
+                                                    || gameplandata.GameplanDataType.TableName ==Plan_Campaign) : gameplandata.CustomField.EntityType == Tactic_EntityType) &&
                                                     (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
                                                 .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
                                                 .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
@@ -1321,7 +1445,46 @@ namespace Integration.WorkFront
         /// </returns>
         public List<string> getWorkFrontFields()
         {
-            return Fields.ReturnAllWorkFrontFields_AsAPI();
+            List<string> WorkfrontCustomFields = GetCustomFieldList();
+            List<string> WorkFrontFields = Fields.ReturnAllWorkFrontFields_AsAPI();
+            if (WorkfrontCustomFields.Count > 0) { WorkFrontFields.AddRange(WorkfrontCustomFields); }
+            return WorkFrontFields;
+
+        }
+
+        /// <summary>
+        /// Returns a list of all workfront custom fields
+        /// Retrieves all custom fields (parameters) from the workfront instance
+        /// Preprends "'DE:" to each field's name and adds to a list. This DE: is needed
+        /// as "'DE: <fieldname>'" is used by workfront for field access
+        /// Added by Brad Gray 20 March 2016 PL#2070
+        /// </summary>
+        /// <returns>
+        /// list of all workfront custom fields as strings
+        /// </returns>
+        private List<string> GetCustomFieldList()
+        {
+            List<string> customNames = new List<string>();
+            try
+            {
+                if(client!=null)
+                {
+                    JToken custom = client.Search(ObjCode.PARAMETER, new { displayType = "TEXT" });
+                    if (custom == null || !custom.HasValues) { return customNames; }
+                    foreach (var param in custom["data"].Children())
+                    {
+                        customNames.Add("'DE:" + param["name"]+"'");
+                    }
+                }
+               
+               
+            }
+            catch (Exception)
+            {
+                throw new ClientException("Failed to retrieve custom fields");
+            }
+
+            return customNames;
         }
 
         /// <summary>
