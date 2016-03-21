@@ -242,7 +242,12 @@ namespace Integration
                     instanceLogStart.Status = Enums.SyncStatus.Error.ToString();
                     db.Entry(instanceLogStart).State = EntityState.Added;
                     Instance.LastSyncStatus = StatusResult.Error.ToString();
+                    Instance.LastSyncDate = DateTime.Now;
                     instanceLogStart.SyncEnd = DateTime.Now;
+                    if (_userId == Guid.Empty)
+                        instanceLogStart.IsAutoSync = true;      // PL ticket #1449: Update IntegrationInstanceLog that Sync process by Auth or Manual.
+                    else
+                        Instance.ForceSyncUser = _userId;
                     db.Entry(Instance).State = EntityState.Modified;
                     int resulValue = db.SaveChanges();
                     Common.SaveIntegrationInstanceLogDetails(_id, instanceLogStart.IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
