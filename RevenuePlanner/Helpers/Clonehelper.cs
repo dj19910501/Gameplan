@@ -1573,9 +1573,9 @@ namespace RevenuePlanner.Helpers
                     planid = objPlanTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                     objPlanTactic.Plan_Campaign_Program = null;
                     objPlanTactic.Plan_Campaign_Program_Tactic_Comment = objPlanTactic.Plan_Campaign_Program_Tactic_Comment.ToList();
-                    //modified by Rahul Shah on 21/03/2016 for PL #2032 observation.
-                    objPlanTactic.CreatedBy = UserId;
-                    objPlanTactic.CreatedDate = DateTime.Now;
+                    //modified by Rahul Shah on 22/03/2016 for PL #2032 observation.
+                    //objPlanTactic.CreatedBy = UserId;
+                    //objPlanTactic.CreatedDate = DateTime.Now;
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Actual = objPlanTactic.Plan_Campaign_Program_Tactic_Actual.ToList();
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
                     //objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
@@ -1653,9 +1653,9 @@ namespace RevenuePlanner.Helpers
                         {
                             pcptl.LineItemType = null;
                             pcptl.Cost = 0;
-                            //modified by Rahul Shah on 21/03/2016 for PL #2032 observation.
-                            pcptl.CreatedBy = UserId;
-                            pcptl.CreatedDate = DateTime.Now;
+                            //modified by Rahul Shah on 22/03/2016 for PL #2032 observation.
+                            //pcptl.CreatedBy = UserId;
+                            //pcptl.CreatedDate = DateTime.Now;
                             pcptl.LinkedLineItemId = pcptl.PlanLineItemId;
                             pcptl.LineItem_Budget = pcptl.LineItem_Budget;
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
