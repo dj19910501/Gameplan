@@ -35,6 +35,7 @@
 }
 
 @Html.Hidden("hdnPlanId", strPlanId, new { id = "hdnPlanId" })
+@Html.HiddenFor(model => model.GoalType) @*Modified by Komal Rawal for 1903 goals not showing as per plan defination*@
 @section PlanHeader{
 
     <div class="light-blue-chart cf full-width-header" id="planHeader">
@@ -384,7 +385,7 @@
                                 else if (data.id != 0) {
                                     $('#PlanId').val(data.id.toString());
                                     $('#divPlanDefinationEnabled').hide();
-                                    $('#divPlanDefinationDisabled').show();
+                                   // $('#divPlanDefinationDisabled').show(); //Commented By komal Rawal for 1903 block displayed on sae of definaion
                                     $('#ModelTitle').html($('#divPlanDefinationEnabled').find('#ModelTitle').html());
                                     renderDisablePlanDefinationSection();
                                     var url = data.redirect;
