@@ -78,6 +78,11 @@
     .margin-top-50 {
         margin-top: 50px;
     }
+    /*Added by Maitri Gandhi on 22/3/2016 for #2039*/
+    div#DivloadPlan .nav.nav-tabs
+    {
+        border-bottom: 1px solid #eee;
+    }
     
 </style>
 
@@ -118,7 +123,7 @@
         @Html.Label("View By:", new { id = "lblViewBy", style = "font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important;font-size:13px;" })
         @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBy, "Value", "Text", myView), new { @class = "ddlStyleReport hide" })
     </div>
- <div id="divCostBudget">
+ <div id="divCostBudget" style="display:none;"> @*Modified by Maitri Gandhi on 22/3/2016 for #2039*@
       <label for="Cost_By:" id="lblCostBudget" style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important;font-size:13px; float:left; margin-right:10px; font-weight:bold; top:0px; padding-top:5px;">Cost vs Budget:</label>
 		     @*<div class="request-icon-block" style="top:0px; cursor:pointer;"><a id="aonCost" class="request" style="padding: 6px 27px 4px;">ON</a></div>*@
             <div class="request-icon-block" style="top:0px; cursor:pointer;"><a id="aonCost" class="new-btn-plan">ON</a></div>
@@ -483,9 +488,9 @@
     var TacCustomTitle = "@Common.TacticCustomTitle";
         //alert("TacCustomTitle: " + TacCustomTitle + " index: " + CurrentView.indexOf(TacCustomTitle));
         if (CurrentView.length > 0 && CurrentView.indexOf(TacCustomTitle) >= 0) {
-
+            //$('#divCostBudget').hide(); Commented By Maitri Gandhi on 22/3/2016 for #2039
             CurrentView = CurrentView.replace(TacCustomTitle, "");
-            $('#divCostBudget').hide();
+            
         }
         else {
             if (currentTab == "aPlanned") {
