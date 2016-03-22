@@ -12887,9 +12887,11 @@ namespace RevenuePlanner.Controllers
                 dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name });
             }
             List<LineItem_Budget> SelectedLineItemBudgetNew = db.LineItem_Budget.Select(a => a).ToList();
+
             var items = GetTopLevelRows(dataTableMain, MinParentid)
                         .Select(row => CreateItem_New(dataTableMain, row, PlanLineItemID, SelectedLineItemBudgetNew))
                         .ToList();
+            
             budgetMain.rows = items;
 
 
@@ -12953,9 +12955,11 @@ namespace RevenuePlanner.Controllers
             var id = row.Field<Int32>("Id");
             var name = row.Field<String>("Name");
             var weightage = row.Field<String>("Weightage");
-            SelectedLineItemBudget = SelectedLineItemBudget.Where(a => a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a).ToList();
-            int SelectedID = SelectedLineItemBudget.Select(a => a.BudgetDetailId).FirstOrDefault();
-            var SelectedWeightage = SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
+            //Modified by Maitri Gandhi on 22/3/2016 for #2076
+            List<LineItem_Budget> _SelectedLineItemBudget = new List<LineItem_Budget>();
+            _SelectedLineItemBudget = SelectedLineItemBudget.Where(a => a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a).ToList();
+            int SelectedID = _SelectedLineItemBudget.Select(a => a.BudgetDetailId).FirstOrDefault();
+            var SelectedWeightage = _SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
             if (id == SelectedID)
             {
                 enableCheck = "checked=\"checked\"";
