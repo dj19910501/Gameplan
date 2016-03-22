@@ -64,7 +64,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         /// added By Komal rawal for new homePage Ui of Plan
         /// 
-        public ActionResult CreatePlan(int id = 0, bool isPlanSelecter = false, bool isGridView = false)// Added by Komal Rawal for 2013 to identify grid view
+        public ActionResult CreatePlan(int id = 0, bool isPlanSelecter = false, bool isGridView = false, bool IsPlanChange = false)// Added by Komal Rawal for 2013 to identify grid view
         {
             /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
             if (isPlanSelecter == true)
@@ -78,6 +78,7 @@ namespace RevenuePlanner.Controllers
 
             bool IsPlanCreateAll = false;
             ViewBag.GridView = isGridView; // Added by Komal Rawal for 2013 to identify grid view
+            ViewBag.IsPlanChange = IsPlanChange; // Added by Komal Rawal for 2072 to identify if plan is changed
 
             try
             {
@@ -564,12 +565,12 @@ namespace RevenuePlanner.Controllers
         }
 
         //Added By Komal Rawal for new Home Page UI
-        public JsonResult SavePlanDefination(PlanModel objPlanModel, string UserId = "")
+        public JsonResult SavePlanDefination(PlanModel objPlanModel, string UserId = "", bool IsPlanChange = false) //Modified BY Komal Rawal for #2072 to check if plan is changed
         {
 
             try
             {
-
+                var ReloadAllFilters = false;
                 if (!string.IsNullOrEmpty(UserId))
                 {
                     if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
@@ -587,6 +588,7 @@ namespace RevenuePlanner.Controllers
                     //// Add Mode
                     if (objPlanModel.PlanId == 0)
                     {
+                        ReloadAllFilters = true;
                         string planDraftStatus = Enums.PlanStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.PlanStatus.Draft.ToString())).Value;
                         plan.Status = planDraftStatus;
                         plan.CreatedDate = System.DateTime.Now;
@@ -622,6 +624,11 @@ namespace RevenuePlanner.Controllers
                     }
                     else //// Edit Mode
                     {
+                        //Modified BY komal Rawal for #2072 to reload filters only if plan is changed in Plan defination
+                        if (IsPlanChange == true)
+                        {
+                            ReloadAllFilters = true;
+                        }
                         plan = db.Plans.Where(_plan => _plan.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
 
                         oldAllocatedBy = plan.AllocatedBy;
@@ -687,7 +694,7 @@ namespace RevenuePlanner.Controllers
                         //Create default Plan Improvement Campaign, Program
                         int returnValue = CreatePlanImprovementCampaignAndProgram();
                     }
-                    return Json(new { id = plan.PlanId, redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = plan.PlanId, ismsg = "Plan Saved Successfully.", IsPlanSelector = true }) });
+                    return Json(new { id = plan.PlanId, redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = plan.PlanId, ismsg = "Plan Saved Successfully.", IsPlanSelector = ReloadAllFilters }) });
 
                 }
             }

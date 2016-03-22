@@ -2150,7 +2150,7 @@
     //End
     //Added by Komal Rawal for new homepage UI to publish plan
     $('#BtnPublishPlan').click(function () {
-        publishPlan();
+        publishPlan();      
     });
 
     function publishPlan() {
@@ -2189,6 +2189,8 @@
 
                         formSubmitEvent(url, queryStringArr);
                     }
+
+                    SaveLastSetofViews(); // Added by Komal Rawal to make a draft plan default if we publish that plan as we can show it now on home page if we publish it.
                 }
             }
         });

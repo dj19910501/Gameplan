@@ -25,6 +25,7 @@
     }
     var ListBudgetingPlan = Model.objplanhomemodelheader.plans;
     var IsGridView = (bool)ViewBag.GridView; //Added by Komal Rawal for 2013 Home/Plan Layout changes
+    var IsPlanChange = (bool)ViewBag.IsPlanChange;  //Added BY komal Rawal for #2072 to reload filters only if plan is changed in Plan defination
 }
 
 @section nlFormContent{
@@ -59,7 +60,7 @@
             else
             {
                 <div>
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId = strPlanId, isGridView = IsGridView })');" style="min-width:90%">< Back to Plan</button>
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId = strPlanId, isGridView = IsGridView, IsPlanSelector = IsPlanChange })');" style="min-width:90%">< Back to Plan</button>
                 </div>
             }
 
@@ -214,7 +215,7 @@
     var IsPlanSelecter = '@isPlanSelecter';
     var isError = false;
 
- @*   jQuery(document).ready(function ($) { //event of browser back button
+    @*   jQuery(document).ready(function ($) { //event of browser back button
         if (window.history && window.history.pushState) {
             window.history.pushState('forward', null, './#forward');
             $(window).on('popstate', function () {
@@ -302,7 +303,7 @@
                     }
                     else {
                         $(this).children('a').removeClass("error-form");
-                      }
+                    }
                 }
                 else if ($(this).next().attr('datadefault') == "SelectModel") {
                     var tValue = $(this).children('a').text();
@@ -364,7 +365,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Plan/SavePlanDefination")',
-                    data: $("form[name=SavePlanForm]").serialize() + '&UserId=' + uId,
+                    data: $("form[name=SavePlanForm]").serialize() + '&UserId=' + uId + '&IsPlanChange=' + '@IsPlanChange',  //Modified BY komal Rawal for #2072 to check  if plan is changed in Plan defination
                     success: function (data) {
 
                         if (data != 'undefined') {
@@ -385,7 +386,7 @@
                                 else if (data.id != 0) {
                                     $('#PlanId').val(data.id.toString());
                                     $('#divPlanDefinationEnabled').hide();
-                                   // $('#divPlanDefinationDisabled').show(); //Commented By komal Rawal for 1903 block displayed on sae of definaion
+                                    // $('#divPlanDefinationDisabled').show(); //Commented By komal Rawal for 1903 block displayed on sae of definaion
                                     $('#ModelTitle').html($('#divPlanDefinationEnabled').find('#ModelTitle').html());
                                     renderDisablePlanDefinationSection();
                                     var url = data.redirect;
@@ -430,7 +431,7 @@
                     }
                 });
             }
-            
+
             return isError;
         });
 
@@ -479,21 +480,30 @@
         GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
     }
 
+
     function onClickPlanTitle() {
+        //Modified BY komal Rawal for #2072 to reload filters only if plan is changed in Plan defination
+        var IsPlanChangefromheader = false;
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
             CurrentPlanId = $(this).attr('value');
+            if (CurrentPlanId.toString() != '@Sessions.PlanId.ToString()') {
+                IsPlanChangefromheader = true;
+            }
             $("#CurrentPlanId").val(CurrentPlanId);
+
             if (CurrentPlanId > 0) {
+
                 GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
-                GetPlan(CurrentPlanId);
+                GetPlan(CurrentPlanId, IsPlanChangefromheader);
+             
             }
         });
     }
 
-    function GetPlan(Planid) {
+    function GetPlan(Planid, IsPlanChangefromheader) {
         var url = '@Url.Content("~/Plan/CreatePlan")';
-        window.location = url + "?id=" + Planid;
+        window.location = url + '?id=' + Planid + '&IsPlanChange=' + IsPlanChangefromheader;
     }
 
     $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
@@ -652,8 +662,7 @@
                 ChangedValue = true;
                 return false;
             }
-            else
-            {
+            else {
                 ChangedValue = false;
             }
         });
@@ -663,18 +672,15 @@
                 ChangedValueFormat = true;
                 return false;
             }
-            else
-            {
+            else {
                 ChangedValueFormat = false;
             }
         });
 
-        if (ChangedValue == true || ChangedValueFormat == true)
-        {
+        if (ChangedValue == true || ChangedValueFormat == true) {
             changed = true;
         }
-        else
-        {
+        else {
             changed = false;
         }
         return changed;
