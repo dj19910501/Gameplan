@@ -495,8 +495,12 @@
 
     $(document).ready(
       function () {
-
-
+                    
+          //Added By Maitri Gandhi for #2073 on 23/3/2016
+          if ($('#ddlTacticType').val() != 0) {
+              var tacticTypeId = $('#ddlTacticType').val();
+              loadtacticdata(tacticTypeId);
+          }
           /*Added by Mitesh Vaishnav for PL ticket #1073
           Register events of new multiselect dropdown customfields*/
           $('.dropdown_new_btn').each(function () {
@@ -1402,6 +1406,7 @@
 
 
     $('#ddlTacticType').change(function () {
+        
         var tacticTypeId = $(this).val();
         loadtacticdata(tacticTypeId);
 
