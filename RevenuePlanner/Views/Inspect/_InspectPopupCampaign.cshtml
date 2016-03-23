@@ -226,33 +226,32 @@
           $("#liSetup,#liReview,#liBudget").on("click", function () {
               var activeTab = $("#InspectTab li.active a").text();
               tabtext = ($(this).children('a').text());
-             // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
+              // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
               var returnpara = true;
               if (tabtext != activeTab) {
                   var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1324
               }
-           
+
               // If condition for campaign id , added by komal rawal for blank setup page on click of setup tab when we create new campaign . Date : 29-jan-2016.Ticket: #1938
               var campaignId = $("#hdnPlanCampaignId").val();
               if (campaignId != 0 || tabtext != activeTab) {
-              if (returnpara) {
+                  if (returnpara) {
 
-                  //$("#successMessageViewCampaign").slideUp(50);
-                  //$("#errorMessageEditCampaign").slideUp(50);
-                  RemoveTabClass();
-                  $(this).removeClass("pull-left");
-                  $(this).addClass("active pull-left");
-                  $("#errorMessage").css("display", "none");
-                  $("#successMessage").css("display", "none");
-                  $("#successMessageViewCampaign").css("display", "none");
-                  $("#errorMessageEditCampaign").css("display", "none");
-                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                
-                  loadReview(campaignId, tabtext);
+                      //$("#successMessageViewCampaign").slideUp(50);
+                      //$("#errorMessageEditCampaign").slideUp(50);
+                      RemoveTabClass();
+                      $(this).removeClass("pull-left");
+                      $(this).addClass("active pull-left");
+                      $("#errorMessage").css("display", "none");
+                      $("#successMessage").css("display", "none");
+                      $("#successMessageViewCampaign").css("display", "none");
+                      $("#errorMessageEditCampaign").css("display", "none");
+                      /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+
+                      loadReview(campaignId, tabtext);
+                  }
               }
-              }
-              else
-              {
+              else {
                   loadAddSetup();
               }
 
@@ -278,7 +277,7 @@
                   }
 
                   else if (activeTab = TabReview) {
-                     
+
                       var ReturnParameter = SaveTitle();
                       if (ReturnParameter == false) {
                           return false;
@@ -308,14 +307,14 @@
               }
               if (iserror) {
                   ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
-                 return false;
-             }
-        $.ajax({
-            async: false,
-            type: 'POST',
-            url: '@Url.Content("~/Inspect/SaveTitle/")',
-            data: { title: campaignTitle, Id: campaignId, ActivePopup: "Campaign" },
-            success: function (data) {
+                  return false;
+              }
+              $.ajax({
+                  async: false,
+                  type: 'POST',
+                  url: '@Url.Content("~/Inspect/SaveTitle/")',
+                  data: { title: campaignTitle, Id: campaignId, ActivePopup: "Campaign" },
+                  success: function (data) {
                       if (!data.IsDuplicate) {
                           var requestedModule = $("#hdnRequestedModule").val();
                           $('#lblCampaignTitle').text(campaignTitle);
@@ -324,7 +323,7 @@
                           $("#spanMessageSuccess").text(data.msg);
                           $("#errorMessage").css("display", "none");
                           // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                         // RefreshCurrentTab(requestedModule, 0, 0, 0);
+                          // RefreshCurrentTab(requestedModule, 0, 0, 0);
                           returnparameter = true
                       }
                       else {
@@ -338,18 +337,18 @@
           //End
           if (planCampaignId != 0) {
               if ($('#btnEditCampaign').hasClass('edit-icon-white') && $("#hdnCampaignOpt").val() == '@Enums.InspectPopupMode.Edit.ToString()') {
-                      $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
-                      $('#btnEditCampaign').addClass('Save-icon-white');
-                      $("#errorMessageEditCampaign").css("display", "none");
-                      $("#successMessageViewCampaign").css("display", "none");
-                      $("#txtTitle").removeClass("error");
-                  }
-                  loadReview(planCampaignId, tabtext);
+                  $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                  $('#btnEditCampaign').addClass('Save-icon-white');
+                  $("#errorMessageEditCampaign").css("display", "none");
+                  $("#successMessageViewCampaign").css("display", "none");
+                  $("#txtTitle").removeClass("error");
               }
-              else {
+              loadReview(planCampaignId, tabtext);
+          }
+          else {
               // $("#liReview ,#liBudget,#liSetup").unbind('click');
-                  loadAddSetup();
-              }
+              loadAddSetup();
+          }
           $("#btnEditCampaign").on("click", function () {
               isDataModified = true;
               var activeTab = $("#InspectTab li.active a").text();
@@ -372,82 +371,82 @@
             //// Added By: Maninder Singh Wadhva on 11/24/2014.
             //// Ticket: 942 Exception handeling in Gameplan.
             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-    }
-});
+        }
+    });
 
-}
-else if (tabtext == "Budget") {
-    url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
-    $("#divTab").empty();
-    $("#divTab").load(url + '?id=' + planCampaignId);
-}
-else if (tabtext == "Review") {
-    url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
-                  $("#divTab").empty();
-                  $("#divTab").load(url + '?id=' + planCampaignId
-, function (response, status, xhr) {
-    if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-        //// Call function to redirect on service unavailibility.
-        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-        //// Ticket: 942 Exception handeling in Gameplan.
-        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-    }
-});
+                  }
+                  else if (tabtext == "Budget") {
+                      url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
+                      $("#divTab").empty();
+                      $("#divTab").load(url + '?id=' + planCampaignId);
+                  }
+                  else if (tabtext == "Review") {
+                      url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
+                      $("#divTab").empty();
+                      $("#divTab").load(url + '?id=' + planCampaignId
+    , function (response, status, xhr) {
+        if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+            //// Call function to redirect on service unavailibility.
+            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+            //// Ticket: 942 Exception handeling in Gameplan.
+            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+        }
+    });
 
-    RemoveTabClass();
-    $("#liSetup").removeClass('pull-left');
-    $("#liSetup").addClass('active pull-left');
+                      RemoveTabClass();
+                      $("#liSetup").removeClass('pull-left');
+                      $("#liSetup").addClass('active pull-left');
 
-}
+                  }
 
                   //   $("#btnEditCampaign").css("display", "none");
                   //  $("#AddForm").css("display", "none");
-    $('#txtTitle').css('display', 'block');
-    $('#lblCampaignTitle').css('display', 'none');
-    $("#txtTitle").prop('readonly', false);
+                  $('#txtTitle').css('display', 'block');
+                  $('#lblCampaignTitle').css('display', 'none');
+                  $("#txtTitle").prop('readonly', false);
                   //  $('#divDeleteCampaign').css('display', 'none');
-    return false;
-}
+                  return false;
+              }
                   //Added by komal Rawal for #1324 - To save the Active Tab on Save Button
-else {
+              else {
 
-    if (activeTab == TabSetup) {
-        var ReturnParameter = SetupCampaignSave();
-        if (ReturnParameter == false) {
-            return false;
-        }
-        else {
-            $('.close-x-big-icon').trigger('click');
-            
+                  if (activeTab == TabSetup) {
+                      var ReturnParameter = SetupCampaignSave();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
+                          $('.close-x-big-icon').trigger('click');
 
-        }
-    }
 
-    else if (activeTab == TabBudget) {
-        var ReturnParameter = BudgetCampaignSave();
-        if (ReturnParameter == false) {
-            return false;
-        }
-        else {
-            $('.close-x-big-icon').trigger('click');
-            
+                      }
+                  }
 
-        }
-    }
+                  else if (activeTab == TabBudget) {
+                      var ReturnParameter = BudgetCampaignSave();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
+                          $('.close-x-big-icon').trigger('click');
 
-    else if (activeTab == TabReview) {
-        var ReturnParameter = SaveTitle();
-        if (ReturnParameter == false) {
-            return false;
-        }
-        else {
-            $('.close-x-big-icon').trigger('click');
-          
-        }
 
-    }
+                      }
+                  }
 
-}
+                  else if (activeTab == TabReview) {
+                      var ReturnParameter = SaveTitle();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
+                          $('.close-x-big-icon').trigger('click');
+
+                      }
+
+                  }
+
+              }
 
           });
 
@@ -455,17 +454,82 @@ else {
               loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', '@planCampaignId', $("#hdnRedirectType").val());
           });
           $('#NewProgram').click(function () {
-
+              //Modified by Rahul Shah for PL #2031 on 22/03/2016
+              var activeTab = $("#InspectTab li.active a").text();
+              if (activeTab != null && activeTab != undefined && activeTab != '') {
+                  SaveAllData(activeTab);
+              }
               loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanCampaignId').val(), $("#hdnRedirectType").val());
           });
 
-          // Close event for Error Message & Success Message Close button 
+          // Close event for Error Message & Success Message Close button
           $(".alert").find(".close").on("click", function (e) {
               e.stopPropagation();
               e.preventDefault();
               $(this).closest(".alert").css("display", "none");
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
           });
+          $('#CloneCampaign').click(function () {
+              var activeTab = $("#InspectTab li.active a").text();
+              if (activeTab != null && activeTab != undefined && activeTab != '') {
+                  SaveAllData(activeTab);
+              }
+              isDataModified = true;
+              var idPlanCamaign = $("#hdnPlanCampaignId").val();
+              var Title = $("#lblCampaignTitle").html();
+              $.ajax({
+                  type: 'POST',
+                  url: '@Url.Content("~/Inspect/Clone")',
+                  data: {
+                      CloneType: '@Enums.DuplicationModule.Campaign',
+                      Id: idPlanCamaign,
+                      title: Title,
+                      CalledFromBudget: '@CalledFromBudget',
+                      RequsetedModule: '@RedirectType',
+                      planId: '@planId'
+                  },
+                  success: function (data) {
+                      if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                          window.location = '@Url.Content("~/Login/Index")';
+                      }
+                      else if (data.IsSuccess) {
+
+                          var currentTab = "Setup";
+
+                          if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                              currentTab = "Budget";
+                          }
+                          var planCampaignId = data.Id;
+                          var expandplanCampaignId = data.expand;
+                          var planProgramId = "";
+
+                          loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+
+                          if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
+                              $("#hdnBudgetingExpandId").val(expandplanCampaignId);
+                              $("#hdnBudgetingIsSave").val("true");
+                          }
+
+                          $("#successMessage").css("display", "block");
+                          $("#spanMessageSuccess").empty();
+                          $("#spanMessageSuccess").text(data.msg);
+                          $("#errorMessage").css("display", "none");
+                          $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                          RefershPlanHeaderCalc();   //Modified By Komal Rawal on 04-03-16 to get proper value in header according to filter on add or copy Campaign.
+                          return;
+
+                      }
+                      else {
+                          $("#successMessageViewCampaign").slideUp(50);
+                          $("#errorMessageEditCampaign").slideDown(400);
+                          $("#spanMessageEditCampaign").empty();
+                          $("#spanMessageEditCampaign").val(data.msg);
+                          return false;
+                      }
+                  }
+              });
+          });
+
 
       });
 
@@ -491,42 +555,42 @@ else {
                   $('#txtTitle').css('display', 'block');
                   $('#lblCampaignTitle').css('display', 'none');
                   url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
-              }
-              else {
-                  url = '@Url.Content("~/Inspect/LoadSetupCampaign/")';
-              }
-          }
-          if (tabValue == TabReview) {
-              if (CampaignOpt == "Edit") {
-                  $('#txtTitle').css('display', 'block');
-                  $('#lblCampaignTitle').css('display', 'none');
-              }
-              url = '@Url.Content("~/Inspect/LoadReviewCampaign/")';
-          }
+            }
+            else {
+                url = '@Url.Content("~/Inspect/LoadSetupCampaign/")';
+            }
+        }
+        if (tabValue == TabReview) {
+            if (CampaignOpt == "Edit") {
+                $('#txtTitle').css('display', 'block');
+                $('#lblCampaignTitle').css('display', 'none');
+            }
+            url = '@Url.Content("~/Inspect/LoadReviewCampaign/")';
+        }
 
-          if (tabValue == TabBudget) {
+        if (tabValue == TabBudget) {
 
-              if (CampaignOpt == "Edit") {
-                  $('#txtTitle').css('display', 'block');
-                  $('#lblCampaignTitle').css('display', 'none');
-                  // SetupCampaignSave();
-              }
-              url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
-          }
+            if (CampaignOpt == "Edit") {
+                $('#txtTitle').css('display', 'block');
+                $('#lblCampaignTitle').css('display', 'none');
+                // SetupCampaignSave();
+            }
+            url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
+        }
 
-          RemoveTabClass();
-          $("#li" + tabValue).removeClass("pull-left");
-          $("#li" + tabValue).addClass("active pull-left");
-          $('#div' + tabValue).css({ display: "block" });
+        RemoveTabClass();
+        $("#li" + tabValue).removeClass("pull-left");
+        $("#li" + tabValue).addClass("active pull-left");
+        $('#div' + tabValue).css({ display: "block" });
 
-         $("#divTab").empty();
+        $("#divTab").empty();
 
-          $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
-              if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                  //// Call function to redirect on service unavailibility.
-                  //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                  //// Ticket: 942 Exception handeling in Gameplan.
-                  window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+        $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
+            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
             }
         });
     }
@@ -544,7 +608,7 @@ else {
         }
         // $("#btnEditCampaign").css("display", "none");
         //  $("#AddForm").css("display", "none");
-        //$(".btn-group").css("display", "none"); 
+        //$(".btn-group").css("display", "none");
         $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
         $('#btnEditCampaign').addClass('Save-icon-white');
         $('#txtTitle').css('display', 'block');
@@ -568,63 +632,7 @@ else {
             $('#popupnewprogram').css("display", "none");
         }
     });
-
-    $('#CloneCampaign').click(function () {
-        isDataModified = true;
-        var idPlanCamaign = $("#hdnPlanCampaignId").val();
-        var Title = $("#lblCampaignTitle").html();
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Inspect/Clone")',
-            data: {
-                CloneType: '@Enums.DuplicationModule.Campaign',
-                Id: idPlanCamaign,
-                title: Title,
-                CalledFromBudget: '@CalledFromBudget',
-                RequsetedModule: '@RedirectType',
-                planId: '@planId'
-            },
-            success: function (data) {
-                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
-                    window.location = '@Url.Content("~/Login/Index")';
-                }
-                else if (data.IsSuccess) {
-
-                    var currentTab = "Setup";
-
-                    if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
-                        currentTab = "Budget";
-                    }
-                    var planCampaignId = data.Id;
-                    var expandplanCampaignId = data.expand;
-                    var planProgramId = "";
-
-                    loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
-
-                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
-                        $("#hdnBudgetingExpandId").val(expandplanCampaignId);
-                        $("#hdnBudgetingIsSave").val("true");
-                    }
-
-                        $("#successMessage").css("display", "block");
-                        $("#spanMessageSuccess").empty();
-                        $("#spanMessageSuccess").text(data.msg);
-                        $("#errorMessage").css("display", "none");
-                        $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
-                        RefershPlanHeaderCalc();   //Modified By Komal Rawal on 04-03-16 to get proper value in header according to filter on add or copy Campaign.
-                        return;
-
-                    }
-                    else {
-                        $("#successMessageViewCampaign").slideUp(50);
-                        $("#errorMessageEditCampaign").slideDown(400);
-                        $("#spanMessageEditCampaign").empty();
-                        $("#spanMessageEditCampaign").val(data.msg);
-                        return false;
-                    }
-            }
-        });
-    });
+    
 
     function SaveMessageOnParent(value) {
         $("#modal-container-186470").modal('hide');
@@ -634,7 +642,7 @@ else {
         $("#cSuccessDuplicatePlan").text(htmlDecode(value));
         $("#successMessageDuplicatePlan").removeClass("message-position");
         $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
-        
+
     }
 
     $("#deleteCampaign").click(function () {
@@ -667,34 +675,34 @@ else {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
                                 SaveMessageOnParent(data.msg);
                                 RefershPlanHeaderCalc();
-                                 //Added By : Kalpesh Sharma Internal review points 18/11/2014
+                                //Added By : Kalpesh Sharma Internal review points 18/11/2014
                                 if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
-                                     LoadPlanGrid();
-                                     gridSearchFlag = 0;
-                                 }
-                                 else {
-                                     RefreshCurrentTab();
-                                 }
-                                 addDefaultModalPopupBackgroungColor();
-                                 $("#modal-container-186470").addClass("transition-close");
-                                 $("#modal-container-186470").removeClass("transition_y");
-                                 $('body').removeClass('bodyOverflow');
-                             }
-                             else {
-                                 window.location.href = data.redirect;
-                                 return;
-                             }
-                         }
-                         else {
-                             $("#successMessageViewCampaign").slideUp(50);
-                             $("#errorMessageEditCampaign").slideDown(400);
-                             $("#spanMessageEditCampaign").empty();
-                             $("#spanMessageEditCampaign").val(data.msg);
-                             return false;
-                         }
-                     }
+                                    LoadPlanGrid();
+                                    gridSearchFlag = 0;
+                                }
+                                else {
+                                    RefreshCurrentTab();
+                                }
+                                addDefaultModalPopupBackgroungColor();
+                                $("#modal-container-186470").addClass("transition-close");
+                                $("#modal-container-186470").removeClass("transition_y");
+                                $('body').removeClass('bodyOverflow');
+                            }
+                            else {
+                                window.location.href = data.redirect;
+                                return;
+                            }
+                        }
+                        else {
+                            $("#successMessageViewCampaign").slideUp(50);
+                            $("#errorMessageEditCampaign").slideDown(400);
+                            $("#spanMessageEditCampaign").empty();
+                            $("#spanMessageEditCampaign").val(data.msg);
+                            return false;
+                        }
+                    }
                 }
             });
-         }
+        }
     });
 </script>

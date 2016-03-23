@@ -455,6 +455,11 @@
 
 
           $("#NewTactic").on("click", function () {
+              //Modified by Rahul Shah for PL #2031 on 22/03/2016
+              var activeTab = $("#InspectTab li.active a").text();
+              if (activeTab != null && activeTab != undefined && activeTab != '') {
+                  SaveAllData(activeTab);
+              }
               $("#errorMessage").css("display", "none");
               $("#successMessage").css("display", "none");
               loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', planProgramId, $("#hdnRedirectType").val());
@@ -563,6 +568,11 @@
     });
 
     $('#CloneProgram').click(function () {
+        //Modified by Rahul Shah for PL #2031 on 22/03/2016
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            SaveAllData(activeTab);
+        }
         isDataModified = true;
         var idPlanProgram = $("#hdnPlanProgramId").val();
         var Title = $("#lblProgramTitle").html();

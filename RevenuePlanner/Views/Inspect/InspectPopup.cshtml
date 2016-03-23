@@ -286,59 +286,7 @@
 
           });
 
-          //Added By Komal Rawal for #1213
-          function SaveAllData(activeTab) {
-              var ProgramOpt = $("#hdnTacticBudgetAllocationOpt").val();
-              if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
-                  if (activeTab == TabSetup) {
-
-                      var ReturnParameter = SetupSavetactic();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-                  else if (activeTab == TabBudget) {
-                      var ReturnParameter = TacticBudgetSave();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-                  else if (activeTab == TabActual) {
-                      var hdnTacticStatus = $("#hdnTacticStatus").val();
-                      var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-                      var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-                      var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-                      if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
-                          var ReturnParameter = SaveActual();
-                      }
-                      else {
-                          var ReturnParameter = SaveTitle();
-
-                      }
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-                  else if (activeTab = TabReview) {
-                      var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
-
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-              }
-
-              return true;
-
-          }
-
-
-
-          //End
+         
 
           // Close event for Error Message & Success Message Close button
           $(".alert").find(".close").on("click", function (e) {
@@ -463,6 +411,56 @@
 
 
       });
+    //Added By Komal Rawal for #1213
+    function SaveAllData(activeTab) {
+        var ProgramOpt = $("#hdnTacticBudgetAllocationOpt").val();
+        if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+            if (activeTab == TabSetup) {
+
+                var ReturnParameter = SetupSavetactic();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
+
+            else if (activeTab == TabBudget) {
+                var ReturnParameter = TacticBudgetSave();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
+
+            else if (activeTab == TabActual) {
+                var hdnTacticStatus = $("#hdnTacticStatus").val();
+                var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
+                    var ReturnParameter = SaveActual();
+                }
+                else {
+                    var ReturnParameter = SaveTitle();
+
+                }
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
+
+            else if (activeTab = TabReview) {
+                var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
+
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
+
+        }
+
+        return true;
+
+    }
+    //End
 
     function ShowError(value) {
         $("#modal-container-186470").scrollTop(0);
@@ -704,6 +702,11 @@
 
 
     $('#CloneTactic').click(function () {
+        //Modified by Rahul Shah for PL #2031 on 22/03/2016
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            SaveAllData(activeTab);
+        }
         isDataModified = true;
         var idPlanTactic = $("#hdnPlanTacticId").val();
         var Title = $("#lblTacticTitle").html();
@@ -856,7 +859,11 @@
         }
     });
     $('#NewTactic').click(function () {
-
+        //Modified by Rahul Shah for PL #2031 on 22/03/2016
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            SaveAllData(activeTab);
+        }
         loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanTacticId').val(), $("#hdnRequestedModule").val());
     });
 

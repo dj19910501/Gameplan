@@ -357,11 +357,21 @@
     });
 
     $('#NewCampaign').click(function () {
+        //Modified by Rahul Shah for PL #2031 on 22/03/2016
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            SaveAllData(activeTab);
+        }
         var planId = $("#hdnPlanId").val();
         loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", planId, '@RequestedModule');
     });
 
     $('#ClonePlan').click(function () {
+        //Modified by Rahul Shah for PL #2031 on 22/03/2016
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            SaveAllData(activeTab);
+        }
         var planId = $("#hdnPlanId").val();
         if (parseInt(planId) > 0) {
             $.ajax({
