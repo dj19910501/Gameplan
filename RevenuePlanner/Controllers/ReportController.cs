@@ -5368,7 +5368,7 @@ namespace RevenuePlanner.Controllers
                     // Desc :: #1541 // Get Approved, In-Progress, Complete status tactic 
                     _tacList = tacticlist.Select(a => a).ToList();
                     // Get All Tactic list 
-                    var _tacticCostIdList = GetTacticForReporting(true).Select(a=>a.PlanTacticId).ToList();
+                    var _tacticCostIdList = GetTacticForReporting(true).Select(a => a.PlanTacticId).Distinct().ToList();
                     _TacticIds = _tacList.Select(tac => tac.PlanTacticId).ToList();
 
 
@@ -5433,27 +5433,8 @@ namespace RevenuePlanner.Controllers
                     //_tacCostList = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => _TacticIds.Contains(tacCost.PlanTacticId)).ToList();
                     // Modified By Nishant Sheth 
                     // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
-                    var tacCostListData = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => _tacticCostIdList.Contains(tacCost.PlanTacticId))
-                         .ToList().Select(tac => new
-                         {
-                             Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
-                             TacticId = tac.PlanTacticId,
-                             Value = tac.Value,
-                             StartYear = tac.Plan_Campaign_Program_Tactic.StartDate.Year
-                         }).ToList().Select(tac => new
-                         {
-                             Period = tac.Period,
-                             NumPeriod = (tac.Period / 13),
-                             TacticId = tac.TacticId,
-                             Value = tac.Value,
-                             StartYear = tac.StartYear
-                         }).ToList().Select(tact => new
-                         {
-                             Period = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                             Year = tact.StartYear + tact.NumPeriod,
-                             TacticId = tact.TacticId,
-                             Value = tact.Value
-                         }).ToList();
+                    List<int> lineitemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(ln => _tacticCostIdList.Contains(ln.PlanTacticId)).Select(ln => ln.PlanLineItemId).ToList();
+                    var tacCostListData = Common.CalculatePlannedCostTacticslist(_tacticCostIdList);
 
                     objFinanceModel.PlannedCostvsBudget = tacCostListData.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(tacCost => tacCost.Value);
 

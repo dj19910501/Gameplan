@@ -391,5 +391,13 @@ namespace RevenuePlanner.Models
     }
     #endregion
 
+    // Add By Nishant Sheth
+    public class MultiYearModel
+    {
+        public int EntityId { get; set; }
+        public int Year { get; set; }
+        public string Period { get; set; }
+        public double Value { get; set; }
+    }
     #endregion
 }

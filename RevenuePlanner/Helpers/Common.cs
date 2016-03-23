@@ -6945,6 +6945,7 @@ namespace RevenuePlanner.Helpers
                     List<BudgetedValue> lstActulalValue;
                     foreach (int keyTactic in PlanTacticIds)
                     {
+                        lstActulalValue = new List<BudgetedValue>();
                         objTacticActualCost = new TacticActualCostModel();
                         objTacticActualCost.PlanTacticId = keyTactic;
                         lstLineItems = new List<int>();
@@ -6973,49 +6974,50 @@ namespace RevenuePlanner.Helpers
                                     TacticId = tact.TacticId,
                                     Value = tact.Value
                                 }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
-                            lstActulalValue = new List<BudgetedValue>();
                             if (lstLineItemActuals.Any())
                             {
                                 lstActulalValue = lstLineItemActuals.Select(actual => new BudgetedValue { Period = actual.Period, Value = actual.Value, Year = actual.Year }).ToList();
                             }
 
                         }
-                        else
-                        {
-                            // Modified By Nishant Sheth
-                            // Desc :: #2052 To Resolve Actual value show 0
-                            var lstPlanTacticsActualsData = Tacticdata.Where(pta => pta.TacticObj.PlanTacticId.Equals(keyTactic)).Select(pta => pta.ActualTacticList).FirstOrDefault();
-                            List<BudgetedValue> lstPlanTacticsActuals = new List<BudgetedValue>();
-                            if (lstPlanTacticsActualsData != null)
-                            {
-                                lstPlanTacticsActuals = lstPlanTacticsActualsData.ToList().Select(tac => new
-                                {
-                                    Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
-                                    TacticId = tac.PlanTacticId,
-                                    Value = tac.Actualvalue,
-                                    StartYear = tac.Plan_Campaign_Program_Tactic.StartDate.Year
-                                }).ToList().Select(tac => new
-                                {
-                                    Period = tac.Period,
-                                    NumPeriod = (tac.Period / 13),
-                                    TacticId = tac.TacticId,
-                                    Value = tac.Value,
-                                    StartYear = tac.StartYear
-                                }).ToList().Select(tact => new BudgetedValue
-                                {
-                                    Period = "Y" + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                                    Year = tact.StartYear + tact.NumPeriod,
-                                    //TacticId = tact.TacticId,
-                                    Value = tact.Value
-                                }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year.ToString()))).ToList();
-                            }
+                        // Commented By Nishant Sheth
+                        // Desc :: Match overview's finance actual value with finace tab #1541
+                        //else
+                        //{
+                        //    // Modified By Nishant Sheth
+                        //    // Desc :: #2052 To Resolve Actual value show 0
+                        //    var lstPlanTacticsActualsData = Tacticdata.Where(pta => pta.TacticObj.PlanTacticId.Equals(keyTactic)).Select(pta => pta.ActualTacticList).FirstOrDefault();
+                        //    List<BudgetedValue> lstPlanTacticsActuals = new List<BudgetedValue>();
+                        //    if (lstPlanTacticsActualsData != null)
+                        //    {
+                        //        lstPlanTacticsActuals = lstPlanTacticsActualsData.ToList().Select(tac => new
+                        //        {
+                        //            Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
+                        //            TacticId = tac.PlanTacticId,
+                        //            Value = tac.Actualvalue,
+                        //            StartYear = tac.Plan_Campaign_Program_Tactic.StartDate.Year
+                        //        }).ToList().Select(tac => new
+                        //        {
+                        //            Period = tac.Period,
+                        //            NumPeriod = (tac.Period / 13),
+                        //            TacticId = tac.TacticId,
+                        //            Value = tac.Value,
+                        //            StartYear = tac.StartYear
+                        //        }).ToList().Select(tact => new BudgetedValue
+                        //        {
+                        //            Period = "Y" + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                        //            Year = tact.StartYear + tact.NumPeriod,
+                        //            //TacticId = tact.TacticId,
+                        //            Value = tact.Value
+                        //        }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year.ToString()))).ToList();
+                        //    }
 
-                            lstActulalValue = new List<BudgetedValue>();
-                            if (lstPlanTacticsActuals != null)
-                            {
-                                lstActulalValue = lstPlanTacticsActuals.ToList();
-                            }
-                        }
+                        //    lstActulalValue = new List<BudgetedValue>();
+                        //    if (lstPlanTacticsActuals != null)
+                        //    {
+                        //        lstActulalValue = lstPlanTacticsActuals.ToList();
+                        //    }
+                        //}
                         objTacticActualCost.ActualList = lstActulalValue;
                         TacticActualCostList.Add(objTacticActualCost);
                     }
@@ -7026,6 +7028,83 @@ namespace RevenuePlanner.Helpers
             {
                 return TacticActualCostList;
             }
+        }
+
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Desc :: Get Planned cost list #1541
+        /// </summary>
+        /// <param name="PlanTacticIds"></param>
+        /// <returns></returns>
+        public static List<MultiYearModel> CalculatePlannedCostTacticslist(List<int> PlanTacticIds)
+        {
+
+            List<MultiYearModel> MultiYearList = new List<MultiYearModel>();
+            List<String> ApprovedTacticStatus = Common.GetStatusListAfterApproved();
+            string PeriodPrefix = "Y";
+            using (MRPEntities db = new MRPEntities())
+            {
+                int TacticLength = PlanTacticIds.Count;
+                for (int i = 0; i < TacticLength; i++)
+                {
+                    int TacticId = PlanTacticIds[i];
+                    var listlineitems = db.Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && !ln.IsDeleted && ln.LineItemTypeId != null).Select(ln => ln).ToList();
+                    List<int> lineitemIds = listlineitems.Select(ln => ln.PlanLineItemId).ToList();
+                    var tacCostData = db.Plan_Campaign_Program_Tactic_Cost.Where(Cost => Cost.PlanTacticId.Equals(TacticId)).Select(cost => cost).ToList();
+                    var LineCostListData = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(Cost => lineitemIds.Contains(Cost.PlanLineItemId)).ToList();
+                    if (lineitemIds.Count > 0)
+                    {
+
+                        if (LineCostListData.Count > 0)
+                        {
+                            var LineItemCostData = LineCostListData.Select(tac => new
+                            {
+                                Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
+                                LineItemId = tac.PlanLineItemId,
+                                Value = tac.Value,
+                                StartYear = tac.Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.StartDate.Year
+                            }).ToList().Select(tac => new
+                            {
+                                Period = tac.Period,
+                                NumPeriod = (tac.Period / 13),
+                                LineItemId = tac.LineItemId,
+                                Value = tac.Value,
+                                StartYear = tac.StartYear
+                            }).ToList().Select(tact => new MultiYearModel
+                            {
+                                Period = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                                Year = tact.StartYear + tact.NumPeriod,
+                                EntityId = tact.LineItemId,
+                                Value = tact.Value
+                            }).ToList();
+                            MultiYearList.AddRange(LineItemCostData);
+                        }
+                    }
+
+                    var LineItemCostSum = LineCostListData.Select(a => a.Value).Sum();
+                    var OtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && ln.LineItemTypeId == null && ln.IsDeleted.Equals(false)).FirstOrDefault();
+                    if (OtherLineItem != null)
+                    {
+                        foreach (var taccost in tacCostData)
+                        {
+                            var lineDataList = LineCostListData.Where(a => a.Period == taccost.Period).ToList();
+                            var lineCostSum = lineDataList.Select(a => a.Value).Sum();
+                            if (taccost.Value >= lineCostSum)
+                            {
+                                MultiYearList.Add(new MultiYearModel
+                                {
+                                    EntityId = OtherLineItem.PlanTacticId,
+                                    Period = taccost.Period,
+                                    Value = taccost.Value - lineCostSum,
+                                    Year = OtherLineItem.Plan_Campaign_Program_Tactic.StartDate.Year
+                                });
+                            }
+                        }
+                    }
+                }
+
+            }
+            return MultiYearList;
         }
         #endregion
 
