@@ -16,6 +16,13 @@
         IntegrationStatus = "No";
     }           
 }
+@*Added BY Bhumika for #2043 reduce white space in comment section.*@
+<style>
+   #divInnerComment.all-height {
+    height: 94% !important;
+}
+</style>
+
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
 
     <div class="cf source-sans-proregular padding-top32">
@@ -81,11 +88,11 @@
                         <div style="float: left; width: 90%;">
                             <span class="commentedby-color">@item.CommentedBy</span>
                             <span class="comment-color">@Html.Raw(item.Comment)</span><br />
-                            <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd") at @item.CommentDate.ToString("hh:mmtt")</span>
+                            <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd yyyy") at @item.CommentDate.ToString("hh:mmtt")</span>
                         </div>
                         <div style="clear: both;"></div>
                     </div>
-                                        
+
                 }
             </div>
             <div></div>

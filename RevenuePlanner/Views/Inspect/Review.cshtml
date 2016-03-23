@@ -24,10 +24,15 @@
     bool IsSyncEloqua = (bool)ViewBag.IsSyncEloqua;     // Get IsSyncEloqua flag
     bool IsSyncWorkFront = (bool)ViewBag.IsSyncWorkFront; //Get IsSyncWorkFront flag - true if the tactic is integrated
 }
-
+@*Added BY Bhumika for #2043 reduce white space in comment section.*@
+<style>
+    #divInnerComment.all-height {
+        height: 94% !important;
+    }
+</style>
 
 <style type="text/css">
-     @@media screen and (-webkit-min-device-pixel-ratio:0) {
+    @@media screen and (-webkit-min-device-pixel-ratio:0) {
     #dp_start .datepicker{
         top: 32px !important;
         left:auto !important;
@@ -183,7 +188,7 @@
     <div class="span2 right-col-tab no_margin_top" id="inspect-modal-left-column2">
         <div class="inspect-bolder-label">Notes</div>
         <div id="divComment" class="chat-div" style="overflow: auto;height: 350px !important;">
-            <div id="divInnerComment" class="comment-scroll-section all-height90">
+            <div id="divInnerComment" class="comment-scroll-section all-height">
                 @foreach (var item in ViewBag.ReviewModel)
                 {
                     <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">
@@ -193,7 +198,7 @@
                         <div style="float: left; width: 90%;">
                             <span class="commentedby-color">@item.CommentedBy</span>
                             <span class="comment-color">@Html.Raw(item.Comment)</span><br />
-                            <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd") at @item.CommentDate.ToString("hh:mmtt")</span>
+                            <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd yyyy") at @item.CommentDate.ToString("hh:mmtt")</span>
                         </div>
                         <div style="clear: both;"></div>
                     </div>

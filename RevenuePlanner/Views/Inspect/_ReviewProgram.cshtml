@@ -16,6 +16,12 @@
         IntegrationStatus = "No";
     }
 }
+@*Added BY Bhumika for #2043 reduce white space in comment section.*@
+<style>
+    #divInnerComment.all-height {
+        height: 94% !important;
+    }
+</style>
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
     <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
         <div style="float: left; width: 95%;">  @*Modified by Viral Kadiya on 11/18/2014 to resolve PL ticket #970*@
@@ -72,7 +78,7 @@
     <div class="inspect-bolder-label">Notes</div>
 
     <div id="divComment" class="chat-div" style="overflow: auto;height: 290px !important;">
-        <div id="divInnerComment"  class="comment-scroll-section all-height">
+        <div id="divInnerComment" class="comment-scroll-section all-height">
             @foreach (var item in ViewBag.ReviewModel)
             {
                 <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">
@@ -82,11 +88,11 @@
                     <div style="float: left; width: 90%;">
                         <span class="commentedby-color">@item.CommentedBy</span>
                         <span class="comment-color">@Html.Raw(item.Comment)</span><br />
-                        <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd") at @item.CommentDate.ToString("hh:mmtt")</span>
+                        <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd yyyy") at @item.CommentDate.ToString("hh:mmtt")</span>
                     </div>
                     <div style="clear: both;"></div>
                 </div>
-                                        
+
             }
         </div>
         <div></div>

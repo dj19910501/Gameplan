@@ -626,7 +626,7 @@ namespace RevenuePlanner.Controllers
                                        CommentDate = tc.CreatedDate,
                                        CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Any() ? userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : Common.GameplanIntegrationService,
                                        CreatedBy = tc.CreatedBy
-                                   }).ToList();
+                                   }).OrderByDescending(x => x.CommentDate).ToList(); //Modified By komal Rawal for 2043 resort comment in desc order
             //// Get Owner name by OwnerId from Username list.
             var ownername = (from user in userName
                              where user.UserId == _inspectmodel.OwnerId
@@ -2194,7 +2194,7 @@ namespace RevenuePlanner.Controllers
                                        CommentDate = tc.CreatedDate,
                                        CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Any() ? userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : Common.GameplanIntegrationService,
                                        CreatedBy = tc.CreatedBy
-                                   }).ToList();
+                                   }).OrderByDescending(x => x.CommentDate).ToList(); //Modified By komal Rawal for 2043 resort comment in desc order
 
             //// Set Owner name to InspectModel.
             var ownername = (from u in userName
@@ -2808,7 +2808,7 @@ namespace RevenuePlanner.Controllers
                                        CommentDate = tc.CreatedDate,
                                        CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Any() ? userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : Common.GameplanIntegrationService,
                                        CreatedBy = tc.CreatedBy
-                                   }).ToList();
+                                   }).OrderByDescending(x => x.CommentDate).ToList(); //Modified By komal Rawal for 2043 resort comment in desc order
 
             //// Get Owner name by OwnerId from Username list.
             var ownername = (from user in userName
@@ -7006,7 +7006,7 @@ namespace RevenuePlanner.Controllers
                                        CommentDate = tc.CreatedDate,
                                        CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Any() ? userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : Common.GameplanIntegrationService,
                                        CreatedBy = tc.CreatedBy
-                                   }).ToList();
+                                   }).OrderByDescending(x => x.CommentDate).ToList(); //Modified By komal Rawal for 2043 resort comment in desc order
 
             var ownername = (from u in userName
                              where u.UserId == im.OwnerId
