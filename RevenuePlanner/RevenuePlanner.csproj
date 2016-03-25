@@ -228,6 +228,7 @@
     <Compile Include="Models\FinanceModel.cs" />
     <Compile Include="Models\ForgotPasswordModel.cs" />
     <Compile Include="Models\GameplanDataTypePullModel.cs" />
+    <Compile Include="Models\GetData.cs" />
     <Compile Include="Models\HomePlanModel.cs" />
     <Compile Include="Models\ImprovementModel.cs" />
     <Compile Include="Models\InspectModel.cs" />
@@ -633,9 +634,14 @@
     <Content Include="Content\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <Content Include="RevenuePlanner.wpp.targets" />
+    <Content Include="Scripts\app\homeCommon.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.min.js.map" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxgantt.js" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.map" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js.map" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxgantt.js.map" />
     <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Scripts\js\bootstrap-notify.min.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.js" />
@@ -687,7 +693,7 @@
     <Content Include="Scripts\js\check.js" />
     <Content Include="Scripts\js\dhtmlxchart.js" />
     <Content Include="Scripts\js\DHTMLX\danddcontrol.js" />
-    <Content Include="Scripts\js\DHTMLX\dhtmlxgantt.js" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxgantt3.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgrid.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid.js" />
     <Content Include="Scripts\js\ganttExportapi.js" />
