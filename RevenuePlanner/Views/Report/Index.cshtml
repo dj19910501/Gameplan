@@ -1675,6 +1675,10 @@
         $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
+            //Added By Maitri Gandhi on 25/3/2016 for #2044
+            if ($(".popover.fade.top.in").length != 0) {
+                $(".popover.fade.top.in").remove();
+            }
         });
 
     }
@@ -1740,6 +1744,10 @@
         $('#divMainReportPart').load(url + '?option=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
+            //Added By Maitri Gandhi on 25/3/2016 for #2044
+            if ($(".popover.fade.top.in").length != 0) {
+                $(".popover.fade.top.in").remove();
+            }
         });
     }
 
@@ -1764,6 +1772,10 @@
         $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
+            //Added By Maitri Gandhi on 25/3/2016 for #2044
+            if ($(".popover.fade.top.in").length != 0) {
+                $(".popover.fade.top.in").remove();
+            }
         });
     }
 
@@ -1851,6 +1863,10 @@
                 $('#divMainReportPart').html('');
                 $('#divMainReportPart').html(response);
                 isAllowClick = true;
+                //Added By Maitri Gandhi on 25/3/2016 for #2044
+                if ($(".popover.fade.top.in").length != 0) {
+                    $(".popover.fade.top.in").remove();
+                }
             }
         });
     }
