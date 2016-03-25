@@ -79,6 +79,8 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> LastSyncDate { get; set; }
         public double ProgramBudget { get; set; }
         public string Abbreviation { get; set; }
+        // Custom Columns
+        public int PlanId { get; set; }
     }
 
     public class Custom_Plan_Campaign_Program_Tactic
@@ -113,6 +115,11 @@ namespace RevenuePlanner.Models
         public Nullable<bool> IsSyncWorkFront { get; set; }
 
         // Custom Columns
-        public int? PlanId { get; set; }
+        public int PlanId { get; set; }
+        public int PlanCampaignId { get; set; }
+        public string TacticTypeTtile { get; set; }
+        public string ColorCode { get; set; }
+        public string PlanYear { get; set; }
+        public int ModelId { get; set; }
     }
 }

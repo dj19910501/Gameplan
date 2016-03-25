@@ -45,8 +45,7 @@ namespace RevenuePlanner
                         "~/Scripts/js/mixpanel.login.js" //ensure this script is the last called
                         ));
 
-            bundles.Add(new ScriptBundle("~/bundles/GetJS").Include(
-                        "~/Scripts/js/DHTMLX/dhtmlxgantt.js",
+            bundles.Add(new ScriptBundle("~/bundles/GetJS").Include(                        
                         "~/Scripts/js/jquery-2.2.1.js",
                         "~/Scripts/js/jquery-migrate-1.2.1.js",
                         "~/Scripts/js/jquery.slimscroll_min.js",
@@ -66,11 +65,14 @@ namespace RevenuePlanner
                         "~/Scripts/js/scripts.js",
                         "~/Scripts/js/scripts_extended.js",
                         "~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js",
+                        "~/Scripts/app/homeCommon.js",
+                        "~/Scripts/js/DHTMLX/dhtmlxgantt.js",
                         "~/Scripts/js/errorhandler.js",
                         "~/Scripts/dhtmlxchart.js",
                         "~/Scripts/js/ganttExportapi.js",
                         "~/Scripts/js/mixpanel.init.js",
-                        "~/Scripts/js/mixpanel.layout.js"
+                        "~/Scripts/js/mixpanel.layout.js",
+                        "~/Scripts/js/DHTMLX/dhtmlxgantt_smart_rendering.js"
                         ));
             bundles.Add(new ScriptBundle("~/bundles/GetJSReport").Include(
                        "~/Scripts/js/jquery.slimscroll.js",
@@ -79,7 +81,7 @@ namespace RevenuePlanner
                        "~/Scripts/js/jquery.actual.js",
                        "~/Scripts/js/highcharts.js"
                        ));
-            BundleTable.EnableOptimizations = true;
+            BundleTable.EnableOptimizations = false;
             
         }
     }
