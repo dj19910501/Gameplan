@@ -1041,23 +1041,8 @@ namespace RevenuePlanner.Test.Controllers
                 CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
             }
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
-            // Add By Akashdeep Kadia
-            // DESC:: For Code optimisation #1798
-            GetData NewData = new GetData();
-            {
-                NewData.viewBy = ViewBy;
-                NewData.planId = CommaSeparatedPlanId;
-                NewData.timeFrame = Year;
-                NewData.customFieldIds = CommaSeparatedCustomFields;
-                NewData.ownerIds = OwnerIds;
-                NewData.activeMenu = Activemenu;
-                NewData.getViewByList = getViewByList;
-                NewData.TacticTypeid = Tactictypeids;
-                NewData.StatusIds = Statusids;
-                NewData.isupdate = true;                
-            };
-            
-            var result = objHomeController.GetViewControlDetail(NewData) as Task<JsonResult>;
+
+            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, Year, CommaSeparatedCustomFields, OwnerIds, Activemenu, getViewByList, Tactictypeids, Statusids, true) as Task<JsonResult>;
             return new JsonResult();
         }
 
