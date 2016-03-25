@@ -14,6 +14,7 @@
             //value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='add_Remove_Entity' name1='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
             value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
             // #1780
+
         }
 
         else if (item.type == "Program" && item.Permission == true) {
