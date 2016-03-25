@@ -586,13 +586,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="activeMenu">current/selected active menu</param>
         /// <param name="getViewByList">flag to retrieve viewby list</param>
         /// <returns>Returns json result object of tactic type and plan campaign program tactic.</returns>
-
-        //public JsonResult GetViewControlDetail1(GetData data)
-        //{
-        //    List<Plan> lstPlans = objSp.GetListPlans(data.planId);
-        //    return Json(lstPlans);
-        //}
-        public async Task<JsonResult> GetViewControlDetail(GetData data)
+        public async Task<JsonResult> GetViewControlDetail(GetData data)//Modified by Akashdeep Kadia for code code optimization Date:25-03-2016
         {
             //Added By Komal Rawal to get all the user names for honeycomb feature
             //TacticTypeList = objDbMrpEntities.TacticTypes.Where(tt => tt.IsDeleted == false).Select(tt => tt).ToList();
