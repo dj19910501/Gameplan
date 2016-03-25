@@ -7072,7 +7072,7 @@ namespace RevenuePlanner.Helpers
                                 StartYear = tac.StartYear
                             }).ToList().Select(tact => new MultiYearModel
                             {
-                                Period = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                                Period = PeriodPrefix + Common.ReportMultiyearMonth(tact.Period, tact.NumPeriod),
                                 Year = tact.StartYear + tact.NumPeriod,
                                 EntityId = tact.LineItemId,
                                 Value = tact.Value
