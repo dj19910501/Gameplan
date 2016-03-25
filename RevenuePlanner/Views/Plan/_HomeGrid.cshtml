@@ -696,7 +696,12 @@
                         HomeGrid.showRow(HomeGrid.getRowId(state0));
                         HomeGrid.openItem(HomeGrid.getRowId(state0));//Added by Rahul Shah for PL #1744
                     }
-                     
+                    //Added by Rahul Shah on 25/03/2016 for PL #2075
+                    if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {
+                        HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+                        HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+                    }
+
               
           //  }
             if ($("#gridbox").find(".rowselected").length >= 1) {

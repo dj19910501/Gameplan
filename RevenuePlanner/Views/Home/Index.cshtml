@@ -6146,11 +6146,11 @@
         $("#modalMainContainer").show();
     });
     function CloseIconClick() {
-        $('.close-x-big-icon').click(function () {
+        $('.close-x-big-icon').click(function () {            
             $("#modal-container-186470").addClass("transition-close");
             $("#modal-container-186470").removeClass("transition_y");
             addDefaultModalPopupBackgroungColor();
-            $('body').removeClass('bodyOverflow');
+            $('body').removeClass('bodyOverflow');           
             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                 if ($('#IsGridView').val().toLowerCase() == "true") {
 
@@ -6174,6 +6174,22 @@
 
                 }
                 else {
+                    //Modified by Rahul Shah on 25/03/2016 for PL #2075
+                    if ($("#hdnPlanLineItemID").val() == '0' || $("#hdnPlanLineItemID").val() == undefined) {
+                        if (isDataModified) {
+                            RefreshCurrentTab();
+                        }
+                        else {
+                            gantt.refreshData();
+                        }                       
+                    } else {
+                        $('#divPlanEditButtonHome').click();
+                    }
+                   
+                }
+            }
+            else {
+                if ($("#hdnPlanLineItemID").val() == '0' || $("#hdnPlanLineItemID").val() == undefined) {
                     if (isDataModified) {
                         RefreshCurrentTab();
                     }
@@ -6181,14 +6197,11 @@
                         gantt.refreshData();
                     }
                 }
-            }
-            else {
-                if (isDataModified) {
-                    RefreshCurrentTab();
-                }
                 else {
-                    gantt.refreshData();
-                }
+                    $('#divPlanEditButtonHome').click();
+                   
+                }               
+               
             }
             $(".datepicker.dropdown-menu").each(function () {
                 $(this).remove();
