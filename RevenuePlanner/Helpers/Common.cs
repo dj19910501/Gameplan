@@ -2286,15 +2286,17 @@ namespace RevenuePlanner.Helpers
                 //List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();// Commented By Rahul Shah on 16/09/2015 for PL #1610
                 // Modify by Nishant Sheth
                 // Desc :: to manage multiple years plan id and to get correct tactic count #1750
-                List<Plan_Tactic> planTacticsList = ((List<Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.Tactic.ToString())).Where(t => t.IsDeleted == false && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
+                //List<Plan_Tactic> planTacticsList = ((List<Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.Tactic.ToString())).Where(t => t.IsDeleted == false && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
+                List<Custom_Plan_Campaign_Program_Tactic> customtacticList = (List<Custom_Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.CustomTactic.ToString());
+                var planTacticsList = ((List<Custom_Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.CustomTactic.ToString())).Where(t => t.IsDeleted == false && innerplanids.Contains(t.PlanId) && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
 
-                lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
+                lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
 
-                    planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy)) &&
-                                             (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.objPlanTactic.TacticType.TacticTypeId)) &&
-                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.objPlanTactic.Status))).ToList();
+                    planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                             (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticTypeId)) &&
+                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
 
 
                     //// Apply Custom restriction for None type
@@ -2305,24 +2307,24 @@ namespace RevenuePlanner.Helpers
                         {
                             lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
                             //// get Allowed Entity Ids
-                            planTacticsList = planTacticsList.Where(tacticlist => lstTacticIds.Contains(tacticlist.objPlanTactic.PlanTacticId)).ToList();
+                            planTacticsList = planTacticsList.Where(tacticlist => lstTacticIds.Contains(tacticlist.PlanTacticId)).ToList();
                         }
 
                     }
-                    lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
+                    lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.objPlanTactic.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy))).ToList();// Modified By Nishant Sheth
+                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy))).ToList();// Modified By Nishant Sheth
                 }
                 else
                 {
-                    planTacticsList = planTacticsList.Where(tactic => (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.objPlanTactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
+                    planTacticsList = planTacticsList.Where(tactic => (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
                 }
 
                 //End
 
-                // var impprogramlist = db.Plan_Improvement_Campaign_Program.Where(imp => innerplanids.Contains(imp.Plan_Improvement_Campaign.ImprovePlanId)).Select(imp => imp.ImprovementPlanProgramId).ToList();
-                //var improvementTacticList = Common.ListImprovementTactic.Where(imp => imp.IsDeleted == false).ToList();
-                var improvementTacticList = ((List<Plan_Improvement_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.ImprovementTactic.ToString())).Where(imp => imp.IsDeleted == false).ToList();
+                var impprogramlist = db.Plan_Improvement_Campaign_Program.Where(imp => innerplanids.Contains(imp.Plan_Improvement_Campaign.ImprovePlanId)).Select(imp => imp.ImprovementPlanProgramId).ToList();
+                var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => impprogramlist.Contains(imp.ImprovementPlanProgramId) && imp.IsDeleted == false).ToList();
+                //var improvementTacticList = ((List<Plan_Improvement_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.ImprovementTactic.ToString())).Where(imp => imp.IsDeleted == false).ToList();
 
                 // Add By Nishant Sheth
                 // Desc :: To get performance. 
@@ -2364,7 +2366,7 @@ namespace RevenuePlanner.Helpers
                 {
                     //HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
 
-                    planTacticIds = planTacticsList.Where(t => t.PlanId == plan.PlanId).Select(tactic => tactic.objPlanTactic).ToList();
+                    planTacticIds = Common.GetTacticFromCustomTacticList(planTacticsList.Where(t => t.PlanId == plan.PlanId).Select(tactic => tactic).ToList());
 
                     ModelId = plan.ModelId;
                     modelDateList = new List<ModelDateList>();
@@ -7337,6 +7339,230 @@ namespace RevenuePlanner.Helpers
             }
             return returnvalue;
         }
+        #endregion
+
+        #region Get Custom model
+
+        public static Plan_Campaign_Program_Tactic GetTacticFromCustomTacticModel(Custom_Plan_Campaign_Program_Tactic CustomTactic)
+        {
+            Plan_Campaign_Program_Tactic tacRecord = new Plan_Campaign_Program_Tactic();
+            tacRecord.Cost = CustomTactic.Cost;
+            tacRecord.CreatedBy = CustomTactic.CreatedBy;
+            tacRecord.CreatedDate = CustomTactic.CreatedDate;
+            tacRecord.Description = CustomTactic.Description;
+            tacRecord.EndDate = CustomTactic.EndDate;
+            tacRecord.IntegrationInstanceEloquaId = CustomTactic.IntegrationInstanceEloquaId;
+            tacRecord.IntegrationInstanceTacticId = CustomTactic.IntegrationInstanceTacticId;
+            tacRecord.IntegrationWorkFrontProjectID = CustomTactic.IntegrationWorkFrontProjectID;
+            tacRecord.IsDeleted = CustomTactic.IsDeleted;
+            tacRecord.IsDeployedToIntegration = CustomTactic.IsDeployedToIntegration;
+            tacRecord.IsSyncEloqua = CustomTactic.IsSyncEloqua;
+            tacRecord.IsSyncSalesForce = CustomTactic.IsSyncSalesForce;
+            tacRecord.IsSyncWorkFront = CustomTactic.IsSyncWorkFront;
+            tacRecord.LastSyncDate = CustomTactic.LastSyncDate;
+            tacRecord.LinkedPlanId = CustomTactic.LinkedPlanId;
+            tacRecord.LinkedTacticId = CustomTactic.LinkedTacticId;
+            tacRecord.ModifiedBy = CustomTactic.ModifiedBy;
+            tacRecord.ModifiedDate = CustomTactic.ModifiedDate;
+            tacRecord.PlanProgramId = CustomTactic.PlanProgramId;
+            tacRecord.PlanTacticId = CustomTactic.PlanTacticId;
+            tacRecord.ProjectedStageValue = CustomTactic.ProjectedStageValue;
+            tacRecord.StageId = CustomTactic.StageId;
+            tacRecord.StartDate = CustomTactic.StartDate;
+            tacRecord.Status = CustomTactic.Status;
+            tacRecord.TacticBudget = CustomTactic.TacticBudget;
+            tacRecord.TacticCustomName = CustomTactic.TacticCustomName;
+            tacRecord.TacticTypeId = CustomTactic.TacticTypeId;
+            tacRecord.Title = CustomTactic.Title;
+            return tacRecord;
+        }
+
+        public static List<Plan_Campaign_Program_Tactic> GetTacticFromCustomTacticList(List<Custom_Plan_Campaign_Program_Tactic> CustomTacticList)
+        {
+            List<Plan_Campaign_Program_Tactic> tacList = new List<Plan_Campaign_Program_Tactic>();
+            tacList = CustomTacticList.Select(CustomTactic => new Plan_Campaign_Program_Tactic
+            {
+                Cost = CustomTactic.Cost,
+                CreatedBy = CustomTactic.CreatedBy,
+                CreatedDate = CustomTactic.CreatedDate,
+                Description = CustomTactic.Description,
+                EndDate = CustomTactic.EndDate,
+                IntegrationInstanceEloquaId = CustomTactic.IntegrationInstanceEloquaId,
+                IntegrationInstanceTacticId = CustomTactic.IntegrationInstanceTacticId,
+                IntegrationWorkFrontProjectID = CustomTactic.IntegrationWorkFrontProjectID,
+                IsDeleted = CustomTactic.IsDeleted,
+                IsDeployedToIntegration = CustomTactic.IsDeployedToIntegration,
+                IsSyncEloqua = CustomTactic.IsSyncEloqua,
+                IsSyncSalesForce = CustomTactic.IsSyncSalesForce,
+                IsSyncWorkFront = CustomTactic.IsSyncWorkFront,
+                LastSyncDate = CustomTactic.LastSyncDate,
+                LinkedPlanId = CustomTactic.LinkedPlanId,
+                LinkedTacticId = CustomTactic.LinkedTacticId,
+                ModifiedBy = CustomTactic.ModifiedBy,
+                ModifiedDate = CustomTactic.ModifiedDate,
+                PlanProgramId = CustomTactic.PlanProgramId,
+                PlanTacticId = CustomTactic.PlanTacticId,
+                ProjectedStageValue = CustomTactic.ProjectedStageValue,
+                StageId = CustomTactic.StageId,
+                StartDate = CustomTactic.StartDate,
+                Status = CustomTactic.Status,
+                TacticBudget = CustomTactic.TacticBudget,
+                TacticCustomName = CustomTactic.TacticCustomName,
+                TacticTypeId = CustomTactic.TacticTypeId,
+                Title = CustomTactic.Title
+            }).ToList();
+            return tacList;
+        }
+        public static List<Plan> GetSpPlanList(DataTable dsPlanCampProgTac)
+        {
+            var PlanList = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan
+            {
+                AllocatedBy = Convert.ToString(row["AllocatedBy"]),
+                Budget = Convert.ToDouble(Convert.ToString(row["Budget"])),
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(Convert.ToString(row["CreatedDate"])),
+                DependencyDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["DependencyDate"])) ? (DateTime?)null : row["DependencyDate"]),
+                Description = (Convert.ToString(row["Description"])),
+                EloquaFolderPath = (Convert.ToString(row["EloquaFolderPath"])),
+                GoalType = (Convert.ToString(row["GoalType"])),
+                GoalValue = Convert.ToDouble(Convert.ToString(row["GoalValue"])),
+                IsActive = Convert.ToBoolean(Convert.ToString(row["IsActive"])),
+                IsDeleted = Convert.ToBoolean(Convert.ToString(row["IsDeleted"])),
+                ModelId = int.Parse(Convert.ToString(row["ModelId"])),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                PlanId = int.Parse(Convert.ToString(row["PlanId"])),
+                Status = Convert.ToString(row["Status"]),
+                Title = Convert.ToString(row["Title"]),
+                Version = Convert.ToString(row["Version"]),
+                Year = Convert.ToString(row["Year"])
+            }).ToList();
+
+            return PlanList;
+        }
+
+        public static List<Plan_Campaign> GetSpCampaignList(DataTable dsPlanCampProgTac)
+        {
+            var lstCampaign = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan_Campaign
+            {
+                Abbreviation = Convert.ToString(row["Abbreviation"]),
+                CampaignBudget = Convert.ToDouble(row["CampaignBudget"]),
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                Description = Convert.ToString(row["Description"]),
+                EndDate = Convert.ToDateTime(row["EndDate"]),
+                IntegrationInstanceCampaignId = Convert.ToString(row["IntegrationInstanceCampaignId"]),
+                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
+                LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
+                PlanId = Convert.ToInt32(row["PlanId"]),
+                StartDate = Convert.ToDateTime(row["StartDate"]),
+                Status = Convert.ToString(row["Status"]),
+                Title = Convert.ToString(row["Title"])
+            }).ToList();
+
+            return lstCampaign;
+        }
+
+        public static List<Plan_Campaign_Program> GetSpProgramList(DataTable dsPlanCampProgTac)
+        {
+            var programList = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan_Campaign_Program
+            {
+                Abbreviation = Convert.ToString(row["Abbreviation"]),
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                Description = Convert.ToString(row["Description"]),
+                EndDate = Convert.ToDateTime(row["EndDate"]),
+                IntegrationInstanceProgramId = Convert.ToString(row["IntegrationInstanceProgramId"]),
+                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
+                LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
+                PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
+                ProgramBudget = Convert.ToDouble(row["ProgramBudget"]),
+                StartDate = Convert.ToDateTime(row["StartDate"]),
+                Status = Convert.ToString(row["Status"]),
+                Title = Convert.ToString(row["Title"])
+            }).ToList();
+
+            return programList;
+        }
+
+        public static List<Custom_Plan_Campaign_Program> GetSpCustomProgramList(DataTable dsPlanCampProgTac)
+        {
+            var lstProgramPer = dsPlanCampProgTac.AsEnumerable().Select(row => new Custom_Plan_Campaign_Program
+            {
+                Abbreviation = Convert.ToString(row["Abbreviation"]),
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                Description = Convert.ToString(row["Description"]),
+                EndDate = Convert.ToDateTime(row["EndDate"]),
+                IntegrationInstanceProgramId = Convert.ToString(row["IntegrationInstanceProgramId"]),
+                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
+                LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
+                PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
+                ProgramBudget = Convert.ToDouble(row["ProgramBudget"]),
+                StartDate = Convert.ToDateTime(row["StartDate"]),
+                Status = Convert.ToString(row["Status"]),
+                Title = Convert.ToString(row["Title"]),
+                PlanId = Convert.ToInt32(row["PlanId"])
+            }).ToList();
+
+            return lstProgramPer;
+        }
+
+        public static List<Custom_Plan_Campaign_Program_Tactic> GetSpCustomTacticList(DataTable dsPlanCampProgTac)
+        {
+            var customtacticList = dsPlanCampProgTac.AsEnumerable().Select(row => new Custom_Plan_Campaign_Program_Tactic
+            {
+                Cost = Convert.ToDouble(row["Cost"]),
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                Description = Convert.ToString(row["Description"]),
+                EndDate = Convert.ToDateTime(row["EndDate"]),
+                IntegrationInstanceEloquaId = Convert.ToString(row["IntegrationInstanceEloquaId"]),
+                IntegrationInstanceTacticId = Convert.ToString(row["IntegrationInstanceEloquaId"]),
+                IntegrationWorkFrontProjectID = Convert.ToString(row["IntegrationWorkFrontProjectID"]),
+                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
+                IsSyncEloqua = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncEloqua"])) ? (bool?)null : row["IsSyncEloqua"]),
+                IsSyncSalesForce = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncSalesForce"])) ? (bool?)null : row["IsSyncSalesForce"]),
+                IsSyncWorkFront = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncWorkFront"])) ? (bool?)null : row["IsSyncWorkFront"]),
+                LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
+                LinkedPlanId = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : row["LinkedPlanId"]),
+                LinkedTacticId = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : row["LinkedTacticId"]),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
+                PlanTacticId = Convert.ToInt32(row["PlanTacticId"]),
+                ProjectedStageValue = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : row["LinkedTacticId"]),
+                StageId = Convert.ToInt32(row["StageId"]),
+                StartDate = Convert.ToDateTime(Convert.ToString(row["StartDate"])),
+                Status = Convert.ToString(row["Status"]),
+                TacticBudget = Convert.ToDouble(row["TacticBudget"]),
+                TacticCustomName = Convert.ToString(row["TacticCustomName"]),
+                TacticTypeId = Convert.ToInt32(row["TacticTypeId"]),
+                Title = Convert.ToString(row["Title"]),
+                PlanId = Convert.ToInt32(row["PlanId"]),
+                PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
+                TacticTypeTtile = Convert.ToString(row["TacticTypeTtile"]),
+                ColorCode = Convert.ToString(row["ColorCode"]),
+                PlanYear = Convert.ToString(row["PlanYear"]),
+                ModelId = Convert.ToInt32(row["ModelId"])
+            }).ToList();
+
+            return customtacticList;
+        }
+
         #endregion
     }
 

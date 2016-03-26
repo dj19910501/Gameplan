@@ -1175,7 +1175,15 @@
 
 
                             });
-                            GetTacticTypelist(PlanId, false);
+                            var setupplanids = [];
+                            $('#ulSelectedPlans').find("input[type=checkbox]:checked").each(function () {
+                                var chkid = $(this).attr("id");
+                                if (chkid != undefined && chkid != 'undefined') {
+                                    setupplanids.push(chkid);
+                                }
+                            });
+                            //GetTacticTypelist(PlanId, false);
+                            GetTacticTypelist(setupplanids, false);
 
                             //if ($("#hdnInspectMode").val() != '@Enums.InspectPopupMode.Add.ToString()') {
                                 $("#ulSelectedOwner li input[type=checkbox]").each(function () {
@@ -1184,7 +1192,8 @@
                                     }
                                 });
 
-                                GetOwnerListForFilter(PlanId, false);
+                            //GetOwnerListForFilter(PlanId, false);
+                                GetOwnerListForFilter(setupplanids, false);
                             //}
 
                             //var TacticListLength = $("#ulTacticType li").length;

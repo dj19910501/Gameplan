@@ -218,6 +218,23 @@ namespace RevenuePlanner.Helpers
                 }
             }
         }
+        // Add By Nishant Sheth
+        // Desc :: Get Or Set multiples PlanIds
+        public static List<int> PlanPlanIds
+        {
+            get
+            {
+                if (HttpContext.Current.Session["PlanPlanIds"] != null)
+                {
+                    return (List<int>)HttpContext.Current.Session["PlanPlanIds"];
+                }
+                return null;
+            }
+            set
+            {
+                HttpContext.Current.Session["PlanPlanIds"] = value;
+            }
+        }
         public static Int32 PublishedPlanId
         {
             get

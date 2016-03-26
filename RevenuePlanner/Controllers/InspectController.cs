@@ -100,7 +100,7 @@ namespace RevenuePlanner.Controllers
                 {
 
                     ViewBag.IsServiceUnavailable = false;
-                    string strUserList = string.Join(",", lstClientUsers);                   
+                    string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati                   
                     if (lstUserDetails.Count > 0)
                     {
@@ -242,14 +242,14 @@ namespace RevenuePlanner.Controllers
                         //// Get Plan list by PlanId.
                         plan = db.Plans.Where(_plan => _plan.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
                         //Modified by Rahul Shah on 09/03/2016 for PL #1939
-                        Guid oldOwnerId = plan.CreatedBy;                        
+                        Guid oldOwnerId = plan.CreatedBy;
                         plan.Title = objPlanModel.Title.Trim();
                         plan.ModifiedBy = Sessions.User.UserId;
                         plan.ModifiedDate = System.DateTime.Now;
-                        
+
                         if (BudgetInputValues == "" && planBudget.ToString() == "") //// Setup Tab
                         {
-                            plan.CreatedBy = objPlanModel.OwnerId;                        
+                            plan.CreatedBy = objPlanModel.OwnerId;
                             plan.Description = objPlanModel.Description;
                         }
                         else   //// Budget Tab
@@ -423,7 +423,7 @@ namespace RevenuePlanner.Controllers
                         // Add By Nishant Sheth
                         // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
                         DataSet dsPlanCampProgTac = new DataSet();
-                        dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(plan.PlanId.ToString());
+                        dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
                         objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
                         if (result > 0)
                         {
@@ -486,7 +486,7 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 return Json(new { id = plan.PlanId, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) });
-                            }                            
+                            }
                         }
                         else
                         {
@@ -775,7 +775,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Plan Id</param>
         /// <returns>Returns Partial View Of Campaign.</returns>
         /// modified by Rahul Shah on 17/03/2016 for PL #2032 
-        public ActionResult CreateCampaign(int id) 
+        public ActionResult CreateCampaign(int id)
         {
             //// Get Plan by Id.
             int planId = id;
@@ -818,12 +818,12 @@ namespace RevenuePlanner.Controllers
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
-                lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); 
+                lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList();
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
                 if (lstClientUsers.Count() > 0)
                 {
                     ViewBag.IsServiceUnavailable = false;
-                    string strUserList = string.Join(",", lstClientUsers);                   
+                    string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati                   
                     if (lstUserDetails.Count > 0)
                     {
@@ -841,7 +841,8 @@ namespace RevenuePlanner.Controllers
                     ViewBag.OwnerList = new List<User>();
                 }
             }
-            catch (Exception e)            {
+            catch (Exception e)
+            {
                 ErrorSignal.FromCurrentContext().Raise(e);
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
@@ -1090,7 +1091,7 @@ namespace RevenuePlanner.Controllers
                                 int campaignid = pcobj.PlanCampaignId;
                                 result = Common.InsertChangeLog(form.PlanId, null, campaignid, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                 Plan pcp = db.Plans.Where(pcobj1 => pcobj1.PlanId.Equals(pcobj.PlanId) && pcobj1.IsDeleted.Equals(false)).FirstOrDefault();
-                               
+
                                 #region "Send Email Notification For Owner changed"
                                 if (result > 0)
                                 {
@@ -1150,15 +1151,15 @@ namespace RevenuePlanner.Controllers
                                         objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;                                        
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
 
                                     }
                                 }
-                                db.SaveChanges();                                
+                                db.SaveChanges();
                                 #endregion
                                 // Added by Rahul Shah on 17/03/2016 for PL #2032 
-                                
+
                                 scope.Complete();
                                 string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                 return Json(new { isSaved = true, msg = strMessage, CampaignID = campaignid });
@@ -2639,7 +2640,7 @@ namespace RevenuePlanner.Controllers
             pcpm.CEndDate = pcp.EndDate;
             pcpm.ProgramBudget = 0;
             pcpm.AllocatedBy = objPlan.AllocatedBy;
-            pcpm.OwnerId=Sessions.User.UserId;
+            pcpm.OwnerId = Sessions.User.UserId;
             #endregion
 
             ViewBag.IsOwner = true;
@@ -2665,7 +2666,7 @@ namespace RevenuePlanner.Controllers
                 {
                     ViewBag.IsServiceUnavailable = false;
                     ViewBag.OwnerName = Common.GetUserName(pcp.CreatedBy.ToString());
-                    string strUserList = string.Join(",", lstClientUsers);                   
+                    string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
                     if (lstUserDetails.Count > 0)
                     {
@@ -2965,7 +2966,7 @@ namespace RevenuePlanner.Controllers
                     IsDeployToIntegrationVisible = true;
                 }
             }
-            
+
             ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
 
             // Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
@@ -2991,12 +2992,12 @@ namespace RevenuePlanner.Controllers
             //setup WorkFront information to keep from making redundant calls;
             IntegrationWorkFrontTacticSetting tSetting;
             IntegrationWorkFrontRequest tRequest;
-            if(isSyncWorkFront)
+            if (isSyncWorkFront)
             {
                 tSetting = db.IntegrationWorkFrontTacticSettings.Where(s => s.TacticId == pcpt.PlanTacticId && s.IsDeleted == false).FirstOrDefault();
                 tRequest = db.IntegrationWorkFrontRequests.Where(a => a.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt
                         && a.PlanTacticId == pcpt.PlanTacticId && a.IsDeleted == false).FirstOrDefault();
-                
+
 
                 if (tSetting != null)
                 {
@@ -3013,7 +3014,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                tSetting = null; 
+                tSetting = null;
                 tRequest = null;
             }
 
@@ -3033,7 +3034,7 @@ namespace RevenuePlanner.Controllers
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4);
                 ViewBag.IsModelIntegratedWorkFront = true; //Added 29 Dec 2015 by Brad Gray PL#1851
 
-                if(pcpt.TacticType.IntegrationWorkFrontTemplate != null && pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name != null)
+                if (pcpt.TacticType.IntegrationWorkFrontTemplate != null && pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name != null)
                 {
                     _inspectmodel.WorkFrontTemplate = pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name;
                 }
@@ -3045,14 +3046,14 @@ namespace RevenuePlanner.Controllers
 
                 // add 1/10/2016 by Brad Gray PL#1856 - get a list of active Requeust Queues for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
                 ViewBag.WorkFrontRequestQueueList = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IntegrationInstanceId
-                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false && q.IsDeleted==false).Select(modelQ => new { modelQ.Id, modelQ.RequestQueueName })
+                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false && q.IsDeleted == false).Select(modelQ => new { modelQ.Id, modelQ.RequestQueueName })
                                         .Distinct().OrderBy(q => q.RequestQueueName).ToList();
                 // add 1/13/2016 by Brad Gray PL#1895 - get a list of active WorkFront users for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
                 ViewBag.WorkFrontUserList = db.IntegrationWorkFrontUsers.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IntegrationInstanceId
                                     && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false).Select(user => new { user.Id, user.WorkFrontUserName })
                                         .Distinct().OrderBy(u => u.WorkFrontUserName).ToList();
             }
-            else{ViewBag.IsModelIntegratedWorkFront = false;} //Added 29 Dec 2015 by Brad Gray PL#1851
+            else { ViewBag.IsModelIntegratedWorkFront = false; } //Added 29 Dec 2015 by Brad Gray PL#1851
             ViewBag.IntegrationInstances = modelIntegrationList;
 
             //create a dictionary of each instance type name ("Salesforce", "WorkFront", etc) and the front end urls)
@@ -3064,15 +3065,15 @@ namespace RevenuePlanner.Controllers
                     int workFrontCompanyNameAttributeId = db.IntegrationTypeAttributes.Where(att => att.IntegrationTypeId == instance.IntegrationTypeId && att.Attribute == "Company Name").FirstOrDefault().IntegrationTypeAttributeId;
                     string prepend = db.IntegrationInstance_Attribute.Where(inst => inst.IntegrationInstanceId == instance.IntegrationInstanceId &&
                        inst.IntegrationTypeAttributeId == workFrontCompanyNameAttributeId).FirstOrDefault().Value;
-                    string append=String.Empty;
-                    
+                    string append = String.Empty;
+
                     if (pcpt.IntegrationWorkFrontProjectID == null) //updates to link to request. PL#1896 - Brad Gray 24 Jan 2016
                     {
-                        if(tSetting!=null&&tSetting.TacticApprovalObject==Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString())
+                        if (tSetting != null && tSetting.TacticApprovalObject == Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString())
                         {
-                            if (tRequest!= null && tRequest.RequestId != null)
+                            if (tRequest != null && tRequest.RequestId != null)
                             {
-                                append = "/issue/view?ID=" + tRequest.RequestId; 
+                                append = "/issue/view?ID=" + tRequest.RequestId;
                             }
                         }
                     }
@@ -3098,8 +3099,8 @@ namespace RevenuePlanner.Controllers
                 }
             }
             ViewBag.IntegrationTypeLinks = IntegrationLinkDictionary;
-        
-            
+
+
             ///End Added by Brad Gray 08-10-2015 for PL#1462
 
             ////Start : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
@@ -3109,7 +3110,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.TacticIntegrationProjMgmtInstance = pcpt.IntegrationWorkFrontProjectID;
             }
-            else if(tRequest!=null && tRequest.RequestId!=null)
+            else if (tRequest != null && tRequest.RequestId != null)
             {
                 ViewBag.TacticIntegrationProjMgmtInstance = tRequest.RequestId;
             }
@@ -3117,8 +3118,8 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.TacticIntegrationProjMgmtInstance = null;
             }
-            
-            
+
+
             string pullResponses = Operation.Pull_Responses.ToString();
             string pullClosedWon = Operation.Pull_ClosedWon.ToString();
             string pullQualifiedLeads = Operation.Pull_QualifiedLeads.ToString();
@@ -3914,7 +3915,7 @@ namespace RevenuePlanner.Controllers
 
 
             ippctm.IsCreated = false;
-            
+
             if (RedirectType == "Assortment")
             {
 
@@ -3988,7 +3989,7 @@ namespace RevenuePlanner.Controllers
             ippctm.CStartDate = plancampaignobj.StartDate;
             ippctm.CEndDate = plancampaignobj.EndDate;
             ippctm.Status = pcpt.Status;
-       
+
             //User userName = new User();
             try
             {
@@ -4130,7 +4131,7 @@ namespace RevenuePlanner.Controllers
 
             ippctm.PlanCampaignList = campaignList.Select(c => new SelectListValue { Id = c.PlanCampaignId, Title = c.Title }).ToList();
             ippctm.CampaignProgramList = programList.Select(p => new SelectListValue { Id = p.PlanProgramId, Title = p.Title }).ToList();
-            
+
             try
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
@@ -4249,13 +4250,13 @@ namespace RevenuePlanner.Controllers
                                 // WorkFront added 19 Feb 2016 for PL#2002. On tactic creation, look at WorkFront integration and set tactic defaults in the same manner as Salesforce and Eloqua
                                 int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
                                 #region "Get SFDC, Elqoua, & WorkFront InstanceId from Model by Plan"
-                                if(planid >0)
+                                if (planid > 0)
                                 {
                                     Model objModel = new Model();
                                     Plan objPlan = new Plan();
-                                    
-                                    objPlan = db.Plans.Where(plan=> plan.PlanId == planid).FirstOrDefault();
-                                    if(objPlan != null)
+
+                                    objPlan = db.Plans.Where(plan => plan.PlanId == planid).FirstOrDefault();
+                                    if (objPlan != null)
                                     {
                                         objModel = objPlan.Model;
                                         if (objModel != null)
@@ -4274,9 +4275,9 @@ namespace RevenuePlanner.Controllers
                                 #region "Get IsDeployedToIntegration by TacticTypeId"
                                 int TacticTypeId = 0;
                                 bool isDeployedToIntegration = false;
-                                if(form.TacticTypeId != null)
+                                if (form.TacticTypeId != null)
                                 {
-                                    TacticTypeId =form.TacticTypeId;
+                                    TacticTypeId = form.TacticTypeId;
                                     TacticType objTacType = new TacticType();
                                     objTacType = db.TacticTypes.Where(tacType => tacType.TacticTypeId == form.TacticTypeId).FirstOrDefault();
                                     if (objTacType != null && objTacType.IsDeployedToIntegration)
@@ -4417,6 +4418,27 @@ namespace RevenuePlanner.Controllers
 
                                 if (result >= 1)
                                 {
+                                    // Add By Nishant Sheth
+                                    // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                                    DataSet dsPlanCampProgTac = new DataSet();
+                                    dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                                    objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                                    List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                                    objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                                    var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                                    objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                                    var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                                    objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                                    var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                                    objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                                    var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
+
                                     // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                     #region "Send Email Notification For Owner changed"
                                     //Send Email Notification For Owner changed.
@@ -4472,7 +4494,7 @@ namespace RevenuePlanner.Controllers
 
                                     scope.Complete();
                                     string strMessag = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid,PlanId = planid });
+                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid, PlanId = planid });
                                 }
                             }
                         }
@@ -5035,12 +5057,12 @@ namespace RevenuePlanner.Controllers
                                     }
                                     List<Plan_Campaign_Program_Tactic_Cost> lstLinkeTac = new List<Plan_Campaign_Program_Tactic_Cost>();
                                     lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId).ToList();
-                                    if (yearDiff > 0 && lstLinkeTac != null && lstLinkeTac.Count >0) // is MultiYear Tactic
+                                    if (yearDiff > 0 && lstLinkeTac != null && lstLinkeTac.Count > 0) // is MultiYear Tactic
                                     {
                                         lstLinkeTac = lstLinkeTac.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
                                     }
 
-                                    if (lstLinkeTac != null && lstLinkeTac.Count >0)
+                                    if (lstLinkeTac != null && lstLinkeTac.Count > 0)
                                     {
                                         linkedTactic.Cost = lstLinkeTac.Sum(tac => tac.Value);
                                     }
@@ -5265,6 +5287,27 @@ namespace RevenuePlanner.Controllers
 
                                 if (result >= 1)
                                 {
+                                    // Add By Nishant Sheth
+                                    // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                                    DataSet dsPlanCampProgTac = new DataSet();
+                                    dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                                    objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                                    List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                                    objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                                    var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                                    objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                                    var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                                    objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                                    var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                                    objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                                    var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
+
                                     //// Start - Added by :- Mitesh Vaishnav on 19/05/2015 for PL ticket #546
                                     if (pcpobj.IntegrationInstanceTacticId != null && oldProgramId > 0)
                                     {
@@ -5294,7 +5337,7 @@ namespace RevenuePlanner.Controllers
 
                                     scope.Complete();
                                     string strMessag = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid, tacticStatus = pcpobj.Status, EndDatediff = EndDatediff ,PlanId = planid });// Modified By Nishant Sheth Desc:: #1812 refresh time frame dropdown
+                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid, tacticStatus = pcpobj.Status, EndDatediff = EndDatediff, PlanId = planid });// Modified By Nishant Sheth Desc:: #1812 refresh time frame dropdown
                                 }
                             }
                         }
@@ -5325,7 +5368,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Plan Program Id</param>
         /// <returns>Returns Partial View Of Tactic.</returns>
         /// modified by Rahul Shah on 17/03/2016 for PL #2032 
-        public ActionResult CreateTactic(int id = 0) 
+        public ActionResult CreateTactic(int id = 0)
         {
 
             Plan_Campaign_Program pcpt = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id)).FirstOrDefault();
@@ -5397,7 +5440,7 @@ namespace RevenuePlanner.Controllers
                     //// Flag to indicate unavailability of web service.
                     ViewBag.IsServiceUnavailable = false;
                     string strUserList = string.Join(",", lstClientUsers);
-                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); 
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId);
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
@@ -5902,7 +5945,7 @@ namespace RevenuePlanner.Controllers
                                     obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
                                     db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
                                 }
-                             }
+                            }
                             //End
 
                             db.Entry(pcpobj).State = EntityState.Modified;
@@ -6446,7 +6489,7 @@ namespace RevenuePlanner.Controllers
                 if (objJasonResult != null && IsDuplicate)
                     return objJasonResult;
 
-                int planTacticId = !string.IsNullOrEmpty(Id)? Convert.ToInt32(Id):0;
+                int planTacticId = !string.IsNullOrEmpty(Id) ? Convert.ToInt32(Id) : 0;
                 Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
                 objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId.Equals(planTacticId) && tac.IsDeleted == false).FirstOrDefault();
                 if (objTactic != null)
@@ -6463,13 +6506,13 @@ namespace RevenuePlanner.Controllers
                     objTactic.ModifiedDate = DateTime.Now;
                     db.Entry(objTactic).State = EntityState.Modified;
 
-                    if(IsSyncWorkFront)
+                    if (IsSyncWorkFront)
                     {
                         SaveWorkFrontTacticReviewSettings(objTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
                     }
 
-                   
-                  
+
+
                     #region "Update linked Tactic Integration Settings"
                     if (objTactic.LinkedTacticId != null && objTactic.LinkedTacticId.HasValue && objTactic.LinkedTacticId.Value > 0)
                     {
@@ -6487,9 +6530,9 @@ namespace RevenuePlanner.Controllers
                         //If integrated to WF, updated the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
                         if (IsSyncWorkFront)
                         {
-                            SaveWorkFrontTacticReviewSettings(objLinkedTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF); 
+                            SaveWorkFrontTacticReviewSettings(objLinkedTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);
                         }
-                    } 
+                    }
                     #endregion
 
                     db.SaveChanges();
@@ -6516,7 +6559,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="approvalBehaviorWorkFront"></param>
         /// <param name="requestQueueWF"></param>
         /// <param name="assigneeWF"></param>
-        public void SaveWorkFrontTacticReviewSettings(Plan_Campaign_Program_Tactic objTactic, string approvalBehaviorWorkFront = "", string requestQueueWF="", string assigneeWF="")
+        public void SaveWorkFrontTacticReviewSettings(Plan_Campaign_Program_Tactic objTactic, string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
         {
             try
             {
@@ -6577,7 +6620,7 @@ namespace RevenuePlanner.Controllers
                 }
                 db.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
@@ -7440,7 +7483,7 @@ namespace RevenuePlanner.Controllers
 
                     pcptlm.OwnerList = new List<SelectListUser>();
                 }
-               //End
+                //End
             }
             catch (Exception e)
             {
@@ -7669,7 +7712,8 @@ namespace RevenuePlanner.Controllers
                                 int result = db.SaveChanges();
                                 lineItemId = objLineitem.PlanLineItemId;
                                 //Added by Rahul Shah on 17/03/2016 for PL #2068
-                                if (result > 0) {
+                                if (result > 0)
+                                {
                                     #region "Send Email Notification For Owner changed"
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != Sessions.User.UserId && form.OwnerId != Guid.Empty)
@@ -7711,13 +7755,13 @@ namespace RevenuePlanner.Controllers
                                             if (lstRecepientEmail.Count > 0)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, lineItemId, Enums.Section.LineItem.ToString().ToLower());
-                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, TacticTitle, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL,objLineitem.Title);
+                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, TacticTitle, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL, objLineitem.Title);
                                             }
                                         }
 
                                     }
                                     #endregion
-                                }                                
+                                }
                                 #endregion
 
                                 if (LinkedobjLineitem != null)
@@ -7752,7 +7796,7 @@ namespace RevenuePlanner.Controllers
                                         LineitemBudgetMapping = new LineItem_Budget();
                                         LineitemBudgetMapping.BudgetDetailId = item.Id;
                                         LineitemBudgetMapping.PlanLineItemId = lineItemId;
-                                        LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;                                       
+                                        LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
                                         LineitemBudgetMapping.CreatedDate = DateTime.Now;
                                         LineitemBudgetMapping.Weightage = (byte)item.Weightage;
                                         db.Entry(LineitemBudgetMapping).State = EntityState.Added;
@@ -9869,7 +9913,7 @@ namespace RevenuePlanner.Controllers
             //Added by Rahul Shah on 17/03/2016 for PL #2032 
             #region "Owner List"
             try
-            {  
+            {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
                 lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); // PL #1532 Dashrath Prajapati
@@ -9879,7 +9923,7 @@ namespace RevenuePlanner.Controllers
                 {
                     //// Flag to indicate unavailability of web service.                   
                     ViewBag.IsServiceUnavailable = false;
-                    string strUserList = string.Join(",", lstClientUsers);                    
+                    string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
                     if (lstUserDetails.Count > 0)
                     {
@@ -9897,7 +9941,7 @@ namespace RevenuePlanner.Controllers
                 {
 
                     pc.OwnerList = new List<SelectListUser>();
-                }                
+                }
             }
             catch (Exception e)
             {
@@ -10225,79 +10269,79 @@ namespace RevenuePlanner.Controllers
             return Json(new { id = 0 });
         }
 
-        public JsonResult SaveTacticTitle(string Id, string title,ref bool isDuplicate)
+        public JsonResult SaveTacticTitle(string Id, string title, ref bool isDuplicate)
         {
             //bool isResultError = false;
             try
             {
                 int Tacticid = Convert.ToInt32(Id);
-                    int linkedTacticId = 0;
+                int linkedTacticId = 0;
 
-                    //   List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Select(tac => tac).ToList();
-                    var objpcpt = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == Tacticid).FirstOrDefault();
-                    int pid = objpcpt.PlanProgramId;
-                    int cid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == pid).Select(program => program.PlanCampaignId).FirstOrDefault();
+                //   List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Select(tac => tac).ToList();
+                var objpcpt = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == Tacticid).FirstOrDefault();
+                int pid = objpcpt.PlanProgramId;
+                int cid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == pid).Select(program => program.PlanCampaignId).FirstOrDefault();
 
-                    #region "Retrieve linkedTactic"
-                    linkedTacticId = (objpcpt != null && objpcpt.LinkedTacticId.HasValue) ? objpcpt.LinkedTacticId.Value : 0;
-                    
-                    #endregion
-                    //// Get Tactic duplicate record.
-                    var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
-                                  join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-                                  join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                  where pcpt.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(Tacticid) && pcpt.IsDeleted.Equals(false)
-                                  && pcp.PlanProgramId == objpcpt.PlanProgramId
-                                  select pcp).FirstOrDefault();
+                #region "Retrieve linkedTactic"
+                linkedTacticId = (objpcpt != null && objpcpt.LinkedTacticId.HasValue) ? objpcpt.LinkedTacticId.Value : 0;
 
-                    //// Get Linked Tactic duplicate record.
-                    Plan_Campaign_Program_Tactic dupLinkedTactic = null;
-                    Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
+                #endregion
+                //// Get Tactic duplicate record.
+                var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
+                              join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                              join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                              where pcpt.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(Tacticid) && pcpt.IsDeleted.Equals(false)
+                              && pcp.PlanProgramId == objpcpt.PlanProgramId
+                              select pcp).FirstOrDefault();
+
+                //// Get Linked Tactic duplicate record.
+                Plan_Campaign_Program_Tactic dupLinkedTactic = null;
+                Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
+                if (linkedTacticId > 0)
+                {
+                    linkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
+
+                    dupLinkedTactic = (from pcpt in db.Plan_Campaign_Program_Tactic
+                                       join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                       join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                       where pcpt.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(linkedTacticId) && pcpt.IsDeleted.Equals(false)
+                                       && pcp.PlanProgramId == linkedTactic.PlanProgramId
+                                       select pcpt).FirstOrDefault();
+                }
+
+                //// if duplicate record exist then return duplication message.
+                if (dupLinkedTactic != null)
+                {
+                    isDuplicate = true;
+                    string strDuplicateMessage = string.Format(Common.objCached.LinkedPlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                    return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+                }
+                else if (pcpvar != null)
+                {
+                    isDuplicate = true;
+                    string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                    return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+                }
+                else
+                {
+
+                    Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(Tacticid)).FirstOrDefault();
+                    pcpobj.Title = title;
+                    db.Entry(pcpobj).State = EntityState.Modified;
+
+                    #region "update linked Tactic"
                     if (linkedTacticId > 0)
                     {
-                        linkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
-
-                        dupLinkedTactic = (from pcpt in db.Plan_Campaign_Program_Tactic
-                                           join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-                                           join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                           where pcpt.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(linkedTacticId) && pcpt.IsDeleted.Equals(false)
-                                           && pcp.PlanProgramId == linkedTactic.PlanProgramId
-                                           select pcpt).FirstOrDefault();
+                        Plan_Campaign_Program_Tactic lnkPCPT = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
+                        lnkPCPT.Title = title;
+                        db.Entry(lnkPCPT).State = EntityState.Modified;
                     }
+                    #endregion
 
-                    //// if duplicate record exist then return duplication message.
-                    if (dupLinkedTactic != null)
-                    {
-                        isDuplicate = true;
-                        string strDuplicateMessage = string.Format(Common.objCached.LinkedPlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
-                        return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
-                    }
-                    else if (pcpvar != null)
-                    {
-                        isDuplicate = true;
-                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                        return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
-                    }
-                    else
-                    {
-
-                        Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(Tacticid)).FirstOrDefault();
-                        pcpobj.Title = title;
-                        db.Entry(pcpobj).State = EntityState.Modified;
-
-                        #region "update linked Tactic"
-                        if (linkedTacticId > 0)
-                        {
-                            Plan_Campaign_Program_Tactic lnkPCPT = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
-                            lnkPCPT.Title = title;
-                            db.Entry(lnkPCPT).State = EntityState.Modified;
-                        }
-                        #endregion
-
-                        db.SaveChanges();
-                        string strMessag = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                        return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = Tacticid }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid, tacticStatus = pcpobj.Status });
-                    }
+                    db.SaveChanges();
+                    string strMessag = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = Tacticid }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid, tacticStatus = pcpobj.Status });
+                }
             }
             catch (Exception ex)
             {
@@ -10862,7 +10906,7 @@ namespace RevenuePlanner.Controllers
                         #endregion
 
                         db.SaveChanges();
-                    } 
+                    }
                     #endregion
                     //End - Added by Viral Kadiya for PL ticket #2002 - Save integration settings on "Sync" button click.
 
@@ -11015,7 +11059,7 @@ namespace RevenuePlanner.Controllers
                 {
                     double budgetAllocation = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => tacCost.PlanTacticId == id).ToList().Sum(tacCost => tacCost.Value);
                     Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
-                    
+
                     imodel = new InspectModel()
                               {
                                   PlanTacticId = pcpt.PlanTacticId,
@@ -11047,7 +11091,7 @@ namespace RevenuePlanner.Controllers
                                   StageLevel = pcpt.Stage.Level,
                                   ProjectedStageValue = pcpt.ProjectedStageValue,
                                   TacticCustomName = pcpt.TacticCustomName
-                                  
+
                               };
 
 
@@ -11402,7 +11446,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="section">Decide for wich section (tactic,program or campaign) status will be updated)</param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
         [HttpPost]
-        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "",  string approvalBehaviorWorkFront = "", string requestQueueWF="", string assigneeWF="")
+        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
         {
             int planid = 0;
             int result = 0;
@@ -12232,6 +12276,26 @@ namespace RevenuePlanner.Controllers
                 {
                     title = HttpUtility.HtmlDecode(title);
                     string strMessage = string.Format(Common.objCached.CloneDuplicated, CloneType);     // Modified by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                    // Add By Nishant Sheth
+                    // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                    DataSet dsPlanCampProgTac = new DataSet();
+                    dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                    objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                    List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                    objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                    var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                    objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                    var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                    objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                    var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                    objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                    var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
 
                     if (!string.IsNullOrEmpty(CalledFromBudget))
                     {
@@ -12552,6 +12616,24 @@ namespace RevenuePlanner.Controllers
 
                         if (returnValue >= 1)
                         {
+                            DataSet dsPlanCampProgTac = new DataSet();
+                            dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                            objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                            List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                            objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                            var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                            objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                            var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                            objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                            var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                            objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                            var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                            objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
                             //// Change Parent section status by ID.
                             if (IsProgram)
                             {
@@ -12676,7 +12758,8 @@ namespace RevenuePlanner.Controllers
                 else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planTacticId = planTacticId, isImprovement = true, activeMenu = "Plan" }, Request.Url.Scheme);
                 //modified by Rahul Shah on 09/03/2016 for PL #1939
-                else if (section == Convert.ToString(Enums.Section.Plan).ToLower()) {
+                else if (section == Convert.ToString(Enums.Section.Plan).ToLower())
+                {
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, activeMenu = "Plan" }, Request.Url.Scheme);
                 }
                 //Added by Rahul Shah on 17/03/2016 for PL #2068
@@ -12891,7 +12974,7 @@ namespace RevenuePlanner.Controllers
             var items = GetTopLevelRows(dataTableMain, MinParentid)
                         .Select(row => CreateItem_New(dataTableMain, row, PlanLineItemID, SelectedLineItemBudgetNew))
                         .ToList();
-            
+
             budgetMain.rows = items;
 
 

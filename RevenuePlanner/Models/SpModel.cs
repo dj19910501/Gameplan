@@ -122,4 +122,14 @@ namespace RevenuePlanner.Models
         public string PlanYear { get; set; }
         public int ModelId { get; set; }
     }
+    // Add by Nishant Sheth
+    // Desc :: For stroe customfield in cache memory
+    public class CacheCustomField
+    {
+        public int EntityId { get; set; }
+        public int CustomFieldId { get; set; }
+        public string Value { get; set; }
+        public Guid CreatedBy { get; set; }
+        public int CustomFieldEntityId { get; set; }
+    }
 }

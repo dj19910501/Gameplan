@@ -1017,7 +1017,7 @@ namespace RevenuePlanner.Controllers
         }
         // Add By Nishant Sheth 
         // Desc:: For get header values with sync proces and performance
-        public JsonResult GetPlanByMultiplePlanIDsPer(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
+        public async Task<JsonResult> GetPlanByMultiplePlanIDsPer(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
         {
             planid = System.Web.HttpUtility.UrlDecode(planid);
             List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
