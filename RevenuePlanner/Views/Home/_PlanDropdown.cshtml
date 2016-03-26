@@ -153,7 +153,7 @@
         // Commented by nishant sheth
         // Desc :: For performace avoid multiple db trip for same results
         //GetHealderData(SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, Tabid);// Modified By Nishant Sheth Desc header value wrong with plan tab
-        GetNumberOfActivityPerMonByPlanId(SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
+        GetNumberOfActivityPerMonByPlanIdPer(SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
     });
 
     $("#ddlTabViewBy").change(function () {
@@ -239,7 +239,7 @@
         // Commented By Nishant Sheth
         // Desc :: For performance issue
             //GetHealderData(TempPlanIds,filters.customFieldIds,filters.OwnerIds,filters.TacticTypeids, filters.StatusIds);
-            GetNumberOfActivityPerMonByPlanId(TempPlanIds, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
+        GetNumberOfActivityPerMonByPlanIdPer(TempPlanIds, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
     });
 
     $('.sbHolder').click(function () {

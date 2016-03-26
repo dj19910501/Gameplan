@@ -352,6 +352,113 @@
                 }
             });
         }
+
+    function GetNumberOfActivityPerMonByPlanIdPer(selectedPlanIds, strParam,Cid, OId,Tacticids,StatusId,Tabid) {
+
+        var _filters = {
+            OwnerIds: [],
+            TacticTypeids:[],
+            StatusIds:[],
+            customFieldIds:[]
+
+        };
+        //Modified BY Komal rawal for #1929 proper Hud chart and count
+        var ID = CalendarId;
+        if($('#IsGridView').val() != undefined && $('#IsGridView').val() != 'undefined' && $('#IsGridView').val() != null && $('#IsGridView').val() != "" ){
+            if ($('#IsGridView').val().toLowerCase() == "true") {
+                ID = GridId;
+            }
+        }
+        Tabid = ID;
+      
+        $("#ulSelectedOwner li input:checkbox:checked").map(function(){
+            _filters.OwnerIds.push($(this).attr("id"));
+        });
+
+        $("#ulTacticType li input:checkbox:checked").map(function(){
+            var Value = $(this).attr("id").replace("CbTT", "");
+            _filters.TacticTypeids.push(Value);
+        });
+
+        $("#ulStatus li input:checkbox:checked").map(function(){
+            var Value = $(this).attr("id");
+            _filters.StatusIds.push(Value);
+        });
+
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    _filters.customFieldIds.push(chkid);
+                }
+            }
+        });
+
+        //Added for "Select All" case of #1952 and #1993 By Maitri Gandhi on 16/2/2016
+        var CheckedCounter = 0, AllCounter = 0, id = null;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                if (AllCounter == CheckedCounter) {
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                    }
+                    var i = 0, customfieldid;
+                    for (i = 0; i < _filters.customFieldIds.length; i++) {
+                        if (_filters.customFieldIds[i].indexOf("_") > -1) {
+                            customfieldid = _filters.customFieldIds[i].split("_")[0];
+                            if (id == customfieldid) {
+                                _filters.customFieldIds.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });        ////End
+
+        var newUrl = '';
+        var isMultiple = false;
+        newUrl = '@Url.Action("GetNumberOfActivityPerMonthPer", "Home")';
+        if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Home.ToString().ToLower()") {
+            isMultiple = true;
+        }
+        else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
+            if (CurrentPlanId > 0) {
+                selectedPlanIds = CurrentPlanId.toString();
+            }
+        }
+        if (selectedPlanIds == '') {
+            return;
+        }
+        $.ajax(
+        {
+            type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
+            cache: false,
+            url: newUrl,
+            data: {
+                planid: selectedPlanIds.toString(),   //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic.
+                strparam: strParam,
+                isMultiplePlan: isMultiple,
+                CustomFieldId:_filters.customFieldIds.toString(),
+                OwnerIds: _filters.OwnerIds.toString(),
+                TacticTypeids:_filters.TacticTypeids.toString(),
+                StatusIds:_filters.StatusIds.toString(),
+                TabId:Tabid //Added BY Komal rawal for #1929 proper Hud chart and count
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data != null) {
+                    $(".dhx_canvas_text").remove();
+                    $("canvas").remove();
+                    setgraphdata(data);
+
+                }
+            }
+        });
+    }
         function setgraphdata(data) {
             $(".dhx_chart_legend").html('');
             var legendvalue="";
