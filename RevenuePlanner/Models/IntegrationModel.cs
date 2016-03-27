@@ -82,9 +82,13 @@ namespace RevenuePlanner.Models
         public IList<GameplanDataTypePullModel> GameplanDataTypePullRevenueModelList { get; set; }
         //Dharmraj End PL#680 Integration - UI - Pull responses from Salesforce
 
-        //Brad Gray Start PL#1367 Integration - UI - Sync Data with WorkFront
-        public IList<GameplanDataTypePullModel> GameplanDataTypeWorkFrontModelList { get; set; }
+        //Brad Gray Start PL#1367 Integration - UI - Sync Data with WorkFront; commented out as unneeded & unused by Brad Gray 26 March 2016
+        //public IList<GameplanDataTypePullModel> GameplanDataTypeWorkFrontModelList { get; set; }
         //Brad Gray End PL#1367 Integration - UI - Sync Data with WorkFront
+
+        //Brad Gray Start 26 March 2016 to persist list of readonly custom fields, PL#2084 
+        public IList<GameplanDataTypeModel> CustomReadOnlyDataModelList { get; set; }
+        //Brad Gray End 26 March 2016
 
         //// Start - Added by Sohel Pathan on 22/12/2014 - PL#1061 Integration - UI - Pull MQL responses from Eloqua
         public IList<GameplanDataTypePullModel> GameplanDataTypePullMQLModelList { get; set; }

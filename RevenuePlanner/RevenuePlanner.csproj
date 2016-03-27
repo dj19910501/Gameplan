@@ -918,6 +918,7 @@
     <Content Include="Views\Plan\_CopyEntity.cshtml" />
     <Content Include="Views\Shared\_DefaultViewFilters.cshtml" />
     <Content Include="Views\ExternalService\_PullSalesforceMQL.cshtml" />
+    <Content Include="Views\ExternalService\_DataMapping-PullData.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

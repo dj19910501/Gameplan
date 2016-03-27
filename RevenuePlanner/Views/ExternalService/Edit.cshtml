@@ -61,6 +61,11 @@
                 @if (Model.IntegrationInstanceId > 0)
                 { 
                     @Html.Partial("~/Views/ExternalService/_DataMapping.cshtml", Model.GameplanDataTypeModelList)
+                    @* Added by Brad Gray on 26 March 2016 for PL#2084*@
+                    if (Model.IntegrationType.Code == Enums.IntegrationType.WorkFront.ToString() && Model.CustomReadOnlyDataModelList.Count > 0)
+                    {
+                        @Html.Partial("~/Views/ExternalService/_DataMapping-PullData.cshtml", Model.CustomReadOnlyDataModelList)
+                    }
 @* Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681*@
                     if (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString())
                     {

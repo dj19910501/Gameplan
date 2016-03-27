@@ -822,6 +822,7 @@ namespace RevenuePlanner.Controllers
             if (id > 0)
             {
                 objView.GameplanDataTypeModelList = GetGameplanDataTypeList(id);   // Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681
+                objView.CustomReadOnlyDataModelList = GetPlanCustomGetFields(id);   //Added by Brad Gray 26 March 2016 for PL #2084
                 objView.ExternalServer = GetExternalServerModelByInstanceId(id);
 
                 // Dharmraj Start : #658: Integration - UI - Pulling Revenue - Salesforce.com
@@ -1461,6 +1462,73 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region Get Plan Read-Only Custom field List
+        /// <summary>
+        /// Get list of read-only custom fields
+        /// These fields should not be included in the GameplanDataType list
+        /// adapted heavily from GetGameplanDataTypeListFromDB method
+        /// added by Brad Gray 26 March 2016, PL#2084
+        /// </summary>
+        /// Added by Brad Gray on 26 March 2016, Ticket #
+        /// <param name="id"></param>
+        /// <returns>Returns GameplanDataTypePullModel List</returns>
+        public IList<GameplanDataTypeModel> GetPlanCustomGetFields(int id)
+        {
+            List<GameplanDataTypeModel> listCustGet = new List<GameplanDataTypeModel>();
+            string Eloqua = Enums.IntegrationType.Eloqua.ToString();
+            string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
+            string Campaign_EntityType = Enums.EntityType.Campaign.ToString();
+            string Program_EntityType = Enums.EntityType.Program.ToString();
+            string Plan_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString();
+            string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString();
+            string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
+
+            try
+            {
+                var integrationType = (from intgrtn in db.IntegrationInstances
+                                       join _type in db.IntegrationTypes on intgrtn.IntegrationTypeId equals _type.IntegrationTypeId
+                                       where intgrtn.IsDeleted == false && _type.IsDeleted == false && intgrtn.IntegrationInstanceId == id
+                                       select new { _type.Title, _type.IntegrationTypeId, _type.Code }).FirstOrDefault();
+
+                string integrationTypeName = string.Empty;
+                string integrationTypeCode = string.Empty;
+                int IntegrationTypeId = 0;
+                if (integrationType != null)
+                {
+                    integrationTypeName = integrationType.Title;
+                    IntegrationTypeId = integrationType.IntegrationTypeId;
+                    integrationTypeCode = integrationType.Code;
+                }
+
+                listCustGet = (from custm in db.CustomFields
+                 join m1 in db.IntegrationInstanceDataTypeMappings on custm.CustomFieldId equals m1.CustomFieldId into mapping
+                 from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                 where custm.IsDeleted == false && custm.ClientId == Sessions.User.ClientId && custm.IsGet == true &&
+                 (integrationTypeCode == Eloqua ? (custm.EntityType == Tactic_EntityType) : 1 == 1)
+                 select new GameplanDataTypeModel
+                 {
+                     GameplanDataTypeId = custm.CustomFieldId,   // For Custom Fields CustomFieldId is GameplanDataType Id in Mapping
+                     IntegrationTypeId = IntegrationTypeId,
+                     TableName = custm.EntityType == Campaign_EntityType ? Plan_Campaign : (custm.EntityType == Program_EntityType ? Plan_Campaign_Program : (custm.EntityType == Tactic_EntityType ? Plan_Campaign_Program_Tactic : string.Empty)),
+                     ActualFieldName = custm.Name,
+                     DisplayFieldName = custm.Name,
+                     IsGet = false,
+                     IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
+                     IntegrationInstanceId = id,
+                     TargetDataType = m.TargetDataType,
+                     IsCustomField = true
+                 }).ToList();
+            }
+            catch
+            {
+                TempData["DataMappingErrorMessage"] = Common.objCached.ErrorOccured;
+             }
+
+            return listCustGet;
+        }
+
+        #endregion
+
         #region Get Gampeplan DataType Pull List
         /// <summary>
         /// Get list of gameplan DataType Pull Mapping list
@@ -1660,11 +1728,12 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 //// Get GamePlan Custom Fields data.
+                // Updated 23 March 2016 PL#2083 by Brad Gray to not retrieve fields where custom field 'IsGet' == true
                 List<GameplanDataTypeModel> listGameplanDataTypeCustomFields = new List<GameplanDataTypeModel>();
                 listGameplanDataTypeCustomFields = (from custm in db.CustomFields
                                                     join m1 in db.IntegrationInstanceDataTypeMappings on custm.CustomFieldId equals m1.CustomFieldId into mapping
                                                     from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                    where custm.IsDeleted == false && custm.ClientId == Sessions.User.ClientId &&
+                                                    where custm.IsDeleted == false && custm.ClientId == Sessions.User.ClientId && custm.IsGet == false &&
                                                     (integrationTypeCode == Eloqua ? (custm.EntityType == Tactic_EntityType) : 1 == 1)
                                                     select new GameplanDataTypeModel
                                                     {
