@@ -1,6 +1,15 @@
 ﻿@model IList<RevenuePlanner.Models.GameplanDataTypeModel>
 @using RevenuePlanner.Helpers
 
+<style>
+#frmDataPullMapping .messages{
+    width:82%;
+    float: left;
+    margin: 10px 0;
+}
+
+</style>
+
 <div class="accordion-group">
     <div class="accordion-heading">
         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseCustomPull">Pull Integration Data<span href="javascript:void(0)">+ Expand</span></a>
@@ -14,7 +23,7 @@
                 @if(Model.Count > 0)
                 {
                     <div class="content-colum-mapDataTypes width100 float-left">
-                        <table id="tblDataPullMapping" class="tblFieldMapping">
+                        <table id="tblDataMapping" class="tblFieldMapping">
                             <tbody>
                                 @{bool GlobalHeaderSet  = false, CampaignHeaderSet = false, ProgramHeaderSet = false, TacticHeaderSet = false;}
                                 @{bool ImprovemntCampaignHeaderSet = false, ImprovemntProgramHeaderSet = false, ImprovemntTacticHeaderSet = false;}
@@ -121,18 +130,18 @@
                             </tbody>
                         </table>
                     </div>
-                
-                    <!--success message-->
+
+                      <!--success message-->
                     <div id="DataPullMappingSuccessMessage" class="alert hide alert-success messages">
                         <a class="close">×</a>
-                        <strong>Success.</strong> <span id="spanMessagePullSuccess">@TempData["DataMappingSuccessMessage"]</span>
+                        <strong>Success.</strong> <span id="spanMessageSuccess">@TempData["DataMappingSuccessMessage"]</span>
                     </div>
                     <!--success message-->
 
                     <!--error message-->
                     <div id="DataPullMappingErrorMessage" class="alert hide alert-error messages">
                         <a class="close">×</a>
-                        <strong>Error!</strong> <span id="spanMessagePullError">@TempData["DataMappingErrorMessage"]</span>
+                        <strong>Error!</strong> <span id="spanMessageError">@TempData["DataMappingErrorMessage"]</span>
                     </div>
                     <!--error message-->
                
@@ -200,26 +209,25 @@
                 else {
                     if (data.status == 0) {
                         console.log("data.status == 0");
-                        $('#DataPullMappingSuccessMessage').find('#spanMessagePullSuccess').html('');
-                        $("#DataPullMappingSuccessMessage").hide();
-                        $('#DataPullMappingErrorMessage').find('#spanMessagePullError').html(data.Message);
+                        $('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
+                        $("#DataMappingSuccessMessage").hide();
+                        $('#DataPullMappingErrorMessage').find('#spanMessageError').html(data.Message);
                         $("#DataPullMappingErrorMessage").slideDown(400);
                         return false;
                     }
                     else if (data.status == 1) {
                         console.log("data.status == 1");
-                        $('#DataPullMappingErrorMessage').find('#spanMessagePullError').html('');
+                        $('#DataPullMappingErrorMessage').find('#spanMessageError').html('');
                         $("#DataPullMappingErrorMessage").hide();
-                        $('#DataPullMappingSuccessMessage').find('#spanMessagePullSuccess').html(data.Message);
-                        console.log("data.status == 1; stage 2");
-                        $("#DataPullMappingSuccessMessage").slideDown(400);
+                        $('#DataPullMappingSuccessMessage').find('#spanMessageSuccess').html(data.Message);
+                        $("#DataPullMappingSuccessMessage").slideDown(200);
                         AssignDefaultValueDataMapping();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
                         return true;
                     }
                 }
             },
         error: function () {
-            $('#DataPullMappingErrorMessage').find('#spanMessagePullError').html('@TempData["DataMappingErrorMessage"]');
+            $('#DataPullMappingErrorMessage').find('#spanMessageError').html('@TempData["DataMappingErrorMessage"]');
             $("#DataPullMappingErrorMessage").slideDown(400);
             return false;
         }
@@ -277,8 +285,8 @@
     {
         $('#DataPullMappingErrorMessage').find('#spanMessageError').html($('#TargetFieldInvalidMsg').val());
         $("#DataPullMappingErrorMessage").slideDown(400);
-        $('#DataPullMappingSuccessMessage').find('#spanMessageSuccess').html('');
-        $("#DataPullMappingSuccessMessage").hide();
+        $('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
+        $("#DataMappingSuccessMessage").hide();
     }
     /* End - Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
 
