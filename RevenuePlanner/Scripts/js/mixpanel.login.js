@@ -1,13 +1,12 @@
-//<!-- MixPanel Tracking Events - Login Page -->
-
 $(window).load(function(){
 	//Logins
 	var loginForm = $('#frmLogin');
 	loginForm.submit(function(){
         mixpanel.track("Logged In");
 		var mixpanelID = $('#UserEmail').val();
-        //Identify Users
-        mixpanel.identify(mixpanelID);
+		//Cookies
+		$.cookie('email', mixpanelID, { expires: 14 });
+		//
 		mixpanel.people.set({
 			"$email": mixpanelID
 		});

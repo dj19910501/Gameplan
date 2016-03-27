@@ -16,7 +16,7 @@
                     <div class="content-colum-mapDataTypes width100 float-left">
                         <table id="tblDataMapping" class="tblFieldMapping">
                             <tbody>
-                                @{bool GlobalHeaderSet  = false, CampaignHeaderSet = false, ProgramHeaderSet = false, TacticHeaderSet = false;}
+                                @{bool GlobalHeaderSet = false, CampaignHeaderSet = false, ProgramHeaderSet = false, TacticHeaderSet = false;}
                                 @{bool ImprovemntCampaignHeaderSet = false, ImprovemntProgramHeaderSet = false, ImprovemntTacticHeaderSet = false;}
                                 @for (var i = 0; i < Model.Count; i++)
                                 {
@@ -108,6 +108,18 @@
                                                 </td>
                                             </tr>
                                         }
+                                        else if (ImprovemntTacticHeaderSet == false && Model[i].TableName == Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString())
+                                        {
+                                            <tr>
+                                                <td colspan="2">
+                                                    <div class="padding-right5 padding-top16">
+                                                        <h5 class="title-header">Plan Fields - Improvement Tactic</h5>
+                                                        @{ImprovemntTacticHeaderSet = true;}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+
                                     }
                                     <tr class="fieldRow">
                                         <td class="title1 width40 ellipsis" title="@Html.DisplayFor(x => x[i].DisplayFieldName)">

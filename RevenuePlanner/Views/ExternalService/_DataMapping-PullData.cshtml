@@ -6,7 +6,7 @@
         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseCustomPull">Pull Integration Data<span href="javascript:void(0)">+ Expand</span></a>
     </div>
     <div class="accordion-body collapse out" id="collapseCustomPull">
-        @using (Html.BeginForm("SaveDataMapping", "ExternalService", FormMethod.Post, new { name = "frmDataMapping", id = "frmDataMapping" }))
+        @using (Html.BeginForm("SaveDataPullMapping", "ExternalService", FormMethod.Post, new { name = "frmDataPullMapping", id = "frmDataPullMapping" }))
         {
             @Html.Hidden("TargetFieldInvalidMsg", TempData["TargetFieldInvalidMsg"])    //// Added by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once. 
             
@@ -14,7 +14,7 @@
                 @if(Model.Count > 0)
                 {
                     <div class="content-colum-mapDataTypes width100 float-left">
-                        <table id="tblDataMapping" class="tblFieldMapping">
+                        <table id="tblDataPullMapping" class="tblFieldMapping">
                             <tbody>
                                 @{bool GlobalHeaderSet  = false, CampaignHeaderSet = false, ProgramHeaderSet = false, TacticHeaderSet = false;}
                                 @{bool ImprovemntCampaignHeaderSet = false, ImprovemntProgramHeaderSet = false, ImprovemntTacticHeaderSet = false;}
@@ -123,26 +123,26 @@
                     </div>
                 
                     <!--success message-->
-                    <div id="DataMappingSuccessMessage" class="alert hide alert-success messages">
+                    <div id="DataPullMappingSuccessMessage" class="alert hide alert-success messages">
                         <a class="close">×</a>
-                        <strong>Success.</strong> <span id="spanMessageSuccess">@TempData["DataMappingSuccessMessage"]</span>
+                        <strong>Success.</strong> <span id="spanMessagePullSuccess">@TempData["DataMappingSuccessMessage"]</span>
                     </div>
                     <!--success message-->
 
                     <!--error message-->
-                    <div id="DataMappingErrorMessage" class="alert hide alert-error messages">
+                    <div id="DataPullMappingErrorMessage" class="alert hide alert-error messages">
                         <a class="close">×</a>
-                        <strong>Error!</strong> <span id="spanMessageError">@TempData["DataMappingErrorMessage"]</span>
+                        <strong>Error!</strong> <span id="spanMessagePullError">@TempData["DataMappingErrorMessage"]</span>
                     </div>
                     <!--error message-->
                
                     
                         <div class="margin-left40per">
                             <span class="span5 margin-top10">
-                                <button id="btnSaveDataMappings" type="button" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" name="button-save">Save</button>
+                                <button id="btnSavePullMappings" type="button" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" name="button-save">Save</button>
                             </span>
                             <span class="span5 margin-top10">
-                                <button id="btnCancelDataMappins" type="button" class="close-form btn-link source-sans-proregular">Cancel</button>
+                                <button id="btnCancelDataPullMappings" type="button" class="close-form btn-link source-sans-proregular">Cancel</button>
                             </span>
                         </div>
                     
@@ -160,10 +160,10 @@
         AssignDefaultValueDataMapping();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
     });
 
-    $("#frmDataMapping").find('.ddlStyle').change(function () {
+    $("#frmDataPullMapping").find('.ddlStyle').change(function () {
         var sbValue = $(this).attr('sb');
-        var selValue = $("#frmDataMapping").find('#sbSelector_' + $(this).attr('sb')).html();   /* Modified by Sohel Pathan on 20/08/2014 for Internal Review Point */
-        $("#frmDataMapping").find('select[sb="' + sbValue + '"]').val(selValue);    /* Modified by Sohel Pathan on 20/08/2014 for Internal Review Point */
+        var selValue = $("#frmDataPullMapping").find('#sbSelector_' + $(this).attr('sb')).html();   /* Modified by Sohel Pathan on 20/08/2014 for Internal Review Point */
+        $("#frmDataPullMapping").find('select[sb="' + sbValue + '"]').val(selValue);    /* Modified by Sohel Pathan on 20/08/2014 for Internal Review Point */
         var currentSelectedValue = $(this).next().find('.sbSelector').html();
         if (!(currentSelectedValue == '' || currentSelectedValue == 'Select')) {
             $(this).next('.sbHolder').prop("title", currentSelectedValue);
@@ -173,7 +173,8 @@
         }
     });
     
-    $("#btnSaveDataMappings").click(function (e) {
+    $("#btnSavePullMappings").click(function (e) {
+        console.log("entering save function");
         var isError = false;
         AssignSelectedValueToSelectBoxOption(); // Added by Sohel Pathan on 17/11/2014 for PL ticket #949.
         /* Start - Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
@@ -185,7 +186,7 @@
         }
         /* End - Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
 
-        var formData = $("#frmDataMapping").serialize();
+        var formData = $("#frmDataPullMapping").serialize();
         var IntegrationInstanceId = '@ViewBag.IntegrationInstanceId';
         var uId = $(window).attr('name');
         $.ajax({
@@ -198,31 +199,34 @@
                 }
                 else {
                     if (data.status == 0) {
-                        $('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
-                        $("#DataMappingSuccessMessage").hide();
-                        $('#DataMappingErrorMessage').find('#spanMessageError').html(data.Message);
-                        $("#DataMappingErrorMessage").slideDown(400);
+                        console.log("data.status == 0");
+                        $('#DataPullMappingSuccessMessage').find('#spanMessagePullSuccess').html('');
+                        $("#DataPullMappingSuccessMessage").hide();
+                        $('#DataPullMappingErrorMessage').find('#spanMessagePullError').html(data.Message);
+                        $("#DataPullMappingErrorMessage").slideDown(400);
                         return false;
                     }
                     else if (data.status == 1) {
-                        $('#DataMappingErrorMessage').find('#spanMessageError').html('');
-                        $("#DataMappingErrorMessage").hide();
-                        $('#DataMappingSuccessMessage').find('#spanMessageSuccess').html(data.Message);
-                        $("#DataMappingSuccessMessage").slideDown(400);
+                        console.log("data.status == 1");
+                        $('#DataPullMappingErrorMessage').find('#spanMessagePullError').html('');
+                        $("#DataPullMappingErrorMessage").hide();
+                        $('#DataPullMappingSuccessMessage').find('#spanMessagePullSuccess').html(data.Message);
+                        console.log("data.status == 1; stage 2");
+                        $("#DataPullMappingSuccessMessage").slideDown(400);
                         AssignDefaultValueDataMapping();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
                         return true;
                     }
                 }
             },
         error: function () {
-            $('#DataMappingErrorMessage').find('#spanMessageError').html('@TempData["DataMappingErrorMessage"]');
-            $("#DataMappingErrorMessage").slideDown(400);
+            $('#DataPullMappingErrorMessage').find('#spanMessagePullError').html('@TempData["DataMappingErrorMessage"]');
+            $("#DataPullMappingErrorMessage").slideDown(400);
             return false;
         }
         });
     });
 
-    $("#frmDataMapping").find(".alert").find(".close").click(function (e) {
+    $("#frmDataPullMapping").find(".alert").find(".close").click(function (e) {
         e.stopPropagation();
         e.preventDefault();
         $(this).closest(".alert").slideUp(400);
@@ -232,16 +236,16 @@
     function CheckTargetFieldMapping()
     {
         var isFieldMappingError = false;
-        $("#frmDataMapping").find('.ddlStyle').each(function () {
+        $("#frmDataPullMapping").find('.ddlStyle').each(function () {
             var isError = false;
             var currentDdl = this;
             var currentTargetValue = $(this).val();
-            var currentTableName = $("#frmDataMapping").find('#hdnTableName_' + currentDdl.id);
+            var currentTableName = $("#frmDataPullMapping").find('#hdnTableName_' + currentDdl.id);
             if (currentTargetValue != null) {
                 if (currentTargetValue.toLowerCase() != 'select' || currentTargetValue.toLowerCase() != '') {
-                    $("#frmDataMapping").find('.ddlStyle').each(function () {
+                    $("#frmDataPullMapping").find('.ddlStyle').each(function () {
 
-                        var SourceTableName = $("#frmDataMapping").find('#hdnTableName_' + this.id);
+                        var SourceTableName = $("#frmDataPullMapping").find('#hdnTableName_' + this.id);
                         var SourceTargetValue = $(this).val();
 
                         if (currentDdl.id != this.id) {
@@ -271,16 +275,16 @@
 
     function ShowTargetFieldInvalid()
     {
-        $('#DataMappingErrorMessage').find('#spanMessageError').html($('#TargetFieldInvalidMsg').val());
-        $("#DataMappingErrorMessage").slideDown(400);
-        $('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
-        $("#DataMappingSuccessMessage").hide();
+        $('#DataPullMappingErrorMessage').find('#spanMessageError').html($('#TargetFieldInvalidMsg').val());
+        $("#DataPullMappingErrorMessage").slideDown(400);
+        $('#DataPullMappingSuccessMessage').find('#spanMessageSuccess').html('');
+        $("#DataPullMappingSuccessMessage").hide();
     }
     /* End - Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
 
     // Start - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
     function AssignDefaultValueDataMapping() {
-        $('#frmDataMapping').find("input[type=text],textarea,select,input[type=password]").each(function () {
+        $('#frmDataPullMapping').find("input[type=text],textarea,select,input[type=password]").each(function () {
             $(this).attr("myValue", $(this).val());
             if ($(this).hasClass('ddlStyle'))
             {
@@ -299,7 +303,7 @@
 
     // Start - Added by Sohel Pathan on 17/11/2014 for PL ticket #949.
     function AssignSelectedValueToSelectBoxOption() {
-        $("#frmDataMapping").find('.ddlStyle').each(function () {
+        $("#frmDataPullMapping").find('.ddlStyle').each(function () {
             var currentSelectedValue = $(this).next().find('.sbSelector').html();
             var currentSelectedOption = $(this).find('option:selected').html();
             if (currentSelectedValue != currentSelectedOption) {

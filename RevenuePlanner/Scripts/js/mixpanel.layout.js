@@ -1,6 +1,8 @@
-//<!-- MixPanel Tracking Events - Rest of App -->
-
 $(window).load(function(){
+	//Identify via Cookie
+	var mixpanelID = $.cookie('email');
+	mixpanel.identify(mixpanelID);
+	//
 	var currentURL = window.location.href;
 	mixpanel.track("Page Load",
 		{
@@ -32,7 +34,7 @@ $(window).load(function(){
 	mixpanel.people.set({
    		'Organization': mixOrg,
 	});
-	//Success Message
+	//Success Text
 	$('.market-activity-main').on('click', 'li.new-prog', function(){
 		$('#SuccessMsg').hide();
 		setTimeout(trackSuccess1, 7000);
