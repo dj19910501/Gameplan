@@ -1512,7 +1512,7 @@ namespace RevenuePlanner.Controllers
                      TableName = custm.EntityType == Campaign_EntityType ? Plan_Campaign : (custm.EntityType == Program_EntityType ? Plan_Campaign_Program : (custm.EntityType == Tactic_EntityType ? Plan_Campaign_Program_Tactic : string.Empty)),
                      ActualFieldName = custm.Name,
                      DisplayFieldName = custm.Name,
-                     IsGet = false,
+                     IsGet = custm.IsGet,
                      IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
                      IntegrationInstanceId = id,
                      TargetDataType = m.TargetDataType,
@@ -1890,9 +1890,9 @@ namespace RevenuePlanner.Controllers
             //this will help determine which mapping types we're storing & removing
             
             bool isGet = false;
-            if (form != null) 
+            if (form.Count > 0) 
             {
-                isGet = form.First().IsGet; 
+                isGet = form.FirstOrDefault().IsGet; 
             }
 
             try
@@ -1903,7 +1903,12 @@ namespace RevenuePlanner.Controllers
                     {
                         //// Delete record from IntegrationInstanceDataTypeMapping table.
                         
-                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappings.Where(_map => _map.IntegrationInstanceId == IntegrationInstanceId && _map.GameplanDataType.IsGet == isGet).Select(_map => _map.IntegrationInstanceDataTypeMappingId).ToList();
+                        //Get a list of mappings with the correct instance Id & the correct isGet value
+                        //if the CustomFieldId value is null, add the object to the list if the GameplanDataType.IsGet is correct
+                        //otherwise, only add the object to the list if the IsGet value is correct
+                        //Added by Brad Gray, 27 Mar 2016 PL#2084
+                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappings.Where(_map => _map.IntegrationInstanceId == IntegrationInstanceId
+                             && (_map.CustomFieldId == null ? (_map.GameplanDataType.IsGet == isGet) : (_map.CustomField.IsGet == isGet) )).Select(_map => _map.IntegrationInstanceDataTypeMappingId).ToList();
                         if (lstIds != null && lstIds.Count > 0)
                         {
                             foreach (int ids in lstIds)

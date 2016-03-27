@@ -645,6 +645,7 @@
     <Content Include="Scripts\js\errorhandler.js" />
     <Content Include="Scripts\js\jquery-2.2.1.js" />
     <Content Include="Scripts\js\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\js\jquery.cookie.js" />
     <Content Include="Scripts\js\mixpanel.init.js" />
     <Content Include="Scripts\js\mixpanel.inspect.js" />
     <Content Include="Scripts\js\mixpanel.layout.js" />
