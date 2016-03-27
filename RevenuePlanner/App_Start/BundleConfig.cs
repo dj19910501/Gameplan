@@ -41,6 +41,7 @@ namespace RevenuePlanner
                         "~/Scripts/js/jquery.slidepanel_min.js",
                         "~/Scripts/js/scripts.js",
                         "~/Scripts/summernote_min.js",
+                        "~/Scripts/jquery.cookie.js", //added Brad Gray 26 Mar 2016 PL#2086
                         "~/Scripts/js/mixpanel.init.js",
                         "~/Scripts/js/mixpanel.login.js" //ensure this script is the last called
                         ));
@@ -69,6 +70,7 @@ namespace RevenuePlanner
                         "~/Scripts/js/errorhandler.js",
                         "~/Scripts/dhtmlxchart.js",
                         "~/Scripts/js/ganttExportapi.js",
+                        "~/Scripts/jquery.cookie.js", //added Brad Gray 26 Mar 2016 PL#2086
                         "~/Scripts/js/mixpanel.init.js",
                         "~/Scripts/js/mixpanel.layout.js"
                         ));

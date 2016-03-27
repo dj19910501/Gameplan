@@ -1861,6 +1861,7 @@ namespace RevenuePlanner.Controllers
         #region Save DataType Mapping using Ajax call
         /// <summary>
         /// Save gameplan mapping data type using ajax call
+        /// Precondition: all objects in form have equal IsGet value
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>05/08/2014</CreatedDate>
@@ -1882,6 +1883,17 @@ namespace RevenuePlanner.Controllers
             }
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            
+            //Added 26 Mar 2016 Brad Gray PL#2084
+            //every GameplanDataTypeModel in the list should have the same IsGet properties
+            //either they'll all be true or false
+            //this will help determine which mapping types we're storing & removing
+            
+            bool isGet = false;
+            if (form != null) 
+            {
+                isGet = form.First().IsGet; 
+            }
 
             try
             {
@@ -1890,7 +1902,8 @@ namespace RevenuePlanner.Controllers
                     using (var scope = new TransactionScope())
                     {
                         //// Delete record from IntegrationInstanceDataTypeMapping table.
-                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappings.Where(_map => _map.IntegrationInstanceId == IntegrationInstanceId).Select(_map => _map.IntegrationInstanceDataTypeMappingId).ToList();
+                        
+                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappings.Where(_map => _map.IntegrationInstanceId == IntegrationInstanceId && _map.GameplanDataType.IsGet == isGet).Select(_map => _map.IntegrationInstanceDataTypeMappingId).ToList();
                         if (lstIds != null && lstIds.Count > 0)
                         {
                             foreach (int ids in lstIds)
