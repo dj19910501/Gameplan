@@ -7939,13 +7939,13 @@ namespace RevenuePlanner.Helpers
                 IsSyncSalesForce = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncSalesForce"])) ? (bool?)null : row["IsSyncSalesForce"]),
                 IsSyncWorkFront = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncWorkFront"])) ? (bool?)null : row["IsSyncWorkFront"]),
                 LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
-                LinkedPlanId = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : row["LinkedPlanId"]),
-                LinkedTacticId = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : row["LinkedTacticId"]),
+                LinkedPlanId = string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : Convert.ToInt32(Convert.ToString(row["LinkedPlanId"])),
+                LinkedTacticId = string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : Convert.ToInt32(Convert.ToString(row["LinkedTacticId"])),
                 ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
                 PlanTacticId = Convert.ToInt32(row["PlanTacticId"]),
-                ProjectedStageValue = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : row["LinkedTacticId"]),
+                ProjectedStageValue = string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : Convert.ToInt32(Convert.ToString(row["LinkedTacticId"])),
                 StageId = Convert.ToInt32(row["StageId"]),
                 StartDate = Convert.ToDateTime(Convert.ToString(row["StartDate"])),
                 Status = Convert.ToString(row["Status"]),
@@ -7958,7 +7958,10 @@ namespace RevenuePlanner.Helpers
                 TacticTypeTtile = Convert.ToString(row["TacticTypeTtile"]),
                 ColorCode = Convert.ToString(row["ColorCode"]),
                 PlanYear = Convert.ToString(row["PlanYear"]),
-                ModelId = Convert.ToInt32(row["ModelId"])
+                ModelId = Convert.ToInt32(row["ModelId"]),
+                CampaignTitle = Convert.ToString(row["CampaignTitle"]),
+                ProgramTitle = Convert.ToString(row["ProgramTitle"]),
+                PlanTitle = Convert.ToString(row["PlanTitle"])
             }).ToList();
 
             return customtacticList;

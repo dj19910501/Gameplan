@@ -39,7 +39,8 @@ namespace RevenuePlanner.Controllers
         private DateTime CalendarEndDate;
         private string PeriodChar = "Y";
         public const string TacticCustomTitle = "TacticCustom";
-
+        CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
+        StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
         #endregion
         #region variable for load plan grid
         List<Plan_Tactic_Values> ListTacticMQLValue = new List<Plan_Tactic_Values>();
@@ -13317,6 +13318,27 @@ namespace RevenuePlanner.Controllers
                         //// Create Clone by CloneType e.g Plan,Campaign,Program,Tactic,LineItem
                         rtResult = objClonehelper.LinkToOtherPlan(lstTacticTypeMapping, CloneType, sourceEntityId, srcPlanId, destEntityId, isdifferModel);
                         UpdateParentEntityStartEndDataforLinking(sourceEntityId, destEntityId, CloneType, srcPlanId, destPlanId);
+
+                        // Add By Nishant Sheth
+                        // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                        DataSet dsPlanCampProgTac = new DataSet();
+                        dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                        objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                        List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                        objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                        var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                        objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                        var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                        objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                        var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                        objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                        var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                        objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);   
                     }
                 }
                 catch (Exception e)

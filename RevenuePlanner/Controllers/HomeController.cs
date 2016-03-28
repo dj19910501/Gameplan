@@ -832,7 +832,7 @@ namespace RevenuePlanner.Controllers
                 //// Modified By Maninder Singh Wadhva PL Ticket#47, Modofied by Dharmraj #538
                 requestCount = Convert.ToString(subordinatesTactic.Where(tactic => tactic.Status.Equals(tacticStatus)).Count() + subordinatesImprovementTactic.Where(improvementTactic => improvementTactic.Status.Equals(tacticStatus)).Count());
 
-                
+
 
                 var tacticForAllTabs = lstTacticPer.ToList();
 
@@ -946,7 +946,7 @@ namespace RevenuePlanner.Controllers
                 }
                 if (lstTactic.Count() > 0)
                 {
-                     lstTacticIds = lstTactic.Select(tactic => tactic.objPlanTactic.PlanTacticId).ToList();
+                    lstTacticIds = lstTactic.Select(tactic => tactic.objPlanTactic.PlanTacticId).ToList();
                     if (filteredCustomFields != null)
                     {
                         //  filteredCustomFields.ForEach(customField =>
@@ -973,7 +973,7 @@ namespace RevenuePlanner.Controllers
                 //// Modified By Maninder Singh Wadhva PL Ticket#47, Modofied by Dharmraj #538
                 requestCount = Convert.ToString(subordinatesTactic.Where(tactic => tactic.objPlanTactic.Status.Equals(tacticStatus)).Count() + subordinatesImprovementTactic.Where(improvementTactic => improvementTactic.Status.Equals(tacticStatus)).Count());
 
-                
+
 
                 var tacticForAllTabs = lstTactic.ToList();
 
@@ -1217,7 +1217,7 @@ namespace RevenuePlanner.Controllers
             //// Modified By Maninder Singh Wadhva PL Ticket#47, Modofied by Dharmraj #538
             //string requestCount = Convert.ToString(subordinatesTactic.Where(tactic => tactic.Status.Equals(tacticStatus)).Count() + subordinatesImprovementTactic.Where(improvementTactic => improvementTactic.Status.Equals(tacticStatus)).Count());
 
-            
+
 
             //var tacticForAllTabs = lstTactic.ToList();
 
@@ -1963,12 +1963,12 @@ namespace RevenuePlanner.Controllers
                 string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
                 // Comment by nishant sheth
                 // Desc :: To Remove db trips
-                //string customFieldType = objDbMrpEntities.CustomFields.Where(c => c.CustomFieldId == CustomTypeId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                //var cusomfieldEntity = objDbMrpEntities.CustomField_Entity.Where(c => c.CustomFieldId == CustomTypeId && entityids.Contains(c.EntityId)).ToList();
+                string customFieldType = objDbMrpEntities.CustomFields.Where(c => c.CustomFieldId == CustomTypeId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                var cusomfieldEntity = objDbMrpEntities.CustomField_Entity.Where(c => c.CustomFieldId == CustomTypeId && entityids.Contains(c.EntityId)).ToList();
                 // Add by nishant sheth
                 // Desc :: Get data from cache for performance
-                string customFieldType = ((List<CustomField>)objCache.Returncache(Enums.CacheObject.CustomField.ToString())).Where(c => c.CustomFieldId == CustomTypeId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                var cusomfieldEntity = ((List<CacheCustomField>)objCache.Returncache(Enums.CacheObject.CustomFieldEntity.ToString())).Where(c => c.CustomFieldId == CustomTypeId && entityids.Contains(c.EntityId)).ToList();
+                //string customFieldType = ((List<CustomField>)objCache.Returncache(Enums.CacheObject.CustomField.ToString())).Where(c => c.CustomFieldId == CustomTypeId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                //var cusomfieldEntity = ((List<CacheCustomField>)objCache.Returncache(Enums.CacheObject.CustomFieldEntity.ToString())).Where(c => c.CustomFieldId == CustomTypeId && entityids.Contains(c.EntityId)).ToList();
                 var customoptionlisttest = (from cfo in objDbMrpEntities.CustomFieldOptions
                                             where cfo.CustomFieldId == CustomTypeId && cfo.IsDeleted == false
                                             select new
@@ -3157,7 +3157,7 @@ namespace RevenuePlanner.Controllers
                     planid = objplan.PlanId,
                     CreatedBy = objplan.CreatedBy,
                     Status = objplan.Status
-                }).Select(objplan => objplan).OrderBy(objplan => objplan.text);
+                }).Select(objplan => objplan).OrderBy(objplan => objplan.text).ToList();
 
 
 
@@ -3178,7 +3178,7 @@ namespace RevenuePlanner.Controllers
                     Status = plan.Status,
                     OwnerName = GetOwnerName(plan.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
-                });
+                }).ToList();
                 #endregion
 
                 //// Get list of plan Ids
@@ -3205,7 +3205,7 @@ namespace RevenuePlanner.Controllers
                     planid = improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId,
                     CreatedBy = improvementTactic.CreatedBy
 
-                }).Select(improvementTactic => improvementTactic).Distinct().OrderBy(improvementTactic => improvementTactic.text);
+                }).Select(improvementTactic => improvementTactic).Distinct().OrderBy(improvementTactic => improvementTactic.text).ToList();
 
                 //// Finalize task data Improvement Tactic list for gantt chart
                 var newTaskDataPlanForImprovement = taskDataPlanForImprovement.Select(improvementTactic => new
@@ -3221,7 +3221,7 @@ namespace RevenuePlanner.Controllers
                     planid = improvementTactic.planid,
                     type = "Plan",
                     Permission = IsPlanCreateAllAuthorized == false ? (improvementTactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(improvementTactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
-                });
+                }).ToList();
                 #endregion
 
                 //// Concat list of Plan task objects and Improvement Tactic task objects
@@ -3357,7 +3357,7 @@ namespace RevenuePlanner.Controllers
                 var taskDataProgram = lstTactic.Select(tactic => new
                 {
                     id = string.Format("L{0}_C{1}_P{2}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId),
-                    text = tactic.Title,
+                    text = tactic.ProgramTitle,
                     start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.StartDate),
                     duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, tactic.StartDate, tactic.EndDate),
                     //progress = GetProgramProgress(lstTactic, tactic.objPlanTacticProgram, EffectiveDateListByPlanIds, tactic.PlanId),
@@ -3397,7 +3397,7 @@ namespace RevenuePlanner.Controllers
                 var taskDataCampaign = lstTactic.Select(tactic => new
                 {
                     id = string.Format("L{0}_C{1}", tactic.PlanId, tactic.PlanCampaignId),
-                    text = tactic.Title,
+                    text = tactic.CampaignTitle,
                     start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.StartDate),
                     duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, tactic.StartDate, tactic.EndDate),
                     progress = GetCampaignProgress(lstTactic, lstCampaign.Where(camp => camp.PlanCampaignId == tactic.PlanCampaignId).FirstOrDefault(), EffectiveDateListByPlanIds, tactic.PlanId),
@@ -4140,7 +4140,10 @@ namespace RevenuePlanner.Controllers
             {
                 case GanttTabs.Tactic:
                     queryPlanProgramId = lstTactic.Where(t => t.PlanId == planId).Select(t => t.PlanProgramId).ToList<int>();
-                    minDateTactic = lstTactic.Where(t => t.PlanId == planId).Select(t => t.StartDate).ToList().Min();
+                    if (lstTactic.Count > 0 && lstTactic.Where(t => t.PlanId == planId).Count() > 0)
+                    {
+                        minDateTactic = lstTactic.Where(t => t.PlanId == planId).Select(t => t.StartDate).ToList().Min();
+                    }
                     break;
                 case GanttTabs.None:
                     queryPlanProgramId = lstProgram.Where(program => program.PlanId == planId).Select(program => program.PlanProgramId).ToList<int>();
@@ -4268,7 +4271,10 @@ namespace RevenuePlanner.Controllers
             {
                 case GanttTabs.Tactic:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.PlanProgramId).ToList<int>();
-                    maxDateTactic = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.EndDate).Max();
+                    if (lstTactic.Count > 0 && lstTactic.Where(t => t.PlanId == planId).Count() > 0)
+                    {
+                        maxDateTactic = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.EndDate).Max();
+                    }
                     break;
                 case GanttTabs.None:
                     queryPlanProgramId = lstProgram.Where(program => program.PlanId == planId).Select(program => program.PlanProgramId).ToList<int>();

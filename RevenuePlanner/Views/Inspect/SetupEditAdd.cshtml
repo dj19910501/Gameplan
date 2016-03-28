@@ -1182,6 +1182,9 @@
                                     setupplanids.push(chkid);
                                 }
                             });
+                            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                                setupplanids.push(PlanId);
+                            }
                             //GetTacticTypelist(PlanId, false);
                             GetTacticTypelist(setupplanids, false);
 

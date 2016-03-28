@@ -9907,13 +9907,13 @@ if (!gantt.templates) gantt.templates = {};
             grid_blank: function (item) {
                 if (item.type == "Tactic") {
 
-                    if ((item.Permission == true && item.LinkTacticPermission == true) || (item.LinkedTacticId != null && item.LinkedTacticId != 0)) {
+                    if ((item.Permission == true && item.LinkTacticPermission == true) || (item.LinkedTacticId != null)) {
                         //"<div class='gantt_tree_icon gantt_blank'></div>";
                         //Added By Komal Rawal for PL 1845 link tactic feature.
                         var Class = 'fa fa-chain-broken';
                         var Id = 'UnlinkIcon';
                         var Tooltip = '';
-                        if (item.LinkedTacticId != null && item.LinkedTacticId != 0) {
+                        if (item.LinkedTacticId != null) {
                             Class = 'fa fa-link';
                             Id = 'LinkIcon';
                             Tooltip = "<span class='unlink-tooltip'>This tactic is linked to <U>" + htmlDecode(htmlEncode(item.LinkedPlanName).replace("'", "&#39;")) + " </U></span>";

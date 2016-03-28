@@ -5115,7 +5115,7 @@
         });
         //PdfFilters.SelectedPlans = filters.SelectedPlans;
         PdfFilters.customFieldIds = filters.customFieldIds;
-
+        isQuater = $('#ddlUpComingActivites').val();
 
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             // #838 Showing Multiple Plans on Plan Page : Kalpesh Sharma
@@ -5124,6 +5124,7 @@
         }
         if (Planid != 0) {
             GetHealderDataPer(Planid.toString(), CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(), CalendarId);
+            GetNumberOfActivityPerMonByPlanIdPer(Planid.toString(), isQuater, CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(), CalendarId);
             $.ajax({
                 type: "POST",//Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
                 cache: false,
@@ -5631,6 +5632,12 @@
             });
         }
         else if ($.isNumeric(isQuater)) {
+            
+            var PlanYears = isQuater.split("-");
+            var yearDiffrence = 1;
+            if (PlanYears.length > 1) {
+                yearDiffrence=(parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
+            }
             gantt.config.scale_unit = "year";
             gantt.config.step = 1;
             gantt.config.date_scale = "%Y";
@@ -5640,7 +5647,7 @@
 
             var date = new Date();
             gantt.config.start_date = new Date(planYear, 00, 01);
-            gantt.config.end_date = new Date(planYear + 1, 00, 01);
+            gantt.config.end_date = new Date(planYear + yearDiffrence, 00, 01);
             gantt.init("gantt_here");
 
             var json_length = tasks.data.length;
@@ -5662,7 +5669,10 @@
             // Add By Nishant Sheth
             // Desc :: For 24 months
             var PlanYears = isQuater.split("-");
-            var yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
+            var yearDiffrence = 1;
+            if (PlanYears.length > 1) {
+                yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
+            }
             gantt.config.scale_unit = "year";
             gantt.config.step = 1;
             gantt.config.date_scale = "%Y";

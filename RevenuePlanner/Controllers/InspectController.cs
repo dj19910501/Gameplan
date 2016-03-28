@@ -1095,6 +1095,26 @@ namespace RevenuePlanner.Controllers
                                 #region "Send Email Notification For Owner changed"
                                 if (result > 0)
                                 {
+                                    // Add By Nishant Sheth
+                                    // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                                    DataSet dsPlanCampProgTac = new DataSet();
+                                    dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                                    objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                                    List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                                    objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                                    var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                                    objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                                    var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                                    objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                                    var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                                    objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                                    var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);   
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != Sessions.User.UserId && form.OwnerId != Guid.Empty)
                                     {
@@ -1268,6 +1288,26 @@ namespace RevenuePlanner.Controllers
                                 // Start - Added by Pratik on 11/03/2014 for PL ticket #711
                                 if (result > 0)
                                 {
+                                    // Add By Nishant Sheth
+                                    // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                                    DataSet dsPlanCampProgTac = new DataSet();
+                                    dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                                    objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                                    List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                                    objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                                    var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                                    objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                                    var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                                    objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                                    var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                                    objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                                    var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);   
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
                                     {
@@ -1909,6 +1949,26 @@ namespace RevenuePlanner.Controllers
                                 #region "Send Email Notification For Owner changed"
                                 if (result > 0)
                                 {
+                                    // Add By Nishant Sheth
+                                    // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                                    DataSet dsPlanCampProgTac = new DataSet();
+                                    dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                                    objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                                    List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                                    objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                                    var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                                    objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                                    var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                                    objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                                    var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                                    objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                                    var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);   
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != Sessions.User.UserId && form.OwnerId != Guid.Empty)
                                     {
@@ -2068,6 +2128,26 @@ namespace RevenuePlanner.Controllers
                                 // Start - Added by Pratik on 11/03/2014 for PL ticket #711
                                 if (result > 0)
                                 {
+                                    // Add By Nishant Sheth
+                                    // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                                    DataSet dsPlanCampProgTac = new DataSet();
+                                    dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                                    objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                                    List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                                    objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                                    var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                                    objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                                    var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                                    objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                                    var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                                    objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                                    var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
                                     {
@@ -6376,6 +6456,27 @@ namespace RevenuePlanner.Controllers
                                     Common.mailSendForTactic(planTacticId, status, improvementPlanTactic.Title, section: Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), URL: strUrl); // Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                     if (result >= 1)
                                     {
+                                        // Add By Nishant Sheth
+                                        // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                                        DataSet dsPlanCampProgTac = new DataSet();
+                                        dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                                        objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                                        List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                                        objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                                        var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                                        objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                                        var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                                        objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                                        var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                                        objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                                        var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                                        objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);   
+
                                         scope.Complete();
                                         return Json(new { result = true }, JsonRequestBehavior.AllowGet);
                                     }
@@ -6450,6 +6551,27 @@ namespace RevenuePlanner.Controllers
 
                                     if (result >= 1)
                                     {
+                                        // Add By Nishant Sheth
+                                        // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                                        DataSet dsPlanCampProgTac = new DataSet();
+                                        dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                                        objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                                        List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                                        objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                                        var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                                        objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                                        var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                                        objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                                        var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                                        objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                                        var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                                        objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);  
+
                                         scope.Complete();
                                         return Json(new { result = true }, JsonRequestBehavior.AllowGet);
                                     }
@@ -11857,6 +11979,26 @@ namespace RevenuePlanner.Controllers
                                     // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                 }
                             }
+                            // Add By Nishant Sheth
+                            // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                            DataSet dsPlanCampProgTac = new DataSet();
+                            dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                            objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                            List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                            objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                            var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                            objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                            var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                            objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                            var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                            objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                            var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                            objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);  
                             scope.Complete();
                             return Json(new { id = planTacticId, TabValue = "Review", msg = strmessage });
                         }

@@ -121,6 +121,9 @@ namespace RevenuePlanner.Models
         public string ColorCode { get; set; }
         public string PlanYear { get; set; }
         public int ModelId { get; set; }
+        public string CampaignTitle { get; set; }
+        public string ProgramTitle { get; set; }
+        public string PlanTitle { get; set; }
     }
     // Add by Nishant Sheth
     // Desc :: For stroe customfield in cache memory
