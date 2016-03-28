@@ -24,7 +24,17 @@
         width: 40%;
     }
 </style>
-
+<script>
+    //Added By Maitri Gandhi on 28/3/2016 for #2044
+    $(".revCurrencyVal").hover(
+        function () { },
+        function () {            
+            if ($(".popover.fade.top.in").length != 0) {
+                    $(".popover.fade.top.in").remove();
+            }
+        }
+       );
+</script>
 <div class="top-revenue-table">
     <table id="@Model.sparklinechartId">
         <thead>
