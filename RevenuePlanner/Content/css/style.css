@@ -10832,6 +10832,7 @@ font-size: 20px;
 .username{
     text-align:left;
 }
+/*Added By Bheru For #2029*/
 .market-activity-main .gantt_ver_scroll {
     overflow-x:hidden !important;
     overflow-y:scroll !important; 
