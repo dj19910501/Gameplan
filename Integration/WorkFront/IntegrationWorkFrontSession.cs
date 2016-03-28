@@ -37,7 +37,9 @@ namespace Integration.WorkFront
         private string _companyName { get; set; }
         private Guid _applicationId = Guid.Empty;
         private Guid _userId { get; set; }
-        private Dictionary<string, string> _mappingTactic { get; set; }
+        private Dictionary<string, string> _mappingTacticPushData { get; set; }
+        private Dictionary<string, string> _mappingCustomFieldPullData { get; set; }
+        private Dictionary<string, string> _mappingTacticCombined { get; set; }
         private List<string> _customFieldIds { get; set; }
         private Guid _clientId { get; set; }
         //api URL must be prepended with the company name
@@ -1159,45 +1161,59 @@ namespace Integration.WorkFront
                 //Begin push to WorkFront only sync
                 //Modified by Brad Gray 20 March 2016 PL#2070
 
-                var last = _mappingTactic.Last();
+                var last = _mappingTacticPushData.Last();
                 updateList.Append(GenerateUpdateData(tactic));
                 JToken jUpdates = JToken.FromObject(updateList.ToString());
-                JToken project = client.Update(ObjCode.PROJECT, new { id = tactic.IntegrationWorkFrontProjectID, updates = jUpdates });
+                JToken project = client.Update(ObjCode.PROJECT, new { id = tactic.IntegrationWorkFrontProjectID, fields = "parameterValues,status", updates = jUpdates });
                 if (project == null) { throw new ClientException("Update not completed on " + tactic.Title + "."); }
                 //End push to WorkFront only sync
 
-                //Begin read only sync
-                //tactic.TacticCustomName = (string)project["data"]["name"]; //--removed until later date
-                if (_mappingTactic.ContainsValue(Fields.WorkFrontField.WORKFRONTPROJECTSTATUS.ToAPIString()))
+                //Begin read only sync - Modified by Brad Gray 27 March 2016 PL#2084
+                foreach (KeyValuePair<String, String> tacticField in _mappingCustomFieldPullData) 
                 {
-                    CustomField_Entity customField;
-                    string status = (string)project["data"]["status"];
-                    foreach (var tacticField in _mappingTactic)
-                    {
-                        if (tacticField.Value == Fields.WorkFrontField.WORKFRONTPROJECTSTATUS.ToAPIString())
-                        {
-                            int CustomFieldID = Convert.ToInt32(tacticField.Key);
-                            var CustomFieldData= db.CustomField_Entity.Where(ce => tactic.PlanTacticId == ce.EntityId && ce.CustomFieldId == CustomFieldID)
-                                                      .Select(ce => new { ce }).ToList();
-                            if( CustomFieldData.Count==0) //need to create a CustomFieldEntity
-                            {
-                                customField = new CustomField_Entity();
-                                customField.CustomFieldId = CustomFieldID;
-                                customField.EntityId = tactic.PlanTacticId;
-                                customField.Value = status;
-                                customField.CreatedDate = DateTime.Now;
-                                customField.CreatedBy = _userId;
-                                db.Entry(customField).State = EntityState.Added;
-                            }
-                            else{
-                                customField = CustomFieldData[0].ce;
-                                customField.Value = status;
-                                db.Entry(customField).State = EntityState.Modified;
-                            }
+          
+                    int CustomFieldId;
+                    String updateValue = "";
+                    if(!Int32.TryParse(tacticField.Key, out CustomFieldId)){throw new ClientException("Can only push data into Plan custom fields");}
+                    CustomField_Entity cfe = db.CustomField_Entity.Where(field => field.CustomFieldId == CustomFieldId && tactic.PlanTacticId == field.EntityId 
+                        && field.CustomField.IsGet == true).FirstOrDefault();
 
+                    if (tacticField.Value == Fields.WorkFrontField.WORKFRONTPROJECTSTATUS.ToAPIString())
+                    {
+                        updateValue = (string)project["data"]["status"];
+                    }
+                    else if (project["data"]["parameterValues"].HasValues)
+                    {
+                       
+                        String temp1 = tacticField.Value.ToString();
+                        String param = temp1.Substring(1, temp1.Length - 2); //remove starting & ending ' characters
+
+                        if (project["data"]["parameterValues"][param] != null)
+                        {
+                            updateValue = project["data"]["parameterValues"][param].ToString(); 
                         }
                     }
-                }
+                    else
+                    {
+                        updateValue = "Cannot update";
+                    }
+                  
+                   if (cfe == null) //need to create a CustomFieldEntity
+                   {
+                      CustomField_Entity customField = new CustomField_Entity();
+                      customField.CustomFieldId = CustomFieldId;
+                      customField.EntityId = tactic.PlanTacticId;
+                      customField.Value = updateValue;
+                      customField.CreatedDate = DateTime.Now;
+                      customField.CreatedBy = _userId;
+                      db.Entry(customField).State = EntityState.Added;
+                    }
+                    else
+                    {
+                      cfe.Value = updateValue;
+                      db.Entry(cfe).State = EntityState.Modified;
+                    }
+                 }
                 //End read only sync
             }
             catch(Exception ex)
@@ -1230,9 +1246,9 @@ namespace Integration.WorkFront
         private StringBuilder GenerateUpdateData(Plan_Campaign_Program_Tactic tactic)
         {
             int notUsedFieldCount = 0;
-            var last = _mappingTactic.Last();
+            var last = _mappingTacticPushData.Last();
             StringBuilder updateList = new StringBuilder();
-            foreach (KeyValuePair<String, String> tacticField in _mappingTactic) //create JSON for editing
+            foreach (KeyValuePair<String, String> tacticField in _mappingTacticPushData) //create JSON for editing
             {
            
                 if (tacticField.Key == Fields.GameplanField.TITLE.ToString())
@@ -1332,14 +1348,22 @@ namespace Integration.WorkFront
                 string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
                 List<Fields.WorkFrontField> wfFields = Fields.GetWorkFrontFieldDetails();
                 List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
-                _mappingTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
-                                                    || gameplandata.GameplanDataType.TableName == Global || gameplandata.GameplanDataType.TableName == Plan_Campaign_Program 
-                                                    || gameplandata.GameplanDataType.TableName ==Plan_Campaign) : gameplandata.CustomField.EntityType == Tactic_EntityType) &&
-                                                    (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
+                _mappingTacticPushData = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ?  ( (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
+                                                    || gameplandata.GameplanDataType.TableName == Global || gameplandata.GameplanDataType.TableName == Plan_Campaign_Program
+                                                    || gameplandata.GameplanDataType.TableName == Plan_Campaign)  && gameplandata.GameplanDataType.IsGet == false) : (gameplandata.CustomField.EntityType == Tactic_EntityType && gameplandata.CustomField.IsGet == false) ) )
+                                                .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
+                                                .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+                _mappingCustomFieldPullData = dataTypeMapping.Where(gameplandata => gameplandata.CustomFieldId != null && gameplandata.CustomField.IsGet == true && gameplandata.CustomField.EntityType == Tactic_EntityType)
+                                                .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
+                                                .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+                _mappingTacticCombined = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
+                                                    || gameplandata.GameplanDataType.TableName == Global || gameplandata.GameplanDataType.TableName == Plan_Campaign_Program
+                                                    || gameplandata.GameplanDataType.TableName == Plan_Campaign) :
+                                                    (gameplandata.CustomField.EntityType == Tactic_EntityType) ))
                                                 .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
                                                 .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
-                foreach (KeyValuePair<string, string> entry in _mappingTactic.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
+                foreach (KeyValuePair<string, string> entry in _mappingTacticCombined.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
                 {
                     if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && wfFields.Where(wf => wf.apiString == entry.Value).FirstOrDefault() != null)
                     {
