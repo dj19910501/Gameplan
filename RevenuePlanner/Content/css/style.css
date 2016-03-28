@@ -10832,9 +10832,11 @@ font-size: 20px;
 .username{
     text-align:left;
 }
-
-
-
+.market-activity-main .gantt_ver_scroll {
+    overflow-x:hidden !important;
+    overflow-y:scroll !important; 
+    border-bottom: 2px solid #d4d4d4;
+}
 
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
