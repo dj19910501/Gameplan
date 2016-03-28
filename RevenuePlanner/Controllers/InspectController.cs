@@ -5421,10 +5421,11 @@ namespace RevenuePlanner.Controllers
 
             #endregion
 
-            if (tactics.ToList().Count == 1)
-            {
-                pcptm.TacticTypeId = tactics.FirstOrDefault().TacticTypeId;
-            }
+            //Commented By Maitri Gandhi on 28/3/2016 for #2073
+            //if (tactics.ToList().Count == 1)
+            //{
+            //    pcptm.TacticTypeId = tactics.FirstOrDefault().TacticTypeId;
+            //}
             // Added by Rahul Shah on 17/03/2016 for PL #2032 
             pcptm.IsTackticAddEdit = true;
             #region "Owner List"
