@@ -67,7 +67,10 @@
         });
 
         //// Proceed to save data.
+        var isResubmissionProceedClick = false;
         $('#proceed-button').on("click", function () {
+            debugger;
+            isResubmissionProceedClick = true;
             $('#divResubmissionPopup').modal("hide");
             $("#divBackground").fadeOut("slow", function () {
                 $('#divBackground').attr('style', 'display: none !important;');
@@ -76,12 +79,17 @@
             //// Check from where it opens.
             if ('@redirectionType' == '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)') {
                 //// Save to Tactic
-                var ReturnParameter = SetupSavetactic(true);
+                
                 if (isInspectWin) {
+                    var ReturnParameter = SetupSavetactic(true);
                     CopyTactNew();
                 }
-                if (isInspectNewLineItem) {
+                else if (isInspectNewLineItem) {
+                    var ReturnParameter = SetupSavetactic(true);
                     loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", '@RevenuePlanner.Helpers.Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanTacticId').val(), $("#hdnRequestedModule").val());
+                }
+                else {
+                    var ReturnParameter = saveTactic(true);
                 }
                 if (ReturnParameter == false) {
                     return false;

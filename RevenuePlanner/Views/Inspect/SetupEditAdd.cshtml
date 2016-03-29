@@ -1049,16 +1049,17 @@
         var isAssortment = true;       
         if (!isInspectWin && !isInspectNewLineItem) {
             _resubmissionLabelValues = [];
-
-            if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
-                url = '@Url.Content("~/Inspect/LoadResubmission")';
-                $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
-                // returnparameter = true;
-            }
-            else
-            {
-                saveTactic();
-            }
+           
+                if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
+                    url = '@Url.Content("~/Inspect/LoadResubmission")';
+                    $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
+                    // returnparameter = true;
+                }
+                else {
+                    saveTactic();
+                }
+              
+           
         }
         else {            
             if (isInspectWin) { 
