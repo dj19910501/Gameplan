@@ -1245,7 +1245,7 @@ namespace Integration.WorkFront
         /// </returns>
         private StringBuilder GenerateUpdateData(Plan_Campaign_Program_Tactic tactic)
         {
-            int notUsedFieldCount = 0;
+            //int notUsedFieldCount = 0;
             var last = _mappingTacticPushData.Last();
             StringBuilder updateList = new StringBuilder();
             foreach (KeyValuePair<String, String> tacticField in _mappingTacticPushData) //create JSON for editing
@@ -1312,13 +1312,13 @@ namespace Integration.WorkFront
                             {
                                 updateList.Append(tacticField.Value + ":'" + cfe.Value + "'");
                             }
-                            else { notUsedFieldCount++; }
+                            //else { notUsedFieldCount++; } 
                  }
-                     else { notUsedFieldCount++; }
-                 updateList.Append(",");
+                else { continue; }
+                updateList.Append(",");
            }
 
-           updateList.Remove(updateList.Length - (notUsedFieldCount+1), notUsedFieldCount+1); //remove the final comma(s) - there will always be at least one final comma
+           updateList.Remove(updateList.Length - 1, 1); //remove the final comma(s) - there will always be at least one final comma
            updateList.Append("}");
            return updateList;
         }
