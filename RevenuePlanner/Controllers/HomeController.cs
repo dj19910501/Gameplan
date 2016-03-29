@@ -861,6 +861,15 @@ namespace RevenuePlanner.Controllers
                         lstImprovementTactic = lstImprovementTactic.Where(improvementTactic => status.Contains(improvementTactic.Status) || ((improvementTactic.CreatedBy == Sessions.User.UserId && !viewBy.Equals(PlanGanttTypes.Request.ToString())) ? statusCD.Contains(improvementTactic.Status) : false))
                                                                    .Select(improvementTactic => improvementTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
 
+                                                
+                            List<int> reqPlanIds = lstTacticPer.Select(a => a.PlanId).Distinct().ToList();
+                            List<int> reqCampIds = lstTacticPer.Select(a => a.PlanCampaignId).Distinct().ToList();
+                            List<int> reqProgIds = lstTacticPer.Select(a => a.PlanProgramId).Distinct().ToList();
+                            lstPlans = lstPlans.Where(a => reqPlanIds.Contains(a.PlanId)).ToList();
+                            lstCampaign = lstCampaign.Where(a => reqCampIds.Contains(a.PlanCampaignId)).ToList();
+                            lstProgramPer = lstProgramPer.Where(a => reqProgIds.Contains(a.PlanProgramId)).ToList();
+                        
+
 
                     }
                     else
@@ -895,7 +904,15 @@ namespace RevenuePlanner.Controllers
                     statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
                     statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
                     lstTacticPer = lstTacticPer.Where(t => status.Contains(t.Status) || (!viewBy.Equals(PlanGanttTypes.Request.ToString()) ? statusCD.Contains(t.Status) : false)).Select(planTactic => planTactic).ToList();
-
+                    if (IsRequest)
+                    {
+                        List<int> reqPlanIds = lstTacticPer.Select(a => a.PlanId).Distinct().ToList();
+                        List<int> reqCampIds = lstTacticPer.Select(a => a.PlanCampaignId).Distinct().ToList();
+                        List<int> reqProgIds = lstTacticPer.Select(a => a.PlanProgramId).Distinct().ToList();
+                        lstPlans = lstPlans.Where(a => reqPlanIds.Contains(a.PlanId)).ToList();
+                        lstCampaign = lstCampaign.Where(a => reqCampIds.Contains(a.PlanCampaignId)).ToList();
+                        lstProgramPer = lstProgramPer.Where(a => reqProgIds.Contains(a.PlanProgramId)).ToList();
+                    }
                     if (IsFiltered && lstTacticPer.Count() == 0)
                     {
                         lstImprovementTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
