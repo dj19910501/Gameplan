@@ -285,7 +285,7 @@
                     }
                     if (item.Key == Enums.IntegrationType.Eloqua.ToString())
                     {
-                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF width100 @clsBottomBorderDiv" integrationType="@item.Key" toggle-id="eloquaIntegrationToggle" style="width:98%"> <!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
+                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationType="@item.Key" toggle-id="eloquaIntegrationToggle" style="width:98%"> <!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -300,21 +300,22 @@
                     }
                     else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
                     {
-                        <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF width100 @clsBottomBorderDiv" integrationtype="@item.Key" toggle-id="salesforceIntegrationToggle" style="width:98%"><!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
+                        <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationtype="@item.Key" toggle-id="salesforceIntegrationToggle" style="width:98%">
+
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
                                     <div class="salesforce-img margin-top10"></div>
                                 </a>
                             </div>
-                            <div class="span1 margin-top16"> 
+                            <div class="span1 margin-top16">
                                 <input id="salesforceIntegrationToggle" type="checkbox">
                             </div>
                         </div>
                     }
                     else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
                     {
-                        <div id="workFrontSection" class="span12 margin-left20 integration-SF-Eloqua-WF width100 margin-top20" integrationtype="@item.Key" toggle-id="workfrontIntegrationToggle" style="width:98%"<!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
+                        <div id="workFrontSection" class="span12 margin-left20 integration-SF-Eloqua-WF margin-top20" integrationtype="@item.Key" toggle-id="workfrontIntegrationToggle" style="width:98%">
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
