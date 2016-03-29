@@ -228,7 +228,7 @@
     <!--Begin PL#1462 07 Brad Gray, Aug 2015, moved & modified 09 Jan 2016 by Brad Gray PL#1872-->
     <div id="integrationInfo" class="row width100 border-bottom-div margin-top10" style="display:table">
            
-        <div class="width10 border-cf-right margin-top20 textalign-mozcenter vertical-aligntop" style="display:table-cell">
+        <div class="width10 textalign-mozcenter vertical-aligntop" style="display:table-cell;float:left"><!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
             <div class="size65x38 margin-top20">
                 <div class="integration-review"></div>
                 <div>
@@ -270,7 +270,7 @@
 
         </div>
 
-        <div id="integrationSettings" class="width100">
+        <div id="integrationSettings" class="border-cf-left" style="float:left;width:89%"><!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
             <!--Modified 09 Jan 2016 by Brad Gray PL#1872 to allow changes per integration-->
             @{
                 int intgrtnCnt = 0,cntr=0;
@@ -285,7 +285,7 @@
                     }
                     if (item.Key == Enums.IntegrationType.Eloqua.ToString())
                     {
-                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationType="@item.Key" toggle-id="eloquaIntegrationToggle" style="width:98%"> 
+                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF width100 @clsBottomBorderDiv" integrationType="@item.Key" toggle-id="eloquaIntegrationToggle" style="width:98%"> <!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -300,7 +300,7 @@
                     }
                     else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
                     {
-                        <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationtype="@item.Key" toggle-id="salesforceIntegrationToggle" style="width:98%">
+                        <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF width100 @clsBottomBorderDiv" integrationtype="@item.Key" toggle-id="salesforceIntegrationToggle" style="width:98%"><!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
@@ -314,7 +314,7 @@
                     }
                     else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
                     {
-                        <div id="workFrontSection" class="span12 margin-left20 integration-SF-Eloqua-WF margin-top20" integrationtype="@item.Key" toggle-id="workfrontIntegrationToggle" style="width:98%">
+                        <div id="workFrontSection" class="span12 margin-left20 integration-SF-Eloqua-WF width100 margin-top20" integrationtype="@item.Key" toggle-id="workfrontIntegrationToggle" style="width:98%"<!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
                             <div class="span2 pull-left integration-review-imglink margin-right20">
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
