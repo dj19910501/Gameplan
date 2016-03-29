@@ -1829,7 +1829,10 @@ namespace RevenuePlanner.Helpers
                     }
                     lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                    planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || pcptobj.CreatedBy == Sessions.User.UserId).ToList();
+                    //planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || pcptobj.CreatedBy == Sessions.User.UserId).ToList();
+                    // Modified By Nishant sheth
+                    // Desc :: to match calendar and grid heads up values
+                    planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy))).ToList();
                 }
                 else
                 {
@@ -7945,7 +7948,7 @@ namespace RevenuePlanner.Helpers
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
                 PlanTacticId = Convert.ToInt32(row["PlanTacticId"]),
-                ProjectedStageValue = string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : Convert.ToInt32(Convert.ToString(row["LinkedTacticId"])),
+                ProjectedStageValue = string.IsNullOrEmpty(Convert.ToString(row["ProjectedStageValue"])) ? (int?)null : Convert.ToInt32(Convert.ToString(row["ProjectedStageValue"])),
                 StageId = Convert.ToInt32(row["StageId"]),
                 StartDate = Convert.ToDateTime(Convert.ToString(row["StartDate"])),
                 Status = Convert.ToString(row["Status"]),
