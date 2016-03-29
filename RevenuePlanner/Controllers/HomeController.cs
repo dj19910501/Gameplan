@@ -2009,7 +2009,8 @@ namespace RevenuePlanner.Controllers
                                                 customFieldTYpe = customFieldType,
                                                 EntityId = customfieldentity.EntityId,
                                                 CreatedBy = customfieldentity.CreatedBy
-                                            }).ToList().Where(fltr => (fltr.customFieldTYpe == DropDownList ? (!isfilteroption || filtercustomfieldoptionid.Contains(fltr.customFieldId.ToString())) && fltr.customFieldId != 0 : true)).Distinct().ToList();
+                                            }).ToList().Where(fltr => (fltr.customFieldTYpe == DropDownList ? (!isfilteroption || filtercustomfieldoptionid.Contains(fltr.customFieldId.ToString())) && fltr.customFieldId != 0 && fltr.customFieldTitle != null: true)).Distinct().ToList();
+              
                 //Commented By Bhavesh because it lake more time and give timeout expire error : End Date: 30-10-2015 #1726
 
                 //Commented By Bhavesh because it lake more time and give timeout expire error Date: 30-10-2015 #1726

@@ -720,7 +720,7 @@
           var arLineitem = [];
           var arrClosedTaskString = null;
           var _customFieldValues = [];
-          var _resubmissionLabelValues = [];
+          //var _resubmissionLabelValues = [];
           hdnYear = @Model.Year
          
        
@@ -1046,24 +1046,33 @@
             }
         });
         _customFieldValues = JSON.stringify(_customFieldValues);
-        var isAssortment = true;
+        var isAssortment = true;       
+        if (!isInspectWin && !isInspectNewLineItem) {
+            _resubmissionLabelValues = [];
 
-        _resubmissionLabelValues = [];
-
-        if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
-            url = '@Url.Content("~/Inspect/LoadResubmission")';
-            $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
-            // returnparameter = true;
+            if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
+                url = '@Url.Content("~/Inspect/LoadResubmission")';
+                $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
+                // returnparameter = true;
+            }
+            else
+            {
+                saveTactic();
+            }
         }
-        else {
-
-            saveTactic();
+        else {            
+            if (isInspectWin) { 
+                saveTactic(isInspectWin);
+            }
+            if (isInspectNewLineItem) {
+                saveTactic(isInspectNewLineItem);
+            }
         }
         return returnparameter;
 
     }
 
-    function saveTactic(resubmission) {
+    function saveTactic(resubmission) {       
         returnparameter = false;
         resubmission = typeof resubmission !== 'undefined' ? resubmission : false;
         var ddlcampaignValue = $("#ddlcampaign").val();
@@ -1277,7 +1286,8 @@
         });
     }
 
-    function checkChangeValue(classname, withResubmissionLabel) {
+    function checkChangeValue(classname, withResubmissionLabel) {      
+        _resubmissionLabelValues = [];
         var resubmit = false;
         if (withResubmissionLabel) {
             $('form').find(classname).each(function () {

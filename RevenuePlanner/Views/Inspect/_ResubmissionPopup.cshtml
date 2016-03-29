@@ -62,6 +62,8 @@
             else {
                 $("#txtCost").val(FormatCurrency(($("#txtCost").val()).toString(), false));
             }
+            isInspectWin = false;
+            isInspectNewLineItem = false;
         });
 
         //// Proceed to save data.
@@ -73,8 +75,14 @@
             // Change By Bhavesh Date: 6-jan-2015, Ticket #1793, after click on proceed popup should be close
             //// Check from where it opens.
             if ('@redirectionType' == '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)') {
-                //// Save to Tactic 
-                var ReturnParameter = saveTactic(true);
+                //// Save to Tactic
+                var ReturnParameter = SetupSavetactic(true);
+                if (isInspectWin) {
+                    CopyTactNew();
+                }
+                if (isInspectNewLineItem) {
+                    loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", '@RevenuePlanner.Helpers.Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanTacticId').val(), $("#hdnRequestedModule").val());
+                }
                 if (ReturnParameter == false) {
                     return false;
                 }
@@ -85,7 +93,7 @@
                 }
             }
             else {
-                //// Save to Improvement Tactic 
+                //// Save to Improvement Tactic
                 var ReturnParameter = SaveImprovementTactic();
                 if (ReturnParameter == false) {
                     return false;

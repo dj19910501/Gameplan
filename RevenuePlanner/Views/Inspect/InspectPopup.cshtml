@@ -699,33 +699,103 @@
     }
 
     //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
-
-
-    $('#CloneTactic').click(function () {
-        //Modified by Rahul Shah for PL #2031 on 22/03/2016
-        var activeTab = $("#InspectTab li.active a").text();
-        if (activeTab != null && activeTab != undefined && activeTab != '') {
-            SaveAllData(activeTab);
+       
+    var isInspectWin = false;
+    $('#CloneTactic').click(function () {        
+        //Modified by Rahul Shah for PL #2031 on 22/03/2016             
+        isInspectWin = false;
+        if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
+            url = '@Url.Content("~/Inspect/LoadResubmission")';
+            $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
+            isInspectWin = true;
+            // returnparameter = true;
         }
+        else {
+            var activeTab = $("#InspectTab li.active a").text();
+            if (activeTab != null && activeTab != undefined && activeTab != '') {
+                SaveAllData(activeTab);
+            }
+        }
+        if (!isInspectWin) {
+            isDataModified = true;
+            var idPlanTactic = $("#hdnPlanTacticId").val();
+            var Title = $("#lblTacticTitle").html();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Inspect/Clone")',
+                data: {
+                    CloneType: '@Enums.DuplicationModule.Tactic',
+                    Id: idPlanTactic,
+                    title: Title,
+                    CalledFromBudget: '@CalledFromBudget',
+                    RequsetedModule: '@RedirectType'
+                },
+                success: function (data) {
+                    if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else if (data.IsSuccess) {
+
+                        var currentTab = "Setup";
+
+                        if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                            currentTab = "Budget";
+                        }
+
+                        var planTacticId = data.Id;
+                        var expandPlanTacticId = data.expand;
+                        var planCampaignId = '@campaignId';
+                        var planProgramId = '@PlanProgramId';
+
+                        loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
+
+                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
+                            $("#hdnBudgetingExpandId").val(expandPlanTacticId);
+                            $("#hdnBudgetingIsSave").val("true");
+                        }
+
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                        $("#errorMessage").css("display", "none");
+                        $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                        RefershPlanHeaderCalc();   //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic.
+                        return;
+                    }
+                    else {
+                        $("#successMessage").slideUp(50);
+                        $("#errorMessage").slideDown(400);
+                        $("#spanMessageError").empty();
+                        $("#spanMessageError").val(data.msg);
+                        return false;
+                    }
+                }
+            });
+        }
+    });
+
+    function CopyTactNew() {
         isDataModified = true;
         var idPlanTactic = $("#hdnPlanTacticId").val();
         var Title = $("#lblTacticTitle").html();
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Inspect/Clone")',
+            async:false,
             data: {
+
                 CloneType: '@Enums.DuplicationModule.Tactic',
                 Id: idPlanTactic,
                 title: Title,
                 CalledFromBudget: '@CalledFromBudget',
                 RequsetedModule: '@RedirectType'
             },
-            success: function (data) {
+            success: function (data) {                
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
-
+                    
                     var currentTab = "Setup";
 
                     if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
@@ -761,8 +831,7 @@
                 }
             }
         });
-    });
-
+    }
     function SaveMessageOnParent(value) {
         $("#modal-container-186470").modal('hide');
         $("#errorMessageDuplicatePlan").slideUp(50);
@@ -858,13 +927,24 @@
             $('#popupnewTactic').css("display", "none");
         }
     });
+    var isInspectNewLineItem = false;
     $('#NewTactic').click(function () {
         //Modified by Rahul Shah for PL #2031 on 22/03/2016
-        var activeTab = $("#InspectTab li.active a").text();
-        if (activeTab != null && activeTab != undefined && activeTab != '') {
-            SaveAllData(activeTab);
+        isInspectNewLineItem = false;
+        if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
+            url = '@Url.Content("~/Inspect/LoadResubmission")';
+            $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
+            isInspectNewLineItem = true;
         }
-        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanTacticId').val(), $("#hdnRequestedModule").val());
+        else {
+            var activeTab = $("#InspectTab li.active a").text();
+            if (activeTab != null && activeTab != undefined && activeTab != '') {
+                SaveAllData(activeTab);
+            }
+        }
+        if (!isInspectNewLineItem) {
+            loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanTacticId').val(), $("#hdnRequestedModule").val());
+        }
     });
 
     function setTacticStatus(status) {
