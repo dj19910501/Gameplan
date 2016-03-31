@@ -5393,7 +5393,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if (pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
                                         {
-                                            ExternalIntegration externalIntegration = new ExternalIntegration(pcpobj.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic, true);
+                                            ExternalIntegration externalIntegration = new ExternalIntegration(pcpobj.PlanTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic, true);
                                             externalIntegration.Sync();
                                         }
                                     }
@@ -6442,7 +6442,7 @@ namespace RevenuePlanner.Controllers
                                         //added by uday for #532
                                         if (improvementPlanTactic.IsDeployedToIntegration == true)
                                         {
-                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.ImprovementTactic);
+                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.ImprovementTactic);
                                             externalIntegration.Sync();
                                         }
                                         //added by uday for #532
@@ -6527,7 +6527,7 @@ namespace RevenuePlanner.Controllers
                                         //// added by uday for #532
                                         if (tactic.IsDeployedToIntegration == true)
                                         {
-                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
+                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
                                             externalIntegration.Sync();
                                         }
                                         //// End by uday for #532
@@ -8009,6 +8009,8 @@ namespace RevenuePlanner.Controllers
                                     db.Entry(objtacticCost).State = EntityState.Added;
                                     objTactic.Cost = objTactic.Cost + tacticlineitemcostmonth;
                                 }
+                                objTactic.ModifiedBy = Sessions.User.UserId;
+                                objTactic.ModifiedDate = DateTime.Now;
                                 db.Entry(objTactic).State = EntityState.Modified;
                                 double LinkedtotalLineitemCost = 0;
                                 if (LinkedTacticId != null)
@@ -8036,6 +8038,9 @@ namespace RevenuePlanner.Controllers
                                         objLinkedNewLineitem.CreatedBy = form.OwnerId;            // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                         objLinkedNewLineitem.CreatedDate = DateTime.Now;
                                         db.Entry(objLinkedNewLineitem).State = EntityState.Added;
+                                        ObjLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                                        ObjLinkedTactic.ModifiedDate = DateTime.Now;
+                                        db.Entry(ObjLinkedTactic).State = EntityState.Modified;
                                         db.SaveChanges();
                                     }
                                     Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
@@ -8075,6 +8080,9 @@ namespace RevenuePlanner.Controllers
                                             }
                                             db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                         }
+                                        ObjLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                                        ObjLinkedTactic.ModifiedDate = DateTime.Now;
+                                        db.Entry(ObjLinkedTactic).State = EntityState.Modified;
 
                                     }
                                     objOtherLineItem.IsDeleted = false;
@@ -8286,7 +8294,9 @@ namespace RevenuePlanner.Controllers
 
 
                                         }
-
+                                        ObjLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                                        ObjLinkedTactic.ModifiedDate = DateTime.Now;
+                                        db.Entry(ObjLinkedTactic).State = EntityState.Modified;
                                         db.SaveChanges();
                                     }
                                     #endregion
@@ -8413,7 +8423,7 @@ namespace RevenuePlanner.Controllers
                                             db.Entry(objtacticCost).State = EntityState.Added;
                                             objTactic.Cost = objTactic.Cost + tacticlineitemcostmonth;
                                         }
-                                        db.Entry(objTactic).State = EntityState.Modified;
+                                        
                                     }
                                     else if (form.Cost < objLineitem.Cost)
                                     {
@@ -8448,6 +8458,9 @@ namespace RevenuePlanner.Controllers
 
                                     //End
                                 }
+                                objTactic.ModifiedBy = Sessions.User.UserId;
+                                objTactic.ModifiedDate = DateTime.Now;
+                                db.Entry(objTactic).State = EntityState.Modified;
 
                                 Guid oldOwnerId = objLineitem.CreatedBy;  //Added by Rahul Shah on 17/03/2016 for PL #2068 
                                 objLineitem.ModifiedBy = Sessions.User.UserId;
@@ -8628,6 +8641,9 @@ namespace RevenuePlanner.Controllers
                                             objLinkedNewLineitem.CreatedBy = Sessions.User.UserId;
                                             objLinkedNewLineitem.CreatedDate = DateTime.Now;
                                             db.Entry(objLinkedNewLineitem).State = EntityState.Added;
+                                            ObjLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                                            ObjLinkedTactic.ModifiedDate = DateTime.Now;
+                                            db.Entry(ObjLinkedTactic).State = EntityState.Modified;
                                             db.SaveChanges();
                                         }
                                         //// Insert New record to table.
@@ -8668,6 +8684,9 @@ namespace RevenuePlanner.Controllers
                                                 }
                                                 db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
                                             }
+                                            ObjLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                                            ObjLinkedTactic.ModifiedDate = DateTime.Now;
+                                            db.Entry(ObjLinkedTactic).State = EntityState.Modified;
                                         }
 
                                         objOtherLineItem.IsDeleted = false;
@@ -8912,6 +8931,15 @@ namespace RevenuePlanner.Controllers
                                     Lineitemobj.ModifiedDate = DateTime.Now;
                                     Lineitemobj.CreatedBy = form.OwnerId;
                                     db.Entry(Lineitemobj).State = EntityState.Modified;
+
+                                    if (LinkedTacticId > 0)
+                                    {
+                                        ObjLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                                        ObjLinkedTactic.ModifiedDate = DateTime.Now;
+                                        db.Entry(ObjLinkedTactic).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+
                                     #endregion
 
 
@@ -11048,7 +11076,7 @@ namespace RevenuePlanner.Controllers
                     //db.SaveChanges();
 
                     #region "Sync Tactic to respective Integration Instance"
-                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.Program);
+                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Program);
                     externalIntegration.Sync();
                     #endregion
 
@@ -11063,7 +11091,7 @@ namespace RevenuePlanner.Controllers
                     //db.SaveChanges();
 
                     #region "Sync Tactic to respective Integration Instance"
-                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.Campaign);
+                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Campaign);
                     externalIntegration.Sync();
                     #endregion
 
@@ -11078,7 +11106,7 @@ namespace RevenuePlanner.Controllers
                     //db.SaveChanges();
 
                     #region "Sync Tactic to respective Integration Instance"
-                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.ImprovementTactic);
+                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.ImprovementTactic);
                     externalIntegration.Sync();
                     #endregion
 
@@ -11836,7 +11864,7 @@ namespace RevenuePlanner.Controllers
                                             //added by uday for #532
                                             if (tactic.IsDeployedToIntegration == true)
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.ImprovementTactic);
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.ImprovementTactic);
                                                 externalIntegration.Sync();
                                             }
                                             //end by uday for #532
@@ -12055,7 +12083,7 @@ namespace RevenuePlanner.Controllers
                         try
                         {
                             db.Configuration.AutoDetectChangesEnabled = false;
-                            lstTactics.ForEach(pcpt => pcpt.Status = status);
+                            lstTactics.ForEach(pcpt => { pcpt.Status = status; pcpt.ModifiedBy = Sessions.User.UserId; pcpt.ModifiedDate = DateTime.Now; });
                         }
                         finally
                         {
@@ -12072,7 +12100,7 @@ namespace RevenuePlanner.Controllers
                         List<Plan_Campaign_Program> lstPrograms = db.Plan_Campaign_Program.Where(pcp => prntEntityIds.Contains(pcp.PlanCampaignId)).ToList();
                         if (lstPrograms != null && lstPrograms.Count > 0)
                         {
-                            lstPrograms.ForEach(pcp => pcp.Status = status);
+                            lstPrograms.ForEach(pcp => { pcp.Status = status; pcp.ModifiedBy = Sessions.User.UserId; pcp.ModifiedDate = DateTime.Now; });
                             List<int> programIds = lstPrograms.Select(prg => prg.PlanProgramId).ToList();
                             UpdateChildEntityStatusByParent(Enums.Section.Program.ToString().ToLower(), status, programIds); // update child tactic status.
                             //db.SaveChanges();

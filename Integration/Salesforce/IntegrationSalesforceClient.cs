@@ -13,6 +13,7 @@ using Integration.Helper;
 using System.Text;
 using System.Data.Common;
 using System.Net;
+using System.Data.SqlClient;
 
 /*
  *  Author: 
@@ -274,57 +275,60 @@ namespace Integration.Salesforce
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     if (planTactic != null)
                     {
-                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                        _isResultError = SetMappingDetails();
-                        if (!_isResultError)
-                        {
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-
-                            List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
-                            _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
-                            List<int> programIdList = new List<int>() { planTactic.PlanProgramId };
-                            var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
-                            List<int> campaignIdList = new List<int>() { planTactic.Plan_Campaign_Program.PlanCampaignId };
-                            var lstCustomFieldsCampaign = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
-                            _mappingCustomFields = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-
-                            if (lstCustomFieldsprogram.Count > 0)
-                            {
-                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
-                            }
-                            if (lstCustomFieldsCampaign.Count > 0)
-                            {
-                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToList();
-                            }
-                            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-
-                            #region "Get Linked Tactic"
-                            int linkedTacticId = 0;
-                            Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
-                            if (planTactic != null)
-                            {
-                                linkedTacticId = (planTactic.LinkedTacticId.HasValue) ? planTactic.LinkedTacticId.Value : 0;
-                                //if (linkedTacticId <= 0)
+                        SyncDatabyEntity(planTactic);
+                        #region "Old Code: commented on 03/23/2016"
+                        //Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        //_isResultError = SetMappingDetails();
+                        //if (!_isResultError)
                                 //{
-                                //    objLinkedTactic = tblPlanTactic.Where(tactic => tactic.LinkedTacticId == planTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
-                                //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
+                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+
+                        //    List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
+                        //    _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
+                        //    List<int> programIdList = new List<int>() { planTactic.PlanProgramId };
+                        //    var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                        //    List<int> campaignIdList = new List<int>() { planTactic.Plan_Campaign_Program.PlanCampaignId };
+                        //    var lstCustomFieldsCampaign = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                        //    _mappingCustomFields = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+
+                        //    if (lstCustomFieldsprogram.Count > 0)
+                        //    {
+                        //        _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
                                 //}
-                            }
-                            if (linkedTacticId > 0)
-                            {
-                                objLinkedTactic = tblPlanTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
-                            }
+                        //    if (lstCustomFieldsCampaign.Count > 0)
+                        //    {
+                        //        _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToList();
+                        //    }
+                        //    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+
+                        //    #region "Get Linked Tactic"
+                        //    int linkedTacticId = 0;
+                        //    Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                        //    if (planTactic != null)
+                        //    {
+                        //        linkedTacticId = (planTactic.LinkedTacticId.HasValue) ? planTactic.LinkedTacticId.Value : 0;
+                        //        //if (linkedTacticId <= 0)
+                        //        //{
+                        //        //    objLinkedTactic = tblPlanTactic.Where(tactic => tactic.LinkedTacticId == planTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                        //        //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
+                        //        //}
+                        //    }
+                        //    if (linkedTacticId > 0)
+                        //    {
+                        //        objLinkedTactic = tblPlanTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
+                        //    }
+                        //    #endregion
+
+                        //    planTactic = SyncTacticData(planTactic, ref sbMessage, objLinkedTactic);
+
+                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //    db.SaveChanges();
+                        //}
+                        //else
+                        //{
+                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
+                        //} 
                             #endregion
-
-                            planTactic = SyncTacticData(planTactic, ref sbMessage, objLinkedTactic);
-
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                            db.SaveChanges();
-                        }
-                        else
-                        {
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
-                        }
                     }
                     else
                     {
@@ -338,237 +342,240 @@ namespace Integration.Salesforce
                     Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == _id && statusList.Contains(program.Status) && program.IsDeployedToIntegration && !program.IsDeleted).FirstOrDefault();
                     if (planProgram != null)
                     {
-                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                        _isResultError = SetMappingDetails();
-                        if (!_isResultError)
-                        {
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-
-                            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                            List<int> programIdList = new List<int>() { planProgram.PlanProgramId };
-                            List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => program.PlanProgramId.Equals(planProgram.PlanProgramId) && !program.IsDeleted).ToList();
-
-                            List<int> campaignIdList = new List<int>() { planProgram.PlanCampaignId };
-
-                            _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
-                            //_mappingCustomFields = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
-                            //if (lstCustomFieldsCampaign.Count > 0)
-                            //{
-                            //    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToList();
-                            //}
-                            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                            //planProgram = SyncProgramData(planProgram, ref sbMessage);
-
-                            #region "Create CampaignIdList, ProgramIdList & TacticIdList"
-                            //List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && !campaign.IsDeleted).ToList();
-                            //List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
-
-                            List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
-
-                            List<Plan_Campaign_Program_Tactic> tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
-
-                            //List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
-                            List<int> programIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.IntegrationInstanceProgramId)).Select(tactic => tactic.PlanProgramId).ToList();
-
-                            int page = 0;
-                            int total = 0;
-                            //int pageSize = 10;
-                            int maxpage = 0;
-
-                            //campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration).ToList();
-                            //campaignIdList = campaignList.Select(c => c.PlanCampaignId).Distinct().ToList();
-                            //if (campaignIdList.Count > 0)
-                            //{
-                            //    campaignIdList.Concat(campaignIdForTactic);
-                            //}
-                            //else
-                            //{
-                            //    campaignIdList = campaignIdForTactic;
-                            //}
-                            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-
-                            programList = programList.Where(program => statusList.Contains(program.Status) && program.IsDeployedToIntegration).ToList();
-                            programIdList = programList.Select(c => c.PlanProgramId).Distinct().ToList();
-                            if (programIdList.Count > 0)
-                            {
-                                programIdList.Concat(programIdForTactic);
-                            }
-                            else
-                            {
-                                programIdList = programIdForTactic;
-                            }
-
-                            //if (programList.Count > 0 || tacticList.Count > 0)
-                            //{
+                        SyncDatabyEntity(planProgram);
+                        #region "Old Code: commented on 03/23/2016"
                             //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
                             //    _isResultError = SetMappingDetails();
                             //    if (!_isResultError)
                             //    {
                             //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+
+                        //    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //    List<int> programIdList = new List<int>() { planProgram.PlanProgramId };
+                        //    List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => program.PlanProgramId.Equals(planProgram.PlanProgramId) && !program.IsDeleted).ToList();
+
+                        //    List<int> campaignIdList = new List<int>() { planProgram.PlanCampaignId };
+
+                        //    _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                        //    //_mappingCustomFields = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                        //    //if (lstCustomFieldsCampaign.Count > 0)
+                        //    //{
+                        //    //    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToList();
+                        //    //}
+                        //    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //    //planProgram = SyncProgramData(planProgram, ref sbMessage);
+
+                        //    #region "Create CampaignIdList, ProgramIdList & TacticIdList"
+                        //    //List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && !campaign.IsDeleted).ToList();
+                        //    //List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
+
+                        //    List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+
+                        //    List<Plan_Campaign_Program_Tactic> tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
+
+                        //    //List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
+                        //    List<int> programIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.IntegrationInstanceProgramId)).Select(tactic => tactic.PlanProgramId).ToList();
+
+                        //    int page = 0;
+                        //    int total = 0;
+                        //    //int pageSize = 10;
+                        //    int maxpage = 0;
+
+                        //    //campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration).ToList();
+                        //    //campaignIdList = campaignList.Select(c => c.PlanCampaignId).Distinct().ToList();
+                        //    //if (campaignIdList.Count > 0)
+                        //    //{
+                        //    //    campaignIdList.Concat(campaignIdForTactic);
+                        //    //}
+                        //    //else
+                        //    //{
+                        //    //    campaignIdList = campaignIdForTactic;
+                        //    //}
+                        //    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+
+                        //    programList = programList.Where(program => statusList.Contains(program.Status) && program.IsDeployedToIntegration).ToList();
+                        //    programIdList = programList.Select(c => c.PlanProgramId).Distinct().ToList();
+                        //    if (programIdList.Count > 0)
+                        //    {
+                        //        programIdList.Concat(programIdForTactic);
                             //    }
+                        //    else
+                        //    {
+                        //        programIdList = programIdForTactic;
+                        //    }
+
+                        //    //if (programList.Count > 0 || tacticList.Count > 0)
+                        //    //{
+                        //    //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        //    //    _isResultError = SetMappingDetails();
+                        //    //    if (!_isResultError)
+                        //    //    {
+                        //    //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        //    //    }
+                        //    //    else
+                        //    //    {
+                        //    //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
+                        //    //        return;
+                        //    //    }
+                        //    //}
+                        //    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //    #endregion
+
+                        //    #region "Sync Program Data"
+                        //    if (programList.Count > 0)
+                        //    {
+                        //        try
+                        //        {
+                        //            #region "Get Program Customfield list"
+                        //            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //            programIdList = programList.Select(c => c.PlanProgramId).ToList();
+
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
+                        //            var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                        //            if (_mappingCustomFields == null)
+                        //                _mappingCustomFields = new List<CustomFiledMapping>();
+                        //            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
+
+                        //            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //            #endregion
+
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process start.");
+                        //            page = 0;
+                        //            total = programList.Count;
+                        //            maxpage = (total / pushRecordBatchSize);
+                        //            List<Plan_Campaign_Program> lstPagedlistProgram = new List<Plan_Campaign_Program>();
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Program: " + total);
+                        //            while (page <= maxpage)
+                        //            {
+                        //                lstPagedlistProgram = new List<Plan_Campaign_Program>();
+                        //                lstPagedlistProgram = programList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+
+                        //                sbMessage = new StringBuilder();
+
+                        //                for (int index = 0; index < lstPagedlistProgram.Count; index++)
+                        //                {
+                        //                    lstPagedlistProgram[index] = SyncProgramData(lstPagedlistProgram[index], ref sbMessage);
+
+                        //                    // Save 10 log records to Table.
+                        //                    if (((index + 1) % logRecordSize) == 0)
+                        //                    {
+                        //                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //                        sbMessage = new StringBuilder();
+                        //                    }
+                        //                }
+
+                        //                if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                        //                {
+                        //                    // Save remaining log records to Table.
+                        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //                }
+                        //                db.SaveChanges();
+                        //                page++;
+                        //            }
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process end.");
+                        //        }
+                        //        catch (Exception ex)
+                        //        {
+                        //            _isResultError = true;
+                        //            string exMessage = Common.GetInnermostException(ex);
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Program data to Salesforce: " + exMessage);
+                        //        }
+                        //    }
+                        //    #endregion
+
+                        //    #region "Sync Tactic Data"
+                        //    if (tacticList.Count > 0)
+                        //    {
+                        //        try
+                        //        {
+                        //            #region "Get Tacic Customfield list & Actual Cost"
+                        //            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //            List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).Distinct().ToList();
+                        //            _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
+
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
+                        //            var lstCustomFieldstactic = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                        //            if (_mappingCustomFields == null)
+                        //                _mappingCustomFields = new List<CustomFiledMapping>();
+                        //            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToList();
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
+                        //            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //            #endregion
+
+                        //            page = 0;
+                        //            total = tacticList.Count;
+                        //            maxpage = (total / pushRecordBatchSize);
+                        //            List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
+                        //            Plan_Campaign_Program_Tactic srcTactic, objLinkedTactic;
+                        //            while (page <= maxpage)
+                        //            {
+                        //                lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
+                        //                lstPagedlistTactic = tacticList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+
+                        //                sbMessage = new StringBuilder();
+                        //                for (int index = 0; index < lstPagedlistTactic.Count; index++)
+                        //                {
+
+                        //                    #region "Get Linked Tactic"
+                        //                    int linkedTacticId = 0;
+                        //                    srcTactic = new Plan_Campaign_Program_Tactic();
+                        //                    objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                        //                    srcTactic = lstPagedlistTactic[index];
+                        //                    if (srcTactic != null)
+                        //                    {
+                        //                        linkedTacticId = (srcTactic != null && srcTactic.LinkedTacticId.HasValue) ? srcTactic.LinkedTacticId.Value : 0;
+                        //                        //if (linkedTacticId <= 0)
+                        //                        //{
+                        //                        //    objLinkedTactic = tblTactic.Where(tactic => tactic.LinkedTacticId == srcTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                        //                        //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
+                        //                        //}
+                        //                    }
+                        //                    if (linkedTacticId > 0)
+                        //                    {
+                        //                        objLinkedTactic = tblTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
+                        //                    }
+                        //                    #endregion
+
+                        //                    lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage, objLinkedTactic);
+
+                        //                    // Save 10 log records to Table.
+                        //                    if (((index + 1) % logRecordSize) == 0)
+                        //                    {
+                        //                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //                        sbMessage = new StringBuilder();
+                        //                    }
+                        //                }
+
+                        //                if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                        //                {
+                        //                    // Save remaining log records to Table.
+                        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //                    sbMessage = new StringBuilder();
+                        //                }
+                        //                db.SaveChanges();
+                        //                page++;
+                        //            }
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process end.");
+                        //        }
+                        //        catch (Exception ex)
+                        //        {
+                        //            _isResultError = true;
+                        //            string exMessage = Common.GetInnermostException(ex);
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Tactic data to Salesforce: " + exMessage);
+                        //        }
+                        //    }
+                        //    #endregion
+
+                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //    db.SaveChanges();
+                        //}
                             //    else
                             //    {
                             //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
-                            //        return;
                             //    }
-                            //}
-                            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                             #endregion
-
-                            #region "Sync Program Data"
-                            if (programList.Count > 0)
-                            {
-                                try
-                                {
-                                    #region "Get Program Customfield list"
-                                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                                    programIdList = programList.Select(c => c.PlanProgramId).ToList();
-
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
-                                    var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
-                                    if (_mappingCustomFields == null)
-                                        _mappingCustomFields = new List<CustomFiledMapping>();
-                                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
-
-                                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                                    #endregion
-
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process start.");
-                                    page = 0;
-                                    total = programList.Count;
-                                    maxpage = (total / pushRecordBatchSize);
-                                    List<Plan_Campaign_Program> lstPagedlistProgram = new List<Plan_Campaign_Program>();
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Program: " + total);
-                                    while (page <= maxpage)
-                                    {
-                                        lstPagedlistProgram = new List<Plan_Campaign_Program>();
-                                        lstPagedlistProgram = programList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
-
-                                        sbMessage = new StringBuilder();
-
-                                        for (int index = 0; index < lstPagedlistProgram.Count; index++)
-                                        {
-                                            lstPagedlistProgram[index] = SyncProgramData(lstPagedlistProgram[index], ref sbMessage);
-
-                                            // Save 10 log records to Table.
-                                            if (((index + 1) % logRecordSize) == 0)
-                                            {
-                                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                                sbMessage = new StringBuilder();
-                                            }
-                                        }
-
-                                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                                        {
-                                            // Save remaining log records to Table.
-                                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                        }
-                                        db.SaveChanges();
-                                        page++;
-                                    }
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process end.");
-                                }
-                                catch (Exception ex)
-                                {
-                                    _isResultError = true;
-                                    string exMessage = Common.GetInnermostException(ex);
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Program data to Salesforce: " + exMessage);
-                                }
-                            }
-                            #endregion
-
-                            #region "Sync Tactic Data"
-                            if (tacticList.Count > 0)
-                            {
-                                try
-                                {
-                                    #region "Get Tacic Customfield list & Actual Cost"
-                                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).Distinct().ToList();
-                                    _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
-
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
-                                    var lstCustomFieldstactic = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                                    if (_mappingCustomFields == null)
-                                        _mappingCustomFields = new List<CustomFiledMapping>();
-                                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToList();
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
-                                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                                    #endregion
-
-                                    page = 0;
-                                    total = tacticList.Count;
-                                    maxpage = (total / pushRecordBatchSize);
-                                    List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
-                                    Plan_Campaign_Program_Tactic srcTactic, objLinkedTactic;
-                                    while (page <= maxpage)
-                                    {
-                                        lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
-                                        lstPagedlistTactic = tacticList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
-
-                                        sbMessage = new StringBuilder();
-                                        for (int index = 0; index < lstPagedlistTactic.Count; index++)
-                                        {
-
-                                            #region "Get Linked Tactic"
-                                            int linkedTacticId = 0;
-                                            srcTactic = new Plan_Campaign_Program_Tactic();
-                                            objLinkedTactic = new Plan_Campaign_Program_Tactic();
-                                            srcTactic = lstPagedlistTactic[index];
-                                            if (srcTactic != null)
-                                            {
-                                                linkedTacticId = (srcTactic != null && srcTactic.LinkedTacticId.HasValue) ? srcTactic.LinkedTacticId.Value : 0;
-                                                //if (linkedTacticId <= 0)
-                                                //{
-                                                //    objLinkedTactic = tblTactic.Where(tactic => tactic.LinkedTacticId == srcTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
-                                                //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
-                                                //}
-                                            }
-                                            if (linkedTacticId > 0)
-                                            {
-                                                objLinkedTactic = tblTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
-                                            }
-                                            #endregion
-
-                                            lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage, objLinkedTactic);
-
-                                            // Save 10 log records to Table.
-                                            if (((index + 1) % logRecordSize) == 0)
-                                            {
-                                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                                sbMessage = new StringBuilder();
-                                            }
-                                        }
-
-                                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                                        {
-                                            // Save remaining log records to Table.
-                                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                            sbMessage = new StringBuilder();
-                                        }
-                                        db.SaveChanges();
-                                        page++;
-                                    }
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process end.");
-                                }
-                                catch (Exception ex)
-                                {
-                                    _isResultError = true;
-                                    string exMessage = Common.GetInnermostException(ex);
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Tactic data to Salesforce: " + exMessage);
-                                }
-                            }
-                            #endregion
-
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                            db.SaveChanges();
-                        }
-                        else
-                        {
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
-                        }
                     }
                     else
                     {
@@ -582,275 +589,278 @@ namespace Integration.Salesforce
                     Plan_Campaign planCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == _id && statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration && !campaign.IsDeleted).FirstOrDefault();
                     if (planCampaign != null)
                     {
-                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                        _isResultError = SetMappingDetails();
-                        if (!_isResultError)
-                        {
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        SyncDatabyEntity(planCampaign);
+                        #region "Old Code: commented on 03/23/2016"
+                        //Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        //_isResultError = SetMappingDetails();
+                        //if (!_isResultError)
+                        //{
+                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
 
-                            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                            List<int> campaignIdList = new List<int>() { planCampaign.PlanCampaignId };
+                        //    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //    List<int> campaignIdList = new List<int>() { planCampaign.PlanCampaignId };
+                        //    //_mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                        //    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //    //planCampaign = SyncCampaingData(planCampaign, ref sbMessage);
+
+                        //    #region "Sync Campaign, Program, Tactic"
+
+                        //    #region "Create CampaignIdList,ProgramIdList,TacticIdList"
+                        //    List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
+                        //    campaignList.Add(planCampaign);
+                        //    //List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
+                        //    List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
+                        //    List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
+                        //    List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+
+                        //    List<Plan_Campaign_Program_Tactic> tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
+
+                        //    List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
+                        //    List<int> programIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.IntegrationInstanceProgramId)).Select(tactic => tactic.PlanProgramId).ToList();
+
+                        //    int page = 0;
+                        //    int total = 0;
+                        //    //int pageSize = 10;
+                        //    int maxpage = 0;
+
+                        //    campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration).ToList();
+                        //    campaignIdList = campaignList.Select(c => c.PlanCampaignId).Distinct().ToList();
+                        //    if (campaignIdList.Count > 0)
+                        //    {
+                        //        campaignIdList.Concat(campaignIdForTactic);
+                        //    }
+                        //    else
+                        //    {
+                        //        campaignIdList = campaignIdForTactic;
+                        //    }
+                        //    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+
+                        //    programList = programList.Where(program => statusList.Contains(program.Status) && program.IsDeployedToIntegration).ToList();
+                        //    programIdList = programList.Select(c => c.PlanProgramId).Distinct().ToList();
+                        //    if (programIdList.Count > 0)
+                        //    {
+                        //        programIdList.Concat(programIdForTactic);
+                        //    }
+                        //    else
+                        //    {
+                        //        programIdList = programIdForTactic;
+                        //    }
+                        //    #endregion
+
+                        //    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+
+                        //    #region "Sync Campaign Data"
+                        //    if (campaignList.Count > 0)
+                        //    {
+                        //        try
+                        //        {
+                        //            #region "Get Campaign CustomFieldlist"
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
                             //_mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
-                            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                            //planCampaign = SyncCampaingData(planCampaign, ref sbMessage);
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
 
-                            #region "Sync Campaign, Program, Tactic"
+                        //            #endregion
 
-                            #region "Create CampaignIdList,ProgramIdList,TacticIdList"
-                            List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
-                            campaignList.Add(planCampaign);
-                            //List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
-                            List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
-                            List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
-                            List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process start.");
+                        //            page = 0;
+                        //            total = campaignList.Count;
+                        //            maxpage = (total / pushRecordBatchSize);
+                        //            List<Plan_Campaign> lstPagedlistCampaign = new List<Plan_Campaign>();
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Campaign: " + total);
+                        //            while (page <= maxpage)
+                        //            {
+                        //                lstPagedlistCampaign = new List<Plan_Campaign>();
+                        //                lstPagedlistCampaign = campaignList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
 
-                            List<Plan_Campaign_Program_Tactic> tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
+                        //                sbMessage = new StringBuilder();
 
-                            List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
-                            List<int> programIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.IntegrationInstanceProgramId)).Select(tactic => tactic.PlanProgramId).ToList();
+                        //                for (int index = 0; index < lstPagedlistCampaign.Count; index++)
+                        //                {
+                        //                    lstPagedlistCampaign[index] = SyncCampaingData(lstPagedlistCampaign[index], ref sbMessage);
 
-                            int page = 0;
-                            int total = 0;
-                            //int pageSize = 10;
-                            int maxpage = 0;
+                        //                    // Save 10 log records to Table.
+                        //                    if (((index + 1) % logRecordSize) == 0)
+                        //                    {
+                        //                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //                        sbMessage = new StringBuilder();
+                        //                    }
+                        //                }
 
-                            campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration).ToList();
-                            campaignIdList = campaignList.Select(c => c.PlanCampaignId).Distinct().ToList();
-                            if (campaignIdList.Count > 0)
-                            {
-                                campaignIdList.Concat(campaignIdForTactic);
-                            }
-                            else
-                            {
-                                campaignIdList = campaignIdForTactic;
-                            }
-                            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //                if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                        //                {
+                        //                    // Save remaining log records to Table.
+                        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //                }
+                        //                db.SaveChanges();
+                        //                page++;
+                        //            }
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process end.");
+                        //        }
+                        //        catch (Exception ex)
+                        //        {
+                        //            _isResultError = true;
+                        //            string exMessage = Common.GetInnermostException(ex);
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Campaign data to Salesforce: " + exMessage);
+                        //        }
+                        //    }
+                        //    #endregion
 
-                            programList = programList.Where(program => statusList.Contains(program.Status) && program.IsDeployedToIntegration).ToList();
-                            programIdList = programList.Select(c => c.PlanProgramId).Distinct().ToList();
-                            if (programIdList.Count > 0)
-                            {
-                                programIdList.Concat(programIdForTactic);
-                            }
-                            else
-                            {
-                                programIdList = programIdForTactic;
-                            } 
+                        //    #region "Sync Program Data"
+                        //    if (programList.Count > 0)
+                        //    {
+                        //        try
+                        //        {
+                        //            #region "Get Program Customfield list"
+                        //            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //            programIdList = programList.Select(c => c.PlanProgramId).ToList();
+
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
+                        //            var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                        //            if (_mappingCustomFields == null)
+                        //                _mappingCustomFields = new List<CustomFiledMapping>();
+                        //            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
+
+                        //            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //            #endregion
+
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process start.");
+                        //            page = 0;
+                        //            total = programList.Count;
+                        //            maxpage = (total / pushRecordBatchSize);
+                        //            List<Plan_Campaign_Program> lstPagedlistProgram = new List<Plan_Campaign_Program>();
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Program: " + total);
+                        //            while (page <= maxpage)
+                        //            {
+                        //                lstPagedlistProgram = new List<Plan_Campaign_Program>();
+                        //                lstPagedlistProgram = programList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+
+                        //                sbMessage = new StringBuilder();
+
+                        //                for (int index = 0; index < lstPagedlistProgram.Count; index++)
+                        //                {
+                        //                    lstPagedlistProgram[index] = SyncProgramData(lstPagedlistProgram[index], ref sbMessage);
+
+                        //                    // Save 10 log records to Table.
+                        //                    if (((index + 1) % logRecordSize) == 0)
+                        //                    {
+                        //                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //                        sbMessage = new StringBuilder();
+                        //                    }
+                        //                }
+
+                        //                if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                        //                {
+                        //                    // Save remaining log records to Table.
+                        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //                }
+                        //                db.SaveChanges();
+                        //                page++;
+                        //            }
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process end.");
+                        //        }
+                        //        catch (Exception ex)
+                        //        {
+                        //            _isResultError = true;
+                        //            string exMessage = Common.GetInnermostException(ex);
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Program data to Salesforce: " + exMessage);
+                        //        }
+                        //    }
+                        //    #endregion
+
+                        //    #region "Sync Tactic Data"
+                        //    if (tacticList.Count > 0)
+                        //    {
+                        //        try
+                        //        {
+                        //            #region "Get Tacic Customfield list & Actual Cost"
+                        //            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //            List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).Distinct().ToList();
+                        //            _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
+
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
+                        //            var lstCustomFieldstactic = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                        //            if (_mappingCustomFields == null)
+                        //                _mappingCustomFields = new List<CustomFiledMapping>();
+                        //            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToList();
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
+                        //            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                        //            #endregion
+
+                        //            page = 0;
+                        //            total = tacticList.Count;
+                        //            maxpage = (total / pushRecordBatchSize);
+                        //            List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
+                        //            Plan_Campaign_Program_Tactic srcTactic, objLinkedTactic;
+                        //            while (page <= maxpage)
+                        //            {
+                        //                lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
+                        //                lstPagedlistTactic = tacticList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+
+                        //                sbMessage = new StringBuilder();
+                        //                for (int index = 0; index < lstPagedlistTactic.Count; index++)
+                        //                {
+                        //                    #region "Get Linked Tactic"
+                        //                    int linkedTacticId = 0;
+                        //                    srcTactic = new Plan_Campaign_Program_Tactic();
+                        //                    objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                        //                    srcTactic = lstPagedlistTactic[index];
+                        //                    if (srcTactic != null)
+                        //                    {
+                        //                        linkedTacticId = (srcTactic != null && srcTactic.LinkedTacticId.HasValue) ? srcTactic.LinkedTacticId.Value : 0;
+                        //                        //if (linkedTacticId <= 0)
+                        //                        //{
+                        //                        //    objLinkedTactic = tblTactic.Where(tactic => tactic.LinkedTacticId == srcTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                        //                        //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
+                        //                        //}
+                        //                    }
+                        //                    if (linkedTacticId > 0)
+                        //                    {
+                        //                        objLinkedTactic = tblTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
+                        //                    }
+                        //                    #endregion
+
+                        //                    lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage, objLinkedTactic);
+
+                        //                    // Save 10 log records to Table.
+                        //                    if (((index + 1) % logRecordSize) == 0)
+                        //                    {
+                        //                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //                        sbMessage = new StringBuilder();
+                        //                    }
+                        //                }
+
+                        //                if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                        //                {
+                        //                    // Save remaining log records to Table.
+                        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //                    sbMessage = new StringBuilder();
+                        //                }
+                        //                db.SaveChanges();
+                        //                page++;
+                        //            }
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process end.");
+                        //        }
+                        //        catch (Exception ex)
+                        //        {
+                        //            _isResultError = true;
+                        //            string exMessage = Common.GetInnermostException(ex);
+                        //            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Tactic data to Salesforce: " + exMessage);
+                        //        }
+                        //    }
+                        //    #endregion
+
+                        //    #endregion
+
+                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        //    db.SaveChanges();
+                        //}
+                        //else
+                        //{
+                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
+                        //} 
                             #endregion
-
-                            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-
-                            #region "Sync Campaign Data"
-                            if (campaignList.Count > 0)
-                            {
-                                try
-                                {
-                                    #region "Get Campaign CustomFieldlist"
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
-                                    _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
-
-                                    #endregion
-
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process start.");
-                                    page = 0;
-                                    total = campaignList.Count;
-                                    maxpage = (total / pushRecordBatchSize);
-                                    List<Plan_Campaign> lstPagedlistCampaign = new List<Plan_Campaign>();
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Campaign: " + total);
-                                    while (page <= maxpage)
-                                    {
-                                        lstPagedlistCampaign = new List<Plan_Campaign>();
-                                        lstPagedlistCampaign = campaignList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
-
-                                        sbMessage = new StringBuilder();
-
-                                        for (int index = 0; index < lstPagedlistCampaign.Count; index++)
-                                        {
-                                            lstPagedlistCampaign[index] = SyncCampaingData(lstPagedlistCampaign[index], ref sbMessage);
-
-                                            // Save 10 log records to Table.
-                                            if (((index + 1) % logRecordSize) == 0)
-                                            {
-                                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                                sbMessage = new StringBuilder();
-                                            }
-                                        }
-
-                                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                                        {
-                                            // Save remaining log records to Table.
-                                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                        }
-                                        db.SaveChanges();
-                                        page++;
-                                    }
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process end.");
-                                }
-                                catch (Exception ex)
-                                {
-                                    _isResultError = true;
-                                    string exMessage = Common.GetInnermostException(ex);
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Campaign data to Salesforce: " + exMessage);
-                                }
-                            } 
-                            #endregion
-
-                            #region "Sync Program Data"
-                            if (programList.Count > 0)
-                            {
-                                try
-                                {
-                                    #region "Get Program Customfield list"
-                                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                                    programIdList = programList.Select(c => c.PlanProgramId).ToList();
-
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
-                                    var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
-                                    if (_mappingCustomFields == null)
-                                        _mappingCustomFields = new List<CustomFiledMapping>();
-                                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
-
-                                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                                    #endregion
-
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process start.");
-                                    page = 0;
-                                    total = programList.Count;
-                                    maxpage = (total / pushRecordBatchSize);
-                                    List<Plan_Campaign_Program> lstPagedlistProgram = new List<Plan_Campaign_Program>();
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Program: " + total);
-                                    while (page <= maxpage)
-                                    {
-                                        lstPagedlistProgram = new List<Plan_Campaign_Program>();
-                                        lstPagedlistProgram = programList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
-
-                                        sbMessage = new StringBuilder();
-
-                                        for (int index = 0; index < lstPagedlistProgram.Count; index++)
-                                        {
-                                            lstPagedlistProgram[index] = SyncProgramData(lstPagedlistProgram[index], ref sbMessage);
-
-                                            // Save 10 log records to Table.
-                                            if (((index + 1) % logRecordSize) == 0)
-                                            {
-                                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                                sbMessage = new StringBuilder();
-                                            }
-                                        }
-
-                                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                                        {
-                                            // Save remaining log records to Table.
-                                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                        }
-                                        db.SaveChanges();
-                                        page++;
-                                    }
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process end.");
-                                }
-                                catch (Exception ex)
-                                {
-                                    _isResultError = true;
-                                    string exMessage = Common.GetInnermostException(ex);
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Program data to Salesforce: " + exMessage);
-                                }
-                            } 
-                            #endregion
-
-                            #region "Sync Tactic Data"
-                            if (tacticList.Count > 0)
-                            {
-                                try
-                                {
-                                    #region "Get Tacic Customfield list & Actual Cost"
-                                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).Distinct().ToList();
-                                    _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
-
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
-                                    var lstCustomFieldstactic = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                                    if (_mappingCustomFields == null)
-                                        _mappingCustomFields = new List<CustomFiledMapping>();
-                                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToList();
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
-                                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                                    #endregion
-
-                                    page = 0;
-                                    total = tacticList.Count;
-                                    maxpage = (total / pushRecordBatchSize);
-                                    List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
-                                    Plan_Campaign_Program_Tactic srcTactic, objLinkedTactic;
-                                    while (page <= maxpage)
-                                    {
-                                        lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
-                                        lstPagedlistTactic = tacticList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
-
-                                        sbMessage = new StringBuilder();
-                                        for (int index = 0; index < lstPagedlistTactic.Count; index++)
-                                        {
-                                            #region "Get Linked Tactic"
-                                            int linkedTacticId = 0;
-                                            srcTactic = new Plan_Campaign_Program_Tactic();
-                                            objLinkedTactic = new Plan_Campaign_Program_Tactic();
-                                            srcTactic = lstPagedlistTactic[index];
-                                            if (srcTactic != null)
-                                            {
-                                                linkedTacticId = (srcTactic != null && srcTactic.LinkedTacticId.HasValue) ? srcTactic.LinkedTacticId.Value : 0;
-                                                //if (linkedTacticId <= 0)
-                                                //{
-                                                //    objLinkedTactic = tblTactic.Where(tactic => tactic.LinkedTacticId == srcTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
-                                                //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
-                                                //}
-                                            }
-                                            if (linkedTacticId > 0)
-                                            {
-                                                objLinkedTactic = tblTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
-                                            }
-                                            #endregion
-
-                                            lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage, objLinkedTactic);
-
-                                            // Save 10 log records to Table.
-                                            if (((index + 1) % logRecordSize) == 0)
-                                            {
-                                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                                sbMessage = new StringBuilder();
-                                            }
-                                        }
-
-                                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                                        {
-                                            // Save remaining log records to Table.
-                                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                            sbMessage = new StringBuilder();
-                                        }
-                                        db.SaveChanges();
-                                        page++;
-                                    }
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process end.");
-                                }
-                                catch (Exception ex)
-                                {
-                                    _isResultError = true;
-                                    string exMessage = Common.GetInnermostException(ex);
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Tactic data to Salesforce: " + exMessage);
-                                }
-                            } 
-                            #endregion
-
-                            #endregion
-
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                            db.SaveChanges();
-                        }
-                        else
-                        {
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
-                        }
                     }
                     else
                     {
@@ -889,7 +899,8 @@ namespace Integration.Salesforce
                 {
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Syncing process with multiple tactic.");
                     IsInstanceSync = true;
-                    SyncInstanceData();
+                    //SyncInstanceData();
+                    SyncDatabyEntity();
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Syncing process with multiple tactic.");
                 }
             }
@@ -1012,14 +1023,6 @@ namespace Integration.Salesforce
                 // Get List of status after Approved Status
                 List<string> statusList = Common.GetStatusListAfterApproved();
 
-                #region "Testing purpose code"
-                //Plan_Campaign_Program_Tactic objTact = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId.Equals(44494)).FirstOrDefault();
-                //objTact.IntegrationInstanceTacticId = string.Empty;
-                //objTact.IntegrationInstanceEloquaId = "53180";
-                //db.Entry(objTact).State = EntityState.Modified;
-                //db.SaveChanges(); 
-                #endregion
-
                 List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                statusList.Contains(tactic.Status) &&
                                                                                                                tactic.StageId == INQStageId &&
@@ -1101,18 +1104,6 @@ namespace Integration.Salesforce
                 //// Get SalesForce tactic list
                 List<Plan_Campaign_Program_Tactic> lstSalesForceTactic = lstAllTactics.Where(_tac => _tac.IntegrationInstanceTacticId != null).ToList();
               
-
-                //// Get Eloqua tactic list
-                //List<Plan_Campaign_Program_Tactic> lstEloquaTactic = lstAllTactics.Where(tactic => string.IsNullOrEmpty(tactic.IntegrationInstanceTacticId) && !string.IsNullOrEmpty(tactic.IntegrationInstanceEloquaId)).ToList();
-                //string SalesForceintegrationTacticIdsByEloquaId = String.Join("','", from _Tactic in lstEloquaTactic
-                //                                                                     join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceEloquaId equals _ElqTactic.EloquaId
-                //                                                                     select _ElqTactic.CRMId);
-
-                //// Merge SalesForce & Eloqua IntegrationTacticIds by comma(',').
-                //string AllIntegrationTacticIds = !string.IsNullOrEmpty(SalesForceintegrationTacticIdsByEloquaId) ? (!string.IsNullOrEmpty(SalesForceintegrationTacticIds) ? (SalesForceintegrationTacticIds + "','" + SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIds;
-                
-                //For Testing
-                //integrationTacticIds = "'701f00000003S9R','701f00000002cGG','701f00000002cGL'";
                 if (lstSalesForceTactic.Count() > 0)
                 {
                     try
@@ -1342,7 +1333,7 @@ namespace Integration.Salesforce
                                                 {
                                             objLnkTac = new Plan_Campaign_Program_Tactic();
                                             objLnkTac = tblPlanTactic.Where(tac => tac.PlanTacticId == linkdTacId).FirstOrDefault();
-											 if (objLnkTac != null)
+                                             if (objLnkTac != null)
                                                     {
                                             yeardiff = objLnkTac.EndDate.Year - objLnkTac.StartDate.Year;
                                             isMultilinkedTactic = yeardiff > 0 ? true : false;
@@ -3531,13 +3522,14 @@ namespace Integration.Salesforce
             StringBuilder sb = new StringBuilder();
             Enums.Mode currentMode = Common.GetMode(planCampaign.IntegrationInstanceCampaignId);
             PlanName = planCampaign.Plan.Title;
-            if (currentMode.Equals(Enums.Mode.Create))
-            {
+            // TODO: Common below code for Update & Create state. 
                 IntegrationInstancePlanEntityLog instanceLogCampaign = new IntegrationInstancePlanEntityLog();
                 instanceLogCampaign.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogCampaign.IntegrationInstanceId = _integrationInstanceId;
                 instanceLogCampaign.EntityId = planCampaign.PlanCampaignId;
                 instanceLogCampaign.EntityType = EntityType.Campaign.ToString();
+            if (currentMode.Equals(Enums.Mode.Create))
+            {
                 instanceLogCampaign.Operation = Operation.Create.ToString();
                 instanceLogCampaign.SyncTimeStamp = DateTime.Now;
                 try
@@ -3591,17 +3583,11 @@ namespace Integration.Salesforce
                     instanceLogCampaign.ErrorDescription = exMessage;
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Campaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                 }
-                instanceLogCampaign.CreatedBy = this._userId;
-                instanceLogCampaign.CreatedDate = DateTime.Now;
-                db.Entry(instanceLogCampaign).State = EntityState.Added;
+
+
             }
             else if (currentMode.Equals(Enums.Mode.Update))
             {
-                IntegrationInstancePlanEntityLog instanceLogCampaign = new IntegrationInstancePlanEntityLog();
-                instanceLogCampaign.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                instanceLogCampaign.IntegrationInstanceId = _integrationInstanceId;
-                instanceLogCampaign.EntityId = planCampaign.PlanCampaignId;
-                instanceLogCampaign.EntityType = EntityType.Campaign.ToString();
                 instanceLogCampaign.Operation = Operation.Update.ToString();
                 instanceLogCampaign.SyncTimeStamp = DateTime.Now;
                 try
@@ -3677,10 +3663,10 @@ namespace Integration.Salesforce
                     instanceLogCampaign.ErrorDescription = exMessage;
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Campaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                 }
+            }
                 instanceLogCampaign.CreatedBy = this._userId;
                 instanceLogCampaign.CreatedDate = DateTime.Now;
                 db.Entry(instanceLogCampaign).State = EntityState.Added;
-            }
             sbMessage.Append(sb.ToString());
             return planCampaign;
         }
@@ -3917,45 +3903,48 @@ namespace Integration.Salesforce
             return planProgram;
         }
 
-        private Plan_Campaign_Program_Tactic SyncTacticData(Plan_Campaign_Program_Tactic planTactic, ref StringBuilder sbMessage, Plan_Campaign_Program_Tactic lnkdTactic)
+        private Plan_Campaign_Program_Tactic SyncTacticData(Plan_Campaign_Program_Tactic planTactic, ref StringBuilder sbMessage)
         {
+            //System.Diagnostics.Trace.WriteLine("Step SyncTacticData 1 Start:" + DateTime.Now.ToString());
             StringBuilder sb = new StringBuilder();
-            bool islinktacticdata = false;
+            //bool islinktacticdata = false;
             Enums.Mode currentMode = Common.GetMode(planTactic.IntegrationInstanceTacticId);
             // If Tactic is linked then sync latest year Program & Campaign to Salesforce.
-            if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
-            {
-                string orgnPlanYear = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
-                string lnkdPlanYear = lnkdTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
-                if (!string.IsNullOrEmpty(orgnPlanYear) && !string.IsNullOrEmpty(lnkdPlanYear))
-                {
-                    if (int.Parse(orgnPlanYear) > int.Parse(lnkdPlanYear))
-                        islinktacticdata = false;
-                    else
-                        islinktacticdata = true;
-                }
-            }
-            if (islinktacticdata)
-            {
-                PlanName = lnkdTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title;
-            }
-            else
-            {
+            //if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
+            //{
+            //    string orgnPlanYear = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+            //    string lnkdPlanYear = lnkdTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+            //    if (!string.IsNullOrEmpty(orgnPlanYear) && !string.IsNullOrEmpty(lnkdPlanYear))
+            //    {
+            //        if (int.Parse(orgnPlanYear) > int.Parse(lnkdPlanYear))
+            //            islinktacticdata = false;
+            //        else
+            //            islinktacticdata = true;
+            //    }
+            //}
+            //if (islinktacticdata)
+            //{
+            //    PlanName = lnkdTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title;
+            //}
+            //else
+            //{
+            //    PlanName = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title;
+            //}
                 PlanName = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title;
-            }
+            //System.Diagnostics.Trace.WriteLine("Step SyncTacticData 1 End:" + DateTime.Now.ToString());
             if (currentMode.Equals(Enums.Mode.Create))
             {
-                Plan_Campaign_Program planProgram = new Plan_Campaign_Program();
-                if (islinktacticdata)
-                {
-                    planProgram = lnkdTactic.Plan_Campaign_Program;
-                }
-                else
-                {
-                    planProgram = planTactic.Plan_Campaign_Program;
-                }
+                //Plan_Campaign_Program planProgram = new Plan_Campaign_Program();
+                //if (islinktacticdata)
+                //{
+                //    planProgram = lnkdTactic.Plan_Campaign_Program;
+                //}
+                //else
+                //{
+                //    planProgram = planTactic.Plan_Campaign_Program;
+                //}
 
-                //Plan_Campaign_Program planProgram = planTactic.Plan_Campaign_Program;
+                Plan_Campaign_Program planProgram = planTactic.Plan_Campaign_Program;
                 _parentId = planProgram.IntegrationInstanceProgramId;
                 if (string.IsNullOrWhiteSpace(_parentId))
                 {
@@ -4118,50 +4107,53 @@ namespace Integration.Salesforce
                         planTactic.ModifiedDate = DateTime.Now;
                         planTactic.ModifiedBy = _userId;
                         instanceLogTactic.Status = StatusResult.Success.ToString();
-                        //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
-                        #region "Add Tactic Synced comment to Plan_Campaign_Program_Tactic_Comment table"
-                        //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
-                        Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
-                        if (!Common.IsAutoSync)
-                        {
-                            objTacticComment.PlanTacticId = planTactic.PlanTacticId;
-                            objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
-                            objTacticComment.CreatedDate = DateTime.Now;
-                            ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                            //if (Common.IsAutoSync)
-                            //{
-                            //    objTacticComment.CreatedBy = new Guid();
-                            //}
-                            //else
-                            //{
-                            objTacticComment.CreatedBy = this._userId;
-                            //}
-                            db.Entry(objTacticComment).State = EntityState.Added;
-                            db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
-                        }
-                        #endregion
-                        // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
 
-                        #region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
-                        if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
-                        {
-                            lnkdTactic.IntegrationInstanceTacticId = planTactic.IntegrationInstanceTacticId;
-                            lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
-                            lnkdTactic.LastSyncDate = DateTime.Now;
-                            lnkdTactic.ModifiedDate = DateTime.Now;
-                            lnkdTactic.ModifiedBy = _userId;
-                            if (!Common.IsAutoSync)
-                            {
-                                // Add linked tactic comment
-                                Plan_Campaign_Program_Tactic_Comment objLinkedTacticComment = new Plan_Campaign_Program_Tactic_Comment();
-                                objLinkedTacticComment.PlanTacticId = lnkdTactic.PlanTacticId;
-                                objLinkedTacticComment.Comment = objTacticComment.Comment;
-                                objLinkedTacticComment.CreatedDate = DateTime.Now;
-                                objLinkedTacticComment.CreatedBy = objTacticComment.CreatedBy;
-                                db.Entry(objLinkedTacticComment).State = EntityState.Added;
-                                db.Plan_Campaign_Program_Tactic_Comment.Add(objLinkedTacticComment);
-                            }
-                        }
+                        #region "Old Code: Update comment"
+                        ////Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+                        //#region "Add Tactic Synced comment to Plan_Campaign_Program_Tactic_Comment table"
+                        ////Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                        //Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                        //if (!Common.IsAutoSync)
+                            //{
+                        //    objTacticComment.PlanTacticId = planTactic.PlanTacticId;
+                        //    objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
+                        //    objTacticComment.CreatedDate = DateTime.Now;
+                        //    ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
+                        //    //if (Common.IsAutoSync)
+                        //    //{
+                        //    //    objTacticComment.CreatedBy = new Guid();
+                        //    //}
+                        //    //else
+                        //    //{
+                        //    objTacticComment.CreatedBy = this._userId;
+                        //    //}
+                        //    db.Entry(objTacticComment).State = EntityState.Added;
+                        //    db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
+                            //}
+                        //#endregion
+                        //// End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+
+                        //#region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
+                        //if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
+                            //{
+                        //    lnkdTactic.IntegrationInstanceTacticId = planTactic.IntegrationInstanceTacticId;
+                        //    lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
+                        //    lnkdTactic.LastSyncDate = DateTime.Now;
+                        //    lnkdTactic.ModifiedDate = DateTime.Now;
+                        //    lnkdTactic.ModifiedBy = _userId;
+                        //    if (!Common.IsAutoSync)
+                        //    {
+                        //        // Add linked tactic comment
+                        //        Plan_Campaign_Program_Tactic_Comment objLinkedTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                        //        objLinkedTacticComment.PlanTacticId = lnkdTactic.PlanTacticId;
+                        //        objLinkedTacticComment.Comment = objTacticComment.Comment;
+                        //        objLinkedTacticComment.CreatedDate = DateTime.Now;
+                        //        objLinkedTacticComment.CreatedBy = objTacticComment.CreatedBy;
+                        //        db.Entry(objLinkedTacticComment).State = EntityState.Added;
+                        //        db.Plan_Campaign_Program_Tactic_Comment.Add(objLinkedTacticComment);
+                            //}
+                        //}
+                        //#endregion 
                         #endregion
                         
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -4205,55 +4197,60 @@ namespace Integration.Salesforce
 
                 try
                 {
+                    //System.Diagnostics.Trace.WriteLine("Step SyncTacticData 2 Start:" + DateTime.Now.ToString());
                     if (UpdateTactic(planTactic))
                     {
+                        //System.Diagnostics.Trace.WriteLine("Step SyncTacticData 2 End:" + DateTime.Now.ToString());
+                        //System.Diagnostics.Trace.WriteLine("Step SyncTacticData 3 Start:" + DateTime.Now.ToString());
                         planTactic.LastSyncDate = DateTime.Now;
                         planTactic.ModifiedDate = DateTime.Now;
                         planTactic.ModifiedBy = _userId;
                         instanceLogTactic.Status = StatusResult.Success.ToString();
-
-                        #region "Add Tactic Update comment to Plan_Campaign_Program_Tactic_Comment table"
-                        //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
-                        Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
-                        if (!Common.IsAutoSync)
-                        {
-                            objTacticComment.PlanTacticId = planTactic.PlanTacticId;
-                            objTacticComment.Comment = Common.TacticUpdatedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
-                            objTacticComment.CreatedDate = DateTime.Now;
-                            ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-                            //if (Common.IsAutoSync)
+                        #region "Old Code"
+                        //#region "Add Tactic Update comment to Plan_Campaign_Program_Tactic_Comment table"
+                        ////Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
+                        //Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                        //if (!Common.IsAutoSync)
                             //{
-                            //    objTacticComment.CreatedBy = new Guid();
+                        //    objTacticComment.PlanTacticId = planTactic.PlanTacticId;
+                        //    objTacticComment.Comment = Common.TacticUpdatedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
+                        //    objTacticComment.CreatedDate = DateTime.Now;
+                        //    ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
+                        //    //if (Common.IsAutoSync)
+                        //    //{
+                        //    //    objTacticComment.CreatedBy = new Guid();
+                        //    //}
+                        //    //else
+                        //    //{
+                        //    objTacticComment.CreatedBy = this._userId;
+                        //    //}
+                        //    db.Entry(objTacticComment).State = EntityState.Added;
+                        //    db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
                             //}
-                            //else
+                        //#endregion
+                        ////System.Diagnostics.Trace.WriteLine("Step SyncTacticData 3 End:" + DateTime.Now.ToString());
+                        //#region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
+                        //if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
                             //{
-                            objTacticComment.CreatedBy = this._userId;
+                        //    lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
+                        //    lnkdTactic.LastSyncDate = DateTime.Now;
+                        //    lnkdTactic.ModifiedDate = DateTime.Now;
+                        //    lnkdTactic.ModifiedBy = _userId;
+                        //    if (!Common.IsAutoSync)
+                        //    {
+                        //        // Add linked tactic comment
+                        //        Plan_Campaign_Program_Tactic_Comment objLinkedTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                        //        objLinkedTacticComment.PlanTacticId = lnkdTactic.PlanTacticId;
+                        //        objLinkedTacticComment.Comment = objTacticComment.Comment;
+                        //        objLinkedTacticComment.CreatedDate = DateTime.Now;
+                        //        objLinkedTacticComment.CreatedBy = objTacticComment.CreatedBy;
+                        //        db.Entry(objLinkedTacticComment).State = EntityState.Added;
+                        //        db.Plan_Campaign_Program_Tactic_Comment.Add(objLinkedTacticComment);
                             //}
-                            db.Entry(objTacticComment).State = EntityState.Added;
-                            db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
-                        }
+                        //}
+                        //#endregion 
                         #endregion
 
-                        #region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
-                        if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
-                        {
-                            lnkdTactic.TacticCustomName = planTactic.TacticCustomName;
-                            lnkdTactic.LastSyncDate = DateTime.Now;
-                            lnkdTactic.ModifiedDate = DateTime.Now;
-                            lnkdTactic.ModifiedBy = _userId;
-                            if (!Common.IsAutoSync)
-                            {
-                                // Add linked tactic comment
-                                Plan_Campaign_Program_Tactic_Comment objLinkedTacticComment = new Plan_Campaign_Program_Tactic_Comment();
-                                objLinkedTacticComment.PlanTacticId = lnkdTactic.PlanTacticId;
-                                objLinkedTacticComment.Comment = objTacticComment.Comment;
-                                objLinkedTacticComment.CreatedDate = DateTime.Now;
-                                objLinkedTacticComment.CreatedBy = objTacticComment.CreatedBy;
-                                db.Entry(objLinkedTacticComment).State = EntityState.Added;
-                                db.Plan_Campaign_Program_Tactic_Comment.Add(objLinkedTacticComment);
-                            }
-                        }
-                        #endregion
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + "); ");
                         _lstSyncError.Add(Common.PrepareSyncErrorList(Convert.ToInt32(planTactic.PlanTacticId), Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), Enums.Mode.Update.ToString(), Enums.SyncStatus.Success, DateTime.Now));
                     }
@@ -4671,62 +4668,859 @@ namespace Integration.Salesforce
             return planIMPTactic;
         }
 
+        #region "Old Code: Modified by Viral PL ticket #2024"
         /// <summary>
         /// Function to Synchronize instance data.
         /// </summary>
-        private void SyncInstanceData()
+        //private void SyncInstanceData()
+        //{
+        //    string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
+        //    string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+        //    StringBuilder sbMessage;
+        //    int logRecordSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LogRecordSize"]);
+        //    int pushRecordBatchSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["IntegrationPushRecordBatchSize"]);
+        //    string strActualCostActualField = "CostActual"; // static variable value to identify that instance has mapped Actual cost field in Instance mapping.
+        //    try
+        //    {
+        //        List<Plan> lstPlan = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
+        //        if (lstPlan != null && lstPlan.Count > 0)
+        //        {
+        //            List<int> planIds = lstPlan.Select(p => p.PlanId).ToList();
+        //            //System.Diagnostics.Trace.WriteLine("Step 1 Start:" + DateTime.Now.ToString());
+        //            #region "Create CampaignIdList, ProgramIdList & TacticIdList"
+        //            List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && !campaign.IsDeleted).ToList();
+        //            List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
+        //            List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
+        //            List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
+        //            List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+        //            List<Plan_Campaign_Program_Tactic> tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
+        //            List<int> LinkedTacticIds = new List<int>();
+        //            List<TacticLinkedTacMapping> lstTac_LinkTacMapping = new List<TacticLinkedTacMapping>();
+        //            if (tacticList != null && tacticList.Count > 0)
+        //            {
+        //                var lstTac_LinkTacMappIds = tacticList.Where(tac => tac.LinkedTacticId.HasValue).Select(tac => new { PlanTacticId = tac.PlanTacticId, PlanTacic = tac, LinkedTacticId = tac.LinkedTacticId.Value }).ToList();
+        //                if (lstTac_LinkTacMappIds != null && lstTac_LinkTacMappIds.Count > 0)
+        //                {
+        //                    #region "Declare local variables"
+        //                    TacticLinkedTacMapping objTacLinkMapping;
+        //                    Plan_Campaign_Program_Tactic linkedTactic;
+        //                    string strOrgnlTacPlanyear, strLnkdTacPlanYear;
+        //                    int orgnlTacPlanYear, lnkdTacPlanYear;
+        //                    #endregion
+
+        //                    foreach (var tac in lstTac_LinkTacMappIds.ToList())
+        //                    {
+        //                        #region "Initialize local variables"
+        //                        objTacLinkMapping = new TacticLinkedTacMapping();
+        //                        linkedTactic = new Plan_Campaign_Program_Tactic();
+        //                        strOrgnlTacPlanyear = string.Empty; strLnkdTacPlanYear = string.Empty;
+        //                        orgnlTacPlanYear = 0; lnkdTacPlanYear = 0;
+        //                        #endregion
+
+        //                        // get linked tactic
+        //                        linkedTactic = tacticList.Where(tactc => tactc.PlanTacticId == tac.LinkedTacticId).FirstOrDefault();
+        //                        if (linkedTactic != null)
+        //                        {
+        //                            #region "Get both tactics Plan year"
+        //                            strOrgnlTacPlanyear = tac.PlanTacic.Plan_Campaign_Program.Plan_Campaign.Plan.Year; // Get Orginal Tactic Plan Year.
+        //                            strLnkdTacPlanYear = linkedTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year; // Get Linked Tactic Plan Year.
+
+        //                            //parse plan year to int.
+        //                            if (!string.IsNullOrEmpty(strOrgnlTacPlanyear) && !string.IsNullOrEmpty(strLnkdTacPlanYear))
+        //                            {
+        //                                orgnlTacPlanYear = int.Parse(strOrgnlTacPlanyear);
+        //                                lnkdTacPlanYear = int.Parse(strLnkdTacPlanYear);
+        //                            }
+        //                            #endregion
+
+        //                            #region "Insert latest plan year tactic to lstTac_LinkTacMapping list"
+        //                            //Identify latest Tactic and add it to "lstTac_LinkTacMapping" list to push latest tactics to SFDC.
+        //                            if (lnkdTacPlanYear > orgnlTacPlanYear)
+        //                            {
+        //                                objTacLinkMapping.PlanTactic = linkedTactic; // set latest plan year tactic as PlanTactic to model and pass to SFDC.
+        //                                objTacLinkMapping.LinkedTactic = tac.PlanTacic; // set old tactic as LinkedTactic and update its IntegrationInstanceTacticId & Comment after pushing origional Tactic.
+        //                                tacticList.Remove(tac.PlanTacic);    // Remove the old tactic from tacticlist which is not going to push to SFDC.
+        //                            }
+        //                            else
+        //                            {
+        //                                objTacLinkMapping.PlanTactic = tac.PlanTacic; // set latest plan year tactic as PlanTactic to model and pass to SFDC.
+        //                                objTacLinkMapping.LinkedTactic = linkedTactic; // set old tactic as LinkedTactic and update its IntegrationInstanceTacticId & Comment after pushing origional Tactic.
+        //                                tacticList.Remove(linkedTactic);    // Remove the old tactic from tacticlist which is not going to push to SFDC.
+        //                            }
+        //                            #endregion
+
+        //                            #region "Remove linked Tactic from current list."
+        //                            var objLnkdTac = lstTac_LinkTacMappIds.FirstOrDefault(t => t.PlanTacticId == tac.LinkedTacticId);
+        //                            if (objLnkdTac != null)
+        //                            {
+        //                                lstTac_LinkTacMappIds.Remove(objLnkdTac);
+        //                            }
+        //                            #endregion
+
+        //                            lstTac_LinkTacMapping.Add(objTacLinkMapping);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
+        //            List<int> programIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.IntegrationInstanceProgramId)).Select(tactic => tactic.PlanProgramId).ToList();
+        //            //System.Diagnostics.Trace.WriteLine("Step 1 End:" + DateTime.Now.ToString());
+        //            //System.Diagnostics.Trace.WriteLine("Step 2 Start:" + DateTime.Now.ToString());
+        //            int page = 0;
+        //            int total = 0;
+        //            //int pageSize = 10;
+        //            int maxpage = 0;
+
+        //            campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration).ToList();
+        //            campaignIdList = campaignList.Select(c => c.PlanCampaignId).Distinct().ToList();
+        //            if (campaignIdList.Count > 0)
+        //            {
+        //                campaignIdList.Concat(campaignIdForTactic);
+        //            }
+        //            else
+        //            {
+        //                campaignIdList = campaignIdForTactic;
+        //            }
+        //            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+
+        //            programList = programList.Where(program => statusList.Contains(program.Status) && program.IsDeployedToIntegration).ToList();
+        //            programIdList = programList.Select(c => c.PlanProgramId).Distinct().ToList();
+        //            if (programIdList.Count > 0)
+        //            {
+        //                programIdList.Concat(programIdForTactic);
+        //            }
+        //            else
+        //            {
+        //                programIdList = programIdForTactic;
+        //            }
+
+        //            if (campaignList.Count > 0 || programList.Count > 0 || tacticList.Count > 0)
+        //            {
+        //                #region "Validate Mappings with SFDC fields"
+        //                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+        //                _isResultError = SetMappingDetails();
+        //                if (!_isResultError)
+        //                {
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+        //                }
+        //                else
+        //                {
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
+        //                    return;
+        //                }
+        //                #endregion
+        //            }
+
+        //            //System.Diagnostics.Trace.WriteLine("Step 2 End:" + DateTime.Now.ToString());
+        //            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+        //            #endregion
+
+        //            #region "Sync Campaign Data"
+        //            if (campaignList.Count > 0)
+        //            {
+        //                try
+        //                {
+        //                    //System.Diagnostics.Trace.WriteLine("Step 3 Start:" + DateTime.Now.ToString());
+        //                    #region "Get Campaign CustomFieldlist"
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
+        //                    _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
+
+        //                    #endregion
+        //                    //System.Diagnostics.Trace.WriteLine("Step 3 End:" + DateTime.Now.ToString());
+        //                    //System.Diagnostics.Trace.WriteLine("Step 4 Start:" + DateTime.Now.ToString());
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process start.");
+        //                    page = 0;
+        //                    total = campaignList.Count;
+        //                    maxpage = (total / pushRecordBatchSize);
+        //                    List<Plan_Campaign> lstPagedlistCampaign = new List<Plan_Campaign>();
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Campaign: " + total);
+        //                    while (page <= maxpage)
+        //                    {
+        //                        lstPagedlistCampaign = new List<Plan_Campaign>();
+        //                        lstPagedlistCampaign = campaignList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+
+        //                        sbMessage = new StringBuilder();
+
+        //                        for (int index = 0; index < lstPagedlistCampaign.Count; index++)
+        //                        {
+        //                            lstPagedlistCampaign[index] = SyncCampaingData(lstPagedlistCampaign[index], ref sbMessage);
+
+        //                            // Save 10 log records to Table.
+        //                            if (((index + 1) % logRecordSize) == 0)
+        //                            {
+        //                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+        //                                sbMessage = new StringBuilder();
+        //                            }
+        //                        }
+
+        //                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
+        //                        {
+        //                            // Save remaining log records to Table.
+        //                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+        //                        }
+        //                        db.SaveChanges();
+        //                        page++;
+        //                    }
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process end.");
+        //                    //System.Diagnostics.Trace.WriteLine("Step 4 End:" + DateTime.Now.ToString());
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    _isResultError = true;
+        //                    string exMessage = Common.GetInnermostException(ex);
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Campaign data to Salesforce: " + exMessage);
+        //                }
+        //            } 
+        //            #endregion
+        //            //System.Diagnostics.Trace.WriteLine("Step 5 Start:" + DateTime.Now.ToString());
+        //            #region "Sync Program Data"
+        //            if (programList.Count > 0)
+        //            {
+        //                try
+        //                {
+        //                    #region "Get Program Customfield list"
+        //                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+        //                    programIdList = programList.Select(c => c.PlanProgramId).ToList();
+
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
+        //                    var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+        //                    if (_mappingCustomFields == null)
+        //                        _mappingCustomFields = new List<CustomFiledMapping>();
+        //                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
+
+        //                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+        //                    #endregion
+
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process start.");
+        //                    page = 0;
+        //                    total = programList.Count;
+        //                    maxpage = (total / pushRecordBatchSize);
+        //                    List<Plan_Campaign_Program> lstPagedlistProgram = new List<Plan_Campaign_Program>();
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Program: " + total);
+        //                    while (page <= maxpage)
+        //                    {
+        //                        lstPagedlistProgram = new List<Plan_Campaign_Program>();
+        //                        lstPagedlistProgram = programList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+
+        //                        sbMessage = new StringBuilder();
+
+        //                        for (int index = 0; index < lstPagedlistProgram.Count; index++)
+        //                        {
+        //                            lstPagedlistProgram[index] = SyncProgramData(lstPagedlistProgram[index], ref sbMessage);
+
+        //                            // Save 10 log records to Table.
+        //                            if (((index + 1) % logRecordSize) == 0)
+        //                            {
+        //                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+        //                                sbMessage = new StringBuilder();
+        //                            }
+        //                        }
+
+        //                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
+        //                        {
+        //                            // Save remaining log records to Table.
+        //                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+        //                        }
+        //                        db.SaveChanges();
+        //                        page++;
+        //                    }
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process end.");
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    _isResultError = true;
+        //                    string exMessage = Common.GetInnermostException(ex);
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Program data to Salesforce: " + exMessage);
+        //                }
+        //            } 
+        //            #endregion
+
+        //            //System.Diagnostics.Trace.WriteLine("Step 5 End:" + DateTime.Now.ToString());
+
+        //            #region "Make list of updated tactic after last sync and sync to SFDC"
+
+        //            #region "Create list of created/updated tactics after last sync"
+        //            int minSyncTacCount = 10;
+        //            List<Plan_Campaign_Program_Tactic> syncTactics = new List<Plan_Campaign_Program_Tactic>();
+        //            DateTime? lastInstanceSyncDate = null;
+        //            List<Plan_Campaign_Program_Tactic> lstUpdatedTactic = new List<Plan_Campaign_Program_Tactic>();
+
+        //            #region "Identify list of tactic updated/created"
+        //            List<int> lstCreatedTacIds = new List<int>();
+        //            // Start - Get list of created tactic.
+        //            var lstCreatedTactic = tacticList.Where(tac => string.IsNullOrEmpty(tac.IntegrationInstanceTacticId)).Select(tac => tac).ToList(); // Get list of created tactics.
+        //            if (lstCreatedTactic != null && lstCreatedTactic.Count > 0)
+        //            {
+        //                syncTactics.AddRange(lstCreatedTactic); // Add tactics those must be create into salesforce.
+        //                lstCreatedTacIds = lstCreatedTactic.Select(tac => tac.PlanTacticId).ToList();
+        //            }
+        //            // End - Get list of created tactic.
+        //            // Start - Get update tactic list.
+        //            lstUpdatedTactic = tacticList.Where(tac => !lstCreatedTacIds.Contains(tac.PlanTacticId)).Select(tac => tac).ToList(); // Get list of tactic those going for update to salesforce.
+        //            // End - Get update tactic list.
+
+        //            #endregion
+
+        //            if (tacticList.Count > minSyncTacCount)
+        //            {
+        //                // if there is no updated tactic means all created tactic then no need to get latest sync start date.
+        //                if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0)
+        //                {
+        //                    #region "Determine last sync date"
+        //                    if (_integrationInstanceId > 0)
+        //                    {
+        //                        string strPushTacticData = Enums.IntegrationInstanceSectionName.PushTacticData.ToString();
+        //                        string strSyncSuccessStatus = Enums.SyncStatus.Success.ToString();
+        //                        var lstInstanceSections = db.IntegrationInstanceSections.Where(inst => inst.IntegrationInstanceId == _integrationInstanceId && inst.SectionName == strPushTacticData && inst.Status == strSyncSuccessStatus).OrderByDescending(inst => inst.SyncStart).Select(inst => new { IntegrationInstanceSectionId = inst.IntegrationInstanceSectionId, SyncStart = inst.SyncStart, SyncEnd = inst.SyncEnd }).ToList();
+        //                        if (lstInstanceSections != null && lstInstanceSections.Count > 0)
+        //                        {
+        //                            string strTacticType = EntityType.Tactic.ToString();
+        //                            List<int> InstanceSectionIds = lstInstanceSections.Select(sec => sec.IntegrationInstanceSectionId).ToList();
+        //                            var tblPlanEntityLog = db.IntegrationInstancePlanEntityLogs.Where(log => InstanceSectionIds.Contains(log.IntegrationInstanceSectionId) && log.EntityType == strTacticType).Select(log => new { IntegrationInstanceSectionId = log.IntegrationInstanceSectionId, EntityId = log.EntityId }).ToList();
+        //                            //var lstInstSections = (from entLog in db.IntegrationInstancePlanEntityLogs
+        //                            //                       join sec in lstInstanceSections on entLog.IntegrationInstanceSectionId equals sec.IntegrationInstanceSectionId
+
+        //                            // Get most recent sync section based on IntegrationInstancePlanEntityLog table tactic pushed count.
+        //                            foreach (var section in lstInstanceSections)
+        //                            {
+        //                                var lstEntity = tblPlanEntityLog.Where(log => log.IntegrationInstanceSectionId == section.IntegrationInstanceSectionId).Select(log => log.EntityId).ToList();
+        //                                // Get Sync date of Section; if pushced tactic count more than 1 for this specific "PushTacticData" section.
+        //                                if (lstEntity != null && lstEntity.Count > 1)
+        //                                {
+        //                                    lastInstanceSyncDate = section.SyncEnd;       // Get most recent sync "PushTacticData" section syncStart Date.
+        //                                    break;
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                    #endregion
+        //                }
+        //            }
+        //            #endregion
+
+        //            #region "Filter 'lstUpdatedTactic' list based on  lastInstanceSyncDate"
+        //            if (lastInstanceSyncDate.HasValue)
+        //            {
+        //                #region "Declared local variables"
+        //                Dictionary<string, string> lstMappingTacticFields = new Dictionary<string, string>();
+        //                string strPlanName = Enums.SFDCGlobalFields.PlanName.ToString();
+        //                lstMappingTacticFields = _mappingTactic;
+        //                #endregion
+
+        //                #region "Plan Modified Date: PlanName field configured in Salesforce Instance then identify then recently updated all plans and push respective plan tactics to 'syncTactics' list"
+        //                if (_mappingTactic.ContainsKey(strPlanName))    // if PlanName field configured in Salesforce Instance then identify then recently updated all plans.
+        //                {
+        //                    #region "Get All Plan Modified tactics after last Sync Date"
+        //                    var lstUpdatePlan = lstPlan.Where(pln => pln.ModifiedDate >= lastInstanceSyncDate.Value).ToList();
+        //                    // Identify the PlanName updated after last instance sync date and Add all respective plan tactics to "syncTactics" list.
+        //                    if (lstUpdatePlan != null && lstUpdatePlan.Count > 0)
+        //                    {
+        //                        var updtPlanIds = lstUpdatePlan.Select(pln => pln.PlanId).ToList();
+        //                        var lstPlanUpdateTactics = lstUpdatedTactic.Where(tac => updtPlanIds.Contains(tac.Plan_Campaign_Program.Plan_Campaign.PlanId));
+        //                        if (lstPlanUpdateTactics != null && lstPlanUpdateTactics.Count() > 0)
+        //                        {
+        //                            // Add modified tactics to "syncTactics" list.
+        //                            syncTactics.AddRange(lstPlanUpdateTactics);
+
+        //                            // remove modified tactics list from updated tactic list and assign to same variable.
+        //                            lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstPlanUpdateTactics.Contains(updTac)).ToList();
+        //                        }
+        //                    }
+        //                    #endregion
+
+        //                    #region "Linked Tactic Plan Name Modified: Get list of Tactic"
+        //                    if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0)
+        //                    {
+        //                        var linkedTactic = lstUpdatedTactic.Where(tac => (tac.LinkedTacticId.HasValue) && (tac.LinkedTacticId.Value > 0)).Select(tac => tac).ToList();
+        //                        if (linkedTactic != null && linkedTactic.Count > 0)
+        //                        {
+        //                            List<int> linkedPlanIds = new List<int>();
+        //                            linkedPlanIds = linkedTactic.Where(tac => (tac.LinkedPlanId.HasValue) && (tac.LinkedPlanId.Value > 0)).Select(tac => tac.LinkedPlanId.Value).ToList();
+        //                            var linkedUpdtPlanIds = db.Plans.Where(pln => (linkedPlanIds.Contains(pln.PlanId)) && (pln.ModifiedDate >= lastInstanceSyncDate)).Select(pln => pln.PlanId).ToList();
+        //                            if (linkedUpdtPlanIds != null && linkedUpdtPlanIds.Count > 0)
+        //                            {
+        //                                linkedTactic = linkedTactic.Where(tac => tac.LinkedPlanId.HasValue && linkedUpdtPlanIds.Contains(tac.LinkedPlanId.Value)).ToList();
+
+        //                                // Add modified tactics to syncTactics list.
+        //                                syncTactics.AddRange(linkedTactic);
+
+        //                                // remove modified tactics list from updated tactic list and assign to same variable.
+        //                                lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !linkedTactic.Contains(updTac)).ToList();
+        //                            }
+        //                        }
+        //                    }
+
+        //                    #endregion
+        //                }
+        //                #endregion
+
+        //                #region "Tactic Modified date: Get list of tactics updated after last Instance Sync date"
+        //                if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0)
+        //                {
+        //                    var lstModifdTactics = lstUpdatedTactic.Where(tac => tac.ModifiedDate >= lastInstanceSyncDate.Value).ToList();
+        //                    if (lstModifdTactics != null && lstModifdTactics.Count > 0)
+        //                    {
+        //                        // Add modified tactics to syncTactics list.
+        //                        syncTactics.AddRange(lstModifdTactics);
+
+        //                        // remove modified tactics list from updated tactic list and assign to same variable.
+        //                        lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstModifdTactics.Contains(updTac)).ToList();
+        //                    }
+        //                }
+        //                #endregion
+
+        //                #region "Budgeted(Planned) Cost: Get all tactics updated planned cost after last Instance Sync Date"
+        //                string strBudgetedCostActualField = "Cost";
+        //                if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0 && _mappingTactic.ContainsKey(strBudgetedCostActualField))
+        //                {
+        //                    var lstBdgtCostUpdateTactics = (from updTac in lstUpdatedTactic
+        //                                                    join bcost in db.Plan_Campaign_Program_Tactic_Cost on updTac.PlanTacticId equals bcost.PlanTacticId
+        //                                                    where bcost.CreatedDate >= lastInstanceSyncDate
+        //                                                    select updTac).ToList();
+        //                    if (lstBdgtCostUpdateTactics != null && lstBdgtCostUpdateTactics.Count > 0)
+        //                    {
+        //                        // Add modified tactics to syncTactics list.
+        //                        syncTactics.AddRange(lstBdgtCostUpdateTactics);
+
+        //                        // remove modified tactics list from updated tactic list and assign to same variable.
+        //                        lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstBdgtCostUpdateTactics.Contains(updTac)).ToList();
+        //                    }
+
+        //                }
+        //                #endregion
+
+        //                #region "Actual Cost: Get all tactics updated actual cost after last Instance Sync Date"
+
+        //                if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0 && _mappingTactic.ContainsKey(strActualCostActualField))
+        //                {
+        //                    #region "Get updated tactic for those child line items cost updated"
+        //                    var lstlineActualCostUpdateTactics = (from updTac in lstUpdatedTactic
+        //                                                          join line in db.Plan_Campaign_Program_Tactic_LineItem on updTac.PlanTacticId equals line.PlanTacticId
+        //                                                          join lineCost in db.Plan_Campaign_Program_Tactic_LineItem_Actual on line.PlanLineItemId equals lineCost.PlanLineItemId
+        //                                                          where line.IsDeleted == true && lineCost.CreatedDate >= lastInstanceSyncDate
+        //                                                          select updTac).ToList();
+        //                    if (lstlineActualCostUpdateTactics != null && lstlineActualCostUpdateTactics.Count > 0)
+        //                    {
+        //                        // Add modified tactics to syncTactics list.
+        //                        syncTactics.AddRange(lstlineActualCostUpdateTactics);
+
+        //                        // remove modified tactics list from updated tactic list and assign to same variable.
+        //                        lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstlineActualCostUpdateTactics.Contains(updTac)).ToList();
+        //                    }
+        //                    #endregion
+
+        //                    #region "Get updated tactic for those modified it's cost"
+        //                    if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0)
+        //                    {
+        //                        string costStageTitle = "Cost";
+        //                        var lstActualCostUpdateTactics = (from updTac in lstUpdatedTactic
+        //                                                          join tacActual in db.Plan_Campaign_Program_Tactic_Actual on updTac.PlanTacticId equals tacActual.PlanTacticId
+        //                                                          where tacActual.StageTitle == costStageTitle && tacActual.CreatedDate >= lastInstanceSyncDate
+        //                                                          select updTac).ToList();
+        //                        if (lstActualCostUpdateTactics != null && lstActualCostUpdateTactics.Count > 0)
+        //                        {
+        //                            // Add modified tactics to syncTactics list.
+        //                            syncTactics.AddRange(lstActualCostUpdateTactics);
+
+        //                            // remove modified tactics list from updated tactic list and assign to same variable.
+        //                            lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstActualCostUpdateTactics.Contains(updTac)).ToList();
+        //                        }
+        //                    }
+        //                    #endregion
+
+        //                }
+        //                #endregion
+        //            }
+
+        //            #endregion
+
+        //            #endregion
+
+        //            // update "tacticlist" by filtered Created & Updated tactics, if system get lastInstanceSyncDate else remains as it is.
+        //            if (lastInstanceSyncDate.HasValue)
+        //            {
+        //                tacticList = syncTactics;
+        //            }
+
+        //            #region "Sync Tactic Data"
+        //            if (tacticList.Count > 0)
+        //            {
+        //                List<int> lstProcessTacIds = new List<int>();
+        //                try
+        //                {
+        //                    //System.Diagnostics.Trace.WriteLine("Step 6 Start:" + DateTime.Now.ToString());
+        //                    #region "Get Tacic Customfield list & Actual Cost"
+        //                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+        //                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).Distinct().ToList();
+
+        //                    // if user has mapped Actualcost field under Instance mapping section then retrieve ActualCost values for all tactics.
+        //                    if (_mappingTactic.ContainsKey(strActualCostActualField))
+        //                    _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
+
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
+        //                    var lstCustomFieldstactic = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+        //                    if (_mappingCustomFields == null)
+        //                        _mappingCustomFields = new List<CustomFiledMapping>();
+        //                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToList();
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
+        //                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+        //                    #endregion
+        //                    //System.Diagnostics.Trace.WriteLine("Step 6 End:" + DateTime.Now.ToString());
+        //                    page = 0;
+        //                    total = tacticList.Count;
+        //                    maxpage = (total / pushRecordBatchSize);
+        //                    List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
+        //                    Plan_Campaign_Program_Tactic srcTactic,objLinkedTactic;
+        //                    while (page <= maxpage)
+        //                    {
+        //                        //System.Diagnostics.Trace.WriteLine("Step paging" + page.ToString() + " Start:" + DateTime.Now.ToString());
+        //                        lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
+        //                        lstPagedlistTactic = tacticList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+
+        //                        sbMessage = new StringBuilder();
+        //                        for (int index = 0; index < lstPagedlistTactic.Count; index++)
+        //                        {
+        //                            //System.Diagnostics.Trace.WriteLine("Step Linked Tactic" + (index + 1).ToString() + " Start:" + DateTime.Now.ToString());
+        //                            #region "Get Linked Tactic"
+        //                            int linkedTacticId = 0;
+        //                            srcTactic = new Plan_Campaign_Program_Tactic();
+        //                            objLinkedTactic = new Plan_Campaign_Program_Tactic();
+        //                            srcTactic = lstPagedlistTactic[index];
+        //                            if (srcTactic != null)
+        //                            {
+        //                                linkedTacticId = (srcTactic != null && srcTactic.LinkedTacticId.HasValue) ? srcTactic.LinkedTacticId.Value : 0;
+        //                            }
+        //                            if (linkedTacticId > 0)
+        //                            {
+        //                                objLinkedTactic = tacticList.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
+        //                            }
+        //                            #endregion
+        //                            //System.Diagnostics.Trace.WriteLine("Step Linked Tactic" + (index + 1).ToString() + "-" + linkedTacticId.ToString() + " End:" + DateTime.Now.ToString());
+
+        //                            //System.Diagnostics.Trace.WriteLine("Step Tactic" + (index + 1).ToString() + " Start:" + DateTime.Now.ToString());
+        //                            lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage);
+        //                            //System.Diagnostics.Trace.WriteLine("Step Tactic" + (index + 1).ToString() + " End:" + DateTime.Now.ToString());
+        //                            lstProcessTacIds.Add(lstPagedlistTactic[index].PlanTacticId);
+        //                            // Save 10 log records to Table.
+        //                            //if (((index + 1) % logRecordSize) == 0)
+        //                            //{
+        //                            //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+        //                            //    sbMessage = new StringBuilder();
+        //                            //}
+
+        //                        }
+
+        //                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
+        //                        {
+        //                            // Save remaining log records to Table.
+        //                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+        //                            sbMessage = new StringBuilder();
+        //                        }
+        //                        db.SaveChanges();
+        //                        //System.Diagnostics.Trace.WriteLine("Step paging" + page.ToString() + " End:" + DateTime.Now.ToString());
+        //                        page++;
+        //                    }
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process end.");
+        //                    //System.Diagnostics.Trace.WriteLine("CallingSP Start:" + DateTime.Now.ToString());
+        //                    UpdateLinkedTacticComment(lstProcessTacIds, tacticList, lstCreatedTacIds, lstTac_LinkTacMapping);
+        //                    //System.Diagnostics.Trace.WriteLine("CallingSP End:" + DateTime.Now.ToString());
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details end.");
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    _isResultError = true;
+        //                    string exMessage = Common.GetInnermostException(ex);
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Tactic data to Salesforce: " + exMessage);
+        //                }
+
+        //            } 
+        //            #endregion
+
+        //            #region "Sync Improvement Tactic Data"
+        //            List<Plan_Improvement_Campaign_Program_Tactic> improvetacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).ToList();
+        //            if (improvetacticList.Count > 0)
+        //            {
+        //                try
+        //                {
+        //                    page = 0;
+        //                    total = improvetacticList.Count;
+        //                    maxpage = (total / pushRecordBatchSize);
+        //                    List<Plan_Improvement_Campaign_Program_Tactic> lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of ImprovementTactic: " + total);
+        //                    while (page <= maxpage)
+        //                    {
+        //                        lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
+        //                        lstPagedlistIMPTactic = improvetacticList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+
+        //                        sbMessage = new StringBuilder();
+
+        //                        for (int index = 0; index < lstPagedlistIMPTactic.Count; index++)
+        //                        {
+        //                            lstPagedlistIMPTactic[index] = SyncImprovementData(lstPagedlistIMPTactic[index], ref sbMessage);
+
+        //                            // Save 10 log records to Table.
+        //                            if (((index + 1) % logRecordSize) == 0)
+        //                            {
+        //                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+        //                                sbMessage = new StringBuilder();
+        //                            }
+        //                        }
+
+        //                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
+        //                        {
+        //                            // Save remaining log records to Table.
+        //                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+        //                        }
+        //                        db.SaveChanges();
+        //                        page++;
+        //                    }
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncImprovementData process end.");
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    _isResultError = true;
+        //                    string exMessage = Common.GetInnermostException(ex);
+        //                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing ImprovementTactic data to Salesforce: " + exMessage);
+        //                }
+        //            } 
+        //            #endregion
+
+        //            #region "Old-Code"
+        //            // We remove deletion flow from salesforce so now below code not require
+        //            //List<Plan_Improvement_Campaign> impcampaignList = db.Plan_Improvement_Campaign.Where(campaign => planIds.Contains(campaign.ImprovePlanId)).ToList();
+        //            //if (impcampaignList.Count() > 0)
+        //            //{
+        //            //    page = 0;
+        //            //    total = impcampaignList.Count();
+        //            //    maxpage = (total / pageSize);
+        //            //    List<Plan_Improvement_Campaign> lstPagedlistIMPCampaign = new List<Plan_Improvement_Campaign>();
+        //            //    while (page <= maxpage)
+        //            //    {
+        //            //        lstPagedlistIMPCampaign = new List<Plan_Improvement_Campaign>();
+        //            //        lstPagedlistIMPCampaign = impcampaignList.Skip(page * pageSize).Take(pageSize).ToList();
+        //            //        using (var scope = new TransactionScope())
+        //            //        {
+        //            //            for (int index = 0; index < lstPagedlistIMPCampaign.Count; index++)
+        //            //            {
+        //            //                lstPagedlistIMPCampaign[index] = SyncImprovementCampaingData(lstPagedlistIMPCampaign[index]);
+        //            //            }
+        //            //            db.SaveChanges();
+        //            //            scope.Complete();
+        //            //        }
+        //            //        page++;
+        //            //    }
+        //            //} 
+        //            #endregion
+        //        }
+        //    }
+        //    catch (SalesforceException e)
+        //    {
+        //        _isResultError = true;
+        //        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing data with Salesforce.", Enums.SyncStatus.Error, DateTime.Now));
+        //        _ErrorMessage = Common.GetInnermostException(e);
+        //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while syncing with multiple Tactic: " + _ErrorMessage);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        string exMessage = Common.GetInnermostException(e);
+        //        _isResultError = true;
+        //        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing data with Salesforce.", Enums.SyncStatus.Error, DateTime.Now));
+        //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while syncing with multiple Tactic: " + exMessage);
+        //    }
+        //} 
+        #endregion
+
+        private void SyncDatabyEntity(object objEntity=null)
         {
-            string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            StringBuilder sbMessage;
-            int logRecordSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LogRecordSize"]);
-            int pushRecordBatchSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["IntegrationPushRecordBatchSize"]);
             try
             {
-                List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).Select(p => p.PlanId).ToList();
-                if (planIds.Count > 0)
-                {
+                    //System.Diagnostics.Trace.WriteLine("Step 1 Start:" + DateTime.Now.ToString());
                     #region "Create CampaignIdList, ProgramIdList & TacticIdList"
-                    List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && !campaign.IsDeleted).ToList();
-                    List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
-                    List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
-                    List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
-                    List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
-                    List<Plan_Campaign_Program_Tactic> tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
+                    #region "Declare local varialbes"
+                    List<int> campaignIdList = new List<int>();
+                    List<int> programIdList = new List<int>();
+                    List<int> tacticIdList = new List<int>();
+                    List<int> LinkedTacticIds = new List<int>();
+                    List<Plan> lstPlan = new List<Plan>();
+                    List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
+                    List<Plan_Campaign_Program> programList = new List<Plan_Campaign_Program>();
+                    List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
+                    List<Plan_Campaign_Program_Tactic> tblTactic = new List<Plan_Campaign_Program_Tactic>();
+                    List<TacticLinkedTacMapping> lstTac_LinkTacMapping = new List<TacticLinkedTacMapping>();
+                    List<int> lstCreatedTacIds = new List<int>();
+                    List<Plan_Campaign_Program_Tactic> lstCreatedTactic = new List<Plan_Campaign_Program_Tactic>();
+                    List<Plan_Campaign_Program_Tactic> lstUpdatedTactic = new List<Plan_Campaign_Program_Tactic>();
+                    List<int> lstProcessTacIds = new List<int>();
+                    #endregion
 
+                    #region "Get Parent-Child Entity list based on EntityType"
+                    if (EntityType.Campaign.Equals(_entityType))
+                    {
+                        if (objEntity != null)
+                        {
+                            campaignList.Add((Plan_Campaign)objEntity);
+                            campaignIdList = campaignList.Select(cmpgn => cmpgn.PlanCampaignId).ToList();
+                        }
+                        programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
+                        programIdList = programList.Select(c => c.PlanProgramId).ToList();
+                        tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+                        tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
+                    }
+                    else if (EntityType.Program.Equals(_entityType))
+                    {
+                        if (objEntity != null)
+                        {
+                            programList.Add((Plan_Campaign_Program)objEntity);
+                            programIdList = programList.Select(prg => prg.PlanProgramId).ToList();
+                        }
+                        tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+                        tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
+                    }
+                    else if (EntityType.Tactic.Equals(_entityType))
+                    {
+                        if (objEntity != null)
+                        {
+                            tacticList.Add((Plan_Campaign_Program_Tactic)objEntity);
+                        }
+                        //tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+                    }
+                    else
+                    {
+                        string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
+                        lstPlan = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
+                        if (lstPlan != null && lstPlan.Count > 0)
+                        {
+                            List<int> planIds = lstPlan.Select(p => p.PlanId).ToList();
+                            campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && !campaign.IsDeleted).ToList();
+                            campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
+                            programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
+                            programIdList = programList.Select(c => c.PlanProgramId).ToList();
+                            tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+                            tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
+
+                            
+                        }
+                    }
+                    #endregion
+
+                    #region "Create Tactic-Linked Tactic mapping list:- Push latest year plan tactic as Plan Tactic and other as linked"
+                    if (tacticList != null && tacticList.Count > 0)
+                    {
+                        var lstTac_LinkTacMappIds = tacticList.Where(tac => tac.LinkedTacticId.HasValue).Select(tac => new { PlanTacticId = tac.PlanTacticId, PlanTacic = tac, LinkedTacticId = tac.LinkedTacticId.Value }).ToList();
+                        if (lstTac_LinkTacMappIds != null && lstTac_LinkTacMappIds.Count > 0)
+                        {
+                            #region "Declare local variables"
+                            TacticLinkedTacMapping objTacLinkMapping;
+                            Plan_Campaign_Program_Tactic linkedTactic;
+                            string strOrgnlTacPlanyear, strLnkdTacPlanYear;
+                            int orgnlTacPlanYear, lnkdTacPlanYear;
+                            #endregion
+
+                            foreach (var tac in lstTac_LinkTacMappIds.ToList())
+                            {
+                                #region "Initialize local variables"
+                                objTacLinkMapping = new TacticLinkedTacMapping();
+                                linkedTactic = new Plan_Campaign_Program_Tactic();
+                                strOrgnlTacPlanyear = string.Empty; strLnkdTacPlanYear = string.Empty;
+                                orgnlTacPlanYear = 0; lnkdTacPlanYear = 0;
+                                #endregion
+
+                                // get linked tactic
+                                linkedTactic = tacticList.Where(tactc => tactc.PlanTacticId == tac.LinkedTacticId).FirstOrDefault();
+                                if (linkedTactic != null)
+                                {
+                                    #region "Get both tactics Plan year"
+                                    strOrgnlTacPlanyear = tac.PlanTacic.Plan_Campaign_Program.Plan_Campaign.Plan.Year; // Get Orginal Tactic Plan Year.
+                                    strLnkdTacPlanYear = linkedTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year; // Get Linked Tactic Plan Year.
+
+                                    //parse plan year to int.
+                                    if (!string.IsNullOrEmpty(strOrgnlTacPlanyear) && !string.IsNullOrEmpty(strLnkdTacPlanYear))
+                                    {
+                                        orgnlTacPlanYear = int.Parse(strOrgnlTacPlanyear);
+                                        lnkdTacPlanYear = int.Parse(strLnkdTacPlanYear);
+                                    }
+                                    #endregion
+
+                                    #region "Insert latest plan year tactic to lstTac_LinkTacMapping list"
+                                    //Identify latest Tactic and add it to "lstTac_LinkTacMapping" list to push latest tactics to SFDC.
+                                    if (lnkdTacPlanYear > orgnlTacPlanYear)
+                                    {
+                                        objTacLinkMapping.PlanTactic = linkedTactic; // set latest plan year tactic as PlanTactic to model and pass to SFDC.
+                                        objTacLinkMapping.LinkedTactic = tac.PlanTacic; // set old tactic as LinkedTactic and update its IntegrationInstanceTacticId & Comment after pushing origional Tactic.
+                                        tacticList.Remove(tac.PlanTacic);    // Remove the old tactic from tacticlist which is not going to push to SFDC.
+                                    }
+                                    else
+                                    {
+                                        objTacLinkMapping.PlanTactic = tac.PlanTacic; // set latest plan year tactic as PlanTactic to model and pass to SFDC.
+                                        objTacLinkMapping.LinkedTactic = linkedTactic; // set old tactic as LinkedTactic and update its IntegrationInstanceTacticId & Comment after pushing origional Tactic.
+                                        tacticList.Remove(linkedTactic);    // Remove the old tactic from tacticlist which is not going to push to SFDC.
+                                    }
+                                    #endregion
+
+                                    #region "Remove linked Tactic from current list."
+                                    var objLnkdTac = lstTac_LinkTacMappIds.FirstOrDefault(t => t.PlanTacticId == tac.LinkedTacticId);
+                                    if (objLnkdTac != null)
+                                    {
+                                        lstTac_LinkTacMappIds.Remove(objLnkdTac);
+                                    }
+                                    #endregion
+
+                                    lstTac_LinkTacMapping.Add(objTacLinkMapping);
+                                }
+                            }
+                        }
+                    } 
+                    #endregion
+                    
+                    tacticIdList = tacticList.Select(tac => tac.PlanTacticId).ToList();
                     List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
                     List<int> programIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.IntegrationInstanceProgramId)).Select(tactic => tactic.PlanProgramId).ToList();
-
-                    int page = 0;
-                    int total = 0;
-                    //int pageSize = 10;
-                    int maxpage = 0;
-
-                    campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration).ToList();
-                    campaignIdList = campaignList.Select(c => c.PlanCampaignId).Distinct().ToList();
-                    if (campaignIdList.Count > 0)
-                    {
-                        campaignIdList.Concat(campaignIdForTactic);
-                    }
-                    else
-                    {
-                        campaignIdList = campaignIdForTactic;
-                    }
+                    //System.Diagnostics.Trace.WriteLine("Step 1 End:" + DateTime.Now.ToString());
+                    //System.Diagnostics.Trace.WriteLine("Step 2 Start:" + DateTime.Now.ToString());
+                    
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
 
-                    programList = programList.Where(program => statusList.Contains(program.Status) && program.IsDeployedToIntegration).ToList();
-                    programIdList = programList.Select(c => c.PlanProgramId).Distinct().ToList();
-                    if (programIdList.Count > 0)
+                    #region "Get CampaignIds"
+                    // Get CampaignId list to push to SFDC in case of Entity type "Campaign" or "Sync Now".
+                    if ((!EntityType.Tactic.Equals(_entityType)) && (!EntityType.Program.Equals(_entityType)))
                     {
-                        programIdList.Concat(programIdForTactic);
+                        campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration).ToList();
+                        campaignIdList = campaignList.Select(c => c.PlanCampaignId).Distinct().ToList();
+                        if (campaignIdList.Count > 0)
+                        {
+                            campaignIdList.Concat(campaignIdForTactic);
+                        }
+                        else
+                        {
+                            campaignIdList = campaignIdForTactic;
+                        }
                     }
-                    else
+                    #endregion
+                    
+                    #region "Get ProgramIds"
+                    if (!EntityType.Tactic.Equals(_entityType))
                     {
-                        programIdList = programIdForTactic;
-                    }
+                        programList = programList.Where(program => statusList.Contains(program.Status) && program.IsDeployedToIntegration).ToList();
+                        programIdList = programList.Select(c => c.PlanProgramId).Distinct().ToList();
+                        if (programIdList.Count > 0)
+                        {
+                            programIdList.Concat(programIdForTactic);
+                        }
+                        else
+                        {
+                            programIdList = programIdForTactic;
+                        }
+                    } 
+                    #endregion
 
+                    #region "Validate Mappings with SFDC fields"
                     if (campaignList.Count > 0 || programList.Count > 0 || tacticList.Count > 0)
                     {
+                       
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
                         _isResultError = SetMappingDetails();
                         if (!_isResultError)
@@ -4739,302 +5533,424 @@ namespace Integration.Salesforce
                             return;
                         }
                     }
+                    #endregion
+                    //System.Diagnostics.Trace.WriteLine("Step 2 End:" + DateTime.Now.ToString());
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     #endregion
 
-                    #region "Sync Campaign Data"
-                    if (campaignList.Count > 0)
+
+                    #region "Identify list of tactic updated/created"
+
+                    // Start - Get list of created tactic.
+                    lstCreatedTactic = tacticList.Where(tac => string.IsNullOrEmpty(tac.IntegrationInstanceTacticId)).Select(tac => tac).ToList(); // Get list of created tactics.
+                    if (lstCreatedTactic != null && lstCreatedTactic.Count > 0)
                     {
-                        try
-                        {
-                            #region "Get Campaign CustomFieldlist"
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
-                            _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
+                        lstCreatedTacIds = lstCreatedTactic.Select(tac => tac.PlanTacticId).ToList();
+                    }
+                    // End - Get list of created tactic.
+                    // Start - Get update tactic list.
+                    lstUpdatedTactic = tacticList.Where(tac => !lstCreatedTacIds.Contains(tac.PlanTacticId)).Select(tac => tac).ToList(); // Get list of tactic those going for update to salesforce.
+                    // End - Get update tactic list.
 
-                            #endregion
-
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process start.");
-                            page = 0;
-                            total = campaignList.Count;
-                            maxpage = (total / pushRecordBatchSize);
-                            List<Plan_Campaign> lstPagedlistCampaign = new List<Plan_Campaign>();
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Campaign: " + total);
-                            while (page <= maxpage)
-                            {
-                                lstPagedlistCampaign = new List<Plan_Campaign>();
-                                lstPagedlistCampaign = campaignList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
-
-                                sbMessage = new StringBuilder();
-
-                                for (int index = 0; index < lstPagedlistCampaign.Count; index++)
-                                {
-                                    lstPagedlistCampaign[index] = SyncCampaingData(lstPagedlistCampaign[index], ref sbMessage);
-
-                                    // Save 10 log records to Table.
-                                    if (((index + 1) % logRecordSize) == 0)
-                                    {
-                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                        sbMessage = new StringBuilder();
-                                    }
-                                }
-
-                                if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                                {
-                                    // Save remaining log records to Table.
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                }
-                                db.SaveChanges();
-                                page++;
-                            }
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process end.");
-                        }
-                        catch (Exception ex)
-                        {
-                            _isResultError = true;
-                            string exMessage = Common.GetInnermostException(ex);
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Campaign data to Salesforce: " + exMessage);
-                        }
-                    } 
                     #endregion
 
-                    #region "Sync Program Data"
-                    if (programList.Count > 0)
+                    if (EntityType.Tactic.Equals(_entityType))
                     {
-                        try
-                        {
-                            #region "Get Program Customfield list"
-                            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                            programIdList = programList.Select(c => c.PlanProgramId).ToList();
-
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
-                            var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
-                            if (_mappingCustomFields == null)
-                                _mappingCustomFields = new List<CustomFiledMapping>();
-                            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
-
-                            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                            #endregion
-
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process start.");
-                            page = 0;
-                            total = programList.Count;
-                            maxpage = (total / pushRecordBatchSize);
-                            List<Plan_Campaign_Program> lstPagedlistProgram = new List<Plan_Campaign_Program>();
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Program: " + total);
-                            while (page <= maxpage)
-                            {
-                                lstPagedlistProgram = new List<Plan_Campaign_Program>();
-                                lstPagedlistProgram = programList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
-
-                                sbMessage = new StringBuilder();
-
-                                for (int index = 0; index < lstPagedlistProgram.Count; index++)
-                                {
-                                    lstPagedlistProgram[index] = SyncProgramData(lstPagedlistProgram[index], ref sbMessage);
-
-                                    // Save 10 log records to Table.
-                                    if (((index + 1) % logRecordSize) == 0)
-                                    {
-                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                        sbMessage = new StringBuilder();
-                                    }
-                                }
-
-                                if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                                {
-                                    // Save remaining log records to Table.
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                }
-                                db.SaveChanges();
-                                page++;
-                            }
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process end.");
-                        }
-                        catch (Exception ex)
-                        {
-                            _isResultError = true;
-                            string exMessage = Common.GetInnermostException(ex);
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Program data to Salesforce: " + exMessage);
-                        }
-                    } 
-                    #endregion
-
-                    #region "Sync Tactic Data"
-                    if (tacticList.Count > 0)
+                        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), tacticList, tacticIdList,ref lstProcessTacIds);         // Push Tactics to SFDC.
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details Start.");
+                        UpdateLinkedTacticComment(lstProcessTacIds, tacticList, lstCreatedTacIds, lstTac_LinkTacMapping);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details End.");
+                    }
+                    else if (EntityType.Program.Equals(_entityType))
                     {
-                        try
-                        {
-                            #region "Get Tacic Customfield list & Actual Cost"
-                            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                            List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).Distinct().ToList();
-                            _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
-
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
-                            var lstCustomFieldstactic = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                            if (_mappingCustomFields == null)
-                                _mappingCustomFields = new List<CustomFiledMapping>();
-                            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToList();
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
-                            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                            #endregion
-
-                            page = 0;
-                            total = tacticList.Count;
-                            maxpage = (total / pushRecordBatchSize);
-                            List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
-                            Plan_Campaign_Program_Tactic srcTactic,objLinkedTactic;
-                            while (page <= maxpage)
-                            {
-                                lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
-                                lstPagedlistTactic = tacticList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
-
-                                sbMessage = new StringBuilder();
-                                for (int index = 0; index < lstPagedlistTactic.Count; index++)
-                                {
-                                    #region "Get Linked Tactic"
-                                    int linkedTacticId = 0;
-                                    srcTactic = new Plan_Campaign_Program_Tactic();
-                                    objLinkedTactic = new Plan_Campaign_Program_Tactic();
-                                    srcTactic = lstPagedlistTactic[index];
-                                    if (srcTactic != null)
-                                    {
-                                        linkedTacticId = (srcTactic != null && srcTactic.LinkedTacticId.HasValue) ? srcTactic.LinkedTacticId.Value : 0;
-                                        //if (linkedTacticId <= 0)
-                                        //{
-                                        //    objLinkedTactic = tblTactic.Where(tactic => tactic.LinkedTacticId == srcTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
-                                        //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
-                                        //}
-                                    }
-                                    if (linkedTacticId > 0)
-                                    {
-                                        objLinkedTactic = tblTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
-                                    }
-                                    #endregion
-
-                                    lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage, objLinkedTactic);
-
-                                    // Save 10 log records to Table.
-                                    if (((index + 1) % logRecordSize) == 0)
-                                    {
-                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                        sbMessage = new StringBuilder();
-                                    }
-                                }
-
-                                if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                                {
-                                    // Save remaining log records to Table.
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                    sbMessage = new StringBuilder();
-                                }
-                                db.SaveChanges();
-                                page++;
-                            }
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process end.");
-                        }
-                        catch (Exception ex)
-                        {
-                            _isResultError = true;
-                            string exMessage = Common.GetInnermostException(ex);
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Tactic data to Salesforce: " + exMessage);
-                        }
-                    } 
-                    #endregion
-
-                    #region "Sync Improvement Tactic Data"
-                    List<Plan_Improvement_Campaign_Program_Tactic> improvetacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).ToList();
-                    if (improvetacticList.Count > 0)
+                        SyncEntityData<Plan_Campaign_Program>(EntityType.Program.ToString(), programList, programIdList, ref lstProcessTacIds);      // Push Programs to SFDC.
+                        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), tacticList, tacticIdList, ref lstProcessTacIds);         // Push Tactics to SFDC.
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details Start.");
+                        UpdateLinkedTacticComment(lstProcessTacIds, tacticList, lstCreatedTacIds, lstTac_LinkTacMapping);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details End.");
+                    }
+                    else
                     {
-                        try
+                        // Execute this code snippet in case of syncing specific Campaign or Instance.
+                        SyncEntityData<Plan_Campaign>(EntityType.Campaign.ToString(), campaignList, campaignIdList, ref lstProcessTacIds);   // Push Campaign to SFDC.
+                        SyncEntityData<Plan_Campaign_Program>(EntityType.Program.ToString(), programList, programIdList, ref lstProcessTacIds);      // Push Programs to SFDC.
+                        
+                        // if user make Sync Now then get only updated tactics after lastsync date of that Instance.
+                        if (!EntityType.Campaign.Equals(_entityType))
                         {
-                            page = 0;
-                            total = improvetacticList.Count;
-                            maxpage = (total / pushRecordBatchSize);
-                            List<Plan_Improvement_Campaign_Program_Tactic> lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of ImprovementTactic: " + total);
-                            while (page <= maxpage)
-                            {
-                                lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
-                                lstPagedlistIMPTactic = improvetacticList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
-
-                                sbMessage = new StringBuilder();
-
-                                for (int index = 0; index < lstPagedlistIMPTactic.Count; index++)
-                                {
-                                    lstPagedlistIMPTactic[index] = SyncImprovementData(lstPagedlistIMPTactic[index], ref sbMessage);
-
-                                    // Save 10 log records to Table.
-                                    if (((index + 1) % logRecordSize) == 0)
-                                    {
-                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                        sbMessage = new StringBuilder();
-                                    }
-                                }
-
-                                if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                                {
-                                    // Save remaining log records to Table.
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                }
-                                db.SaveChanges();
-                                page++;
-                            }
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncImprovementData process end.");
+                            tacticList = GetLastSyncUpdatedTactics(tacticList, lstCreatedTactic, lstUpdatedTactic, lstPlan);
+                            tacticIdList = tacticList.Select(tac => tac.PlanTacticId).ToList();
                         }
-                        catch (Exception ex)
-                        {
-                            _isResultError = true;
-                            string exMessage = Common.GetInnermostException(ex);
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing ImprovementTactic data to Salesforce: " + exMessage);
-                        }
-                    } 
-                    #endregion
+                        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), tacticList, tacticIdList, ref lstProcessTacIds);         // Push Tactics to SFDC.
 
-                    #region "Old-Code"
-                    // We remove deletion flow from salesforce so now below code not require
-                    //List<Plan_Improvement_Campaign> impcampaignList = db.Plan_Improvement_Campaign.Where(campaign => planIds.Contains(campaign.ImprovePlanId)).ToList();
-                    //if (impcampaignList.Count() > 0)
-                    //{
-                    //    page = 0;
-                    //    total = impcampaignList.Count();
-                    //    maxpage = (total / pageSize);
-                    //    List<Plan_Improvement_Campaign> lstPagedlistIMPCampaign = new List<Plan_Improvement_Campaign>();
-                    //    while (page <= maxpage)
-                    //    {
-                    //        lstPagedlistIMPCampaign = new List<Plan_Improvement_Campaign>();
-                    //        lstPagedlistIMPCampaign = impcampaignList.Skip(page * pageSize).Take(pageSize).ToList();
-                    //        using (var scope = new TransactionScope())
-                    //        {
-                    //            for (int index = 0; index < lstPagedlistIMPCampaign.Count; index++)
-                    //            {
-                    //                lstPagedlistIMPCampaign[index] = SyncImprovementCampaingData(lstPagedlistIMPCampaign[index]);
-                    //            }
-                    //            db.SaveChanges();
-                    //            scope.Complete();
-                    //        }
-                    //        page++;
-                    //    }
-                    //} 
-                    #endregion
-                }
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details Start.");
+                        UpdateLinkedTacticComment(lstProcessTacIds, tacticList, lstCreatedTacIds, lstTac_LinkTacMapping);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details End.");
+                    }
             }
-            catch (SalesforceException e)
+            catch (Exception ex)
             {
+                string exMessage = Common.GetInnermostException(ex);
                 _isResultError = true;
-                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing data with Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
-                _ErrorMessage = Common.GetInnermostException(e);
-                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while syncing with multiple Tactic: " + _ErrorMessage);
-            }
-            catch (Exception e)
-            {
-                string exMessage = Common.GetInnermostException(e);
-                _isResultError = true;
-                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing data with Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
+                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing data with Salesforce.", Enums.SyncStatus.Error, DateTime.Now));
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while syncing with multiple Tactic: " + exMessage);
             }
+        }
+
+        private void SyncEntityData<T>(string entityType, List<T> entityList, List<int> entityIdList, ref List<int> lstProcessTacIds)
+        {
+            #region "Declare local variables"
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            StringBuilder sbMessage;
+            int logRecordSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LogRecordSize"]);
+            int pushRecordBatchSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["IntegrationPushRecordBatchSize"]);
+            string strActualCostActualField = "CostActual"; // static variable value to identify that instance has mapped Actual cost field in Instance mapping.
+            
+            #endregion
+            try
+            {
+
+                #region "Convert EntityList"
+                int page = 0, total = 0, maxpage = 0;
+                lstProcessTacIds = new List<int>(); // initialize varialbe for each entity.
+                #endregion
+
+                #region "Sync each entity Data"
+                if (entityList != null && entityList.Count > 0)
+                {
+                    try
+                    {
+                        // Get ActualCost for all tactics if user has made mapping of ActualCost under Instance configuration.
+                        if (EntityType.Tactic.ToString().Equals(entityType) && _mappingTactic.ContainsKey(strActualCostActualField))
+                            _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(entityIdList);
+
+                        #region "Get Entity CustomFieldlist"
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for " + entityType + ".");
+                        if (_mappingCustomFields != null && _mappingCustomFields.Count > 0)
+                            _mappingCustomFields.AddRange(CreateMappingCustomFieldDictionary(entityIdList, entityType));
+                        else
+                        {
+                            _mappingCustomFields = new List<CustomFiledMapping>();
+                            _mappingCustomFields = CreateMappingCustomFieldDictionary(entityIdList, entityType);
+                        }
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for " + entityType + ".");
+
+                        #endregion
+
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync" + entityType + "Data process start.");
+                        page = 0;
+                        total = entityList.Count;
+                        maxpage = (total / pushRecordBatchSize);
+
+                        var lstPagedEntityList = (dynamic)null;
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of " + entityType + ": " + total);
+                        while (page <= maxpage)
+                        {
+                            sbMessage = new StringBuilder();
+                            if (EntityType.Campaign.ToString().Equals(entityType) && entityList is List<Plan_Campaign>)
+                            {
+                                lstPagedEntityList = new List<Plan_Campaign>();
+                                lstPagedEntityList = entityList.ToList().Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList() as List<Plan_Campaign>;
+                                if (lstPagedEntityList != null && lstPagedEntityList.Count > 0)
+                                {
+                                    for (int index = 0; index < lstPagedEntityList.Count; index++)
+                                    {
+                                        lstPagedEntityList[index] = SyncCampaingData(lstPagedEntityList[index], ref sbMessage);
+                                        lstProcessTacIds.Add(lstPagedEntityList[index].PlanCampaignId);
+                                        #region "Old Code"
+                                        // Save 10 log records to Table.
+                                        //if (((index + 1) % logRecordSize) == 0)
+                                        //{
+                                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                        //    sbMessage = new StringBuilder();
+                                        //} 
+                                        #endregion
+                                    }
+                                }
+                            }
+                            else if (EntityType.Program.ToString().Equals(entityType) && entityList is List<Plan_Campaign_Program>)
+                            {
+                                lstPagedEntityList = new List<Plan_Campaign_Program>();
+                                lstPagedEntityList = entityList.ToList().Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList() as List<Plan_Campaign_Program>;
+                                if (lstPagedEntityList != null && lstPagedEntityList.Count > 0)
+                                {
+                                    for (int index = 0; index < lstPagedEntityList.Count; index++)
+                                    {
+                                        lstPagedEntityList[index] = SyncProgramData(lstPagedEntityList[index], ref sbMessage);
+                                        lstProcessTacIds.Add(lstPagedEntityList[index].PlanProgramId);
+                                        #region "Old Code"
+                                        // Save 10 log records to Table.
+                                        //if (((index + 1) % logRecordSize) == 0)
+                                        //{
+                                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                        //    sbMessage = new StringBuilder();
+                                        //} 
+                                        #endregion
+                                    }
+                                }
+                            }
+                            else if (EntityType.Tactic.ToString().Equals(entityType) && entityList is List<Plan_Campaign_Program_Tactic>)
+                            {
+                                lstPagedEntityList = new List<Plan_Campaign_Program_Tactic>();
+                                lstPagedEntityList = entityList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList() as List<Plan_Campaign_Program_Tactic>;
+                                if (lstPagedEntityList != null && lstPagedEntityList.Count > 0)
+                                {
+                                    for (int index = 0; index < lstPagedEntityList.Count; index++)
+                                    {
+                                        lstPagedEntityList[index] = SyncTacticData(lstPagedEntityList[index], ref sbMessage);
+                                        lstProcessTacIds.Add(lstPagedEntityList[index].PlanTacticId);
+                                        #region "Old Code"
+                                        // Save 10 log records to Table.
+                                        //if (((index + 1) % logRecordSize) == 0)
+                                        //{
+                                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                        //    sbMessage = new StringBuilder();
+                                        //} 
+                                        #endregion
+                                    }
+                                }
+                            }
+                            //if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                            //{
+                            //    // Save remaining log records to Table.
+                            //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                            //}
+                            db.SaveChanges();
+                            page++;
+                        }
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync" + entityType + "Data process end.");
+                        //System.Diagnostics.Trace.WriteLine("Step 4 End:" + DateTime.Now.ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        _isResultError = true;
+                        string exMessage = Common.GetInnermostException(ex);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing " + entityType + " data to Salesforce: " + exMessage);
+                    }
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                _isResultError = true;
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing " + entityType + " data to Salesforce: " + exMessage);
+            }
+        }
+
+        private List<Plan_Campaign_Program_Tactic> GetLastSyncUpdatedTactics(List<Plan_Campaign_Program_Tactic> tacticList, List<Plan_Campaign_Program_Tactic> lstCreatedTactic, List<Plan_Campaign_Program_Tactic> lstUpdatedTactic,List<Plan> lstPlan)
+        {
+            string strActualCostActualField = "CostActual"; // static variable value to identify that instance has mapped Actual cost field in Instance mapping.
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            try
+            {
+                #region "Make list of updated tactic after last sync and sync to SFDC"
+
+                #region "Create list of created/updated tactics after last sync"
+                int minSyncTacCount = 10;
+                List<Plan_Campaign_Program_Tactic> syncTactics = new List<Plan_Campaign_Program_Tactic>();
+                DateTime? lastInstanceSyncDate = null;
+
+                #region "Add created tactics to push tactic list"
+                if (lstCreatedTactic != null && lstCreatedTactic.Count > 0)
+                {
+                    syncTactics.AddRange(lstCreatedTactic); // Add tactics those must be create into salesforce.
+                }
+                #endregion
+
+                if (tacticList.Count > minSyncTacCount)
+                {
+                    // if there is no updated tactic means all created tactic then no need to get latest sync start date.
+                    if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0)
+                    {
+                        #region "Determine last successfully synced instance date"
+                        if (_integrationInstanceId > 0)
+                        {
+                            string strPushTacticData = Enums.IntegrationInstanceSectionName.PushTacticData.ToString();
+                            string strSyncSuccessStatus = Enums.SyncStatus.Success.ToString();
+                            var lstInstanceSections = db.IntegrationInstanceSections.Where(inst => inst.IntegrationInstanceId == _integrationInstanceId && inst.SectionName == strPushTacticData && inst.Status == strSyncSuccessStatus).OrderByDescending(inst => inst.SyncStart).Select(inst => new { IntegrationInstanceSectionId = inst.IntegrationInstanceSectionId, SyncStart = inst.SyncStart, SyncEnd = inst.SyncEnd }).ToList();
+                            if (lstInstanceSections != null && lstInstanceSections.Count > 0)
+                            {
+                                string strTacticType = EntityType.Tactic.ToString();
+                                List<int> InstanceSectionIds = lstInstanceSections.Select(sec => sec.IntegrationInstanceSectionId).ToList();
+                                var tblPlanEntityLog = db.IntegrationInstancePlanEntityLogs.Where(log => InstanceSectionIds.Contains(log.IntegrationInstanceSectionId) && log.EntityType == strTacticType).Select(log => new { IntegrationInstanceSectionId = log.IntegrationInstanceSectionId, EntityId = log.EntityId }).ToList();
+                                //var lstInstSections = (from entLog in db.IntegrationInstancePlanEntityLogs
+                                //                       join sec in lstInstanceSections on entLog.IntegrationInstanceSectionId equals sec.IntegrationInstanceSectionId
+
+                                // Get most recent sync section based on IntegrationInstancePlanEntityLog table tactic pushed count.
+                                foreach (var section in lstInstanceSections)
+                                {
+                                    var lstEntity = tblPlanEntityLog.Where(log => log.IntegrationInstanceSectionId == section.IntegrationInstanceSectionId).Select(log => log.EntityId).ToList();
+                                    // Get Sync date of Section; if pushced tactic count more than 1 for this specific "PushTacticData" section.
+                                    if (lstEntity != null && lstEntity.Count > 1)
+                                    {
+                                        lastInstanceSyncDate = section.SyncEnd;       // Get most recent sync "PushTacticData" section syncStart Date.
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        #endregion
+                    }
+                }
+                #endregion
+
+                #region "Filter 'lstUpdatedTactic' list based on  lastInstanceSyncDate"
+                if (lastInstanceSyncDate.HasValue)
+                {
+                    #region "Declared local variables"
+                    Dictionary<string, string> lstMappingTacticFields = new Dictionary<string, string>();
+                    string strPlanName = Enums.SFDCGlobalFields.PlanName.ToString();
+                    lstMappingTacticFields = _mappingTactic;
+                    #endregion
+
+                    #region "Plan Modified Date: PlanName field configured in Salesforce Instance then identify then recently updated all plans and push respective plan tactics to 'syncTactics' list"
+                    if (_mappingTactic.ContainsKey(strPlanName))    // if PlanName field configured in Salesforce Instance then identify then recently updated all plans.
+                    {
+                        #region "Get All Plan Modified tactics after last Sync Date"
+                        if (lstPlan != null)
+                        {
+                            var lstUpdatePlan = lstPlan.Where(pln => pln.ModifiedDate >= lastInstanceSyncDate.Value).ToList();
+                            // Identify the PlanName updated after last instance sync date and Add all respective plan tactics to "syncTactics" list.
+                            if (lstUpdatePlan != null && lstUpdatePlan.Count > 0)
+                            {
+                                var updtPlanIds = lstUpdatePlan.Select(pln => pln.PlanId).ToList();
+                                var lstPlanUpdateTactics = lstUpdatedTactic.Where(tac => updtPlanIds.Contains(tac.Plan_Campaign_Program.Plan_Campaign.PlanId));
+                                if (lstPlanUpdateTactics != null && lstPlanUpdateTactics.Count() > 0)
+                                {
+                                    // Add modified tactics to "syncTactics" list.
+                                    syncTactics.AddRange(lstPlanUpdateTactics);
+
+                                    // remove modified tactics list from updated tactic list and assign to same variable.
+                                    lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstPlanUpdateTactics.Contains(updTac)).ToList();
+                                }
+                            }
+                        }
+                        #endregion
+
+                        #region "Linked Tactic Plan Name Modified: Get list of Tactic"
+                        if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0)
+                        {
+                            var linkedTactic = lstUpdatedTactic.Where(tac => (tac.LinkedTacticId.HasValue) && (tac.LinkedTacticId.Value > 0)).Select(tac => tac).ToList();
+                            if (linkedTactic != null && linkedTactic.Count > 0)
+                            {
+                                List<int> linkedPlanIds = new List<int>();
+                                linkedPlanIds = linkedTactic.Where(tac => (tac.LinkedPlanId.HasValue) && (tac.LinkedPlanId.Value > 0)).Select(tac => tac.LinkedPlanId.Value).ToList();
+                                var linkedUpdtPlanIds = db.Plans.Where(pln => (linkedPlanIds.Contains(pln.PlanId)) && (pln.ModifiedDate >= lastInstanceSyncDate)).Select(pln => pln.PlanId).ToList();
+                                if (linkedUpdtPlanIds != null && linkedUpdtPlanIds.Count > 0)
+                                {
+                                    linkedTactic = linkedTactic.Where(tac => tac.LinkedPlanId.HasValue && linkedUpdtPlanIds.Contains(tac.LinkedPlanId.Value)).ToList();
+
+                                    // Add modified tactics to syncTactics list.
+                                    syncTactics.AddRange(linkedTactic);
+
+                                    // remove modified tactics list from updated tactic list and assign to same variable.
+                                    lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !linkedTactic.Contains(updTac)).ToList();
+                                }
+                            }
+                        }
+
+                        #endregion
+                    }
+                    #endregion
+
+                    #region "Tactic Modified date: Get list of tactics updated after last Instance Sync date"
+                    if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0)
+                    {
+                        var lstModifdTactics = lstUpdatedTactic.Where(tac => tac.ModifiedDate >= lastInstanceSyncDate.Value).ToList();
+                        if (lstModifdTactics != null && lstModifdTactics.Count > 0)
+                        {
+                            // Add modified tactics to syncTactics list.
+                            syncTactics.AddRange(lstModifdTactics);
+
+                            // remove modified tactics list from updated tactic list and assign to same variable.
+                            lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstModifdTactics.Contains(updTac)).ToList();
+                        }
+                    }
+                    #endregion
+
+                    #region "Budgeted(Planned) Cost: Get all tactics updated planned cost after last Instance Sync Date"
+                    string strBudgetedCostActualField = "Cost";
+                    if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0 && _mappingTactic.ContainsKey(strBudgetedCostActualField))
+                    {
+                        var lstBdgtCostUpdateTactics = (from updTac in lstUpdatedTactic
+                                                        join bcost in db.Plan_Campaign_Program_Tactic_Cost on updTac.PlanTacticId equals bcost.PlanTacticId
+                                                        where bcost.CreatedDate >= lastInstanceSyncDate
+                                                        select updTac).ToList();
+                        if (lstBdgtCostUpdateTactics != null && lstBdgtCostUpdateTactics.Count > 0)
+                        {
+                            // Add modified tactics to syncTactics list.
+                            syncTactics.AddRange(lstBdgtCostUpdateTactics);
+
+                            // remove modified tactics list from updated tactic list and assign to same variable.
+                            lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstBdgtCostUpdateTactics.Contains(updTac)).ToList();
+                        }
+
+                    }
+                    #endregion
+
+                    #region "Actual Cost: Get all tactics updated actual cost after last Instance Sync Date"
+
+                    if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0 && _mappingTactic.ContainsKey(strActualCostActualField))
+                    {
+                        #region "Get updated tactic for those child line items cost updated"
+                        var lstlineActualCostUpdateTactics = (from updTac in lstUpdatedTactic
+                                                              join line in db.Plan_Campaign_Program_Tactic_LineItem on updTac.PlanTacticId equals line.PlanTacticId
+                                                              join lineCost in db.Plan_Campaign_Program_Tactic_LineItem_Actual on line.PlanLineItemId equals lineCost.PlanLineItemId
+                                                              where line.IsDeleted == true && lineCost.CreatedDate >= lastInstanceSyncDate
+                                                              select updTac).ToList();
+                        if (lstlineActualCostUpdateTactics != null && lstlineActualCostUpdateTactics.Count > 0)
+                        {
+                            // Add modified tactics to syncTactics list.
+                            syncTactics.AddRange(lstlineActualCostUpdateTactics);
+
+                            // remove modified tactics list from updated tactic list and assign to same variable.
+                            lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstlineActualCostUpdateTactics.Contains(updTac)).ToList();
+                        }
+                        #endregion
+
+                        #region "Get updated tactic for those modified it's cost"
+                        if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0)
+                        {
+                            string costStageTitle = "Cost";
+                            var lstActualCostUpdateTactics = (from updTac in lstUpdatedTactic
+                                                              join tacActual in db.Plan_Campaign_Program_Tactic_Actual on updTac.PlanTacticId equals tacActual.PlanTacticId
+                                                              where tacActual.StageTitle == costStageTitle && tacActual.CreatedDate >= lastInstanceSyncDate
+                                                              select updTac).ToList();
+                            if (lstActualCostUpdateTactics != null && lstActualCostUpdateTactics.Count > 0)
+                            {
+                                // Add modified tactics to syncTactics list.
+                                syncTactics.AddRange(lstActualCostUpdateTactics);
+
+                                // remove modified tactics list from updated tactic list and assign to same variable.
+                                lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstActualCostUpdateTactics.Contains(updTac)).ToList();
+                            }
+                        }
+                        #endregion
+
+                    }
+                    #endregion
+                }
+
+                #endregion
+
+                #endregion
+
+                // update "tacticlist" by filtered Created & Updated tactics, if system get lastInstanceSyncDate else remains as it is.
+                if (lastInstanceSyncDate.HasValue)
+                {
+                    tacticList = syncTactics;
+                }
+            }
+            catch (Exception ex)
+            {
+                string exMessage = Common.GetInnermostException(ex);
+                _isResultError = true;
+                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing data with Salesforce.", Enums.SyncStatus.Error, DateTime.Now));
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting last updated tactics: " + exMessage);
+
+            }
+            return tacticList;
         }
 
         private string CreateCampaign(Plan_Campaign planCampaign)
@@ -5701,10 +6617,118 @@ namespace Integration.Salesforce
                 return strActualCost;
             }
         }
+
+        public void UpdateLinkedTacticComment(List<int> lstProcessTacIds, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstCreatedTacIds, List<TacticLinkedTacMapping> lstTac_LinkTacMapping)
+        {
+            string query = string.Empty;
+            try
+            {
+                #region "Update linkedTactic Comment & IntegrationInstanceTacticId"
+                // if any tactic processed(push).
+                if (lstProcessTacIds != null && lstProcessTacIds.Count > 0)
+                {
+                    #region "Declare local varialbles"
+                    // Get created linked TacticIds.
+                    List<int> lstCreateLinkedTacIds = new List<int>();
+                    List<int> lstUpdateTacIds = new List<int>();
+                    List<int> lstUpdateLinkedTacIds = new List<int>();
+                    string strCreatedLinkedTacIds = string.Empty, strUpdatedLinkedTacIds = string.Empty, strCreatedTacIds = string.Empty, strUpdatedTacIds = string.Empty; 
+                    #endregion
+                    
+                    // if linked tactic exist.
+                    if (lstTac_LinkTacMapping != null && lstTac_LinkTacMapping.Count > 0)
+                    {
+                        if (lstCreatedTacIds != null && lstCreatedTacIds.Count > 0)
+                        {
+                            // get only tactics created to SFDC.
+                            lstCreatedTacIds = lstCreatedTacIds.Where(crtId => lstProcessTacIds.Contains(crtId)).ToList();
+                            lstCreateLinkedTacIds = lstTac_LinkTacMapping.Where(tac => lstCreatedTacIds.Contains(tac.PlanTactic.PlanTacticId)).Select(tac => tac.LinkedTactic.PlanTacticId).ToList();
+
+                            // get only tactics update to SFDC.
+                            lstUpdateTacIds = tacticList.Where(tac => !lstCreatedTacIds.Contains(tac.PlanTacticId) && lstProcessTacIds.Contains(tac.PlanTacticId)).Select(tac => tac.PlanTacticId).ToList();
+                        }
+                        else
+                        {
+                            // get only tactics update to SFDC.
+                            lstUpdateTacIds = tacticList.Where(tac => lstProcessTacIds.Contains(tac.PlanTacticId)).Select(tac => tac.PlanTacticId).ToList();
+                        }
+
+                        // Get Updated linked TacIds.
+                        
+                        if (lstUpdateTacIds != null && lstUpdateTacIds.Count > 0)
+                        {
+                            lstUpdateLinkedTacIds = lstTac_LinkTacMapping.Where(tac => lstUpdateTacIds.Contains(tac.PlanTactic.PlanTacticId)).Select(tac => tac.LinkedTactic.PlanTacticId).ToList();
+                        }
+                    }
+                    else
+                    {
+                        // Get list of only tactics but not linked tactics.
+                        if (lstCreatedTacIds != null && lstCreatedTacIds.Count > 0)
+                        {
+                            // get only tactics created to SFDC.
+                            lstCreatedTacIds = lstCreatedTacIds.Where(crtId => lstProcessTacIds.Contains(crtId)).ToList();
+                            // get only tactics update to SFDC.
+                            lstUpdateTacIds = tacticList.Where(tac => !lstCreatedTacIds.Contains(tac.PlanTacticId) && lstProcessTacIds.Contains(tac.PlanTacticId)).Select(tac => tac.PlanTacticId).ToList();
+                        }
+                        else
+                        {
+                            // get only tactics update to SFDC.
+                            lstUpdateTacIds = tacticList.Where(tac => lstProcessTacIds.Contains(tac.PlanTacticId)).Select(tac => tac.PlanTacticId).ToList();
+                        }
+                    }
+
+                    #region "Linked Tactic: Create comma separated created & updated linked tactic"
+                    if (lstCreateLinkedTacIds != null && lstCreateLinkedTacIds.Count > 0)
+                        strCreatedLinkedTacIds = string.Join(",", lstCreateLinkedTacIds);
+                    if (lstUpdateLinkedTacIds != null && lstUpdateLinkedTacIds.Count > 0)
+                        strUpdatedLinkedTacIds = string.Join(",", lstUpdateLinkedTacIds);
+                    #endregion
+
+                    #region "Plan Tactic: Create comma separated created & updated Plan Tactic Ids"
+                    if (lstCreatedTacIds != null && lstCreatedTacIds.Count > 0)
+                        strCreatedTacIds = string.Join(",", lstCreatedTacIds);
+                    if (lstUpdateTacIds != null && lstUpdateTacIds.Count > 0)
+                        strUpdatedTacIds = string.Join(",", lstUpdateTacIds);
+                    #endregion
+
+                    
+
+                    MRPEntities mp = new MRPEntities();
+                    SqlConnection conn = new SqlConnection();
+                    conn.ConnectionString = mp.Database.Connection.ConnectionString;
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("UpdateTacticInstanceTacticId_Comment",conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@strCreatedTacIds",strCreatedTacIds);
+                    cmd.Parameters.AddWithValue("@strUpdatedTacIds", strUpdatedTacIds);
+                    cmd.Parameters.AddWithValue("@strUpdateComment", Common.TacticUpdatedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString());
+                    cmd.Parameters.AddWithValue("@strCreateComment", Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString());
+                    cmd.Parameters.AddWithValue("@isAutoSync", Common.IsAutoSync);
+                    cmd.Parameters.AddWithValue("@userId", _userId);
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    mp.Dispose();
+                }
+
+                #endregion
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 }
 public class linkedTacticMultipleList
 {
     public int LinkedTacticId { get; set; }
     public List<string> lstLinkedPeriods { get; set; }
+}
+public class TacticLinkedTacMapping
+{
+    public Plan_Campaign_Program_Tactic PlanTactic { get; set; }
+    public Plan_Campaign_Program_Tactic LinkedTactic { get; set; }
+    public string PlanName { get; set; }
 }

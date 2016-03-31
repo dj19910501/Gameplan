@@ -5182,6 +5182,8 @@ namespace RevenuePlanner.Controllers
                                     db.Entry(objTacticBudget).State = EntityState.Added;
                                 }
                             }
+                            objTactic.ModifiedBy = Sessions.User.UserId;
+                            objTactic.ModifiedDate = DateTime.Now;
                             db.Entry(objTactic).State = EntityState.Modified;
                         }
                         db.SaveChanges();
@@ -5227,6 +5229,8 @@ namespace RevenuePlanner.Controllers
                             db.Entry(objtacticbudget).State = EntityState.Added;
                         }
                         objTactic.TacticBudget = yearlyBudget;
+                        objTactic.ModifiedBy = Sessions.User.UserId;
+                        objTactic.ModifiedDate = DateTime.Now;
                         db.Entry(objTactic).State = EntityState.Modified;
                     }
                     db.SaveChanges();
@@ -5401,6 +5405,8 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                                 objTactic.Cost = yearlycost;
+                                objTactic.ModifiedBy = Sessions.User.UserId;
+                                objTactic.ModifiedDate = DateTime.Now;
                                 db.Entry(objTactic).State = EntityState.Modified;
                                 //// Calculate Total LineItem Cost.
                                 Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
@@ -5634,6 +5640,8 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                                 objTactic.Cost = yearlycost;
+                                objTactic.ModifiedBy = Sessions.User.UserId;
+                                objTactic.ModifiedDate = DateTime.Now;
                                 db.Entry(objTactic).State = EntityState.Modified;
                                 //// Calculate Total LineItem Cost.
                                 Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
@@ -5781,6 +5789,8 @@ namespace RevenuePlanner.Controllers
                                     db.Entry(objTacticBudget).State = EntityState.Added;
                                 }
                             }
+                            objTactic.ModifiedBy = Sessions.User.UserId;
+                            objTactic.ModifiedDate = DateTime.Now;
                             db.Entry(objTactic).State = EntityState.Modified;
                         }
                     }
@@ -5943,6 +5953,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 objLineitem.Cost = yearlycost;
                                 db.Entry(objLineitem).State = EntityState.Modified;
+                                objTactic.ModifiedBy = Sessions.User.UserId;
+                                objTactic.ModifiedDate = DateTime.Now;
                                 db.Entry(objTactic).State = EntityState.Modified;
                                 //// Calculate Total LineItem Cost.
                                 Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
@@ -6219,7 +6231,8 @@ namespace RevenuePlanner.Controllers
                                         objTactic.Cost = objTactic.Cost + diffCost;
                                     }
                                 }
-
+                                objTactic.ModifiedBy = Sessions.User.UserId;
+                                objTactic.ModifiedDate = DateTime.Now;
                                 db.Entry(objTactic).State = EntityState.Modified;
                                 db.Entry(objLineitem).State = EntityState.Modified;
                                 //// Calculate Total LineItem Cost.
@@ -6261,7 +6274,12 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (tab == Enums.BudgetTab.Actual.ToString())
                         {
+                            Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
                             var objLineTactic = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcpt => pcpt.PlanLineItemId == EntityId && pcpt.IsDeleted.Equals(false)).FirstOrDefault();
+                            if (objLineTactic != null)
+                            {
+                                objTactic = objLineTactic.Plan_Campaign_Program_Tactic;
+                            }
                             if (!isquarter)
                             {
                                 if (objLineTactic.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(pcptc => pcptc.Period == period).Any())
@@ -6365,6 +6383,12 @@ namespace RevenuePlanner.Controllers
                                     objTacticBudget.CreatedDate = DateTime.Now;
                                     db.Entry(objTacticBudget).State = EntityState.Added;
                                 }
+                            }
+                            if (objTactic != null && objTactic.PlanTacticId > 0)
+                            {
+                                objTactic.ModifiedBy = Sessions.User.UserId;
+                                objTactic.ModifiedDate = DateTime.Now;
+                                db.Entry(objTactic).State = EntityState.Modified;
                             }
                             db.Entry(objLineTactic).State = EntityState.Modified;
                         }
@@ -6491,7 +6515,8 @@ namespace RevenuePlanner.Controllers
                             }
                             db.Entry(objOtherLineItem).State = EntityState.Modified;
                         }
-
+                        pcpobj.ModifiedBy = Sessions.User.UserId;
+                        pcpobj.ModifiedDate = DateTime.Now;
                         db.Entry(pcpobj).State = EntityState.Modified;
 
                         //End
@@ -6551,7 +6576,7 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(objtacticCost).State = EntityState.Added;
                                 objTactic.Cost = objTactic.Cost + tacticlineitemcostmonth;
                             }
-                            db.Entry(objTactic).State = EntityState.Modified;
+
                         }
                         else if (YearlyCost < objLineitem.Cost)
                         {
@@ -6628,7 +6653,9 @@ namespace RevenuePlanner.Controllers
                         }
 
                         db.Entry(objLineitem).State = EntityState.Modified;
-
+                        objTactic.ModifiedBy = Sessions.User.UserId;
+                        objTactic.ModifiedDate = DateTime.Now;
+                        db.Entry(objTactic).State = EntityState.Modified;
                         //End
                     }
                 }
@@ -11063,7 +11090,13 @@ namespace RevenuePlanner.Controllers
 
                     }
                     if (linkedTacticId > 0)
+                    {
+                        linkedTactic.ModifiedBy = Sessions.User.UserId;
+                        linkedTactic.ModifiedDate = DateTime.Now;
                         db.Entry(linkedTactic).State = EntityState.Modified;
+                    }
+                    pcpobj.ModifiedBy = Sessions.User.UserId;
+                    pcpobj.ModifiedDate = DateTime.Now;
                     db.Entry(pcpobj).State = EntityState.Modified;
                     db.SaveChanges();
                     int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
@@ -11497,7 +11530,7 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(objtacticCost).State = EntityState.Added;
                                 objTactic.Cost = objTactic.Cost + tacticlineitemcostmonth;
                             }
-                            db.Entry(objTactic).State = EntityState.Modified;
+                            
                             #endregion
 
                             //if (tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
@@ -11731,7 +11764,17 @@ namespace RevenuePlanner.Controllers
 
                         }
 
+                        objTactic.ModifiedBy = Sessions.User.UserId;
+                        objTactic.ModifiedDate = DateTime.Now;
+                        db.Entry(objTactic).State = EntityState.Modified;
 
+                        if (ObjLinkedTactic != null)
+                        {
+                            ObjLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                            ObjLinkedTactic.ModifiedDate = DateTime.Now;
+                            db.Entry(ObjLinkedTactic).State = EntityState.Modified;
+                        }
+                        db.SaveChanges();
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {

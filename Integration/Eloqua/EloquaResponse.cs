@@ -385,8 +385,11 @@ namespace Integration.Eloqua
                                             {
                                                 objlinkedTactic = new Plan_Campaign_Program_Tactic();
                                                 objlinkedTactic = tblTactic.Where(tac => (tac.PlanTacticId == linkedTacticId) && (tac.IsDeleted == false)).FirstOrDefault();
+                                                if (objlinkedTactic != null)
+                                                {
                                                 objlinkedTactic.IntegrationInstanceEloquaId = strEloquaId;
                                                 db.Entry(objlinkedTactic).State = EntityState.Modified;
+                                            }
                                             }
                                             #endregion
                                         }
@@ -531,6 +534,8 @@ namespace Integration.Eloqua
                                         numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
                                         NumPeriod = int.Parse(numPeriod);
                                         linkedTactic = tblTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                        if (linkedTactic != null)
+                                        {
                                         yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
                                         
                                         if (yearDiff > 0) //Is linked tactic Multiyear
@@ -544,6 +549,7 @@ namespace Integration.Eloqua
                                                 if (rem > 0 || div > 1)
                                                 {
                                                     lnkePeriod = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
+                                                    }
                                                 }
                                             }
                                         }
@@ -634,9 +640,12 @@ namespace Integration.Eloqua
                                 {
                                     Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
                                     objLinkedTactic = tblTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                    if (objLinkedTactic != null)
+                                    {
                                     objLinkedTactic.LastSyncDate = DateTime.Now;
                                     objLinkedTactic.ModifiedDate = DateTime.Now;
                                     objLinkedTactic.ModifiedBy = _userId;
+                                    }
                                 }
 
                                 // Insert Log
@@ -950,8 +959,11 @@ namespace Integration.Eloqua
                                             {
                                                 objlinkedTactic = new Plan_Campaign_Program_Tactic();
                                                 objlinkedTactic = tblTactic.Where(tac => (tac.PlanTacticId == linkedTacticId) && (tac.IsDeleted == false)).FirstOrDefault();
+                                                if (objlinkedTactic != null)
+                                                {
                                                 objlinkedTactic.IntegrationInstanceEloquaId = eloquaId;
                                                 db.Entry(objlinkedTactic).State = EntityState.Modified;
+                                            } 
                                             } 
                                         #endregion
                                     }
@@ -1068,6 +1080,8 @@ namespace Integration.Eloqua
                                         numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
                                         NumPeriod = int.Parse(numPeriod);
                                         linkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                        if (linkedTactic != null)
+                                        {
                                         yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
 
                                         if (yearDiff > 0) //Is linked tactic Multiyear
@@ -1081,6 +1095,7 @@ namespace Integration.Eloqua
                                                 if (rem > 0 || div > 1)
                                                 {
                                                     lnkePeriod = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
+                                                    }
                                                 }
                                             }
                                         }
@@ -1124,9 +1139,12 @@ namespace Integration.Eloqua
                                 {
                                     Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
                                     objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                    if (objLinkedTactic != null)
+                                    {
                                     objLinkedTactic.LastSyncDate = DateTime.Now;
                                     objLinkedTactic.ModifiedDate = DateTime.Now;
                                     objLinkedTactic.ModifiedBy = _userId;
+                                    }
                                 } 
                                 #endregion
 
@@ -1256,6 +1274,8 @@ namespace Integration.Eloqua
                                         numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
                                         NumPeriod = int.Parse(numPeriod);
                                         linkedTactic = tblUnProcessedPlanTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                        if (linkedTactic != null)
+                                        {
                                         yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
 
                                         if (yearDiff > 0) //Is linked tactic Multiyear
@@ -1269,6 +1289,7 @@ namespace Integration.Eloqua
                                                 if (rem > 0 || div > 1)
                                                 {
                                                     lnkePeriod = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
+                                                    }
                                                 }
                                             }
                                         }
@@ -1313,9 +1334,12 @@ namespace Integration.Eloqua
                                 {
                                     Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
                                     objLinkedTactic = tblUnProcessedPlanTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                    if (objLinkedTactic != null)
+                                    {
                                     objLinkedTactic.LastSyncDate = DateTime.Now;
                                     objLinkedTactic.ModifiedDate = DateTime.Now;
                                     objLinkedTactic.ModifiedBy = _userId;
+                                    }
                                 }
                                 #endregion
 
