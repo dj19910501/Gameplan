@@ -841,6 +841,22 @@
 
         //Added by Rahul Shah for PL #1898
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+
+            //Added by Maitri Gandhi for #2040 on 31/3/2016
+            var cookie = document.cookie;
+            if (cookie.indexOf("gridOpen") > -1) {
+                var cookies = cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    if (cookies[i].indexOf("gridOpen") > -1) {
+                        cookies[i] = "gridOpen=plan.1";
+                    }
+                } document.cookie = "gridOpen=plan.1";
+                //document.cookie = cookies.join(';');
+            }
+            else {
+                //cookie += "; gridOpen=plan.1";
+                document.cookie = "gridOpen=plan.1";
+            }
             CurrentPlanId = $(this).attr('value');
             IsSavedPlan = $("#CurrentPlanId").val();
             if ((IsSavedPlan.indexOf(CurrentPlanId.toString()) <= -1 || IsSavedPlan == null)) {
