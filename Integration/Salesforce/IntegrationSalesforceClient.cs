@@ -3040,162 +3040,162 @@ namespace Integration.Salesforce
                                             {
                                                 db.Configuration.AutoDetectChangesEnabled = false;
                                             foreach (var tactic in lstMergedTactics)
-                                                {
-                                                    try
                                             {
-                                                var innerOpportunityMember = OpportunityMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
-                                                int lnkdTacId = 0;
-                                                if (lstlinkedTacticMapping != null && lstlinkedTacticMapping.Count > 0)
-                                                    lnkdTacId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == tactic.PlanTacticId).Value;
-                                                
-                                                foreach (var objOpportunityMember in innerOpportunityMember)
+                                                try
                                                 {
-                                                    var innertacticactualcw = OuteractualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageCW);
-                                                    if (innertacticactualcw != null && isDoneFirstPullCW)
+                                                    var innerOpportunityMember = OpportunityMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
+                                                    int lnkdTacId = 0;
+                                                    if (lstlinkedTacticMapping != null && lstlinkedTacticMapping.Count > 0)
+                                                        lnkdTacId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == tactic.PlanTacticId).Value;
+                                                    
+                                                    foreach (var objOpportunityMember in innerOpportunityMember)
                                                     {
-                                                        innertacticactualcw.Actualvalue = innertacticactualcw.Actualvalue + objOpportunityMember.Count;
-                                                        innertacticactualcw.ModifiedDate = DateTime.Now;
-                                                        innertacticactualcw.ModifiedBy = _userId;
-                                                        db.Entry(innertacticactualcw).State = EntityState.Modified;
-                                                    }
-                                                    else
-                                                    {
-                                                        Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                                        objPlanTacticActual.PlanTacticId = objOpportunityMember.TacticId;
-                                                        objPlanTacticActual.Period = objOpportunityMember.Period;
-                                                        objPlanTacticActual.StageTitle = Common.StageCW;
-                                                        objPlanTacticActual.Actualvalue = objOpportunityMember.Count;
-                                                        objPlanTacticActual.CreatedBy = _userId;
-                                                        objPlanTacticActual.CreatedDate = DateTime.Now;
-                                                        db.Entry(objPlanTacticActual).State = EntityState.Added;
-                                                        ProcessedCWCount = ProcessedCWCount + objOpportunityMember.Count;
-                                                    }
-
-                                                    var innertacticactualrevenue = OuteractualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageRevenue);
-                                                    if (innertacticactualrevenue != null && isDoneFirstPullCW)
-                                                    {
-                                                        innertacticactualrevenue.Actualvalue = innertacticactualrevenue.Actualvalue + objOpportunityMember.Revenue;
-                                                        innertacticactualrevenue.ModifiedDate = DateTime.Now;
-                                                        innertacticactualrevenue.ModifiedBy = _userId;
-                                                        db.Entry(innertacticactualrevenue).State = EntityState.Modified;
-                                                    }
-                                                    else
-                                                    {
-                                                        Plan_Campaign_Program_Tactic_Actual objPlanTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
-                                                        objPlanTacticActualRevenue.PlanTacticId = objOpportunityMember.TacticId;
-                                                        objPlanTacticActualRevenue.Period = objOpportunityMember.Period;
-                                                        objPlanTacticActualRevenue.StageTitle = Common.StageRevenue;
-                                                        objPlanTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
-                                                        objPlanTacticActualRevenue.CreatedBy = _userId;
-                                                        objPlanTacticActualRevenue.CreatedDate = DateTime.Now;
-                                                        db.Entry(objPlanTacticActualRevenue).State = EntityState.Added;
-                                                    }
-
-                                                    #region "Add/Update  Linked Tactic Actuals"
-                                                    if (lnkdTacId > 0)
-                                                    {
-                                                        LinkedActualTacticList = tblPlanActual.Where(actual => actual.PlanTacticId == lnkdTacId).ToList();
-                                                        string orgPeriod = objOpportunityMember.Period;
-                                                        string numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
-                                                        int NumPeriod = int.Parse(numPeriod), yearDiff=1;
-                                                        string lnkePeriod = string.Empty;
-                                                        //int yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
-                                                        if (lstMultiLinkedTactic.ToList().Any(tacId => tacId == lnkdTacId)) //Is linked tactic Multiyear
-                                                            lnkePeriod = PeriodChar + ((12 * yearDiff) + NumPeriod).ToString();   // (12*1)+3 = 15 => For March(Y15) month. 
+                                                        var innertacticactualcw = OuteractualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageCW);
+                                                        if (innertacticactualcw != null && isDoneFirstPullCW)
+                                                        {
+                                                            innertacticactualcw.Actualvalue = innertacticactualcw.Actualvalue + objOpportunityMember.Count;
+                                                            innertacticactualcw.ModifiedDate = DateTime.Now;
+                                                            innertacticactualcw.ModifiedBy = _userId;
+                                                            db.Entry(innertacticactualcw).State = EntityState.Modified;
+                                                        }
                                                         else
                                                         {
-                                                            if (NumPeriod > 12)
-                                                            {
-                                                                int rem = NumPeriod % 12;    // For March, Y3(i.e 15%12 = 3)  
-                                                                int div = NumPeriod / 12;    // In case of 24, Y12.
-                                                                if (rem > 0 || div > 1)
-                                                                {
-                                                                    lnkePeriod = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
-                                                                }
-                                                            }
-                                                            //lnkePeriod = 
+                                                            Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                                            objPlanTacticActual.PlanTacticId = objOpportunityMember.TacticId;
+                                                            objPlanTacticActual.Period = objOpportunityMember.Period;
+                                                            objPlanTacticActual.StageTitle = Common.StageCW;
+                                                            objPlanTacticActual.Actualvalue = objOpportunityMember.Count;
+                                                            objPlanTacticActual.CreatedBy = _userId;
+                                                            objPlanTacticActual.CreatedDate = DateTime.Now;
+                                                            db.Entry(objPlanTacticActual).State = EntityState.Added;
+                                                            ProcessedCWCount = ProcessedCWCount + objOpportunityMember.Count;
                                                         }
 
-                                                        if (!string.IsNullOrEmpty(lnkePeriod))
+                                                        var innertacticactualrevenue = OuteractualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageRevenue);
+                                                        if (innertacticactualrevenue != null && isDoneFirstPullCW)
                                                         {
-                                                            var lnkdActualCW = LinkedActualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == lnkdTacId && tacticActual.Period == lnkePeriod && tacticActual.StageTitle == Common.StageCW);
-                                                            if (lnkdActualCW != null && isDoneFirstPullCW)
-                                                            {
-                                                                lnkdActualCW.Actualvalue = innertacticactualcw.Actualvalue + objOpportunityMember.Count;
-                                                                lnkdActualCW.ModifiedDate = DateTime.Now;
-                                                                lnkdActualCW.ModifiedBy = _userId;
-                                                                db.Entry(lnkdActualCW).State = EntityState.Modified;
-                                                            }
-                                                            else
-                                                            {
-                                                                Plan_Campaign_Program_Tactic_Actual objlnkdTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                                                objlnkdTacticActual.PlanTacticId = lnkdTacId;
-                                                                objlnkdTacticActual.Period = lnkePeriod;
-                                                                objlnkdTacticActual.StageTitle = Common.StageCW;
-                                                                objlnkdTacticActual.Actualvalue = objOpportunityMember.Count;
-                                                                objlnkdTacticActual.CreatedBy = _userId;
-                                                                objlnkdTacticActual.CreatedDate = DateTime.Now;
-                                                                db.Entry(objlnkdTacticActual).State = EntityState.Added;
-                                                            }
-
-                                                            var lnkdActualRevenue = LinkedActualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == lnkdTacId && tacticActual.Period == lnkePeriod && tacticActual.StageTitle == Common.StageRevenue);
-                                                            if (lnkdActualRevenue != null && isDoneFirstPullCW)
-                                                            {
-                                                                lnkdActualRevenue.Actualvalue = innertacticactualrevenue.Actualvalue + objOpportunityMember.Revenue;
-                                                                lnkdActualRevenue.ModifiedDate = DateTime.Now;
-                                                                lnkdActualRevenue.ModifiedBy = _userId;
-                                                                db.Entry(lnkdActualRevenue).State = EntityState.Modified;
-                                                            }
-                                                            else
-                                                            {
-                                                                Plan_Campaign_Program_Tactic_Actual objlnkdTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
-                                                                objlnkdTacticActualRevenue.PlanTacticId = lnkdTacId;
-                                                                objlnkdTacticActualRevenue.Period = lnkePeriod;
-                                                                objlnkdTacticActualRevenue.StageTitle = Common.StageRevenue;
-                                                                objlnkdTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
-                                                                objlnkdTacticActualRevenue.CreatedBy = _userId;
-                                                                objlnkdTacticActualRevenue.CreatedDate = DateTime.Now;
-                                                                db.Entry(objlnkdTacticActualRevenue).State = EntityState.Added;
-                                                            } 
+                                                            innertacticactualrevenue.Actualvalue = innertacticactualrevenue.Actualvalue + objOpportunityMember.Revenue;
+                                                            innertacticactualrevenue.ModifiedDate = DateTime.Now;
+                                                            innertacticactualrevenue.ModifiedBy = _userId;
+                                                            db.Entry(innertacticactualrevenue).State = EntityState.Modified;
                                                         }
-                                                    } 
-                                                    #endregion
-                                                }
-
-                                                tactic.LastSyncDate = DateTime.Now;
-                                                tactic.ModifiedDate = DateTime.Now;
-                                                tactic.ModifiedBy = _userId;
-
-                                                // Update linked Tactic LastSyncDate,ModifiedDate & ModifiedBy.
-                                                if (lnkdTacId > 0) // check whether linkedTactics exist or not.
-                                                {
-                                                    Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
-                                                    objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == lnkdTacId).FirstOrDefault();
-                                                            if (objLinkedTactic != null)
-                                                            {
-                                                    objLinkedTactic.LastSyncDate = DateTime.Now;
-                                                    objLinkedTactic.ModifiedDate = DateTime.Now;
-                                                    objLinkedTactic.ModifiedBy = _userId;
-                                                }
+                                                        else
+                                                        {
+                                                            Plan_Campaign_Program_Tactic_Actual objPlanTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
+                                                            objPlanTacticActualRevenue.PlanTacticId = objOpportunityMember.TacticId;
+                                                            objPlanTacticActualRevenue.Period = objOpportunityMember.Period;
+                                                            objPlanTacticActualRevenue.StageTitle = Common.StageRevenue;
+                                                            objPlanTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
+                                                            objPlanTacticActualRevenue.CreatedBy = _userId;
+                                                            objPlanTacticActualRevenue.CreatedDate = DateTime.Now;
+                                                            db.Entry(objPlanTacticActualRevenue).State = EntityState.Added;
                                                         }
 
-                                                IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                                                instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-                                                instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-                                                instanceTactic.EntityId = tactic.PlanTacticId;
-                                                instanceTactic.EntityType = EntityType.Tactic.ToString();
-                                                instanceTactic.Status = StatusResult.Success.ToString();
-                                                instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
-                                                instanceTactic.SyncTimeStamp = DateTime.Now;
-                                                instanceTactic.CreatedDate = DateTime.Now;
-                                                instanceTactic.CreatedBy = _userId;
-                                                db.Entry(instanceTactic).State = EntityState.Added;
+                                                        #region "Add/Update  Linked Tactic Actuals"
+                                                        if (lnkdTacId > 0)
+                                                        {
+                                                            LinkedActualTacticList = tblPlanActual.Where(actual => actual.PlanTacticId == lnkdTacId).ToList();
+                                                            string orgPeriod = objOpportunityMember.Period;
+                                                            string numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
+                                                            int NumPeriod = int.Parse(numPeriod), yearDiff=1;
+                                                            string lnkePeriod = string.Empty;
+                                                            //int yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+                                                            if (lstMultiLinkedTactic.ToList().Any(tacId => tacId == lnkdTacId)) //Is linked tactic Multiyear
+                                                                lnkePeriod = PeriodChar + ((12 * yearDiff) + NumPeriod).ToString();   // (12*1)+3 = 15 => For March(Y15) month. 
+                                                            else
+                                                            {
+                                                                if (NumPeriod > 12)
+                                                                {
+                                                                    int rem = NumPeriod % 12;    // For March, Y3(i.e 15%12 = 3)  
+                                                                    int div = NumPeriod / 12;    // In case of 24, Y12.
+                                                                    if (rem > 0 || div > 1)
+                                                                    {
+                                                                        lnkePeriod = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
+                                                                    }
+                                                                }
+                                                                //lnkePeriod = 
+                                                            }
+
+                                                            if (!string.IsNullOrEmpty(lnkePeriod))
+                                                            {
+                                                                var lnkdActualCW = LinkedActualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == lnkdTacId && tacticActual.Period == lnkePeriod && tacticActual.StageTitle == Common.StageCW);
+                                                                if (lnkdActualCW != null && isDoneFirstPullCW)
+                                                                {
+                                                                    lnkdActualCW.Actualvalue = innertacticactualcw.Actualvalue + objOpportunityMember.Count;
+                                                                    lnkdActualCW.ModifiedDate = DateTime.Now;
+                                                                    lnkdActualCW.ModifiedBy = _userId;
+                                                                    db.Entry(lnkdActualCW).State = EntityState.Modified;
+                                                                }
+                                                                else
+                                                                {
+                                                                    Plan_Campaign_Program_Tactic_Actual objlnkdTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                                                    objlnkdTacticActual.PlanTacticId = lnkdTacId;
+                                                                    objlnkdTacticActual.Period = lnkePeriod;
+                                                                    objlnkdTacticActual.StageTitle = Common.StageCW;
+                                                                    objlnkdTacticActual.Actualvalue = objOpportunityMember.Count;
+                                                                    objlnkdTacticActual.CreatedBy = _userId;
+                                                                    objlnkdTacticActual.CreatedDate = DateTime.Now;
+                                                                    db.Entry(objlnkdTacticActual).State = EntityState.Added;
+                                                                }
+
+                                                                var lnkdActualRevenue = LinkedActualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == lnkdTacId && tacticActual.Period == lnkePeriod && tacticActual.StageTitle == Common.StageRevenue);
+                                                                if (lnkdActualRevenue != null && isDoneFirstPullCW)
+                                                                {
+                                                                    lnkdActualRevenue.Actualvalue = innertacticactualrevenue.Actualvalue + objOpportunityMember.Revenue;
+                                                                    lnkdActualRevenue.ModifiedDate = DateTime.Now;
+                                                                    lnkdActualRevenue.ModifiedBy = _userId;
+                                                                    db.Entry(lnkdActualRevenue).State = EntityState.Modified;
+                                                                }
+                                                                else
+                                                                {
+                                                                    Plan_Campaign_Program_Tactic_Actual objlnkdTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
+                                                                    objlnkdTacticActualRevenue.PlanTacticId = lnkdTacId;
+                                                                    objlnkdTacticActualRevenue.Period = lnkePeriod;
+                                                                    objlnkdTacticActualRevenue.StageTitle = Common.StageRevenue;
+                                                                    objlnkdTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
+                                                                    objlnkdTacticActualRevenue.CreatedBy = _userId;
+                                                                    objlnkdTacticActualRevenue.CreatedDate = DateTime.Now;
+                                                                    db.Entry(objlnkdTacticActualRevenue).State = EntityState.Added;
+                                                                } 
+                                                            }
+                                                        } 
+                                                        #endregion
                                                     }
-                                                    catch (Exception ex)
+
+                                                    tactic.LastSyncDate = DateTime.Now;
+                                                    tactic.ModifiedDate = DateTime.Now;
+                                                    tactic.ModifiedBy = _userId;
+
+                                                    // Update linked Tactic LastSyncDate,ModifiedDate & ModifiedBy.
+                                                    if (lnkdTacId > 0) // check whether linkedTactics exist or not.
                                                     {
-                                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Error occurred on insert CW on Actual table : TacticId-" + tactic.PlanTacticId.ToString() + Common.GetInnermostException(ex));
+                                                        Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                                        objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == lnkdTacId).FirstOrDefault();
+                                                        if (objLinkedTactic != null)
+                                                        {
+                                                            objLinkedTactic.LastSyncDate = DateTime.Now;
+                                                            objLinkedTactic.ModifiedDate = DateTime.Now;
+                                                            objLinkedTactic.ModifiedBy = _userId;
+                                                        }
                                                     }
+
+                                                    IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                                    instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                                                    instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                                                    instanceTactic.EntityId = tactic.PlanTacticId;
+                                                    instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                                    instanceTactic.Status = StatusResult.Success.ToString();
+                                                    instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
+                                                    instanceTactic.SyncTimeStamp = DateTime.Now;
+                                                    instanceTactic.CreatedDate = DateTime.Now;
+                                                    instanceTactic.CreatedBy = _userId;
+                                                    db.Entry(instanceTactic).State = EntityState.Added;
                                                 }
+                                                catch (Exception ex)
+                                                {
+                                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Error occurred on insert CW on Actual table : TacticId-" + tactic.PlanTacticId.ToString() + Common.GetInnermostException(ex));
+                                                }
+                                            }
                                             }
                                             finally
                                             {
@@ -5346,6 +5346,7 @@ namespace Integration.Salesforce
                     List<int> tacticIdList = new List<int>();
                     List<int> LinkedTacticIds = new List<int>();
                     List<Plan> lstPlan = new List<Plan>();
+                    List<int> planIds = new List<int>();
                     List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
                     List<Plan_Campaign_Program> programList = new List<Plan_Campaign_Program>();
                     List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
@@ -5394,7 +5395,7 @@ namespace Integration.Salesforce
                         lstPlan = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
                         if (lstPlan != null && lstPlan.Count > 0)
                         {
-                            List<int> planIds = lstPlan.Select(p => p.PlanId).ToList();
+                            planIds = lstPlan.Select(p => p.PlanId).ToList();
                             campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && !campaign.IsDeleted).ToList();
                             campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
                             programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
@@ -5586,6 +5587,17 @@ namespace Integration.Salesforce
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details Start.");
                         UpdateLinkedTacticComment(lstProcessTacIds, tacticList, lstCreatedTacIds, lstTac_LinkTacMapping);
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details End.");
+                        if (!EntityType.Campaign.Equals(_entityType))
+                        {
+                            #region "Sync Improvement Tactic Data"
+                            List<Plan_Improvement_Campaign_Program_Tactic> improvetacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && statusList.Contains(tactic.Status) && !tactic.IsDeleted && tactic.IsDeployedToIntegration == true).ToList();
+                            if (improvetacticList.Count > 0)
+                            {
+                                List<int> lstimprovetacticIds = new List<int>();
+                                SyncEntityData<Plan_Improvement_Campaign_Program_Tactic>(EntityType.ImprovementTactic.ToString(), improvetacticList, lstimprovetacticIds, ref lstProcessTacIds);         // Push Tactics to SFDC.
+                            }
+                            #endregion
+                        }
                     }
             }
             catch (Exception ex)
@@ -5623,20 +5635,21 @@ namespace Integration.Salesforce
                         // Get ActualCost for all tactics if user has made mapping of ActualCost under Instance configuration.
                         if (EntityType.Tactic.ToString().Equals(entityType) && _mappingTactic.ContainsKey(strActualCostActualField))
                             _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(entityIdList);
-
-                        #region "Get Entity CustomFieldlist"
-                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for " + entityType + ".");
-                        if (_mappingCustomFields != null && _mappingCustomFields.Count > 0)
-                            _mappingCustomFields.AddRange(CreateMappingCustomFieldDictionary(entityIdList, entityType));
-                        else
+                        if (!EntityType.ImprovementTactic.ToString().Equals(entityType))
                         {
-                            _mappingCustomFields = new List<CustomFiledMapping>();
-                            _mappingCustomFields = CreateMappingCustomFieldDictionary(entityIdList, entityType);
+                            #region "Get Entity CustomFieldlist"
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for " + entityType + ".");
+                            if (_mappingCustomFields != null && _mappingCustomFields.Count > 0)
+                                _mappingCustomFields.AddRange(CreateMappingCustomFieldDictionary(entityIdList, entityType));
+                            else
+                            {
+                                _mappingCustomFields = new List<CustomFiledMapping>();
+                                _mappingCustomFields = CreateMappingCustomFieldDictionary(entityIdList, entityType);
+                            }
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for " + entityType + ".");
+
+                            #endregion
                         }
-                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for " + entityType + ".");
-
-                        #endregion
-
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync" + entityType + "Data process start.");
                         page = 0;
                         total = entityList.Count;
@@ -5699,6 +5712,27 @@ namespace Integration.Salesforce
                                     {
                                         lstPagedEntityList[index] = SyncTacticData(lstPagedEntityList[index], ref sbMessage);
                                         lstProcessTacIds.Add(lstPagedEntityList[index].PlanTacticId);
+                                        #region "Old Code"
+                                        // Save 10 log records to Table.
+                                        //if (((index + 1) % logRecordSize) == 0)
+                                        //{
+                                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                        //    sbMessage = new StringBuilder();
+                                        //} 
+                                        #endregion
+                                    }
+                                }
+                            }
+                            else if (EntityType.ImprovementTactic.ToString().Equals(entityType) && entityList is List<Plan_Improvement_Campaign_Program_Tactic>)
+                            {
+                                lstPagedEntityList = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                                lstPagedEntityList = entityList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList() as List<Plan_Improvement_Campaign_Program_Tactic>;
+                                if (lstPagedEntityList != null && lstPagedEntityList.Count > 0)
+                                {
+                                    for (int index = 0; index < lstPagedEntityList.Count; index++)
+                                    {
+                                        lstPagedEntityList[index] = SyncImprovementData(lstPagedEntityList[index], ref sbMessage);
+                                        lstProcessTacIds.Add(lstPagedEntityList[index].ImprovementPlanTacticId);
                                         #region "Old Code"
                                         // Save 10 log records to Table.
                                         //if (((index + 1) % logRecordSize) == 0)
