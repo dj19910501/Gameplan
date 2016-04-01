@@ -575,11 +575,28 @@
     function onClickPlanTitle() {
 
         var IsSavedPlan = null;
-
+        
 
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            CurrentPlanId = $(this).attr('value');
 
+            //Added by Maitri Gandhi for #2040 on 31/3/2016            
+            var cookie = document.cookie;
+            if (cookie.indexOf("gridOpen") > -1) {
+                var cookies = cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    if (cookies[i].indexOf("gridOpen") > -1) {
+                        cookies[i] = "gridOpen=plan.1";
+                    }
+                }
+                //document.cookie = cookies.join(';');
+                document.cookie = "gridOpen=plan.1";
+            }
+            else {
+                //cookie += "; gridOpen=plan.1";
+                document.cookie = "gridOpen=plan.1";
+            }
+
+            CurrentPlanId = $(this).attr('value');
             IsSavedPlan = $("#CurrentPlanId").val();
 
             $("#CurrentPlanId").val(CurrentPlanId);
@@ -2276,6 +2293,22 @@
     var IsUpdate = false;
     var SavePresetValue = false;
     function UpdatePlan() {
+        //Added by Maitri Gandhi for #2040 on 31/3/2016
+        var cookie = document.cookie;
+        if (cookie.indexOf("gridOpen") > -1) {
+            var cookies = cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                if (cookies[i].indexOf("gridOpen") > -1) {
+                    cookies[i] = "gridOpen=plan.1";
+                }
+            }
+            //document.cookie = cookies.join(';');
+            document.cookie = "gridOpen=plan.1";
+        }
+        else {
+            //cookie += "; gridOpen=plan.1";
+            document.cookie = "gridOpen=plan.1";
+        }
         IsUpdate = true;
         isRequest = false;
 
@@ -2313,6 +2346,21 @@
     }
     //Added By Maitri Gandhi on 24/2/2016 For #2014
     function ApplyFilters() {
+        //Added by Maitri Gandhi for #2040 on 31/3/2016
+        var cookie = document.cookie;
+        if (cookie.indexOf("gridOpen") > -1) {
+            var cookies = cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                if (cookies[i].indexOf("gridOpen") > -1) {
+                    cookies[i] = "gridOpen=plan.1";
+                }
+            } document.cookie = "gridOpen=plan.1";
+            //document.cookie = cookies.join(';');
+        }
+        else {
+            cookie += "; gridOpen=plan.1";
+            document.cookie = "gridOpen=plan.1";
+        }
         UpdateResult();
     }
     ////Added to set filters count and selected filters name : 1952 By Maitri Gandhi

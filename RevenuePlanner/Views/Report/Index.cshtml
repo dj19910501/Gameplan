@@ -2056,6 +2056,23 @@
     };
 
     function UpdatePlan() {
+
+        //Added by Maitri Gandhi for #2040 on 31/3/2016
+        
+        var cookie = document.cookie;
+        if (cookie.indexOf("gridOpen") > -1) {
+            var cookies = cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                if (cookies[i].indexOf("gridOpen") > -1) {
+                    cookies[i] = "gridOpen=plan.1";
+                }
+            } document.cookie = "gridOpen=plan.1";
+            //document.cookie = cookies.join(';');
+        }
+        else {
+            //cookie += "; gridOpen=plan.1";
+            document.cookie = "gridOpen=plan.1";
+        }
         //Checked All Filters and Load Owner nd tactic type
 
         var planids = [];
@@ -2084,6 +2101,21 @@
     }
     //Added By Maitri Gandhi on 24/2/2016 For #2014
     function ApplyFilters() {
+        //Added by Maitri Gandhi for #2040 on 31/3/2016
+        var cookie = document.cookie;
+        if (cookie.indexOf("gridOpen") > -1) {
+            var cookies = cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                if (cookies[i].indexOf("gridOpen") > -1) {
+                    cookies[i] = "gridOpen=plan.1";
+                }
+            } document.cookie = "gridOpen=plan.1";
+            //document.cookie = cookies.join(';');
+        }
+        else {
+            //cookie += "; gridOpen=plan.1";
+            document.cookie = "gridOpen=plan.1";
+        }
         updatedata();
     }
 

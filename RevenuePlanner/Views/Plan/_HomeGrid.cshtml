@@ -694,7 +694,7 @@
                     if(HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '')
                     {
                         HomeGrid.showRow(HomeGrid.getRowId(state0));
-                        HomeGrid.openItem(HomeGrid.getRowId(state0));//Added by Rahul Shah for PL #1744
+                        //HomeGrid.openItem(HomeGrid.getRowId(state0));//Added by Rahul Shah for PL #1744
                     }
                     //Added by Rahul Shah on 25/03/2016 for PL #2075
                     if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {
@@ -724,6 +724,27 @@
         //GridDataCsv.rows=JSON.parse(GridData).rows;
         HomeGrid.parse(GridDataHomeGrid, "json");
         HomeGrid.splitAt(2);
+        //Added by Maitri Gandhi for #2040 on 31/3/2016        
+        HomeGrid.collapseAll();        
+        var cookie = document.cookie;
+        if(cookie.indexOf("gridOpen") > -1){
+            var cookies = cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                if (cookies[i] == "gridOpen") {
+                    if (cookies[i].indexOf("|") > -1) {
+                        cookies[i] = "gridOpen=plan.1";                
+                        document.cookie = "gridOpen=plan.1";   //  document.cookie = cookies.join(';');
+                    }
+                }           
+            } 
+        }
+        else{            
+            //cookie += "; gridOpen=plan.1";
+            document.cookie = "gridOpen=plan.1";
+        }
+        
+        HomeGrid.loadOpenStates(); 
+        
         // HomeGrid.sortRows(1, 'str', 'asc');
         LoadAfterParsing();
         //Added by Rahul shah for PL #1683
@@ -1094,6 +1115,7 @@
             HomeGrid.detachEvent(editidonOpenEnd);
         }
         editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
+            HomeGrid.saveOpenStates();  //Added by Maitri Gandhi for #2040 on 31/3/2016
             //Modified by komal Rawal for #1553
             $(".grid_Search").off("click");
             $(".grid_Search").click(function (e) {
