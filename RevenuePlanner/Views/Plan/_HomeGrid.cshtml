@@ -598,7 +598,7 @@
     // End By Nishant Sheth
 
     function callsearch() {
-        $("#divgridview").find(".grid_Search").each(function () {
+        $("#divgridview").find(".grid_Search").each(function () {            
             $(this).click(function (e) {
                 inspectCloseFocus = $(this).position().top;
                 var id = $(this).parent().next().html();
@@ -723,7 +723,7 @@
         //GridDataCsv.head=JSON.parse(GridData).head;
         //GridDataCsv.rows=JSON.parse(GridData).rows;
         HomeGrid.parse(GridDataHomeGrid, "json");
-        HomeGrid.splitAt(2);
+        HomeGrid.splitAt(4);
         //Added by Maitri Gandhi for #2040 on 31/3/2016        
         HomeGrid.collapseAll();        
         var cookie = document.cookie;
@@ -1114,7 +1114,7 @@
         if (editidonOpenEnd != 0) {
             HomeGrid.detachEvent(editidonOpenEnd);
         }
-        editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
+        editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {         
             HomeGrid.saveOpenStates();  //Added by Maitri Gandhi for #2040 on 31/3/2016
             //Modified by komal Rawal for #1553
             $(".grid_Search").off("click");
