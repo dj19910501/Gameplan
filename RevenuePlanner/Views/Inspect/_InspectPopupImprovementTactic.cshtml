@@ -186,6 +186,7 @@
                 var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1324
             }
             if (returnpara) {
+                inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
                 RemoveTabClass();
                 $(this).removeClass("pull-left");
                 $(this).addClass("active pull-left");

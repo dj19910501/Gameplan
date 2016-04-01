@@ -1490,7 +1490,7 @@ namespace Integration.Salesforce
                                         }
 
                                         tactic.LastSyncDate = DateTime.Now;
-                                        tactic.ModifiedDate = DateTime.Now;
+                                        //tactic.ModifiedDate = DateTime.Now;
                                         tactic.ModifiedBy = _userId;
 
                                         // Update linked Tactic lastSync Date,ModifiedDate & ModifiedBy.
@@ -1498,7 +1498,7 @@ namespace Integration.Salesforce
                                         {
                                             
                                             objLinkedTactic.LastSyncDate = DateTime.Now;
-                                            objLinkedTactic.ModifiedDate = DateTime.Now;
+                                            //objLinkedTactic.ModifiedDate = DateTime.Now;
                                             objLinkedTactic.ModifiedBy = _userId;
                                         }
 
@@ -2308,7 +2308,7 @@ namespace Integration.Salesforce
                                         }
 
                                         tactic.LastSyncDate = DateTime.Now;
-                                        tactic.ModifiedDate = DateTime.Now;
+                                        //tactic.ModifiedDate = DateTime.Now;
                                         tactic.ModifiedBy = _userId;
 
                                         // Update linked Tactic lastSync Date,ModifiedDate & ModifiedBy.
@@ -2316,7 +2316,7 @@ namespace Integration.Salesforce
                                         {
 
                                             objLinkedTactic.LastSyncDate = DateTime.Now;
-                                            objLinkedTactic.ModifiedDate = DateTime.Now;
+                                            //objLinkedTactic.ModifiedDate = DateTime.Now;
                                             objLinkedTactic.ModifiedBy = _userId;
                                         }
 
@@ -3163,7 +3163,7 @@ namespace Integration.Salesforce
                                                     }
 
                                                     tactic.LastSyncDate = DateTime.Now;
-                                                    tactic.ModifiedDate = DateTime.Now;
+                                                    //tactic.ModifiedDate = DateTime.Now;
                                                     tactic.ModifiedBy = _userId;
 
                                                     // Update linked Tactic LastSyncDate,ModifiedDate & ModifiedBy.
@@ -3174,7 +3174,7 @@ namespace Integration.Salesforce
                                                         if (objLinkedTactic != null)
                                                         {
                                                             objLinkedTactic.LastSyncDate = DateTime.Now;
-                                                            objLinkedTactic.ModifiedDate = DateTime.Now;
+                                                            //objLinkedTactic.ModifiedDate = DateTime.Now;
                                                             objLinkedTactic.ModifiedBy = _userId;
                                                         }
                                                     }
@@ -5776,6 +5776,7 @@ namespace Integration.Salesforce
         {
             string strActualCostActualField = "CostActual"; // static variable value to identify that instance has mapped Actual cost field in Instance mapping.
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            bool isInstanceMappingUpdate = false;
             try
             {
                 #region "Make list of updated tactic after last sync and sync to SFDC"
@@ -5829,8 +5830,18 @@ namespace Integration.Salesforce
                 }
                 #endregion
 
-                #region "Filter 'lstUpdatedTactic' list based on  lastInstanceSyncDate"
+                #region "Identify Instance mapping updated after last sync date"
                 if (lastInstanceSyncDate.HasValue)
+                {
+                    var lstPushInstnceMapping = db.IntegrationInstanceDataTypeMappings.Where(inst => inst.IntegrationInstanceId == _integrationInstanceId && inst.CreatedDate >= lastInstanceSyncDate.Value).ToList();
+                    if (lstPushInstnceMapping != null && lstPushInstnceMapping.Count > 0)
+                        isInstanceMappingUpdate = true;
+                }
+                #endregion
+
+                #region "Filter 'lstUpdatedTactic' list based on  lastInstanceSyncDate"
+                // if Instance Mapping updated after last sync date then push all the tactics rather than updated.
+                if (lastInstanceSyncDate.HasValue && !isInstanceMappingUpdate)
                 {
                     #region "Declared local variables"
                     Dictionary<string, string> lstMappingTacticFields = new Dictionary<string, string>();
@@ -5971,7 +5982,7 @@ namespace Integration.Salesforce
                 #endregion
 
                 // update "tacticlist" by filtered Created & Updated tactics, if system get lastInstanceSyncDate else remains as it is.
-                if (lastInstanceSyncDate.HasValue)
+                if (lastInstanceSyncDate.HasValue && !isInstanceMappingUpdate)
                 {
                     tacticList = syncTactics;
                 }
