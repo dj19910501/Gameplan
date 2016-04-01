@@ -12,6 +12,7 @@ using System.Web.Routing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace RevenuePlanner.Test.Controllers
 {
@@ -52,6 +53,17 @@ namespace RevenuePlanner.Test.Controllers
             int planId = result.GetValue<int>("id");
 
             Assert.IsTrue(Convert.ToBoolean(planId));
+            if (Convert.ToBoolean(planId))
+            {
+
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
+            }
 
         }
         #endregion
@@ -87,6 +99,19 @@ namespace RevenuePlanner.Test.Controllers
             int planId = result.GetValue<int>("id");
 
             Assert.IsTrue(Convert.ToBoolean(planId));
+
+            if (Convert.ToBoolean(planId))
+            {
+
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
+            }
+
 
         }
         #endregion
@@ -125,6 +150,17 @@ namespace RevenuePlanner.Test.Controllers
             int planId = result.GetValue<int>("id");
 
             Assert.IsTrue(Convert.ToBoolean(planId));
+            if (Convert.ToBoolean(planId))
+            {
+
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
+            }
 
         }
 
@@ -161,6 +197,17 @@ namespace RevenuePlanner.Test.Controllers
             int planId = result.GetValue<int>("id");
 
             Assert.IsTrue(Convert.ToBoolean(planId));
+            if (true)
+            {
+
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
+            }
 
         }
         #endregion
@@ -184,6 +231,13 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
             }
 
 
@@ -209,6 +263,13 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
             }
 
 
@@ -237,6 +298,13 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
             }
 
         }
@@ -266,6 +334,13 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
             }
 
         }
@@ -305,8 +380,14 @@ namespace RevenuePlanner.Test.Controllers
             var result = controller.LoadHomeGrid(PlanId.ToString(), Ownerids, tactictypeids, Status, CommaSeparatedCustomFields) as Task<ActionResult>;
             if (result != null)
             {
-                // data object should not be null in json result
-                //  Assert.IsNotNull(result.Data);
+                //     data object should not be null in json result
+                Assert.IsNotNull(result,"Pass");
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
             }
 
         }
@@ -327,6 +408,13 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
             }
 
 
@@ -358,6 +446,13 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual("~/Views/Plan/_CopyEntity.cshtml", result.ViewName);
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
             }
         }
 
@@ -379,6 +474,13 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.IsNotNull(result.Data);
+                Debug.WriteLine("Pass");
+                Console.WriteLine("Pass");
+            }
+            else
+            {
+                Debug.WriteLine("Fail");
+                Console.WriteLine("Fail");
             }
         }
 
@@ -416,7 +518,7 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #region "Link Entities from One Plan to Another"
-        
+
         #endregion
 
         #endregion
