@@ -124,6 +124,8 @@ namespace RevenuePlanner.Models
         public string CampaignTitle { get; set; }
         public string ProgramTitle { get; set; }
         public string PlanTitle { get; set; }
+        public string StageTitle { get; set; }
+        public string PlanStatus { get; set; }
     }
     // Add by Nishant Sheth
     // Desc :: For stroe customfield in cache memory

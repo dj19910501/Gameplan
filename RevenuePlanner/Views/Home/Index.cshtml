@@ -5171,7 +5171,10 @@
             GetSelectedPlanNo = 1;
         }
         if (Planid != 0) {
-            GetHealderDataPer(Planid.toString(), CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(), CalendarId);
+            if (!IsViewBy) {
+                GetHealderDataPer(Planid.toString(), CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(), CalendarId);
+            }
+            IsViewBy = false;
             GetNumberOfActivityPerMonByPlanIdPer(Planid.toString(), isQuater, CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(), CalendarId);
             $.ajax({
                 type: "POST",//Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.

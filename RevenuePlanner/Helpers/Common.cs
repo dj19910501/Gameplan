@@ -6921,8 +6921,6 @@ namespace RevenuePlanner.Helpers
                                 //    {
                                 //        lstAllowedEntityIds.Add(tacticId);
                                 //    }
-
-
                                 //}
 
                             }
@@ -7817,6 +7815,33 @@ namespace RevenuePlanner.Helpers
             }).ToList();
             return tacList;
         }
+
+        public static List<Plan_Campaign_Program> GetProgramFromCustomPreogramList(List<Custom_Plan_Campaign_Program> CustomProgramList)
+        {
+            List<Plan_Campaign_Program> ProgList = new List<Plan_Campaign_Program>();
+            ProgList = CustomProgramList.Select(CustomProgram => new Plan_Campaign_Program
+            {
+                Abbreviation = CustomProgram.Abbreviation,
+                CreatedBy = CustomProgram.CreatedBy,
+                CreatedDate = CustomProgram.CreatedDate,
+                Description = CustomProgram.Description,
+                EndDate = CustomProgram.EndDate,
+                IntegrationInstanceProgramId = CustomProgram.IntegrationInstanceProgramId,
+                IsDeleted = CustomProgram.IsDeleted,
+                IsDeployedToIntegration = CustomProgram.IsDeployedToIntegration,
+                LastSyncDate = CustomProgram.LastSyncDate,
+                ModifiedBy = CustomProgram.ModifiedBy,
+                ModifiedDate = CustomProgram.ModifiedDate,
+                PlanCampaignId = CustomProgram.PlanCampaignId,
+                PlanProgramId = CustomProgram.PlanProgramId,
+                ProgramBudget = CustomProgram.ProgramBudget,
+                StartDate = CustomProgram.StartDate,
+                Status = CustomProgram.Status,
+                Title = CustomProgram.Title
+            }).ToList();
+            return ProgList;
+        }
+
         public static List<Plan> GetSpPlanList(DataTable dsPlanCampProgTac)
         {
             var PlanList = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan
@@ -7926,6 +7951,7 @@ namespace RevenuePlanner.Helpers
 
         public static List<Custom_Plan_Campaign_Program_Tactic> GetSpCustomTacticList(DataTable dsPlanCampProgTac)
         {
+
             var customtacticList = dsPlanCampProgTac.AsEnumerable().Select(row => new Custom_Plan_Campaign_Program_Tactic
             {
                 Cost = Convert.ToDouble(row["Cost"]),
@@ -7942,34 +7968,73 @@ namespace RevenuePlanner.Helpers
                 IsSyncSalesForce = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncSalesForce"])) ? (bool?)null : row["IsSyncSalesForce"]),
                 IsSyncWorkFront = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncWorkFront"])) ? (bool?)null : row["IsSyncWorkFront"]),
                 LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
-                LinkedPlanId = string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : Convert.ToInt32(Convert.ToString(row["LinkedPlanId"])),
-                LinkedTacticId = string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : Convert.ToInt32(Convert.ToString(row["LinkedTacticId"])),
+                LinkedPlanId = string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : int.Parse(Convert.ToString(row["LinkedPlanId"])),
+                LinkedTacticId = string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : int.Parse(Convert.ToString(row["LinkedTacticId"])),
                 ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
-                PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
-                PlanTacticId = Convert.ToInt32(row["PlanTacticId"]),
-                ProjectedStageValue = string.IsNullOrEmpty(Convert.ToString(row["ProjectedStageValue"])) ? (int?)null : Convert.ToInt32(Convert.ToString(row["ProjectedStageValue"])),
-                StageId = Convert.ToInt32(row["StageId"]),
+                PlanProgramId = int.Parse(row["PlanProgramId"].ToString()),
+                PlanTacticId = int.Parse(row["PlanTacticId"].ToString()),
+                ProjectedStageValue = string.IsNullOrEmpty(Convert.ToString(row["ProjectedStageValue"])) ? (double?)null : double.Parse(Convert.ToString(row["ProjectedStageValue"])),
+                StageId = int.Parse(row["StageId"].ToString()),
                 StartDate = Convert.ToDateTime(Convert.ToString(row["StartDate"])),
                 Status = Convert.ToString(row["Status"]),
                 TacticBudget = Convert.ToDouble(row["TacticBudget"]),
                 TacticCustomName = Convert.ToString(row["TacticCustomName"]),
-                TacticTypeId = Convert.ToInt32(row["TacticTypeId"]),
+                TacticTypeId = int.Parse(row["TacticTypeId"].ToString()),
                 Title = Convert.ToString(row["Title"]),
-                PlanId = Convert.ToInt32(row["PlanId"]),
-                PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
+                PlanId = int.Parse(row["PlanId"].ToString()),
+                PlanCampaignId = int.Parse(row["PlanCampaignId"].ToString()),
                 TacticTypeTtile = Convert.ToString(row["TacticTypeTtile"]),
                 ColorCode = Convert.ToString(row["ColorCode"]),
                 PlanYear = Convert.ToString(row["PlanYear"]),
-                ModelId = Convert.ToInt32(row["ModelId"]),
+                ModelId = int.Parse(row["ModelId"].ToString()),
                 CampaignTitle = Convert.ToString(row["CampaignTitle"]),
                 ProgramTitle = Convert.ToString(row["ProgramTitle"]),
-                PlanTitle = Convert.ToString(row["PlanTitle"])
+                PlanTitle = Convert.ToString(row["PlanTitle"]),
+                StageTitle = Convert.ToString(row["StageTitle"])
             }).ToList();
 
             return customtacticList;
         }
 
+        public static List<CustomField> GetSpCustomFieldList(DataTable dsCustomfield)
+        {
+            var CustomFieldList = dsCustomfield.AsEnumerable().Select(row => new CustomField
+            {
+                AbbreviationForMulti = Convert.ToString(row["AbbreviationForMulti"]),
+                ClientId = Guid.Parse(Convert.ToString(row["ClientId"])),
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
+                CustomFieldTypeId = Convert.ToInt32(row["CustomFieldTypeId"]),
+                Description = Convert.ToString(row["Description"]),
+                EntityType = Convert.ToString(row["EntityType"]),
+                IsDefault = Convert.ToBoolean(row["IsDefault"]),
+                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                IsDisplayForFilter = Convert.ToBoolean(row["IsDisplayForFilter"]),
+                IsGet = Convert.ToBoolean(row["IsGet"]),
+                IsRequired = Convert.ToBoolean(row["IsRequired"]),
+                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                Name = Convert.ToString(row["Name"])
+            }).ToList();
+
+            return CustomFieldList;
+        }
+
+        public static List<CacheCustomField> GetSpCustomFieldEntityList(DataTable dsCustomfieldEntity)
+        {
+            var CustomFieldEntityList = dsCustomfieldEntity.AsEnumerable().Select(row => new CacheCustomField
+            {
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CustomFieldEntityId = Convert.ToInt32(row["CustomFieldEntityId"]),
+                CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
+                EntityId = Convert.ToInt32(row["EntityId"]),
+                Value = Convert.ToString(row["Value"])
+            }).ToList();
+
+            return CustomFieldEntityList;
+        }
         #endregion
     }
 
@@ -8110,22 +8175,34 @@ namespace RevenuePlanner.Helpers
         }
 
         // Get Custom field entity
-        public List<CustomField_Entity> GetCustomFieldEntityList(string customfieldid)
+        public DataSet GetCustomFieldEntityList(string EntityType, int? CustomTypeId = null)
         {
 
+            DataTable datatable = new DataTable();
+            DataSet dataset = new DataSet();
             MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
 
-            SqlParameter[] para = new SqlParameter[1];
+            command = new SqlCommand("GetCustomFieldEntityList", Connection);
 
-            para[0] = new SqlParameter
+            using (command)
             {
-                ParameterName = "customfieldId",
-                Value = customfieldid
-            };
 
-            var data = db.Database.SqlQuery<RevenuePlanner.Models.CustomField_Entity>("GetCustomFieldEntityList @customfieldId", para).ToList();
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@CustomTypeId", CustomTypeId);
+                command.Parameters.AddWithValue("@EntityType", EntityType);
+                command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(dataset);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
 
-            return data;
+            return dataset;
         }
 
         // Get Tactic line ite,

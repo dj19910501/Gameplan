@@ -153,9 +153,9 @@
         // Commented by nishant sheth
         // Desc :: For performace avoid multiple db trip for same results
         //GetHealderData(SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, Tabid);// Modified By Nishant Sheth Desc header value wrong with plan tab
-        GetNumberOfActivityPerMonByPlanIdPer(SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
+        //GetNumberOfActivityPerMonByPlanIdPer(SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
     });
-
+    var IsViewBy = false;
     $("#ddlTabViewBy").change(function () {
         ExportSelectedIds = {
             TaskID: [],
@@ -165,7 +165,7 @@
             TacticType: [],
             PlanFlag: []
         };
-
+        IsViewBy = true;
         requestPlanActiveTab(false);
         RefreshCurrentTab();
     });

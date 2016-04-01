@@ -280,6 +280,7 @@ namespace RevenuePlanner.Models
         public DateTime PlanEndDate { get; set; }
         public bool LinkTacticPermission { get; set; }
         public int? LinkedTacticId { get; set; }
+        public Custom_Plan_Campaign_Program_Tactic CustomTactic { get; set; }
     }
     // Add By Nishant Sheth
     // Desc :: Store Progess details for Plan/Campaign/Program ticket #1798
