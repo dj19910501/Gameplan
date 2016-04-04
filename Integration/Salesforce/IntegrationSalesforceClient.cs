@@ -79,6 +79,7 @@ namespace Integration.Salesforce
         private List<SalesForceObjectFieldDetails> lstSalesforceFieldDetail = new List<SalesForceObjectFieldDetails>();
         private string PeriodChar = "Y";
         private string PlanName = string.Empty;
+        private DateTime? startDate; // Use this startDate varialbe while push linked tactic to SFDC.
 
         public bool IsAuthenticated
         {
@@ -3909,6 +3910,7 @@ namespace Integration.Salesforce
             StringBuilder sb = new StringBuilder();
             //bool islinktacticdata = false;
             Enums.Mode currentMode = Common.GetMode(planTactic.IntegrationInstanceTacticId);
+            #region "Old Code: commented on 04/04/2016 for PL ticket #2024"
             // If Tactic is linked then sync latest year Program & Campaign to Salesforce.
             //if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
             //{
@@ -3929,11 +3931,13 @@ namespace Integration.Salesforce
             //else
             //{
             //    PlanName = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title;
-            //}
+            //} 
+            #endregion
                 PlanName = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title;
             //System.Diagnostics.Trace.WriteLine("Step SyncTacticData 1 End:" + DateTime.Now.ToString());
             if (currentMode.Equals(Enums.Mode.Create))
             {
+                #region "OldCode: commented on 04/04/2016 for PL ticket #2024"
                 //Plan_Campaign_Program planProgram = new Plan_Campaign_Program();
                 //if (islinktacticdata)
                 //{
@@ -3942,7 +3946,8 @@ namespace Integration.Salesforce
                 //else
                 //{
                 //    planProgram = planTactic.Plan_Campaign_Program;
-                //}
+                //} 
+                #endregion
 
                 Plan_Campaign_Program planProgram = planTactic.Plan_Campaign_Program;
                 _parentId = planProgram.IntegrationInstanceProgramId;
@@ -5557,15 +5562,15 @@ namespace Integration.Salesforce
 
                     if (EntityType.Tactic.Equals(_entityType))
                     {
-                        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), tacticList, tacticIdList,ref lstProcessTacIds);         // Push Tactics to SFDC.
+                        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), tacticList, tacticIdList,ref lstProcessTacIds,lstTac_LinkTacMapping);         // Push Tactics to SFDC.
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details Start.");
                         UpdateLinkedTacticComment(lstProcessTacIds, tacticList, lstCreatedTacIds, lstTac_LinkTacMapping);
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details End.");
                     }
                     else if (EntityType.Program.Equals(_entityType))
                     {
-                        SyncEntityData<Plan_Campaign_Program>(EntityType.Program.ToString(), programList, programIdList, ref lstProcessTacIds);      // Push Programs to SFDC.
-                        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), tacticList, tacticIdList, ref lstProcessTacIds);         // Push Tactics to SFDC.
+                        SyncEntityData<Plan_Campaign_Program>(EntityType.Program.ToString(), programList, programIdList, ref lstProcessTacIds,lstTac_LinkTacMapping);      // Push Programs to SFDC.
+                        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), tacticList, tacticIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);         // Push Tactics to SFDC.
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details Start.");
                         UpdateLinkedTacticComment(lstProcessTacIds, tacticList, lstCreatedTacIds, lstTac_LinkTacMapping);
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details End.");
@@ -5573,8 +5578,8 @@ namespace Integration.Salesforce
                     else
                     {
                         // Execute this code snippet in case of syncing specific Campaign or Instance.
-                        SyncEntityData<Plan_Campaign>(EntityType.Campaign.ToString(), campaignList, campaignIdList, ref lstProcessTacIds);   // Push Campaign to SFDC.
-                        SyncEntityData<Plan_Campaign_Program>(EntityType.Program.ToString(), programList, programIdList, ref lstProcessTacIds);      // Push Programs to SFDC.
+                        SyncEntityData<Plan_Campaign>(EntityType.Campaign.ToString(), campaignList, campaignIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);   // Push Campaign to SFDC.
+                        SyncEntityData<Plan_Campaign_Program>(EntityType.Program.ToString(), programList, programIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);      // Push Programs to SFDC.
                         
                         // if user make Sync Now then get only updated tactics after lastsync date of that Instance.
                         if (!EntityType.Campaign.Equals(_entityType))
@@ -5582,7 +5587,7 @@ namespace Integration.Salesforce
                             tacticList = GetLastSyncUpdatedTactics(tacticList, lstCreatedTactic, lstUpdatedTactic, lstPlan);
                             tacticIdList = tacticList.Select(tac => tac.PlanTacticId).ToList();
                         }
-                        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), tacticList, tacticIdList, ref lstProcessTacIds);         // Push Tactics to SFDC.
+                        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), tacticList, tacticIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);         // Push Tactics to SFDC.
 
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Updating Tactic log & Comment details Start.");
                         UpdateLinkedTacticComment(lstProcessTacIds, tacticList, lstCreatedTacIds, lstTac_LinkTacMapping);
@@ -5594,7 +5599,7 @@ namespace Integration.Salesforce
                             if (improvetacticList.Count > 0)
                             {
                                 List<int> lstimprovetacticIds = new List<int>();
-                                SyncEntityData<Plan_Improvement_Campaign_Program_Tactic>(EntityType.ImprovementTactic.ToString(), improvetacticList, lstimprovetacticIds, ref lstProcessTacIds);         // Push Tactics to SFDC.
+                                SyncEntityData<Plan_Improvement_Campaign_Program_Tactic>(EntityType.ImprovementTactic.ToString(), improvetacticList, lstimprovetacticIds, ref lstProcessTacIds, lstTac_LinkTacMapping);         // Push Tactics to SFDC.
                             }
                             #endregion
                         }
@@ -5609,7 +5614,7 @@ namespace Integration.Salesforce
             }
         }
 
-        private void SyncEntityData<T>(string entityType, List<T> entityList, List<int> entityIdList, ref List<int> lstProcessTacIds)
+        private void SyncEntityData<T>(string entityType, List<T> entityList, List<int> entityIdList, ref List<int> lstProcessTacIds,List<TacticLinkedTacMapping> lstTac_LinkedTacMapping)
         {
             #region "Declare local variables"
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
@@ -5617,7 +5622,7 @@ namespace Integration.Salesforce
             int logRecordSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LogRecordSize"]);
             int pushRecordBatchSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["IntegrationPushRecordBatchSize"]);
             string strActualCostActualField = "CostActual"; // static variable value to identify that instance has mapped Actual cost field in Instance mapping.
-            
+            int tacticId = 0;
             #endregion
             try
             {
@@ -5710,8 +5715,20 @@ namespace Integration.Salesforce
                                 {
                                     for (int index = 0; index < lstPagedEntityList.Count; index++)
                                     {
+                                        startDate = null; //#2097: reset startDate global variable.
+                                        tacticId = lstPagedEntityList[index].PlanTacticId;
+                                        if(lstTac_LinkedTacMapping != null && lstTac_LinkedTacMapping.Count >0)
+                                        {
+                                            //#2097: Get Orgional Tactic.
+                                            var lnkdTac = lstTac_LinkedTacMapping.Where(tac => tac.PlanTactic.PlanTacticId == tacticId).Select(tac => tac.LinkedTactic).FirstOrDefault();
+                                            if (lnkdTac != null && lnkdTac.PlanTacticId > 0)
+                                            {
+                                                startDate = lnkdTac.StartDate;  //#2097: Set Orgional Tactic start date to push old tactic date to SFDC.  
+                                            }
+                                        }
                                         lstPagedEntityList[index] = SyncTacticData(lstPagedEntityList[index], ref sbMessage);
-                                        lstProcessTacIds.Add(lstPagedEntityList[index].PlanTacticId);
+                                        lstProcessTacIds.Add(tacticId);
+                                        startDate = null; //#2097: reset startDate global variable.
                                         #region "Old Code"
                                         // Save 10 log records to Table.
                                         //if (((index + 1) % logRecordSize) == 0)
@@ -6403,7 +6420,11 @@ namespace Integration.Salesforce
                         }
                         else if (mapping.Key == statDate || mapping.Key == endDate || mapping.Key == effectiveDate)
                         {
-                            value = Convert.ToDateTime(value).ToString("yyyy-MM-ddThh:mm:ss+hh:mm");
+                            // #2097: In case of push Linked Tactic,get startdate value from global varialbe(i.e. "startDate")
+                            if (mapping.Key == statDate && startDate.HasValue && obj is Plan_Campaign_Program_Tactic) 
+                                value = Convert.ToDateTime(startDate).ToString("yyyy-MM-ddThh:mm:ss+hh:mm");
+                            else
+                                value = Convert.ToDateTime(value).ToString("yyyy-MM-ddThh:mm:ss+hh:mm");  // If not linked tactic then pick start date from respecitve entity(i.e. Campaign,Program,Tactic)
                         }
                         //// Start - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
                         else if (mapping.Key == tacticType)

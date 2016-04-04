@@ -67,7 +67,7 @@ namespace Integration.Eloqua
         private string _AccessToken { get; set; }
         public string _eloquaClientID { get; set; }
         public string _ClientSecret { get; set; }
-
+        public DateTime? startDate { get; set; }
         #endregion
 
         #region Properties
@@ -1160,6 +1160,22 @@ namespace Integration.Eloqua
             int _tacFolderId = 0;
             _tacFolderId = GetEloquaFolderIdByPlanId(planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId);
 
+            #region "Get Original Tactic StartDate"
+            //#2097: If Tactic is linked then sync origional year tactic's startdate to Salesforce.
+            if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
+            {
+                string orgnPlanYear = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+                string lnkdPlanYear = lnkdTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+                if (!string.IsNullOrEmpty(orgnPlanYear) && !string.IsNullOrEmpty(lnkdPlanYear))
+                {
+                    // if linkedTactic is orgional tactic then set it's startdate to global variable.
+                    if (int.Parse(orgnPlanYear) > int.Parse(lnkdPlanYear))
+                    {
+                        startDate = lnkdTactic.StartDate;
+                    }
+                }
+            }
+            #endregion
 
             if (currentMode.Equals(Enums.Mode.Create))
             {
@@ -1343,7 +1359,7 @@ namespace Integration.Eloqua
                 instanceLogTactic.CreatedDate = DateTime.Now;
                 db.Entry(instanceLogTactic).State = EntityState.Added;
             }
-
+            startDate = null; //Reset startDate global variable to null.
             sbMessage.Append(sb.ToString());
             return planTactic;
         }
@@ -1750,7 +1766,11 @@ namespace Integration.Eloqua
                     }
                     else if (mapping.Key == statDate || mapping.Key == endDate || mapping.Key == effectiveDate)
                     {
-                        value = ConvertToUnixEpoch(Convert.ToDateTime(value)).ToString(); ////Convert.ToDateTime(value).ToString("yyyy-MM-ddThh:mm:ss+hh:mm");
+                        // #2097: In case of push Linked Tactic,get startdate value from global varialbe(i.e. "startDate")
+                        if (mapping.Key == statDate && startDate.HasValue && obj is Plan_Campaign_Program_Tactic)
+                            value = ConvertToUnixEpoch(Convert.ToDateTime(startDate)).ToString();
+                        else
+                            value = ConvertToUnixEpoch(Convert.ToDateTime(value)).ToString();  // If not linked tactic then pick start date from respecitve entity(i.e.Tactic,ImprovementTactic)
                     }
                     //// Start - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
                     else if (mapping.Key == tacticType)
