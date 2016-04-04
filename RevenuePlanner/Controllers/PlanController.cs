@@ -968,14 +968,14 @@ namespace RevenuePlanner.Controllers
         /// Get plan by plan id
         /// </summary>
         /// <param name="planid"></param>
-        public async Task<JsonResult> GetPlanByPlanID(int planid, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
+        public async Task<JsonResult> GetPlanByPlanID(int planid, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "", bool IsHeaderActuals = false)
         {
             try
             {
                 await Task.Delay(1);
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, TabId: TabId),// Modified By Nishant Sheth Desc header value wrong with plan tab
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, TabId: TabId, IsHeaderActuals: IsHeaderActuals),// Modified By Nishant Sheth Desc header value wrong with plan tab
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
@@ -9507,16 +9507,20 @@ namespace RevenuePlanner.Controllers
                         lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
                     });
 
+
+
                 }
                 //Modified By Komal Rawal for #1499
                 TacticfilterList = programtactic.Where(pcptobj => pcptobj.IsDeleted == false).ToList();
+
+               
                 lstTacticIds = TacticfilterList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
                     IsFiltered = true;
-                    TacticfilterList = TacticfilterList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
-                                             (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
-                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+                    TacticfilterList = TacticfilterList.Where(pcptobj => ( filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                             (filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
+                                             (filterStatus.Contains(pcptobj.Status))).ToList();
 
                     //// Apply Custom restriction for None type
                     if (TacticfilterList.Count() > 0)
@@ -9564,7 +9568,7 @@ namespace RevenuePlanner.Controllers
                 // Add By Nishant Shet
                 // Desc:: To resolve owner filter issue
                 TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId)
-                    || (filterOwner.Count.Equals(0) || filterOwner.Contains(tacticlist.CreatedBy))).Select(tacticlist => tacticlist).ToList();
+                    || ( filterOwner.Contains(tacticlist.CreatedBy))).Select(tacticlist => tacticlist).ToList();
                 //End By Nishant Sheth
 
                 TempData["TacticfilterList"] = TacticfilterList;

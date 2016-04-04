@@ -129,7 +129,7 @@
     }
 
 
-    function GetHealderData(selectedPlanIds,Cid, OId,Tacticids,StatusId,Tabid) {
+    function GetHealderData(selectedPlanIds,Cid, OId,Tacticids,StatusId,Tabid,IsHeaderActuals) {
         // Modified By Nishant Sheth add tab id as argument:  Desc header value wrong with plan tab
         var CustomId = "";
         var OwnerIds = "";
@@ -170,7 +170,8 @@
                 OwnerIds:OwnerIds.toString(),
                 TacticTypeids:TacticTypeids.toString(),
                 StatusIds:StatusIds.toString(),
-                TabId:Tabid
+                TabId:Tabid,
+                IsHeaderActuals : IsHeaderActuals
             },
             dataType: "json",
             success: function (data) {
@@ -230,7 +231,7 @@
     }
 
 
-    function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam,Cid, OId,Tacticids,StatusId,Tabid) {
+    function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam,Cid, OId,Tacticids,StatusId,Tabid,IsHeaderActuals) {
     
         var _filters = {
             OwnerIds: [],
@@ -272,12 +273,22 @@
     });
 
     //Added for "Select All" case of #1952 and #1993 By Maitri Gandhi on 16/2/2016
-    var CheckedCounter = 0, AllCounter = 0, id = null;
+    var CheckedCounter = 0, AllCounter = 0, id = null,UncheckedCounter = 0;
     $("#divCustomFieldsFilter").find("div.accordion").each(function () {
         if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
             AllCounter = $(this).find("input[type=checkbox]").length;
             CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-            if (AllCounter == CheckedCounter) {
+            UncheckedCounter = AllCounter - CheckedCounter;
+            if (AllCounter == UncheckedCounter) {
+                var Id = $(this).attr("id");
+                if (Id.indexOf("-") >= 0) {
+                    Id = Id.split('-')[1];
+                    var CustomId = Id + "_null";
+                    _filters.customFieldIds.push(CustomId);
+
+                }
+            }
+            else if (AllCounter == CheckedCounter) {
                 id = this.id;
                 if (id != null && id != "" && id.indexOf("-") > -1) {
                     id = this.id.split("-")[1];
@@ -340,7 +351,8 @@
                     OwnerIds: _filters.OwnerIds.toString(),
                     TacticTypeids:_filters.TacticTypeids.toString(),
                     StatusIds:_filters.StatusIds.toString(),
-                    TabId:Tabid //Added BY Komal rawal for #1929 proper Hud chart and count
+                    TabId:Tabid, //Added BY Komal rawal for #1929 proper Hud chart and count
+                    IsHeaderActuals:IsHeaderActuals
                 },
                 dataType: "json",
                 success: function (data) {
@@ -354,7 +366,7 @@
             });
         }
 
-    function GetNumberOfActivityPerMonByPlanIdPer(selectedPlanIds, strParam,Cid, OId,Tacticids,StatusId,Tabid) {
+    function GetNumberOfActivityPerMonByPlanIdPer(selectedPlanIds, strParam,Cid, OId,Tacticids,StatusId,Tabid,IsHeaderActuals) {
         var _filters = {
             OwnerIds: [],
             TacticTypeids:[],
@@ -395,12 +407,22 @@
         });
 
         //Added for "Select All" case of #1952 and #1993 By Maitri Gandhi on 16/2/2016
-        var CheckedCounter = 0, AllCounter = 0, id = null;
+        var CheckedCounter = 0, AllCounter = 0, id = null,UncheckedCounter = 0;
         $("#divCustomFieldsFilter").find("div.accordion").each(function () {
             if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
                 AllCounter = $(this).find("input[type=checkbox]").length;
                 CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-                if (AllCounter == CheckedCounter) {
+                UncheckedCounter = AllCounter - CheckedCounter;
+                if (AllCounter == UncheckedCounter) {
+                    var Id = $(this).attr("id");
+                    if (Id.indexOf("-") >= 0) {
+                        Id = Id.split('-')[1];
+                        var CustomId = Id + "_null";
+                        _filters.customFieldIds.push(CustomId);
+
+                    }
+                }
+                else if (AllCounter == CheckedCounter) {
                     id = this.id;
                     if (id != null && id != "" && id.indexOf("-") > -1) {
                         id = this.id.split("-")[1];
@@ -446,7 +468,8 @@
                 OwnerIds: _filters.OwnerIds.toString(),
                 TacticTypeids:_filters.TacticTypeids.toString(),
                 StatusIds:_filters.StatusIds.toString(),
-                TabId:Tabid //Added BY Komal rawal for #1929 proper Hud chart and count
+                TabId:Tabid, //Added BY Komal rawal for #1929 proper Hud chart and count
+                IsHeaderActuals:IsHeaderActuals
             },
             dataType: "json",
             success: function (data) {
@@ -564,7 +587,7 @@
         }
 
         //ENd
-        function GetHealderDataPer(selectedPlanIds,Cid, OId,Tacticids,StatusId,Tabid) {
+        function GetHealderDataPer(selectedPlanIds,Cid, OId,Tacticids,StatusId,Tabid,IsHeaderActuals) {
             
             // Modified By Nishant Sheth add tab id as argument:  Desc header value wrong with plan tab 
             var CustomId = "";
@@ -606,7 +629,8 @@
                     OwnerIds:OwnerIds.toString(),
                     TacticTypeids:TacticTypeids.toString(),
                     StatusIds:StatusIds.toString(),
-                    TabId:Tabid
+                    TabId:Tabid,
+                    IsHeaderActuals: IsHeaderActuals
                 },
                 dataType: "json",
                 success: function (data) {

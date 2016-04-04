@@ -214,6 +214,7 @@
     var isQuater = '@IsQuarter';
     var IsPlanSelecter = '@isPlanSelecter';
     var isError = false;
+    var IsHeaderActuals = true;
 
     @*   jQuery(document).ready(function ($) { //event of browser back button
         if (window.history && window.history.pushState) {
@@ -476,8 +477,8 @@
         var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
         populateNF(plans, "dropdown-plan-title");
         var nlform = new NLForm(document.getElementById('nl-form2'));
-        GetHealderData(CurrentPlanId);
-        GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+        GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
+        GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
     }
 
 
@@ -493,8 +494,8 @@
 
             if (CurrentPlanId > 0) {
 
-                GetHealderData(CurrentPlanId);
-                GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+                GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
+                GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
                 GetPlan(CurrentPlanId, IsPlanChangefromheader);
              
             }

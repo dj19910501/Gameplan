@@ -127,12 +127,22 @@
         }
         $('.request-icons').show();
         //Added for the case of "Select All" custom field By Maitri Gandhi on 26/2/2016
-        var CheckedCounter = 0, AllCounter = 0, id = null;
+        var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
         $("#divCustomFieldsFilter").find("div.accordion").each(function () {
             if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
                 AllCounter = $(this).find("input[type=checkbox]").length;
                 CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-                if (AllCounter == CheckedCounter) {
+                UncheckedCounter = AllCounter - CheckedCounter;
+                if (AllCounter == UncheckedCounter) {
+                    var Id = $(this).attr("id");
+                    if (Id.indexOf("-") >= 0) {
+                        Id = Id.split('-')[1];
+                        var CustomId = Id + "_null";
+                        filters.customFieldIds.push(CustomId);
+
+                    }
+                }
+                else if (AllCounter == CheckedCounter) {
                     id = this.id;
                     if (id != null && id != "" && id.indexOf("-") > -1) {
                         id = this.id.split("-")[1];

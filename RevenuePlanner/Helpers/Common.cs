@@ -1667,7 +1667,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planId">selected plan id</param>
         /// <returns>returns  HomePlanModelHeader object</returns>
-        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false, string TabId = "")
+        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false, string TabId = "", bool IsHeaderActuals = false)
         {
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
@@ -1808,12 +1808,12 @@ namespace RevenuePlanner.Helpers
 
                 }
                 lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
-                if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+                if ((filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0) && IsHeaderActuals != true)
                 {
 
-                    planTacticIds = planTacticIds.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
-                                             (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
-                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+                    planTacticIds = planTacticIds.Where(pcptobj => (filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                             (filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
+                                             (filterStatus.Contains(pcptobj.Status))).ToList();
 
                     //// Apply Custom restriction for None type
                     if (planTacticIds.Count() > 0)
@@ -1832,7 +1832,7 @@ namespace RevenuePlanner.Helpers
                     //planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || pcptobj.CreatedBy == Sessions.User.UserId).ToList();
                     // Modified By Nishant sheth
                     // Desc :: to match calendar and grid heads up values
-                    planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy))).ToList();
+                    planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Contains(pcptobj.CreatedBy))).ToList();
                 }
                 else
                 {
@@ -1846,7 +1846,7 @@ namespace RevenuePlanner.Helpers
                     //}
                     //List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
                     // Modified By Nishant Sheth
-                    planTacticIds = planTacticIds.Where(tactic => (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
+                    planTacticIds = planTacticIds.Where(tactic => (IsHeaderActuals == true || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
 
 
                 }
@@ -2077,9 +2077,9 @@ namespace RevenuePlanner.Helpers
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
 
-                    planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy)) &&
-                                             (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.objPlanTactic.TacticType.TacticTypeId)) &&
-                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.objPlanTactic.Status))).ToList();
+                    planTacticsList = planTacticsList.Where(pcptobj => ( filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy)) &&
+                                             (filterTacticType.Contains(pcptobj.objPlanTactic.TacticType.TacticTypeId)) &&
+                                             ( filterStatus.Contains(pcptobj.objPlanTactic.Status))).ToList();
 
 
                     //// Apply Custom restriction for None type
@@ -2096,13 +2096,13 @@ namespace RevenuePlanner.Helpers
                     }
                     lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.objPlanTactic.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy))).ToList();// Modified By Nishant Sheth
+                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.objPlanTactic.PlanTacticId) || ( filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy))).ToList();// Modified By Nishant Sheth
                 }
                 else
                 {
 
 
-                    planTacticsList = planTacticsList.Where(tactic => (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.objPlanTactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
+                    planTacticsList = planTacticsList.Where(tactic => ( filterOwner.Contains(tactic.objPlanTactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
 
 
                 }
@@ -2347,9 +2347,9 @@ namespace RevenuePlanner.Helpers
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
 
-                    planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
-                                             (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticTypeId)) &&
-                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+                    planTacticsList = planTacticsList.Where(pcptobj => ( filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                             (filterTacticType.Contains(pcptobj.TacticTypeId)) &&
+                                             ( filterStatus.Contains(pcptobj.Status))).ToList();
 
 
                     //// Apply Custom restriction for None type
@@ -2366,11 +2366,11 @@ namespace RevenuePlanner.Helpers
                     }
                     lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy))).ToList();// Modified By Nishant Sheth
+                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Contains(pcptobj.CreatedBy))).ToList();// Modified By Nishant Sheth
                 }
                 else
                 {
-                    planTacticsList = planTacticsList.Where(tactic => (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
+                    planTacticsList = planTacticsList.Where(tactic => ( filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
                 }
 
                 //End
@@ -6921,6 +6921,8 @@ namespace RevenuePlanner.Helpers
                                 //    {
                                 //        lstAllowedEntityIds.Add(tacticId);
                                 //    }
+
+
                                 //}
 
                             }
@@ -7291,12 +7293,17 @@ namespace RevenuePlanner.Helpers
                 //        }
                 //    }
                 //}
-
+                var EntityValues = db.CustomField_Entity.Where(tac => tacticIds.Contains(tac.EntityId)).Select(val => new
+                {
+                  CustomFieldid = val.CustomFieldId,
+                  TacticId = val.EntityId
+                }).ToList();
+                var AllTacticIDs = tacticIds;
                 for (int i = 0; i < lstCustomFieldIds.Count; i++)
                 {
                     optionvalue = string.Empty;
                     optionvalue = lstCustomFieldFilter.Where(x => x.CustomFieldId == lstCustomFieldIds[i]).Select(x => x.OptionId).FirstOrDefault();
-                    if (optionvalue != "" && optionvalue != string.Empty)
+                    if (optionvalue != "" && optionvalue != string.Empty && optionvalue != "null" && optionvalue != null)
                     {
                         optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == lstCustomFieldIds[i]).Select(x => x.OptionId.Split('_').Last()).ToList();// Modified by Nishant Sheth #1863
                         lstEntityData = new List<CustomField_Entity>();
@@ -7313,6 +7320,12 @@ namespace RevenuePlanner.Helpers
                             lstEntityIds = lstEntityData.Select(x => x.EntityId).Distinct().ToList();
                             isListExits = true;
                         }
+                    }
+                    else if (optionvalue == "null" || optionvalue == null)
+                    {
+                       var TacticIds = EntityValues.Where(entity => entity.CustomFieldid == lstCustomFieldIds[i]).Select(tac => tac.TacticId).Distinct().ToList();
+                       lstEntityIds = AllTacticIDs.Except(TacticIds).ToList();
+                       AllTacticIDs = lstEntityIds;
                     }
 
                 }

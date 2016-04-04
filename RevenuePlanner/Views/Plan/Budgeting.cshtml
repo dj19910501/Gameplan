@@ -160,6 +160,7 @@
     var CurrentView = '@myView';
     var currentTab = 'aAllocated';
     var isQuater = '@IsQuarter';
+    var IsHeaderActuals = true;
     if ('@type' == 'plan') {
         currentTab = 'aPlanned';
     }
@@ -578,8 +579,8 @@ function LoadPlan() {
    populateNF(plans, "dropdown-plan-title");
     var nlform = new NLForm(document.getElementById('nl-form2'));
     TabLoad(currentTab);   
-    GetHealderData(CurrentPlanId);
-    GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+    GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
+    GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
     hideAllMessages = true;
 }
 
@@ -631,8 +632,8 @@ function onClickPlanTitle() {
         $("#errorMessageDuplicatePlan").slideUp(300);
         HideMessages();
         if (CurrentPlanId > 0) {  //Modified by komal rawal for new homepage UI
-            GetHealderData(CurrentPlanId);
-            GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+            GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
+            GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
         }
     });
 }

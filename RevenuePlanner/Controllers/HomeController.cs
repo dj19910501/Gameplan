@@ -789,13 +789,14 @@ namespace RevenuePlanner.Controllers
                 // Add By Nishant Sheth // Desc:: For get values from cache
                 objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
                 lstProgramId = lstProgramPer.Select(program => program.PlanProgramId).ToList();
-
+                //Modified By Komal Rawal for #2059 display no tactics if filters are deselected
                 lstTacticPer = ((List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.CustomTactic.ToString()))
                                                                        .Where(tactic => tactic.IsDeleted.Equals(false) &&
                                                                        lstProgramId.Contains(tactic.PlanProgramId) &&
-                                                                       (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy)) &&
-                                                                       (filterTacticType.Count.Equals(0) || filterTacticType.Contains(tactic.TacticTypeId)) &&
-                                                                       (filterStatus.Count.Equals(0) || filterStatus.Contains(tactic.Status))).ToList();
+                                                                       (filterOwner.Contains(tactic.CreatedBy)) &&
+                                                                       (filterTacticType.Contains(tactic.TacticTypeId)) &&
+                                                                       (filterStatus.Contains(tactic.Status))).ToList();
+                
                 objCache.AddCache(Enums.CacheObject.Tactic.ToString(), lstTacticPer.ToList());
 
                 if (int.TryParse(listYear[0], out checklistyear))
@@ -820,7 +821,7 @@ namespace RevenuePlanner.Controllers
                         lstTacticPer = lstTacticPer.Where(tactic => lstTacticIds.Contains(tactic.PlanTacticId)).ToList();
                     }
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                    lstTacticPer = lstTacticPer.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
+                    lstTacticPer = lstTacticPer.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || (filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
                 }
 
                 //// Get list of tactic and improvementTactic for which selected users are Owner
@@ -957,9 +958,9 @@ namespace RevenuePlanner.Controllers
                 lstTacticPer = ((List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.CustomTactic.ToString()))
                                                                       .Where(tactic => tactic.IsDeleted.Equals(false) &&
                                                                            lstProgramId.Contains(tactic.PlanProgramId) &&
-                                                                           (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy)) &&
-                                                                      (filterTacticType.Count.Equals(0) || filterTacticType.Contains(tactic.TacticTypeId)) &&
-                                                                      (filterStatus.Count.Equals(0) || filterStatus.Contains(tactic.Status))).ToList();
+                                                                           ( filterOwner.Contains(tactic.CreatedBy)) &&
+                                                                      ( filterTacticType.Contains(tactic.TacticTypeId)) &&
+                                                                      ( filterStatus.Contains(tactic.Status))).ToList();
 
                 objCache.AddCache(Enums.CacheObject.Tactic.ToString(), lstTacticPer.ToList());
 
@@ -985,7 +986,7 @@ namespace RevenuePlanner.Controllers
                         lstTacticPer = lstTacticPer.Where(tactic => lstTacticIds.Contains(tactic.PlanTacticId)).ToList();
                     }
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                    lstTacticPer = lstTacticPer.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
+                    lstTacticPer = lstTacticPer.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || (filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
                 }
 
                 //// Get list of tactic and improvementTactic for which selected users are Owner
@@ -4873,7 +4874,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="strPlanIds">Comma separated string of Plan Ids</param>
         /// <param name="strparam">Upcoming Activity dropdown selected option e.g. planyear, thisyear</param>
         /// <returns>returns Activity Chart object as jsonresult</returns>
-        public async Task<JsonResult> GetNumberOfActivityPerMonth(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
+        public async Task<JsonResult> GetNumberOfActivityPerMonth(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "",bool IsHeaderActuals = false)
         {
             List<int> filteredPlanIds = new List<int>();
             string planYear = string.Empty;
@@ -4955,12 +4956,12 @@ namespace RevenuePlanner.Controllers
                     filteredPlanIds.Add(int.Parse(planid));
 
             }
-
+            //Modified By Komal Rawal for #2059 display no tactics if filters are deselected
             //// Get planyear of the selected Plan
             if (strparam.Contains("-") || IsMultiYearPlan)
             {
                 List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
-                lstActivityChartyears = getmultipleyearActivityChart(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan);
+                lstActivityChartyears = getmultipleyearActivityChart(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan, IsHeaderActuals);
                 return Json(new { lstchart = lstActivityChartyears.ToList(), strparam = strparam }, JsonRequestBehavior.AllowGet);
             }
             //End
@@ -4995,14 +4996,16 @@ namespace RevenuePlanner.Controllers
                     lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
                 });
 
-            }
+               
 
-            if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+            }
+            //Modified By Komal Rawal for #2059 display no tactics if filters are deselected
+            if ((filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0) && IsHeaderActuals!= true)
             {
                 lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
-                objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
-                                         (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticTypeId)) &&
-                                         (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+                objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => (filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                         (filterTacticType.Contains(pcptobj.TacticTypeId)) &&
+                                         (filterStatus.Contains(pcptobj.Status))).ToList();
 
                 //// Apply Custom restriction for None type
                 if (objPlan_Campaign_Program_Tactic.Count() > 0)
@@ -5218,7 +5221,7 @@ namespace RevenuePlanner.Controllers
             return Json(new { lstchart = lstActivityChart.ToList(), strparam = strparam }, JsonRequestBehavior.AllowGet); //Modified BY Komal rawal for #1929 proper Hud chart and count
         }
 
-        public async Task<JsonResult> GetNumberOfActivityPerMonthPer(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
+        public async Task<JsonResult> GetNumberOfActivityPerMonthPer(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "", bool IsHeaderActuals = false)
         {
 
             List<int> filteredPlanIds = new List<int>();
@@ -5304,13 +5307,13 @@ namespace RevenuePlanner.Controllers
                     filteredPlanIds.Add(int.Parse(planid));
 
             }
-
+            //Modified By Komal Rawal for #2059 display no tactics if filters are deselected
             //// Get planyear of the selected Plan
             if (strparam.Contains("-") || IsMultiYearPlan)
             {
 
                 List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
-                lstActivityChartyears = getmultipleyearActivityChartPer(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan);
+                lstActivityChartyears = getmultipleyearActivityChartPer(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan, IsHeaderActuals);
 
                 return Json(new { lstchart = lstActivityChartyears.ToList(), strparam = strparam }, JsonRequestBehavior.AllowGet);
             }
@@ -5349,13 +5352,13 @@ namespace RevenuePlanner.Controllers
                 });
 
             }
-
-            if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+            //Modified By Komal Rawal for #2059 display no tactics if filters are deselected
+            if ((filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0) && IsHeaderActuals != true)
             {
                 lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
-                objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
-                                         (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticTypeId)) &&
-                                         (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+                objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => (filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                         ( filterTacticType.Contains(pcptobj.TacticTypeId)) &&
+                                         ( filterStatus.Contains(pcptobj.Status))).ToList();
 
                 //// Apply Custom restriction for None type
                 if (objPlan_Campaign_Program_Tactic.Count() > 0)
@@ -5573,7 +5576,7 @@ namespace RevenuePlanner.Controllers
             return Json(new { lstchart = lstActivityChart.ToList(), strparam = strparam }, JsonRequestBehavior.AllowGet); //Modified BY Komal rawal for #1929 proper Hud chart and count
         }
 
-        private List<ActivityChart> getmultipleyearActivityChart(string strParam, string planid, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, bool isMultiplePlan)
+        private List<ActivityChart> getmultipleyearActivityChart(string strParam, string planid, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, bool isMultiplePlan,bool IsHeaderActuals)
         {
             List<int> filteredPlanIds = new List<int>();
             string planYear = string.Empty;
@@ -5670,13 +5673,13 @@ namespace RevenuePlanner.Controllers
                         });
 
                     }
-
-                    if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+                    //Modified By Komal Rawal for #2059 display no tactics if filters are deselected
+                    if ((filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0) && IsHeaderActuals != true)
                     {
                         lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
-                        objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
-                                                 (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticTypeId)) &&
-                                                 (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+                        objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => ( filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                                 (filterTacticType.Contains(pcptobj.TacticTypeId)) &&
+                                                 (filterStatus.Contains(pcptobj.Status))).ToList();
 
                         //// Apply Custom restriction for None type
                         if (objPlan_Campaign_Program_Tactic.Count() > 0)
@@ -5998,7 +6001,7 @@ namespace RevenuePlanner.Controllers
             return lstActivitybothChart;
         }
 
-        private List<ActivityChart> getmultipleyearActivityChartPer(string strParam, string planid, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, bool isMultiplePlan)
+        private List<ActivityChart> getmultipleyearActivityChartPer(string strParam, string planid, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, bool isMultiplePlan, bool IsHeaderActuals = false)
         {
             List<int> filteredPlanIds = new List<int>();
             string planYear = string.Empty;
@@ -6099,13 +6102,13 @@ namespace RevenuePlanner.Controllers
                         });
 
                     }
-
-                    if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+                    //Modified By Komal Rawal for #2059 display no tactics if filters are deselected
+                    if ((filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0) && IsHeaderActuals != true)
                     {
                         lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
-                        objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
-                                                 (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticTypeId)) &&
-                                                 (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+                        objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => ( filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                                 (filterTacticType.Contains(pcptobj.TacticTypeId)) &&
+                                                 ( filterStatus.Contains(pcptobj.Status))).ToList();
 
                         //// Apply Custom restriction for None type
                         if (objPlan_Campaign_Program_Tactic.Count() > 0)
@@ -6585,19 +6588,19 @@ namespace RevenuePlanner.Controllers
                 TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(planTactic => planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(PlanId) &&
                                                                                 tacticStatus.Contains(planTactic.Status) && planTactic.IsDeleted.Equals(false) &&
                                                                                 !planTactic.Plan_Campaign_Program_Tactic_Actual.Any() &&
-                                                                                (filteredTacticTypeIds.Count.Equals(0) || filteredTacticTypeIds.Contains(planTactic.TacticType.TacticTypeId)) &&
-                                                                                (filteredOwner.Count.Equals(0) || filteredOwner.Contains(planTactic.CreatedBy))).ToList();
+                                                                                ( filteredTacticTypeIds.Contains(planTactic.TacticType.TacticTypeId)) &&
+                                                                                ( filteredOwner.Contains(planTactic.CreatedBy))).ToList();
             }
             else
             {
                 TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId &&
                                                                                 tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false &&
-                                                                                (filteredTacticTypeIds.Count.Equals(0) || filteredTacticTypeIds.Contains(tactic.TacticType.TacticTypeId)) &&
-                                                                                (filteredOwner.Count.Equals(0) || filteredOwner.Contains(tactic.CreatedBy))).ToList();
+                                                                                ( filteredTacticTypeIds.Contains(tactic.TacticType.TacticTypeId)) &&
+                                                                                ( filteredOwner.Contains(tactic.CreatedBy))).ToList();
             }
 
             List<int> TacticIds = TacticList.Select(tactic => tactic.PlanTacticId).ToList();
-
+                List<string> lstFilteredCustomFieldOptionIds = new List<string>();
             //// Apply Custom restriction for None type
             if (TacticIds.Count() > 0)
             {
@@ -6611,6 +6614,7 @@ namespace RevenuePlanner.Controllers
                     {
                         string[] splittedCustomField = customField.Split('_');
                         lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                        lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
                     });
 
                     TacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, TacticIds);

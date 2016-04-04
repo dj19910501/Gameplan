@@ -345,6 +345,7 @@
     var MQlTitle = '';
     var IsLineItemActual = false;
     //var showMyTacticId = 0;
+    var IsHeaderActuals = true;
     var Status = 0;
     var isQuater = '@IsQuarter';
     var CurrentPlanId = '@CurrentPlanId';
@@ -422,10 +423,11 @@
 
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
 
-        LoadPlan();
+     
         onClickPlanTitle();
-        GetOwnerListForFilter(CurrentPlanId, false);
         GetTacticTypelist(CurrentPlanId, false);
+        GetOwnerListForFilter(CurrentPlanId, false);
+        LoadPlan();
         GetLastSetofViews($('#FilterName').val());
         CallAjax();
     });//document ready
@@ -832,8 +834,8 @@
         var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
         populateNF(plans, "dropdown-plan-title");
         var nlform = new NLForm(document.getElementById('nl-form2'));
-        GetHealderData(CurrentPlanId);
-        GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+        GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
+        GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
     }
 
     function onClickPlanTitle() {
@@ -913,8 +915,8 @@
             SaveLastSetofViews();
             $("#CurrentPlanId").val(CurrentPlanId);
             if (CurrentPlanId > 0) {
-                GetHealderData(CurrentPlanId);
-                GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+                GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
+                GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
                 GetList(CurrentPlanId);
             }
         });
@@ -1039,12 +1041,22 @@
         });
         //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
         //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
-        var CheckedCounter = 0, AllCounter = 0, id = null;
+        var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
         $("#divCustomFieldsFilter").find("div.accordion").each(function () {
             if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
                 AllCounter = $(this).find("input[type=checkbox]").length;
                 CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-                if (AllCounter == CheckedCounter) {
+                UncheckedCounter = AllCounter - CheckedCounter;
+                if (AllCounter == UncheckedCounter) {
+                    var Id = $(this).attr("id");
+                    if (Id.indexOf("-") >= 0) {
+                        Id = Id.split('-')[1];
+                        var CustomId = Id + "_null";
+                        customFieldIds.push(CustomId);
+
+                    }
+                }
+                else if (AllCounter == CheckedCounter) {
                     id = this.id;
                     if (id != null && id != "" && id.indexOf("-") > -1) {
                         id = this.id.split("-")[1];

@@ -556,12 +556,16 @@ namespace RevenuePlanner.Controllers
 
             //Commented by Maitri Gandhi on 4/3/2016 
             //Added by Komal Rawal
-            //if (Sessions.ReportOwnerIds != null && Sessions.ReportOwnerIds.Count > 0)
-            //{
-            //    ownerIds = Sessions.ReportOwnerIds.Select(owner => new Guid(owner)).ToList();
-            //    tacticList = tacticList.Where(tactic => ownerIds.Contains(tactic.CreatedBy)
-            //                                                  ).ToList();
-            //}
+            if (Sessions.ReportOwnerIds != null && Sessions.ReportOwnerIds.Count > 0)
+            {
+                ownerIds = Sessions.ReportOwnerIds.Select(owner => new Guid(owner)).ToList();
+                tacticList = tacticList.Where(tactic => ownerIds.Contains(tactic.CreatedBy)
+                                                              ).ToList();
+            }
+            else
+            {
+                tacticList = new List<Plan_Campaign_Program_Tactic>();
+            }
             //else
             //{
             //    // Add By Nishant Sheth 
@@ -587,6 +591,10 @@ namespace RevenuePlanner.Controllers
                 tacticList = tacticList.Where(tactic => TactictypeIds.Contains(tactic.TacticTypeId)
                                                               ).ToList();
 
+            }
+            else
+            {
+                tacticList = new List<Plan_Campaign_Program_Tactic>();
             }
             //End
 
@@ -1166,13 +1174,16 @@ namespace RevenuePlanner.Controllers
                         List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
                         List<int> entityids = new List<int>();
                         //// get entity id based on custom field entity
+                        List<int> ReportPlanIds = Sessions.ReportPlanIds;  
+                       List<int> campaignlistIDs = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
+                    
                         if (IsCampaign)
                         {
-                            entityids = tacticlist.Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
+                            entityids = campaignlistIDs;
                         }
                         else if (IsProgram)
                         {
-                            entityids = tacticlist.Select(tactic => tactic.PlanProgramId).ToList();
+                            entityids = db.Plan_Campaign_Program.Where(prog => campaignlistIDs.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).ToList();
                         }
                         else if (IsTactic)
                         {
@@ -1423,8 +1434,11 @@ namespace RevenuePlanner.Controllers
 
                 tacticlist = GetTacticForReporting();
                 // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-                campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
-                programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
+                //campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
+                //programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
+                List<int> ReportPlanIds = Sessions.ReportPlanIds;
+                campaignlist = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
+                programlist = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).ToList();
                 Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
                 TempData["ReportData"] = Tacticdata;
 
@@ -1461,8 +1475,7 @@ namespace RevenuePlanner.Controllers
                 //// Get Campaign list for dropdown
                 List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId
                     && (ListYear.Contains(t.StartDate.Year.ToString()) || ListYear.Contains(t.EndDate.Year.ToString()))).ToList();// Modified By Nishant Sheth #1839
-                List<int> campaignIds = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId
-                    && (ListYear.Contains(t.StartDate.Year.ToString()) || ListYear.Contains(t.EndDate.Year.ToString()))).Select(t => t.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();// Modified By Nishant Sheth #1839
+                List<int> campaignIds = db.Plan_Campaign.Where(t => t.Plan.Model.ClientId == Sessions.User.ClientId && t.IsDeleted == false && ReportPlanIds.Contains(t.PlanId)).ToList().Where(t=>(ListYear.Contains( t.StartDate.Year.ToString()) || ListYear.Contains(t.EndDate.Year.ToString()))).Select(t => t.PlanCampaignId).Distinct().ToList<int>();// Modified By Nishant Sheth #1839
                 var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId) && pc.IsDeleted == false).ToList() // Modified by Viral Kadiya on 11/17/2015 for PL ticket #1754 - Deleted programs show up on report filters: Add "IsDeleted" filter to show only undeleted records in report filters.
                     .Where(pc => ListYear.Contains(pc.StartDate.Year.ToString()) || ListYear.Contains(pc.EndDate.Year.ToString()))// Modified By Nishant Sheth #1839
                         .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
@@ -1718,16 +1731,18 @@ namespace RevenuePlanner.Controllers
             // Modified by Arpita Soni  for Ticket #1148 on 01/28/2014
             //Common.GetReportStartEndDate(selectOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
             Common.GetselectedYearList(selectOption, ref selectedYearList);// Add By Nishant Sheth #1839
-            List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
+         //   List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
             List<int> programIds = new List<int>();
             if (id != null && id != "")
             {
                 int campaignid = Convert.ToInt32(id);
-                programIds = TacticList.Where(tactic => tactic.Plan_Campaign_Program.PlanCampaignId == campaignid).Select(tactic => tactic.PlanProgramId).Distinct().ToList<int>();
+                programIds = db.Plan_Campaign_Program.Where(tactic => tactic.PlanCampaignId == campaignid).Select(tactic => tactic.PlanProgramId).Distinct().ToList<int>();
             }
             else
             {
-                programIds = TacticList.Select(tactic => tactic.PlanProgramId).Distinct().ToList<int>();
+                List<int> ReportPlanIds = Sessions.ReportPlanIds;
+                List<int> campaignlist = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
+                programIds = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(tactic => tactic.PlanProgramId).Distinct().ToList<int>();
             }
             var programList = db.Plan_Campaign_Program.Where(pc => programIds.Contains(pc.PlanProgramId))
                     .Select(program => new { PlanProgramId = program.PlanProgramId, Title = program.Title })
@@ -2193,8 +2208,8 @@ namespace RevenuePlanner.Controllers
             List<int> TacticId = db.Plan_Campaign_Program_Tactic.Where(tactic =>
                               PlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
                               && tactic.IsDeleted.Equals(false)
-                              && (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))
-                              && (filterTacticType.Count.Equals(0) || filterTacticType.Contains(tactic.TacticType.TacticTypeId))
+                              && (filterOwner.Contains(tactic.CreatedBy))
+                              && (filterTacticType.Contains(tactic.TacticType.TacticTypeId))
                               ).Select(t => t.PlanTacticId).ToList();
 
             if (TacticId.Count > 0)
@@ -2217,9 +2232,13 @@ namespace RevenuePlanner.Controllers
             lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Plan.ToString(), Value = ReportTabType.Plan.ToString() });
 
             ////Start - Modified by Mitesh Vaishnav for PL ticket #831
-            var campaignProgramList = db.Plan_Campaign_Program_Tactic.Where(tactic => TacticId.Contains(tactic.PlanTacticId)).ToList();
-            List<int> campaignlist = campaignProgramList.Select(campaign => campaign.Plan_Campaign_Program.PlanCampaignId).ToList();
-            List<int> programlist = campaignProgramList.Select(program => program.PlanProgramId).ToList();
+            //var campaignProgramList = db.Plan_Campaign_Program_Tactic.Where(tactic => TacticId.Contains(tactic.PlanTacticId)).ToList();
+            //List<int> campaignlist = campaignProgramList.Select(campaign => campaign.Plan_Campaign_Program.PlanCampaignId).ToList();
+            //List<int> programlist = campaignProgramList.Select(program => program.PlanProgramId).ToList();
+
+            List<int> ReportPlanIds = Sessions.ReportPlanIds;
+            List<int> campaignlist = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
+            List<int> programlist = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).ToList();
             //List<int> LineItemlist = db.Plan_Campaign_Program_Tactic_LineItem.Where(tactic => TacticId.Contains(tactic.PlanTacticId)).Select(lineitem => lineitem.PlanLineItemId).ToList();
 
             lstViewByTab = lstViewByTab.Where(modal => !string.IsNullOrEmpty(modal.Text)).ToList();
@@ -2359,12 +2378,15 @@ namespace RevenuePlanner.Controllers
             var FilteredLineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
             //// load Filter lists.
             List<int> TacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+            List<int> ReportPlanIds = Sessions.ReportPlanIds;
+            List<int> CampaignIds = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
+            List<int> ProgramIds = db.Plan_Campaign_Program.Where(prog => CampaignIds.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).ToList();
 
             var LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => TacticIds.Contains(lineitem.PlanTacticId) && lineitem.IsDeleted.Equals(false)).ToList();
             List<int> LineitemIds = LineItemList.Select(id => id.PlanLineItemId).ToList();
-            List<int> ProgramIds = tacticList.Select(tactic => tactic.PlanProgramId).ToList();
+          //  List<int> ProgramIds = tacticList.Select(tactic => tactic.PlanProgramId).ToList();
             var ProgramList = db.Plan_Campaign_Program.Where(program => ProgramIds.Contains(program.PlanProgramId) && program.IsDeleted.Equals(false)).ToList();
-            List<int> CampaignIds = ProgramList.Select(tactic => tactic.PlanCampaignId).ToList();
+           // List<int> CampaignIds = ProgramList.Select(tactic => tactic.PlanCampaignId).ToList();
             var CampaignList = db.Plan_Campaign.Where(campaign => CampaignIds.Contains(campaign.PlanCampaignId) && campaign.IsDeleted.Equals(false)).ToList();
             List<int> PlanIdsInner = CampaignList.Select(campaign => campaign.PlanId).ToList();
 
@@ -4984,11 +5006,13 @@ namespace RevenuePlanner.Controllers
                     }
                 }
                 // End - Added by Arpita Soni for Ticket #1148 on 01/30/2015
-
+                List<int> ReportPlanIds = Sessions.ReportPlanIds;
                 #region "Get Customfieldlist"
                 List<ViewByModel> CustomFieldList = new List<ViewByModel>();
-                List<int> campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
-                List<int> programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
+                //List<int> campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
+                //List<int> programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
+                List<int> campaignlist = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
+                List<int> programlist = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).ToList();
                 CustomFieldList = CustomFieldList.Where(s => !string.IsNullOrEmpty(s.Text)).ToList();
                 var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
                 CustomFieldList = CustomFieldList.Concat(lstCustomFields).ToList();
@@ -6227,7 +6251,8 @@ namespace RevenuePlanner.Controllers
 
                 if (strCustomField.Contains(Common.TacticCustomTitle) || strCustomField.Contains(Common.CampaignCustomTitle) || strCustomField.Contains(Common.ProgramCustomTitle))
                 {
-
+                    List<int> ReportPlanIds = Sessions.ReportPlanIds;
+                    List<int> campaignlist = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
                     #region "Entity list based on CustomFieldId"
                     List<int> entityids = new List<int>();
                     if (IsTacticCustomField)
@@ -6236,11 +6261,11 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (IsCampaignCustomField)
                     {
-                        entityids = TacticData.Select(t => t.TacticObj.Plan_Campaign_Program.PlanCampaignId).ToList();
+                        entityids = campaignlist;
                     }
                     else
                     {
-                        entityids = TacticData.Select(t => t.TacticObj.PlanProgramId).ToList();
+                        entityids = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).ToList();
                     }
                     #endregion
 
@@ -8020,6 +8045,9 @@ namespace RevenuePlanner.Controllers
 
             /// End Declartion
             #endregion
+            List<int> ReportPlanIds = Sessions.ReportPlanIds;
+            List<int> campaignIds = new List<int>();
+            campaignIds = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).Distinct().ToList();
 
             int customFieldIdCardSection = 0;
             int customFieldOptionIdCardSection = 0;
@@ -8030,8 +8058,6 @@ namespace RevenuePlanner.Controllers
                 if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                 {
                     int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                    List<int> campaignIds = new List<int>();
-                    campaignIds = TacticData.Select(p => p.TacticObj.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
                     string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
                     campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
                     TacticData = TacticData.Where(t => campaignIds.Contains(t.TacticObj.Plan_Campaign_Program.PlanCampaignId)).ToList();
@@ -8040,7 +8066,7 @@ namespace RevenuePlanner.Controllers
                 {
                     int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
                     List<int> programIds = new List<int>();
-                    programIds = TacticData.Select(p => p.TacticObj.PlanProgramId).Distinct().ToList();
+                    programIds = db.Plan_Campaign_Program.Where(prog => campaignIds.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).Distinct().ToList();
                     string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
                     programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
                     TacticData = TacticData.Where(t => programIds.Contains(t.TacticObj.PlanProgramId)).ToList();
@@ -8273,6 +8299,9 @@ namespace RevenuePlanner.Controllers
 
                     #region "New Code"
                     List<int> entityids = new List<int>();
+                    List<int> CampaignListIDs = new List<int>();
+                    CampaignListIDs = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).Distinct().ToList();
+         
                     // Get Entity id base on Custom fields.
                     if (IsTacticCustomField)
                     {
@@ -8280,11 +8309,11 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (IsCampaignCustomField)
                     {
-                        entityids = TacticData.Select(t => t.TacticObj.Plan_Campaign_Program.PlanCampaignId).ToList();
+                        entityids = CampaignListIDs;
                     }
                     else
                     {
-                        entityids = TacticData.Select(t => t.TacticObj.PlanProgramId).ToList();
+                        entityids = db.Plan_Campaign_Program.Where(prog => CampaignListIDs.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).ToList();
                     }
 
                     // Get the Custom field type and list of tacic option with custom fields.
@@ -10120,8 +10149,11 @@ namespace RevenuePlanner.Controllers
                 List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
 
                 // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-                List<int> campaignlist = tacticlist.Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
-                List<int> programlist = tacticlist.Select(tactic => tactic.PlanProgramId).ToList();
+                //List<int> campaignlist = tacticlist.Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
+                //List<int> programlist = tacticlist.Select(tactic => tactic.PlanProgramId).ToList();
+                List<int> ReportPlanIds = Sessions.ReportPlanIds;
+                List<int> campaignlist = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
+                List<int> programlist = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).ToList();
 
                 //// Calculate Value for ecah tactic
                 List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
@@ -10274,7 +10306,7 @@ namespace RevenuePlanner.Controllers
                 List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
                 _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
 
-                var campaignList = tacticlist.Select(t => new { PlanCampaignId = t.Plan_Campaign_Program.PlanCampaignId, Title = t.Plan_Campaign_Program.Plan_Campaign.Title }).Distinct().OrderBy(pcp => pcp.Title).ToList();
+                var campaignList = db.Plan_Campaign.Where(camp=>camp.IsDeleted == false && ReportPlanIds.Contains(camp.PlanId)).Select(t => new { PlanCampaignId = t.PlanCampaignId, Title = t.Title }).Distinct().OrderBy(pcp => pcp.Title).ToList();
                 campaignList = campaignList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
                 var lstCampaignList = campaignList;
                 lstCampaignList.Insert(0, new { PlanCampaignId = 0, Title = "All Campaigns" });
@@ -10282,7 +10314,8 @@ namespace RevenuePlanner.Controllers
                 _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
 
                 //// Get Program list for dropdown
-                var programList = tacticlist.Select(t => new { PlanProgramId = t.PlanProgramId, Title = t.Plan_Campaign_Program.Title }).Distinct().OrderBy(pcp => pcp.Title).ToList();
+                var CampaignIds = campaignList.Select(camp => camp.PlanCampaignId).ToList();
+                var programList = db.Plan_Campaign_Program.Where(prog => prog.IsDeleted == false && CampaignIds.Contains(prog.PlanCampaignId)).Select(t => new { PlanProgramId = t.PlanProgramId, Title = t.Title }).Distinct().OrderBy(pcp => pcp.Title).ToList();
                 programList = programList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
                 var lstProgramList = programList;
                 lstProgramList.Insert(0, new { PlanProgramId = 0, Title = "All Programs" });
@@ -11211,8 +11244,9 @@ namespace RevenuePlanner.Controllers
                 ViewBag.Convoption = option;
                 List<ProjectedTrendModel> MqlProjected = new List<ProjectedTrendModel>();// Header projected
                 List<ActualTrendModel> MqlActual = new List<ActualTrendModel>();
-
-
+                List<int> ReportPlanIds = Sessions.ReportPlanIds;
+                List<int> campaignIds = new List<int>();
+                campaignIds = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).Distinct().ToList();
                 int customFieldIdCardSection = 0;
                 bool isTacticCustomFieldCardSection = false;
                 int customFieldOptionIdCardSection = 0;
@@ -11222,8 +11256,7 @@ namespace RevenuePlanner.Controllers
                     if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                     {
                         int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                        List<int> campaignIds = new List<int>();
-                        campaignIds = TacticData.Select(p => p.TacticObj.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
+                      
                         string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
                         campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
                         TacticData = TacticData.Where(t => campaignIds.Contains(t.TacticObj.Plan_Campaign_Program.PlanCampaignId)).ToList();
@@ -11232,7 +11265,7 @@ namespace RevenuePlanner.Controllers
                     {
                         int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
                         List<int> programIds = new List<int>();
-                        programIds = TacticData.Select(p => p.TacticObj.PlanProgramId).Distinct().ToList();
+                        programIds = db.Plan_Campaign_Program.Where(prog => campaignIds.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).Distinct().ToList();
                         string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
                         programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
                         TacticData = TacticData.Where(t => programIds.Contains(t.TacticObj.PlanProgramId)).ToList();
@@ -11513,17 +11546,18 @@ namespace RevenuePlanner.Controllers
 
                         #region "New Code"
                         List<int> entityids = new List<int>();
+                        List<int> campaignlistIds = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
                         if (IsTacticCustomField)
                         {
                             entityids = TacticData.Select(t => t.TacticObj.PlanTacticId).ToList();
                         }
                         else if (IsCampaignCustomField)
                         {
-                            entityids = TacticData.Select(t => t.TacticObj.Plan_Campaign_Program.PlanCampaignId).ToList();
+                            entityids = campaignlistIds;
                         }
                         else
                         {
-                            entityids = TacticData.Select(t => t.TacticObj.PlanProgramId).ToList();
+                            entityids = db.Plan_Campaign_Program.Where(prog => campaignlistIds.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).ToList();
                         }
 
                         if (ParentLabel.Contains(Common.TacticCustomTitle) && customfieldId == 0)
@@ -13450,9 +13484,10 @@ namespace RevenuePlanner.Controllers
             // Modified by Arpita Soni  for Ticket #1148 on 01/28/2014
             //Common.GetReportStartEndDate(selectOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
             Common.GetselectedYearList(selectOption, ref selectedYearList);// Add By Nishant Sheth #1839
-            List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
+          //  List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
             List<int> campaignIds = new List<int>();
-            campaignIds = TacticList.Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
+            List<int> ReportPlanIds = Sessions.ReportPlanIds;  
+            campaignIds = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).Distinct().ToList<int>();
             if (masterCustomFieldOptionId > 0)
             {
                 if (marsterCustomField.Contains(Common.CampaignCustomTitle))
@@ -13482,16 +13517,18 @@ namespace RevenuePlanner.Controllers
             // Modified by Arpita Soni  for Ticket #1148 on 01/28/2014
             //Common.GetReportStartEndDate(selectOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
             Common.GetselectedYearList(selectOption, ref selectedYearList);// Add By Nishant Sheth #1839
-            List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
+          //  List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
             List<Plan_Campaign_Program> ProgramList = new List<Plan_Campaign_Program>();
             if (id != null && id != "")
             {
                 int campaignid = Convert.ToInt32(id);
-                ProgramList = TacticList.Where(tactic => tactic.Plan_Campaign_Program.PlanCampaignId == campaignid).Select(tactic => tactic.Plan_Campaign_Program).Distinct().ToList();
+                ProgramList = db.Plan_Campaign_Program.Where(tactic => tactic.PlanCampaignId == campaignid).Select(prog => prog).Distinct().ToList();
             }
             else
             {
-                ProgramList = TacticList.Select(tactic => tactic.Plan_Campaign_Program).Distinct().ToList();
+                List<int> ReportPlanIds = Sessions.ReportPlanIds;
+                List<int> campaignlist = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
+                ProgramList = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(prog => prog).Distinct().ToList();
             }
             if (masterCustomFieldOptionId > 0)
             {
@@ -13535,7 +13572,7 @@ namespace RevenuePlanner.Controllers
             //Common.GetReportStartEndDate(selectOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
             Common.GetselectedYearList(selectOption, ref selectedYearList);// Add By Nishant Sheth #1839
             List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
-
+            List<int> ReportPlanIds = Sessions.ReportPlanIds;  
             // Modified by Arpita Soni  for Ticket #1148 on 01/28/2014
             if (id != null && id != "")
             {
@@ -13552,11 +13589,11 @@ namespace RevenuePlanner.Controllers
             }
             if (masterCustomFieldOptionId > 0)
             {
+                List<int> campaignIds = new List<int>();
+                campaignIds = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).Distinct().ToList();
                 if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                 {
                     int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                    List<int> campaignIds = new List<int>();
-                    campaignIds = TacticList.Select(p => p.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
                     string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
                     campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
                     TacticList = TacticList.Where(t => campaignIds.Contains(t.Plan_Campaign_Program.PlanCampaignId)).ToList();
@@ -13565,7 +13602,7 @@ namespace RevenuePlanner.Controllers
                 {
                     int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
                     List<int> programIds = new List<int>();
-                    programIds = TacticList.Select(p => p.PlanProgramId).Distinct().ToList();
+                    programIds = db.Plan_Campaign_Program.Where(prog => campaignIds.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(camp => camp.PlanProgramId).Distinct().ToList();
                     string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
                     programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
                     TacticList = TacticList.Where(t => programIds.Contains(t.PlanProgramId)).ToList();

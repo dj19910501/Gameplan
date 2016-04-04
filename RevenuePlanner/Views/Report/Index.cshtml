@@ -97,7 +97,7 @@
     // Desc :: #1958 Add hide icon to hide side bar*@
 <div class="padding-content padding-bottom0 sidebar-toogle-wrapper" id="divsidebartoggle">
     <div class="sidebar-toogle">
-        <a href="#"><<&nbsp;<span>hide</span></a>
+        <a href="#">&nbsp;<span>hide</span></a>
     </div>
 </div>
     <div class="padding-content padding-bottom0 sidebar-toogle-wrapper" id="btnreportSection">
@@ -633,7 +633,6 @@
     var IsDeselectAll = false;
     var currentRequest = null;//Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
     function GetOwnerListForFilter(Planids, ifexists, OnPlanChange) {
-
         var type = '@PlanGanttTypes.Tactic.ToString()';
         var asyncval = false;
         if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
@@ -1025,8 +1024,8 @@
         LoadYearDropdown();
         //loadBasedOnPlan(); // Commented By Nishant Sheth due to off multiple time same methods are called
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
-        GetOwnerListForFilter(PlanIds, false);
         GetTacticTypelist(PlanIds, false);
+        GetOwnerListForFilter(PlanIds, false);
         GetLastSetofViews($('#FilterName').val());
         GetselectionFilter();
         $("#DivShareReport").hide();
@@ -1044,7 +1043,6 @@
     });
 
     function GetLastSetofViews(presetName) {
-
         $.ajax({
             type: 'POST',
             url: '@Url.Action("LastSetOfViews", "Home")',
@@ -1305,7 +1303,6 @@
     }
 
     function GetselectionFilter() {
-
         var yy = $(this);
         var arrOptionIds = new Array();
         //// close multiselect
@@ -1330,12 +1327,22 @@
             }
 
         //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
-        var CheckedCounter = 0, AllCounter = 0, id = null;
+        var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
         $("#divCustomFieldsFilter").find("div.accordion").each(function () {
             if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
                 AllCounter = $(this).find("input[type=checkbox]").length;
                 CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-                if (AllCounter == CheckedCounter) {
+                UncheckedCounter = AllCounter - CheckedCounter;
+                if (AllCounter == UncheckedCounter) {
+                    var Id = $(this).attr("id");
+                  //  if (Id.indexOf("-") >= 0) {
+                        Id = Id.replace('accordion', '');
+                        var CustomId = null;
+                        arrOptionIds.push({ CustomFieldId: Id, OptionId: CustomId });
+
+                    //}
+                }
+                else if (AllCounter == CheckedCounter) {
                     id = this.id;
                     if (id != null && id != "") {
                         id = this.id.replace('accordion', '');
@@ -1796,12 +1803,22 @@
         });
 
         // modified by Rahul Shah "Viewby" dropdown of Report->Finance tab not filled customfields when all customfields of left pane are selected.
-        var CheckedCounter = 0, AllCounter = 0, id = null;
+        var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
         $("#divCustomFieldsFilter").find("div.accordion").each(function () {
             if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
                 AllCounter = $(this).find("input[type=checkbox]").length;
                 CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-                if (AllCounter == CheckedCounter) {
+                UncheckedCounter = AllCounter - CheckedCounter;
+                if (AllCounter == UncheckedCounter) {
+                    var Id = $(this).attr("id");
+                   // if (Id.indexOf("-") >= 0) {
+                        Id = Id.replace('accordion', '');
+                        var CustomId = Id + "_null";
+                        filters.customFieldIds.push(CustomId);
+
+                   // }
+                }
+                else if (AllCounter == CheckedCounter) {
                     //id = this.id;
                     id = this.id.replace('accordion', '');                    
                     var i = 0, customfieldid;
@@ -1978,12 +1995,22 @@
         }
 
         //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
-        var CheckedCounter = 0, AllCounter = 0, id = null;
+        var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
         $("#divCustomFieldsFilter").find("div.accordion").each(function () {
             if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
                 AllCounter = $(this).find("input[type=checkbox]").length;
                 CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-                if (AllCounter == CheckedCounter) {
+                UncheckedCounter = AllCounter - CheckedCounter;
+                if (AllCounter == UncheckedCounter) {
+                    var Id = $(this).attr("id");
+                  //  if (Id.indexOf("-") >= 0) {
+                       Id = Id.replace('accordion', '');
+                        var CustomId = null;
+                        arrOptionIds.push({ CustomFieldId: Id, OptionId: CustomId });
+
+                   // }
+                }
+                else if (AllCounter == CheckedCounter) {
                     id = this.id;
                     if (id != null && id != "") {
                         id = this.id.replace('accordion', '');
@@ -1999,6 +2026,22 @@
                 }
             }
         });        ////End
+
+        filters.OwnerIds = [];
+        $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.OwnerIds.push(chkid);
+            }
+        });
+
+        filters.TacticTypeids = [];
+        $("#ulTacticType li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+            }
+        });
 
         //// get selected value from multiselect
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
@@ -2382,8 +2425,9 @@
             isAllowClick = false;
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
                 leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
-                GetOwnerListForFilter(PlanIds, true);
-                GetTacticTypelist(PlanIds, true);
+                //GetTacticTypelist(PlanIds, true);
+                //GetOwnerListForFilter(PlanIds, true);
+               
             }
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
             LoadYearDropdown(leftPaneOption);
@@ -2402,8 +2446,9 @@
             isAllowClick = false;
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
                 leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
-                GetOwnerListForFilter(PlanIds, true);
-                GetTacticTypelist(PlanIds, true);
+                //GetTacticTypelist(PlanIds, true);
+                //GetOwnerListForFilter(PlanIds, true);
+                
             }
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
             LoadYearDropdown(leftPaneOption);
@@ -2423,8 +2468,9 @@
             isAllowClick = false;
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
                 leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Waterfall.ToString()';
-                GetOwnerListForFilter(PlanIds, true);
-                GetTacticTypelist(PlanIds, true);
+                //GetTacticTypelist(PlanIds, true);
+                //GetOwnerListForFilter(PlanIds, true);
+              
             }
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Waterfall.ToString()';  //PL 1562 Dashrath Prajpati
             LoadYearDropdown(leftPaneOption);
@@ -2445,15 +2491,17 @@
             if (leftPaneOption != '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
                 leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
                 //modified by Rahul Shah on 19/02/2016 for PL #1975.
-                GetOwnerListForFilter(PlanIds, false);
-                GetTacticTypelist(PlanIds, false);
+                //GetTacticTypelist(PlanIds, false);
+                //GetOwnerListForFilter(PlanIds, false);
+              
             }
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
             LoadYearDropdown(leftPaneOption);
             RemoveAllActiveItem();
             $(this).addClass('active');
             $('#ddlsection').hide(); //Modified for #1296
-            LoadBudgetView();
+            GetselectionFilter();
+            //LoadBudgetView();
         }
     });
 
