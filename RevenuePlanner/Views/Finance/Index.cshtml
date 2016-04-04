@@ -624,13 +624,31 @@
                                 myTreeGrid.setColumnHidden(Count, false);
                                 Count = Count + 4;
                             }
+                            //Added By Bhumika Chakravarti for #1771 on 4/4/2016
+                            if($("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","none"))
+                            {
+                                $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","table-row");
+                                $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","normal");
+                            }
                         }
-                    }else{
+                    } 
+                    else {
                         if (IsChecked == "false" || IsChecked == undefined) {
                             myTreeGrid.setColumnHidden(Count, true);
+                            
                         }
                         if (IsChecked == "true") {
                             myTreeGrid.setColumnHidden(Count, false);
+                            //Added By Bhumika Chakravarti for #1771 on 4/4/2016
+                            var HeaderRowCount = $("#gridbox .xhdr .hdr tr").length;
+                            if(HeaderRowCount == 3)
+                            {
+                                if($("#gridbox .xhdr .hdr tr:nth-child(2)").height() < $("#gridbox .xhdr .hdr tr:nth-child(3)").height())
+                                {
+                                    $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","none");
+                                    $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","32px");
+                                }
+                            }
                         }
                     }
 
@@ -1109,7 +1127,22 @@
         valueTimeFrame = $("#ddlRevenueTimeFrame").val();
         $("#ddlRevenueTimeFrame").val(valueTimeFrame);
         var url = '@Url.Content("~/Finance/EditBudget/")';
-        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel+'&EditPermission='+GlobalEditPermission);
+        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel+'&EditPermission='+GlobalEditPermission,
+            //Added By Bhumika Chakravarti for #1771 on 4/4/2016
+            function( response, status, xhr){
+                if(status == "success")
+                {
+                    var HeaderRowCount = $("#gridbox .xhdr .hdr tr").length;
+                    if(HeaderRowCount == 3)
+                    {
+                        if($("#gridbox .xhdr .hdr tr:nth-child(2)").height() < $("#gridbox .xhdr .hdr tr:nth-child(3)").height())
+                        {
+                            $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","none");
+                            $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","32px");
+                        }
+                    }
+                }
+            });
 
     }
 

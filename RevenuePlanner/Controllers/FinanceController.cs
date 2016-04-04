@@ -653,8 +653,15 @@ namespace RevenuePlanner.Controllers
                                     else
                                     {
                                         var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
-
+                                        //Added By Bhumika for #1771 on 1/4/2016
+                                        if (Convert.ToString(DropDownVal) != null)
+                                        {
                                         Datarow[colname] = Convert.ToString(DropDownVal);
+                                        }
+                                        else
+                                        {
+                                            Datarow[colname] = "<div style='color: #000 ;'> --- </div>";
+                                        }
                                     }
                                 }
                             }
