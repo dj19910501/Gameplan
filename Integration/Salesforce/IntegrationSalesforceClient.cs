@@ -5436,9 +5436,23 @@ namespace Integration.Salesforce
                                 #endregion
 
                                 // get linked tactic
-                                linkedTactic = tacticList.Where(tactc => tactc.PlanTacticId == tac.LinkedTacticId).FirstOrDefault();
+                                if (EntityType.Tactic.Equals(_entityType))
+                                {
+                                    linkedTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId==tac.LinkedTacticId && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).FirstOrDefault();
+                                }
+                                else if (EntityType.Campaign.Equals(_entityType) || EntityType.Program.Equals(_entityType))
+                                {
+                                    linkedTactic = tblTactic.Where(tactic => tactic.PlanTacticId == tac.LinkedTacticId).FirstOrDefault();
+                                }
+                                else
+                                {
+                                    linkedTactic = tacticList.Where(tactc => tactc.PlanTacticId == tac.LinkedTacticId).FirstOrDefault();
+                                }
                                 if (linkedTactic != null)
                                 {
+                                    if (!tacticList.Contains(linkedTactic))
+                                        tacticList.Add(linkedTactic);
+
                                     #region "Get both tactics Plan year"
                                     strOrgnlTacPlanyear = tac.PlanTacic.Plan_Campaign_Program.Plan_Campaign.Plan.Year; // Get Orginal Tactic Plan Year.
                                     strLnkdTacPlanYear = linkedTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year; // Get Linked Tactic Plan Year.
@@ -5810,28 +5824,52 @@ namespace Integration.Salesforce
                 }
                 #endregion
 
-                if (tacticList.Count > minSyncTacCount)
-                {
                     // if there is no updated tactic means all created tactic then no need to get latest sync start date.
-                    if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0)
+                if (lstUpdatedTactic != null && lstUpdatedTactic.Count > 0 && lstUpdatedTactic.Count > minSyncTacCount)
                     {
                         #region "Determine last successfully synced instance date"
                         if (_integrationInstanceId > 0)
                         {
                             string strPushTacticData = Enums.IntegrationInstanceSectionName.PushTacticData.ToString();
                             string strSyncSuccessStatus = Enums.SyncStatus.Success.ToString();
-                            var lstInstanceSections = db.IntegrationInstanceSections.Where(inst => inst.IntegrationInstanceId == _integrationInstanceId && inst.SectionName == strPushTacticData && inst.Status == strSyncSuccessStatus).OrderByDescending(inst => inst.SyncStart).Select(inst => new { IntegrationInstanceSectionId = inst.IntegrationInstanceSectionId, SyncStart = inst.SyncStart, SyncEnd = inst.SyncEnd }).ToList();
+                        #region "Old Code"
+                        //var lstInstanceSections = db.IntegrationInstanceSections.Where(inst => inst.IntegrationInstanceId == _integrationInstanceId && inst.SectionName == strPushTacticData && inst.Status == strSyncSuccessStatus).OrderByDescending(inst => inst.SyncStart).Select(inst => new { IntegrationInstanceSectionId = inst.IntegrationInstanceSectionId, SyncStart = inst.SyncStart, SyncEnd = inst.SyncEnd }).ToList();
+                        //if (lstInstanceSections != null && lstInstanceSections.Count > 0)
+                        //{
+                        //    string strTacticType = EntityType.Tactic.ToString();
+                        //    List<int> InstanceSectionIds = lstInstanceSections.Select(sec => sec.IntegrationInstanceSectionId).ToList();
+                        //    var tblPlanEntityLog = db.IntegrationInstancePlanEntityLogs.Where(log => InstanceSectionIds.Contains(log.IntegrationInstanceSectionId) && log.EntityType == strTacticType).Select(log => new { IntegrationInstanceSectionId = log.IntegrationInstanceSectionId, EntityId = log.EntityId }).ToList();
+                        //    //var lstInstSections = (from entLog in db.IntegrationInstancePlanEntityLogs
+                        //    //                       join sec in lstInstanceSections on entLog.IntegrationInstanceSectionId equals sec.IntegrationInstanceSectionId
+
+                        //    // Get most recent sync section based on IntegrationInstancePlanEntityLog table tactic pushed count.
+                        //    foreach (var section in lstInstanceSections)
+                        //    {
+                        //        var lstEntity = tblPlanEntityLog.Where(log => log.IntegrationInstanceSectionId == section.IntegrationInstanceSectionId).Select(log => log.EntityId).ToList();
+                        //        // Get Sync date of Section; if pushced tactic count more than 1 for this specific "PushTacticData" section.
+                        //        if (lstEntity != null && lstEntity.Count > 1)
+                        //        {
+                        //            lastInstanceSyncDate = section.SyncEnd;       // Get most recent sync "PushTacticData" section syncStart Date.
+                        //            break;
+                        //        }
+                        //    }
+                        //} 
+                        #endregion
+                        #region "Get last sync date"
+                        var lstInstanceSections = db.IntegrationInstanceSections.Where(inst => inst.IntegrationInstanceId == _integrationInstanceId && inst.SectionName == strPushTacticData).OrderByDescending(inst => inst.SyncStart).Select(inst => new { IntegrationInstanceSectionId = inst.IntegrationInstanceSectionId, SyncStart = inst.SyncStart, SyncEnd = inst.SyncEnd,Status=inst.Status }).ToList();
                             if (lstInstanceSections != null && lstInstanceSections.Count > 0)
                             {
                                 string strTacticType = EntityType.Tactic.ToString();
                                 List<int> InstanceSectionIds = lstInstanceSections.Select(sec => sec.IntegrationInstanceSectionId).ToList();
-                                var tblPlanEntityLog = db.IntegrationInstancePlanEntityLogs.Where(log => InstanceSectionIds.Contains(log.IntegrationInstanceSectionId) && log.EntityType == strTacticType).Select(log => new { IntegrationInstanceSectionId = log.IntegrationInstanceSectionId, EntityId = log.EntityId }).ToList();
-                                //var lstInstSections = (from entLog in db.IntegrationInstancePlanEntityLogs
-                                //                       join sec in lstInstanceSections on entLog.IntegrationInstanceSectionId equals sec.IntegrationInstanceSectionId
+                            var tblPlanEntityLog = db.IntegrationInstancePlanEntityLogs.Where(log => InstanceSectionIds.Contains(log.IntegrationInstanceSectionId) && log.EntityType == strTacticType).Select(log => new { IntegrationInstanceSectionId = log.IntegrationInstanceSectionId, EntityId = log.EntityId,Status = log.Status }).ToList();
 
                                 // Get most recent sync section based on IntegrationInstancePlanEntityLog table tactic pushed count.
                                 foreach (var section in lstInstanceSections)
                                 {
+                                if (section.Status != null)
+                                {
+                                    if (section.Status.Equals(Enums.SyncStatus.Success.ToString()))
+                                    {
                                     var lstEntity = tblPlanEntityLog.Where(log => log.IntegrationInstanceSectionId == section.IntegrationInstanceSectionId).Select(log => log.EntityId).ToList();
                                     // Get Sync date of Section; if pushced tactic count more than 1 for this specific "PushTacticData" section.
                                     if (lstEntity != null && lstEntity.Count > 1)
@@ -5840,10 +5878,33 @@ namespace Integration.Salesforce
                                         break;
                                     }
                                 }
+                                    else if (section.Status.Equals(Enums.SyncStatus.Error.ToString()))
+                                    {
+                                        var lstEntity = tblPlanEntityLog.Where(log => log.IntegrationInstanceSectionId == section.IntegrationInstanceSectionId).Select(log => new { EntityId = log.EntityId, Status = log.Status }).ToList();
+                                        // Get Sync date of Section; if pushced tactic count more than 1 for this specific "PushTacticData" section.
+                                        if (lstEntity != null && lstEntity.Count > 1)
+                                        {
+                                            string strErrorStatus = Enums.SyncStatus.Error.ToString();
+                                            List<int> lstEntityIds = lstEntity.Where(ent => ent.Status.Equals(strErrorStatus)).Select(ent => ent.EntityId).ToList();
+                                            var lstFailedTactics = db.Plan_Campaign_Program_Tactic.Where(tac => lstEntityIds.Contains(tac.PlanTacticId)).ToList();
+                                            if (lstFailedTactics != null && lstFailedTactics.Count > 0)
+                                            {
+                                                // Add modified tactics to syncTactics list.
+                                                syncTactics.AddRange(lstFailedTactics);
+
+                                                // remove modified tactics list from updated tactic list and assign to same variable.
+                                                lstUpdatedTactic = lstUpdatedTactic.Where(updTac => !lstFailedTactics.Contains(updTac)).ToList();
+                                            }
+                                            lastInstanceSyncDate = section.SyncEnd;       // Get most recent sync "PushTacticData" section syncStart Date.
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         }
                         #endregion
                     }
+                    #endregion
                 }
                 #endregion
 
@@ -6002,6 +6063,7 @@ namespace Integration.Salesforce
                 if (lastInstanceSyncDate.HasValue && !isInstanceMappingUpdate)
                 {
                     tacticList = syncTactics;
+                    tacticList = tacticList.Distinct().ToList();
                 }
             }
             catch (Exception ex)

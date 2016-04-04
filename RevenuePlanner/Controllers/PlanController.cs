@@ -13276,7 +13276,7 @@ namespace RevenuePlanner.Controllers
             bool isdifferModel = false;
             string destPlanTitle = string.Empty;
             List<Plan> tblPlan = Common.GetPlan();
-
+            Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
             // when user click on "Copy To" option from Plan Grid then source planId will be null.
             #region "Get Source PlanId"
             if (sourceEntityId > 0 && string.IsNullOrEmpty(srcPlanID))
@@ -13284,7 +13284,7 @@ namespace RevenuePlanner.Controllers
 
                 if (CloneType == Enums.Section.Tactic.ToString())
                 {
-                    Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId).FirstOrDefault();
+                    objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId).FirstOrDefault();
                     srcPlanId = objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                 }
             }
@@ -13364,6 +13364,16 @@ namespace RevenuePlanner.Controllers
 
                         //// Create Clone by CloneType e.g Plan,Campaign,Program,Tactic,LineItem
                         rtResult = objClonehelper.LinkToOtherPlan(lstTacticTypeMapping, CloneType, sourceEntityId, srcPlanId, destEntityId, isdifferModel);
+                        #region "Update Source tactic Modified By & Date while linking tactic"
+                        if (rtResult > 0)
+                        {
+                            objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId).FirstOrDefault();
+                            objTactic.ModifiedBy = Sessions.User.UserId;
+                            objTactic.ModifiedDate = System.DateTime.Now;
+                            db.Entry(objTactic).State = EntityState.Modified;
+                            db.SaveChanges();
+                        } 
+                        #endregion
                         UpdateParentEntityStartEndDataforLinking(sourceEntityId, destEntityId, CloneType, srcPlanId, destPlanId);
 
                         // Add By Nishant Sheth

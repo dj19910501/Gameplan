@@ -1585,6 +1585,8 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.StartDate = GetResultDateforLink(objPlanTactic.StartDate, startDate, true);
                     objPlanTactic.EndDate = objPlanTactic.EndDate;
                     objPlanTactic.Cost = 0;
+                    objPlanTactic.ModifiedBy = Sessions.User.UserId;
+                    objPlanTactic.ModifiedDate = System.DateTime.Now;
                     //objPlanTactic.StartDate = objPlanTactic.StartDate;
                     //objPlanTactic.EndDate = objPlanTactic.EndDate;
                     objPlanTactic.LinkedPlanId = planid;
