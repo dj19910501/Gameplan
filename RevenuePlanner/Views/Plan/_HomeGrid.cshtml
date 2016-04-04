@@ -696,12 +696,13 @@
                         HomeGrid.showRow(HomeGrid.getRowId(state0));
                         //HomeGrid.openItem(HomeGrid.getRowId(state0));//Added by Rahul Shah for PL #1744
                     }
-                    //Added by Rahul Shah on 25/03/2016 for PL #2075
-                    if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {
-                        HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
-                        HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+            //Added by Rahul Shah on 25/03/2016 for PL #2075
+                    if(!IslineItemDelete){  //Added By Maitri for #2040 Observation
+                        if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {                        
+                            HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+                            HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+                        }
                     }
-
               
           //  }
             if ($("#gridbox").find(".rowselected").length >= 1) {
@@ -723,8 +724,8 @@
         //GridDataCsv.head=JSON.parse(GridData).head;
         //GridDataCsv.rows=JSON.parse(GridData).rows;
         HomeGrid.parse(GridDataHomeGrid, "json");
-        HomeGrid.splitAt(4);
-        //Added by Maitri Gandhi for #2040 on 31/3/2016        
+        HomeGrid.splitAt(2);
+        //Added by Maitri Gandhi for #2040 on 31/3/2016          
         HomeGrid.collapseAll();        
         var cookie = document.cookie;
         if(cookie.indexOf("gridOpen") > -1){

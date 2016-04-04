@@ -128,7 +128,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 if (ModelState.IsValid)
-                {
+                {                    
                     BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                     BDSService.User obj = new BDSService.User();
                     Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
@@ -249,7 +249,9 @@ namespace RevenuePlanner.Controllers
 
                     //Update last login date for user
                     objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
-
+                    //Added By Maitri for #2040 Observation
+                    Common.RemoveCookie("gridOpen");
+                    Common.RemoveCookie("gridOpengridBox");
                     if ((!string.IsNullOrWhiteSpace(returnUrl)) && IsLocalUrl(returnUrl))
                     {
                         return RedirectLocal(returnUrl);
@@ -268,7 +270,7 @@ namespace RevenuePlanner.Controllers
                         {
                             return RedirectToAction(defaultURL.actionName, defaultURL.controllerName);
                         }
-                    }
+                    }                    
                 }
                 else
                 {
@@ -564,6 +566,9 @@ namespace RevenuePlanner.Controllers
             CacheObject objCache= new CacheObject();
             objCache.RemoveAllCurrentUserCache();
             Sessions.Clear();
+            //Added By Maitri for #2040 Observation
+            Common.RemoveCookie("gridOpen");
+            Common.RemoveCookie("gridOpengridBox");
             //Start Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
             System.Web.Security.FormsAuthentication.SignOut();
             //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
