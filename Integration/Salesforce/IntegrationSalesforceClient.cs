@@ -5886,7 +5886,7 @@ namespace Integration.Salesforce
                                         {
                                             string strErrorStatus = Enums.SyncStatus.Error.ToString();
                                             List<int> lstEntityIds = lstEntity.Where(ent => ent.Status.Equals(strErrorStatus)).Select(ent => ent.EntityId).ToList();
-                                            var lstFailedTactics = db.Plan_Campaign_Program_Tactic.Where(tac => lstEntityIds.Contains(tac.PlanTacticId)).ToList();
+                                            var lstFailedTactics = db.Plan_Campaign_Program_Tactic.Where(tac => lstEntityIds.Contains(tac.PlanTacticId) && statusList.Contains(tac.Status) && tac.IsDeployedToIntegration && !tac.IsDeleted && tac.IsSyncSalesForce.HasValue && tac.IsSyncSalesForce.Value == true).ToList();
                                             if (lstFailedTactics != null && lstFailedTactics.Count > 0)
                                             {
                                                 // Add modified tactics to syncTactics list.
