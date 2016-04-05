@@ -1587,8 +1587,7 @@
                                     return false;
                                 }
                                 else if (UpdateColumn == "Planned Cost") {
-                                   
-                                    //Added By Rahul Shah on 16/10/2015 for PL 1559
+                                   //Added By Rahul Shah on 16/10/2015 for PL 1559
                                     diff = parseInt(nValue) - parseInt(oValue);
                                     diffLineAndTactic = states.lineItemCost - states.tacticCost
                                     if (states.lineItemCost > states.tacticCost) {
@@ -1685,12 +1684,12 @@
                                 }
 
                                 //Added By Komal Rawal for 2058 
-                                if(OldValue.toString() != states.OwnerName.toString())
+                                if((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" &&  states.OwnerName != null)
                                 {
-                                    if (planid > 0 && planid != null && planid != undefined) {
+                                    if (planid != 0 && planid != null && planid != undefined) {
                                         var PlanID = HomeGrid.cells(planid,3).getValue();
                                     }
-                                    else if(campid > 0 && campid != null && campid != undefined) {
+                                    else if(campid != 0 && campid != null && campid != undefined) {
                                         var PlanID = HomeGrid.cells(campid,3).getValue();
                                     }
                                     else{
