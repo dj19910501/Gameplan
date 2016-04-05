@@ -190,6 +190,170 @@ AND CustomField.CustomFieldId=CustomField_Entity.CustomFieldId
 END
 
 GO
+-- =============================================
+-- Author: Rahul
+-- Create date: 04/05/2016
+-- Description: Get list of Data for CSV
+-- =============================================
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGridDataList]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[spGridDataList]
+GO
+
+-- =============================================
+-- Author:<Author,Akashdeep>
+-- Create date: <Create Date,21-Mar-2016,>
+-- Description:	<Description,,>
+--
+--Exec spGridDataList '12950'
+-- =============================================
+CREATE PROCEDURE  [dbo].[spGridDataList] 
+	-- Add the parameters for the stored procedure here
+	@PlanId int	
+	
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	
+	SET NOCOUNT ON;
+
+SELECT [Section]='Plan',[Plan].PlanId As Id,null As ParentId,[Plan].Title As 'Plan',null AS 'Campaign', null AS 'Program', null AS 'Tactic', null AS 'LineItem',
+StartDate = Convert(nvarchar(10),Campaign.MinStartDate,101),
+EndDate = Convert(nvarchar(10),Campaign.MaxEndDate,101),null as 'Type',[Plan].CreatedBy AS 'CreatedBy',null AS 'Owner',[Plan].Budget, 
+PlanCost=(
+	select sum(cost)  from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId in (select PlanTacticId from Plan_Campaign_Program_Tactic where PlanProgramId in (select PlanProgramId from Plan_Campaign_Program where PlanCampaignId in (select PlanCampaignId from Plan_Campaign where PlanId = @PlanId and IsDeleted=0) and IsDeleted=0) and IsDeleted=0) and IsDeleted=0
+),null As 'StageId',null AS 'TargetStageValue',null AS 'MQLS',null AS 'Revenue',null As 'ExternalName',null As EloquaId,null AS SFDCId,[Plan].ModelId AS 'ModelId'
+FROM [Plan] AS [Plan] WITH (NOLOCK) 
+CROSS APPLY (SELECT min(StartDate) as 'MinStartDate',max(EndDate) as 'MaxEndDate' FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0) Campaign 
+WHERE [Plan].PlanId IN (@PlanId)
+ AND [Plan].IsDeleted=0 
+
+union 
+select [Section]='Campaign', Campaign.PlanCampaignId,Campaign.PlanId as ParentId, [Plan].Title AS 'Plan',Campaign.Title AS 'Campaign', null AS 'Program', null AS 'Tactic', null AS 'LineItem',Convert(nvarchar(10),StartDate,101),Convert(nvarchar(10),EndDate,101),null as 'Type',
+Campaign.CreatedBy AS 'CreatedBy',null AS 'Owner',null,null,null As 'StageId',null AS 'TargetStageValue',null AS 'MQLS',null AS 'Revenue',null As 'ExternalName',null As EloquaId,IntegrationInstanceCampaignId AS SFDCId,null AS 'ModelId' from Plan_Campaign Campaign
+CROSS APPLY (SELECT * From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
+WHERE Campaign.IsDeleted=0
+
+union
+SELECT [Section]='Program', Program.PlanProgramId AS Id,Program.PlanCampaignId as ParentId,[Plan].Title AS 'Plan',Campaign.Title AS 'Campaign',Program.Title AS 'Program',null AS 'Tactic', null AS 'LineItem', 
+Convert(nvarchar(10),Program.StartDate,101),Convert(nvarchar(10),Program.EndDate,101),null as 'Type',Program.CreatedBy AS 'CreatedBy',null AS 'Owner',null,null,null As 'StageId',null AS 'TargetStageValue',null AS 'MQLS',null AS 'Revenue',null As 'ExternalName',null As EloquaId,IntegrationInstanceProgramId AS SFDCId,null AS 'ModelId' FROM Plan_Campaign_Program Program WITH (NOLOCK)
+CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
+CROSS APPLY (SELECT PlanId,Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
+WHERE Program.IsDeleted=0
+union
+
+SELECT [Section]='Tactic',Tactic.PlanTacticId AS Id,Tactic.PlanProgramId AS ParentId,[Plan].Title AS 'Plan',[Campaign].Title AS 'Campaign',Program.Title AS 'Program',Tactic.Title AS 'Tactic',null AS 'LineItem',
+Convert(nvarchar(10),StartDate,101),Convert(nvarchar(10),EndDate,101),[TacticType].[Title] AS 'Type',[Tactic].CreatedBy AS 'CreatedBy',null AS 'Owner',Tactic.ProjectedStageValue,Tactic.Cost,
+[Tactic].StageId As 'StageId',CONVERT(NVARCHAR(MAX),[Tactic].ProjectedStageValue) +' '+ [Stage].Title As 'TargetStageValue',null AS 'MQLS',null AS 'Revenue',Tactic.TacticCustomName As 'ExternalName',Tactic.IntegrationInstanceEloquaId AS EloquaId,Tactic.IntegrationInstanceTacticId AS SFDCId,null AS 'ModelId'
+FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) 
+CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=Tactic.PlanProgramId AND Program.IsDeleted=0) Program
+CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
+CROSS APPLY (SELECT PlanId,Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
+OUTER APPLY (SELECT [TacticTypeId],[Title] FROM [TacticType] WITH (NOLOCK) Where [Tactic].TacticTypeId=TacticType.TacticTypeId AND IsDeleted=0) [TacticType]
+OUTER APPLY (SELECT [StageId],[Title] FROM [Stage] WITH (NOLOCK) Where [Tactic].StageId=Stage.StageId AND  IsDeleted=0) Stage
+WHERE Tactic.IsDeleted=0
+
+union
+SELECT [Section]='LineItem', LineItem.PlanLineItemId AS Id,LineItem.PlanTacticId AS ParentId,[Plan].Title AS 'Plan',[Campaign].Title AS 'Campaign',Program.Title AS 'Program',Tactic.Title AS 'Tactic'
+,LineItem.Title AS 'LineItem',Convert(nvarchar(10),StartDate,101),Convert(nvarchar(10),EndDate,101),LineItemType.Title as 'Type',[LineItem].CreatedBy AS 'CreatedBy',null AS 'Owner',null,LineItem.Cost,null As 'StageId',
+null AS 'TargetStageValue',null AS 'MQLS',null AS 'Revenue',null As 'ExternalName',null As EloquaId,null AS SFDCId,null AS 'ModelId'
+FROM Plan_Campaign_Program_Tactic_LineItem AS LineItem WITH (NOLOCK) 
+CROSS APPLY (SELECT PlanTacticId,PlanProgramId,Title FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE Tactic.PlanTacticId=LineItem.PlanTacticId AND Tactic.IsDeleted=0) Tactic
+CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=Tactic.PlanProgramId AND Program.IsDeleted=0) Program
+CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
+CROSS APPLY (SELECT PlanId,ModelId,[Year],Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
+OUTER APPLY (SELECT [LineItemTypeId],[Title] FROM [LineItemType] WITH (NOLOCK) Where [LineItem].LineItemTypeId=[LineItemType].LineItemTypeId AND IsDeleted=0) [LineItemType]
+WHERE LineItem.IsDeleted=0
+END
+GO
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spCustomfieldData]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[spCustomfieldData] 
+GO
+
+-- =============================================
+-- Author:		<Author,,Akashdeep>
+-- Create date: <Create Date,04-Apr-2016,>
+-- Description:	<Description,,>
+--
+--Exec spCustomfieldData '12950','464EB808-AD1F-4481-9365-6AADA15023BD'
+-- =============================================
+CREATE PROCEDURE  [dbo].[spCustomfieldData] 
+	-- Add the parameters for the stored procedure here
+	@PlanId nvarchar(max),
+	@ClientId varchar(max)
+
+	
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	
+	SET NOCOUNT ON;	
+
+select * into TempData from(
+
+select Distinct(a.Name) as [Text],EntityType,a.CustomFieldId,c.EntityId,c.Value as CustomValue,b.Name, CASE b.Name WHEN 'DropDownList' THEN
+
+(select DropDownText from  dbo.DDLValueName(c.Value))
+ ELSE 
+c.Value  END as DDLText
+ from CustomField as a
+ inner join CustomFieldType as b on a.CustomFieldTypeId = b.CustomFieldTypeId
+ right join CustomField_Entity as c on a.CustomFieldId = c.CustomFieldId and EntityId in(
+
+
+select Campaign.PlanCampaignId from Plan_Campaign Campaign
+CROSS APPLY (SELECT * From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
+WHERE Campaign.IsDeleted=0
+
+union
+SELECT Program.PlanProgramId AS Id FROM Plan_Campaign_Program Program WITH (NOLOCK)
+CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
+CROSS APPLY (SELECT PlanId,Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
+WHERE Program.IsDeleted=0
+union
+
+SELECT Tactic.PlanTacticId AS Id FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) 
+CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=Tactic.PlanProgramId AND Program.IsDeleted=0) Program
+CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
+CROSS APPLY (SELECT PlanId,Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
+OUTER APPLY (SELECT [TacticTypeId],[Title] FROM [TacticType] WITH (NOLOCK) Where [Tactic].TacticTypeId=TacticType.TacticTypeId AND IsDeleted=0) [TacticType]
+WHERE Tactic.IsDeleted=0
+
+union
+SELECT  LineItem.PlanLineItemId AS Id FROM Plan_Campaign_Program_Tactic_LineItem AS LineItem WITH (NOLOCK) 
+CROSS APPLY (SELECT PlanTacticId,PlanProgramId,Title FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE Tactic.PlanTacticId=LineItem.PlanTacticId AND Tactic.IsDeleted=0) Tactic
+CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=Tactic.PlanProgramId AND Program.IsDeleted=0) Program
+CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
+CROSS APPLY (SELECT PlanId,ModelId,[Year],Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
+OUTER APPLY (SELECT [LineItemTypeId],[Title] FROM [LineItemType] WITH (NOLOCK) Where [LineItem].LineItemTypeId=[LineItemType].LineItemTypeId AND IsDeleted=0) [LineItemType]
+WHERE LineItem.IsDeleted=0
+ 
+ )
+ where a.ClientId=@ClientId and a.IsDeleted=0 --and EntityType in ('Tactic','Campaign','Program')
+ 
+ 
+ 
+ ) as Temp
+
+ select  EntityId,      
+
+       (SELECT STUFF((SELECT ',' + [Text]
+                      FROM TempData tn2 WHERE EntityId = t.EntityId 
+                                     
+            FOR XML PATH('')) ,1,1,'')) as Header,
+		(SELECT STUFF((SELECT ',' + [DDLText]
+                      FROM TempData tn2 WHERE EntityId = t.EntityId 
+                                     
+            FOR XML PATH('')) ,1,1,'')) as Value,
+	EntityType
+       
+from TempData t
+GROUP BY t.EntityId,t.EntityType
+DROP TABLE TempData
+END
+GO
 
 -- Added By : Maitri Gandhi
 -- Added Date : 2/22/2016

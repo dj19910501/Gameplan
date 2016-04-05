@@ -193,6 +193,10 @@
     });
 
     function ExportToCSV() {
+        window.location = "/Plan/GetDataforExportCSV";
+    }
+
+    function ExportToCSV1() {
         HomeGrid.expandAll();
         var count = HomeGrid.getRowsNum();
         var parentid = 0;

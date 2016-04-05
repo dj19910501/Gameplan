@@ -137,4 +137,40 @@ namespace RevenuePlanner.Models
         public Guid CreatedBy { get; set; }
         public int CustomFieldEntityId { get; set; }
     }
+    public class Custom_CSV
+    {
+
+        public string Plan { get; set; }
+        public string Campaign { get; set; }
+        public string Program { get; set; }
+        public string Tactic { get; set; }
+        public string LineItem { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+        public string Type { get; set; }
+        public Guid CreatedBy { get; set; }
+        public string Owner { get; set; }
+        public double? PlanCost { get; set; }
+        public string TargetStageValue { get; set; }
+        public double? MQLS { get; set; }
+        public double? Revenue { get; set; }
+        public string ExternalName { get; set; }
+        public string EloquaId { get; set; }
+        public string SFDCId { get; set; }
+        public int Id { get; set; }
+        public Nullable<int> ParentId { get; set; }
+        public int? StageId { get; set; }
+        public int? ModelId { get; set; }
+        public string Section { get; set; }
+        public double? Budget { get; set; }
+
+    }
+
+    public class Custom_CustomFieldHeader
+    {
+        public int EntityId { get; set; }
+        public string Header { get; set; }
+        public string Value { get; set; }
+        public string EntityType { get; set; }
+    }
 }
