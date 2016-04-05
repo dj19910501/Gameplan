@@ -9515,12 +9515,12 @@ namespace RevenuePlanner.Controllers
                 //Modified By Komal Rawal for #1499
                 TacticfilterList = programtactic.Where(pcptobj => pcptobj.IsDeleted == false).ToList();
 
-               
+
                 lstTacticIds = TacticfilterList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
                     IsFiltered = true;
-                    TacticfilterList = TacticfilterList.Where(pcptobj => ( filterOwner.Contains(pcptobj.CreatedBy)) &&
+                    TacticfilterList = TacticfilterList.Where(pcptobj => (filterOwner.Contains(pcptobj.CreatedBy)) &&
                                              (filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
                                              (filterStatus.Contains(pcptobj.Status))).ToList();
 
@@ -9570,7 +9570,7 @@ namespace RevenuePlanner.Controllers
                 // Add By Nishant Shet
                 // Desc:: To resolve owner filter issue
                 TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId)
-                    || ( filterOwner.Contains(tacticlist.CreatedBy))).Select(tacticlist => tacticlist).ToList();
+                    || (filterOwner.Contains(tacticlist.CreatedBy))).Select(tacticlist => tacticlist).ToList();
                 //End By Nishant Sheth
 
                 TempData["TacticfilterList"] = TacticfilterList;
@@ -9748,7 +9748,7 @@ namespace RevenuePlanner.Controllers
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
-                        plandataobj.value = doubledesh;                        
+                        plandataobj.value = doubledesh;
                         plandataobj.type = typero;
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
@@ -9761,9 +9761,10 @@ namespace RevenuePlanner.Controllers
                         {
                             plandataobj.locked = lockedstatezero;
                         }
-                        else {
+                        else
+                        {
                             plandataobj.locked = lockedstateone;
-                        }                        
+                        }
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
@@ -10393,7 +10394,7 @@ namespace RevenuePlanner.Controllers
                     return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
                 }
             }
-           
+
             await Task.Delay(1);
             return PartialView("_HomeGrid", objplangrid);
         }
@@ -10676,7 +10677,7 @@ namespace RevenuePlanner.Controllers
                             SendEmailnotification(plan.PlanId, id, oldOwnerId, new Guid(UpdateVal), plan.Title, plan.Title, plan.Title, plan.Title, Enums.Section.Plan.ToString().ToLower());
 
                     }
-                   
+
                     var OwnerName = "";
                     if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
@@ -11536,7 +11537,7 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(objtacticCost).State = EntityState.Added;
                                 objTactic.Cost = objTactic.Cost + tacticlineitemcostmonth;
                             }
-                            
+
                             #endregion
 
                             //if (tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
@@ -11807,7 +11808,8 @@ namespace RevenuePlanner.Controllers
                     int result = Common.InsertChangeLog(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                     db.SaveChanges();
                     //Added by Rahul Shah on 17/03/2016 for PL #2068
-                    if (result > 0) {
+                    if (result > 0)
+                    {
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                             SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, oldOwnerId, new Guid(UpdateVal), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString());
                     }
@@ -12091,8 +12093,8 @@ namespace RevenuePlanner.Controllers
                             //Added by Rahul Shah on 17/03/2016 for PL #2068
                             else if (Enums.Section.LineItem.ToString().ToLower() == section)
                             {
-                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL,LineItemTitle);
-                            }                            
+                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL, LineItemTitle);
+                            }
                             else
                             {
                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);
@@ -12130,12 +12132,12 @@ namespace RevenuePlanner.Controllers
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planCampaignId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
                 else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planTacticId = planTacticId, isImprovement = true, activeMenu = "Plan" }, Request.Url.Scheme);
-                else if (section == Convert.ToString(Enums.Section.Plan).ToLower())                
+                else if (section == Convert.ToString(Enums.Section.Plan).ToLower())
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
                 //Added by Rahul Shah on 17/03/2016 for PL #2068
                 else if (section == Convert.ToString(Enums.Section.LineItem).ToLower())
                     strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planLineItemId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
-                
+
 
             }
             catch (Exception e)
@@ -12393,7 +12395,8 @@ namespace RevenuePlanner.Controllers
                     else if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.plan.ToString())
                     {
                         //Modified by Rahul Shah on 09/03/2016 for PL #1939
-                        if (OwnerID == Sessions.User.UserId) {
+                        if (OwnerID == Sessions.User.UserId)
+                        {
                             IsEditable = true;
                         }
                         else if (IsPlanEditAllAuthorized)
@@ -13374,7 +13377,7 @@ namespace RevenuePlanner.Controllers
                             objTactic.ModifiedDate = System.DateTime.Now;
                             db.Entry(objTactic).State = EntityState.Modified;
                             db.SaveChanges();
-                        } 
+                        }
                         #endregion
                         UpdateParentEntityStartEndDataforLinking(sourceEntityId, destEntityId, CloneType, srcPlanId, destPlanId);
 
@@ -13397,7 +13400,7 @@ namespace RevenuePlanner.Controllers
                         objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
 
                         var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
-                        objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);   
+                        objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
                     }
                 }
                 catch (Exception e)
@@ -13683,22 +13686,21 @@ namespace RevenuePlanner.Controllers
                     case "PlanCost":
                     case "Type":
                     case "Owner":
+                    case "Revenue":
+                    case "EloquaId":
+                    case "SFDCId":
+                        csv += i.Name + ',';
+                        colum += colum;
+                        break;
                     case "TargetStageValue":
                         csv += "Target Stage Value" + ',';
                         break;
                     case "MQLS":
                         csv += MQLTitle + ',';
                         break;
-                    case "Revenue":
                     case "ExternalName":
                         csv += "External Name" + ',';
                         break;
-                    case "EloquaId":
-                    case "SFDCId":
-                        csv += i.Name + ',';
-                        colum += colum;
-                        break;
-
                     default:
                         break;
                 }
@@ -13748,20 +13750,20 @@ namespace RevenuePlanner.Controllers
                             case "Tactic":
                                 tact += i + ',';
                                 break;
-                            case "LineItem":
+                            case "Lineitem":
                                 line += i + ',';
                                 break;
                             default:
                                 break;
                         }
                         Heads.Add(i, item.EntityType);
-                        csv += i + ',';
+                        //csv += i + ',';
 
                     }
 
                 }
             }
-            string custHeader = csv;
+            csv += camp + prog + tact + line;
             csv += "\r\n";
             //Rows
             foreach (var item in Hdata)
@@ -13783,11 +13785,13 @@ namespace RevenuePlanner.Controllers
                         case "Owner":
                         case "TargetStageValue":
                         case "MQLS":
-                        case "Revenue":
                         case "ExternalName":
                         case "EloquaId":
                         case "SFDCId":
                             csv += j.GetValue(item) + ",";
+                            break;
+                        case "Revenue":
+                            csv += j.GetValue(item) == null ? j.GetValue(item) : "$" + j.GetValue(item) + ",";
                             break;
                         case "Id":
                             if (customfieldlist.Find(t => t.EntityId == item.Id) != null)
