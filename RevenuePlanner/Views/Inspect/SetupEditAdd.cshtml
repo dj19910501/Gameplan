@@ -1356,7 +1356,7 @@
                         $("#txtProjectedStageValue").attr("label", data.stageTitle)
                         $("#hdnStageId").val(data.stageId);
                         $("#txtProjectedStageValue").val(projectedStageValue);
-                        GetConversionRate(projectedStageValue, true);
+                        GetConversionRatePopup(projectedStageValue, true);
                         $("#TacticCost").val(pcost);
 
                         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
@@ -1460,13 +1460,13 @@
         document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
         var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
         $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
-        GetConversionRate(projectedStageValue, false);
+        GetConversionRatePopup(projectedStageValue, false);
         $("#txtProjectedStageValue").val(FormatCommas($("#txtProjectedStageValue").val(), false));
     });
 
     var isAssortment = true;
     var mqlConversion = 0;
-    function GetConversionRate(projectedStageValue, isTacticTypeChange) {
+    function GetConversionRatePopup(projectedStageValue, isTacticTypeChange) {
         if ($('#ddlTacticType').val() != '') {
             $.ajax({
                 type: 'POST',
