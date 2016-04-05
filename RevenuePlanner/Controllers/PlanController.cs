@@ -13687,6 +13687,8 @@ namespace RevenuePlanner.Controllers
                         csv += "Target Stage Value" + ',';
                         break;
                     case "MQLS":
+                        csv += MQLTitle + ',';
+                        break;
                     case "Revenue":
                     case "ExternalName":
                         csv += "External Name" + ',';
