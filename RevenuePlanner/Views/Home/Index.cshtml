@@ -2355,7 +2355,17 @@
         UpdateResult();
     }
     //Added By Maitri Gandhi on 24/2/2016 For #2014
-    function ApplyFilters() {        
+    function ApplyFilters() {
+        //Modified to set cache values
+        $.ajax({
+            url: '@Url.Content("~/Home/GetCacheValue/")',
+            async:false,
+            data: {
+            },
+            success: function (result) {
+            }
+        });
+        //End
         UpdateResult();
     }
     ////Added to set filters count and selected filters name : 1952 By Maitri Gandhi

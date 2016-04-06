@@ -9257,6 +9257,36 @@ namespace RevenuePlanner.Controllers
         #endregion
 
 
+
+        public void GetCacheValue()
+        {
+         
+            // Add By Nishant Sheth
+            // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+            var PlanId = string.Join(",", Sessions.PlanPlanIds);
+            DataSet dsPlanCampProgTac = new DataSet();
+            dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(PlanId);
+            objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+            List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+            objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+            var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+            objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+            var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+            objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+            //var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && lstPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => tactic).ToList();
+
+            var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+            objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+            // Add By Nishant Sheth
+            // Desc :: Set tatcilist for original db/modal format
+            var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+            objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
+        }
+
+
     }
 
     public class ProgressModel
