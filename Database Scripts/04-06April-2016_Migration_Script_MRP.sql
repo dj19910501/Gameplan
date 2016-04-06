@@ -188,170 +188,278 @@ AND CustomField.CustomFieldId=CustomField_Entity.CustomFieldId
 ) CustomField 
 
 END
-
 GO
 -- =============================================
--- Author: Rahul
--- Create date: 04/05/2016
--- Description: Get list of Data for CSV
+-- Author: Nishant 
+-- Create date: 04/06/2016
+-- Description: Get list Custom fields and Custom field entity list
 -- =============================================
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGridDataList]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spGridDataList]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ExportToCSV]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[ExportToCSV]
 GO
+/****** Object:  StoredProcedure [dbo].[ExportToCSV]    Script Date: 4/6/2016 11:04:51 AM ******/
 
--- =============================================
--- Author:<Author,Akashdeep>
--- Create date: <Create Date,21-Mar-2016,>
--- Description:	<Description,,>
---
---Exec spGridDataList '12950'
--- =============================================
-CREATE PROCEDURE  [dbo].[spGridDataList] 
-	-- Add the parameters for the stored procedure here
-	@PlanId int	
-	
+-- EXEC ExportToCSV 14071,'E5EF88EB-4748-4436-9ACC-ABA6B2C5F6A9','16114','Created,Submitted,Approved,In-Progress,Complete,Declined','34','1212'
+CREATE PROCEDURE [dbo].[ExportToCSV]
+@PlanId int=0
+,@OwnerId nvarchar(max)=''
+,@TacticTypeId nvarchar(max)=''
+,@Status nvarchar(max)=''
+,@CustomFields nvarchar(max)=''
+,@CustomFieldOptionIds nvarchar(max)=''
 AS
 BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	
-	SET NOCOUNT ON;
 
-SELECT [Section]='Plan',[Plan].PlanId As Id,null As ParentId,[Plan].Title As 'Plan',null AS 'Campaign', null AS 'Program', null AS 'Tactic', null AS 'LineItem',
-StartDate = Convert(nvarchar(10),Campaign.MinStartDate,101),
-EndDate = Convert(nvarchar(10),Campaign.MaxEndDate,101),null as 'Type',[Plan].CreatedBy AS 'CreatedBy',null AS 'Owner',[Plan].Budget, 
-PlanCost=(
-	select sum(cost)  from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId in (select PlanTacticId from Plan_Campaign_Program_Tactic where PlanProgramId in (select PlanProgramId from Plan_Campaign_Program where PlanCampaignId in (select PlanCampaignId from Plan_Campaign where PlanId = @PlanId and IsDeleted=0) and IsDeleted=0) and IsDeleted=0) and IsDeleted=0
-),null As 'StageId',null AS 'TargetStageValue',null AS 'MQLS',null AS 'Revenue',null As 'ExternalName',null As EloquaId,null AS SFDCId,[Plan].ModelId AS 'ModelId'
+SET NOCOUNT ON;
+IF OBJECT_ID('tempdb..#tblPivot') IS NOT NULL
+   DROP TABLE #tblPivot
+
+IF OBJECT_ID('tempdb..#tblColName') IS NOT NULL
+   DROP TABLE #tblColName
+
+IF OBJECT_ID('tempdb..##tblCustomData') IS NOT NULL
+   DROP TABLE ##tblCustomData
+
+IF OBJECT_ID('tempdb..##tblCsvData') IS NOT NULL
+	DROP TABLE ##tblCsvData 
+
+IF OBJECT_ID('tempdb..#tbldynamicColumns') IS NOT NULL
+	DROP TABLE #tbldynamicColumns
+
+IF OBJECT_ID('tempdb..##tblStuffData') IS NOT NULL
+	DROP TABLE ##tblStuffData 
+
+IF OBJECT_ID('tempdb..##tblCSVOriginalData') IS NOT NULL
+	DROP TABLE ##tblCSVOriginalData
+	
+
+SELECT ROW_NUMBER() OVER(ORDER BY CustomFieldEntityId) AS ROWNUM,* into #tblPivot FROM
+(
+SELECT   NULL AS 'CustomFieldEntityId',[Section] = 'Plan',[Plan].PlanId  AS 'EntityId',NULL AS'CustomFieldId',
+NULL AS 'Value','Plan' AS'EntityType', NULL as 'ColName',NULL As 'ParentId', [Plan].Title AS 'Plan',NULL AS 'Campaign',NULL AS 'Program',NULL AS 'Tactic',NULL AS 'LineItem'
+,Convert(nvarchar(10),Campaign.StartDate,101) AS 'StartDate', Convert(nvarchar(10),Campaign.EndDate,101) AS 'EndDate',null As 'PlannedCost',null AS 'Type',null AS SFDCId,null AS EloquaId
+,[Plan].CreatedBy AS 'CreatedBy'
+,null AS 'TargetStageGoal'
+,null AS 'MQL',null AS 'Revenue',null AS 'Owner'
+,[Plan].ModelId AS 'ModelId'
+,null As 'ExternalName'
 FROM [Plan] AS [Plan] WITH (NOLOCK) 
-CROSS APPLY (SELECT min(StartDate) as 'MinStartDate',max(EndDate) as 'MaxEndDate' FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0) Campaign 
+OUTER APPLY (SELECT PlanCampaignId,PlanId,StartDate,EndDate FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0) Campaign 
 WHERE [Plan].PlanId IN (@PlanId)
- AND [Plan].IsDeleted=0 
-
-union 
-select [Section]='Campaign', Campaign.PlanCampaignId,Campaign.PlanId as ParentId, [Plan].Title AS 'Plan',Campaign.Title AS 'Campaign', null AS 'Program', null AS 'Tactic', null AS 'LineItem',Convert(nvarchar(10),StartDate,101),Convert(nvarchar(10),EndDate,101),null as 'Type',
-Campaign.CreatedBy AS 'CreatedBy',null AS 'Owner',null,null,null As 'StageId',null AS 'TargetStageValue',null AS 'MQLS',null AS 'Revenue',null As 'ExternalName',null As EloquaId,IntegrationInstanceCampaignId AS SFDCId,null AS 'ModelId' from Plan_Campaign Campaign
-CROSS APPLY (SELECT * From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
-WHERE Campaign.IsDeleted=0
-
-union
-SELECT [Section]='Program', Program.PlanProgramId AS Id,Program.PlanCampaignId as ParentId,[Plan].Title AS 'Plan',Campaign.Title AS 'Campaign',Program.Title AS 'Program',null AS 'Tactic', null AS 'LineItem', 
-Convert(nvarchar(10),Program.StartDate,101),Convert(nvarchar(10),Program.EndDate,101),null as 'Type',Program.CreatedBy AS 'CreatedBy',null AS 'Owner',null,null,null As 'StageId',null AS 'TargetStageValue',null AS 'MQLS',null AS 'Revenue',null As 'ExternalName',null As EloquaId,IntegrationInstanceProgramId AS SFDCId,null AS 'ModelId' FROM Plan_Campaign_Program Program WITH (NOLOCK)
-CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
-CROSS APPLY (SELECT PlanId,Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
-WHERE Program.IsDeleted=0
-union
-
-SELECT [Section]='Tactic',Tactic.PlanTacticId AS Id,Tactic.PlanProgramId AS ParentId,[Plan].Title AS 'Plan',[Campaign].Title AS 'Campaign',Program.Title AS 'Program',Tactic.Title AS 'Tactic',null AS 'LineItem',
-Convert(nvarchar(10),StartDate,101),Convert(nvarchar(10),EndDate,101),[TacticType].[Title] AS 'Type',[Tactic].CreatedBy AS 'CreatedBy',null AS 'Owner',Tactic.ProjectedStageValue,Tactic.Cost,
-[Tactic].StageId As 'StageId',CONVERT(NVARCHAR(MAX),[Tactic].ProjectedStageValue) +' '+ [Stage].Title As 'TargetStageValue',null AS 'MQLS',null AS 'Revenue',Tactic.TacticCustomName As 'ExternalName',Tactic.IntegrationInstanceEloquaId AS EloquaId,Tactic.IntegrationInstanceTacticId AS SFDCId,null AS 'ModelId'
-FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) 
-CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=Tactic.PlanProgramId AND Program.IsDeleted=0) Program
-CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
-CROSS APPLY (SELECT PlanId,Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
-OUTER APPLY (SELECT [TacticTypeId],[Title] FROM [TacticType] WITH (NOLOCK) Where [Tactic].TacticTypeId=TacticType.TacticTypeId AND IsDeleted=0) [TacticType]
+UNION
+SELECT DISTINCT CustomField_Entity.CustomFieldEntityId,[Section] = 'Campaign',CustomField_Entity.EntityId,CustomField_Entity.CustomFieldId,
+CONVERT(NVARCHAR(800),CASE [CustomFieldType].Name WHEN 'DropDownList' THEN (SELECT [CustomFieldOption].Value  FROM CustomFieldOption WHERE CustomFieldOptionId=CustomField_Entity.Value) ELSE CustomField_Entity.Value END) AS 'Value',EntityType,[CustomField].Name as 'ColName',[Plan].PlanId As 'ParentId'
+, [Plan].Title AS 'Plan',[Campaign].Title AS 'Campaign',NULL AS 'Program',NULL AS 'Tactic',NULL AS 'LineItem'
+,Convert(nvarchar(10),Campaign.StartDate,101) AS 'StartDate',Convert(nvarchar(10),Campaign.EndDate,101) AS 'EndDate',null As 'PlannedCost',null AS 'Type',Campaign.IntegrationInstanceCampaignId AS SFDCId,null AS EloquaId
+,[Campaign].CreatedBy AS 'CreatedBy'
+,null AS 'TargetStageGoal'
+,null AS 'MQL',null AS 'Revenue',null AS 'Owner'
+,[Plan].ModelId AS 'ModelId'
+,null As 'ExternalName'
+FROM [Plan] WITH (NOLOCK)
+CROSS APPLY (SELECT PlanCampaignId,PlanId,Title,StartDate,EndDate,IntegrationInstanceCampaignId,CreatedBy FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0 ) Campaign 
+OUTER APPLY (SELECT * FROM CustomField_Entity AS CustomField_Entity WITH (NOLOCK) WHERE [Campaign].PlanCampaignId=CustomField_Entity.EntityId) CustomField_Entity
+CROSS APPLY (SELECT * FROM CustomField WHERE CustomField.CustomFieldId=CustomField_Entity.CustomFieldId AND IsDeleted=0) [CustomField]
+CROSS APPLY (SELECT * FROM CustomFieldType WHERE CustomFieldType.CustomFieldTypeId=CustomField.CustomFieldTypeId) [CustomFieldType]
+OUTER APPLY (SELECT * FROM CustomFieldOption WHERE CustomField.CustomFieldId=CustomFieldOption.CustomFieldId AND CustomFieldOption.IsDeleted=0) [CustomFieldOption]
+WHERE [Plan].PlanId IN(@PlanId)
+UNION
+SELECT DISTINCT CustomField_Entity.CustomFieldEntityId,[Section] = 'Program',CustomField_Entity.EntityId,CustomField_Entity.CustomFieldId,
+CONVERT(NVARCHAR(800),CASE [CustomFieldType].Name WHEN 'DropDownList' THEN (SELECT [CustomFieldOption].Value  FROM CustomFieldOption WHERE CustomFieldOptionId=CustomField_Entity.Value)  ELSE CustomField_Entity.Value END) AS 'Value',EntityType,[CustomField].Name as 'ColName',[Campaign].PlanCampaignId As 'ParentId'
+, [Plan].Title AS 'Plan',[Campaign].Title AS 'Campaign',[Program].Title AS 'Program',NULL AS 'Tactic',NULL AS 'LineItem'
+,Convert(nvarchar(10),Program.StartDate,101) AS 'StartDate',Convert(nvarchar(10),Program.EndDate,101) AS 'EndDate',NULL As 'PlannedCost',null AS 'Type',Program.IntegrationInstanceProgramId AS SFDCId,null AS EloquaId
+,[Program].CreatedBy AS 'CreatedBy'
+,null AS 'TargetStageGoal'
+,null AS 'MQL',null AS 'Revenue',null AS 'Owner'
+,[Plan].ModelId AS 'ModelId'
+,null As 'ExternalName'
+FROM [Plan] WITH (NOLOCK)
+CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0 ) Campaign 
+CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title,StartDate,EndDate,IntegrationInstanceProgramId,CreatedBy FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE [Campaign].PlanCampaignId= Program.PlanCampaignId AND Program.IsDeleted=0 ) Program
+OUTER APPLY (SELECT PlanTacticId,PlanProgramId,[Status],Title,TacticCustomName,StartDate,EndDate,Cost,TacticTypeId,IntegrationInstanceTacticId,IntegrationInstanceEloquaId,CreatedBy,StageId,ProjectedStageValue FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE [Program].PlanProgramId=[Tactic].PlanProgramId AND Tactic.IsDeleted=0 ) Tactic
+OUTER APPLY (SELECT * FROM CustomField_Entity AS CustomField_Entity WITH (NOLOCK) WHERE [Program].PlanProgramId=CustomField_Entity.EntityId) CustomField_Entity
+CROSS APPLY (SELECT * FROM CustomField WHERE CustomField.CustomFieldId=CustomField_Entity.CustomFieldId AND IsDeleted=0) [CustomField]
+CROSS APPLY (SELECT * FROM CustomFieldType WHERE CustomFieldType.CustomFieldTypeId=CustomField.CustomFieldTypeId) [CustomFieldType]
+OUTER APPLY (SELECT * FROM CustomFieldOption WHERE CustomField.CustomFieldId=CustomFieldOption.CustomFieldId AND CustomFieldOption.IsDeleted=0) [CustomFieldOption]
+WHERE [Plan].PlanId IN(@PlanId)
+UNION
+SELECT DISTINCT CustomField_Entity.CustomFieldEntityId,[Section] = 'Tactic',CustomField_Entity.EntityId,CustomField_Entity.CustomFieldId,
+CONVERT(NVARCHAR(800),CASE [CustomFieldType].Name WHEN 'DropDownList' THEN (SELECT [CustomFieldOption].Value  FROM CustomFieldOption WHERE CustomFieldOptionId=CustomField_Entity.Value)  ELSE CustomField_Entity.Value END) AS 'Value',EntityType,[CustomField].Name as 'ColName',[Program].PlanProgramId As 'ParentId'
+, [Plan].Title AS 'Plan',[Campaign].Title AS 'Campaign',[Program].Title AS 'Program',[Tactic].Title AS 'Tactic',NULL AS 'LineItem'
+,Convert(nvarchar(10),Tactic.StartDate,101) AS 'StartDate',Convert(nvarchar(10),Tactic.EndDate,101) AS 'EndDate',[Tactic].Cost As 'PlannedCost',[TacticType].Title AS 'Type',Tactic.IntegrationInstanceTacticId AS SFDCId,Tactic.IntegrationInstanceEloquaId AS EloquaId
+,[Tactic].CreatedBy AS 'CreatedBy'
+,CONVERT(NVARCHAR(MAX),[Tactic].ProjectedStageValue) +' '+ [Stage].Title As 'TargetStageGoal'
+,null AS 'MQL',null AS 'Revenue',null AS 'Owner'
+,[Plan].ModelId AS 'ModelId'
+,[Tactic].TacticCustomName As 'ExternalName'
+FROM [Plan] WITH (NOLOCK)
+CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0 ) Campaign 
+CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE [Campaign].PlanCampaignId= Program.PlanCampaignId AND Program.IsDeleted=0 ) Program
+CROSS APPLY (SELECT PlanTacticId,PlanProgramId,[Status],Title,TacticCustomName,StartDate,EndDate,Cost,TacticTypeId,IntegrationInstanceTacticId,IntegrationInstanceEloquaId,CreatedBy,StageId,ProjectedStageValue FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE [Program].PlanProgramId=[Tactic].PlanProgramId AND Tactic.IsDeleted=0 ) Tactic
 OUTER APPLY (SELECT [StageId],[Title] FROM [Stage] WITH (NOLOCK) Where [Tactic].StageId=Stage.StageId AND  IsDeleted=0) Stage
-WHERE Tactic.IsDeleted=0
+OUTER APPLY (SELECT * FROM CustomField_Entity AS CustomField_Entity WITH (NOLOCK) WHERE [Tactic].PlanTacticId=CustomField_Entity.EntityId) CustomField_Entity
+OUTER APPLY (SELECT * FROM CustomField WHERE CustomField.CustomFieldId=CustomField_Entity.CustomFieldId AND IsDeleted=0) [CustomField]
+CROSS APPLY (SELECT * FROM CustomFieldType WHERE CustomFieldType.CustomFieldTypeId=CustomField.CustomFieldTypeId) [CustomFieldType]
+OUTER APPLY (SELECT * FROM CustomFieldOption WHERE CustomField.CustomFieldId=CustomFieldOption.CustomFieldId AND CustomFieldOption.IsDeleted=0 ) [CustomFieldOption]
+OUTER APPLY (SELECT TacticTypeId,Title FROM TacticType AS TacticType WITH (NOLOCK) WHERE [Tactic].TacticTypeId=TacticType.TacticTypeId AND TacticType.IsDeleted=0) TacticType
+WHERE [Plan].PlanId IN(@PlanId)
+--WHERE EntityId=PlanCampaignId
+UNION
+SELECT DISTINCT CustomField_Entity.CustomFieldEntityId,[Section] = 'LineItem',CustomField_Entity.EntityId,CustomField_Entity.CustomFieldId,
+CONVERT(NVARCHAR(800),CASE [CustomFieldType].Name WHEN 'DropDownList' THEN (SELECT [CustomFieldOption].Value  FROM CustomFieldOption WHERE CustomFieldOptionId=CustomField_Entity.Value)  ELSE CustomField_Entity.Value END) AS 'Value',EntityType,[CustomField].Name as 'ColName',[Tactic].PlanTacticId As 'ParentId'
+, [Plan].Title AS 'Plan',[Campaign].Title AS 'Campaign',[Program].Title AS 'Program',[Tactic].Title AS 'Tactic',[lineitem].Title AS 'LineItem'
+,NULL AS 'StartDate',NULL AS 'EndDate',[lineitem].Cost As 'PlannedCost',[LineItemType].Title As 'Type',null AS SFDCId,null AS EloquaId
+,[lineitem].CreatedBy AS 'CreatedBy'
+,null AS 'TargetStageGoal'
+,null AS 'MQL',null AS 'Revenue',null AS 'Owner'
+,[Plan].ModelId AS 'ModelId'
+,null As 'ExternalName'
+FROM [Plan] WITH (NOLOCK)
+CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0 ) Campaign 
+CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE [Campaign].PlanCampaignId= Program.PlanCampaignId AND Program.IsDeleted=0 ) Program
+CROSS APPLY (SELECT PlanTacticId,PlanProgramId,Title FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE [Program].PlanProgramId=[Tactic].PlanProgramId AND Tactic.IsDeleted=0 ) Tactic
+CROSS APPLY (SELECT PlanLineItemId,PlanTacticId,Title,LineItemTypeId,Cost,CreatedBy FROM Plan_Campaign_Program_Tactic_LineItem AS lineitem WITH (NOLOCK) WHERE [Tactic].PlanTacticId=[lineitem].PlanTacticId AND lineitem.IsDeleted=0) lineitem
+OUTER APPLY (SELECT * FROM CustomField_Entity AS CustomField_Entity WITH (NOLOCK) WHERE [lineitem].PlanLineItemId=CustomField_Entity.EntityId) CustomField_Entity
+CROSS APPLY (SELECT * FROM CustomField WHERE CustomField.CustomFieldId=CustomField_Entity.CustomFieldId AND IsDeleted=0) [CustomField]
+CROSS APPLY (SELECT * FROM CustomFieldType WHERE CustomFieldType.CustomFieldTypeId=CustomField.CustomFieldTypeId) [CustomFieldType]
+OUTER APPLY (SELECT * FROM CustomFieldOption WHERE CustomField.CustomFieldId=CustomFieldOption.CustomFieldId AND CustomFieldOption.IsDeleted=0) [CustomFieldOption]
+OUTER APPLY (SELECT LineItemTypeId,Title FROM LineItemType AS LineItemType WITH (NOLOCK) WHERE [lineitem].LineItemTypeId=LineItemType.LineItemTypeId AND LineItemType.IsDeleted=0) LineItemType
+WHERE [Plan].PlanId IN(@PlanId)
+) tblUnion
 
-union
-SELECT [Section]='LineItem', LineItem.PlanLineItemId AS Id,LineItem.PlanTacticId AS ParentId,[Plan].Title AS 'Plan',[Campaign].Title AS 'Campaign',Program.Title AS 'Program',Tactic.Title AS 'Tactic'
-,LineItem.Title AS 'LineItem',Convert(nvarchar(10),StartDate,101),Convert(nvarchar(10),EndDate,101),LineItemType.Title as 'Type',[LineItem].CreatedBy AS 'CreatedBy',null AS 'Owner',null,LineItem.Cost,null As 'StageId',
-null AS 'TargetStageValue',null AS 'MQLS',null AS 'Revenue',null As 'ExternalName',null As EloquaId,null AS SFDCId,null AS 'ModelId'
-FROM Plan_Campaign_Program_Tactic_LineItem AS LineItem WITH (NOLOCK) 
-CROSS APPLY (SELECT PlanTacticId,PlanProgramId,Title FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE Tactic.PlanTacticId=LineItem.PlanTacticId AND Tactic.IsDeleted=0) Tactic
-CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=Tactic.PlanProgramId AND Program.IsDeleted=0) Program
-CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
-CROSS APPLY (SELECT PlanId,ModelId,[Year],Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
-OUTER APPLY (SELECT [LineItemTypeId],[Title] FROM [LineItemType] WITH (NOLOCK) Where [LineItem].LineItemTypeId=[LineItemType].LineItemTypeId AND IsDeleted=0) [LineItemType]
-WHERE LineItem.IsDeleted=0
-END
-GO
+--Select * FROM #tblPivot 
 
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spCustomfieldData]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spCustomfieldData] 
-GO
+DECLARE   @ConcatString NVARCHAR(Max)=''
+--SELECT   @ConcatString = COALESCE(@ConcatString + ', ', '') + ColName FROM #tblPivot 
+--SELECT   @ConcatString AS Fruits
 
--- =============================================
--- Author:		<Author,,Akashdeep>
--- Create date: <Create Date,04-Apr-2016,>
--- Description:	<Description,,>
---
---Exec spCustomfieldData '12950','464EB808-AD1F-4481-9365-6AADA15023BD'
--- =============================================
-CREATE PROCEDURE  [dbo].[spCustomfieldData] 
-	-- Add the parameters for the stored procedure here
-	@PlanId nvarchar(max),
-	@ClientId varchar(max)
+Declare @RowCount int , @Count int=1
 
-	
-AS
+SELECT ROW_NUMBER() OVER(ORDER BY ColName) AS ROWNUM,* into #tblColName FROM (SELECT Distinct ColName FROM #tblPivot WHERE ColName IS NOT NULL) tblColName
+
+SET @RowCount=(SELECT COUNT(*) FROM #tblColName)
+Declare @Delimeter varchar(5)=',';
+While @Count<=@RowCount
 BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
+IF(@Count=@RowCount)
+BEGIN
+SET @Delimeter='';
+END
+
+SET @ConcatString= @ConcatString +'['+ (SELECT ColName FROM #tblColName WHERE ROWNUM=@Count)+']'+@Delimeter ;
+SET @Count=@Count+1;
+END
+
+DECLARE @query nvarchar(max)
+
+    SELECT @query = 
+    'SELECT * into ##tblCustomData FROM
+    (SELECT     
+        ROW_NUMBER() OVER(ORDER BY ColName) AS ROWNUM,
+		Section,
+		[Plan],		
+		Campaign,
+		Program,
+		Tactic,
+		Lineitem,
+		StartDate,
+		EndDate,
+		PlannedCost,
+		Type,
+		SFDCId,
+		EloquaId,
+        CustomFieldEntityId, 
+		CreatedBy,
+		TargetStageGoal,
+		ModelId,
+		MQL,
+		Revenue,
+		Owner,
+		ExternalName,
+              EntityId,
+			  EntityType,
+			  ParentId,
+			  ColName,
+              CONVERT(NVARCHAR(MAX),Value) AS Value
+    FROM #tblPivot)X
+    PIVOT 
+    (
+        MIN(Value)
+        for [ColName] in (' + @ConcatString + ')
+    ) P 
+	'
+	EXEC SP_EXECUTESQL @query	
+
+	DECLARE @CustomtblCount int
+	DECLARE @initCustomCount int =1
 	
-	SET NOCOUNT ON;	
+	
+	select ROW_NUMBER() OVER(ORDER BY name) AS ROWNUM,name into #tbldynamicColumns from tempdb.sys.columns where object_id =
+	object_id('tempdb..##tblCustomData');
 
-select * into TempData from(
+	DECLARE @SqlStuff VARCHAR(max)='SELECT '
+	SET @Count=1
+	DECLARE @Val nvarchar(max)=''
+	SELECT @RowCount = COUNT(*) FROM #tbldynamicColumns
+	
+	SET @Delimeter=',';
+	While @Count<=@RowCount
+	BEGIN
+		IF(@Count=@RowCount)
+		BEGIN
+			SET @Delimeter='';
+		END
+		SET @Val =''
+		(SELECT @Val=name FROM #tbldynamicColumns WHERE ROWNUM=@Count)
+		IF(@Val ='CustomFieldEntityId' OR @Val='EntityId' OR @Val='EndDate' OR @Val='StartDate' OR @Val='Plan' OR @Val='Campaign' OR @Val='Program' OR @Val='Tactic' OR @Val='LineItem' OR @Val='EntityType' OR @Val='ROWNUM' OR @Val='PlannedCost' OR @Val='Section' OR @Val='Type' OR @Val='EloquaId' OR @Val='SFDCId' OR @Val='ParentId' OR @Val='CreatedBy' OR @Val='TargetStageGoal' OR @Val='ModelId' OR @Val='ExternalName' OR @val='MQL' OR @val='Revenue' OR @Val='Owner')
+		BEGIN
+			IF @Val!='EndDate'
+			BEGIN 
+				SET @SqlStuff= @SqlStuff +'MIN(t.['+ @Val+']) AS ['+ @Val+'] '+@Delimeter ;
+			END
+			ELSE 
+			BEGIN
+				SET @SqlStuff= @SqlStuff +'MAX(t.['+ @Val+']) AS ['+ @Val+'] '+@Delimeter ;
+			END
+		END
+		ELSE
+		BEGIN
+			SET @SqlStuff= @SqlStuff +'(SELECT STUFF((SELECT '';'' + CONVERT(nvarchar(max),['+@Val+']) FROM ##tblCustomData tn2 WHERE EntityId = t.EntityId FOR XML PATH('''')) ,1,1,'''')) AS ['+@Val+'] '+@Delimeter;
+		END
+		SET @Count=@Count+1;
+	END
+	SET @SqlStuff+=' INTO ##tblStuffData FROM ##tblCustomData t GROUP BY t.EntityId, t.EntityType'
+	
+	--PRINT(@SqlStuff)
+	EXEC(@SqlStuff)
+	SET @Count=1
+	
+	SET @ConcatString= ''
+	SET @Delimeter=',';
+	While @Count<=@RowCount
+	BEGIN
+		IF(@Count=@RowCount)
+		BEGIN
+			SET @Delimeter='';
+		END
+		SET @Val =''
+		(SELECT @Val=name FROM #tbldynamicColumns WHERE ROWNUM=@Count)
+		IF(@Val ='CustomFieldEntityId' OR @Val='EntityId' OR @Val='EndDate' OR @Val='StartDate' OR @Val='Plan' OR @Val='Campaign' OR @Val='Program' OR @Val='Tactic' OR @Val='LineItem' OR @Val='EntityType' OR @Val='ROWNUM' OR @Val='PlannedCost' OR @Val='Section' OR @Val='Type' OR @Val='EloquaId' OR @Val='SFDCId' OR @Val='ParentId' OR @Val='CreatedBy' OR @Val='TargetStageGoal' OR @Val='ModelId' OR @Val='ExternalName' OR @val='MQL' OR @val='Revenue' OR @Val='Owner')
+		BEGIN
+			SET @ConcatString= @ConcatString +'MIN(M.['+ @Val+']) AS ['+ @Val+'] '+@Delimeter ;
+		END
+		ELSE
+		BEGIN
+			SET @ConcatString= @ConcatString +'MIN(M.['+ @Val+']) AS ['+@Val+'] '+@Delimeter ;
+		END
+		SET @Count=@Count+1;
+	END
 
-select Distinct(a.Name) as [Text],EntityType,a.CustomFieldId,c.EntityId,c.Value as CustomValue,b.Name, CASE b.Name WHEN 'DropDownList' THEN
-
-(select DropDownText from  dbo.DDLValueName(c.Value))
- ELSE 
-c.Value  END as DDLText
- from CustomField as a
- inner join CustomFieldType as b on a.CustomFieldTypeId = b.CustomFieldTypeId
- right join CustomField_Entity as c on a.CustomFieldId = c.CustomFieldId and EntityId in(
-
-
-select Campaign.PlanCampaignId from Plan_Campaign Campaign
-CROSS APPLY (SELECT * From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
-WHERE Campaign.IsDeleted=0
-
-union
-SELECT Program.PlanProgramId AS Id FROM Plan_Campaign_Program Program WITH (NOLOCK)
-CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
-CROSS APPLY (SELECT PlanId,Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
-WHERE Program.IsDeleted=0
-union
-
-SELECT Tactic.PlanTacticId AS Id FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) 
-CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=Tactic.PlanProgramId AND Program.IsDeleted=0) Program
-CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
-CROSS APPLY (SELECT PlanId,Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
-OUTER APPLY (SELECT [TacticTypeId],[Title] FROM [TacticType] WITH (NOLOCK) Where [Tactic].TacticTypeId=TacticType.TacticTypeId AND IsDeleted=0) [TacticType]
-WHERE Tactic.IsDeleted=0
-
-union
-SELECT  LineItem.PlanLineItemId AS Id FROM Plan_Campaign_Program_Tactic_LineItem AS LineItem WITH (NOLOCK) 
-CROSS APPLY (SELECT PlanTacticId,PlanProgramId,Title FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE Tactic.PlanTacticId=LineItem.PlanTacticId AND Tactic.IsDeleted=0) Tactic
-CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=Tactic.PlanProgramId AND Program.IsDeleted=0) Program
-CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId=Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
-CROSS APPLY (SELECT PlanId,ModelId,[Year],Title From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId IN (@PlanId)  AND [Plan].PlanId=Campaign.PlanId AND [Plan].IsDeleted=0 ) [Plan]
-OUTER APPLY (SELECT [LineItemTypeId],[Title] FROM [LineItemType] WITH (NOLOCK) Where [LineItem].LineItemTypeId=[LineItemType].LineItemTypeId AND IsDeleted=0) [LineItemType]
-WHERE LineItem.IsDeleted=0
- 
- )
- where a.ClientId=@ClientId and a.IsDeleted=0 --and EntityType in ('Tactic','Campaign','Program')
- 
- 
- 
- ) as Temp
-
- select  EntityId,      
-
-       (SELECT STUFF((SELECT ',' + [Text]
-                      FROM TempData tn2 WHERE EntityId = t.EntityId 
-                                     
-            FOR XML PATH('')) ,1,1,'')) as Header,
-		(SELECT STUFF((SELECT ',' + [DDLText]
-                      FROM TempData tn2 WHERE EntityId = t.EntityId 
-                                     
-            FOR XML PATH('')) ,1,1,'')) as Value,
-	EntityType
-       
-from TempData t
-GROUP BY t.EntityId,t.EntityType
-DROP TABLE TempData
+	--SELECT @ConcatString 
+	DEClARE @SqlGroup nvarchar(max)=''
+	SET @SqlGroup='SELECT '+@ConcatString+'  FROM ##tblStuffData M JOIN ##tblStuffData C ON M.EntityId=C.EntityId
+	GROUP BY M.EntityID'
+	EXEC(@SqlGroup)
 END
 GO
 
