@@ -1341,6 +1341,37 @@ namespace RevenuePlanner.Helpers
             CustomFieldEntity,
             CustomFieldOption
         }
+
+        public enum DownloadCSV
+        {
+            Plan,
+            Campaign,
+            Program,
+            Tactic,
+            Lineitem,
+            StartDate,
+            EndDate,
+            Type,
+            Owner,
+            PlannedCost,
+            TargetStageGoal,
+            MQL,
+            Revenue,
+            EloquaId,
+            SFDCId
+        }
+
+        public enum NotDownloadCSV
+        {
+            EntityId,
+            EntityType,
+            ModelId,
+            ROWNUM,
+            Section,
+            ParentId,
+            CustomFieldEntityId,
+            CreatedBy
+        }
     }
 
     #region Authorization

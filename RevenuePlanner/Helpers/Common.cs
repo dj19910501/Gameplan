@@ -8278,6 +8278,32 @@ namespace RevenuePlanner.Helpers
             return viewByListResult = viewByListResult.Concat(customViewBy).ToList();
         }
 
+        public DataSet GetExportCSV(int PlanId)
+        {
+            DataTable datatable = new DataTable();
+            DataSet dataset = new DataSet();
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+
+            command = new SqlCommand("ExportToCSV", Connection);
+
+            using (command)
+            {
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@PlanId", PlanId);
+                //command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(dataset);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+            return dataset;
+        }
 
     }
     #endregion

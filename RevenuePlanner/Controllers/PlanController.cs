@@ -36,7 +36,6 @@ namespace RevenuePlanner.Controllers
 
         private MRPEntities db = new MRPEntities();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-
         private DateTime CalendarStartDate;
         private DateTime CalendarEndDate;
         private string PeriodChar = "Y";
@@ -45,6 +44,10 @@ namespace RevenuePlanner.Controllers
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
         #endregion
         #region variable for load plan grid
+        double totalmqlCSV = 0;
+        double totalrevenueCSV = 0;
+        double totalPlannedCostCSV = 0;
+        string OwnerNameCsv = "";
         List<Plan_Tactic_Values> ListTacticMQLValue = new List<Plan_Tactic_Values>();
 
         List<Plan_Tactic_LineItem_Values> LineItemList = new List<Plan_Tactic_LineItem_Values>();
@@ -13552,289 +13555,582 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "Get Data for Export to CSV with all Attribute"
-        public void GetDataforExportCSV()
+        //public void GetDataforExportCSV()
+        //{
+        //    //double totalcost = 0;
+        //    double totalmql = 0;
+        //    double totalrevenue = 0;
+        //    DataSet dsHomeGridDataCSV = new DataSet();
+
+        //    SqlParameter[] para1 = new SqlParameter[1];
+
+        //    para1[0] = new SqlParameter()
+        //    {
+        //        ParameterName = "PlanId",
+        //        Value = Sessions.PlanPlanIds[0]
+        //    };
+        //    var dataList = db.Database.SqlQuery<Custom_CSV>("spGridDataList @PlanId", para1).ToList();
+        //    var PlanList = dataList.Where(ids => ids.Section.ToString() == Enums.Section.Plan.ToString()).ToList();
+        //    var FileName = PlanList.Select(file => file.Plan).FirstOrDefault();
+        //    var CampaignList = dataList.Where(ids => ids.Section.ToString() == Enums.Section.Campaign.ToString()).ToList();
+
+        //    List<Custom_CSV> Hdata = new List<Custom_CSV>();
+        //    int modelId = dataList.Where(p => p.Section.ToString() == Enums.Section.Plan.ToString()).Select(mId => Convert.ToInt32(mId.ModelId)).FirstOrDefault();
+        //    int PlanId = dataList.Where(p => p.Section.ToString() == Enums.Section.Plan.ToString()).Select(mId => Convert.ToInt32(mId.Id)).FirstOrDefault();
+        //    var ProgramIds = dataList.Where(ids => ids.Section.ToString() == Enums.Section.Program.ToString()).Select(ids => ids.Id).ToList();
+        //    var progTactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => ProgramIds.Contains(_tactic.PlanProgramId) && _tactic.IsDeleted.Equals(false)).ToList();
+        //    var TacticIds = progTactic.Select(ids => ids.PlanTacticId).ToList();
+        //    stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+        //    string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
+        //    ViewBag.MQLTitle = MQLTitle;
+
+        //    CalculateTacticCostRevenue(modelId, TacticIds, progTactic, PlanId);
+
+        //    if (PlanList.Count > 0)
+        //    {
+        //        totalmql = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
+        //        totalrevenue = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
+        //        var pl = PlanList.FirstOrDefault();
+        //        pl.MQLS = totalmql;
+        //        pl.Revenue = totalrevenue;
+        //        pl.Owner = GetOwnerName(pl.CreatedBy.ToString());
+        //        Hdata.Add(pl);
+        //        if (CampaignList.Count > 0)
+        //        {
+
+        //            foreach (var campaignitem in CampaignList)
+        //            {
+        //                var mqlcamp = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => campaignitem.Id == l.CampaignId).Sum(l => l.MQL) : 0;
+        //                var revenuecamp = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => campaignitem.Id == l.CampaignId).Sum(l => l.Revenue) : 0;
+        //                campaignitem.MQLS = mqlcamp;
+        //                campaignitem.Revenue = revenuecamp;
+        //                campaignitem.Owner = GetOwnerName(campaignitem.CreatedBy.ToString());
+        //                Hdata.Add(campaignitem);
+
+        //                var ProgramList = dataList.FindAll(x => x.ParentId == campaignitem.Id).ToList();
+
+        //                if (ProgramList.Count > 0)
+        //                {
+
+        //                    foreach (var programitem in ProgramList)
+        //                    {
+
+        //                        var mqlprog = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => programitem.Id == l.Programid).Sum(l => l.MQL) : 0;
+        //                        var revenueprog = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => programitem.Id == l.Programid).Sum(l => l.Revenue) : 0;
+        //                        programitem.MQLS = mqlprog;
+        //                        programitem.Revenue = revenueprog;
+        //                        programitem.Owner = GetOwnerName(programitem.CreatedBy.ToString());
+        //                        Hdata.Add(programitem);
+        //                        var TacticList = dataList.FindAll(x => x.ParentId == programitem.Id).ToList();
+        //                        if (TacticList.Count > 0)
+        //                        {
+
+        //                            foreach (var tacticitem in TacticList)
+        //                            {
+        //                                var mqltact = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => tacticitem.Id == l.PlanTacticId).Sum(l => l.MQL) : 0;
+        //                                var revenuetact = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => tacticitem.Id == l.PlanTacticId).Sum(l => l.Revenue) : 0;
+        //                                tacticitem.MQLS = mqltact;
+        //                                tacticitem.Revenue = revenuetact;
+        //                                tacticitem.Owner = GetOwnerName(tacticitem.CreatedBy.ToString());
+        //                                Hdata.Add(tacticitem);
+        //                                var LineItemList = dataList.FindAll(x => x.ParentId == tacticitem.Id).ToList();
+
+        //                                if (LineItemList.Count > 0)
+        //                                {
+        //                                    foreach (var lineitem in LineItemList)
+        //                                    {
+        //                                        lineitem.Owner = GetOwnerName(lineitem.CreatedBy.ToString());
+        //                                        Hdata.Add(lineitem);
+        //                                    }
+        //                                }
+        //                            }
+        //                        }
+
+        //                    }
+        //                }
+        //            }
+
+
+        //        }
+        //    }
+
+
+        //    SqlParameter[] para = new SqlParameter[2];
+
+        //    para[0] = new SqlParameter()
+        //    {
+        //        ParameterName = "PlanId",
+        //        Value = Sessions.PlanPlanIds[0]
+        //    };
+        //    para[1] = new SqlParameter()
+        //    {
+        //        ParameterName = "ClientId",
+        //        Value = Sessions.User.ClientId
+        //    };
+        //    var customfieldlist = db.Database.SqlQuery<Custom_CustomFieldHeader>("spCustomfieldData @PlanId,@ClientId", para).ToList();
+
+        //    //Build the CSV file data as a Comma separated string.
+        //    string csv = string.Empty;
+
+
+        //    //Add the Header row for CSV file.
+        //    int colum = 0;
+        //    foreach (var i in Hdata.FirstOrDefault().GetType().GetProperties())
+        //    {
+        //        switch (i.Name)
+        //        {
+        //            case "Plan":
+        //            case "Campaign":
+        //            case "Program":
+        //            case "Tactic":
+        //            case "LineItem":
+        //            case "StartDate":
+        //            case "EndDate":
+        //            case "PlanCost":
+        //            case "Type":
+        //            case "Owner":
+        //            case "Revenue":
+        //            case "EloquaId":
+        //            case "SFDCId":
+        //                csv += i.Name + ',';
+        //                colum += colum;
+        //                break;
+        //            case "TargetStageValue":
+        //                csv += "Target Stage Value" + ',';
+        //                break;
+        //            case "MQLS":
+        //                csv += MQLTitle + ',';
+        //                break;
+        //            case "ExternalName":
+        //                csv += "External Name" + ',';
+        //                break;
+        //            default:
+        //                break;
+        //        }
+
+        //    }
+        //    Dictionary<string, string> Heads = new Dictionary<string, string>();
+        //    string camp = string.Empty, prog = string.Empty, tact = string.Empty, line = string.Empty;
+        //    foreach (var item in customfieldlist)
+        //    {
+        //        System.Collections.ArrayList newList = new System.Collections.ArrayList();
+        //        System.Collections.ArrayList newHeadVal = new System.Collections.ArrayList();
+
+        //        var vHead = item.Header.Split(',').ToArray();
+        //        var vHval = item.Value.Split(',').ToArray();
+
+        //        for (int i = 0; i < vHead.Length; i++)
+        //        {
+        //            if (!newList.Contains(vHead[i]))
+        //            {
+        //                newList.Add(vHead[i]);
+        //                newHeadVal.Add(vHval[i]);
+        //            }
+        //            else
+        //            {
+        //                newHeadVal[newList.IndexOf(vHead[i])] += ';' + Convert.ToString(vHval[i]);
+        //            }
+
+
+        //        }
+
+        //        item.Header = string.Join(",", newList.ToArray());
+        //        item.Value = string.Join(",", newHeadVal.ToArray());
+
+        //        foreach (var i in item.Header.Split(','))
+        //        {
+        //            if (!Heads.ContainsKey(i))
+        //            {
+
+        //                switch (item.EntityType)
+        //                {
+        //                    case "Campaign":
+        //                        camp += i + ',';
+        //                        break;
+        //                    case "Program":
+        //                        prog += i + ',';
+        //                        break;
+        //                    case "Tactic":
+        //                        tact += i + ',';
+        //                        break;
+        //                    case "Lineitem":
+        //                        line += i + ',';
+        //                        break;
+        //                    default:
+        //                        break;
+        //                }
+        //                Heads.Add(i, item.EntityType);
+        //                //csv += i + ',';
+
+        //            }
+
+        //        }
+        //    }
+        //    csv += camp + prog + tact + line;
+        //    csv += "\r\n";
+        //    //Rows
+        //    foreach (var item in Hdata)
+        //    {
+
+        //        foreach (var j in item.GetType().GetProperties())
+        //        {
+        //            switch (j.Name)
+        //            {
+        //                case "Plan":
+        //                case "Campaign":
+        //                case "Program":
+        //                case "Tactic":
+        //                case "LineItem":
+        //                case "StartDate":
+        //                case "EndDate":
+        //                case "PlanCost":
+        //                case "Type":
+        //                case "Owner":
+        //                case "TargetStageValue":
+        //                case "MQLS":
+        //                case "ExternalName":
+        //                case "EloquaId":
+        //                case "SFDCId":
+        //                    csv += j.GetValue(item) + ",";
+        //                    break;
+        //                case "Revenue":
+        //                    csv += j.GetValue(item) == null ? j.GetValue(item) : "$" + j.GetValue(item) + ",";
+        //                    break;
+        //                case "Id":
+        //                    if (customfieldlist.Find(t => t.EntityId == item.Id) != null)
+        //                    {
+        //                        if (customfieldlist.Find(t => t.EntityId == item.Id).EntityType == "Campaign")
+        //                        {
+        //                            string camVal = customfieldlist.Find(t => t.EntityId == item.Id).Value;
+        //                            string camHead = customfieldlist.Find(t => t.EntityId == item.Id).Header;
+        //                            if (camHead.Count(x => x == ',') == camp.Count(x => x == ','))
+        //                                csv += camVal + "," + Regex.Replace(prog, "[a-zA-Z0-9 -]", "") + Regex.Replace(tact, "[a-zA-Z0-9 -]", "") + Regex.Replace(line, "[a-zA-Z0-9 -]", "");
+        //                            else
+        //                            {
+        //                                csv += camVal + "," + Regex.Replace(prog, "[a-zA-Z0-9 -]", "") + Regex.Replace(tact, "[a-zA-Z0-9 -]", "") + Regex.Replace(line, "[a-zA-Z0-9 -]", "");
+
+        //                            }
+        //                        }
+        //                        else if (customfieldlist.Find(t => t.EntityId == item.Id).EntityType == "Program")
+        //                        {
+        //                            csv += Regex.Replace(camp, "[a-zA-Z0-9 -]", "") + customfieldlist.Find(t => t.EntityId == item.Id).Value + "," + Regex.Replace(tact, "[a-zA-Z0-9 -]", "") + Regex.Replace(line, "[a-zA-Z0-9 -]", "");
+        //                        }
+        //                        else if (customfieldlist.Find(t => t.EntityId == item.Id).EntityType == "Tactic")
+        //                        {
+        //                            csv += Regex.Replace(camp, "[a-zA-Z0-9 -]", "") + Regex.Replace(prog, "[a-zA-Z0-9 -]", "") + customfieldlist.Find(t => t.EntityId == item.Id).Value + "," + Regex.Replace(line, "[a-zA-Z0-9 -]", "");
+        //                        }
+        //                        else if (customfieldlist.Find(t => t.EntityId == item.Id).EntityType == "Lineitem")
+        //                        {
+        //                            csv += Regex.Replace(camp, "[a-zA-Z0-9 -]", "") + Regex.Replace(prog, "[a-zA-Z0-9 -]", "") + Regex.Replace(tact, "[a-zA-Z0-9 -]", "") + customfieldlist.Find(t => t.EntityId == item.Id).Value;
+        //                        }
+        //                    }
+        //                    break;
+        //                default:
+        //                    break;
+        //            }
+
+        //        }
+        //        csv += "\r\n";
+        //    }
+        //    Response.ContentType = "Application/x-msexcel";
+        //    Response.AddHeader("content-disposition", "attachment;filename=  " + FileName + ".csv");
+
+        //    Response.Write(csv);
+        //    Response.End();
+
+        //}
+
+        public void DownloadCSV()
         {
-            //double totalcost = 0;
-            double totalmql = 0;
-            double totalrevenue = 0;
-            DataSet dsHomeGridDataCSV = new DataSet();
+            DataTable dtTable = new DataTable();
+            DataRow dtRow;
 
-            SqlParameter[] para1 = new SqlParameter[1];
+            dtTable.Columns.Add("SNo", typeof(int));
+            dtTable.Columns.Add("Address", typeof(string));
 
-            para1[0] = new SqlParameter()
+            for (int i = 0; i <= 9; i++)
             {
-                ParameterName = "PlanId",
-                Value = Sessions.PlanPlanIds[0]
-            };
-            var dataList = db.Database.SqlQuery<Custom_CSV>("spGridDataList @PlanId", para1).ToList();
-            var PlanList = dataList.Where(ids => ids.Section.ToString() == Enums.Section.Plan.ToString()).ToList();
-            var FileName = PlanList.Select(file => file.Plan).FirstOrDefault();
-            var CampaignList = dataList.Where(ids => ids.Section.ToString() == Enums.Section.Campaign.ToString()).ToList();
+                dtRow = dtTable.NewRow();
+                dtRow[0] = i;
+                dtRow[1] = "Address " + i.ToString();
+                dtTable.Rows.Add(dtRow);
+            }
 
-            List<Custom_CSV> Hdata = new List<Custom_CSV>();
-            int modelId = dataList.Where(p => p.Section.ToString() == Enums.Section.Plan.ToString()).Select(mId => Convert.ToInt32(mId.ModelId)).FirstOrDefault();
-            int PlanId = dataList.Where(p => p.Section.ToString() == Enums.Section.Plan.ToString()).Select(mId => Convert.ToInt32(mId.Id)).FirstOrDefault();
-            var ProgramIds = dataList.Where(ids => ids.Section.ToString() == Enums.Section.Program.ToString()).Select(ids => ids.Id).ToList();
-            var progTactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => ProgramIds.Contains(_tactic.PlanProgramId) && _tactic.IsDeleted.Equals(false)).ToList();
-            var TacticIds = progTactic.Select(ids => ids.PlanTacticId).ToList();
+            Response.ContentType = "Application/x-msexcel";
+            Response.AddHeader("content-disposition", "attachment;filename=test.csv");
+            Response.Write(ExportToCSVFile(dtTable));
+            Response.End();
+
+        }
+
+        private string ExportToCSVFile(DataTable dtTable)
+        {
+            StringBuilder sbldr = new StringBuilder();
+            if (dtTable.Columns.Count != 0)
+            {
+                foreach (DataColumn col in dtTable.Columns)
+                {
+                    sbldr.Append(col.ColumnName + ',');
+                }
+                sbldr.Append("\r\n");
+                foreach (DataRow row in dtTable.Rows)
+                {
+                    foreach (DataColumn column in dtTable.Columns)
+                    {
+                        sbldr.Append(row[column].ToString() + ',');
+                    }
+                    sbldr.Append("\r\n");
+                }
+            }
+            return HtmlDecodeString(sbldr.ToString());
+        }
+
+        public void ExportCsvDataTable(string FileName)
+        {
+            DataTable CSVDataTable = (DataTable)Session["CSVDataTable"];
+            Response.ContentType = "Application/x-msexcel";
+            Response.AddHeader("content-disposition", "attachment;filename=" + FileName + ".csv");
+            Response.Write(ExportToCSVFile(CSVDataTable));
+            Response.End();
+        }
+
+        public JsonResult ExportToCsv(string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, int PlanId = 0)
+        {
+            List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeid) ? new List<int>() : TacticTypeid.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+            List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
+            List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<Guid>() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+            List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+
+            DataTable dtTable = new DataTable();
+            DataSet dsExportCsv = new DataSet();
+            DataTable dtCSV = new DataTable();
+            dsExportCsv = objSp.GetExportCSV(PlanId);
+            dtCSV = dsExportCsv.Tables[0];
+
             stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
             string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
             ViewBag.MQLTitle = MQLTitle;
 
+            DataColumnCollection columns = dsExportCsv.Tables[0].Columns;
+
+            string[] ListEnumCol = Enum.GetNames(typeof(Enums.DownloadCSV));
+            string[] ListNotEnumCol = Enum.GetNames(typeof(Enums.NotDownloadCSV));
+            foreach (var colEnums in ListEnumCol)
+            {
+                string dtcolname = Convert.ToString(colEnums);
+                if (colEnums == Enums.DownloadCSV.MQL.ToString())
+                {
+                    dtcolname = MQLTitle;
+                }
+                dtTable.Columns.Add(dtcolname, typeof(string));
+            }
+
+            for (int i = 0; i < columns.Count; i++)
+            {
+                if (!ListEnumCol.Contains(columns[i].ToString()) && !ListNotEnumCol.Contains(columns[i].ToString()))
+                {
+                    dtTable.Columns.Add(columns[i].ToString(), typeof(string));
+                }
+            }
+            dtTable.AcceptChanges();
+
+            DataColumnCollection columnNames = dtTable.Columns;
+
+            var PlanList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => x.Field<int>("EntityId")).ToList();
+            int modelId = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => x.Field<int>("ModelId")).FirstOrDefault();
+            string FileName = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => x.Field<string>("Plan")).FirstOrDefault();
+            ViewBag.CSVFileName = FileName;
+            var TacticIds = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()).Select(x => x.Field<int>("EntityId")).ToList();
+
+            var progTactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => TacticIds.Contains(_tactic.PlanTacticId) && _tactic.IsDeleted.Equals(false)).ToList();
+            string section = Enums.Section.Tactic.ToString();
+            var cusomfield = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false).ToList();
+            var customfieldidlist = cusomfield.Select(c => c.CustomFieldId).ToList();
+
+            var lstAllTacticCustomFieldEntitiesanony = db.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
+                                                                                                   .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList();
+
+            List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
+                                                        join lst in TacticIds on tbl.EntityId equals lst
+                                                        select new CustomField_Entity
+                                                        {
+                                                            EntityId = tbl.EntityId,
+                                                            CustomFieldId = tbl.CustomFieldId,
+                                                            Value = tbl.Value
+                                                        }).ToList();
+
             CalculateTacticCostRevenue(modelId, TacticIds, progTactic, PlanId);
 
-            if (PlanList.Count > 0)
+            //// Custom Field Filter Criteria.
+            List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+            if (filteredCustomFields.Count > 0)
             {
-                totalmql = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
-                totalrevenue = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
-                var pl = PlanList.FirstOrDefault();
-                pl.MQLS = totalmql;
-                pl.Revenue = totalrevenue;
-                pl.Owner = GetOwnerName(pl.CreatedBy.ToString());
-                Hdata.Add(pl);
-                if (CampaignList.Count > 0)
+                filteredCustomFields.ForEach(customField =>
+                {
+                    string[] splittedCustomField = customField.Split('_');
+                    lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                    lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                });
+            }
+
+            if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+            {
+                progTactic = progTactic.Where(pcptobj => (filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                         (filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
+                                         (filterStatus.Contains(pcptobj.Status))).ToList();
+
+                //// Apply Custom restriction for None type
+                if (progTactic.Count() > 0)
                 {
 
-                    foreach (var campaignitem in CampaignList)
+                    if (filteredCustomFields.Count > 0)
                     {
-                        var mqlcamp = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => campaignitem.Id == l.CampaignId).Sum(l => l.MQL) : 0;
-                        var revenuecamp = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => campaignitem.Id == l.CampaignId).Sum(l => l.Revenue) : 0;
-                        campaignitem.MQLS = mqlcamp;
-                        campaignitem.Revenue = revenuecamp;
-                        campaignitem.Owner = GetOwnerName(campaignitem.CreatedBy.ToString());
-                        Hdata.Add(campaignitem);
+                        TacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, TacticIds, customfieldlist);
+                        //// get Allowed Entity Ids
+                        progTactic = progTactic.Where(tacticlist => TacticIds.Contains(tacticlist.PlanTacticId)).ToList();
+                    }
 
-                        var ProgramList = dataList.FindAll(x => x.ParentId == campaignitem.Id).ToList();
+                }
+            }
+            var FilterTacticIds = progTactic.Select(a => a.PlanTacticId).ToList();
+            for (int plan = 0; plan < PlanList.Count; plan++)
+            {
+                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
+                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
 
-                        if (ProgramList.Count > 0)
+                DataRow[] dr = dtCSV.Select("EntityId = " + PlanList[plan]);
+
+                OwnerNameCsv = GetOwnerName(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString());
+
+                var CampList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Campaign.ToString()
+                    && x.Field<int>("ParentId") == PlanList[plan]).Select(x => x.Field<int>("EntityId")).ToList();
+
+                var PlanProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
+                      && CampList.Contains(x.Field<int>("ParentId"))).Select(x => x.Field<int>("EntityId")).ToList();
+
+                var PlanTacticCostlist = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                               && PlanProgramList.Contains(x.Field<int>("ParentId"))).Select(x => x.Field<double>("PlannedCost")).ToList();
+
+                totalPlannedCostCSV = PlanTacticCostlist.Sum();
+
+                DataRowsInsert(dr, dtTable, columnNames);
+
+                for (int camp = 0; camp < CampList.Count; camp++)
+                {
+                    totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.MQL) : 0;
+                    totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.Revenue) : 0;
+
+                    var ProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
+                       && x.Field<int>("ParentId") == CampList[camp]).Select(x => x.Field<int>("EntityId")).ToList();
+
+                    var CampTacticCostlist = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                                   && ProgramList.Contains(x.Field<int>("ParentId"))).Select(x => x.Field<double>("PlannedCost")).ToList();
+
+                    totalPlannedCostCSV = CampTacticCostlist.Sum();
+
+                    dr = dtCSV.Select("EntityId = " + CampList[camp]);
+                    OwnerNameCsv = GetOwnerName(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString());
+                    DataRowsInsert(dr, dtTable, columnNames);
+
+                    for (int prog = 0; prog < ProgramList.Count; prog++)
+                    {
+                        totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.MQL) : 0;
+                        totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.Revenue) : 0;
+
+                        var ProgTacticCostlist = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                                   && x.Field<int>("ParentId") == ProgramList[prog]).Select(x => x.Field<double>("PlannedCost")).ToList();
+                        totalPlannedCostCSV = ProgTacticCostlist.Sum();
+
+                        dr = dtCSV.Select("EntityId = " + ProgramList[prog]);
+                        OwnerNameCsv = GetOwnerName(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString());
+                        DataRowsInsert(dr, dtTable, columnNames);
+
+                        var TacticList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                            && x.Field<int>("ParentId") == ProgramList[prog]).Select(x => x.Field<int>("EntityId")).ToList();
+
+                        for (int Tac = 0; Tac < TacticList.Count; Tac++)
                         {
-
-                            foreach (var programitem in ProgramList)
+                            if (FilterTacticIds.Contains(TacticList[Tac]))
                             {
+                                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.MQL) : 0;
+                                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.Revenue) : 0;
+                                dr = dtCSV.Select("EntityId = " + TacticList[Tac]);
+                                totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
+                                OwnerNameCsv = GetOwnerName(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString());
+                                DataRowsInsert(dr, dtTable, columnNames);
 
-                                var mqlprog = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => programitem.Id == l.Programid).Sum(l => l.MQL) : 0;
-                                var revenueprog = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => programitem.Id == l.Programid).Sum(l => l.Revenue) : 0;
-                                programitem.MQLS = mqlprog;
-                                programitem.Revenue = revenueprog;
-                                programitem.Owner = GetOwnerName(programitem.CreatedBy.ToString());
-                                Hdata.Add(programitem);
-                                var TacticList = dataList.FindAll(x => x.ParentId == programitem.Id).ToList();
-                                if (TacticList.Count > 0)
+                                var LineitemList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.LineItem.ToString()
+                                    && x.Field<int>("ParentId") == TacticList[Tac]).Select(x => x.Field<int>("EntityId")).ToList();
+
+                                for (int line = 0; line < LineitemList.Count; line++)
                                 {
-
-                                    foreach (var tacticitem in TacticList)
-                                    {
-                                        var mqltact = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => tacticitem.Id == l.PlanTacticId).Sum(l => l.MQL) : 0;
-                                        var revenuetact = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => tacticitem.Id == l.PlanTacticId).Sum(l => l.Revenue) : 0;
-                                        tacticitem.MQLS = mqltact;
-                                        tacticitem.Revenue = revenuetact;
-                                        tacticitem.Owner = GetOwnerName(tacticitem.CreatedBy.ToString());
-                                        Hdata.Add(tacticitem);
-                                        var LineItemList = dataList.FindAll(x => x.ParentId == tacticitem.Id).ToList();
-
-                                        if (LineItemList.Count > 0)
-                                        {
-                                            foreach (var lineitem in LineItemList)
-                                            {
-                                                lineitem.Owner = GetOwnerName(lineitem.CreatedBy.ToString());
-                                                Hdata.Add(lineitem);
-                                            }
-                                        }
-                                    }
+                                    totalmqlCSV = 0;
+                                    totalrevenueCSV = 0;
+                                    dr = dtCSV.Select("EntityId = " + LineitemList[line]);
+                                    totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
+                                    OwnerNameCsv = GetOwnerName(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString());
+                                    DataRowsInsert(dr, dtTable, columnNames);
                                 }
-
                             }
                         }
                     }
 
-
                 }
             }
+            Session["CSVDataTable"] = dtTable;
+            return Json(new { data = FileName }, JsonRequestBehavior.AllowGet); ;
+        }
 
-
-            SqlParameter[] para = new SqlParameter[2];
-
-            para[0] = new SqlParameter()
+        public void DataRowsInsert(DataRow[] dr, DataTable dt, DataColumnCollection columns)
+        {
+            for (int i = 0; i < dr.Length; i++)
             {
-                ParameterName = "PlanId",
-                Value = Sessions.PlanPlanIds[0]
-            };
-            para[1] = new SqlParameter()
-            {
-                ParameterName = "ClientId",
-                Value = Sessions.User.ClientId
-            };
-            var customfieldlist = db.Database.SqlQuery<Custom_CustomFieldHeader>("spCustomfieldData @PlanId,@ClientId", para).ToList();
-
-            //Build the CSV file data as a Comma separated string.
-            string csv = string.Empty;
-
-
-            //Add the Header row for CSV file.
-            int colum = 0;
-            foreach (var i in Hdata.FirstOrDefault().GetType().GetProperties())
-            {
-                switch (i.Name)
+                DataRow row = dt.NewRow();
+                for (int j = 0; j < columns.Count; j++)
                 {
-                    case "Plan":
-                    case "Campaign":
-                    case "Program":
-                    case "Tactic":
-                    case "LineItem":
-                    case "StartDate":
-                    case "EndDate":
-                    case "PlanCost":
-                    case "Type":
-                    case "Owner":
-                    case "Revenue":
-                    case "EloquaId":
-                    case "SFDCId":
-                        csv += i.Name + ',';
-                        colum += colum;
-                        break;
-                    case "TargetStageValue":
-                        csv += "Target Stage Value" + ',';
-                        break;
-                    case "MQLS":
-                        csv += MQLTitle + ',';
-                        break;
-                    case "ExternalName":
-                        csv += "External Name" + ',';
-                        break;
-                    default:
-                        break;
-                }
+                    string MqlColName = Convert.ToString(ViewBag.MQLTitle);
+                    ViewBag.MQLTitle = MqlColName;
 
-            }
-            Dictionary<string, string> Heads = new Dictionary<string, string>();
-            string camp = string.Empty, prog = string.Empty, tact = string.Empty, line = string.Empty;
-            foreach (var item in customfieldlist)
-            {
-                System.Collections.ArrayList newList = new System.Collections.ArrayList();
-                System.Collections.ArrayList newHeadVal = new System.Collections.ArrayList();
-
-                var vHead = item.Header.Split(',').ToArray();
-                var vHval = item.Value.Split(',').ToArray();
-
-                for (int i = 0; i < vHead.Length; i++)
-                {
-                    if (!newList.Contains(vHead[i]))
+                    if (columns[j].ToString() == MqlColName)
                     {
-                        newList.Add(vHead[i]);
-                        newHeadVal.Add(vHval[i]);
+                        row[columns[j].ToString()] = totalmqlCSV;
+                    }
+                    else if (columns[j].ToString() == "Revenue")
+                    {
+                        row[columns[j].ToString()] = "$" + totalrevenueCSV;
+                    }
+                    else if (columns[j].ToString() == "Owner")
+                    {
+                        row[columns[j].ToString()] = OwnerNameCsv;
+                    }
+                    else if (columns[j].ToString() == "PlannedCost")
+                    {
+                        row[columns[j].ToString()] = totalPlannedCostCSV;
                     }
                     else
                     {
-                        newHeadVal[newList.IndexOf(vHead[i])] += ';' + Convert.ToString(vHval[i]);
-                    }
 
-
-                }
-
-                item.Header = string.Join(",", newList.ToArray());
-                item.Value = string.Join(",", newHeadVal.ToArray());
-
-                foreach (var i in item.Header.Split(','))
-                {
-                    if (!Heads.ContainsKey(i))
-                    {
-
-                        switch (item.EntityType)
+                        if (columns[j].ToString() == MqlColName)
                         {
-                            case "Campaign":
-                                camp += i + ',';
-                                break;
-                            case "Program":
-                                prog += i + ',';
-                                break;
-                            case "Tactic":
-                                tact += i + ',';
-                                break;
-                            case "Lineitem":
-                                line += i + ',';
-                                break;
-                            default:
-                                break;
+                            row[MqlColName] = Convert.ToString(dr[i][Enums.DownloadCSV.MQL.ToString()]);
                         }
-                        Heads.Add(i, item.EntityType);
-                        //csv += i + ',';
-
+                        else
+                        {
+                            row[columns[j].ToString()] = Convert.ToString(dr[i][columns[j].ToString()]);
+                        }
                     }
-
                 }
+                dt.Rows.Add(row);
+                dt.AcceptChanges();
             }
-            csv += camp + prog + tact + line;
-            csv += "\r\n";
-            //Rows
-            foreach (var item in Hdata)
-            {
+        }
 
-                foreach (var j in item.GetType().GetProperties())
-                {
-                    switch (j.Name)
-                    {
-                        case "Plan":
-                        case "Campaign":
-                        case "Program":
-                        case "Tactic":
-                        case "LineItem":
-                        case "StartDate":
-                        case "EndDate":
-                        case "PlanCost":
-                        case "Type":
-                        case "Owner":
-                        case "TargetStageValue":
-                        case "MQLS":
-                        case "ExternalName":
-                        case "EloquaId":
-                        case "SFDCId":
-                            csv += j.GetValue(item) + ",";
-                            break;
-                        case "Revenue":
-                            csv += j.GetValue(item) == null ? j.GetValue(item) : "$" + j.GetValue(item) + ",";
-                            break;
-                        case "Id":
-                            if (customfieldlist.Find(t => t.EntityId == item.Id) != null)
-                            {
-                                if (customfieldlist.Find(t => t.EntityId == item.Id).EntityType == "Campaign")
-                                {
-                                    string camVal = customfieldlist.Find(t => t.EntityId == item.Id).Value;
-                                    string camHead = customfieldlist.Find(t => t.EntityId == item.Id).Header;
-                                    if (camHead.Count(x => x == ',') == camp.Count(x => x == ','))
-                                        csv += camVal + "," + Regex.Replace(prog, "[a-zA-Z0-9 -]", "") + Regex.Replace(tact, "[a-zA-Z0-9 -]", "") + Regex.Replace(line, "[a-zA-Z0-9 -]", "");
-                                    else
-                                    {
-                                        csv += camVal + "," + Regex.Replace(prog, "[a-zA-Z0-9 -]", "") + Regex.Replace(tact, "[a-zA-Z0-9 -]", "") + Regex.Replace(line, "[a-zA-Z0-9 -]", "");
+        private string HtmlDecodeString(string source)
+        {
 
-                                    }
-                                }
-                                else if (customfieldlist.Find(t => t.EntityId == item.Id).EntityType == "Program")
-                                {
-                                    csv += Regex.Replace(camp, "[a-zA-Z0-9 -]", "") + customfieldlist.Find(t => t.EntityId == item.Id).Value + "," + Regex.Replace(tact, "[a-zA-Z0-9 -]", "") + Regex.Replace(line, "[a-zA-Z0-9 -]", "");
-                                }
-                                else if (customfieldlist.Find(t => t.EntityId == item.Id).EntityType == "Tactic")
-                                {
-                                    csv += Regex.Replace(camp, "[a-zA-Z0-9 -]", "") + Regex.Replace(prog, "[a-zA-Z0-9 -]", "") + customfieldlist.Find(t => t.EntityId == item.Id).Value + "," + Regex.Replace(line, "[a-zA-Z0-9 -]", "");
-                                }
-                                else if (customfieldlist.Find(t => t.EntityId == item.Id).EntityType == "Lineitem")
-                                {
-                                    csv += Regex.Replace(camp, "[a-zA-Z0-9 -]", "") + Regex.Replace(prog, "[a-zA-Z0-9 -]", "") + Regex.Replace(tact, "[a-zA-Z0-9 -]", "") + customfieldlist.Find(t => t.EntityId == item.Id).Value;
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
-                }
-                csv += "\r\n";
-            }
-            Response.ContentType = "Application/x-msexcel";
-            Response.AddHeader("content-disposition", "attachment;filename=  " + FileName + ".csv");
-
-            Response.Write(csv);
-            Response.End();
-
+            source = source.Replace("&amp;", "&");
+            return HttpUtility.HtmlDecode(source.ToString());
         }
 
         #endregion

@@ -31,9 +31,9 @@
     <span id="spnmql"></span>
     <span id="spncw"></span>
     @*<a class="btn btn-blue-grid text-shadow-blue source-sans-proregular" id="exportcsv" onclick="return ExportToCSV();">
-        <img src="~/Content/images/grid-export.png" /> Export .csv
-    </a> Changed by bhumika #2015 *@
-    <a class="source-sans-proregular export-link" id="exportcsv" onclick="return ExportToCSV();">
+            <img src="~/Content/images/grid-export.png" /> Export .csv
+        </a> Changed by bhumika #2015 *@
+    <a class="source-sans-proregular export-link" id="exportcsv" onclick="return ExportToCsvSp();">
         <i class="fa fa-external-link"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Export.csv</span>
     </a>
 </div>
@@ -82,12 +82,12 @@
     var eventidonbeforedrag = 0;
     var eventidonscroll = 0;
     var editidonOpenEnd = 0;
-   
+
 
     $(document).ready(function () {
         //$("#divupcomingact").hide();
         //Modified by Komal Rawal for 2013 Home/Plan Layout changes
-      //  $("#RequestTab").hide();
+        //  $("#RequestTab").hide();
         $("#BudgetIcon").show();
         $("#BtnTabIcons").addClass("bdrRadius");
         //End
@@ -191,9 +191,57 @@
     $(document).ajaxComplete(function () {
         HomeGrid.setSizes();
     });
+    function ExportToCsvSp()
+    {
 
-    function ExportToCSV() {
-        window.location = "/Plan/GetDataforExportCSV";
+        var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                UncheckedCounter = AllCounter - CheckedCounter;
+                if (AllCounter == UncheckedCounter) {
+                    var Id = $(this).attr("id");
+                    if (Id.indexOf("-") >= 0) {
+                        Id = Id.split('-')[1];
+                        var CustomId = Id + "_null";
+                        filters.customFieldIds.push(CustomId);
+
+                    }
+                }
+                else if (AllCounter == CheckedCounter) {
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                    }
+                    var i = 0, customfieldid;
+                    for (i = 0; i < filters.customFieldIds.length; i++) {
+                        if (filters.customFieldIds[i].indexOf("_") > -1) {
+                            customfieldid = filters.customFieldIds[i].split("_")[0];
+                            if (id == customfieldid) {
+                                filters.customFieldIds.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        var OwnerIds= filters.OwnerIds.toString();
+        var TacticTypeids=filters.TacticTypeids.toString();
+        var StatusIds=filters.StatusIds.toString();
+        var CustomFieldId=filters.customFieldIds.toString();
+        //window.location='@Url.Content("~/Plan/ExportToCsv/")'+"?ownerIds="+OwnerIds+"&TacticTypeid="+TacticTypeids+"&StatusIds="+StatusIds+"&customFieldIds="+CustomFieldId+"&PlanId="+SelectedPlanIds.toString();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/ExportToCsv/")',
+            data: { ownerIds: OwnerIds, TacticTypeid: TacticTypeids, StatusIds: StatusIds, customFieldIds:CustomFieldId ,PlanId:SelectedPlanIds.toString()},
+            success: function (data) {
+                var FileName =data.data.toString();
+                window.location='@Url.Content("~/Plan/ExportCsvDataTable/")?FileName='+FileName;
+            }
+
+        });
     }
 
     function ExportToCSV1() {
@@ -602,7 +650,7 @@
     // End By Nishant Sheth
 
     function callsearch() {
-        $("#divgridview").find(".grid_Search").each(function () {            
+        $("#divgridview").find(".grid_Search").each(function () {
             $(this).click(function (e) {
                 inspectCloseFocus = $(this).position().top;
                 var id = $(this).parent().next().html();
@@ -664,10 +712,10 @@
     });
     //var GridDataCsv;
     var GridDataHomeGrid;
-    function BindHomeGrid() {       
+    function BindHomeGrid() {
         @*var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid))';*@
-        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';        
-        
+        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
+
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
@@ -683,32 +731,32 @@
 
         HomeGrid.setCustomSorting(sort_TacticType, 7);
         HomeGrid.csvParser = HomeGrid.csvExtParser;
-        HomeGrid.init();        
+        HomeGrid.init();
         // added by bhavesh - 11-Nov-2015
         // Apply Distributed Parsing
         HomeGrid.attachEvent("onDistributedEnd", function () {
             // your code here
             LoadAfterParsing();
-           // flag=false;
-          
-           // if(relativeOffsetscroll > 0)
-           // {
-               
+            // flag=false;
 
-                    if(HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '')
-                    {
-                        HomeGrid.showRow(HomeGrid.getRowId(state0));
-                        HomeGrid.openItem(HomeGrid.getRowId(state0));//Added by Rahul Shah for PL #1744
-                    }
+            // if(relativeOffsetscroll > 0)
+            // {
+
+
+            if(HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '')
+            {
+                HomeGrid.showRow(HomeGrid.getRowId(state0));
+                HomeGrid.openItem(HomeGrid.getRowId(state0));//Added by Rahul Shah for PL #1744
+            }
             //Added by Rahul Shah on 25/03/2016 for PL #2075
-                    //if(!IslineItemDelete){  //Added By Maitri for #2040 Observation
-                        if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {                        
-                            HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
-                            HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
-                        }
-                    //}
-              
-          //  }
+            //if(!IslineItemDelete){  //Added By Maitri for #2040 Observation
+            if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {
+                HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+                HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+            }
+            //}
+
+            //  }
             if ($("#gridbox").find(".rowselected").length >= 1) {
                 var scrolltop = $(".rowselected").offset().top;
                 $(window).scrollTop(scrolltop - 100);
@@ -729,27 +777,27 @@
         //GridDataCsv.rows=JSON.parse(GridData).rows;
         HomeGrid.parse(GridDataHomeGrid, "json");
         HomeGrid.splitAt(2);
-        //Added by Maitri Gandhi for #2040 on 31/3/2016          
-        //HomeGrid.collapseAll();        
+        //Added by Maitri Gandhi for #2040 on 31/3/2016
+        //HomeGrid.collapseAll();
         //var cookie = document.cookie;
         //if(cookie.indexOf("gridOpen") > -1){
         //    var cookies = cookie.split(';');
         //    for (var i = 0; i < cookies.length; i++) {
         //        if (cookies[i] == "gridOpen") {
         //            if (cookies[i].indexOf("|") > -1) {
-        //                cookies[i] = "gridOpen=plan.1";                
+        //                cookies[i] = "gridOpen=plan.1";
         //                document.cookie = "gridOpen=plan.1";   //  document.cookie = cookies.join(';');
         //            }
-        //        }           
-        //    } 
+        //        }
+        //    }
         //}
-        //else{            
+        //else{
         //    //cookie += "; gridOpen=plan.1";
         //    document.cookie = "gridOpen=plan.1";
         //}
-        
-        //HomeGrid.loadOpenStates(); 
-        
+
+        //HomeGrid.loadOpenStates();
+
         // HomeGrid.sortRows(1, 'str', 'asc');
         LoadAfterParsing();
         //Added by Rahul shah for PL #1683
@@ -782,7 +830,7 @@
             $("#gridbox").show();
             $("#goalwrapper").show();
             $(".pull-right.toggle-status.source-sans-proregular").show();
-           // $("#improvements").show(); //Modify by dashrath prajapati for ticket #1955
+            // $("#improvements").show(); //Modify by dashrath prajapati for ticket #1955
             $("#NodatawithfilterGrid").hide();
 
         }else{
@@ -1009,11 +1057,11 @@
     }
 
 
-   // var flag=false;
+    // var flag=false;
     // Create funtion to load grid view event - Apply Distributed Parsing
     // Added By Bhavesh - Date: 11-Nov-2015
     function LoadAfterParsing() {
-       // flag=true;
+        // flag=true;
         if (eventidonedit != 0) {
             HomeGrid.detachEvent(eventidonedit);
         }
@@ -1078,17 +1126,17 @@
             if(id != undefined && id != 'undefined')
             {
                 rowid = id[0];
-            
-           
-            var SourcePtype = (rowid).split(".")[0];
-            // if (SourcePtype == "line") {
-            // HomeGrid.openItem(HomeGrid.getParentId(rowid));
-            HomeGrid.openItem(rowid);
-            //}
-         
-            ItemIndex=HomeGrid.getRowIndex(rowid);
-            state0=ItemIndex;
-            HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+
+
+                var SourcePtype = (rowid).split(".")[0];
+                // if (SourcePtype == "line") {
+                // HomeGrid.openItem(HomeGrid.getParentId(rowid));
+                HomeGrid.openItem(rowid);
+                //}
+
+                ItemIndex=HomeGrid.getRowIndex(rowid);
+                state0=ItemIndex;
+                HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
             }
             isCopyTacticHomeGrid = 0;
             isCopyTactic = 0;
@@ -1099,16 +1147,16 @@
 
             //  HomeGrid.openItem(id[0]);
 
-            var id = selectedcell[0];  
+            var id = selectedcell[0];
             var rowid;
             if(id != undefined && id != 'undefined')
             {
                 rowid = id[0];
-            HomeGrid.openItem(HomeGrid.getParentId(rowid));
-            HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
-           
-            ItemIndex=HomeGrid.getRowIndex(rowid);
-            state0=ItemIndex;
+                HomeGrid.openItem(HomeGrid.getParentId(rowid));
+                HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+
+                ItemIndex=HomeGrid.getRowIndex(rowid);
+                state0=ItemIndex;
             }
             //var scrolltop = $(".rowselected").offset().top;
             //  $(window).scrollTop(scrolltop - 100);
@@ -1119,7 +1167,7 @@
         if (editidonOpenEnd != 0) {
             HomeGrid.detachEvent(editidonOpenEnd);
         }
-        editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {         
+        editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
             //HomeGrid.saveOpenStates();  //Added by Maitri Gandhi for #2040 on 31/3/2016
             //Modified by komal Rawal for #1553
             $(".grid_Search").off("click");
@@ -1311,7 +1359,7 @@
     var value;
 
     var TacticName;
-    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {        
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         var updatetype = rowId.split(".")[0];
         var Id;
         var UpdateColumn;
@@ -1342,7 +1390,7 @@
 
         UpdateColumn = HomeGrid.getColLabel(Colind, 0);
         if (stage == 0) {
-         
+
             //   value = HomeGrid.cells(rowId, cellInd).getValue();
             //  value =   divvalue.split("</div>")[0];
 
@@ -1382,7 +1430,7 @@
                 return false;
         }
         if (stage == 1) {
-          
+
             if (updatetype == "line") {
                 var oldval = HomeGrid.cells(rowId, cellInd).getValue();
                 var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
@@ -1425,7 +1473,7 @@
         }
         if (stage == 2) // start edit Shipping column
         {
-         
+
             if (nValue != null && nValue != "") {
 
                 //Added By Komal Rawal to Change the value in array if grid updated
@@ -1437,7 +1485,7 @@
                     UpdateColumn = HomeGrid.getColLabel(Colind, 0);
                 if(UpdateColumn == "Task Name"){
                     updatePlanNameDrp(TaskID,NewValue);
-                }                
+                }
                 if(cellInd == 1)
                 {
                     $("div[taskId='" + TaskID + "']").attr('taskname',NewValue);
@@ -1591,7 +1639,7 @@
                                     return false;
                                 }
                                 else if (UpdateColumn == "Planned Cost") {
-                                   //Added By Rahul Shah on 16/10/2015 for PL 1559
+                                    //Added By Rahul Shah on 16/10/2015 for PL 1559
                                     diff = parseInt(nValue) - parseInt(oValue);
                                     diffLineAndTactic = states.lineItemCost - states.tacticCost
                                     if (states.lineItemCost > states.tacticCost) {
@@ -1634,7 +1682,7 @@
                                         //$('#liGrid').click();
                                         //ItemIndex=HomeGrid.getRowIndex(tactid);
                                         //state0=ItemIndex;
-                                     
+
                                     }
                                     //$('#liGrid').click();
                                     ChangeTabView('liGrid'); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
@@ -1669,11 +1717,11 @@
                             success: function (states) {
                                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                                 var TaskID = HomeGrid.cells(rowId,3).getValue();
-                                    var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
+                                var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
 
                                 if(ExportSelectedIds.TaskID.length > 0)
                                 {
-                                 
+
                                     var OwnerNameIndex = ExportSelectedIds.OwnerName.indexOf(OldValue);
 
                                     if(OwnerNameIndex >= 0 && states.OwnerName != "" )
@@ -1687,7 +1735,7 @@
                                     $("div[taskId='" + TaskID + "']").attr('ownername',states.OwnerName);
                                 }
 
-                                //Added By Komal Rawal for 2058 
+                                //Added By Komal Rawal for 2058
                                 if((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" &&  states.OwnerName != null)
                                 {
                                     if (planid != 0 && planid != null && planid != undefined) {
@@ -1709,9 +1757,9 @@
                                     GetOwnerListForFilter(PlanID, false);
                                     //var OwnerListLength = $("#ulSelectedOwner li").length;
                                     //if (( PreviousOwnerListlength != OwnerListLength && PreviousOwnerListlength != 0)) {
-                                        SaveLastSetofViews();
+                                    SaveLastSetofViews();
                                     //}
-                                  
+
                                 }
                                 //End
                                 if (states.errormsg != null && states.errormsg.trim() != "") {
@@ -1720,7 +1768,7 @@
                                     return false;
                                 }
                                 if (UpdateColumn == "Start Date") {
-                                  
+
                                     if(states.IsExtended){
                                         alert("Since the Tactic is link to another Plan, it cannot be extended");
                                         HomeGrid.cells(rowId, cellInd).setValue(oValue);
@@ -1738,7 +1786,7 @@
 
                                     if(YearDiff > 0)
                                     {
-                                       
+
                                         var getvalue = HomeGrid.cells(rowId, 1).getValue();
                                         var Index = getvalue.indexOf("</div>");
                                         if(Index <= -1)
@@ -1752,7 +1800,7 @@
                                     }
                                     else
                                     {
-                                      
+
                                         if(_yrDiff == 0)
                                         {
                                             return false;
@@ -1762,7 +1810,7 @@
                                         var Index = getvalue.indexOf("</div>");
                                         if(Index > -1)
                                         {
-                                           
+
                                             HomeGrid.cells(rowId, 1).setValue(getvalue.split("</div>")[1]);
                                             $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "False")
                                         }
@@ -1772,7 +1820,7 @@
                                 }
 
                                 if (UpdateColumn == "End Date") {
-                                 
+
                                     if(states.IsExtended){
                                         alert("Since the Tactic is link to another Plan, it cannot be extended");
                                         HomeGrid.cells(rowId, cellInd).setValue(oValue);
@@ -1786,11 +1834,11 @@
                                     //
                                     var oldvalueofEndYear = oValue.split('/')[2];
                                     var _yrDiff=oldvalueofEndYear-StartYear;
-                                   //
+                                    //
 
                                     if(YearDiff > 0)
                                     {
-                                       
+
                                         var getvalue = HomeGrid.cells(rowId, 1).getValue();
                                         var Index = getvalue.indexOf("</div>");
                                         if(Index <= -1)
@@ -1802,8 +1850,8 @@
                                     }
                                     else
                                     {
-                                       
-                                       // return false;
+
+                                        // return false;
                                         if(_yrDiff == 0)
                                         {
                                             return false;
@@ -1835,7 +1883,7 @@
 
                                         HomeGrid.cells(rowId, 6).setValue((oValue));
                                     }
-                                    //Added by Rahul Shah for PL #1744.
+                                        //Added by Rahul Shah for PL #1744.
                                     else if (nValue == states.lineItemCost) {
                                         if (TotalRowIds != "") {
                                             for (var i = 0; i < TotalRowIds.split(',').length; i++) {
@@ -1868,7 +1916,7 @@
                                         //$('#liGrid').click();
                                         //ItemIndex=HomeGrid.getRowIndex(rowId);
                                         //state0=ItemIndex;
-                                      
+
                                     }
                                     //$('#liGrid').click();
                                     ChangeTabView('liGrid'); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
@@ -1879,11 +1927,11 @@
                                     CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
 
                                 }
-                                
+
                             }
                         });
                     }
-                 
+
                     //Modified By Komal Rawal for #1848 Link To tactic feature
                     if(cellInd == 1)
                     {
@@ -1907,7 +1955,7 @@
                     return true;
                 }
 
-                
+
                 //Modified By Komal Rawal for #1848 Link To tactic feature
                 if(cellInd == 1)
                 {
@@ -2206,17 +2254,17 @@
                             HomeGrid.cells(rowid, 9).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
                         }
                         //added by Rahul Shah for PL #2058 on 15/03/2016.
-                        if (UpdateColumn == "Type") {     
-                            
+                        if (UpdateColumn == "Type") {
+
                             var PlanIds = HomeGrid.cells(planid,3).getValue()
                             $("#ulTacticType li input[type=checkbox]").each(function () {
                                 var chkid = $(this).attr("id");
                                 if ($(this).attr('checked') != 'checked') {
-                                    filters.tempTacticTypeIds.push(chkid.replace("CbTT", ""));                                    
-                                }                             
+                                    filters.tempTacticTypeIds.push(chkid.replace("CbTT", ""));
+                                }
 
-                            });                           
-                            
+                            });
+
                             GetTacticTypelist(PlanIds, false);
                             SaveLastSetofViews();
                         }
