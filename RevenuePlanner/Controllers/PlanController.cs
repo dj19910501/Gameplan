@@ -14193,8 +14193,8 @@ namespace RevenuePlanner.Controllers
         
         private string HtmlDecodeString(string source)
         {
-
             source = source.Replace("&amp;", "&");
+            source = source.Replace("–", "-");
             return HttpUtility.HtmlDecode(source.ToString());
         }
 
