@@ -246,7 +246,7 @@ NULL AS 'Value','Plan' AS'EntityType',[CustomField].Name AS 'ColName',NULL As 'P
 ,null As 'ExternalName'
 FROM [Plan] AS [Plan] WITH (NOLOCK) 
 OUTER APPLY (SELECT PlanCampaignId,PlanId,StartDate,EndDate FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0) Campaign 
-OUTER APPLY (SELECT * FROM CustomField WHERE CustomField.ClientId=@ClientId ) [CustomField]
+OUTER APPLY (SELECT * FROM CustomField WHERE CustomField.ClientId=@ClientId AND CustomField.EntityType!='Budget' ) [CustomField]
 WHERE [Plan].PlanId IN (@PlanId)
 UNION ALL
 -- Campaign Details
@@ -263,7 +263,7 @@ CONVERT(NVARCHAR(800),CASE [CustomFieldType].Name WHEN 'DropDownList' THEN (SELE
 FROM [Plan] WITH (NOLOCK)
 CROSS APPLY (SELECT PlanCampaignId,PlanId,Title,StartDate,EndDate,IntegrationInstanceCampaignId,CreatedBy FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0 ) Campaign 
 OUTER APPLY (SELECT * FROM CustomField_Entity AS CustomField_Entity WITH (NOLOCK) WHERE [Campaign].PlanCampaignId=CustomField_Entity.EntityId) CustomField_Entity
-OUTER APPLY (SELECT * FROM CustomField WHERE CustomField_Entity.CustomFieldId = CustomField_Entity.CustomFieldEntityId AND CustomField.ClientId=@ClientId AND CustomField.EntityType='Campaign') [CustomField]
+OUTER APPLY (SELECT * FROM CustomField WHERE CustomField_Entity.CustomFieldId = CustomField_Entity.CustomFieldEntityId AND CustomField.ClientId=@ClientId AND CustomField.EntityType='Campaign' ) [CustomField]
 OUTER APPLY (SELECT * FROM CustomFieldType WHERE CustomField.CustomFieldTypeId=CustomFieldType.CustomFieldTypeId) [CustomFieldType]
 OUTER APPLY (SELECT * FROM CustomFieldOption WHERE CustomField.CustomFieldId=CustomFieldOption.CustomFieldId AND CustomFieldOption.IsDeleted=0) [CustomFieldOption]
 WHERE [Plan].PlanId IN(@PlanId)
@@ -484,6 +484,7 @@ DECLARE @query nvarchar(max)
 
 
 END
+
 
 GO
 
