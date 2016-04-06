@@ -14145,11 +14145,25 @@ namespace RevenuePlanner.Controllers
 
                     if (columns[j].ToString() == MqlColName)
                     {
-                        row[columns[j].ToString()] = totalmqlCSV;
+                        if (row[columns["Lineitem"].ToString()] != null && row[columns["Lineitem"].ToString()] != "")
+                        {
+                            row[columns[j].ToString()] = "--";
+                        }
+                        else
+                        {
+                            row[columns[j].ToString()] = totalmqlCSV;
+                        }
                     }
                     else if (columns[j].ToString() == "Revenue")
                     {
-                        row[columns[j].ToString()] = "$" + totalrevenueCSV;
+                        if (row[columns["Lineitem"].ToString()] != null && row[columns["Lineitem"].ToString()] != "")
+                        {
+                            row[columns[j].ToString()] = "--";
+                        }
+                        else
+                        {
+                            row[columns[j].ToString()] = "$" + totalrevenueCSV;
+                        }
                     }
                     else if (columns[j].ToString() == "Owner")
                     {
@@ -14176,7 +14190,7 @@ namespace RevenuePlanner.Controllers
                 dt.AcceptChanges();
             }
         }
-
+        
         private string HtmlDecodeString(string source)
         {
 
