@@ -2126,7 +2126,7 @@
             RefreshCurrentTab();
             // 1762
             $('#IsGridView').val("False");
-
+            Currenttime = $('#ddlUpComingActivites').val(); //Modified by Komal Rawal for proper HuD when we change tab
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
             $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
             
@@ -2152,7 +2152,6 @@
 
         }
    
-        Currenttime = $('#ddlUpComingActivites').val(); //Modified by Komal Rawal for proper HuD when we change tab
         // Add by Nishant Sheth
         // Desc:: To resolve the header data issue
         // Modified By Nishant Sheth Desc header value wrong with plan tab
