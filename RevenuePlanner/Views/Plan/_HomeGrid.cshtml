@@ -237,8 +237,8 @@
             url: '@Url.Content("~/Plan/ExportToCsv/")',
             data: { ownerIds: OwnerIds, TacticTypeid: TacticTypeids, StatusIds: StatusIds, customFieldIds:CustomFieldId ,PlanId:SelectedPlanIds.toString()},
             success: function (data) {
-                var FileName =data.data.toString();
-                window.location='@Url.Content("~/Plan/ExportCsvDataTable/")?FileName='+FileName;
+                @*window.location='@Url.Content("~/Plan/ExportCsvDataTable/")?FileName='+FileName;*@
+                window.location='@Url.Content("~/Plan/ExportCsvDataTable/")';
             }
 
         });

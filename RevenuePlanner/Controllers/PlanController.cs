@@ -12666,6 +12666,47 @@ namespace RevenuePlanner.Controllers
 
         }
 
+        public string GetOwnerNameCSV(string UserGuid, List<User> lstUserDetailsData)
+        {
+            var OwnerName = "";
+            try
+            {
+                if (UserGuid != "")
+                {
+                    if (lstUserDetailsData == null || lstUserDetailsData.Count == 0)
+                    {
+                        lstUserDetailsData = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                    }
+
+                    var userName = lstUserDetailsData.Where(user => user.UserId.ToString() == UserGuid).Select(user => new
+                    {
+                        FirstName = user.FirstName,
+                        Lastname = user.LastName
+                    }).FirstOrDefault();
+
+
+                    if (userName != null)
+                    {
+                        OwnerName = userName.FirstName + " " + userName.Lastname;
+                    }
+                }
+
+                return OwnerName.ToString();
+            }
+            catch (Exception e)
+            {
+
+                if (e is System.Data.EntityException || e is System.Data.SqlClient.SqlException)
+                {
+
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                }
+
+            }
+            return OwnerName.ToString();
+
+        }
+
         #endregion
 
         #region "Feature: Copy or Link Tactic/Program/Campaign between Plan"
@@ -13885,8 +13926,9 @@ namespace RevenuePlanner.Controllers
             return HtmlDecodeString(sbldr.ToString());
         }
 
-        public void ExportCsvDataTable(string FileName)
+        public void ExportCsvDataTable()
         {
+            string FileName = HttpUtility.HtmlDecode(Convert.ToString(Session["FileName"]));
             DataTable CSVDataTable = (DataTable)Session["CSVDataTable"];
             Response.ContentType = "Application/x-msexcel";
             Response.AddHeader("content-disposition", "attachment;filename=" + FileName + ".csv");
@@ -13896,6 +13938,8 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult ExportToCsv(string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, int PlanId = 0)
         {
+            BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
+
             List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeid) ? new List<int>() : TacticTypeid.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
             List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
             List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<Guid>() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
@@ -13905,9 +13949,15 @@ namespace RevenuePlanner.Controllers
             DataTable dtTable = new DataTable();
             DataSet dsExportCsv = new DataSet();
             DataTable dtCSV = new DataTable();
+            DataTable dtCSVCost = new DataTable();
             dsExportCsv = objSp.GetExportCSV(PlanId);
             dtCSV = dsExportCsv.Tables[0];
+            dtCSVCost = dsExportCsv.Tables[0];
 
+            var useridslist = dtCSV.Rows.Cast<DataRow>().Select(x => x.Field<Guid>("CreatedBy")).ToList();
+            string strContatedIndividualList = string.Join(",", useridslist.Select(tactic => tactic.ToString()));
+
+            var listOfClientId = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId);
             stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
             string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
             ViewBag.MQLTitle = MQLTitle;
@@ -13993,23 +14043,23 @@ namespace RevenuePlanner.Controllers
 
                 }
             }
+            
             var FilterTacticIds = progTactic.Select(a => a.PlanTacticId).ToList();
             for (int plan = 0; plan < PlanList.Count; plan++)
             {
                 totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
                 totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
 
-                DataRow[] dr = dtCSV.Select("EntityId = " + PlanList[plan]);
+                DataRow[] dr = dtCSV.Select("EntityId = " + PlanList[plan] + "AND Section = '" + Enums.Section.Plan.ToString() + "'");
 
-                OwnerNameCsv = GetOwnerName(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString());
-
+                OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
                 var CampList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Campaign.ToString()
-                    && x.Field<int>("ParentId") == PlanList[plan]).Select(x => x.Field<int>("EntityId")).ToList();
+                    && x.Field<int>("ParentId") == PlanList[plan]).OrderBy(x => x.Field<string>("Campaign")).Select(x => x.Field<int>("EntityId")).ToList();
 
                 var PlanProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
                       && CampList.Contains(x.Field<int>("ParentId"))).Select(x => x.Field<int>("EntityId")).ToList();
 
-                var PlanTacticCostlist = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                var PlanTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
                                && PlanProgramList.Contains(x.Field<int>("ParentId"))).Select(x => x.Field<double>("PlannedCost")).ToList();
 
                 totalPlannedCostCSV = PlanTacticCostlist.Sum();
@@ -14022,14 +14072,14 @@ namespace RevenuePlanner.Controllers
                     totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.Revenue) : 0;
 
                     var ProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
-                       && x.Field<int>("ParentId") == CampList[camp]).Select(x => x.Field<int>("EntityId")).ToList();
+                       && x.Field<int>("ParentId") == CampList[camp]).OrderBy(x => x.Field<string>("Program")).Select(x => x.Field<int>("EntityId")).ToList();
 
-                    var CampTacticCostlist = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                    var CampTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
                                    && ProgramList.Contains(x.Field<int>("ParentId"))).Select(x => x.Field<double>("PlannedCost")).ToList();
 
                     totalPlannedCostCSV = CampTacticCostlist.Sum();
 
-                    dr = dtCSV.Select("EntityId = " + CampList[camp]);
+                    dr = dtCSV.Select("EntityId = " + CampList[camp] + "AND Section ='" + Enums.Section.Campaign.ToString() + "'");
                     OwnerNameCsv = GetOwnerName(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString());
                     DataRowsInsert(dr, dtTable, columnNames);
 
@@ -14038,16 +14088,16 @@ namespace RevenuePlanner.Controllers
                         totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.MQL) : 0;
                         totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.Revenue) : 0;
 
-                        var ProgTacticCostlist = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                        var ProgTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
                                    && x.Field<int>("ParentId") == ProgramList[prog]).Select(x => x.Field<double>("PlannedCost")).ToList();
                         totalPlannedCostCSV = ProgTacticCostlist.Sum();
 
-                        dr = dtCSV.Select("EntityId = " + ProgramList[prog]);
+                        dr = dtCSV.Select("EntityId = " + ProgramList[prog] + "AND Section = '" + Enums.Section.Program.ToString() + "'");
                         OwnerNameCsv = GetOwnerName(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString());
                         DataRowsInsert(dr, dtTable, columnNames);
 
                         var TacticList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                            && x.Field<int>("ParentId") == ProgramList[prog]).Select(x => x.Field<int>("EntityId")).ToList();
+                            && x.Field<int>("ParentId") == ProgramList[prog]).OrderBy(x => x.Field<string>("Tactic")).Select(x => x.Field<int>("EntityId")).ToList();
 
                         for (int Tac = 0; Tac < TacticList.Count; Tac++)
                         {
@@ -14055,19 +14105,19 @@ namespace RevenuePlanner.Controllers
                             {
                                 totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.MQL) : 0;
                                 totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.Revenue) : 0;
-                                dr = dtCSV.Select("EntityId = " + TacticList[Tac]);
+                                dr = dtCSV.Select("EntityId = " + TacticList[Tac] + "AND Section = '" + Enums.Section.Tactic.ToString() + "'");
                                 totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
                                 OwnerNameCsv = GetOwnerName(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString());
                                 DataRowsInsert(dr, dtTable, columnNames);
-
+                                
                                 var LineitemList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.LineItem.ToString()
-                                    && x.Field<int>("ParentId") == TacticList[Tac]).Select(x => x.Field<int>("EntityId")).ToList();
+                                    && x.Field<int>("ParentId") == TacticList[Tac]).OrderBy(x => x.Field<string>("LineItem")).Select(x => x.Field<int>("EntityId")).ToList();
 
                                 for (int line = 0; line < LineitemList.Count; line++)
                                 {
                                     totalmqlCSV = 0;
                                     totalrevenueCSV = 0;
-                                    dr = dtCSV.Select("EntityId = " + LineitemList[line]);
+                                    dr = dtCSV.Select("EntityId = " + LineitemList[line] + "AND Section = '" + Enums.Section.LineItem.ToString() + "'");
                                     totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
                                     OwnerNameCsv = GetOwnerName(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString());
                                     DataRowsInsert(dr, dtTable, columnNames);
@@ -14079,6 +14129,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             Session["CSVDataTable"] = dtTable;
+            Session["FileName"] = FileName;
             return Json(new { data = FileName }, JsonRequestBehavior.AllowGet); ;
         }
 
@@ -14106,7 +14157,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (columns[j].ToString() == "PlannedCost")
                     {
-                        row[columns[j].ToString()] = totalPlannedCostCSV;
+                        row[columns[j].ToString()] = "$" + totalPlannedCostCSV;
                     }
                     else
                     {
