@@ -1593,6 +1593,47 @@ namespace RevenuePlanner.Controllers
                         dbedit.Dispose();
 
                         TempData["SuccessMessage"] = string.Format(Common.objCached.ModelTacticEditSucess, Title);
+
+                        //#2063: Tactic 'Deployed To Integration' not defaulting to on
+                        // Added by Viral on 04/08/2016
+                        #region "Update DeployToIntegration settings for all tactics related to Model & TacticType"
+                        if (isDeployedToModel && isDeployedToIntegration != null)
+                        { 
+                            Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
+                            string strModelStatus = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).Select(mdl=>mdl.Status).FirstOrDefault();
+                            if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().Equals(strModelStatus))
+                            {
+                                List<int> lstTacticTypeIds = new List<int>();
+                                lstTacticTypeIds.Add(objTacticType.TacticTypeId);
+                                // Get list of tactics related to TacticType.
+                                //List<Plan_Campaign_Program_Tactic> lstTactics = objTacticType.Plan_Campaign_Program_Tactic.ToList();
+                                List<Plan_Campaign_Program_Tactic> lstTactics = GetPlanTacticsByTacticType(objModel.ModelId, lstTacticTypeIds);
+                                if (lstTactics != null && lstTactics.Count > 0)
+                                {
+                                    lstTactics = lstTactics.Where(tac => tac.IsDeleted == false).ToList();
+                                    if (lstTactics != null && lstTactics.Count > 0)
+                                    {
+                                        #region "Update Tactics IsDeployedToIntegration settings"
+                                        try
+                                        {
+                                            objDbMrpEntities.Configuration.AutoDetectChangesEnabled = false;
+                                            lstTactics.ForEach(tac =>
+                                            {
+                                                tac.IsDeployedToIntegration = isDeployedToIntegration;
+                                                objDbMrpEntities.Entry(tac).State = EntityState.Modified;
+                                            });
+                                        }
+                                        finally
+                                        {
+                                            objDbMrpEntities.Configuration.AutoDetectChangesEnabled = true;
+                                        }
+                                        objDbMrpEntities.SaveChanges();  
+                                        #endregion
+                                    }
+                                }
+                            }
+                        }
+                        #endregion
                     }
                     else
                     {
@@ -1664,9 +1705,24 @@ namespace RevenuePlanner.Controllers
                 {
                     if (rejid.Length > 0)
                     {
+                        #region "Declare local variables"
+                            int tacticId;
+                        List<int> lstRejTacticTypeIds = new List<int>();
+                        List<Plan_Campaign_Program_Tactic> lstAllRejTactics = new List<Plan_Campaign_Program_Tactic>();
+                        #endregion
+                        #region "Get TacticTypeIds"
                         for (int i = 0; i < rejid.Length; i++)
                         {
-                            int tacticId;
+                            string[] strArr = rejid[i].Replace("rej", "").Split('_');
+                            int.TryParse(strArr[0], out tacticId);
+                            if (tacticId != 0)
+                                lstRejTacticTypeIds.Add(tacticId);
+                        }
+                        if (lstRejTacticTypeIds != null && lstRejTacticTypeIds.Count > 0)
+                            lstAllRejTactics = GetPlanTacticsByTacticType(objModel.ModelId, lstRejTacticTypeIds);
+                        #endregion
+                        for (int i = 0; i < rejid.Length; i++)
+                        {
                             string[] strArr = rejid[i].Replace("rej", "").Split('_');
                             int.TryParse(strArr[0], out tacticId);
                             if (tacticId != 0)
@@ -1679,6 +1735,40 @@ namespace RevenuePlanner.Controllers
                                     rejTacticType.IsDeleted = false;
                                     objDbMrpEntities.TacticTypes.Attach(rejTacticType);
                                     objDbMrpEntities.Entry(rejTacticType).State = EntityState.Modified;
+
+                                    //#2063: Tactic 'Deployed To Integration' not defaulting to on
+                                    // Added by Viral on 04/08/2016
+                                    #region "Update DeployToIntegration settings for all tactics related to Model & TacticType"
+                                    string strModelStatus = objModel.Status.ToLower();
+                                    if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus) && lstAllRejTactics != null && lstAllRejTactics.Count >0)
+                                    {
+                                        // Get list of tactics related to TacticType.
+                                        List<Plan_Campaign_Program_Tactic> lstTactics = lstAllRejTactics.Where(tac => tac.TacticTypeId == objtactic.TacticTypeId).ToList();
+                                        if (lstTactics != null && lstTactics.Count > 0)
+                                        {
+                                            lstTactics = lstTactics.Where(tac => tac.IsDeleted == false).ToList();
+                                            if (lstTactics != null && lstTactics.Count > 0)
+                                            {
+                                                #region "Update Tactics IsDeployedToIntegration settings"
+                                                try
+                                                {
+                                                    objDbMrpEntities.Configuration.AutoDetectChangesEnabled = false;
+                                                    lstTactics.ForEach(tac =>
+                                                    {
+                                                        tac.IsDeployedToIntegration = false;
+                                                        objDbMrpEntities.Entry(tac).State = EntityState.Modified;
+                                                    });
+                                                }
+                                                finally
+                                                {
+                                                    objDbMrpEntities.Configuration.AutoDetectChangesEnabled = true;
+                                                }
+                                                #endregion
+                                            }
+                                        }
+                                    }
+                                    #endregion
+
                                     result = objDbMrpEntities.SaveChanges();
 
                                     //// changed by : Nirav Shah on 31 Jan 2013
@@ -1704,8 +1794,20 @@ namespace RevenuePlanner.Controllers
                         string StageType = Enums.StageType.CR.ToString();
                         Model_Stage objStage;
                         MRPEntities dbedit; 
+                        List<int> lstTacticTypeIds = new List<int>();
+                        List<Plan_Campaign_Program_Tactic> lstAllTactics = new List<Plan_Campaign_Program_Tactic>();
                         #endregion
-                        
+                        #region "Get TacticTypeIds"
+                        for (int i = 0; i < id.Length; i++)
+                        {
+                            strArr = id[i].Replace("rej", "").Split('_');
+                            int.TryParse(strArr[0], out tacticId);
+                            if (tacticId != 0)
+                                lstTacticTypeIds.Add(tacticId);
+                        } 
+                        if(lstTacticTypeIds != null && lstTacticTypeIds.Count >0)
+                            lstAllTactics = GetPlanTacticsByTacticType(objModel.ModelId, lstTacticTypeIds);
+                        #endregion
                         for (int i = 0; i < id.Length; i++)
                         {
                             strArr = id[i].Replace("rej", "").Split('_');
@@ -1752,6 +1854,41 @@ namespace RevenuePlanner.Controllers
 
                                 dbedit = new MRPEntities();
                                 dbedit.Entry(objtactic).State = EntityState.Modified;
+
+                                //#2063: Tactic 'Deployed To Integration' not defaulting to on
+                                // Added by Viral on 04/08/2016
+                                #region "Update DeployToIntegration settings for all tactics related to Model & TacticType"
+                                string strModelStatus = objModel.Status.ToLower();
+                                if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus) && lstAllTactics != null && lstAllTactics.Count>0)
+                                {
+                                    // Get list of tactics related to TacticType.
+                                    List<Plan_Campaign_Program_Tactic> lstTactics = lstAllTactics.Where(tac => tac.TacticTypeId == objtactic.TacticTypeId).ToList();
+                                    if (lstTactics != null && lstTactics.Count > 0)
+                                    {
+                                        lstTactics = lstTactics.Where(tac => tac.IsDeleted == false).ToList();
+                                        if (lstTactics != null && lstTactics.Count > 0)
+                                        {
+                                            #region "Update Tactics IsDeployedToIntegration settings"
+                                            try
+                                            {
+                                                objDbMrpEntities.Configuration.AutoDetectChangesEnabled = false;
+                                                lstTactics.ForEach(tac =>
+                                                {
+                                                    tac.IsDeployedToIntegration = IsDeployToIntegration;
+                                                    objDbMrpEntities.Entry(tac).State = EntityState.Modified;
+                                                });
+                                            }
+                                            finally
+                                            {
+                                                objDbMrpEntities.Configuration.AutoDetectChangesEnabled = true;
+                                            }
+                                            objDbMrpEntities.SaveChanges();
+                                            #endregion
+                                        }
+                                    }
+                                }
+                                #endregion
+
                                 result = dbedit.SaveChanges();
                                 dbedit.Dispose();
                                 //// changed by : Nirav Shah on 31 Jan 2013
@@ -1814,6 +1951,30 @@ namespace RevenuePlanner.Controllers
             {
                 return Json(new { }, JsonRequestBehavior.AllowGet);
             }
+        }
+
+        public List<Plan_Campaign_Program_Tactic> GetPlanTacticsByTacticType(int ModelId, List<int> lstTacticTypeIds)
+        {
+            List<Plan_Campaign_Program_Tactic> lstPlanTactics = new List<Plan_Campaign_Program_Tactic>();
+            try
+            {
+                lstPlanTactics = (from mdl in objDbMrpEntities.Models
+                                  where (mdl.IsDeleted == false) && (mdl.ModelId == ModelId)
+                                  join plan in objDbMrpEntities.Plans on mdl.ModelId equals plan.ModelId
+                                  join cmpgn in objDbMrpEntities.Plan_Campaign on plan.PlanId equals cmpgn.PlanId
+                                  where cmpgn.IsDeleted == false
+                                  join prg in objDbMrpEntities.Plan_Campaign_Program on cmpgn.PlanCampaignId equals prg.PlanCampaignId
+                                  where prg.IsDeleted == false
+                                  join tac in objDbMrpEntities.Plan_Campaign_Program_Tactic on prg.PlanProgramId equals tac.PlanProgramId
+                                  where (tac.IsDeleted == false) && (lstTacticTypeIds.Contains(tac.TacticTypeId))
+                                  select tac
+                                  ).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return lstPlanTactics;
         }
 
         #endregion
