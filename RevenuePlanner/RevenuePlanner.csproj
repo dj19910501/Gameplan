@@ -562,7 +562,6 @@
     <Content Include="DLLs\RestSharp.dll" />
     <Content Include="DLLs\SalesforceSharp.dll" />
     <Content Include="favicon.ico" />
-    <Content Include="ganttExportapi.js" />
     <Content Include="Global.asax" />
     <Content Include="Images\favicon.png" />
     <Content Include="less\accordion.less" />
