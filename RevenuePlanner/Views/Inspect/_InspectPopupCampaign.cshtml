@@ -36,7 +36,8 @@
         InspectMode = campaignMaster.InspectMode;
         popupvalue = (string)campaignMaster.InspectPopup;
     }
-    
+    //Added by Rahul Shah on 12/04/2016 for PL #2038
+    var EntityId = planId + "_" + planCampaignId;
  
     //Added By komal Rawal For #1324 - To maintain the mode on tab change after review
     string Campaignopt = "";
@@ -101,8 +102,11 @@
                         <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                         <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupnewprogram">
                             <ul style="margin: 0;">
-                                <li class="new-prog" id="NewProgram">New Program</li>
+                                @*Modified by Rahul Shah on 12/04/2016 for PL #2038*@
+                                <li class="new-prog" id="NewCampaignfromPopup">New Campaign</li> 
                                 <li class="copy-camp" id="CloneCampaign">Copy Campaign</li>
+                                <li class="new-prog" id="NewProgram">New Program</li>                                
+                                <li class="new-prog" entityid=@EntityId sectiontype="Campaign" id="copyToCampaign" onclick="OpentCopyPopup(this)" popuptype="Copying" redirecttype=@RedirectType>Copy To</li>
                             </ul>
                         </div>
                     </div>
@@ -704,5 +708,13 @@
                 }
             });
         }
+    });
+    //Added by Rahul Shah on 12/04/2016 for PL #2038
+    $('#NewCampaignfromPopup').click(function () {      
+        debugger;
+        var planId = @planId; 
+        isCopyTactic = PlanId;        
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RedirectType');
+        //$('.taskpopup').css('display', 'none');
     });
 </script>

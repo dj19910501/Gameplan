@@ -2101,7 +2101,7 @@
             PlanFlag: []
         };
         //#1780
-
+        
 
         $("#totalEntity").text(0);
         $(".honeycombbox-icon-gantt-Active").removeClass();
@@ -7713,7 +7713,7 @@
             ID = GridId;
             GetHealderData(SelectedPlanIds, SelectedCF, SelectedOwners, SelectedTacticType, SelectedStatus, ID); //Modified by Nishant Sheth for perfomance to make it call only for grid view
         }
-        
+
         GetNumberOfActivityPerMonByPlanIdPer(SelectedPlanIds, Currenttime);
     }
 
@@ -7876,11 +7876,11 @@
         if (type == "Plan") {
             if (permission == "true") {
                 if ('@IsPlanCreateAuthorized'.toLowerCase() == 'true') {
-                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan1'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>Child Campaign</li> </ul>";
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan1'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>New Campaign</li> </ul>";
                 }
                 else {
 
-                    ul = "<ul style='margin: 0;'> <li class='new-prog' id='ChildCampaign'>Child Campaign</li> </ul>";
+                    ul = "<ul style='margin: 0;'> <li class='new-prog' id='ChildCampaign'>New Campaign</li> </ul>";
 
                 }
             }
@@ -7891,7 +7891,7 @@
 
         else if (type == "Program") {
             if (permission == "true") {
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewProgram'>New Program </li> <li class='new-prog' id='CloneProgram1'>Copy Program </li>  <li class='new-prog' id='ChildTactic'>Child Tactic</li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + ProgramId + "' id='lblCopyTo' popupType='Copying'  onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
+                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewProgram'>New Program </li> <li class='new-prog' id='CloneProgram1'>Copy Program </li>  <li class='new-prog' id='ChildTactic'>New Tactic</li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + ProgramId + "' id='lblCopyTo' popupType='Copying'  onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
             }
             else {
                 $('#popupType').css('display', 'none');
@@ -7902,11 +7902,11 @@
             if (permission == "true") {
 
                 if (LinkTacticPermission.toLowerCase() == "true" && (LinkedTacticId == "null" || LinkedTacticId == "0")) {
-                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)' popupType='Copying'>Copy To</li> <li class='link-icon' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblLinkTo' onclick='OpentCopyPopup(this)'popupType='Linking'><i class='fa fa-link'></i>Link To</li></ul>";
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>New Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)' popupType='Copying'>Copy To</li> <li class='link-icon' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblLinkTo' onclick='OpentCopyPopup(this)'popupType='Linking'><i class='fa fa-link'></i>Link To</li></ul>";
                 }
                 else {
 
-                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' popupType='Copying' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>New Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' popupType='Copying' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
 
                 }
             }
@@ -7917,7 +7917,7 @@
 
         else if (type == "Campaign") {
             if (permission == "true") {
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewCampaign'>New Campaign</li> <li class='new-prog' id='CloneCampaign1'>Copy Campaign</li>  <li class='new-prog' id='ChildProgram'>Child Program</li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + CampaignId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)' popupType='Copying'>Copy To</li></ul>";
+                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewCampaign'>New Campaign</li> <li class='new-prog' id='CloneCampaign1'>Copy Campaign</li>  <li class='new-prog' id='ChildProgram'>New Program</li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + CampaignId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)' popupType='Copying'>Copy To</li></ul>";
             }
             else {
                 $('#popupType').css('display', 'none');
@@ -8590,7 +8590,14 @@ function () {
             scrollstate = gantt.getScrollState();
         }
         else {
-            linkItemId = $(obj).attr('entityid').replace('_', '');
+            //Modified by Rahul Shah on 12/04/2016 for PL #2038. campaign 'copy to' getting error on grid.
+            linkItemId = $(obj).attr('entityid');
+            if (linkItemId.indexOf("_") >= 0) {
+                linkItemId = linkItemId.split('_')[1];
+            }
+            else {
+                linkItemId = $(obj).attr('entityid').replace("_","");
+            }
             var selectedcell = HomeGrid.findCell(linkItemId, 3, true);
             var id = selectedcell[0];
             var rowid = id[0];
@@ -8600,10 +8607,11 @@ function () {
         var sectionType = $(obj).attr('sectionType');
         var entityId = $(obj).attr('entityId');
         var popuptype = $(obj).attr('popupType');//Added by Rahul Shah for PL #1847
+        var redirectType = $(obj).attr('redirecttype');//Added by Rahul Shah on 12/04/2016 for PL #2038
         $("#dvCopyEntity").empty();
         var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
         //$("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
-        $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype); // section parameter added to open share tactic popup
+        $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype + "&RedirectType=" + redirectType); // section parameter added to open share tactic popup
     }
     function SaveAsPreset() {
 

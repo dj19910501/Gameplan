@@ -11,7 +11,8 @@
     var constPlan = RevenuePlanner.Helpers.Enums.Section.Plan;
     var constCampaign = RevenuePlanner.Helpers.Enums.Section.Campaign;
     var constProgram = RevenuePlanner.Helpers.Enums.Section.Program;
-    var constTactic = RevenuePlanner.Helpers.Enums.Section.Tactic;   
+    var constTactic = RevenuePlanner.Helpers.Enums.Section.Tactic;
+    var redirectType = ViewBag.RedirectType; //Added by Rahul Shah on 12/04/2016 for PL #2038
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" />
 <!-- Modal -->
@@ -50,272 +51,303 @@
         </div>
     </div>
     <script type="text/javascript">
-    var myTreeGrid;
-    var poptype = '@PopupType.ToString().ToUpper()';
-    $(document).ready(function () {
-        //Modified by Rahul Shah on 22/02/2016 for PL#1961. display Message When No Future Plan Exists for Link to tactics.
-        if (('@ViewBag.isPlanExist' == 'True' && poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") || poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Copying).ToUpper()") {
-            nlformUserChildFinance = new NLForm(document.getElementById('nl-formCopyTacticPlan'));
-            showWarningMessage();   // show "METADETA" lost warning message when popup load first time.
-            $('#nl-formCopyTacticPlan > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-                showWarningMessage();
-                var planId = $(this).attr('value');
-                if (planId != null && planId != 'undefined' && planId != '0') {
-                    RefreshParentEntitySelectionList(planId);
-                }
-                $('#nl-formCopyTacticPlan .nl-field-toggle').text($(this).text());
-            });
-            $('#nl-formCopyTacticPlan .nl-field-toggle').addClass('tipsyTitle');
-            @*var hdrTitle = '@headerTitle';
+        var myTreeGrid;
+        var poptype = '@PopupType.ToString().ToUpper()';
+        $(document).ready(function () {
+            //Modified by Rahul Shah on 22/02/2016 for PL#1961. display Message When No Future Plan Exists for Link to tactics.
+            if (('@ViewBag.isPlanExist' == 'True' && poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") || poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Copying).ToUpper()") {
+                nlformUserChildFinance = new NLForm(document.getElementById('nl-formCopyTacticPlan'));
+                showWarningMessage();   // show "METADETA" lost warning message when popup load first time.
+                $('#nl-formCopyTacticPlan > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                    showWarningMessage();
+                    var planId = $(this).attr('value');
+                    if (planId != null && planId != 'undefined' && planId != '0') {
+                        RefreshParentEntitySelectionList(planId);
+                    }
+                    $('#nl-formCopyTacticPlan .nl-field-toggle').text($(this).text());
+                });
+                $('#nl-formCopyTacticPlan .nl-field-toggle').addClass('tipsyTitle');
+                @*var hdrTitle = '@headerTitle';
             hdrTitle = $('<div/>').html(hdrTitle.toString().replace(/[\\]/g, "\\\\")).text();
             $("#hdrTitle").text(hdrTitle.replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<"));
             NumberFormatterTipsyTitle(".tipsyTitle", 28);
             $(".closeCopyEntity").click(function () {
                 $('#dvCopyEntity').empty();
             });*@
-            var mainGridData = "@_mainGridData";
-            mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-            //var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
-            var GridData = (mainGridData.toString().replace(/&amp;/g, "&"));
-            BindParentEntitySelectionList(GridData);
-            $("#SuccessMsg").css("display", "none");
-            CloseIconClick();
-        }
-        else {
-            errorMsg = '@RevenuePlanner.Helpers.Common.objCached.NoPlanforLinking.ToString()';
-            ShowError(false, errorMsg);
-            $('#nl-formCopyTacticPlan').hide();
-            $('#btncopySubmit').hide();
+                var mainGridData = "@_mainGridData";
+                mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+                //var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
+                var GridData = (mainGridData.toString().replace(/&amp;/g, "&"));
+                BindParentEntitySelectionList(GridData);
+                $("#SuccessMsg").css("display", "none");
+                CloseIconClick();
+            }
+            else {
+                errorMsg = '@RevenuePlanner.Helpers.Common.objCached.NoPlanforLinking.ToString()';
+                ShowError(false, errorMsg);
+                $('#nl-formCopyTacticPlan').hide();
+                $('#btncopySubmit').hide();
 
-        }
-        var hdrTitle = '@headerTitle';
-        hdrTitle = $('<div/>').html(hdrTitle.toString().replace(/[\\]/g, "\\\\")).text();
-        $("#hdrTitle").text(hdrTitle.replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<"));
-        NumberFormatterTipsyTitle(".tipsyTitle", 28);
-        $(".closeCopyEntity").click(function () {
-            $('#dvCopyEntity').empty();
+            }
+            var hdrTitle = '@headerTitle';
+            hdrTitle = $('<div/>').html(hdrTitle.toString().replace(/[\\]/g, "\\\\")).text();
+            $("#hdrTitle").text(hdrTitle.replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<"));
+            NumberFormatterTipsyTitle(".tipsyTitle", 28);
+            $(".closeCopyEntity").click(function () {
+                $('#dvCopyEntity').empty();
+            });
+            $('.btn-dropdwn').hide();
         });
-    });
-    function RefreshParentEntitySelectionList(planId) {
+        function RefreshParentEntitySelectionList(planId) {
 
-        var url = '@Url.Content("~/Plan/RefreshParentEntitySelectionList/")';
-        $.ajax({
-            url: url,
-            data: {
-                planId: planId
-            },
-            datatype: 'json',
-            type: 'POST',
-            async: false,
-            success: function (griddata) {
-                BindParentEntitySelectionList(griddata);
-            }
-        });
-    }
-    function BindParentEntitySelectionList(GridData) {
-
-        //GridData = $('<div/>').html(GridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-        //GridData = (GridData.toString().replace(/&amp;/g, "&"));
-        myTreeGrid = new dhtmlXGridObject('dvParentEntitySelection');
-        myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
-        myTreeGrid.setImageSize(1, 1);
-        myTreeGrid.enableTreeCellEdit(false);
-        myTreeGrid.setHeader("");
-        myTreeGrid.setNoHeader(true);
-        //myTreeGrid.setInitWidths("200");
-        myTreeGrid.setColAlign("left");
-        myTreeGrid.setColTypes("tree");
-        myTreeGrid.init();
-        myTreeGrid.setSkin("dhx_skyblue");
-        myTreeGrid.parse(GridData, "json");
-        myTreeGrid.expandAll();
-        $(".modal-content-grid .objbox").css("height", 450);
-        $('#copytactic .nl-field').css('border-right', 'none');
-        $("#dvParentEntitySelection table").css('color', 'black');
-        //$("#copytactic .nl-field-toggle").css('font-weight', 'bold');
-        $("div.objbox table").delegate('tr', 'click', function () {
-            $(this).removeClass('rowselected');
-            $(this).find('td').removeClass('cellselected');
-            $(this).addClass('selectiontr');
-
-            $(this).siblings().removeClass('selectiontr');
-
-        });
-    }
-    function CopyEntity() {
-        @*var poptype = '@PopupType.ToString().ToUpper()';*@
-        var selectedRowId = myTreeGrid.getSelectedRowId();
-        if (selectedRowId != null && selectedRowId != 'undefined') {
-            var arrElements = selectedRowId.split('_'); // selectedRowWIdFormat: [entityname]_[EntityId]_[prntEntityId]_[sectionType]_[destPlanId]
-            var srcSectionType = '@srcSectionType';
-            var selectedSectionType = arrElements != null && arrElements[3] != null && arrElements[3] != 'undefined' ? arrElements[3] : "";
-            var errorMsg = '';
-
-            if (srcSectionType.toLowerCase() == ('@constCampaign').toLowerCase() && selectedSectionType.toLowerCase() !== '@constPlan'.toLowerCase()) {
-                errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityErrorMessage.Replace("{0}", srcSectionType.ToString()).Replace("{1}", constPlan.ToString())';
-            }
-            else if (srcSectionType.toLowerCase() == ('@constProgram').toLowerCase() && selectedSectionType.toLowerCase() !== '@constCampaign'.toLowerCase()) {
-                errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityErrorMessage.Replace("{0}", srcSectionType.ToString()).Replace("{1}", constCampaign.ToString())';
-            }
-            else if (srcSectionType.toLowerCase() == ('@constTactic').toLowerCase() && selectedSectionType.toLowerCase() !== '@constProgram'.toLowerCase()) {
-                errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityErrorMessage.Replace("{0}", srcSectionType.ToString()).Replace("{1}", constProgram.ToString())';
-            }
+            var url = '@Url.Content("~/Plan/RefreshParentEntitySelectionList/")';
+            $.ajax({
+                url: url,
+                data: {
+                    planId: planId
+                },
+                datatype: 'json',
+                type: 'POST',
+                async: false,
+                success: function (griddata) {
+                    BindParentEntitySelectionList(griddata);
+                }
+            });
         }
-        else {
-            errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityNonSelctionErrorMessage.ToString()';
-        }
-        if (errorMsg != '') {
-            ShowError(false, errorMsg);
-        }
-        else {
-            if (poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") {
-                var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
-                var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
-                LinkEntityToOtherPlan(destEntityId, destPlanId);
-            } else {
-                var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
-                var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
-                CloneEntityToOtherPlan(destEntityId, destPlanId);
-            }
-        }
+        function BindParentEntitySelectionList(GridData) {
 
-        //alert(selectedRowId);
-    }
+            //GridData = $('<div/>').html(GridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+            //GridData = (GridData.toString().replace(/&amp;/g, "&"));
+            myTreeGrid = new dhtmlXGridObject('dvParentEntitySelection');
+            myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+            myTreeGrid.setImageSize(1, 1);
+            myTreeGrid.enableTreeCellEdit(false);
+            myTreeGrid.setHeader("");
+            myTreeGrid.setNoHeader(true);
+            //myTreeGrid.setInitWidths("200");
+            myTreeGrid.setColAlign("left");
+            myTreeGrid.setColTypes("tree");
+            myTreeGrid.init();
+            myTreeGrid.setSkin("dhx_skyblue");
+            myTreeGrid.parse(GridData, "json");
+            myTreeGrid.expandAll();
+            $(".modal-content-grid .objbox").css("height", 450);
+            $('#copytactic .nl-field').css('border-right', 'none');
+            $("#dvParentEntitySelection table").css('color', 'black');
+            //$("#copytactic .nl-field-toggle").css('font-weight', 'bold');
+            $("div.objbox table").delegate('tr', 'click', function () {
+                $(this).removeClass('rowselected');
+                $(this).find('td').removeClass('cellselected');
+                $(this).addClass('selectiontr');
+
+                $(this).siblings().removeClass('selectiontr');
+
+            });
+        }
+        function CopyEntity() {
+            @*var poptype = '@PopupType.ToString().ToUpper()';*@
+            var selectedRowId = myTreeGrid.getSelectedRowId();
+            if (selectedRowId != null && selectedRowId != 'undefined') {
+                var arrElements = selectedRowId.split('_'); // selectedRowWIdFormat: [entityname]_[EntityId]_[prntEntityId]_[sectionType]_[destPlanId]
+                var srcSectionType = '@srcSectionType';
+                var selectedSectionType = arrElements != null && arrElements[3] != null && arrElements[3] != 'undefined' ? arrElements[3] : "";
+                var errorMsg = '';
+
+                if (srcSectionType.toLowerCase() == ('@constCampaign').toLowerCase() && selectedSectionType.toLowerCase() !== '@constPlan'.toLowerCase()) {
+                    errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityErrorMessage.Replace("{0}", srcSectionType.ToString()).Replace("{1}", constPlan.ToString())';
+                }
+                else if (srcSectionType.toLowerCase() == ('@constProgram').toLowerCase() && selectedSectionType.toLowerCase() !== '@constCampaign'.toLowerCase()) {
+                    errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityErrorMessage.Replace("{0}", srcSectionType.ToString()).Replace("{1}", constCampaign.ToString())';
+                }
+                else if (srcSectionType.toLowerCase() == ('@constTactic').toLowerCase() && selectedSectionType.toLowerCase() !== '@constProgram'.toLowerCase()) {
+                    errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityErrorMessage.Replace("{0}", srcSectionType.ToString()).Replace("{1}", constProgram.ToString())';
+                }
+            }
+            else {
+                errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityNonSelctionErrorMessage.ToString()';
+            }
+            if (errorMsg != '') {
+                ShowError(false, errorMsg);
+            }
+            else {
+                if (poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") {
+                    var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
+                    var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
+                    LinkEntityToOtherPlan(destEntityId, destPlanId);
+                } else {
+                    var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
+                    var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
+                    CloneEntityToOtherPlan(destEntityId, destPlanId);
+                }
+            }
+
+            //alert(selectedRowId);
+        }
         //Added by Rahul Shah on 30/12/2015 for PL #1847
         function LinkEntityToOtherPlan(destEntityId, destPlanId) {
-        var srcEntityID = '@srcEntityId';
-        var srcPlanID = '@srcPlanId';
-        var cloneType = '@srcSectionType';
-        var destEntityID = destEntityId;
-        var srcEntityTitle = '@HttpUtility.JavaScriptStringEncode(headerTitle)'; //PL#1794 Copy Tactic/Program/Campaign: Error Message & Validation Message -Added by Dashrath Prajapati
-        $.ajax({
-            url: '@Url.Content("~/Plan/LinktoOtherPlan/")',
-            data: {
-                CloneType: cloneType,
-                srcEntityId: srcEntityID,
-                destEntityID: destEntityId,
-                srcPlanID: srcPlanID,
-                destPlanID: destPlanId,
-                sourceEntityTitle: srcEntityTitle
-            },
-            datatype: 'json',
-            type: 'GET',
-            async: true,
-            success: function (result) {
-                if (result != null && result != undefined) {
-                    gridSearchFlag = 1;
-                    var issuccess = result.isSuccess;
-                    if (issuccess != null && issuccess != 'undefined' && issuccess) {
-                        $('#copytactic').hide();
-                        $("#errorMsg").css("display", "none");
-                        $("#SuccessMsg").css("display", "block");
-                        $("#spanMsgSuccess").empty();
-                        $("#spanMsgSuccess").text(result.msg).css('font-weight', 'normal');
-                        var str = result.clonetype + " " + '<span class="lickSuccessMsg">' + result.sourceEntityHtmlDecodedTitle + '</span>' + " " + 'has been linked to' + " " + '<span class="lickSuccessMsg">' + result.destPlanTitle + '</span>';
-                        $('#spanMsgSuccess').html(str);
-                        $("#errorMessage1").css("display", "none");
-                        $("#successMessage1").css("display", "none");
-                        isDataModified = true;
-                        //Modified By Komal RAwal for #2001 remove multiple request of same method
-                       // $('.close-x-big-icon').trigger('click');
-                         ConfirmLinkTactic();
-                        //End
+            //Modified by Rahul Shah on 12/04/2016 for PL #2038
+            var srcEntityID = '@srcEntityId';
+            var srcPlanID = '@srcPlanId';
+            var cloneType = '@srcSectionType';
+            var destEntityID = destEntityId;
+            var redirecttype = '@redirectType';
+            var srcEntityTitle = '@HttpUtility.JavaScriptStringEncode(headerTitle)'; //PL#1794 Copy Tactic/Program/Campaign: Error Message & Validation Message -Added by Dashrath Prajapati
+            $.ajax({
+                url: '@Url.Content("~/Plan/LinktoOtherPlan/")',
+                data: {
+                    CloneType: cloneType,
+                    srcEntityId: srcEntityID,
+                    destEntityID: destEntityId,
+                    srcPlanID: srcPlanID,
+                    destPlanID: destPlanId,
+                    sourceEntityTitle: srcEntityTitle,
+                    redirecttype: redirecttype
+                },
+                datatype: 'json',
+                type: 'GET',
+                async: true,
+                success: function (result) {
+                    if (result != null && result != undefined) {
+                        gridSearchFlag = 1;
+                        var issuccess = result.isSuccess;
+                        var option = result.opt;
+                        if (issuccess != null && issuccess != 'undefined' && issuccess) {
+                            //Modified by Rahul Shah on 12/04/2016 for PL #2038
+                            //if (option != "") {
+                            //    //$(".close-x-big-icon").trigger("click");
+                            //    $("#successMessage").css("display", "block");
+                            //    $("#spanMessageSuccess").empty();
+                            //    $("#spanMessageSuccess").text(result.msg).css('font-weight', 'normal');
+                            //    var str = result.clonetype + " " + '<span class="lickSuccessMsg">' + result.sourceEntityHtmlDecodedTitle + '</span>' + " " + 'has been linked to' + " " + '<span class="lickSuccessMsg">' + result.destPlanTitle + '</span>';
+                            //    $('#spanMessageSuccess').html(str);
+                            //    $("#errorMessage").css("display", "none");
+                            //    $("#errorMessage1").css("display", "none");
+                            //    $("#successMessage1").css("display", "none");
+                            //}
+                            //else {
+                            if (option != "") {
+                                $(".close-x-big-icon").trigger("click");
+                            }
+                            $("#SuccessMsg").css("display", "block");
+                            $("#spanMsgSuccess").empty();
+                            $("#spanMsgSuccess").text(result.msg).css('font-weight', 'normal');
+                            var str = result.clonetype + " " + '<span class="lickSuccessMsg">' + result.sourceEntityHtmlDecodedTitle + '</span>' + " " + 'has been linked to' + " " + '<span class="lickSuccessMsg">' + result.destPlanTitle + '</span>';
+                            $('#spanMsgSuccess').html(str);
+                            $("#errorMessage1").css("display", "none");
+                            $("#successMessage1").css("display", "none");
+                            //}
+                            $('#copytactic').hide();
+                            isDataModified = true;
+                            ConfirmLinkTactic();
+
+                        }
+                        else {
+                            ShowError(issuccess, result.msg);
+                        }
 
                     }
-                    else {
-                        ShowError(issuccess, result.msg);
-                    }
-
                 }
-            }
-        });
+            });
         }
-    function CloneEntityToOtherPlan(destEntityId, destPlanId) {
-        var srcEntityID = '@srcEntityId';
-        var srcPlanID = '@srcPlanId';
-        var cloneType = '@srcSectionType';
-        var destEntityID = destEntityId;
-        var srcEntityTitle = '@HttpUtility.JavaScriptStringEncode(headerTitle)'; //PL#1794 Copy Tactic/Program/Campaign: Error Message & Validation Message -Added by Dashrath Prajapati
-        $.ajax({
-            url: '@Url.Content("~/Plan/ClonetoOtherPlan/")',
-            data: {
-                CloneType: cloneType,
-                srcEntityId: srcEntityID,
-                destEntityID: destEntityId,
-                srcPlanID: srcPlanID,
-                destPlanID: destPlanId,
-                sourceEntityTitle:srcEntityTitle
-            },
-            datatype: 'json',
-            type: 'GET',
-            async:false,
-            success: function (result) {
-                if (result != null && result != undefined) {
-                    var issuccess = result.isSuccess;
-                    if (issuccess != null && issuccess != 'undefined' && issuccess) {
-                        $('#copytactic').hide();
-                        $("#errorMsg").css("display", "none");
-                        $("#SuccessMsg").css("display", "block");
-                        $("#spanMsgSuccess").empty();
-                        $("#spanMsgSuccess").text(result.msg);
-                        $("#errorMessage1").css("display", "none");
-                        $("#successMessage1").css("display", "none");
-                    }
-                    else {
-                        ShowError(issuccess, result.msg);
-                    }
+        function CloneEntityToOtherPlan(destEntityId, destPlanId) {
+            //Modified by Rahul Shah on 12/04/2016 for PL #2038
+            var srcEntityID = '@srcEntityId';
+            var srcPlanID = '@srcPlanId';
+            var cloneType = '@srcSectionType';
+            var destEntityID = destEntityId;
+            var redirecttype = '@redirectType';
+            var srcEntityTitle = '@HttpUtility.JavaScriptStringEncode(headerTitle)'; //PL#1794 Copy Tactic/Program/Campaign: Error Message & Validation Message -Added by Dashrath Prajapati
+            $.ajax({
+                url: '@Url.Content("~/Plan/ClonetoOtherPlan/")',
+                data: {
+                    CloneType: cloneType,
+                    srcEntityId: srcEntityID,
+                    destEntityID: destEntityId,
+                    srcPlanID: srcPlanID,
+                    destPlanID: destPlanId,
+                    sourceEntityTitle: srcEntityTitle,
+                    redirecttype: redirecttype
+                },
+                datatype: 'json',
+                type: 'GET',
+                async: false,
+                success: function (result) {
+                    if (result != null && result != undefined) {
+                        //Modified by Rahul Shah on 12/04/2016 for PL #2038
+                        var issuccess = result.isSuccess;
+                        var option = result.opt;
+                        if (issuccess != null && issuccess != 'undefined' && issuccess) {
+                            if (option != "") {
+                                $("#successMessage").css("display", "block");
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(result.msg);
+                                $("#errorMessage").css("display", "none");
+                            }
+                            else {
+                                $("#errorMsg").css("display", "none");
+                                $("#SuccessMsg").css("display", "block");
+                                $("#spanMsgSuccess").empty();
+                                $("#spanMsgSuccess").text(result.msg);
+                            }
+                            $('#copytactic').hide();
+                            $("#errorMessage1").css("display", "none");
+                            $("#successMessage1").css("display", "none");
+                        }
+                        else {
+                            ShowError(issuccess, result.msg);
+                        }
 
+                    }
                 }
+            });
+        }
+
+        function ShowError(isSuccess, value) {
+
+            if (isSuccess != null && isSuccess != 'undefined' && isSuccess) {
+                //$("#modal-container-1864701").scrollTop(0);
+                $("#errorMsg").css("display", "none");
+                $("#SuccessMsg").css("display", "block");
+                $("#spanMsgSuccess").empty();
+                $("#spanMsgSuccess").text(value);
+                $("#errorMessage1").css("display", "none");
+                $("#successMessage1").css("display", "none");
+                //$("#spanMessageSuccess1").empty();
+                //$("#spanMessageSuccess1").text(Message);
+
+                //if (time != 'undefined') {
+                //    $('#successMessage1').slideDown(time);
+                //}
             }
-        });
-    }
-
-    function ShowError(isSuccess, value) {
-
-        if (isSuccess != null && isSuccess != 'undefined' && isSuccess) {
-            //$("#modal-container-1864701").scrollTop(0);
-            $("#errorMsg").css("display", "none");
-            $("#SuccessMsg").css("display", "block");
-            $("#spanMsgSuccess").empty();
-            $("#spanMsgSuccess").text(value);
+            else {
+                //$('#copytactic').show();
+                $("#warningMessage1").css("display", "none");
+                $("#successMessage1").css("display", "none");
+                $("#errorMessage1").css("display", "block");
+                $("#errorMessage1").slideDown(400);
+                $("#spanMessageError1").empty();
+                $("#spanMessageError1").html(value);
+            }
+        }
+        function showWarningMessage() {
+            var poptype = '@PopupType.ToString().ToUpper()';
+            $("#warningMessage1").css("display", "block");
+            $("#spanMessageWarning1").empty();
+            if (poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") {
+                $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.LinkEntityInformationMessage.ToString()');
+            }
+            else {
+                $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.CloneEntityMetaDataErrorMessage.ToString()');
+            }
+            $("#SuccessMsg").css("display", "none");
             $("#errorMessage1").css("display", "none");
-            $("#successMessage1").css("display", "none");
-            //$("#spanMessageSuccess1").empty();
-            //$("#spanMessageSuccess1").text(Message);
-
-            //if (time != 'undefined') {
-            //    $('#successMessage1').slideDown(time);
-            //}
         }
-        else {
-            //$('#copytactic').show();
-            $("#warningMessage1").css("display", "none");
-            $("#successMessage1").css("display", "none");
-            $("#errorMessage1").css("display", "block");
-            $("#errorMessage1").slideDown(400);
-            $("#spanMessageError1").empty();
-            $("#spanMessageError1").html(value);
-        }
-    }
-    function showWarningMessage() {
-        var poptype = '@PopupType.ToString().ToUpper()';
-        $("#warningMessage1").css("display", "block");
-        $("#spanMessageWarning1").empty();
-        if (poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") {
-            $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.LinkEntityInformationMessage.ToString()');
-        }
-        else {
-            $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.CloneEntityMetaDataErrorMessage.ToString()');
-        }
-        $("#SuccessMsg").css("display", "none");
-        $("#errorMessage1").css("display", "none");
-    }
-    $(".closemessage").click(function () {
-        //$("#divBackground").css("display", "none");
-        $(this).parent().closest('div').css("display", "none");
-        //$('#dvCopyEntity').empty();
-        //$(".modal-backdrop").css('display', 'none');
+        $(".closemessage").click(function () {
+            //$("#divBackground").css("display", "none");
+            $(this).parent().closest('div').css("display", "none");
+            //$('#dvCopyEntity').empty();
+            //$(".modal-backdrop").css('display', 'none');
 
 
-    });
-</script>
+        });
+    </script>

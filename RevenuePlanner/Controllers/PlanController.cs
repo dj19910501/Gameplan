@@ -12712,7 +12712,7 @@ namespace RevenuePlanner.Controllers
         #region "Feature: Copy or Link Tactic/Program/Campaign between Plan"
 
         #region "Bind Planlist & Tree list"
-        public ActionResult LoadCopyEntityPopup(string entityId, string section, string PopupType)
+        public ActionResult LoadCopyEntityPopup(string entityId, string section, string PopupType, string RedirectType) //Modified by Rahul Shah on 12/04/2016 for PL #2038
         {
             CopyEntiyBetweenPlanModel objModel = new CopyEntiyBetweenPlanModel();
             try
@@ -12720,7 +12720,7 @@ namespace RevenuePlanner.Controllers
                 string planId = !string.IsNullOrEmpty(entityId) ? entityId.Split(new char[] { '_' })[0] : string.Empty;
                 string year = string.Empty;
                 entityId = !string.IsNullOrEmpty(entityId) ? entityId.Split(new char[] { '_' })[1] : string.Empty;
-
+                ViewBag.RedirectType = RedirectType;//Added by Rahul Shah on 12/04/2016 for PL #2038
                 // Get Source Entity Title to display on Popup & success message.
                 #region "Get Source Entity Title"
                 int sourceEntityId = !string.IsNullOrEmpty(entityId) ? int.Parse(entityId) : 0;
@@ -13002,7 +13002,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="destPlanEntityId">Destination EntityId: Under which source entity copied</param>
         /// <param name="CloneType">CloneType: Entity will be copied</param>
         /// <returns></returns>
-        public JsonResult ClonetoOtherPlan(string CloneType, string srcEntityId, string destEntityID, string srcPlanID, string destPlanID, string sourceEntityTitle)
+        public JsonResult ClonetoOtherPlan(string CloneType, string srcEntityId, string destEntityID, string srcPlanID, string destPlanID, string sourceEntityTitle, string redirecttype = "")//Modified by Rahul Shah on 12/04/2016 for PL #2038
         {
             string sourceEntityHtmlDecodedTitle = string.Empty;
             int sourceEntityId = !string.IsNullOrEmpty(srcEntityId) ? Convert.ToInt32(srcEntityId) : 0;
@@ -13117,7 +13117,13 @@ namespace RevenuePlanner.Controllers
                 return Json(new { msg = Common.objCached.ExceptionErrorMessage, isSuccess = false }, JsonRequestBehavior.AllowGet);
                 // throw ex;
             }
-            return Json(new { msg = Common.objCached.CloneEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), isSuccess = true }, JsonRequestBehavior.AllowGet);
+            //Modified by Rahul Shah on 12/04/2016 for PL #2038
+            var RequsetedModule = redirecttype;
+            if (!string.IsNullOrEmpty(RequsetedModule) && RequsetedModule == Enums.InspectPopupRequestedModules.Index.ToString())
+            {
+                return Json(new { isSuccess = true, redirect = Url.Action("Index"), msg = Common.objCached.CloneEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), opt = Enums.InspectPopupRequestedModules.Index.ToString(), Id = srcEntityId }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { msg = Common.objCached.CloneEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), opt = "", isSuccess = true }, JsonRequestBehavior.AllowGet);
         }
 
         public List<PlanTactic_TacticTypeMapping> CheckTacticTypeIdToDestinationModel(string CloneType, int sourceEntityId, int destModelId, ref string invalidTacticIds)
@@ -13315,7 +13321,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="destPlanEntityId">Destination EntityId: Under which source entity copied</param>
         /// <param name="CloneType">CloneType: Entity will be copied</param>
         /// <returns></returns>
-        public JsonResult LinktoOtherPlan(string CloneType, string srcEntityId, string destEntityID, string srcPlanID, string destPlanID, string sourceEntityTitle)
+        public JsonResult LinktoOtherPlan(string CloneType, string srcEntityId, string destEntityID, string srcPlanID, string destPlanID, string sourceEntityTitle, string redirecttype = "")//Modified by Rahul Shah on 12/04/2016 for PL #2038
         {
             string sourceEntityHtmlDecodedTitle = string.Empty;
             int sourceEntityId = !string.IsNullOrEmpty(srcEntityId) ? Convert.ToInt32(srcEntityId) : 0;
@@ -13474,7 +13480,13 @@ namespace RevenuePlanner.Controllers
                 return Json(new { msg = Common.objCached.ExceptionErrorMessageforLinking, isSuccess = false }, JsonRequestBehavior.AllowGet);
                 // throw ex;
             }
-            return Json(new { msg = Common.objCached.LinkEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), isSuccess = true, clonetype = CloneType, sourceEntityHtmlDecodedTitle = sourceEntityHtmlDecodedTitle, destPlanTitle = destPlanTitle }, JsonRequestBehavior.AllowGet);
+            //Modified by Rahul Shah on 12/04/2016 for PL #2038
+            var RequsetedModule = redirecttype;
+            if (!string.IsNullOrEmpty(RequsetedModule) && RequsetedModule == Enums.InspectPopupRequestedModules.Index.ToString())
+            {
+                return Json(new { isSuccess = true, redirect = Url.Action("Index"), msg = Common.objCached.LinkEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), clonetype = CloneType, opt = Enums.InspectPopupRequestedModules.Index.ToString(), Id = srcEntityId, sourceEntityHtmlDecodedTitle = sourceEntityHtmlDecodedTitle, destPlanTitle = destPlanTitle }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { msg = Common.objCached.LinkEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), isSuccess = true, opt = "",clonetype = CloneType, sourceEntityHtmlDecodedTitle = sourceEntityHtmlDecodedTitle, destPlanTitle = destPlanTitle }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

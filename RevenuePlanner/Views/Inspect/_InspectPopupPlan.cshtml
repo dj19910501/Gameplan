@@ -70,9 +70,12 @@
                     <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" class="add-icon-white btn-blue btn-large"></span>
                     <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
                         <ul style="margin: 0;">
+                            @*Modified by Rahul Shah on 12/04/2016 for PL #2038*@
+                            <li id="NewPlanfromPopup" class="new-prog">New Plan</li>
+                            <li id="ClonePlan" class="copy-camp">Copy Plan</li>
                             <li id="NewCampaign" class="new-prog">New Campaign</li>
                          
-                                <li id="ClonePlan" class="copy-camp">Copy Plan</li>
+                                
                             
                         </ul>
                     </div>
@@ -495,6 +498,12 @@
                 }
             });
          }
+    });
+    //Added by Rahul Shah on 12/04/2016 for PL #2038
+    $("#NewPlanfromPopup").click(function (e) {
+        debugger;
+        var url = '@Url.Action("CreatePlan", "Plan")';
+        displayconfirm(url);
     });
 
 </script>

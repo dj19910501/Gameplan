@@ -16,7 +16,7 @@
         var PlanTacticId = 0;
         var IsResubmitableStatus = false;
         bool IsPlanEditable = false;
-
+        var PlanId = 0;
        
 
         var PlanProgramId = tacticMaster.PlanProgramId;
@@ -39,6 +39,8 @@
             campaignId = Convert.ToString(tacticMaster.PlanCampaignId);
             IsPlanCreateAll = (bool)tacticMaster.IsPlanCreateAll;
             InspectMode = tacticMaster.InspectMode;
+            PlanId = tacticMaster.PlanId;
+
         }
         else
         {
@@ -47,7 +49,10 @@
                 PlanProgramId = tacticMaster.PlanProgramId;
             }
         }
-
+        //Added by Rahul Shah on 12/04/2016 for PL #2038
+        var EntityId = PlanId + "_" + PlanTacticId;
+        var LinkTacticPermission = ((tacticMaster.EndDate.Year - tacticMaster.StartDate.Year) > 0) ? true : false;
+        var LinkedTacticId = tacticMaster.LinkedTacticId;
         bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
 
         //Added By komal Rawal For #1213 - To maintain the mode on tab change after review
@@ -97,8 +102,15 @@
                         <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                         <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupnewTactic">
                             <ul style="margin: 0;">
-                                <li class="new-prog" id="NewTactic">New Line Item</li>
+                                @*Modified by Rahul Shah on 12/04/2016 for PL #2038*@
+                                <li class="new-prog" id="NewTacticfromPopup"> New Tactic</li>
                                 <li class="copy-camp" id="CloneTactic">Copy Tactic</li>
+                                <li class="new-prog" id="NewLineItem">New Line Item</li>                                
+                                <li class="copy-camp" entityid=@EntityId sectiontype="Tactic" id="copyToTactic" onclick="OpentCopyPopup(this)" popuptype="Copying" redirecttype=@RedirectType>Copy To</li>
+                                @if (LinkTacticPermission.ToString().ToLower() == "true" && (LinkedTacticId.ToString() == "" || LinkedTacticId.ToString() == "0"))
+                                {
+                                    <li style="position:relative" entityid=@EntityId sectiontype="Tactic" id="linkToTactic" onclick="OpentCopyPopup(this)" popuptype="Linking" redirecttype=@RedirectType><i class="fa fa-link"></i> Link To</li>
+                                }
                             </ul>
                         </div>
                     </div>
@@ -928,7 +940,8 @@
         }
     });
     var isInspectNewLineItem = false;
-    $('#NewTactic').click(function () {
+    //Modified by Rahul Shah on 12/04/2016 for PL #2038
+    $('#NewLineItem').click(function () {
         //Modified by Rahul Shah for PL #2031 on 22/03/2016
         isInspectNewLineItem = false;
         if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
@@ -946,7 +959,13 @@
             loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanTacticId').val(), $("#hdnRequestedModule").val());
         }
     });
-
+    //Added by Rahul Shah on 12/04/2016 for PL #2038
+    $("#NewTacticfromPopup").on("click", function () {       
+        var ProgramId = @PlanProgramId;
+        isCopyTactic = ProgramId;
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');       
+        return false;
+    });
     function setTacticStatus(status) {
         var $this = $('#status');
         $this.removeClass();

@@ -16,7 +16,7 @@
         string colorCode = "C6EBF3";
         string programTitle = "";
         var campaignId = Convert.ToString(programMaster.PlanCampaignId);
-        
+        var PlanId = 0;
         bool IsPlanEditable = false;
         bool IsPlanCreateAll = false;
         var popupvalue = string.Empty;
@@ -32,8 +32,9 @@
             IsPlanCreateAll = (bool)programMaster.IsPlanCreateAll;
             popupvalue = (string)programMaster.InspectPopup;
             InspectMode = programMaster.InspectMode;
+            PlanId = programMaster.PlanId;
         }
-
+        var EntityId = PlanId + "_" + planProgramId;
         //Added By komal Rawal For #1325 - To maintain the mode on tab change after review
         string ProgramOpt = "";
         if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
@@ -96,8 +97,11 @@
                         <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                         <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupnewprogram">
                             <ul style="margin: 0;">
-                                <li class="new-prog" id="NewTactic">New Tactic</li>
+                                @*Modified by Rahul Shah on 12/04/2016 for PL #2038*@
+                                <li class="new-prog" id="NewProgramfromPopup">New Program</li>
                                 <li class="copy-camp" id="CloneProgram">Copy Program</li>
+                                <li class="new-prog" id="NewTactic">New Tactic</li>                                
+                                <li class="new-prog" entityid=@EntityId sectiontype="Program" id="copyToProgram" onclick="OpentCopyPopup(this)" popuptype="Copying" redirecttype=@RedirectType>Copy To</li>
                             </ul>
                         </div>
                     </div>
@@ -708,5 +712,12 @@
                     }
              });
             }
+    });
+    //Added by Rahul Shah on 12/04/2016 for PL #2038
+    $('#NewProgramfromPopup').click(function () {
+        var CampaignId = @campaignId;
+        isCopyTactic = CampaignId;         
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RedirectType');
+        //$('.taskpopup').css('display', 'none');
     });
 </script>

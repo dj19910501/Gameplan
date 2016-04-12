@@ -16154,3 +16154,10 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 
 
 /* #2015 new style Icons  End*/
+
+/* style add for #2038 */
+#popupnewTactic #linkToTactic .fa-link:before {
+    position: absolute;
+    left: 9px;
+    top: 5px;
+}

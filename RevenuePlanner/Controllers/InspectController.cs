@@ -10958,13 +10958,13 @@ namespace RevenuePlanner.Controllers
 
             if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
             {
-
+                im.PlanId = objPlan_Campaign_Program.Plan_Campaign.PlanId;
                 return PartialView("_InspectPopupProgram", im);
             }
             else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
             {
 
-
+                im.PlanId = objPlan_Campaign.PlanId;
                 return PartialView("_InspectPopupCampaign", im);
             }
             else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
@@ -10990,7 +10990,9 @@ namespace RevenuePlanner.Controllers
 
                 return PartialView("_InspectPopupPlan", im);
             }
-            // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
+            //Added by Rahul Shah on 12/04/2016 for PL #2038
+            im.LinkedTacticId = objPlan_Campaign_Program_Tactic.LinkedTacticId;
+            im.PlanId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;            
             return PartialView("InspectPopup", im);
         }
 
