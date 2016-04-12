@@ -337,9 +337,9 @@ namespace Integration.Helper
                                 if (customobj != null)
                                 {
                                     // Added by Viral: #2053: Trim/add charcters while generating external name based on configuration
-                                    if (fieldlength != 0 && !string.IsNullOrEmpty(customobj.CustomNameValue))
+                                    if (fieldlength != 0 && !string.IsNullOrEmpty(customobj.CustomNameValue) && (customobj.CustomNameValue.Length > fieldlength))
                                     {
-                                        customobj.CustomNameValue = (customobj.CustomNameValue.Length > fieldlength) ? (customobj.CustomNameValue.Substring(0, fieldlength)) : customobj.CustomNameValue;
+                                        customobj.CustomNameValue = customobj.CustomNameValue.Substring(0, fieldlength);
                                     }
                                     customTacticName.Append(RemoveSpaceAndUppercaseFirst(customobj.CustomNameValue) + "_");
                                 }
@@ -348,9 +348,9 @@ namespace Integration.Helper
                             {
                                 string tacticTitle = RemoveSpaceAndUppercaseFirst(System.Web.HttpUtility.HtmlDecode(objTactic.Title));
                                 // Added by Viral: #2053: Trim/add charcters while generating external name based on configuration
-                                if (fieldlength != 0 && !string.IsNullOrEmpty(tacticTitle))
+                                if ((fieldlength != 0) && (!string.IsNullOrEmpty(tacticTitle)) && (tacticTitle.Length > fieldlength))
                                 {
-                                    tacticTitle = (tacticTitle.Length > fieldlength) ? (tacticTitle.Substring(0, fieldlength)) : tacticTitle;
+                                    tacticTitle = tacticTitle.Substring(0, fieldlength);
                                 }
                                 customTacticName.Append(tacticTitle + "_");
                             }
@@ -358,9 +358,9 @@ namespace Integration.Helper
                             {
                                 string tacticTypeTitle = !string.IsNullOrEmpty(objTactic.TacticType.Abbreviation) ? RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Abbreviation) : RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Title);
                                 // Added by Viral: #2053: Trim/add charcters while generating external name based on configuration
-                                if (fieldlength != 0 && !string.IsNullOrEmpty(tacticTypeTitle))
+                                if (fieldlength != 0 && !string.IsNullOrEmpty(tacticTypeTitle) && (tacticTypeTitle.Length > fieldlength))
                                 {
-                                    tacticTypeTitle = (tacticTypeTitle.Length > fieldlength) ? (tacticTypeTitle.Substring(0, fieldlength)) : tacticTypeTitle;
+                                    tacticTypeTitle = tacticTypeTitle.Substring(0, fieldlength);
                                 }
                                 customTacticName.Append(tacticTypeTitle + "_");
                             }
