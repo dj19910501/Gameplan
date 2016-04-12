@@ -458,6 +458,21 @@ END
 
 GO
 
+-- =============================================
+-- Author: Viral 
+-- Create date: 04/12/2016
+-- Description:	Trim/add charcters while generating external name based on configuration
+-- =============================================
+
+IF NOT EXISTS(SELECT * FROM sys.columns
+WHERE Name = N'CustomNameCharNo' AND OBJECT_ID = OBJECT_ID(N'[CampaignNameConvention]'))
+BEGIN
+Alter Table [dbo].[CampaignNameConvention] 
+ADD  CustomNameCharNo int
+END 
+GO
+
+
 -- Added By : Maitri Gandhi
 -- Added Date : 2/22/2016
 -- Description :Ensure versioning table exists & Update versioning table with script version
