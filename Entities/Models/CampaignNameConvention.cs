@@ -23,6 +23,7 @@ namespace RevenuePlanner.Models
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public bool IsDeleted { get; set; }
+        public Nullable<int> CustomNameCharNo { get; set; }
     
         public virtual CustomField CustomField { get; set; }
     }

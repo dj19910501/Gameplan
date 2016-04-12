@@ -317,6 +317,7 @@ namespace Integration.Helper
         public static string GenerateCustomName(Plan_Campaign_Program_Tactic objTactic, List<CampaignNameConvention> SequencialOrderedTableList, List<CustomFiledMapping> mappingCustomFields)
         {
             StringBuilder customTacticName = new StringBuilder();
+            int fieldlength;
             if (objTactic != null)
             {
                 //Fetch custom name convention sequence
@@ -326,22 +327,41 @@ namespace Integration.Helper
                     {
                         foreach (CampaignNameConvention objCampaignNameConvention in SequencialOrderedTableList)
                         {
+                            fieldlength = 0;
+                            if (objCampaignNameConvention.CustomNameCharNo.HasValue)
+                                fieldlength = objCampaignNameConvention.CustomNameCharNo.Value;
+
                             if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.CustomField.ToString())
                             {
                                 var customobj = mappingCustomFields.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId && a.EntityId == objTactic.PlanTacticId).FirstOrDefault();
                                 if (customobj != null)
                                 {
+                                    // Added by Viral: #2053: Trim/add charcters while generating external name based on configuration
+                                    if (fieldlength != 0 && !string.IsNullOrEmpty(customobj.CustomNameValue))
+                                    {
+                                        customobj.CustomNameValue = (customobj.CustomNameValue.Length > fieldlength) ? (customobj.CustomNameValue.Substring(0, fieldlength)) : customobj.CustomNameValue;
+                                    }
                                     customTacticName.Append(RemoveSpaceAndUppercaseFirst(customobj.CustomNameValue) + "_");
                                 }
                             }
                             else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program_Tactic.ToString())
                             {
                                 string tacticTitle = RemoveSpaceAndUppercaseFirst(System.Web.HttpUtility.HtmlDecode(objTactic.Title));
+                                // Added by Viral: #2053: Trim/add charcters while generating external name based on configuration
+                                if (fieldlength != 0 && !string.IsNullOrEmpty(tacticTitle))
+                                {
+                                    tacticTitle = (tacticTitle.Length > fieldlength) ? (tacticTitle.Substring(0, fieldlength)) : tacticTitle;
+                                }
                                 customTacticName.Append(tacticTitle + "_");
                             }
                             else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.TacticType.ToString())
                             {
                                 string tacticTypeTitle = !string.IsNullOrEmpty(objTactic.TacticType.Abbreviation) ? RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Abbreviation) : RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Title);
+                                // Added by Viral: #2053: Trim/add charcters while generating external name based on configuration
+                                if (fieldlength != 0 && !string.IsNullOrEmpty(tacticTypeTitle))
+                                {
+                                    tacticTypeTitle = (tacticTypeTitle.Length > fieldlength) ? (tacticTypeTitle.Substring(0, fieldlength)) : tacticTypeTitle;
+                                }
                                 customTacticName.Append(tacticTypeTitle + "_");
                             }
                         }

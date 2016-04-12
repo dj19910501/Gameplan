@@ -549,6 +549,7 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="CustomNameCharNo" Type="int" />
         </EntityType>
         <EntityType Name="ChangeLog">
           <Key>
@@ -3167,6 +3168,7 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_CampaignNameConvention_CustomField" FromRole="CampaignNameConvention" ToRole="CustomField" />
+          <Property Type="Int32" Name="CustomNameCharNo" />
         </EntityType>
         <EntityType Name="ChangeLog">
           <Key>
@@ -5595,6 +5597,7 @@
           <EntitySetMapping Name="CampaignNameConventions">
             <EntityTypeMapping TypeName="MRPModel.CampaignNameConvention">
               <MappingFragment StoreEntitySet="CampaignNameConvention">
+                <ScalarProperty Name="CustomNameCharNo" ColumnName="CustomNameCharNo" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
