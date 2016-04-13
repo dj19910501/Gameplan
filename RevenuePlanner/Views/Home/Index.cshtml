@@ -3831,7 +3831,7 @@
                 //}
                 $('#mainpdfdiv').css('width', '');
                 var headerhtml = $("#testdiv").html();
-            }
+            }           
             gantt.exportToPDF({
                 header: headerhtml,
                 start: datestart,
@@ -8607,6 +8607,13 @@ function () {
                 state0 = ItemIndex;
             }
         }
+        // Added by Rahul Shah to save data when 'Copy To' or 'Link To' operation perform from the inspection window
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            SaveAllData(activeTab);
+            $('#spanMessageSuccess').empty();
+            $("#successMessage").css("display", "none");
+        }        
         var sectionType = $(obj).attr('sectionType');
         var entityId = $(obj).attr('entityId');
         var popuptype = $(obj).attr('popupType');//Added by Rahul Shah for PL #1847

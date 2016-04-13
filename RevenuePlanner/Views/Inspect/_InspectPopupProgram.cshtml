@@ -257,84 +257,7 @@
           });
 
           //Added By Komal Rawal for #1325
-          function SaveAllData(activeTab) {
-              var ProgramOpt = $("#hdnProgramOpt").val();
-              if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
-                  if (activeTab == TabSetup) {
-                      var ReturnParameter = SetupSaveProgram();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-                  else if (activeTab == TabBudget) {
-                      var ReturnParameter = SaveProgramBudget();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-                  else if (activeTab = TabReview) {
-                      var ReturnParameter = SaveTitle();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-
-              }
-
-              return true;
-          }
-          //End
-
-          //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
-          function SaveTitle() {
-              var returnparameter = false;
-              var title = htmlEncode($('#txtProgramTitle').val());
-              var planProgramId = $("#hdnPlanProgramId").val();
-              var iserror = false;
-
-              if (title == '') {
-                  $('#txtProgramTitle').addClass("error");
-                  iserror = true;
-              }
-              else {
-                  $('#txtProgramTitle').removeClass("error");
-
-              }
-              if (iserror) {
-                  ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
-                 return false;
-             }
-        $.ajax({
-            async: false,
-            type: 'POST',
-            url: '@Url.Content("~/Inspect/SaveTitle/")',
-            data: { title: title, Id: planProgramId, ActivePopup: "Program" },
-            success: function (data) {
-                if (!data.IsDuplicate) {
-                    var planProgramId = $("#hdnPlanProgramId").val();
-                    var campaignId = data.campaignID;
-                          var requestedModule = $("#hdnRequestedModule").val();
-                          $('#lblProgramTitle').text(title);
-                          $("#successMessage").css("display", "block");
-                          $("#spanMessageSuccess").empty();
-                          $("#spanMessageSuccess").text(data.Msg);
-                          $("#errorMessage").css("display", "none");
-                        // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                         // RefreshCurrentTab(requestedModule, campaignId, planProgramId, 0);
-                          returnparameter = true
-                      }
-                      else {
-                           ShowError(data.errormsg);
-                        //  $("#errorMessage").val(data.errormsg)
-                          returnparameter = false;
-                      }
-                  }
-              });
-              return returnparameter;
-          }
+          
 
         
           //End
@@ -532,7 +455,84 @@
 
           
       });
+    function SaveAllData(activeTab) {
+        var ProgramOpt = $("#hdnProgramOpt").val();
+        if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+            if (activeTab == TabSetup) {
+                var ReturnParameter = SetupSaveProgram();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
 
+            else if (activeTab == TabBudget) {
+                var ReturnParameter = SaveProgramBudget();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
+
+            else if (activeTab = TabReview) {
+                var ReturnParameter = SaveTitle();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
+
+
+        }
+
+        return true;
+    }
+    //End
+
+    //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
+    function SaveTitle() {
+        var returnparameter = false;
+        var title = htmlEncode($('#txtProgramTitle').val());
+        var planProgramId = $("#hdnPlanProgramId").val();
+        var iserror = false;
+
+        if (title == '') {
+            $('#txtProgramTitle').addClass("error");
+            iserror = true;
+        }
+        else {
+            $('#txtProgramTitle').removeClass("error");
+
+        }
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/SaveTitle/")',
+            data: { title: title, Id: planProgramId, ActivePopup: "Program" },
+            success: function (data) {
+                if (!data.IsDuplicate) {
+                    var planProgramId = $("#hdnPlanProgramId").val();
+                    var campaignId = data.campaignID;
+                    var requestedModule = $("#hdnRequestedModule").val();
+                    $('#lblProgramTitle').text(title);
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.Msg);
+                    $("#errorMessage").css("display", "none");
+                    // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                    // RefreshCurrentTab(requestedModule, campaignId, planProgramId, 0);
+                    returnparameter = true
+                }
+                else {
+                    ShowError(data.errormsg);
+                    //  $("#errorMessage").val(data.errormsg)
+                    returnparameter = false;
+                }
+            }
+        });
+        return returnparameter;
+    }
     function ShowError(value) {
         $("#modal-container-186470").scrollTop(0);
         $("#successMessageViewProgram").slideUp(50);
@@ -715,6 +715,10 @@
     });
     //Added by Rahul Shah on 12/04/2016 for PL #2038
     $('#NewProgramfromPopup').click(function () {
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            SaveAllData(activeTab);
+        }
         var CampaignId = @campaignId;
         isCopyTactic = CampaignId;         
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RedirectType');

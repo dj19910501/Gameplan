@@ -10,7 +10,7 @@
     var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
     bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
     var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
-   
+
 
     var planCampaignId = 0;
     var campaignStatus = "";
@@ -18,8 +18,8 @@
     string planId = Convert.ToString(campaignMaster.PlanId);
     string campaignTitle = "";
 
-    
-   
+
+
     string InspectMode = string.Empty;
     bool IsPlanEditable = false;
     bool IsPlanCreateAll = false;
@@ -38,7 +38,7 @@
     }
     //Added by Rahul Shah on 12/04/2016 for PL #2038
     var EntityId = planId + "_" + planCampaignId;
- 
+
     //Added By komal Rawal For #1324 - To maintain the mode on tab change after review
     string Campaignopt = "";
     if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
@@ -87,7 +87,7 @@
         <h2 class="title-simple source-sans-prolight">
             @if (campaignMaster.PlanCampaignId != 0)
             {
-                
+
                 <span>
                     @if (IsPlanEditable)
                     {
@@ -98,18 +98,18 @@
 
                     @if(IsPlanCreateAll)
                     {
-                    <div style="float: right; position: relative;">
-                        <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
-                        <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupnewprogram">
-                            <ul style="margin: 0;">
-                                @*Modified by Rahul Shah on 12/04/2016 for PL #2038*@
-                                <li class="new-prog" id="NewCampaignfromPopup">New Campaign</li> 
-                                <li class="copy-camp" id="CloneCampaign">Copy Campaign</li>
-                                <li class="new-prog" id="NewProgram">New Program</li>                                
-                                <li class="new-prog" entityid=@EntityId sectiontype="Campaign" id="copyToCampaign" onclick="OpentCopyPopup(this)" popuptype="Copying" redirecttype=@RedirectType>Copy To</li>
-                            </ul>
+                        <div style="float: right; position: relative;">
+                            <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
+                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupnewprogram">
+                                <ul style="margin: 0;">
+                                    @*Modified by Rahul Shah on 12/04/2016 for PL #2038*@
+                                    <li class="new-prog" id="NewCampaignfromPopup">New Campaign</li>
+                                    <li class="copy-camp" id="CloneCampaign">Copy Campaign</li>
+                                    <li class="new-prog" id="NewProgram">New Program</li>
+                                    <li class="new-prog" entityid=@EntityId sectiontype="Campaign" id="copyToCampaign" onclick="OpentCopyPopup(this)" popuptype="Copying" redirecttype=@RedirectType>Copy To</li>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
                     }
                     @if ( IsPlanEditable)
                     {
@@ -118,8 +118,8 @@
 
 
                 </span>
-     
-             
+
+
             }
 
             @if (campaignMaster.PlanCampaignId == 0)
@@ -153,25 +153,25 @@
             <div class="modal-popup-summary" id="campaignSummary">
                 <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight" style="margin-bottom: 0px;">
                     <p class="modal-status">
-                        Status: 
-            @if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
-            {
-                <span id="status" class="source-sans-prosemibold statussubmitted">@campaignMaster.Status</span>
-            }
-            else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value)
-            {
-                <span id="status" class="source-sans-prosemibold statusrejected">@campaignMaster.Status</span>
-            }
-            else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Complete.ToString())).Value ||
-                     campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.InProgress.ToString())).Value ||
-                     campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value)
-            {
-                <span id="status" class="source-sans-prosemibold statusapproved">@campaignMaster.Status</span>
-            }
-            else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
-            {
-                <span id="status" class="source-sans-prosemibold statuscreated">@campaignMaster.Status</span>
-            }
+                        Status:
+                        @if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
+                        {
+                            <span id="status" class="source-sans-prosemibold statussubmitted">@campaignMaster.Status</span>
+                        }
+                        else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value)
+                        {
+                            <span id="status" class="source-sans-prosemibold statusrejected">@campaignMaster.Status</span>
+                        }
+                        else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Complete.ToString())).Value ||
+                                 campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.InProgress.ToString())).Value ||
+                                 campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value)
+                        {
+                            <span id="status" class="source-sans-prosemibold statusapproved">@campaignMaster.Status</span>
+                        }
+                        else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
+                        {
+                            <span id="status" class="source-sans-prosemibold statuscreated">@campaignMaster.Status</span>
+                        }
                     </p>
                 </div>
             </div>
@@ -184,12 +184,12 @@
                 <li class="pull-left" id="liReview">
                     <a>Review</a>
                 </li>
-                 @if (!Sessions.IsBudgetShow)
+                @if (!Sessions.IsBudgetShow)
                 {
-                <li class="pull-left" id="liBudget">
-                    <a>Budget</a>
-                </li>
-                 }
+                    <li class="pull-left" id="liBudget">
+                        <a>Budget</a>
+                    </li>
+                }
             </ul>
             <div id="divTab">
             </div>
@@ -263,81 +263,7 @@
 
 
           //Added By Komal Rawal for #1324
-          function SaveAllData(activeTab) {
-              var CampaignOpt = $("#hdnCampaignOpt").val();
-              if (CampaignOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
-                  if (activeTab == TabSetup) {
-                      var ReturnParameter = SetupCampaignSave();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-                  else if (activeTab == TabBudget) {
-                      var ReturnParameter = BudgetCampaignSave();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-                  else if (activeTab = TabReview) {
-
-                      var ReturnParameter = SaveTitle();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-
-              }
-
-              return true;
-          }
-          //End
-
-          //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
-          function SaveTitle() {
-              var returnparameter = false;
-              var campaignTitle = htmlEncode($('#txtTitle').val());
-              var campaignId = $("#hdnPlanCampaignId").val()
-              var iserror = false;
-
-              if (campaignTitle == "") {
-                  $('#txtTitle').addClass("error");
-                  iserror = true;
-              }
-              else {
-                  $('#txtTitle').removeClass("error");
-              }
-              if (iserror) {
-                  ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
-                  return false;
-              }
-              $.ajax({
-                  async: false,
-                  type: 'POST',
-                  url: '@Url.Content("~/Inspect/SaveTitle/")',
-                  data: { title: campaignTitle, Id: campaignId, ActivePopup: "Campaign" },
-                  success: function (data) {
-                      if (!data.IsDuplicate) {
-                          var requestedModule = $("#hdnRequestedModule").val();
-                          $('#lblCampaignTitle').text(campaignTitle);
-                          $("#successMessage").css("display", "block");
-                          $("#spanMessageSuccess").empty();
-                          $("#spanMessageSuccess").text(data.msg);
-                          $("#errorMessage").css("display", "none");
-                          // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                          // RefreshCurrentTab(requestedModule, 0, 0, 0);
-                          returnparameter = true
-                      }
-                      else {
-                          ShowError(data.msg);
-                          returnparameter = false;
-                      }
-                  }
-              });
-              return returnparameter;
-          }
+      
           //End
           if (planCampaignId != 0) {
               if ($('#btnEditCampaign').hasClass('edit-icon-white') && $("#hdnCampaignOpt").val() == '@Enums.InspectPopupMode.Edit.ToString()') {
@@ -534,31 +460,106 @@
               });
           });
 
-
+        
       });
+    
+    function SaveAllData(activeTab) {
+        var CampaignOpt = $("#hdnCampaignOpt").val();
+        if (CampaignOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+            if (activeTab == TabSetup) {
+                var ReturnParameter = SetupCampaignSave();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
 
-      function RemoveTabClass() {
-          $('#InspectTab').children().each(function () {
-              if ($(this).hasClass('active pull-left')) {
-                  $(this).removeClass("active pull-left");
-                  $(this).addClass("pull-left");
-              }
-          });
-      }
+            else if (activeTab == TabBudget) {
+                var ReturnParameter = BudgetCampaignSave();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
 
-      function loadReview(id, tabValue) {
-          $("#hdnInspectPopup").val(tabValue);
-          $.ajaxSetup({ cache: false });
-          var url;
+            else if (activeTab = TabReview) {
 
-          var CampaignOpt = $("#hdnCampaignOpt").val();
-          if (tabValue == TabSetup) {
+                var ReturnParameter = SaveTitle();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
 
-              if (CampaignOpt == "Edit") {
-                  // BudgetCampaignSave();
-                  $('#txtTitle').css('display', 'block');
-                  $('#lblCampaignTitle').css('display', 'none');
-                  url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
+
+        }
+
+        return true;
+    }
+    //End
+
+    //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
+    function SaveTitle() {
+        var returnparameter = false;
+        var campaignTitle = htmlEncode($('#txtTitle').val());
+        var campaignId = $("#hdnPlanCampaignId").val()
+        var iserror = false;
+
+        if (campaignTitle == "") {
+            $('#txtTitle').addClass("error");
+            iserror = true;
+        }
+        else {
+            $('#txtTitle').removeClass("error");
+        }
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/SaveTitle/")',
+            data: { title: campaignTitle, Id: campaignId, ActivePopup: "Campaign" },
+            success: function (data) {
+                if (!data.IsDuplicate) {
+                    var requestedModule = $("#hdnRequestedModule").val();
+                    $('#lblCampaignTitle').text(campaignTitle);
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.msg);
+                    $("#errorMessage").css("display", "none");
+                    // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                    // RefreshCurrentTab(requestedModule, 0, 0, 0);
+                    returnparameter = true
+                }
+                else {
+                    ShowError(data.msg);
+                    returnparameter = false;
+                }
+            }
+        });
+        return returnparameter;
+    }
+    function RemoveTabClass() {
+        $('#InspectTab').children().each(function () {
+            if ($(this).hasClass('active pull-left')) {
+                $(this).removeClass("active pull-left");
+                $(this).addClass("pull-left");
+            }
+        });
+    }
+
+    function loadReview(id, tabValue) {
+        $("#hdnInspectPopup").val(tabValue);
+        $.ajaxSetup({ cache: false });
+        var url;
+
+        var CampaignOpt = $("#hdnCampaignOpt").val();
+        if (tabValue == TabSetup) {
+
+            if (CampaignOpt == "Edit") {
+                // BudgetCampaignSave();
+                $('#txtTitle').css('display', 'block');
+                $('#lblCampaignTitle').css('display', 'none');
+                url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
             }
             else {
                 url = '@Url.Content("~/Inspect/LoadSetupCampaign/")';
@@ -636,7 +637,7 @@
             $('#popupnewprogram').css("display", "none");
         }
     });
-    
+
 
     function SaveMessageOnParent(value) {
         $("#modal-container-186470").modal('hide');
@@ -710,10 +711,13 @@
         }
     });
     //Added by Rahul Shah on 12/04/2016 for PL #2038
-    $('#NewCampaignfromPopup').click(function () {      
-        debugger;
-        var planId = @planId; 
-        isCopyTactic = PlanId;        
+    $('#NewCampaignfromPopup').click(function () {
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            SaveAllData(activeTab);
+        }
+        var planId = @planId;
+        isCopyTactic = PlanId;
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RedirectType');
         //$('.taskpopup').css('display', 'none');
     });

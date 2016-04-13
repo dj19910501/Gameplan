@@ -960,7 +960,11 @@
         }
     });
     //Added by Rahul Shah on 12/04/2016 for PL #2038
-    $("#NewTacticfromPopup").on("click", function () {       
+    $("#NewTacticfromPopup").on("click", function () {   
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            SaveAllData(activeTab);
+        }
         var ProgramId = @PlanProgramId;
         isCopyTactic = ProgramId;
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');       

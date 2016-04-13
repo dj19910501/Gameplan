@@ -501,7 +501,10 @@
     });
     //Added by Rahul Shah on 12/04/2016 for PL #2038
     $("#NewPlanfromPopup").click(function (e) {
-        debugger;
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            SaveAllData(activeTab);
+        }
         var url = '@Url.Action("CreatePlan", "Plan")';
         displayconfirm(url);
     });
