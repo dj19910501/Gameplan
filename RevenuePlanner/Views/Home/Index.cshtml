@@ -8584,30 +8584,33 @@ function () {
             ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, 0, '@RequestedModule');
         }
     }
-    function OpentCopyPopup(obj) {
+    function OpentCopyPopup(obj) {        
         //Added by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
-        if ($('#IsGridView').val().toLowerCase() == "false") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
-            scrollstate = gantt.getScrollState();
-        }
-        else {
-            //Modified by Rahul Shah on 12/04/2016 for PL #2038. campaign 'copy to' getting error on grid.
-            linkItemId = $(obj).attr('entityid');
-            if (linkItemId.indexOf("_") >= 0) {
-                linkItemId = linkItemId.split('_')[1];
+        var redirectType = $(obj).attr('redirecttype');
+        if (redirectType == "" || redirectType == undefined) {
+            if ($('#IsGridView').val().toLowerCase() == "false") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+                scrollstate = gantt.getScrollState();
             }
             else {
-                linkItemId = $(obj).attr('entityid').replace("_","");
+                //Modified by Rahul Shah on 12/04/2016 for PL #2038. campaign 'copy to' getting error on grid.
+                linkItemId = $(obj).attr('entityid');
+                if (linkItemId.indexOf("_") >= 0) {
+                    linkItemId = linkItemId.split('_')[1];
+                }
+                else {
+                    linkItemId = $(obj).attr('entityid').replace("_", "");
+                }
+                var selectedcell = HomeGrid.findCell(linkItemId, 3, true);
+                var id = selectedcell[0];
+                var rowid = id[0];
+                ItemIndex = HomeGrid.getRowIndex(rowid);
+                state0 = ItemIndex;
             }
-            var selectedcell = HomeGrid.findCell(linkItemId, 3, true);
-            var id = selectedcell[0];
-            var rowid = id[0];
-            ItemIndex = HomeGrid.getRowIndex(rowid);
-            state0 = ItemIndex;
         }
         var sectionType = $(obj).attr('sectionType');
         var entityId = $(obj).attr('entityId');
         var popuptype = $(obj).attr('popupType');//Added by Rahul Shah for PL #1847
-        var redirectType = $(obj).attr('redirecttype');//Added by Rahul Shah on 12/04/2016 for PL #2038
+        
         $("#dvCopyEntity").empty();
         var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
         //$("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
