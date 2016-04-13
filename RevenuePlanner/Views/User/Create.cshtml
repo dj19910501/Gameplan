@@ -252,10 +252,22 @@
                     }
                 }
             });
-
+            //Added By Maitri Gandhi on 8/4/2016 for #2105
             if ($('#result').text() != '' && $('#result').text().toLowerCase() == 'too short') {
                 $('#result').removeClass();
+                $('#result').addClass('check-icon-red');
+                $('#result').prop('title', 'Minimum 8 charactes required');
+                $('#Password').prop('title', 'Minimum 8 charactes required');
+                $("#Password").addClass("error");
+                return false;
+            }
+
+            if ($('#result').text() != '' && $('#result').text().toLowerCase() == 'weak') {
+                $('#result').removeClass();
                 $('#result').addClass('check-icon-red')
+                $('#result').prop('title', 'Password should contain at least one lowar case, one upper case, one digit and one special character');
+                $('#Password').prop('title', 'Password should contain at least one lowar case, one upper case, one digit and one special character');
+                $("#Password").addClass("error");
                 return false;
             }
 
@@ -472,11 +484,13 @@
 
         //initial strength
         var strength = 0
-
+        //Modified By Maitri Gandhi on 8/4/2016 for #2105
         //if the password length is less than 6, return message.
         if (password.length < 8) {
             $('#result').removeClass()
-            $('#result').addClass('check-icon-red')
+            $('#result').addClass('check-icon-red');
+            $('#result').prop('title', 'Minimum 8 charactes required');
+            $('#Password').prop('title', 'Minimum 8 charactes required');
             return 'Too short'
         }
 
@@ -496,23 +510,45 @@
 
         //if it has two special characters, increase strength value
         if (password.match(/(.*[!,%,&,@@,#,$,^,*,?,_,~].*[!,",%,&,@@,#,$,^,*,?,_,~])/)) strength += 1
+        //Added By Maitri Gandhi on 4/7/2016
+        if (password.match(/([a-z])/) && password.match(/([A-Z])/) && password.match(/([0-9])/) && password.match(/([@@,#,$,%,^,&,*,_,+,|,~,-,=,\,`,:,",;,'])/)) {
+            if (password.match(/(.*[@@,#,$,%,^,&,*,_,+,|,~,-,=,\,`,:,",;,'].*[@@,#,$,%,^,&,*,_,+,|,~,-,=,\,`,:,",;,'])/)) {
+                $('#result').removeClass()
+                $('#result').addClass('check-icon-green')//strong
+                $('#result').prop('title', '');
+                $('#Password').prop('title', '');
+                return 'Strong'
+            }
+            $('#result').removeClass()
+            $('#result').addClass('check-icon-green')//good)
+            $('#result').prop('title', '');
+            $('#Password').prop('title', '');
+            return 'Good'
+        }
+        else {
+            $('#result').removeClass()
+            $('#result').addClass('check-icon-red')//weak
+            $('#result').prop('title', 'Password should contain at least one lowar case, one upper case, one digit and one special character');
+            $('#Password').prop('title', 'Password should contain at least one lowar case, one upper case, one digit and one special character');
+            return 'Weak'
+        }
 
         //now we have calculated strength value, we can return messages
 
         //if value is less than 2
-        if (strength < 2) {
-            $('#result').removeClass()
-            $('#result').addClass('check-icon-red')//weak
-            return 'Weak'
-        } else if (strength == 2) {
-            $('#result').removeClass()
-            $('#result').addClass('check-icon-green')//good)
-            return 'Good'
-        } else {
-            $('#result').removeClass()
-            $('#result').addClass('check-icon-green')//strong
-            return 'Strong'
-        }
+        //if (strength < 2) {
+        //    $('#result').removeClass()
+        //    $('#result').addClass('check-icon-red')//weak
+        //    //return 'Weak'
+        //} else if (strength == 2) {
+        //    $('#result').removeClass()
+        //    $('#result').addClass('check-icon-green')//good)
+        //   // return 'Good'
+        //} else {
+        //    $('#result').removeClass()
+        //    $('#result').addClass('check-icon-green')//strong
+        //    return 'Strong'
+        //}
     }
 
     $("#RoleId").change(function () {
