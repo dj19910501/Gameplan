@@ -83,6 +83,31 @@ namespace RevenuePlanner.Helpers
                 _InvalidLogin = value;
             }
         }
+        private string _InvalidEmailLogin;
+        public string InvalidEmailLogin
+        {
+            get
+            {
+                return _InvalidEmailLogin;
+            }
+            set
+            {
+                _InvalidEmailLogin = value;
+            }
+        }
+
+        private string _LockedUser;
+        public string LockedUser
+        {
+            get
+            {
+                return _LockedUser;
+            }
+            set
+            {
+                _LockedUser = value;
+            }
+        }
 
         private string _ErrorOccured;
         public string ErrorOccured
@@ -2756,6 +2781,13 @@ namespace RevenuePlanner.Helpers
                                         case "InvalidLogin":
                                             _InvalidLogin = strMsgValue;
                                             break;
+                                        case "InvalidEmailLogin":
+                                            _InvalidEmailLogin = strMsgValue;
+                                            break;
+                                        case "LockedUser":
+                                            _LockedUser = strMsgValue;
+                                            break;
+                                            
                                         case "InvalidPassword":
                                             _InvalidPassword = strMsgValue;
                                             break;

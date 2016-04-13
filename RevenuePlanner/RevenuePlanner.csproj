@@ -639,7 +639,6 @@
     <Content Include="Scripts\js\jquery-2.2.1.min.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt.js.map" />
-    <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Scripts\js\bootstrap-notify.min.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.min.js" />
@@ -653,6 +652,7 @@
     <Content Include="Scripts\js\mixpanel.inspect.js" />
     <Content Include="Scripts\js\mixpanel.layout.js" />
     <Content Include="Scripts\js\mixpanel.login.js" />
+    <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -923,6 +923,9 @@
     <Content Include="Views\Shared\_DefaultViewFilters.cshtml" />
     <Content Include="Views\ExternalService\_PullSalesforceMQL.cshtml" />
     <Content Include="Views\ExternalService\_DataMapping-PullData.cshtml" />
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.AppConfiguration.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

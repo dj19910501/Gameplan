@@ -2,17 +2,89 @@
 <wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="BDSService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <xsd:schema targetNamespace="http://tempuri.org/Imports">
-      <xsd:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
-      <xsd:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-      <xsd:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" />
-      <xsd:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" />
     </xsd:schema>
   </wsdl:types>
+  <wsdl:message name="IBDSService_GetUserListWithCustomRestrictions_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserListWithCustomRestrictions" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetUserListWithCustomRestrictions_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserListWithCustomRestrictionsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetMultipleTeamMemberName_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultipleTeamMemberName" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetMultipleTeamMemberName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultipleTeamMemberNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetMultipleTeamMemberNameByApplicationId_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultipleTeamMemberNameByApplicationId" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetMultipleTeamMemberNameByApplicationId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultipleTeamMemberNameByApplicationIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetClientApplicationactivitylist_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetClientApplicationactivitylist" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetClientApplicationactivitylist_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetClientApplicationactivitylistResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetDatabaseList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDatabaseList" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetDatabaseList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDatabaseListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_SetDefaultRightsForDababase_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetDefaultRightsForDababase" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_SetDefaultRightsForDababase_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetDefaultRightsForDababaseResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_UpdateLicenseAgreed_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateLicenseAgreed" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_UpdateLicenseAgreed_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateLicenseAgreedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetLicenseAgreed_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetLicenseAgreed" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetLicenseAgreed_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetLicenseAgreedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_CreatePasswordHistory_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreatePasswordHistory" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_CreatePasswordHistory_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreatePasswordHistoryResponse" />
+  </wsdl:message>
   <wsdl:message name="IBDSService_ValidateUser_InputMessage">
     <wsdl:part name="parameters" element="tns:ValidateUser" />
   </wsdl:message>
   <wsdl:message name="IBDSService_ValidateUser_OutputMessage">
     <wsdl:part name="parameters" element="tns:ValidateUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_Validate_User_InputMessage">
+    <wsdl:part name="parameters" element="tns:Validate_User" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_Validate_User_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Validate_UserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_ValidateAppConfiguration_InputMessage">
+    <wsdl:part name="parameters" element="tns:ValidateAppConfiguration" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_ValidateAppConfiguration_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ValidateAppConfigurationResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_LockUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:LockUser" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_LockUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:LockUserResponse" />
   </wsdl:message>
   <wsdl:message name="IBDSService_ValidateUserByClient_InputMessage">
     <wsdl:part name="parameters" element="tns:ValidateUserByClient" />
@@ -98,11 +170,23 @@
   <wsdl:message name="IBDSService_GetUserDetails_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetUserDetailsResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_GetUserDetailsById_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserDetailsById" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetUserDetailsById_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserDetailsByIdResponse" />
+  </wsdl:message>
   <wsdl:message name="IBDSService_CreateUser_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateUser" />
   </wsdl:message>
   <wsdl:message name="IBDSService_CreateUser_OutputMessage">
     <wsdl:part name="parameters" element="tns:CreateUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_CreateUserBasic_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateUserBasic" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_CreateUserBasic_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateUserBasicResponse" />
   </wsdl:message>
   <wsdl:message name="IBDSService_CreateUserWithPermission_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateUserWithPermission" />
@@ -116,6 +200,18 @@
   <wsdl:message name="IBDSService_UpdateUser_OutputMessage">
     <wsdl:part name="parameters" element="tns:UpdateUserResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_UpdateUserData_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateUserData" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_UpdateUserData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateUserDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_UpdateClientData_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateClientData" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_UpdateClientData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateClientDataResponse" />
+  </wsdl:message>
   <wsdl:message name="IBDSService_GetUserRole_InputMessage">
     <wsdl:part name="parameters" element="tns:GetUserRole" />
   </wsdl:message>
@@ -127,6 +223,12 @@
   </wsdl:message>
   <wsdl:message name="IBDSService_GetApplicationName_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetApplicationNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetApplicationDictionary_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetApplicationDictionary" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetApplicationDictionary_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetApplicationDictionaryResponse" />
   </wsdl:message>
   <wsdl:message name="IBDSService_GetClientName_InputMessage">
     <wsdl:part name="parameters" element="tns:GetClientName" />
@@ -199,6 +301,12 @@
   </wsdl:message>
   <wsdl:message name="IBDSService_GetUserListByClientId_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetUserListByClientIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetUserListComplete_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserListComplete" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetUserListComplete_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserListCompleteResponse" />
   </wsdl:message>
   <wsdl:message name="IBDSService_GetApplicationReleaseVersion_InputMessage">
     <wsdl:part name="parameters" element="tns:GetApplicationReleaseVersion" />
@@ -338,46 +446,58 @@
   <wsdl:message name="IBDSService_AssignUser_OutputMessage">
     <wsdl:part name="parameters" element="tns:AssignUserResponse" />
   </wsdl:message>
-  <wsdl:message name="IBDSService_GetUserListWithCustomRestrictions_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetUserListWithCustomRestrictions" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_GetUserListWithCustomRestrictions_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetUserListWithCustomRestrictionsResponse" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_GetMultipleTeamMemberName_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetMultipleTeamMemberName" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_GetMultipleTeamMemberName_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetMultipleTeamMemberNameResponse" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_GetMultipleTeamMemberNameByApplicationId_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetMultipleTeamMemberNameByApplicationId" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_GetMultipleTeamMemberNameByApplicationId_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetMultipleTeamMemberNameByApplicationIdResponse" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_GetClientApplicationactivitylist_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetClientApplicationactivitylist" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_GetClientApplicationactivitylist_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetClientApplicationactivitylistResponse" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_GetDatabaseList_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetDatabaseList" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_GetDatabaseList_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetDatabaseListResponse" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_SetDefaultRightsForDababase_InputMessage">
-    <wsdl:part name="parameters" element="tns:SetDefaultRightsForDababase" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_SetDefaultRightsForDababase_OutputMessage">
-    <wsdl:part name="parameters" element="tns:SetDefaultRightsForDababaseResponse" />
-  </wsdl:message>
   <wsdl:portType name="IBDSService">
+    <wsdl:operation name="GetUserListWithCustomRestrictions">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictions" message="tns:IBDSService_GetUserListWithCustomRestrictions_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictionsResponse" message="tns:IBDSService_GetUserListWithCustomRestrictions_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMultipleTeamMemberName">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberName" message="tns:IBDSService_GetMultipleTeamMemberName_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameResponse" message="tns:IBDSService_GetMultipleTeamMemberName_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMultipleTeamMemberNameByApplicationId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameByApplicationId" message="tns:IBDSService_GetMultipleTeamMemberNameByApplicationId_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameByApplicationIdResponse" message="tns:IBDSService_GetMultipleTeamMemberNameByApplicationId_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetClientApplicationactivitylist">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetClientApplicationactivitylist" message="tns:IBDSService_GetClientApplicationactivitylist_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetClientApplicationactivitylistResponse" message="tns:IBDSService_GetClientApplicationactivitylist_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDatabaseList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetDatabaseList" message="tns:IBDSService_GetDatabaseList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetDatabaseListResponse" message="tns:IBDSService_GetDatabaseList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetDefaultRightsForDababase">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/SetDefaultRightsForDababase" message="tns:IBDSService_SetDefaultRightsForDababase_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/SetDefaultRightsForDababaseResponse" message="tns:IBDSService_SetDefaultRightsForDababase_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateLicenseAgreed">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/UpdateLicenseAgreed" message="tns:IBDSService_UpdateLicenseAgreed_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/UpdateLicenseAgreedResponse" message="tns:IBDSService_UpdateLicenseAgreed_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLicenseAgreed">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetLicenseAgreed" message="tns:IBDSService_GetLicenseAgreed_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetLicenseAgreedResponse" message="tns:IBDSService_GetLicenseAgreed_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreatePasswordHistory">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CreatePasswordHistory" message="tns:IBDSService_CreatePasswordHistory_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CreatePasswordHistoryResponse" message="tns:IBDSService_CreatePasswordHistory_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="ValidateUser">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/ValidateUser" message="tns:IBDSService_ValidateUser_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/ValidateUserResponse" message="tns:IBDSService_ValidateUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Validate_User">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/Validate_User" message="tns:IBDSService_Validate_User_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/Validate_UserResponse" message="tns:IBDSService_Validate_User_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateAppConfiguration">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/ValidateAppConfiguration" message="tns:IBDSService_ValidateAppConfiguration_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/ValidateAppConfigurationResponse" message="tns:IBDSService_ValidateAppConfiguration_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="LockUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/LockUser" message="tns:IBDSService_LockUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/LockUserResponse" message="tns:IBDSService_LockUser_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="ValidateUserByClient">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/ValidateUserByClient" message="tns:IBDSService_ValidateUserByClient_InputMessage" />
@@ -435,9 +555,17 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetUserDetails" message="tns:IBDSService_GetUserDetails_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetUserDetailsResponse" message="tns:IBDSService_GetUserDetails_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="GetUserDetailsById">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetUserDetailsById" message="tns:IBDSService_GetUserDetailsById_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetUserDetailsByIdResponse" message="tns:IBDSService_GetUserDetailsById_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="CreateUser">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CreateUser" message="tns:IBDSService_CreateUser_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CreateUserResponse" message="tns:IBDSService_CreateUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateUserBasic">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CreateUserBasic" message="tns:IBDSService_CreateUserBasic_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/CreateUserBasicResponse" message="tns:IBDSService_CreateUserBasic_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="CreateUserWithPermission">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/CreateUserWithPermission" message="tns:IBDSService_CreateUserWithPermission_InputMessage" />
@@ -447,6 +575,14 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/UpdateUser" message="tns:IBDSService_UpdateUser_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/UpdateUserResponse" message="tns:IBDSService_UpdateUser_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="UpdateUserData">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/UpdateUserData" message="tns:IBDSService_UpdateUserData_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/UpdateUserDataResponse" message="tns:IBDSService_UpdateUserData_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientData">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/UpdateClientData" message="tns:IBDSService_UpdateClientData_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/UpdateClientDataResponse" message="tns:IBDSService_UpdateClientData_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="GetUserRole">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetUserRole" message="tns:IBDSService_GetUserRole_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetUserRoleResponse" message="tns:IBDSService_GetUserRole_OutputMessage" />
@@ -454,6 +590,10 @@
     <wsdl:operation name="GetApplicationName">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetApplicationName" message="tns:IBDSService_GetApplicationName_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetApplicationNameResponse" message="tns:IBDSService_GetApplicationName_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetApplicationDictionary">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetApplicationDictionary" message="tns:IBDSService_GetApplicationDictionary_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetApplicationDictionaryResponse" message="tns:IBDSService_GetApplicationDictionary_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetClientName">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetClientName" message="tns:IBDSService_GetClientName_InputMessage" />
@@ -502,6 +642,10 @@
     <wsdl:operation name="GetUserListByClientId">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetUserListByClientId" message="tns:IBDSService_GetUserListByClientId_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetUserListByClientIdResponse" message="tns:IBDSService_GetUserListByClientId_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUserListComplete">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetUserListComplete" message="tns:IBDSService_GetUserListComplete_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetUserListCompleteResponse" message="tns:IBDSService_GetUserListComplete_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetApplicationReleaseVersion">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetApplicationReleaseVersion" message="tns:IBDSService_GetApplicationReleaseVersion_InputMessage" />
@@ -595,35 +739,119 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/AssignUser" message="tns:IBDSService_AssignUser_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/AssignUserResponse" message="tns:IBDSService_AssignUser_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="GetUserListWithCustomRestrictions">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictions" message="tns:IBDSService_GetUserListWithCustomRestrictions_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictionsResponse" message="tns:IBDSService_GetUserListWithCustomRestrictions_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="GetMultipleTeamMemberName">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberName" message="tns:IBDSService_GetMultipleTeamMemberName_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameResponse" message="tns:IBDSService_GetMultipleTeamMemberName_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="GetMultipleTeamMemberNameByApplicationId">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameByApplicationId" message="tns:IBDSService_GetMultipleTeamMemberNameByApplicationId_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameByApplicationIdResponse" message="tns:IBDSService_GetMultipleTeamMemberNameByApplicationId_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="GetClientApplicationactivitylist">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetClientApplicationactivitylist" message="tns:IBDSService_GetClientApplicationactivitylist_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetClientApplicationactivitylistResponse" message="tns:IBDSService_GetClientApplicationactivitylist_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="GetDatabaseList">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetDatabaseList" message="tns:IBDSService_GetDatabaseList_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetDatabaseListResponse" message="tns:IBDSService_GetDatabaseList_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="SetDefaultRightsForDababase">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/SetDefaultRightsForDababase" message="tns:IBDSService_SetDefaultRightsForDababase_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/SetDefaultRightsForDababaseResponse" message="tns:IBDSService_SetDefaultRightsForDababase_OutputMessage" />
-    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IBDSService" type="tns:IBDSService">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetUserListWithCustomRestrictions">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictions" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMultipleTeamMemberName">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMultipleTeamMemberNameByApplicationId">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameByApplicationId" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetClientApplicationactivitylist">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetClientApplicationactivitylist" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDatabaseList">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetDatabaseList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetDefaultRightsForDababase">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/SetDefaultRightsForDababase" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateLicenseAgreed">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/UpdateLicenseAgreed" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLicenseAgreed">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetLicenseAgreed" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreatePasswordHistory">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/CreatePasswordHistory" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ValidateUser">
       <soap:operation soapAction="http://tempuri.org/IBDSService/ValidateUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Validate_User">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/Validate_User" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateAppConfiguration">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/ValidateAppConfiguration" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LockUser">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/LockUser" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -757,8 +985,26 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetUserDetailsById">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetUserDetailsById" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="CreateUser">
       <soap:operation soapAction="http://tempuri.org/IBDSService/CreateUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateUserBasic">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/CreateUserBasic" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -784,6 +1030,24 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="UpdateUserData">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/UpdateUserData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientData">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/UpdateClientData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetUserRole">
       <soap:operation soapAction="http://tempuri.org/IBDSService/GetUserRole" style="document" />
       <wsdl:input>
@@ -795,6 +1059,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetApplicationName">
       <soap:operation soapAction="http://tempuri.org/IBDSService/GetApplicationName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetApplicationDictionary">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetApplicationDictionary" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -903,6 +1176,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetUserListByClientId">
       <soap:operation soapAction="http://tempuri.org/IBDSService/GetUserListByClientId" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserListComplete">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetUserListComplete" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1117,64 +1399,10 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetUserListWithCustomRestrictions">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictions" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetMultipleTeamMemberName">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberName" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetMultipleTeamMemberNameByApplicationId">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameByApplicationId" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetClientApplicationactivitylist">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/GetClientApplicationactivitylist" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetDatabaseList">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/GetDatabaseList" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="SetDefaultRightsForDababase">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/SetDefaultRightsForDababase" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="BDSService">
     <wsdl:port name="BasicHttpBinding_IBDSService" binding="tns:BasicHttpBinding_IBDSService">
-      <soap:address location="http://stage-new:8085/BDSServiceOct/BDSService.svc" />
+      <soap:address location="http://localhost:51731/BDSService.svc" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

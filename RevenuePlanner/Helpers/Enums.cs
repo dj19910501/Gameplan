@@ -1372,6 +1372,13 @@ namespace RevenuePlanner.Helpers
             CustomFieldEntityId,
             CreatedBy
         }
+
+        public enum AppConfiguration
+        {
+            Pwd_MaxAttempts,
+            PasswordHistoryCount,
+            Pwd_ExpiryDays
+        }
     }
 
     #region Authorization

@@ -21,6 +21,14 @@
 		<value>Login failed, please ensure that you have entered valid credentials.</value>
 	</Field>
 	<Field>
+		<Name>InvalidEmailLogin</Name>
+		<value>Login failed,user does not exist</value>
+	</Field>
+	<Field>
+		<Name>LockedUser</Name>
+		<value>User locked,please reset your password using forgot password feature or contact your system administrator</value>
+	</Field>
+	<Field>
 		<Name>ErrorOccured</Name>
 		<value>An error has occured.</value>
 	</Field>
