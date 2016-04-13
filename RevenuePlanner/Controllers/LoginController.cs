@@ -1131,10 +1131,18 @@ namespace RevenuePlanner.Controllers
                     /* ------------------ Single hash password ----------------------*/
                     string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
                     /* ---------------------------------------------------------------*/
-
+                    //Added By Maitri Gandhi on 8/4/2016 for #2105
+                    string returnMessage = objBDSServiceClient.CreatePasswordHistory(form.UserId, SingleHash_NewPassword, form.UserId);
+                    if (returnMessage != "Success")
+                    {
+                        ModelState.AddModelError("", returnMessage);
+                    }
+                    else
+                    {
                     objBDSServiceClient.ResetPassword(form.UserId, SingleHash_NewPassword);
 
                     form.IsSuccess = true;
+                    }
                 }
 
 

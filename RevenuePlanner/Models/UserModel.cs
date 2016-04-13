@@ -38,6 +38,8 @@ namespace RevenuePlanner.Models
         [Display(Name = "Password")]
         [MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
         [MinLength(8, ErrorMessage = "Password should be atleast 8 characters.")]
+        [RegularExpression("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&*_+|~=`:'/]).*$", ErrorMessage = " ")]    //Added By Maitri Gandhi on 8/4/2016 for #2105
+        //[RegularExpression("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&*_+|~=`:'/]).*$", ErrorMessage = "Er ")]    //Added By Maitri Gandhi on 8/4/2016 for #2105
         public string Password { get; set; }
 
         [Required]
@@ -135,6 +137,8 @@ namespace RevenuePlanner.Models
         [Display(Name = "New Password")]
         [MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
         [MinLength(8, ErrorMessage = "Password should be atleast 8 characters.")]
+        //[RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&*_+|~=`:'{}[]()/]).*$", ErrorMessage = "E ")]    //Added By Maitri Gandhi on 8/4/2016 for #2105
+        [RegularExpression("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&*_+|~=`:'/]).*$", ErrorMessage = " ")]    //Added By Maitri Gandhi on 8/4/2016 for #2105
         public string NewPassword { get; set; }
 
 

@@ -167,7 +167,15 @@ namespace RevenuePlanner.Controllers
                         string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.CurrentPassword.ToString().Trim());
                         string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
                         /* ---------------------------------------------------------------*/
-
+                        //Added By Maitri Gandhi for #2105 on 11/4/2016
+                        string returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
+                        if (returnMessage != "Success")
+                        {
+                            TempData["ErrorMessage"] = returnMessage;
+                            return View(form);
+                        }
+                        else
+                        {
                     //// Update New Password by UserId.
                         int retVal = objBDSServiceClient.ChangePassword(Sessions.User.UserId, SingleHash_NewPassword, SingleHash_CurrentPassword);
 
@@ -195,6 +203,7 @@ namespace RevenuePlanner.Controllers
                                 return RedirectToAction("Index", "Home");
                             }
                             TempData["SuccessMessage"] = Common.objCached.UserPasswordChanged;
+                            }
                         }
                     }
                 }
