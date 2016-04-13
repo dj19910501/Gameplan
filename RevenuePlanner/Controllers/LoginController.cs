@@ -129,7 +129,7 @@ namespace RevenuePlanner.Controllers
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             bool IsEmailInvalid = false;
             List<BDSService.AppConfiguration> AppConfigObj = new List<BDSService.AppConfiguration>();
-            int FailedAttempts = Convert.ToInt32(TempData["FailedAttempts"]);
+            int FailedAttempts = Convert.ToInt32(TempData[form.UserEmail]);
             var MaxAttempts = Enums.AppConfiguration.Pwd_MaxAttempts.ToString();
             var days = Enums.AppConfiguration.Pwd_ExpiryDays.ToString();
             AppConfigObj = objBDSServiceClient.ValidateAppConfiguration(Sessions.ApplicationId, form.UserEmail);
@@ -167,14 +167,7 @@ namespace RevenuePlanner.Controllers
                         TotalAttempts = null;
                         obj = null;
                     }
-                    if (Convert.ToInt32(TotalAttempts) != Convert.ToInt32(TempData["MaxAttempts"]) && IsEmailInvalid == false)
-                    {
-                        TempData["FailedAttempts"] = null;
-                    }
-                    if (IsEmailInvalid == false)
-                    {
-                        TempData["MaxAttempts"] = TotalAttempts;
-                    }
+               
                    //End
 
                     //Start  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
@@ -270,7 +263,7 @@ namespace RevenuePlanner.Controllers
                     //End Bhavesh
 
                     //Redirect users logging in for the first time to the change password module
-                    TempData["FailedAttempts"] = null;
+                    TempData.Clear();
                     if (obj.LastLoginDate == null)
                     {
                         Sessions.RedirectToChangePassword = true;
@@ -323,11 +316,11 @@ namespace RevenuePlanner.Controllers
                     {
                         if (IsEmailInvalid == false)
                         {
-                            TempData["FailedAttempts"] = Convert.ToInt32(TempData["FailedAttempts"]) + 1;
+                            TempData[form.UserEmail] = Convert.ToInt32(TempData[form.UserEmail]) + 1;
 
-                            if (Convert.ToInt32(TotalAttempts) == Convert.ToInt32(TempData["FailedAttempts"]))
+                            if (Convert.ToInt32(TotalAttempts) == Convert.ToInt32(TempData[form.UserEmail]))
                             {
-                                TempData["FailedAttempts"] = null;
+                                TempData.Clear();
                                 ModelState.AddModelError("", Common.objCached.LockedUser);
                                 int Locked = objBDSServiceClient.LockUser(Sessions.ApplicationId, form.UserEmail);
                             }
@@ -336,8 +329,7 @@ namespace RevenuePlanner.Controllers
                                 ModelState.AddModelError("", "you have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
                             }
                         }
-                    TempData.Keep("FailedAttempts");
-                    TempData.Keep("MaxAttempts");
+                    TempData.Keep(form.UserEmail);
                     }
                     //End
                 
@@ -360,11 +352,11 @@ namespace RevenuePlanner.Controllers
                 {
                     if(IsEmailInvalid == false)
                     { 
-                    TempData["FailedAttempts"] = Convert.ToInt32(TempData["FailedAttempts"]) + 1;
+                    TempData[form.UserEmail] = Convert.ToInt32(TempData[form.UserEmail]) + 1;
 
-                    if (Convert.ToInt32(TotalAttempts) == Convert.ToInt32(TempData["FailedAttempts"]))
+                    if (Convert.ToInt32(TotalAttempts) == Convert.ToInt32(TempData[form.UserEmail]))
                 {
-                    TempData["FailedAttempts"] = null;
+                    TempData.Clear();
                     ModelState.AddModelError("", Common.objCached.LockedUser);
                     int Locked = objBDSServiceClient.LockUser(Sessions.ApplicationId, form.UserEmail);
                 }
@@ -373,8 +365,7 @@ namespace RevenuePlanner.Controllers
                     ModelState.AddModelError("", "you have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
                 }
                     }
-                TempData.Keep("FailedAttempts");
-                TempData.Keep("MaxAttempts");
+                TempData.Keep(form.UserEmail);
                 }
             //ENd
                 ErrorSignal.FromCurrentContext().Raise(e);
