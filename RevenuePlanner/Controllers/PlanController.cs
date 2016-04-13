@@ -11006,6 +11006,7 @@ namespace RevenuePlanner.Controllers
                     else if (UpdateColumn == Enums.PlanGrid_Column["tactictype"])
                     {
                         int tactictypeid = Convert.ToInt32(UpdateVal);
+                        int oldTactictypeId = pcpobj.TacticTypeId;
                         pcpobj.TacticTypeId = tactictypeid;
                         TacticType tt = db.TacticTypes.Where(tacType => tacType.TacticTypeId == tactictypeid).FirstOrDefault();
                         pcpobj.ProjectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue;
@@ -11025,6 +11026,72 @@ namespace RevenuePlanner.Controllers
                                 linkedTactic.StageId = destTacticType.StageId == null ? 0 : (int)destTacticType.StageId;
                             }
                         }
+
+                        // Added by Viral Kadiya related to PL ticket #2108.
+                        #region "Update DeployToIntegration & Instnace toggle on Tactic Type update"
+                        if (tactictypeid != null && oldTactictypeId != tactictypeid)
+                        {
+                            // Added by Viral Kadiya related to PL ticket #2108: When we update tactic type, then the integration need to look at the model. If under model integration, there are any integration mapped then the switched for these needs to be turned on as well.
+                            int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
+                            #region "Get SFDC, Elqoua, & WorkFront InstanceId from Model by Plan"
+                            Model objModel = new Model();
+                            Plan objPlan = new Plan();
+
+                            objPlan = pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan;
+                            if (objPlan != null)
+                            {
+                                objModel = objPlan.Model;
+                                if (objModel != null)
+                                {
+                                    if (objModel.IntegrationInstanceId.HasValue)
+                                        sfdcInstanceId = objModel.IntegrationInstanceId.Value;
+                                    if (objModel.IntegrationInstanceEloquaId.HasValue)
+                                        elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
+                                    if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
+                                        workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
+                                }
+                            }
+                            #endregion
+
+                            #region "Get IsDeployedToIntegration by TacticTypeId"
+                            int TacticTypeId = 0;
+                            bool isDeployedToIntegration = false;
+
+                            TacticTypeId = tactictypeid;
+                            TacticType objTacType = new TacticType();
+                            objTacType = db.TacticTypes.Where(tacType => tacType.TacticTypeId == TacticTypeId).FirstOrDefault();
+                            if (objTacType != null && objTacType.IsDeployedToIntegration)
+                            {
+                                isDeployedToIntegration = true;
+                            }
+                            pcpobj.IsDeployedToIntegration = isDeployedToIntegration;
+                            #endregion
+
+                            #region "Update Instnce toggle based on TacticType & Model settings"
+                            if (isDeployedToIntegration)
+                            {
+                                if (sfdcInstanceId > 0)
+                                    pcpobj.IsSyncSalesForce = true;         // Set SFDC setting to True if Salesforce instance mapped under Tactic's Model.
+                                if (elqaInstanceId > 0)
+                                    pcpobj.IsSyncEloqua = true;             // Set Eloqua setting to True if Eloqua instance mapped under Tactic's Model.
+                                if (workfrontInstanceId > 0)
+                                    pcpobj.IsSyncWorkFront = true;          // Set WorkFront setting to True if WorkFront instance mapped under Tactic's Model.
+                            }
+                            else
+                            {
+                                pcpobj.IsSyncSalesForce = false;         // Set SFDC setting to false if isDeployedToIntegration false.
+                                pcpobj.IsSyncEloqua = false;             // Set Eloqua setting to True if isDeployedToIntegration false.
+                                pcpobj.IsSyncWorkFront = false;          // Set WorkFront setting to True if isDeployedToIntegration false.
+                            }
+                            #endregion
+                            if (linkedTacticId > 0)
+                            {
+                                linkedTactic.IsDeployedToIntegration = pcpobj.IsDeployedToIntegration;
+                                linkedTactic.IsSyncSalesForce = pcpobj.IsSyncSalesForce;
+                                linkedTactic.IsSyncEloqua = pcpobj.IsSyncEloqua;
+                            }
+                        }
+                        #endregion
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["targetstagegoal"])
                     {

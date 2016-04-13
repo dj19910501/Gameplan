@@ -3260,6 +3260,25 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.TopThreeCustomFields = topThreeCustomFields;
 
+            // Added by Viral Kadiya related to PL ticket #2108: Scenario1.
+            int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
+            #region "Get SFDC, Elqoua, & WorkFront InstanceId from Model"
+            Model objModel = new Model();
+            objModel = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model;
+            if (objModel != null)
+            {
+                if (objModel.IntegrationInstanceId.HasValue)
+                    sfdcInstanceId = objModel.IntegrationInstanceId.Value;
+                if (objModel.IntegrationInstanceEloquaId.HasValue)
+                    elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
+                if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
+                    workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
+            }
+            ViewBag.SFDCId = sfdcInstanceId;
+            ViewBag.ElouqaId = elqaInstanceId;
+            ViewBag.WorkfrontId=workfrontInstanceId;
+            #endregion
+
             return PartialView("Review", _inspectmodel);
         }
 
@@ -4344,7 +4363,7 @@ namespace RevenuePlanner.Controllers
                                             if (objModel.IntegrationInstanceId.HasValue)
                                                 sfdcInstanceId = objModel.IntegrationInstanceId.Value;
                                             if (objModel.IntegrationInstanceEloquaId.HasValue)
-                                                elqaInstanceId = objModel.IntegrationInstanceId.Value;
+                                                elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
                                             if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
                                                 workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
                                         }
@@ -4641,6 +4660,7 @@ namespace RevenuePlanner.Controllers
                                 int oldProgramId = 0;
                                 string oldProgramTitle = "";
                                 int oldCampaignId = 0;
+                                int oldTacticTypeId = 0;
                                 #endregion
                                 //Start - Added by Mitesh Vaishnav for PL ticket #1137
                                 if (resubmission)
@@ -4692,6 +4712,7 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.Description = form.Description;
                                 Guid oldOwnerId = pcpobj.CreatedBy;
                                 //Start - Added by Mitesh Vaishnav - Remove old resubmission condition and combine it for PL ticket #1137
+                                oldTacticTypeId = pcpobj.TacticTypeId;
                                 pcpobj.TacticTypeId = form.TacticTypeId;
                                 pcpobj.CreatedBy = form.OwnerId;
                                 pcpobj.ProjectedStageValue = form.ProjectedStageValue;
@@ -4797,6 +4818,68 @@ namespace RevenuePlanner.Controllers
                                 }
                                 #endregion
 
+                                #region "Update DeployToIntegration & Instnace toggle on Tactic Type update"
+                                if (form.TacticTypeId != null && oldTacticTypeId != form.TacticTypeId)
+                                {
+                                    // Added by Viral Kadiya related to PL ticket #2108: When we update tactic type, then the integration need to look at the model. If under model integration, there are any integration mapped then the switched for these needs to be turned on as well.
+                                    int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
+                                    #region "Get SFDC, Elqoua, & WorkFront InstanceId from Model by Plan"
+                                    if (planid > 0)
+                                    {
+                                        Model objModel = new Model();
+                                        Plan objPlan = new Plan();
+
+                                        objPlan = db.Plans.Where(plan => plan.PlanId == planid).FirstOrDefault();
+                                        if (objPlan != null)
+                                        {
+                                            objModel = objPlan.Model;
+                                            if (objModel != null)
+                                            {
+                                                if (objModel.IntegrationInstanceId.HasValue)
+                                                    sfdcInstanceId = objModel.IntegrationInstanceId.Value;
+                                                if (objModel.IntegrationInstanceEloquaId.HasValue)
+                                                    elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
+                                                if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
+                                                    workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
+                                            }
+                                        }
+                                    }
+                                    #endregion
+
+                                    #region "Get IsDeployedToIntegration by TacticTypeId"
+                                    int TacticTypeId = 0;
+                                    bool isDeployedToIntegration = false;
+                                    
+                                    TacticTypeId = form.TacticTypeId;
+                                    TacticType objTacType = new TacticType();
+                                    objTacType = db.TacticTypes.Where(tacType => tacType.TacticTypeId == form.TacticTypeId).FirstOrDefault();
+                                    if (objTacType != null && objTacType.IsDeployedToIntegration)
+                                    {
+                                        isDeployedToIntegration = true;
+                                    }
+                                    pcpobj.IsDeployedToIntegration = isDeployedToIntegration;
+                                    #endregion 
+
+                                    #region "Update Instnce toggle based on TacticType & Model settings"
+                                    if (isDeployedToIntegration)
+                                    {
+                                        if (sfdcInstanceId > 0)
+                                            pcpobj.IsSyncSalesForce = true;         // Set SFDC setting to True if Salesforce instance mapped under Tactic's Model.
+                                        if (elqaInstanceId > 0)
+                                            pcpobj.IsSyncEloqua = true;             // Set Eloqua setting to True if Eloqua instance mapped under Tactic's Model.
+                                        if (workfrontInstanceId > 0)
+                                            pcpobj.IsSyncWorkFront = true;          // Set WorkFront setting to True if WorkFront instance mapped under Tactic's Model.
+                                    }
+                                    else
+                                    {
+                                        pcpobj.IsSyncSalesForce = false;         // Set SFDC setting to false if isDeployedToIntegration false.
+                                        pcpobj.IsSyncEloqua = false;             // Set Eloqua setting to True if isDeployedToIntegration false.
+                                        pcpobj.IsSyncWorkFront = false;          // Set WorkFront setting to True if isDeployedToIntegration false.
+                                    }
+                                    #endregion
+                                }
+                                #endregion
+                                
                                 //// check that Tactic cost count greater than 0 OR Plan's AllocatedBy is None or Defaults.
                                 if ((db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).ToList()).Count() == 0 ||
                                     pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
@@ -5146,7 +5229,10 @@ namespace RevenuePlanner.Controllers
                                     {
                                         linkedTactic.Cost = lstLinkeTac.Sum(tac => tac.Value);
                                     }
-                                    linkedTactic.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                                    linkedTactic.IsDeployedToIntegration = pcpobj.IsDeployedToIntegration;
+                                    linkedTactic.IsSyncSalesForce = pcpobj.IsSyncSalesForce;
+                                    linkedTactic.IsSyncEloqua = pcpobj.IsSyncEloqua;
+                                    linkedTactic.IsSyncWorkFront = pcpobj.IsSyncWorkFront;
                                     //linkedTactic.StageId = form.StageId;
                                     linkedTactic.ProjectedStageValue = form.ProjectedStageValue;
                                     linkedTactic.ModifiedBy = Sessions.User.UserId;

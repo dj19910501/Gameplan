@@ -23,6 +23,12 @@
     bool IsSyncSF = (bool)ViewBag.IsSyncSF;             // Get IsSyncSalesforce flag
     bool IsSyncEloqua = (bool)ViewBag.IsSyncEloqua;     // Get IsSyncEloqua flag
     bool IsSyncWorkFront = (bool)ViewBag.IsSyncWorkFront; //Get IsSyncWorkFront flag - true if the tactic is integrated
+    // start: Added by Viral for PL ticket #2108 scenario-1
+    int SFDCId = 0,eloquaId=0,workfrontId=0;
+    SFDCId = ViewBag.SFDCId;
+    eloquaId = ViewBag.ElouqaId;
+    workfrontId = ViewBag.WorkfrontId;
+    // end: Added by Viral for PL ticket #2108 scenario-1
 }
 @*Added BY Bhumika for #2043 reduce white space in comment section.*@
 <style>
@@ -717,6 +723,14 @@
                 if(isVisibleSyncbtn){       // Sync button exist when Tactic status from 'In-Progress, Complete or Approved'
                     $("#divDeployToIntegration").css('display','none');
                 }
+                // Added by Viral for PL ticket #2108:Scenario1
+                $('.integration-SF-Eloqua-WF').each(function (key, val) {
+                    //debugger;
+                    var _divToggle = $(this).find("div.integrationToggle");
+                    var toggleId = $(this).attr('toggle-id');
+                    var eleToggle = $("#"+toggleId);
+                    eleToggle.bootstrapToggle('off');            // Set toggle button to Off for all instances.
+                });
             }
             else {
                 $(this).val("Sync to integration");
@@ -728,6 +742,24 @@
                 if(isVisibleSyncbtn){       // Sync button exist when Tactic status from 'In-Progress, Complete or Approved'
                     $("#divDeployToIntegration").css('display','block');
                 }
+
+                // Added by Viral for PL ticket #2108:Scenario1
+                $('.integration-SF-Eloqua-WF').each(function (key, val) {
+                    //debugger;
+                    var _divToggle = $(this).find("div.integrationToggle");
+                    var _intgrtnType = $(this).attr('integrationType');
+                    var toggleId = $(this).attr('toggle-id');
+                    var eleToggle = $("#"+toggleId);
+                    if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()' && '@eloquaId' >0) {
+                            eleToggle.bootstrapToggle('on');            // Set Eloqua toggle button to ON.
+                    }
+                    else if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()' && '@SFDCId' >0) {
+                        eleToggle.bootstrapToggle('on');            // Set Eloqua toggle button to ON.
+                    }
+                    else if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()' && '@workfrontId' >0) {
+                        eleToggle.bootstrapToggle('on');            // Set Eloqua toggle button to ON.
+                    }
+                });
             }
         });
 
