@@ -2680,6 +2680,20 @@ namespace RevenuePlanner.Helpers
         }
         
         ////End - Added by Viral Kadiya for PL ticket #1970
+
+
+        private string _PasswordExpired;
+        public string PasswordExpired
+        {
+            get
+            {
+                return _PasswordExpired;
+            }
+            set
+            {
+                _PasswordExpired = value;
+            }
+        }
         #endregion
 
         #region  Functions
@@ -3535,7 +3549,12 @@ namespace RevenuePlanner.Helpers
                                         case "TacticPlanedCostReduce":
                                             _TacticPlanedCostReduce = strMsgValue;
                                             break;
-                                        ////End - Added by Viral Kadiya for PL ticket #1970
+
+                                         ////End - Added by Viral Kadiya for PL ticket #1970
+
+                                        case "PasswordExpired":
+                                            _PasswordExpired = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;

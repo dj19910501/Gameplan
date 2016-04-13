@@ -134,6 +134,13 @@ namespace RevenuePlanner.Controllers
             var days = Enums.AppConfiguration.Pwd_ExpiryDays.ToString();
             AppConfigObj = objBDSServiceClient.ValidateAppConfiguration(Sessions.ApplicationId, form.UserEmail);
             var TotalAttempts = AppConfigObj.Where(a => a.Config_Key.Equals(MaxAttempts)).Select(a => a.Config_Value).FirstOrDefault();
+            //Added By Maitri 13/4/2016
+            var PasswordConfiguration = AppConfigObj.Where(a => a.Config_Key.Equals(days))
+                                        .Select(a => new
+                                        {
+                                            Config_Value = a.Config_Value,
+                                            PasswordModifiedDate = a.PasswordModifiedDate
+                                        }).FirstOrDefault();
             //End
            
             try
@@ -166,6 +173,28 @@ namespace RevenuePlanner.Controllers
                         ModelState.AddModelError("", Common.objCached.LockedUser);
                         TotalAttempts = null;
                         obj = null;
+                    }
+                    else
+                    {
+                        //Added By Maitri 13/4/2016
+                        //Case of Password Expiration
+                        if (obj != null)
+                        {
+                            int totaldays = Convert.ToInt32((DateTime.Now - PasswordConfiguration.PasswordModifiedDate).TotalDays);
+                            if (totaldays >= Convert.ToInt32(PasswordConfiguration.Config_Value))
+                            {
+                                BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+                                objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
+                                objPasswordResetRequest.UserId = obj.UserId;
+                                objPasswordResetRequest.AttemptCount = 0;
+                                objPasswordResetRequest.CreatedDate = DateTime.Now;
+                                objPasswordResetRequest.IsUsed = false;
+
+                                string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+
+                                return RedirectToAction("ResetPassword", "Login", new { id = PasswordResetRequestId, PasswordExpired = true });
+                            }
+                        }
                     }
                
                    //End
@@ -1016,7 +1045,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public ActionResult ResetPassword(string id)
+        public ActionResult ResetPassword(string id, bool PasswordExpired = false)
         {
             try
             {
@@ -1027,7 +1056,11 @@ namespace RevenuePlanner.Controllers
 
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 var objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(PasswordResetRequestId);
-
+                //Added By Maitri Gandhi on 13/4/2016
+                if (PasswordExpired == true)
+                {
+                    ViewBag.Expired = Common.objCached.PasswordExpired;
+                }
                 if (objPasswordResetRequest == null)
                 {
                     TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
@@ -1058,7 +1091,15 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             objPasswordResetRequest.PasswordResetRequestId = PasswordResetRequestId;
-                            objPasswordResetRequest.IsUsed = true;
+                            //Added By Maitri Gandhi on 13/4/2016
+                            if (PasswordExpired)
+                            {
+                                objPasswordResetRequest.IsUsed = false;
+                            }
+                            else
+                            {
+                                objPasswordResetRequest.IsUsed = true;
+                            }
                             objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
                             //Guid UserId = Guid.Parse(TempData["UserId"].ToString());                      //Commented by Rahul Shah on 09/09/2015 for #1577
                             Guid UserId = objPasswordResetRequest.UserId;                               //Added by Rahul Shah on 09/09/2015 for #1577  
