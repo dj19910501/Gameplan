@@ -19,6 +19,11 @@
     div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
         width: 100% !important;
     }
+    /*Added by viral for PL #2112*/
+    .goals-wrapper .valuenumber
+    {
+        padding-left:0px;
+    }
     /*Added by Rahul Shah on 29/09/2015 for PL #1618*/
     /*div.gridbox {
         height: 100% !important;
@@ -26,10 +31,14 @@
 </style>
 <div class="goals-wrapper" id="goalwrapper">
     <span class="goal-text">Goals</span>
-    <span id="spnrevenue"></span>
-    <span id="spninq"></span>
-    <span id="spnmql"></span>
-    <span id="spncw"></span>
+    <span>Revenue : </span>
+    <span id="spnrevenue" class="valuenumber"></span>
+    <span>@Model.INQLable : </span>
+    <span id="spninq" class="valuenumber"></span>
+    <span>@Model.MQLLable : </span>
+    <span id="spnmql" class="valuenumber"></span>
+    <span>@Model.CWLable : </span>
+    <span id="spncw" class="valuenumber"></span>
     @*<a class="btn btn-blue-grid text-shadow-blue source-sans-proregular" id="exportcsv" onclick="return ExportToCSV();">
             <img src="~/Content/images/grid-export.png" /> Export .csv
         </a> Changed by bhumika #2015 *@
@@ -66,15 +75,20 @@
 <script type="text/javascript">
     var HomeGrid;
 
-    var revenue = "Revenue : $" + number_format('@Model.Revenue', 0, '.', ',');
-    $("#spnrevenue").html(revenue);
-    var mql = '@Model.MQLLable' + " : " + number_format('@Model.MQLValue', 0, '.', ',');
-    $("#spnmql").html(mql);
-    var inq = '@Model.INQLable' + " : " + number_format('@Model.INQValue', 0, '.', ',');
-    $("#spninq").html(inq);
+    //var revenue = "Revenue : $" + number_format('@Model.Revenue', 0, '.', ',');
+    $("#spnrevenue").html('@Model.Revenue');
+    // added by Viral for PL ticket #2112
+    SetBudget("#spnrevenue");
+    //var mql = number_format('@Model.MQLValue', 0, '.', ',');
+    $("#spnmql").html('@Model.MQLValue');
+    SetPriceValue("#spnmql");
+    //var inq = number_format('@Model.INQValue', 0, '.', ',');
+    $("#spninq").html('@Model.INQValue');
+    SetPriceValue("#spninq");
+    //var cw = number_format('@Model.CWValue', 0, '.', ',');
+    $("#spncw").html('@Model.CWValue');
+    SetPriceValue("#spncw");
 
-    var cw = '@Model.CWLable' + " : " + number_format('@Model.CWValue', 0, '.', ',');
-    $("#spncw").html(cw);
     // Variable added by bhavesh - 11-Nov-2015
     // Apply distributed Parsing - variable for event id
     var eventiddrag = 0;
@@ -82,7 +96,7 @@
     var eventidonbeforedrag = 0;
     var eventidonscroll = 0;
     var editidonOpenEnd = 0;
-
+    var plannedCostColId='plannedcost';
 
     $(document).ready(function () {
         //$("#divupcomingact").hide();
@@ -145,6 +159,8 @@
             $(".honeycombbox").show();
         }
         //#1780
+
+        
     });
 
 
@@ -2255,6 +2271,15 @@
                         }
                         //added by Rahul Shah for PL #2058 on 15/03/2016.
                         if (UpdateColumn == "Type") {
+                            var tacCost = 0;
+                            if(states.TacticCost != null && states.TacticCost != 'undefined'){
+                                tacCost =states.TacticCost;
+                            }
+
+                            //Start - Added by Viral, To Resolve internal point: Change PlannedCost value based on TacticType.
+                            var PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
+                            HomeGrid.cells(rowid, PlannedCostColIndex).setValue(tacCost);
+                            //End - Added by Viral, To Resolve internal point: Change PlannedCost value based on TacticType.
 
                             var PlanIds = HomeGrid.cells(planid,3).getValue()
                             $("#ulTacticType li input[type=checkbox]").each(function () {

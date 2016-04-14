@@ -4136,13 +4136,14 @@ namespace RevenuePlanner.Controllers
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
             double budgetAllocation = db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == id).ToList().Sum(_tacCost => _tacCost.Value);
 
-            //ippctm.Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpt.PlanTacticId && lineItem.IsDeleted == false)).Count() > 0
-            //    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
-            //    ?
-            //    (budgetAllocation > 0 ? budgetAllocation : (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
-            //    : pcpt.Cost;
+            // modified by Viral for PL ticket #2112.
+            ippctm.Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpt.PlanTacticId && lineItem.IsDeleted == false)).Count() > 0
+                && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
+                ?
+                (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost)
+                : pcpt.Cost;
 
-            ippctm.Cost = pcpt.Cost; //modified by komal rawal
+            //ippctm.Cost = pcpt.Cost; //modified by komal rawal
 
             ippctm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
             ippctm.StageId = Convert.ToInt32(pcpt.StageId);
