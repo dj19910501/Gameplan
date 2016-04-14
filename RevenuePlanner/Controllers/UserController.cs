@@ -167,25 +167,32 @@ namespace RevenuePlanner.Controllers
                         string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.CurrentPassword.ToString().Trim());
                         string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
                         /* ---------------------------------------------------------------*/
-                        
-                    //// Update New Password by UserId.
-                        int retVal = objBDSServiceClient.ChangePassword(Sessions.User.UserId, SingleHash_NewPassword, SingleHash_CurrentPassword);
-
-                        if (retVal == -1)
+                        //Added By Maitri Gandhi for #2105 on 11/4/2016
+                        string returnMessage = "Success";
+                        if (Sessions.User.LastLoginDate != null)
                         {
-                            TempData["ErrorMessage"] = Common.objCached.CurrentUserPasswordNotCorrect;
+                            returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
                         }
-                        else if (retVal == 1)
+                        if (returnMessage != "Success")
                         {
-                            //Added By Maitri Gandhi for #2105 on 11/4/2016
-                            string returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
-                            if (returnMessage != "Success")
+                            TempData["ErrorMessage"] = returnMessage;
+                            return View(form);
+                        }
+                        else
+                        {
+                            //// Update New Password by UserId.
+                            int retVal = objBDSServiceClient.ChangePassword(Sessions.User.UserId, SingleHash_NewPassword, SingleHash_CurrentPassword);
+
+                            if (retVal == -1)
                             {
-                                TempData["ErrorMessage"] = returnMessage;
-                                return View(form);
+                                TempData["ErrorMessage"] = Common.objCached.CurrentUserPasswordNotCorrect;
                             }
-                            else
+                            else if (retVal == 1)
                             {
+                                if (Sessions.User.LastLoginDate == null)
+                                {
+                                    returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
+                                }
                                 ChangePasswordMail();
                                 //Redirect users logging in for the first time to the change password module
                                 if (Sessions.User.LastLoginDate == null && Sessions.RedirectToChangePassword)
