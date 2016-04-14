@@ -167,15 +167,7 @@ namespace RevenuePlanner.Controllers
                         string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.CurrentPassword.ToString().Trim());
                         string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
                         /* ---------------------------------------------------------------*/
-                        //Added By Maitri Gandhi for #2105 on 11/4/2016
-                        string returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
-                        if (returnMessage != "Success")
-                        {
-                            TempData["ErrorMessage"] = returnMessage;
-                            return View(form);
-                        }
-                        else
-                        {
+                        
                     //// Update New Password by UserId.
                         int retVal = objBDSServiceClient.ChangePassword(Sessions.User.UserId, SingleHash_NewPassword, SingleHash_CurrentPassword);
 
@@ -185,24 +177,33 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (retVal == 1)
                         {
-                            ChangePasswordMail();
-                            //Redirect users logging in for the first time to the change password module
-                            if (Sessions.User.LastLoginDate == null && Sessions.RedirectToChangePassword)
+                            //Added By Maitri Gandhi for #2105 on 11/4/2016
+                            string returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
+                            if (returnMessage != "Success")
                             {
-                                Sessions.RedirectToChangePassword = false;
-                                //Update last login date for user
-                                objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
-
-                                //Commented By Komal Rawal for #1457
-                                //if (Sessions.User.SecurityQuestionId == null)
-                                //{
-                                //    Sessions.RedirectToSetSecurityQuestion = true;
-                                //    return RedirectToAction("SetSecurityQuestion", "Login");
-                                //}
-
-                                return RedirectToAction("Index", "Home");
+                                TempData["ErrorMessage"] = returnMessage;
+                                return View(form);
                             }
-                            TempData["SuccessMessage"] = Common.objCached.UserPasswordChanged;
+                            else
+                            {
+                                ChangePasswordMail();
+                                //Redirect users logging in for the first time to the change password module
+                                if (Sessions.User.LastLoginDate == null && Sessions.RedirectToChangePassword)
+                                {
+                                    Sessions.RedirectToChangePassword = false;
+                                    //Update last login date for user
+                                    objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
+
+                                    //Commented By Komal Rawal for #1457
+                                    //if (Sessions.User.SecurityQuestionId == null)
+                                    //{
+                                    //    Sessions.RedirectToSetSecurityQuestion = true;
+                                    //    return RedirectToAction("SetSecurityQuestion", "Login");
+                                    //}
+
+                                    return RedirectToAction("Index", "Home");
+                                }
+                                TempData["SuccessMessage"] = Common.objCached.UserPasswordChanged;
                             }
                         }
                     }
