@@ -443,7 +443,8 @@ namespace RevenuePlanner.Test.Controllers
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
             string Section = Enums.Section.Tactic.ToString();
             string Popuptype = Enums.ModelTypeText.Copying.ToString();
-            var result = controller.LoadCopyEntityPopup(entityId, Section, Popuptype) as PartialViewResult;
+            string RedirectType = Enums.InspectPopupRequestedModules.Index.ToString();
+            var result = controller.LoadCopyEntityPopup(entityId, Section, Popuptype, RedirectType) as PartialViewResult;
             if (result != null)
             {
                 Assert.AreEqual("~/Views/Plan/_CopyEntity.cshtml", result.ViewName);
