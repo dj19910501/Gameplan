@@ -631,13 +631,17 @@ namespace Integration
                         List<SyncError> lstSyncError = new List<SyncError>();
                         _isResultError = integrationWorkFrontClient.SyncData(out lstSyncError);
                         _lstAllSyncError.AddRange(lstSyncError);
-                        if(lstSyncError.Count>0)
+                        if(lstSyncError.Count>0 && _isResultError)
                         {
                             Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "WorkFront Sync Error");
                             foreach(SyncError e in lstSyncError)
                             {
                                 Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, e.SectionName, Enums.MessageLabel.Error, e.Message);
                             }
+                        }
+                        else
+                        {
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Success: Sync with WorkFront");
                         }
                     }
                     else
