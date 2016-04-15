@@ -131,26 +131,27 @@ namespace RevenuePlanner.Controllers
             List<BDSService.AppConfiguration> AppConfigObj = new List<BDSService.AppConfiguration>();
             int FailedAttempts = Convert.ToInt32(TempData[form.UserEmail]);
             var MaxAttempts = Enums.AppConfiguration.Pwd_MaxAttempts.ToString();
-            var days = Enums.AppConfiguration.Pwd_ExpiryDays.ToString();
-            AppConfigObj = objBDSServiceClient.ValidateAppConfiguration(Sessions.ApplicationId, form.UserEmail);
-            var TotalAttempts = AppConfigObj.Where(a => a.Config_Key.Equals(MaxAttempts)).Select(a => a.Config_Value).FirstOrDefault();
-            //Added By Maitri 13/4/2016
-            var PasswordConfiguration = AppConfigObj.Where(a => a.Config_Key.Equals(days))
-                                        .Select(a => new
-                                        {
-                                            Config_Value = a.Config_Value,
-                                            PasswordModifiedDate = a.PasswordModifiedDate
-                                        }).FirstOrDefault();
+            var ExpDays = Enums.AppConfiguration.Pwd_ExpiryDays.ToString();            
+            var TotalAttempts = "";                      
             //End
-           
             try
             {
+                Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+                //Added By komal rawal for password lockout feature #2107
+                AppConfigObj = objBDSServiceClient.ValidateAppConfiguration(applicationId, form.UserEmail);
+                TotalAttempts = AppConfigObj.Where(a => a.Config_Key.Equals(MaxAttempts)).Select(a => a.Config_Value).FirstOrDefault(); //End
+                //Added By Maitri 13/4/2016
+                var PasswordConfiguration = AppConfigObj.Where(a => a.Config_Key.Equals(ExpDays))
+                                            .Select(a => new
+                                            {
+                                                Config_Value = a.Config_Value,
+                                                PasswordModifiedDate = a.PasswordModifiedDate
+                                            }).FirstOrDefault();
               
                 if (ModelState.IsValid)
                 {                    
                     BDSService.User obj = new BDSService.User();
-
-                    Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+                    
                     string singlehash = Common.ComputeSingleHash(form.Password.ToString().Trim());
 
 
@@ -160,6 +161,7 @@ namespace RevenuePlanner.Controllers
                     if (obj == null)
                     {
                         ModelState.AddModelError("", Common.objCached.InvalidLogin);
+
                     }
                     else if (obj.Email == "" )
                     {
@@ -340,8 +342,16 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
+                    if (form.Password != null && form.Password.Length < 8)
+                    {
+                        ModelState.AddModelError("", Common.objCached.InvalidPassword);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", Common.objCached.InvalidLogin);
+                    }
                     //Modified By komal rawal for password lockout feature #2107
-                    if (TotalAttempts != null && Convert.ToInt32(TotalAttempts) != 0)
+                    if (TotalAttempts != null && TotalAttempts != "" && Convert.ToInt32(TotalAttempts) != 0)
                     {
                         if (IsEmailInvalid == false)
                         {
@@ -360,24 +370,14 @@ namespace RevenuePlanner.Controllers
                         }
                     TempData.Keep(form.UserEmail);
                     }
-                    //End
-                
-                    if (form.Password != null && form.Password.Length < 8)
-                    {
-                        ModelState.AddModelError("", Common.objCached.InvalidPassword);
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", Common.objCached.InvalidLogin);
-                    }
-
+                    //End                                
 
                 }
             }
             catch (Exception e)
             {
                 //Modified By komal rawal for password lockout feature #2107
-                if (TotalAttempts != null && Convert.ToInt32(TotalAttempts) != 0 )
+                if (TotalAttempts != null && TotalAttempts != "" && Convert.ToInt32(TotalAttempts) != 0 )
                 {
                     if(IsEmailInvalid == false)
                     { 
@@ -391,7 +391,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "you have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
+                    ModelState.AddModelError("", "You have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
                 }
                     }
                 TempData.Keep(form.UserEmail);

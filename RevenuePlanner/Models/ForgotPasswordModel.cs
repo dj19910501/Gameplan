@@ -44,7 +44,8 @@ namespace RevenuePlanner.Models
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "New Password")]
-        [MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        //[MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        [MaxLength(50, ErrorMessage = "Password cannot be more than 50 characters.")] //Added By Maitri Gandhi on 15/4/2016
         [MinLength(8, ErrorMessage = "Password should be atleast 8 characters.")]
         [RegularExpression(@"(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&*_+|~=`:'\(\)\-\\\{\}\[\]\<\>\//]).*$", ErrorMessage = " ")]    //Added By Maitri Gandhi on 8/4/2016 for #2105
         public string NewPassword { get; set; }
@@ -53,7 +54,8 @@ namespace RevenuePlanner.Models
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Confirm New Password")]
-        [MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        //[MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        [MaxLength(50, ErrorMessage = "Password cannot be more than 50 characters.")] //Added By Maitri Gandhi on 15/4/2016
         public string ConfirmNewPassword { get; set; }
 
         public bool IsSuccess { get; set; }

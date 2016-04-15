@@ -86,7 +86,7 @@
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.Password)
 
-                    @Html.TextBoxFor(model => model.Password, new { placeholder = "Password (8 char. min)", type = "password" })
+                    @Html.TextBoxFor(model => model.Password, new { maxlength = "50",placeholder = "Password (8 char. min)", type = "password" })
                     <span id="result"></span>
                     @Html.ValidationMessageFor(model => model.Password)
                 </div>
@@ -94,7 +94,7 @@
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.ConfirmPassword)
 
-                    @Html.TextBoxFor(model => model.ConfirmPassword, new { placeholder = "Confirm Password (8 char. min)", type = "password" })
+                    @Html.TextBoxFor(model => model.ConfirmPassword, new { maxlength = "50",placeholder = "Confirm Password (8 char. min)", type = "password" })
                     <span id="match"></span>
                     @Html.ValidationMessageFor(model => model.ConfirmPassword)
                 </div>
