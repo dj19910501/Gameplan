@@ -96,7 +96,7 @@
                         </div>
                     }
 
-                    @if(IsPlanCreateAll)
+                    @if (IsPlanCreateAll)
                     {
                         <div style="float: right; position: relative;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
@@ -111,7 +111,7 @@
                             </div>
                         </div>
                     }
-                    @if ( IsPlanEditable)
+                    @if (IsPlanEditable)
                     {
                         <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px; cursor: pointer;"></span>
                     }
@@ -140,7 +140,7 @@
                 <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
                 <h2 class="title-simple source-sans-prolight">
                     <span>
-                        <span id="lblCampaignTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(campaignTitle)" >@HttpUtility.HtmlDecode(campaignTitle)</span>
+                        <span id="lblCampaignTitle" class="tipsyclassTitle ConcatTextlength" title="@HttpUtility.HtmlDecode(campaignTitle)">@HttpUtility.HtmlDecode(campaignTitle)</span>
                     </span>
                     @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(campaignTitle), new { placeholder = "Campaign name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = HttpUtility.HtmlDecode(campaignTitle), id = "txtTitle" })
                     @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
@@ -263,7 +263,7 @@
 
 
           //Added By Komal Rawal for #1324
-      
+
           //End
           if (planCampaignId != 0) {
               if ($('#btnEditCampaign').hasClass('edit-icon-white') && $("#hdnCampaignOpt").val() == '@Enums.InspectPopupMode.Edit.ToString()') {
@@ -385,11 +385,14 @@
           });
           $('#NewProgram').click(function () {
               //Modified by Rahul Shah for PL #2031 on 22/03/2016
+              var returnpara = true;
               var activeTab = $("#InspectTab li.active a").text();
               if (activeTab != null && activeTab != undefined && activeTab != '') {
-                  SaveAllData(activeTab);
+                  returnpara = SaveAllData(activeTab);
               }
-              loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanCampaignId').val(), $("#hdnRedirectType").val());
+              if(returnpara){
+                  loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanCampaignId').val(), $("#hdnRedirectType").val());
+              }
           });
 
           // Close event for Error Message & Success Message Close button
@@ -400,71 +403,75 @@
               /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
           });
           $('#CloneCampaign').click(function () {
+              var returnpara = true;
               var activeTab = $("#InspectTab li.active a").text();
               if (activeTab != null && activeTab != undefined && activeTab != '') {
-                  SaveAllData(activeTab);
+                  returnpara = SaveAllData(activeTab);
               }
-              isDataModified = true;
-              var idPlanCamaign = $("#hdnPlanCampaignId").val();
-              var Title = $("#lblCampaignTitle").html();
-              $.ajax({
-                  type: 'POST',
-                  url: '@Url.Content("~/Inspect/Clone")',
-                  data: {
-                      CloneType: '@Enums.DuplicationModule.Campaign',
-                      Id: idPlanCamaign,
-                      title: Title,
-                      CalledFromBudget: '@CalledFromBudget',
-                      RequsetedModule: '@RedirectType',
-                      planId: '@planId'
-                  },
-                  success: function (data) {
-                      if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
-                          window.location = '@Url.Content("~/Login/Index")';
-                      }
-                      else if (data.IsSuccess) {
-
-                          var currentTab = "Setup";
-
-                          if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
-                              currentTab = "Budget";
+              if(returnpara) {
+                  isDataModified = true;
+                  var idPlanCamaign = $("#hdnPlanCampaignId").val();
+                  var Title = $("#lblCampaignTitle").html();
+                  $.ajax({
+                      type: 'POST',
+                      url: '@Url.Content("~/Inspect/Clone")',
+                      data: {
+                          CloneType: '@Enums.DuplicationModule.Campaign',
+                          Id: idPlanCamaign,
+                          title: Title,
+                          CalledFromBudget: '@CalledFromBudget',
+                          RequsetedModule: '@RedirectType',
+                          planId: '@planId'
+                      },
+                      success: function (data) {
+                          if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                              window.location = '@Url.Content("~/Login/Index")';
                           }
-                          var planCampaignId = data.Id;
-                          var expandplanCampaignId = data.expand;
-                          var planProgramId = "";
+                          else if (data.IsSuccess) {
 
-                          loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+                              var currentTab = "Setup";
 
-                          if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
-                              $("#hdnBudgetingExpandId").val(expandplanCampaignId);
-                              $("#hdnBudgetingIsSave").val("true");
+                              if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                                  currentTab = "Budget";
+                              }
+                              var planCampaignId = data.Id;
+                              var expandplanCampaignId = data.expand;
+                              var planProgramId = "";
+
+                              loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+
+                              if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
+                                  $("#hdnBudgetingExpandId").val(expandplanCampaignId);
+                                  $("#hdnBudgetingIsSave").val("true");
+                              }
+
+                              $("#successMessage").css("display", "block");
+                              $("#spanMessageSuccess").empty();
+                              $("#spanMessageSuccess").text(data.msg);
+                              $("#errorMessage").css("display", "none");
+                              $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                              RefershPlanHeaderCalc();   //Modified By Komal Rawal on 04-03-16 to get proper value in header according to filter on add or copy Campaign.
+                              return;
+
                           }
-
-                          $("#successMessage").css("display", "block");
-                          $("#spanMessageSuccess").empty();
-                          $("#spanMessageSuccess").text(data.msg);
-                          $("#errorMessage").css("display", "none");
-                          $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
-                          RefershPlanHeaderCalc();   //Modified By Komal Rawal on 04-03-16 to get proper value in header according to filter on add or copy Campaign.
-                          return;
-
+                          else {
+                              $("#successMessageViewCampaign").slideUp(50);
+                              $("#errorMessageEditCampaign").slideDown(400);
+                              $("#spanMessageEditCampaign").empty();
+                              $("#spanMessageEditCampaign").val(data.msg);
+                              return false;
+                          }
                       }
-                      else {
-                          $("#successMessageViewCampaign").slideUp(50);
-                          $("#errorMessageEditCampaign").slideDown(400);
-                          $("#spanMessageEditCampaign").empty();
-                          $("#spanMessageEditCampaign").val(data.msg);
-                          return false;
-                      }
-                  }
-              });
+                  });
+              }
           });
 
-        
+
       });
-    
+
     function SaveAllData(activeTab) {
         var CampaignOpt = $("#hdnCampaignOpt").val();
+        $('.btn-dropdwn').hide();
         if (CampaignOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
             if (activeTab == TabSetup) {
                 var ReturnParameter = SetupCampaignSave();
@@ -712,13 +719,16 @@
     });
     //Added by Rahul Shah on 12/04/2016 for PL #2038
     $('#NewCampaignfromPopup').click(function () {
+        var returnpara = true;
         var activeTab = $("#InspectTab li.active a").text();
         if (activeTab != null && activeTab != undefined && activeTab != '') {
-            SaveAllData(activeTab);
+            returnpara = SaveAllData(activeTab);
         }
         var planId = @planId;
         isCopyTactic = PlanId;
-        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RedirectType');
+        if(returnpara){
+            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RedirectType');
+        }
         //$('.taskpopup').css('display', 'none');
     });
 </script>

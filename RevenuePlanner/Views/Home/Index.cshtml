@@ -8587,7 +8587,7 @@ function () {
             ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, 0, '@RequestedModule');
         }
     }
-    function OpentCopyPopup(obj) {        
+    function OpentCopyPopup(obj) {
         //Added by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
         var redirectType = $(obj).attr('redirecttype');
         if (redirectType == "" || redirectType == undefined) {
@@ -8611,20 +8611,22 @@ function () {
             }
         }
         // Added by Rahul Shah to save data when 'Copy To' or 'Link To' operation perform from the inspection window
+        var returnpara = true;
         var activeTab = $("#InspectTab li.active a").text();
         if (activeTab != null && activeTab != undefined && activeTab != '') {
-            SaveAllData(activeTab);
+            returnpara = SaveAllData(activeTab);
             $('#spanMessageSuccess').empty();
             $("#successMessage").css("display", "none");
-        }        
+            $('.btn-dropdwn').hide();
+        }
         var sectionType = $(obj).attr('sectionType');
         var entityId = $(obj).attr('entityId');
         var popuptype = $(obj).attr('popupType');//Added by Rahul Shah for PL #1847
-        
-        $("#dvCopyEntity").empty();
-        var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
-        //$("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
-        $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype + "&RedirectType=" + redirectType); // section parameter added to open share tactic popup
+        if (returnpara) {
+            $("#dvCopyEntity").empty();
+            var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
+            $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype + "&RedirectType=" + redirectType); // section parameter added to open share tactic popup
+        }
     }
     function SaveAsPreset() {
 

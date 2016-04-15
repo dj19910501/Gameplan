@@ -237,6 +237,7 @@
 
     //Added By Komal Rawal for #1327
     function SaveAllData(activeTab) {
+        $('.btn-dropdwn').hide();
         if ('@InspectMode' == '@Enums.InspectPopupMode.Edit.ToString()') {
             if (activeTab == TabSetup) {
                 var ReturnParameter = SetupPlanSave();
@@ -361,70 +362,76 @@
 
     $('#NewCampaign').click(function () {
         //Modified by Rahul Shah for PL #2031 on 22/03/2016
+        var returnpara = true;
         var activeTab = $("#InspectTab li.active a").text();
         if (activeTab != null && activeTab != undefined && activeTab != '') {
-            SaveAllData(activeTab);
+            returnpara = SaveAllData(activeTab);
         }
-        var planId = $("#hdnPlanId").val();
-        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", planId, '@RequestedModule');
+        if (returnpara) {
+            var planId = $("#hdnPlanId").val();
+            loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", planId, '@RequestedModule');
+        }
     });
 
     $('#ClonePlan').click(function () {
         //Modified by Rahul Shah for PL #2031 on 22/03/2016
+        var returnpara = true;        
         var activeTab = $("#InspectTab li.active a").text();
         if (activeTab != null && activeTab != undefined && activeTab != '') {
-            SaveAllData(activeTab);
+            returnpara = SaveAllData(activeTab);
         }
-        var planId = $("#hdnPlanId").val();
-        if (parseInt(planId) > 0) {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/Clone")',
-                data: {
-                    CloneType: '@Enums.DuplicationModule.Plan',
-                    Id: '@Model.PlanId',
-                    title: ''
-                },
-                success: function (data) {
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content("~/Login/Index")';
-                    }
-                    else {
-                        if (data.redirect) {
-                            var currentTab = "Setup";
+        if (returnpara) {
+            var planId = $("#hdnPlanId").val();
+            if (parseInt(planId) > 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/Clone")',
+                    data: {
+                        CloneType: '@Enums.DuplicationModule.Plan',
+                        Id: '@Model.PlanId',
+                        title: ''
+                    },
+                    success: function (data) {
+                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                            window.location = '@Url.Content("~/Login/Index")';
+                        }
+                        else {
+                            if (data.redirect) {
+                                var currentTab = "Setup";
 
-                            if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
-                                 currentTab = "Budget";
+                                if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                                    currentTab = "Budget";
+                                }
+
+                                var planId = data.Id;
+                                var expandplanProgramId = data.expand;
+                                var planCampaignId = "";
+                                var planProgramId = "";
+                                loadInspectPopup(planId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
+
+                                if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
+                                    $("#hdnBudgetingExpandId").val(expandplanProgramId);
+                                    $("#hdnBudgetingIsSave").val("true");
+                                    $("#hdnBudgetingCurrentTab").val("aAllocated")
+                                    $("#hdnBudgetingCurrentPlanId").val(planId)
+                                }
+                                else {
+                                    RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, 0);
+                                }
+
+                                $("#successMessage").css("display", "block");
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(data.msg);
+                                return;
                             }
-
-                            var planId = data.Id;
-                            var expandplanProgramId = data.expand;
-                            var planCampaignId = "";
-                            var planProgramId="";
-                            loadInspectPopup(planId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
-
-                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
-                                $("#hdnBudgetingExpandId").val(expandplanProgramId);
-                                $("#hdnBudgetingIsSave").val("true");
-                                $("#hdnBudgetingCurrentTab").val("aAllocated")
-                                $("#hdnBudgetingCurrentPlanId").val(planId)
+                            if (data.errormsg != '') {
+                                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html());
+                                return;
                             }
-                            else {
-                            RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, 0);
-                        }
-
-                            $("#successMessage").css("display", "block");
-                            $("#spanMessageSuccess").empty();
-                            $("#spanMessageSuccess").text(data.msg);
-                            return;
-                        }
-                        if (data.errormsg != '') {
-                            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html());
-                            return;
                         }
                     }
-                }
-            });
+                });
+            }
         }
     });
 
@@ -501,12 +508,15 @@
     });
     //Added by Rahul Shah on 12/04/2016 for PL #2038
     $("#NewPlanfromPopup").click(function (e) {
+        var returnpara = true;
         var activeTab = $("#InspectTab li.active a").text();
         if (activeTab != null && activeTab != undefined && activeTab != '') {
-            SaveAllData(activeTab);
+            returnpara = SaveAllData(activeTab);
         }
-        var url = '@Url.Action("CreatePlan", "Plan")';
-        displayconfirm(url);
+        if (returnpara) { 
+            var url = '@Url.Action("CreatePlan", "Plan")';
+            displayconfirm(url);
+        }
     });
 
 </script>

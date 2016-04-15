@@ -3,11 +3,11 @@
 
 @{
     RevenuePlanner.Models.InspectModel lineitemMaster = null;
-    if(Model != null) 
+    if(Model != null)
     {
         lineitemMaster = Model;
     }
-     
+
     var popupvalue = string.Empty;
     var RedirectType = (string)lineitemMaster.RedirectType;
     var inspectMode = string.Empty;
@@ -36,7 +36,7 @@
         lineitemTitle = lineitemMaster.Title;
         IsPlanCreateAll = (bool)lineitemMaster.IsPlanCreateAll;
     }
-   
+
     string colorCode = "C6EBF3";
     bool IsOtherLineItem = false;
     if (ViewBag.IsOtherLineItem != null)
@@ -87,21 +87,24 @@
                     @if (IsPlanEditable)
                     {
                         if (!IsOtherLineItem)
-                        {  
-                        <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
-                            <button class="delete-btn-gray" id="deleteLineItem" type="button">Delete</button>
-                        </div>
+                        {
+                            <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
+                                <button class="delete-btn-gray" id="deleteLineItem" type="button">Delete</button>
+                            </div>
                         }
                     }
 
-                    @if (!IsOtherLineItem && IsPlanCreateAll)
+                    @if (IsPlanCreateAll)
                     {
                         <div style="float: right; position: relative;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                             <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupLineitem">
                                 <ul style="margin: 0;">
                                     <li class="new-prog" id="NewLineItem">New Line Item</li>
-                                    <li class="copy-camp" id="CloneLineItem">Copy Line Item</li>
+                                    @if (!IsOtherLineItem)
+                                    {
+                                        <li class="copy-camp" id="CloneLineItem">Copy Line Item</li>
+                                    }
                                 </ul>
                             </div>
                         </div>
@@ -111,13 +114,13 @@
                     {
                         <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px; cursor: pointer;"></span>
                     }
-                </span> 
+                </span>
             }
 
             @if (string.IsNullOrEmpty(lineitemTitle))
             {
                 <span class="Save-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px; cursor: pointer;"></span>
-               
+
             }
 
             <button class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></button> @*Modified by Bhumika #2003 from "buttom" to "button"  *@
@@ -133,7 +136,7 @@
                 <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
                 <h2 class="title-simple source-sans-prolight">
                     <span>
-                        <span id="lblLineitemTitle" class="tipsyclassTitle" title="@Html.Raw(lineitemTitle)" >@Html.Raw(lineitemTitle)</span>
+                        <span id="lblLineitemTitle" class="tipsyclassTitle" title="@Html.Raw(lineitemTitle)">@Html.Raw(lineitemTitle)</span>
                     </span>
                     @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(lineitemTitle), new { placeholder = "Line Item name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = lineitemTitle, id = "txtTitle" })
                     @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
@@ -157,9 +160,9 @@
                 {
                     if (!Sessions.IsBudgetShow)
                     {
-                    <li class="pull-left" id="liBudget">
-                        <a>Budget</a>
-                    </li>
+                        <li class="pull-left" id="liBudget">
+                            <a>Budget</a>
+                        </li>
                     }
                 }
             </ul>
@@ -186,12 +189,13 @@
     //// Ticket: 942 Exception handeling in Gameplan.
     function redirectOnServiceUnavailibility() {
         if ('@Html.Raw(Json.Encode(isServiceUnavailable))' == 'true') {
-         window.location = '@Url.Content(RevenuePlanner.Helpers.Common.RedirectOnServiceUnavailibilityPage)';
-     }
- }
-    //Added By Komal Rawal 
+            window.location = '@Url.Content(RevenuePlanner.Helpers.Common.RedirectOnServiceUnavailibilityPage)';
+        }
+    }
+    //Added By Komal Rawal
     function SaveAllData(activeTab) {
         var LineitemOpt = $("#hdnLineitemOpt").val();
+        $('.btn-dropdwn').hide();
         if (LineitemOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
             if (activeTab == TabSetup) {
                 var ReturnParameter = SetupSaveLineitem();
@@ -213,25 +217,25 @@
                 //}
                 var hdnTacticStatus = $("#hdnParentTacticStatus").val();
                 var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-                     var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-                     var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-                     if (typeof hdnTacticStatus != 'undefined' && (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus)) {
-                         var ReturnParameter = SaveLineitemActual();
-                      
-                     }
-                     else {
-                         var ReturnParameter = SaveTitle();
-                     }
-                     if (ReturnParameter == false) {
-                         return false;
-                     }
-                 }
+                var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                if (typeof hdnTacticStatus != 'undefined' && (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus)) {
+                    var ReturnParameter = SaveLineitemActual();
+
+                }
+                else {
+                    var ReturnParameter = SaveTitle();
+                }
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
 
 
-     }
+        }
 
-     return true;
- }
+        return true;
+    }
 
 
 
@@ -264,18 +268,18 @@
                 $('#txtTitle').css('display', 'block');
                 $('#lblLineitemTitle').css('display', 'none');
                 url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
+            }
+            else {
+                url = '@Url.Content("~/Inspect/LoadSetupLineitem/")';
+            }
         }
-        else {
-            url = '@Url.Content("~/Inspect/LoadSetupLineitem/")';
-        }
-    }
 
-    if (tabValue == TabBudget) {
-        if (LineitemOpt == "Edit") {
-            $('#txtTitle').css('display', 'block');
-            $('#lblLineitemTitle').css('display', 'none');
-        }
-        url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
+        if (tabValue == TabBudget) {
+            if (LineitemOpt == "Edit") {
+                $('#txtTitle').css('display', 'block');
+                $('#lblLineitemTitle').css('display', 'none');
+            }
+            url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
         }
         if (tabValue == TabActual) {
             if (LineitemOpt == "Edit") {
@@ -299,7 +303,7 @@
             }
         });
     }
-    // Close event for Error Message & Success Message Close button 
+    // Close event for Error Message & Success Message Close button
     $(".alert").find(".close").on("click", function (e) {
         e.stopPropagation();
         e.preventDefault();
@@ -327,12 +331,12 @@
         var InspectValue = $("#hdnInspectPopup").val();
         var tabtext = ($("#li" + InspectValue).children('a').text());
         var tacticId = '@tacticId';
-         if (tabtext == "Setup") {
-             url = '@Url.Content("~/Inspect/createLineitem/")';
+        if (tabtext == "Setup") {
+            url = '@Url.Content("~/Inspect/createLineitem/")';
             $("#divTab").empty();
             $("#divTab").load(url + '?id=' + tacticId);
         }
-         //$("#btnEditlineItem").css("display", "none");
+        //$("#btnEditlineItem").css("display", "none");
         $("#AddForm").css("display", "none");
         $('#txtTitle').css('display', 'block');
         $('#txtTitle').text('');
@@ -340,24 +344,24 @@
         return false;
     }
 
- $(document).ready(
-  function () {
-      //// Call function to redirect on service unavailibility.
-      //// Added By: Maninder Singh Wadhva on 11/24/2014.
-      //// Ticket: 942 Exception handeling in Gameplan.
-      var modelHeight = $(window).height();
-      var headerHeight = $('.headerfix-wraper').height();
-      var bodyWrapperMaxHeight = modelHeight - headerHeight - 100;
-      //$('.pop-body-wraper').css('height', '92%');
-      redirectOnServiceUnavailibility();
-      CloseIconClick();
-      $("#btnEditlineItem").css("display", "block");
-      $("#AddForm").css("display", "block");
-      $("#divDeleteProgram").css("display", "block");
-      NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
-      var InspectValue = $("#hdnInspectPopup").val();
+    $(document).ready(
+     function () {
+         //// Call function to redirect on service unavailibility.
+         //// Added By: Maninder Singh Wadhva on 11/24/2014.
+         //// Ticket: 942 Exception handeling in Gameplan.
+         var modelHeight = $(window).height();
+         var headerHeight = $('.headerfix-wraper').height();
+         var bodyWrapperMaxHeight = modelHeight - headerHeight - 100;
+         //$('.pop-body-wraper').css('height', '92%');
+         redirectOnServiceUnavailibility();
+         CloseIconClick();
+         $("#btnEditlineItem").css("display", "block");
+         $("#AddForm").css("display", "block");
+         $("#divDeleteProgram").css("display", "block");
+         NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
+         var InspectValue = $("#hdnInspectPopup").val();
 
-      if (('@IsOtherLineItem'.toLowerCase().toString() == "true") && (InspectValue == "Budget")) {
+         if (('@IsOtherLineItem'.toLowerCase().toString() == "true") && (InspectValue == "Budget")) {
              InspectValue = "Setup";
          }
 
@@ -376,9 +380,9 @@
              // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
              var returnpara = true;
              if (tabtext != activeTab) {
-                 var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal 
+                 var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal
              }
-           
+
              PlanLineItemId = $("#hdnPlanLineItemID").val();
              if (PlanLineItemId != 0 || tabtext != activeTab) {
                  if (returnpara) {
@@ -407,7 +411,7 @@
              loadAddSetup();
          }
          if ($('#btnEditlineItem').hasClass('edit-icon-white') && inspectMode == '@Enums.InspectPopupMode.Edit.ToString()') {
-             $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318 
+             $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318
              $('#btnEditlineItem').addClass('Save-icon-white');
              $("#errorMessage").css("display", "none");
              $("#successMessage").css("display", "none");
@@ -417,263 +421,269 @@
              $('#lblLineitemTitle').css('display', 'none');
          }
 
-      $("#NewLineItem").on("click", function () {
-          var activeTab = $("#InspectTab li.active a").text();
-          if (activeTab != null && activeTab != undefined && activeTab != '') {
-              SaveAllData(activeTab);
-          }
-          loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@tacticId', '@RedirectType');
-      });
+         $("#NewLineItem").on("click", function () {
+             var returnpara = true;
+             var activeTab = $("#InspectTab li.active a").text();
+             if (activeTab != null && activeTab != undefined && activeTab != '') {
+                 returnpara = SaveAllData(activeTab);
+             }
+             if (returnpara) {
+                 loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@tacticId', '@RedirectType');
+             }
+         });
 
-      $('#CloneLineItem').click(function () {
-          var activeTab = $("#InspectTab li.active a").text();
-          if (activeTab != null && activeTab != undefined && activeTab != '') {
-              SaveAllData(activeTab);
-          }
-          isDataModified = true;
-          var idPlanProgram = $("#hdnPlanLineItemID").val();
-          var Title = $("#lblLineitemTitle").html();
-          $.ajax({
-              type: 'POST',
-              url: '@Url.Content("~/Inspect/Clone")',
-              data: {
-                  CloneType: '@Enums.DuplicationModule.LineItem',
-                Id: idPlanProgram,
-                title: Title,
-                CalledFromBudget: '@CalledFromBudget',
-                RequsetedModule: '@RedirectType'
-            },
-              success: function (data) {
-                  if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
-                      window.location = '@Url.Content("~/Login/Index")';
-                }
-                else if (data.IsSuccess) {
+         $('#CloneLineItem').click(function () {
+             var activeTab = $("#InspectTab li.active a").text();
+             var returnpara = true;
+             if (activeTab != null && activeTab != undefined && activeTab != '') {
+                 returnpara = SaveAllData(activeTab);
+             }
+             if (returnpara) {
+                 isDataModified = true;
+                 var idPlanProgram = $("#hdnPlanLineItemID").val();
+                 var Title = $("#lblLineitemTitle").html();
+                 $.ajax({
+                     type: 'POST',
+                     url: '@Url.Content("~/Inspect/Clone")',
+                     data: {
+                         CloneType: '@Enums.DuplicationModule.LineItem',
+                         Id: idPlanProgram,
+                         title: Title,
+                         CalledFromBudget: '@CalledFromBudget',
+                         RequsetedModule: '@RedirectType'
+                     },
+                     success: function (data) {
+                         if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                             window.location = '@Url.Content("~/Login/Index")';
+                         }
+                         else if (data.IsSuccess) {
 
-                    var currentTab = "Setup";
+                             var currentTab = "Setup";
 
-                    if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
-                            currentTab = "Budget";
-                        }
+                             if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                                 currentTab = "Budget";
+                             }
 
-                        var lineItemId = data.Id;
-                        var expandplanLineItemId = data.expand;
-                        var planCampaignId = '@campaignId';
-                        var planProgramId = '@planProgrameId';
-                    var planTacticId = '@tacticId';
-                    loadInspectPopup(lineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+                             var lineItemId = data.Id;
+                             var expandplanLineItemId = data.expand;
+                             var planCampaignId = '@campaignId';
+                             var planProgramId = '@planProgrameId';
+                             var planTacticId = '@tacticId';
+                             loadInspectPopup(lineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
 
-                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
-                        $("#hdnBudgetingExpandId").val(expandplanLineItemId);
-                        $("#hdnBudgetingIsSave").val("true");
-                    }
+                             if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
+                                 $("#hdnBudgetingExpandId").val(expandplanLineItemId);
+                                 $("#hdnBudgetingIsSave").val("true");
+                             }
 
-                    $("#successMessage").css("display", "block");
-                    $("#spanMessageSuccess").empty();
-                    $("#spanMessageSuccess").text(data.msg);
-                    $("#errorMessage").css("display", "none");
-                    return;
-                }
-                else {
-                    $("#successMessageViewProgram").slideUp(50);
-                    $("#errorMessageEditProgram").slideDown(400);
-                    $("#spanMessageEditProgram").empty();
-                    $("#spanMessageEditProgram").val(data.msg);
-                    return false;
-                }
-            }
-          });
-      });
+                             $("#successMessage").css("display", "block");
+                             $("#spanMessageSuccess").empty();
+                             $("#spanMessageSuccess").text(data.msg);
+                             $("#errorMessage").css("display", "none");
+                             return;
+                         }
+                         else {
+                             $("#successMessageViewProgram").slideUp(50);
+                             $("#errorMessageEditProgram").slideDown(400);
+                             $("#spanMessageEditProgram").empty();
+                             $("#spanMessageEditProgram").val(data.msg);
+                             return false;
+                         }
+                     }
+                 });
+             }
+         });
 
-      $("#btnEditlineItem").on("click", function () {
-          isDataModified = true;
-          var activeTab = $("#InspectTab li.active a").text();
-          if ($('#btnEditlineItem').hasClass('edit-icon-white')) {
-              $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
-              $('#btnEditlineItem').addClass('Save-icon-white');
-              $("#errorMessage").css("display", "none");
-              $("#successMessage").css("display", "none");
-              $("#hdnLineitemOpt").val("Edit");
-              var InspectValue = $("#hdnInspectPopup").val();
-              var tabtext = ($("#li" + InspectValue).children('a').text());
-              if (tabtext == "Setup") {
-                  url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
-                $("#divTab").empty();
-                $("#divTab").load(url + '?id=' + PlanLineItemId, function (response, status, xhr) {
-                    if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                        //// Call function to redirect on service unavailibility.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                }
-            });
-        }
-        else if (tabtext == "Budget") {
-            url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
-                  $("#divTab").empty();
-                  $("#divTab").load(url + '?id=' + PlanLineItemId);
-              }
-              else if (tabtext == "Actuals") {
-                  //// Modified By: Arpita Soni on 1/17/2015.
-                  //// Ticket: 1067 
-                  var hdnTacticStatus = $("#hdnParentTacticStatus").val();
-                  var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-                  var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-                  var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-                  if ((hdnTacticStatus == null || hdnTacticStatus == '') || (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus)) {
-                      loadReview(PlanLineItemId, TabSetup);
-                  }
-                  else {
-                      loadReview(PlanLineItemId, TabActual);
-                  }
-              }
+         $("#btnEditlineItem").on("click", function () {
+             isDataModified = true;
+             var activeTab = $("#InspectTab li.active a").text();
+             if ($('#btnEditlineItem').hasClass('edit-icon-white')) {
+                 $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                 $('#btnEditlineItem').addClass('Save-icon-white');
+                 $("#errorMessage").css("display", "none");
+                 $("#successMessage").css("display", "none");
+                 $("#hdnLineitemOpt").val("Edit");
+                 var InspectValue = $("#hdnInspectPopup").val();
+                 var tabtext = ($("#li" + InspectValue).children('a').text());
+                 if (tabtext == "Setup") {
+                     url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
+                     $("#divTab").empty();
+                     $("#divTab").load(url + '?id=' + PlanLineItemId, function (response, status, xhr) {
+                         if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                             //// Call function to redirect on service unavailibility.
+                             //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                             //// Ticket: 942 Exception handeling in Gameplan.
+                             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                         }
+                     });
+                 }
+                 else if (tabtext == "Budget") {
+                     url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
+                     $("#divTab").empty();
+                     $("#divTab").load(url + '?id=' + PlanLineItemId);
+                 }
+                 else if (tabtext == "Actuals") {
+                     //// Modified By: Arpita Soni on 1/17/2015.
+                     //// Ticket: 1067
+                     var hdnTacticStatus = $("#hdnParentTacticStatus").val();
+                     var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                     var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                     var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                     if ((hdnTacticStatus == null || hdnTacticStatus == '') || (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus)) {
+                         loadReview(PlanLineItemId, TabSetup);
+                     }
+                     else {
+                         loadReview(PlanLineItemId, TabActual);
+                     }
+                 }
 
-            //  $("#btnEditlineItem").css("display", "none");
-      $('#txtTitle').css('display', 'block');
-      $('#lblLineitemTitle').css('display', 'none');
-      $("#txtTitle").prop('readonly', false);
-            //  $("#AddForm").css("display", "none");
-            //  $("#divDeleteProgram").css("display", "none");
-      $("#txtTitle").removeClass('error');
-      return false;
-  }
-  else {
-      if (activeTab == TabSetup) {
-          var ReturnParameter = SetupSaveLineitem();
-          if (ReturnParameter == false) {
-              return false;
-          }
-          else {
-              $('.close-x-big-icon').trigger('click');
-            
-          }
-      }
+                 //  $("#btnEditlineItem").css("display", "none");
+                 $('#txtTitle').css('display', 'block');
+                 $('#lblLineitemTitle').css('display', 'none');
+                 $("#txtTitle").prop('readonly', false);
+                 //  $("#AddForm").css("display", "none");
+                 //  $("#divDeleteProgram").css("display", "none");
+                 $("#txtTitle").removeClass('error');
+                 return false;
+             }
+             else {
+                 if (activeTab == TabSetup) {
+                     var ReturnParameter = SetupSaveLineitem();
+                     if (ReturnParameter == false) {
+                         return false;
+                     }
+                     else {
+                         $('.close-x-big-icon').trigger('click');
 
-      else if (activeTab == TabBudget) {
-          var ReturnParameter = SaveLineitemBudget();
-          if (ReturnParameter == false) {
-              return false;
-          }
-          else {
-              $('.close-x-big-icon').trigger('click');
-            
+                     }
+                 }
 
-          }
-      }
-
-      else if (activeTab == TabActual) {
-          var hdnTacticStatus = $("#hdnParentTacticStatus").val();
-          var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-          var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-          var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-          if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
-              var ReturnParameter = SaveLineitemActual();
-          }
-          else {
-              var ReturnParameter = SaveTitle();
-          }
-          if (ReturnParameter == false) {
-              return false;
-          }
-          else {
-              $('.close-x-big-icon').trigger('click');
-            
-          }
-
-      }
-
-}
-      });
+                 else if (activeTab == TabBudget) {
+                     var ReturnParameter = SaveLineitemBudget();
+                     if (ReturnParameter == false) {
+                         return false;
+                     }
+                     else {
+                         $('.close-x-big-icon').trigger('click');
 
 
-      $('#AddForm').click(function () {
-          if ($('#popupLineitem').css('display') == 'none') {
-              $('#popupLineitem').css('display', 'block')
-          }
-          else {
-              $('#popupLineitem').css('display', 'none')
-          }
-      });
+                     }
+                 }
 
-      $(document).mouseup(function (e) {
-          var popup = $('#popupLineitem');
-          var button = $('#AddForm');
-          if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
-              $('#popupLineitem').css('display', 'none');
-          }
-      });
+                 else if (activeTab == TabActual) {
+                     var hdnTacticStatus = $("#hdnParentTacticStatus").val();
+                     var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                     var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                     var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                     if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
+                         var ReturnParameter = SaveLineitemActual();
+                     }
+                     else {
+                         var ReturnParameter = SaveTitle();
+                     }
+                     if (ReturnParameter == false) {
+                         return false;
+                     }
+                     else {
+                         $('.close-x-big-icon').trigger('click');
 
-      $("#deleteLineItem").click(function () {
-        
-          if (confirm('@Common.objCached.ConfirmationForDeleteLineItem')) {
-              isDataModified = true;
-              var ProgramId = $("#hdnPlanLineItemID").val();
-              var uId = $(window).attr('name');
-              var arrClosedTaskString = null;
-              if (typeof arrClosedTask != 'undefined') {
-                  arrClosedTaskString = arrClosedTask.toString();
-              }
-              $.ajax({
-                  type: 'POST',
-                  url: '@Url.Content("~/Inspect/DeleteSection")',
-            data: {
-                ID: ProgramId
-                , DeleteType: '@Enums.DuplicationModule.LineItem'
-                     , UserId: uId
-                     , closedTask: arrClosedTaskString
-                     , CalledFromBudget: '@CalledFromBudget'
-                        , IsIndex: '@isIndex'
-                        , RedirectType: '@RedirectTypeMode'
-                },
-                  success: function (data) {
-                      //IslineItemDelete = true;  //Added By Maitri for #2040 Observation
-                if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                    window.location = '@Url.Content("~/Login/Index")';
-                    }
-                    else {
-                        if (data.IsSuccess && data.opt != 'undefined') {
-                            if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                                SaveMessageOnParent(data.msg);
-                                if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
-                                    LoadPlanGrid();
-                                    gridSearchFlag = 0;
-                                }
-                                else {
-                                    RefreshCurrentTab();
-                                }
-                                addDefaultModalPopupBackgroungColor();
-                                $("#modal-container-186470").addClass("transition-close");
-                                $("#modal-container-186470").removeClass("transition_y");
-                                $('body').removeClass('bodyOverflow');
-                            }
-                            else {
-                                if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == data.opt) {
-                                    $("#hdnBudgetingExpandId").val(data.expand);
-                                    $("#hdnBudgetingIsSave").val("true");
-                                    $("#hdnBudgetingIsDelete").val("true");
-                                    $(".close-x-big-icon").trigger("click");
-                                }
-                                else {
-                                    window.location.href = data.redirect;
-                                }
+                     }
 
-                                return;
-                            }
-                        }
-                        else {
-                            $("#successMessageViewProgram").slideUp(50);
-                            $("#errorMessageEditProgram").slideDown(400);
-                            $("#spanMessageEditProgram").empty();
-                            $("#spanMessageEditProgram").val(data.msg);
-                            return false;
-                        }
-                    }
-                }
-        });
-        }
-      });
-  });
+                 }
 
-   
+             }
+         });
+
+
+         $('#AddForm').click(function () {
+             if ($('#popupLineitem').css('display') == 'none') {
+                 $('#popupLineitem').css('display', 'block')
+             }
+             else {
+                 $('#popupLineitem').css('display', 'none')
+             }
+         });
+
+         $(document).mouseup(function (e) {
+             var popup = $('#popupLineitem');
+             var button = $('#AddForm');
+             if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
+                 $('#popupLineitem').css('display', 'none');
+             }
+         });
+
+         $("#deleteLineItem").click(function () {
+
+             if (confirm('@Common.objCached.ConfirmationForDeleteLineItem')) {
+                 isDataModified = true;
+                 var ProgramId = $("#hdnPlanLineItemID").val();
+                 var uId = $(window).attr('name');
+                 var arrClosedTaskString = null;
+                 if (typeof arrClosedTask != 'undefined') {
+                     arrClosedTaskString = arrClosedTask.toString();
+                 }
+                 $.ajax({
+                     type: 'POST',
+                     url: '@Url.Content("~/Inspect/DeleteSection")',
+                     data: {
+                         ID: ProgramId
+                         , DeleteType: '@Enums.DuplicationModule.LineItem'
+                              , UserId: uId
+                              , closedTask: arrClosedTaskString
+                              , CalledFromBudget: '@CalledFromBudget'
+                                 , IsIndex: '@isIndex'
+                                 , RedirectType: '@RedirectTypeMode'
+                     },
+                     success: function (data) {
+                         //IslineItemDelete = true;  //Added By Maitri for #2040 Observation
+                         if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                             window.location = '@Url.Content("~/Login/Index")';
+                         }
+                         else {
+                             if (data.IsSuccess && data.opt != 'undefined') {
+                                 if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                                     SaveMessageOnParent(data.msg);
+                                     if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+                                         LoadPlanGrid();
+                                         gridSearchFlag = 0;
+                                     }
+                                     else {
+                                         RefreshCurrentTab();
+                                     }
+                                     addDefaultModalPopupBackgroungColor();
+                                     $("#modal-container-186470").addClass("transition-close");
+                                     $("#modal-container-186470").removeClass("transition_y");
+                                     $('body').removeClass('bodyOverflow');
+                                 }
+                                 else {
+                                     if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == data.opt) {
+                                         $("#hdnBudgetingExpandId").val(data.expand);
+                                         $("#hdnBudgetingIsSave").val("true");
+                                         $("#hdnBudgetingIsDelete").val("true");
+                                         $(".close-x-big-icon").trigger("click");
+                                     }
+                                     else {
+                                         window.location.href = data.redirect;
+                                     }
+
+                                     return;
+                                 }
+                             }
+                             else {
+                                 $("#successMessageViewProgram").slideUp(50);
+                                 $("#errorMessageEditProgram").slideDown(400);
+                                 $("#spanMessageEditProgram").empty();
+                                 $("#spanMessageEditProgram").val(data.msg);
+                                 return false;
+                             }
+                         }
+                     }
+                 });
+             }
+         });
+     });
+
+
 
     //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
     function SaveTitle() {
@@ -681,14 +691,14 @@
         var planLineitemId = $("#hdnPlanLineItemID").val();
         var _lineitemtitle = htmlEncode($('#txtTitle').val());
         //  var isotherlineitem = $("#hdnIsOtherLineItem").val();
-          @* if (isotherlineitem.toLowerCase() == 'false') {
+        @* if (isotherlineitem.toLowerCase() == 'false') {
               if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
                   var errorMsg = "You can't use 'Other' as title.";
                   ShowError(errorMsg);
                   return false;
               }
           }*@
-       var iserror = false;
+        var iserror = false;
 
         if (_lineitemtitle == '') {
             $('#txtTitle').addClass("error");
@@ -732,6 +742,6 @@
 
 
 
-  
+
 </script>
 
