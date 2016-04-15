@@ -8278,7 +8278,7 @@ namespace RevenuePlanner.Helpers
             return viewByListResult = viewByListResult.Concat(customViewBy).ToList();
         }
 
-        public DataSet GetExportCSV(int PlanId)
+        public DataSet GetExportCSV(int PlanId, string HoneyCombids = null)
         {
             DataTable datatable = new DataTable();
             DataSet dataset = new DataSet();
@@ -8297,6 +8297,7 @@ namespace RevenuePlanner.Helpers
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PlanId", PlanId);
                 command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                command.Parameters.AddWithValue("@HoneyCombids", HoneyCombids);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
                 adp.Fill(dataset);

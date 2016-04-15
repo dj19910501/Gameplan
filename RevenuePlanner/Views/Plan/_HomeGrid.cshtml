@@ -260,7 +260,7 @@
         });
     }
 
-    function ExportToCSV1() {
+    function ExportToCSVOld() {
         HomeGrid.expandAll();
         var count = HomeGrid.getRowsNum();
         var parentid = 0;
@@ -421,6 +421,23 @@
     }
 
     var IsExportToCsv = false;
+    // Add By Nishant Sheth
+    // Desc :: #2102 CSV file with Customfield attributes
+    function ExportCSVHoneyCombSp()
+    {
+        var Honeycombids=ExportSelectedIds.CsvId.toString();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/ExportToCsv/")',
+            data: { HoneycombIds:Honeycombids,PlanId:SelectedPlanIds.toString()},
+            success: function (data) {
+                @*window.location='@Url.Content("~/Plan/ExportCsvDataTable/")?FileName='+FileName;*@
+                window.location='@Url.Content("~/Plan/ExportCsvDataTable/")';
+            }
+
+        });
+    }
+    // End By Nishant Sheth
     //Added by Ashish mistry for PL #1782 :- export to csv for Honeycomb
     var ListOfSelectedIds = { Id: [] };
     function ExportCSVHoneyComb() {
@@ -886,6 +903,7 @@
                     ExportSelectedIds.TacticType.splice(index, 1);
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
+                    ExportSelectedIds.CsvId.splice(index, 1);
                 }
 
                 $(item).removeClass("honeycombbox-icon-gantt-Active");
@@ -920,6 +938,7 @@
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
+                ExportSelectedIds.CsvId.push($(item).attr('csvid'));
                 // Loop for selecting Program on selecting Plan
                 //$($("div[altId^='" + $(item).attr('altId').split('_')[0] + "']")).each(function (index) {
                 //    var campid = $(this).attr('altId').split('_')[1];
@@ -964,6 +983,7 @@
                     ExportSelectedIds.TacticType.splice(index, 1);
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
+                    ExportSelectedIds.CsvId.splice(index, 1);
                 }
                 $(item).removeClass("honeycombbox-icon-gantt-Active");
                 $(item).addClass("honeycombbox-icon-gantt");
@@ -987,6 +1007,7 @@
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
+                ExportSelectedIds.CsvId.push($(item).attr('csvid'));
 
                 // Loop for selecting tactin on selecting Campaign
                 //$($("div[altId^='_" + $(item).attr('altId').split('_')[1] + "']")).each(function (index) {
@@ -1019,6 +1040,7 @@
                     ExportSelectedIds.TacticType.splice(index, 1);
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
+                    ExportSelectedIds.CsvId.splice(index, 1);
                 }
                 $(item).addClass("honeycombbox-icon-gantt");
 
@@ -1032,6 +1054,7 @@
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
+                ExportSelectedIds.CsvId.push($(item).attr('csvid'));
 
             }
         }
@@ -1047,6 +1070,7 @@
                     ExportSelectedIds.TacticType.splice(index, 1);
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
+                    ExportSelectedIds.CsvId.splice(index, 1);
                 }
                 $(item).addClass("honeycombbox-icon-gantt");
             }
@@ -1058,6 +1082,7 @@
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
+                ExportSelectedIds.CsvId.push($(item).attr('csvid'));
             }
         }
         if ($('.honeycombbox-icon-gantt-Active').length == 0) {

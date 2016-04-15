@@ -9725,7 +9725,7 @@ namespace RevenuePlanner.Controllers
                         //#1780
                         //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=add_Remove_Entity onclick=javascript:AddRemoveEntity(this) id=PlanAdd altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() +"></div>";
                         //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd TacticType= '" + doubledesh + "' OwnerName= '" + GetOwnerName(planitem.CreatedBy.ToString()) + "' TaskName='" + (HttpUtility.HtmlEncode(planitem.Title).Replace("'", "&#39;")) + "' ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>";
-                        plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd TacticType= '" + doubledesh + "' OwnerName= '" + GetOwnerName(planitem.CreatedBy.ToString()) + "' TaskName='" + (HttpUtility.HtmlEncode(planitem.Title).Replace("'", "&#39;")) + "' ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "' taskId=" + planitem.PlanId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId
+                        plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd TacticType= '" + doubledesh + "' OwnerName= '" + GetOwnerName(planitem.CreatedBy.ToString()) + "' TaskName='" + (HttpUtility.HtmlEncode(planitem.Title).Replace("'", "&#39;")) + "' ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "' taskId=" + planitem.PlanId + " csvId=Plan_" + planitem.PlanId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
@@ -9890,7 +9890,7 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj = new Plandataobj();
                                     //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") +  "<div class=add_Remove_Entity id=CampaignAdd onclick=javascript:AddRemoveEntity(this) altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                     //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + GetOwnerName(Campaignitem.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Campaignitem.Title).Replace("'", "&#39;")) + "' altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                    campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + GetOwnerName(Campaignitem.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Campaignitem.Title).Replace("'", "&#39;")) + "' altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "' taskId= " + Campaignitem.PlanCampaignId + " ></div>";//Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId
+                                    campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + GetOwnerName(Campaignitem.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Campaignitem.Title).Replace("'", "&#39;")) + "' altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "' taskId= " + Campaignitem.PlanCampaignId + " csvId=Campaign_" + Campaignitem.PlanCampaignId + "></div>";//Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId
                                     campaigndataobjlist.Add(campaigndataobj);
 
                                     campaigndataobj = new Plandataobj();
@@ -10044,7 +10044,7 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj = new Plandataobj();
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=add_Remove_Entity id=ProgramAdd onclick=javascript:AddRemoveEntity(this); altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                                programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "'  taskId= " + Programitem.PlanProgramId + "></div>";  //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                                                              
+                                                programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "'  taskId= " + Programitem.PlanProgramId + " csvId=Program_" + Programitem.PlanProgramId + "></div>";  //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                                                              
                                                 programdataobjlist.Add(programdataobj);
 
                                                 programdataobj = new Plandataobj();
@@ -10132,13 +10132,7 @@ namespace RevenuePlanner.Controllers
                                                     var lsttacticTaskData = finalTacticfilterList.Select((taskdata, index) => new
                                                     {
                                                         index = index,
-                                                        //totalcost = LineItemList.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Cost),
-                                                        // modified by Viral for PL ticket #2112.
-                                                        totalcost = (taskdata.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == taskdata.PlanTacticId && s.IsDeleted == false)).Count() > 0
-                                                                    && taskdata.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && taskdata.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
-                                                                    ?
-                                                                    ((taskdata.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == taskdata.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
-                                                                     : taskdata.Cost,
+                                                        totalcost = LineItemList.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Cost),
                                                         totalmql = ListTacticMQLValue.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.MQL),
                                                         totalrevenue = ListTacticMQLValue.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Revenue),
 
@@ -10198,7 +10192,7 @@ namespace RevenuePlanner.Controllers
 
 
                                                         //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "' tacticaddId='" + tactic.PlanTacticId + "'></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "' tacticaddId='" + tactic.PlanTacticId + "'></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + " csvId=Tactic_" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                         tacticdataobjlist.Add(tacticdataobj);
 
                                                         tacticdataobj = new Plandataobj();
@@ -14053,7 +14047,7 @@ namespace RevenuePlanner.Controllers
             Response.End();
         }
 
-        public JsonResult ExportToCsv(string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, int PlanId = 0)
+        public JsonResult ExportToCsv(string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string HoneycombIds = null, int PlanId = 0)
         {
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
 
@@ -14067,7 +14061,7 @@ namespace RevenuePlanner.Controllers
             DataSet dsExportCsv = new DataSet();
             DataTable dtCSV = new DataTable();
             DataTable dtCSVCost = new DataTable();
-            dsExportCsv = objSp.GetExportCSV(PlanId);
+            dsExportCsv = objSp.GetExportCSV(PlanId, HoneycombIds);
             dtCSV = dsExportCsv.Tables[0];
             dtCSVCost = dsExportCsv.Tables[0];
 
@@ -14107,11 +14101,14 @@ namespace RevenuePlanner.Controllers
 
             var PlanList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => x.Field<int>("EntityId")).ToList();
             int modelId = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => int.Parse(x.Field<string>("ModelId"))).FirstOrDefault();
-            string FileName = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => x.Field<string>("Plan")).FirstOrDefault();
-            ViewBag.CSVFileName = FileName;
+
             var TacticIds = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()).Select(x => x.Field<int>("EntityId")).ToList();
 
-            var progTactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => TacticIds.Contains(_tactic.PlanTacticId) && _tactic.IsDeleted.Equals(false)).ToList();
+            var PlanTactics = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(PlanId) && _tactic.IsDeleted.Equals(false)).ToList();
+            string FileName = PlanTactics.Select(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.Title).FirstOrDefault();
+            ViewBag.CSVFileName = FileName;
+            var PlanTacticIds = PlanTactics.Select(a => a.PlanTacticId).ToList();
+            var progTactic = PlanTactics.Where(_tactic => TacticIds.Contains(_tactic.PlanTacticId) && _tactic.IsDeleted.Equals(false)).ToList();
             string section = Enums.Section.Tactic.ToString();
             var cusomfield = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false).ToList();
             var customfieldidlist = cusomfield.Select(c => c.CustomFieldId).ToList();
@@ -14127,8 +14124,18 @@ namespace RevenuePlanner.Controllers
                                                             CustomFieldId = tbl.CustomFieldId,
                                                             Value = tbl.Value
                                                         }).ToList();
-
+            if (HoneycombIds == null)
+            {
             CalculateTacticCostRevenue(modelId, TacticIds, progTactic, PlanId);
+            }
+            else
+            {
+                if (modelId == 0 || modelId == null)
+                {
+                    modelId = PlanTactics.Select(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).FirstOrDefault();
+                }
+                CalculateTacticCostRevenue(modelId, PlanTacticIds, PlanTactics, PlanId);
+            }
 
             //// Custom Field Filter Criteria.
             List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
@@ -14163,6 +14170,78 @@ namespace RevenuePlanner.Controllers
             }
             
             var FilterTacticIds = progTactic.Select(a => a.PlanTacticId).ToList();
+            if (HoneycombIds != null)
+            {
+                var TacticIdsList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString())
+                    .Select(x => int.Parse(x.Field<string>("ParentId"))).ToList();
+
+                var ProgramIdsList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString())
+                    .Select(x => int.Parse(x.Field<string>("ParentId"))).ToList();
+
+                var CampaignIdsList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Campaign.ToString())
+                    .Select(x => int.Parse(x.Field<string>("ParentId"))).ToList();
+
+                var PlanIdsList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString())
+                    .Select(x => int.Parse(x.Field<string>("ParentId"))).ToList();
+
+                var MinParentId = 0;
+                var MinSection = "";
+                if (PlanIdsList.Count > 0)
+                {
+                    MinParentId = PlanIdsList.Min();
+                    MinSection = Enums.Section.Plan.ToString();
+                }
+                else if (CampaignIdsList.Count > 0)
+                {
+                    MinParentId = CampaignIdsList.Min();
+                    MinSection = Enums.Section.Campaign.ToString();
+                }
+                else if (ProgramIdsList.Count > 0)
+                {
+                    MinParentId = ProgramIdsList.Min();
+                    MinSection = Enums.Section.Program.ToString();
+                }
+                else if (TacticIdsList.Count > 0)
+                {
+                    MinParentId = TacticIdsList.Min();
+                    MinSection = Enums.Section.Tactic.ToString();
+                }
+
+                var dd = dtCSV
+              .Rows
+              .Cast<DataRow>()
+              .Where(row => row.Field<string>("ParentId") == Convert.ToString(MinParentId) && row.Field<string>("Section") == MinSection).ToList();
+
+                for (int i = 0; i < dtCSV.Rows.Count; i++)
+                {
+                    if (dtTable.Rows.Count == 0)
+                    {
+                        var items = GetTopLevelRows(dtCSV, MinParentId, MinSection)
+                                .Select(row => CreateItem(dtCSV, row, columnNames, dtTable, listOfClientId, PlanTacticIds))
+                                .ToList();
+                    }
+                    else
+                    {
+                        MinParentId = Convert.ToInt32(dtCSV.Rows[i]["ParentId"].ToString());
+                        MinSection = Convert.ToString(dtCSV.Rows[i]["Section"].ToString());
+                        var EntityId = dtCSV.Rows[i]["EntityId"].ToString();
+                        var CheckRecordExist = dtTable.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == MinSection && x.Field<string>("EntityId") == EntityId)
+                            .Select(x => x.Field<string>("EntityId")).ToList();
+
+                        if (CheckRecordExist.Count == 0)
+                        {
+                           
+                            var items = GetTopLevelRows(dtCSV, MinParentId, MinSection)
+                                    .Select(row => CreateItem(dtCSV, row, columnNames, dtTable, listOfClientId, PlanTacticIds))
+                                    .ToList();
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                #region Default Hireachy
             for (int plan = 0; plan < PlanList.Count; plan++)
             {
                 totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
@@ -14246,6 +14325,10 @@ namespace RevenuePlanner.Controllers
 
                 }
             }
+                #endregion
+            }
+            dtTable.Columns.Remove(Enums.DownloadCSV.EntityId.ToString());
+            dtTable.Columns.Remove(Enums.DownloadCSV.Section.ToString());
             Session["CSVDataTable"] = dtTable;
             Session["FileName"] = FileName;
             return Json(new { data = FileName }, JsonRequestBehavior.AllowGet); ;
@@ -14258,6 +14341,8 @@ namespace RevenuePlanner.Controllers
                 DataRow row = dt.NewRow();
                 for (int j = 0; j < columns.Count; j++)
                 {
+                    if (dr[i].Table.Columns.Contains(columns[j].ToString()))
+                    {
                     string MqlColName = Convert.ToString(ViewBag.MQLTitle);
                     ViewBag.MQLTitle = MqlColName;
 
@@ -14309,6 +14394,11 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
+                    else
+                    {
+                        row[columns[j].ToString()] = Convert.ToString(DBNull.Value);
+                    }
+                }
                 dt.Rows.Add(row);
                 dt.AcceptChanges();
             }
@@ -14320,6 +14410,97 @@ namespace RevenuePlanner.Controllers
             source = source.Replace("–", "-");
             return HttpUtility.HtmlDecode(source.ToString());
         }
+
+        #region parent child hireachy combination
+        // Add By Nishant Sheth
+
+        //get the children of a specific item
+        IEnumerable<DataRow> GetChildren(DataTable dataTable, Int32 parentId, string Section)
+        {
+            return dataTable
+              .Rows
+              .Cast<DataRow>()
+              .Where(row => row.Field<string>("ParentId") == Convert.ToString(parentId) && row.Field<string>("Section") == Section);
+        }
+
+        //create an item including the child collection. This function will recurse down the hierarchy
+        CSVItem CreateItem(DataTable dataTable, DataRow row, DataColumnCollection columnNames, DataTable insertDataTable, List<User> listOfClientId, List<int> TacticIdsList)
+        {
+            var id = row.Field<Int32>("EntityId");
+            var Section = row.Field<String>("Section");
+            var ChildSection = Section;
+            if (Section == Enums.Section.Plan.ToString())
+            {
+                ChildSection = Enums.Section.Campaign.ToString();
+            }
+            else if (Section == Enums.Section.Campaign.ToString())
+            {
+                ChildSection = Enums.Section.Program.ToString();
+            }
+            else if (Section == Enums.Section.Program.ToString())
+            {
+                ChildSection = Enums.Section.Tactic.ToString();
+            }
+
+            //var Section = row.Field<string>("Section");
+            if (Section == Enums.Section.Plan.ToString())
+            {
+                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIdsList.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
+                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIdsList.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
+                totalPlannedCostCSV = LineItemList.Count > 0 ? LineItemList.Where(l => TacticIdsList.Contains(l.PlanTacticId)).Sum(l => l.Cost) : 0;
+            }
+            else if (Section == Enums.Section.Campaign.ToString())
+            {
+                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.CampaignId == id).Sum(l => l.MQL) : 0;
+                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.CampaignId == id).Sum(l => l.Revenue) : 0;
+                totalPlannedCostCSV = LineItemList.Count > 0 ? LineItemList.Where(l => l.CampaignId == id).Sum(l => l.Cost) : 0;
+            }
+            else if (Section == Enums.Section.Program.ToString())
+            {
+                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.Programid == id).Sum(l => l.MQL) : 0;
+                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.Programid == id).Sum(l => l.Revenue) : 0;
+                totalPlannedCostCSV = LineItemList.Count > 0 ? LineItemList.Where(l => l.Programid == id).Sum(l => l.Cost) : 0;
+            }
+            else if (Section == Enums.Section.Tactic.ToString())
+            {
+                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.PlanTacticId == id).Sum(l => l.MQL) : 0;
+                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.PlanTacticId == id).Sum(l => l.Revenue) : 0;
+                totalPlannedCostCSV = LineItemList.Count > 0 ? LineItemList.Where(l => l.PlanTacticId == id).Sum(l => l.Cost) : 0;
+            }
+
+            DataRow[] dr = dataTable.Select("EntityId = " + id + "AND Section = '" + Section + "'");
+
+            OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
+
+            DataRowsInsert(dr, insertDataTable, columnNames);
+
+            var children = GetChildren(dataTable, id, ChildSection)
+             .Select(r => CreateItem(dataTable, r, columnNames, insertDataTable, listOfClientId, TacticIdsList))
+             .ToList();
+            //return row;
+            return new CSVItem { Id = id, Section = Section, Children = children };
+        }
+
+        //get rows of the top-level items
+        IEnumerable<DataRow> GetTopLevelRows(DataTable dataTable, int minParentId, string Section)
+        {
+            return dataTable
+              .Rows
+              .Cast<DataRow>()
+              .Where(row => row.Field<string>("ParentId") == Convert.ToString(minParentId) && row.Field<string>("Section") == Section);
+        }
+
+        class CSVItem
+        {
+
+            public Int32 Id { get; set; }
+
+            public String Section { get; set; }
+
+            public IEnumerable<CSVItem> Children { get; set; }
+
+        }
+        #endregion
 
         #endregion
     }

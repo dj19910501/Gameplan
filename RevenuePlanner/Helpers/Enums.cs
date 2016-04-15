@@ -1358,19 +1358,20 @@ namespace RevenuePlanner.Helpers
             MQL,
             Revenue,
             EloquaId,
-            SFDCId
+            SFDCId,
+            EntityId,
+            Section
         }
 
         public enum NotDownloadCSV
         {
-            EntityId,
             EntityType,
             ModelId,
             ROWNUM,
-            Section,
             ParentId,
             CustomFieldEntityId,
-            CreatedBy
+            CreatedBy,
+            DummyCol
         }
     }
 
