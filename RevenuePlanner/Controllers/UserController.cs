@@ -169,10 +169,9 @@ namespace RevenuePlanner.Controllers
                         /* ---------------------------------------------------------------*/
                         //Added By Maitri Gandhi for #2105 on 11/4/2016
                         string returnMessage = "Success";
-                        if (Sessions.User.LastLoginDate != null)
-                        {
-                            returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
-                        }
+                       
+                        returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
+                       
                         if (returnMessage != "Success")
                         {
                             TempData["ErrorMessage"] = returnMessage;
@@ -188,11 +187,7 @@ namespace RevenuePlanner.Controllers
                                 TempData["ErrorMessage"] = Common.objCached.CurrentUserPasswordNotCorrect;
                             }
                             else if (retVal == 1)
-                            {
-                                if (Sessions.User.LastLoginDate == null)
-                                {
-                                    returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
-                                }
+                            {                                
                                 ChangePasswordMail();
                                 //Redirect users logging in for the first time to the change password module
                                 if (Sessions.User.LastLoginDate == null && Sessions.RedirectToChangePassword)
@@ -236,7 +231,7 @@ namespace RevenuePlanner.Controllers
         /// Function to verify users current password.
         /// </summary>
         /// <param name="currentPassword">current password</param>
-        /// <returns>Returns true if the operation is successful, 0 otherwise.</returns>
+        /// <returns>Returns true if the operation is successful, 0 otherwise.</returns>      
         public ActionResult CheckCurrentPassword(string currentPassword)
         {
             bool isValid = false;
@@ -572,6 +567,8 @@ namespace RevenuePlanner.Controllers
                     if (retVal == 1)
                     {
                         UserCreatedMail(objUser, password);
+                        var UserDetails = objBDSServiceClient.GetUserDetails(objUser.Email);
+                        objBDSServiceClient.CreatePasswordHistory(UserDetails.UserId, objUser.Password,Sessions.User.UserId);
                         TempData["SuccessMessage"] = Common.objCached.UserAdded;
                         return RedirectToAction("Index");
                     }

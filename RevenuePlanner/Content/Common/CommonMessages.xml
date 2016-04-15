@@ -26,7 +26,7 @@
 	</Field>
 	<Field>
 		<Name>LockedUser</Name>
-		<value>User locked,please reset your password using forgot password feature or contact your system administrator</value>
+		<value>User locked, please reset your password using forgot password feature or contact your system administrator</value>
 	</Field>
 	<Field>
 		<Name>ErrorOccured</Name>
@@ -1060,6 +1060,6 @@
 	<!--End Added by Viral Kadiya for PL ticket #1970-->
   <Field>
     <Name>PasswordExpired</Name>
-    <value>Password Expired,please reset your password</value>
+    <value>Password expired, please reset your password</value>
   </Field>
 </Messages>

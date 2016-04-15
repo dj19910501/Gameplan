@@ -101,7 +101,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (Sessions.User != null)
                 {
-                    if (Sessions.User.LastLoginDate == null && Sessions.RedirectToChangePassword)
+                    if (Sessions.User.LastLoginDate == null && Sessions.RedirectToChangePassword && !(Request.RawUrl.ToLower().Contains("checkcurrentpassword")))
                     {
                         filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { action = "ChangePassword", Controller = "User" }));
                     }

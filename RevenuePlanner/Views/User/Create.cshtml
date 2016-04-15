@@ -176,7 +176,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-
+        myApp.hidePleaseWait();
         $('#lblClientIdRequired').hide();
         $('#lblRoleIdRequired').hide();
         $('#lblManagerIdRequired').hide();
@@ -185,6 +185,7 @@
         $(".selectBox select").selectbox();
         
         $('#btnSubmit').click(function () {
+            myApp.showPleaseWait();
             var isValid = true;
 
             //ClientId Dropdown Required Validtion
@@ -220,7 +221,9 @@
                         $('#lblManagerIdRequired').hide();
                     }
             // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-
+                    if (isValid == false) {
+                        myApp.hidePleaseWait();
+                    }
             return isValid;
         });
 
@@ -256,8 +259,8 @@
             if ($('#result').text() != '' && $('#result').text().toLowerCase() == 'too short') {
                 $('#result').removeClass();
                 $('#result').addClass('check-icon-red');
-                $('#result').prop('title', 'Minimum 8 charactes required');
-                $('#Password').prop('title', 'Minimum 8 charactes required');
+                $('#result').prop('title', 'Minimum 8 characters required');
+                $('#Password').prop('title', 'Minimum 8 characters required');
                 $("#Password").addClass("error");
                 return false;
             }
@@ -265,8 +268,8 @@
             if ($('#result').text() != '' && $('#result').text().toLowerCase() == 'weak') {
                 $('#result').removeClass();
                 $('#result').addClass('check-icon-red')
-                $('#result').prop('title', 'Password should contain at least one lowar case, one upper case, one digit and one special character');
-                $('#Password').prop('title', 'Password should contain at least one lowar case, one upper case, one digit and one special character');
+                $('#result').prop('title', 'Password should contain at least one lower case, one upper case, one digit and one special character');
+                $('#Password').prop('title', 'Password should contain at least one lower case, one upper case, one digit and one special character');
                 $("#Password").addClass("error");
                 return false;
             }
@@ -489,8 +492,8 @@
         if (password.length < 8) {
             $('#result').removeClass()
             $('#result').addClass('check-icon-red');
-            $('#result').prop('title', 'Minimum 8 charactes required');
-            $('#Password').prop('title', 'Minimum 8 charactes required');
+            $('#result').prop('title', 'Minimum 8 characters required');
+            $('#Password').prop('title', 'Minimum 8 characters required');
             return 'Too short'
         }
 
@@ -511,8 +514,8 @@
         //if it has two special characters, increase strength value
         if (password.match(/(.*[!,%,&,@@,#,$,^,*,?,_,~].*[!,",%,&,@@,#,$,^,*,?,_,~])/)) strength += 1
         //Added By Maitri Gandhi on 4/7/2016
-        if (password.match(/([a-z])/) && password.match(/([A-Z])/) && password.match(/([0-9])/) && password.match(/([@@,#,$,%,^,&,*,_,+,|,~,-,=,\,`,:,",;,'])/)) {
-            if (password.match(/(.*[@@,#,$,%,^,&,*,_,+,|,~,-,=,\,`,:,",;,'].*[@@,#,$,%,^,&,*,_,+,|,~,-,=,\,`,:,",;,'])/)) {
+        if (password.match(/([a-z])/) && password.match(/([A-Z])/) && password.match(/([0-9])/) && password.match(/([@@,#,$,%,^,&,*,_,+,|,~,\-,=,\\,`,:,\",;,',(,),{,},\],\[,<,>,\/])/)) {
+            if (password.match(/(.*[@@,#,$,%,^,&,*,_,+,|,~,\-,=,\\,`,:,",;,',(,),{,},\],\[,<,>,\/].*[@@,#,$,%,^,&,*,_,+,|,~,\-,=,\\,`,:,\",;,',(,),{,},\],\[,<,>,\/])/)) {
                 $('#result').removeClass()
                 $('#result').addClass('check-icon-green')//strong
                 $('#result').prop('title', '');
@@ -528,8 +531,8 @@
         else {
             $('#result').removeClass()
             $('#result').addClass('check-icon-red')//weak
-            $('#result').prop('title', 'Password should contain at least one lowar case, one upper case, one digit and one special character');
-            $('#Password').prop('title', 'Password should contain at least one lowar case, one upper case, one digit and one special character');
+            $('#result').prop('title', 'Password should contain at least one lower case, one upper case, one digit and one special character');
+            $('#Password').prop('title', 'Password should contain at least one lower case, one upper case, one digit and one special character');
             return 'Weak'
         }
 
