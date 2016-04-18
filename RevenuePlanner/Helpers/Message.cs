@@ -82,6 +82,32 @@ namespace RevenuePlanner.Helpers
             {
                 _InvalidLogin = value;
             }
+        }  
+////Added by Komal Rawal for #2107
+        private string _InvalidEmailLogin;
+        public string InvalidEmailLogin
+        {
+            get
+            {
+                return _InvalidEmailLogin;
+            }
+            set
+            {
+                _InvalidEmailLogin = value;
+            }
+        }
+
+        private string _LockedUser;
+        public string LockedUser
+        {
+            get
+            {
+                return _LockedUser;
+            }
+            set
+            {
+                _LockedUser = value;
+            }
         }
 
         private string _ErrorOccured;
@@ -2655,6 +2681,20 @@ namespace RevenuePlanner.Helpers
         }
         
         ////End - Added by Viral Kadiya for PL ticket #1970
+
+		////Added by Komal Rawal for #2107
+        private string _PasswordExpired;
+        public string PasswordExpired
+        {
+            get
+            {
+                return _PasswordExpired;
+            }
+            set
+            {
+                _PasswordExpired = value;
+            }
+        }
         #endregion
 
         #region  Functions
@@ -2756,6 +2796,13 @@ namespace RevenuePlanner.Helpers
                                         case "InvalidLogin":
                                             _InvalidLogin = strMsgValue;
                                             break;
+                                        case "InvalidEmailLogin":
+                                            _InvalidEmailLogin = strMsgValue;
+                                            break;
+                                        case "LockedUser":
+                                            _LockedUser = strMsgValue;
+                                            break;
+                                            
                                         case "InvalidPassword":
                                             _InvalidPassword = strMsgValue;
                                             break;
@@ -3503,7 +3550,12 @@ namespace RevenuePlanner.Helpers
                                         case "TacticPlanedCostReduce":
                                             _TacticPlanedCostReduce = strMsgValue;
                                             break;
+
                                         ////End - Added by Viral Kadiya for PL ticket #1970
+									    ////Added by Komal Rawal for #2107
+                                        case "PasswordExpired":
+                                            _PasswordExpired = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;

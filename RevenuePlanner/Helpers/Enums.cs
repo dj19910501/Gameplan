@@ -1372,6 +1372,12 @@ namespace RevenuePlanner.Helpers
             CustomFieldEntityId,
             CreatedBy,
             DummyCol
+        }	  
+    public enum AppConfiguration
+        {
+            Pwd_MaxAttempts,
+            PasswordHistoryCount,
+            Pwd_ExpiryDays
         }
     }
 

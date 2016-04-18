@@ -20,6 +20,15 @@
 		<Name>InvalidLogin</Name>
 		<value>Login failed, please ensure that you have entered valid credentials.</value>
 	</Field>
+	<!--Added By Komal Rawal for #2107-->
+	<Field>
+		<Name>InvalidEmailLogin</Name>
+		<value>Login failed,user does not exist</value>
+	</Field>
+	<Field>
+		<Name>LockedUser</Name>
+		<value>User locked, please reset your password using forgot password feature or contact your system administrator</value>
+	</Field>
 	<Field>
 		<Name>ErrorOccured</Name>
 		<value>An error has occured.</value>
@@ -1050,4 +1059,9 @@
 		<value>{0} planned cost can not be less than the sum of line items. Please change the cost of line items.</value>
 	</Field>
 	<!--End Added by Viral Kadiya for PL ticket #1970-->
+	<!--Added By Komal Rawal for #2107-->
+	<Field>
+		<Name>PasswordExpired</Name>
+		<value>Password expired, please reset your password</value>
+	</Field>
 </Messages>

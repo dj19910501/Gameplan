@@ -125,17 +125,81 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult Index(LoginModel form, string returnUrl)
         {
+            //Added By komal rawal for password lockout feature #2107
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            bool IsEmailInvalid = false;
+            List<BDSService.AppConfiguration> AppConfigObj = new List<BDSService.AppConfiguration>();
+            int FailedAttempts = Convert.ToInt32(TempData[form.UserEmail]);
+            var MaxAttempts = Enums.AppConfiguration.Pwd_MaxAttempts.ToString();
+            var ExpDays = Enums.AppConfiguration.Pwd_ExpiryDays.ToString();            
+            var TotalAttempts = "";                      
+            //End
             try
             {
+                Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+                //Added By komal rawal for password lockout feature #2107
+                AppConfigObj = objBDSServiceClient.ValidateAppConfiguration(applicationId, form.UserEmail);
+                TotalAttempts = AppConfigObj.Where(a => a.Config_Key.Equals(MaxAttempts)).Select(a => a.Config_Value).FirstOrDefault(); //End
+                //Added By Maitri 13/4/2016
+                var PasswordConfiguration = AppConfigObj.Where(a => a.Config_Key.Equals(ExpDays))
+                                            .Select(a => new
+                                            {
+                                                Config_Value = a.Config_Value,
+                                                PasswordModifiedDate = a.PasswordModifiedDate
+                                            }).FirstOrDefault();
+              
                 if (ModelState.IsValid)
                 {                    
-                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                     BDSService.User obj = new BDSService.User();
-                    Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+                    
                     string singlehash = Common.ComputeSingleHash(form.Password.ToString().Trim());
-                    obj = objBDSServiceClient.ValidateUser(applicationId, form.UserEmail.Trim(), singlehash);
+
+
+                    //Modified By komal rawal for password lockout feature #2107
+                    obj = objBDSServiceClient.Validate_User(applicationId, form.UserEmail.Trim(), singlehash);
+                   
                     if (obj == null)
+                    {
                         ModelState.AddModelError("", Common.objCached.InvalidLogin);
+
+                    }
+                    else if (obj.Email == "" )
+                    {
+                        IsEmailInvalid = true;
+                        ModelState.AddModelError("", Common.objCached.InvalidEmailLogin);
+                        obj = null;
+
+                    }
+                    else if(obj.IsLocked == true)
+                    {
+                        ModelState.AddModelError("", Common.objCached.LockedUser);
+                        TotalAttempts = null;
+                        obj = null;
+                    }
+                    else
+                    {
+                        //Added By Maitri 13/4/2016
+                        //Case of Password Expiration
+                        if (obj != null)
+                        {
+                            int totaldays = Convert.ToInt32((DateTime.Now - PasswordConfiguration.PasswordModifiedDate).TotalDays);
+                            if (totaldays >= Convert.ToInt32(PasswordConfiguration.Config_Value))
+                            {
+                                BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+                                objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
+                                objPasswordResetRequest.UserId = obj.UserId;
+                                objPasswordResetRequest.AttemptCount = 0;
+                                objPasswordResetRequest.CreatedDate = DateTime.Now;
+                                objPasswordResetRequest.IsUsed = false;
+
+                                string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+
+                                return RedirectToAction("ResetPassword", "Login", new { id = PasswordResetRequestId, PasswordExpired = true });
+                            }
+                        }
+                    }
+               
+                   //End
 
                     //Start  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
                     System.Web.Security.FormsAuthentication.SetAuthCookie(obj.UserId.ToString(), false);
@@ -230,6 +294,7 @@ namespace RevenuePlanner.Controllers
                     //End Bhavesh
 
                     //Redirect users logging in for the first time to the change password module
+                    TempData.Clear();
                     if (obj.LastLoginDate == null)
                     {
                         Sessions.RedirectToChangePassword = true;
@@ -248,16 +313,19 @@ namespace RevenuePlanner.Controllers
                     //}
 
                     //Update last login date for user
+
                     objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
                     //Added By Maitri for #2040 Observation
                     //Common.RemoveCookie("gridOpen");
                     //Common.RemoveCookie("gridOpengridBox");
+
                     if ((!string.IsNullOrWhiteSpace(returnUrl)) && IsLocalUrl(returnUrl))
                     {
                         return RedirectLocal(returnUrl);
                     }
                     else
                     {
+
                         MVCUrl defaultURL = Common.DefaultRedirectURL(Enums.ActiveMenu.None);
                         if (defaultURL == null)
                             return RedirectToAction("Index", "Home");
@@ -282,10 +350,53 @@ namespace RevenuePlanner.Controllers
                     {
                         ModelState.AddModelError("", Common.objCached.InvalidLogin);
                     }
+                    //Modified By komal rawal for password lockout feature #2107
+                    if (TotalAttempts != null && TotalAttempts != "" && Convert.ToInt32(TotalAttempts) != 0)
+                    {
+                        if (IsEmailInvalid == false)
+                        {
+                            TempData[form.UserEmail] = Convert.ToInt32(TempData[form.UserEmail]) + 1;
+
+                            if (Convert.ToInt32(TotalAttempts) == Convert.ToInt32(TempData[form.UserEmail]))
+                            {
+                                TempData.Clear();
+                                ModelState.AddModelError("", Common.objCached.LockedUser);
+                                int Locked = objBDSServiceClient.LockUser(Sessions.ApplicationId, form.UserEmail);
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("", "you have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
+                            }
+                        }
+                    TempData.Keep(form.UserEmail);
+                    }
+                    //End                                
+
                 }
             }
             catch (Exception e)
             {
+                //Modified By komal rawal for password lockout feature #2107
+                if (TotalAttempts != null && TotalAttempts != "" && Convert.ToInt32(TotalAttempts) != 0 )
+                {
+                    if(IsEmailInvalid == false)
+                    { 
+                    TempData[form.UserEmail] = Convert.ToInt32(TempData[form.UserEmail]) + 1;
+
+                    if (Convert.ToInt32(TotalAttempts) == Convert.ToInt32(TempData[form.UserEmail]))
+                {
+                    TempData.Clear();
+                    ModelState.AddModelError("", Common.objCached.LockedUser);
+                    int Locked = objBDSServiceClient.LockUser(Sessions.ApplicationId, form.UserEmail);
+                }
+                else
+                {
+                    ModelState.AddModelError("", "You have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
+                }
+                    }
+                TempData.Keep(form.UserEmail);
+                }
+            //ENd
                 ErrorSignal.FromCurrentContext().Raise(e);
 
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
@@ -934,7 +1045,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public ActionResult ResetPassword(string id)
+        public ActionResult ResetPassword(string id, bool PasswordExpired = false)
         {
             try
             {
@@ -945,7 +1056,11 @@ namespace RevenuePlanner.Controllers
 
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 var objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(PasswordResetRequestId);
-
+                //Added By Maitri Gandhi on 13/4/2016
+                if (PasswordExpired == true)
+                {
+                    ViewBag.Expired = Common.objCached.PasswordExpired;
+                }
                 if (objPasswordResetRequest == null)
                 {
                     TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
@@ -976,7 +1091,15 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             objPasswordResetRequest.PasswordResetRequestId = PasswordResetRequestId;
+                            //Added By Maitri Gandhi on 13/4/2016
+                            if (PasswordExpired)
+                            {
+                                objPasswordResetRequest.IsUsed = false;
+                            }
+                            else
+                            {
                             objPasswordResetRequest.IsUsed = true;
+                            }
                             objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
                             //Guid UserId = Guid.Parse(TempData["UserId"].ToString());                      //Commented by Rahul Shah on 09/09/2015 for #1577
                             Guid UserId = objPasswordResetRequest.UserId;                               //Added by Rahul Shah on 09/09/2015 for #1577  
@@ -1040,10 +1163,18 @@ namespace RevenuePlanner.Controllers
                     /* ------------------ Single hash password ----------------------*/
                     string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
                     /* ---------------------------------------------------------------*/
-
+                    //Added By Maitri Gandhi on 8/4/2016 for #2105
+                    string returnMessage = objBDSServiceClient.CreatePasswordHistory(form.UserId, SingleHash_NewPassword, form.UserId);
+                    if (returnMessage != "Success")
+                    {
+                        ModelState.AddModelError("", returnMessage);
+                    }
+                    else
+                    {
                     objBDSServiceClient.ResetPassword(form.UserId, SingleHash_NewPassword);
 
                     form.IsSuccess = true;
+                    }
                 }
 
 

@@ -36,14 +36,17 @@ namespace RevenuePlanner.Models
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
-        [MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        //[MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        [MaxLength(50, ErrorMessage = "Password cannot be more than 50 characters.")] //Added By Maitri Gandhi on 15/4/2016
         [MinLength(8, ErrorMessage = "Password should be atleast 8 characters.")]
+        [RegularExpression(@"(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&*_+|~=`:'\(\)\-\\\{\}\[\]\<\>\//]).*$", ErrorMessage = " ")]    //Added By Maitri Gandhi on 8/4/2016 for #2105
         public string Password { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Confirm Password")]
-        [MaxLength(255, ErrorMessage = "Confirm Password cannot contain more than 255 characters.")]
+        //[MaxLength(255, ErrorMessage = "Confirm Password cannot contain more than 255 characters.")]
+        [MaxLength(50, ErrorMessage = "Password cannot be more than 50 characters.")] //Added By Maitri Gandhi on 15/4/2016
         [MinLength(8, ErrorMessage = "Confirm Password should be atleast 8 characters.")]
         public string ConfirmPassword { get; set; }
 
@@ -126,22 +129,26 @@ namespace RevenuePlanner.Models
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Current Password")]
-        [MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        [MaxLength(50, ErrorMessage = "Password cannot be more than 50 characters.")] //Added By Maitri Gandhi on 15/4/2016
+        //[MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
         public string CurrentPassword { get; set; }
 
 
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "New Password")]
-        [MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        //[MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        [MaxLength(50, ErrorMessage = "Password cannot be more than 50 characters.")] //Added By Maitri Gandhi on 15/4/2016
         [MinLength(8, ErrorMessage = "Password should be atleast 8 characters.")]
+        [RegularExpression(@"(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&*_+|~=`:'\(\)\-\\\{\}\[\]\<\>\//]).*$", ErrorMessage = " ")]    //Added By Maitri Gandhi on 8/4/2016 for #2105
         public string NewPassword { get; set; }
 
 
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Confirm New Password")]
-        [MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        //[MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
+        [MaxLength(50, ErrorMessage = "Password cannot be more than 50 characters.")] //Added By Maitri Gandhi on 15/4/2016
         public string ConfirmNewPassword { get; set; }
     }
 }

@@ -167,7 +167,18 @@ namespace RevenuePlanner.Controllers
                         string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.CurrentPassword.ToString().Trim());
                         string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
                         /* ---------------------------------------------------------------*/
-
+                        //Added By Maitri Gandhi for #2105 on 11/4/2016
+                        string returnMessage = "Success";
+                       
+                        returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
+                       
+                        if (returnMessage != "Success")
+                        {
+                            TempData["ErrorMessage"] = returnMessage;
+                            return View(form);
+                        }
+                        else
+                        {
                     //// Update New Password by UserId.
                         int retVal = objBDSServiceClient.ChangePassword(Sessions.User.UserId, SingleHash_NewPassword, SingleHash_CurrentPassword);
 
@@ -197,6 +208,7 @@ namespace RevenuePlanner.Controllers
                             TempData["SuccessMessage"] = Common.objCached.UserPasswordChanged;
                         }
                     }
+                }
                 }
             catch (Exception e)
             {
@@ -555,6 +567,8 @@ namespace RevenuePlanner.Controllers
                     if (retVal == 1)
                     {
                         UserCreatedMail(objUser, password);
+                        var UserDetails = objBDSServiceClient.GetUserDetails(objUser.Email);
+                        objBDSServiceClient.CreatePasswordHistory(UserDetails.UserId, objUser.Password,Sessions.User.UserId);
                         TempData["SuccessMessage"] = Common.objCached.UserAdded;
                         return RedirectToAction("Index");
                     }
