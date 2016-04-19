@@ -3462,7 +3462,7 @@ input.icon-check-blue {
 }
 
 .align_avatar_image {
-    margin: -13px 0 -21px 5px;
+    margin: 0 0 0 5px;/* changed dor #2112 BY Bhumika // margin: -13px 0 -21px 5px;*/
 }
 
 .align_avatar_first_image {
@@ -4020,7 +4020,7 @@ span.link-blue {
     }
 
 .gantt-padding {
-    padding-top: 40px !important;
+    padding-top: 40px ;
     padding-left: 5px !important;
 }
 
@@ -14278,6 +14278,310 @@ box-shadow: 1px 0 0 rgba(255, 255, 255, 0.125) inset, 0 1px 0 rgba(255, 255, 255
     .unlink-icon:hover .unlink-tooltip{display:block !important; }
 
 
+/*by Bheru Mehta 23-11-2015 #1748 start*/
+    .modal-copytactic {
+    z-index:2501;
+  padding-bottom:20px;
+  min-height:600px;
+    }
+        .modal-copytactic .btn-grey
+     {
+         color:#000;
+         margin-left:15px;
+         background: -webkit-linear-gradient(to bottom, #efefef, #bbbbbb); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(to bottom, #efefef, #bbbbbb); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(to bottom, #efefef, #bbbbbb); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(to bottom, #efefef, #bbbbbb); /* Standard syntax */
+  border:1px solid #cccccc;
+  font-size:14px;
+     }
+        .modal-copytactic .btn-blue
+        {
+            min-width: 90px;
+        }
+   .modal-copytactic .modal-header .close,.modal-copytactic .modal-header .close:hover
+   {
+       opacity:1;
+       line-height: 34px;
+   }
+.modal-copytactic  .modal-header
+   {
+       border-bottom: 1px solid #ccc;
+   }
+.modal-copytactic .modal-content-grid
+{
+     margin:20px 0;
+}
+.modal-copytactic .modal-title
+{
+     font-weight:normal;
+     font-size:24px;
+     color:#000;
+}
+.modal-copytactic  .modal-body h4 {
+margin:10px 0;
+font-size:24px;
+font-weight:normal;
+  color:#000;
+}
+        .modal-copytactic .modal-body
+        {
+            max-height:none;
+        }
+/*by Bheru Mehta 23-11-2015 #1748 end*/
+.msgWarning
+{
+    color:#D2B276;
+}
+.selectiontr
+{
+    background-color:#F0BE29 !important;
+}
+
+/*by Bheru Mehta #1746 23-11-2015 start*/
+.notify-load .progress-bar {
+    background-color: #337ab7;
+    -webkit-box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15) inset; /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15) inset; /* Firefox 3.5 - 3.6 */
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15) inset;
+    color: #fff;
+    float: left;
+    font-size: 12px;
+    height: 100%;
+    line-height: 20px;
+    text-align: center;
+    transition: width 0.6s ease 0s;
+    width: 0;
+}
+
+.notify-load .progress-bar-success {
+    background-color: #5cb85c;
+}
+
+
+.notify-load {
+    border: 1px solid transparent;
+    padding: 15px 0 0;/*by bheru 30-12-2015 #1799*/
+}
+
+
+    .notify-load [data-notify="progressbar"] {
+        margin-bottom: 0px;
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        width: 100%;
+        height: 5px;
+        z-index: 99999999999999;
+    }
+
+    .notify-load .notifyBox {
+        background-color: #FFF;
+        border: 1px solid #CCC;
+    }
+
+    .notify-load .notifyPic {
+        max-width: 100%;
+        max-height: 80px;
+        height: auto;
+    }
+
+    .notify-load .notifyBox h5 {
+        margin-top: 0;
+    }
+    .notify-load span {
+  float: left;
+  padding-left: 15px;
+}
+.loading-progress {
+  float: left;
+  height: 5px;
+  margin-top: 10px;
+  width: 100%;
+}
+.loading-load{
+      background: rgba(0, 0, 0, 0) url("../images/loading.gif") no-repeat scroll center 100%;
+}
+.loading-success{
+      background: rgba(0, 0, 0, 0) url("../images/loading-success.png") no-repeat scroll center 100%;
+}
+/*Notify animation css start*/
+.animated {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeInDown {
+    from {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -100%, 0);
+        transform: translate3d(0, -100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -100%, 0);
+        transform: translate3d(0, -100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
+    }
+}
+
+.fadeInDown {
+    -webkit-animation-name: fadeInDown;
+    animation-name: fadeInDown;
+}
+
+@-webkit-keyframes fadeInUp {
+    from {
+        opacity: 0;
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
+    }
+}
+
+.fadeInUp {
+    -webkit-animation-name: fadeInUp;
+    animation-name: fadeInUp;
+}
+/*Notify animation css end*/
+
+/*by Bheru Mehta #1746 23-11-2015 end*/
+.modal-copytactic .modal-title span
+{
+    display:inline;
+}
+
+div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
+  height: 23px !important;
+  line-height: 23px !important;
+}
+
+
+
+ .lickSuccessMsg{
+    font-weight:bold;
+    }
+
+/* #2015 new style Icons  Start Add by bhumika*/
+
+#BtnTabIcons{margin-left:0}
+#BtnTabIcons .request-icon-block a {padding:8px 18px}
+
+.request-icon-block .request-icon-link {
+    background: #fff none no-repeat scroll left center;
+    border: 1px solid #c6c6c6;
+    border-radius: 0 5px 5px 0;
+    font-family: source_sans_proregular;
+    font-size: 14px;
+    height: 32px;
+    line-height: 33px;
+    padding:8px 18px;
+    color: #000 !important;
+}
+
+.nav-tabs li .request .badge, .nav-tabs li .request-icon-block a,.nav-tabs li .request-icon-block a:hover, .nav-tabs li .request-icon-block a:focus{color: #000;}
+#BtnTabIcons .new-btn-plan{ border-radius: 5px 0 0 5px;}
+#divCostBudget  #aonCost.new-btn-plan{border-radius: 5px 0 0 5px;} /*Added by Bhumika #2065 18-3-2016*/ 
+
+
+#RequestTab .request{border-radius: 5px; margin-left: 10px;padding: 8px 10px;}
+
+#RequestTab .fa-thumbs-o-up::before {
+    left: 0;
+    position: absolute;
+    top: -11px;
+}
+#divPlanButton.full-radius .new-btn-plan {
+    border-radius: 5px;
+}
+.nav-tabs .fa.fa-thumbs-o-up {
+    font-size: 15px;
+    position: relative;
+    width: 14px;
+    color: #000;
+}
+.nav-tabs .request-icons.bdrRadius #divPlanEditButtonHome .request-icon-link {
+    border-radius: 0 ;border-left:0; border-right:0
+}
+.nav-tabs li .request-icon-block a.request-btn-active {
+    background-color: #2384b8 !important; color:#fff !important;
+}
+.nav-tabs a.request-btn-active .fa.fa-thumbs-o-up, .nav-tabs a.request-btn-active .badge{color:#ffffff }
+
+.nav-tabs {
+    border-bottom:0px solid #ddd;
+}
+#exportcsv {
+    margin: 0 10px 0 0; float:right;cursor:pointer;
+}
+#exportcsv > span {
+    margin: 0;
+    padding: 0;
+}
+
+
+/* #2015 new style Icons  End*/
+
+/* style add for #2038 */
+#popupnewTactic #linkToTactic .fa-link:before {
+    position: absolute;
+    left: 9px;
+    top: 5px;
+}
+
+
+/*Added for #2112 (scrollbar on collaborater on Plan page )*/
+#scroll-Collaborator {
+    display: inline-block;
+    height: auto;
+    max-width: 60%;
+    vertical-align: bottom;
+    width: auto;
+    float: left;
+    margin-right: 5px;
+}
+
+#scroll-Collaborator .profile-info{display:inline-block; height:34px; }
+.calendar-gant-table .gantt-padding{padding-top:15px}
+ #treeviewddl .hdrcell.filter input {
+    background:url("../images/icon-filter-search.gif") right 8px  no-repeat;
+    }
+
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {
 
@@ -15533,10 +15837,6 @@ left: 10%;
  width: 60% !important;
 }
 
-
-
-
-
 }
 /*End by Device 640 Mukesh 30-9-2015*/
 
@@ -15875,289 +16175,3 @@ tbody.column2 {
 }
 /*End by Device 320 Mukesh 25-9-2015*/
 /************************************************ Responsive css End here **********************************************************/
-
-/*by Bheru Mehta 23-11-2015 #1748 start*/
-    .modal-copytactic {
-    z-index:2501;
-  padding-bottom:20px;
-  min-height:600px;
-    }
-        .modal-copytactic .btn-grey
-     {
-         color:#000;
-         margin-left:15px;
-         background: -webkit-linear-gradient(to bottom, #efefef, #bbbbbb); /* For Safari 5.1 to 6.0 */
-            background: -o-linear-gradient(to bottom, #efefef, #bbbbbb); /* For Opera 11.1 to 12.0 */
-  background: -moz-linear-gradient(to bottom, #efefef, #bbbbbb); /* For Firefox 3.6 to 15 */
-  background: linear-gradient(to bottom, #efefef, #bbbbbb); /* Standard syntax */
-  border:1px solid #cccccc;
-  font-size:14px;
-     }
-        .modal-copytactic .btn-blue
-        {
-            min-width: 90px;
-        }
-   .modal-copytactic .modal-header .close,.modal-copytactic .modal-header .close:hover
-   {
-       opacity:1;
-       line-height: 34px;
-   }
-.modal-copytactic  .modal-header
-   {
-       border-bottom: 1px solid #ccc;
-   }
-.modal-copytactic .modal-content-grid
-{
-     margin:20px 0;
-}
-.modal-copytactic .modal-title
-{
-     font-weight:normal;
-     font-size:24px;
-     color:#000;
-}
-.modal-copytactic  .modal-body h4 {
-margin:10px 0;
-font-size:24px;
-font-weight:normal;
-  color:#000;
-}
-        .modal-copytactic .modal-body
-        {
-            max-height:none;
-        }
-/*by Bheru Mehta 23-11-2015 #1748 end*/
-.msgWarning
-{
-    color:#D2B276;
-}
-.selectiontr
-{
-    background-color:#F0BE29 !important;
-}
-
-/*by Bheru Mehta #1746 23-11-2015 start*/
-.notify-load .progress-bar {
-    background-color: #337ab7;
-    -webkit-box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15) inset; /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-    -moz-box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15) inset; /* Firefox 3.5 - 3.6 */
-    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15) inset;
-    color: #fff;
-    float: left;
-    font-size: 12px;
-    height: 100%;
-    line-height: 20px;
-    text-align: center;
-    transition: width 0.6s ease 0s;
-    width: 0;
-}
-
-.notify-load .progress-bar-success {
-    background-color: #5cb85c;
-}
-
-
-.notify-load {
-    border: 1px solid transparent;
-    padding: 15px 0 0;/*by bheru 30-12-2015 #1799*/
-}
-
-
-    .notify-load [data-notify="progressbar"] {
-        margin-bottom: 0px;
-        position: absolute;
-        bottom: 0px;
-        left: 0px;
-        width: 100%;
-        height: 5px;
-        z-index: 99999999999999;
-    }
-
-    .notify-load .notifyBox {
-        background-color: #FFF;
-        border: 1px solid #CCC;
-    }
-
-    .notify-load .notifyPic {
-        max-width: 100%;
-        max-height: 80px;
-        height: auto;
-    }
-
-    .notify-load .notifyBox h5 {
-        margin-top: 0;
-    }
-    .notify-load span {
-  float: left;
-  padding-left: 15px;
-}
-.loading-progress {
-  float: left;
-  height: 5px;
-  margin-top: 10px;
-  width: 100%;
-}
-.loading-load{
-      background: rgba(0, 0, 0, 0) url("../images/loading.gif") no-repeat scroll center 100%;
-}
-.loading-success{
-      background: rgba(0, 0, 0, 0) url("../images/loading-success.png") no-repeat scroll center 100%;
-}
-/*Notify animation css start*/
-.animated {
-    -webkit-animation-duration: 1s;
-    animation-duration: 1s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
-}
-
-@-webkit-keyframes fadeInDown {
-    from {
-        opacity: 0;
-        -webkit-transform: translate3d(0, -100%, 0);
-        transform: translate3d(0, -100%, 0);
-    }
-
-    to {
-        opacity: 1;
-        -webkit-transform: none;
-        transform: none;
-    }
-}
-
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        -webkit-transform: translate3d(0, -100%, 0);
-        transform: translate3d(0, -100%, 0);
-    }
-
-    to {
-        opacity: 1;
-        -webkit-transform: none;
-        transform: none;
-    }
-}
-
-.fadeInDown {
-    -webkit-animation-name: fadeInDown;
-    animation-name: fadeInDown;
-}
-
-@-webkit-keyframes fadeInUp {
-    from {
-        opacity: 0;
-        -webkit-transform: translate3d(0, 100%, 0);
-        transform: translate3d(0, 100%, 0);
-    }
-
-    to {
-        opacity: 1;
-        -webkit-transform: none;
-        transform: none;
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        -webkit-transform: translate3d(0, 100%, 0);
-        transform: translate3d(0, 100%, 0);
-    }
-
-    to {
-        opacity: 1;
-        -webkit-transform: none;
-        transform: none;
-    }
-}
-
-.fadeInUp {
-    -webkit-animation-name: fadeInUp;
-    animation-name: fadeInUp;
-}
-/*Notify animation css end*/
-
-/*by Bheru Mehta #1746 23-11-2015 end*/
-.modal-copytactic .modal-title span
-{
-    display:inline;
-}
-
-div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
-  height: 23px !important;
-  line-height: 23px !important;
-}
-
-
-
- .lickSuccessMsg{
-    font-weight:bold;
-    }
-
-/* #2015 new style Icons  Start Add by bhumika*/
-
-#BtnTabIcons{margin-left:0}
-#BtnTabIcons .request-icon-block a {padding:8px 18px}
-
-.request-icon-block .request-icon-link {
-    background: #fff none no-repeat scroll left center;
-    border: 1px solid #c6c6c6;
-    border-radius: 0 5px 5px 0;
-    font-family: source_sans_proregular;
-    font-size: 14px;
-    height: 32px;
-    line-height: 33px;
-    padding:8px 18px;
-    color: #000 !important;
-}
-
-.nav-tabs li .request .badge, .nav-tabs li .request-icon-block a,.nav-tabs li .request-icon-block a:hover, .nav-tabs li .request-icon-block a:focus{color: #000;}
-#BtnTabIcons .new-btn-plan{ border-radius: 5px 0 0 5px;}
-#divCostBudget  #aonCost.new-btn-plan{border-radius: 5px 0 0 5px;} /*Added by Bhumika #2065 18-3-2016*/ 
-
-
-#RequestTab .request{border-radius: 5px; margin-left: 10px;padding: 8px 10px;}
-
-#RequestTab .fa-thumbs-o-up::before {
-    left: 0;
-    position: absolute;
-    top: -11px;
-}
-#divPlanButton.full-radius .new-btn-plan {
-    border-radius: 5px;
-}
-.nav-tabs .fa.fa-thumbs-o-up {
-    font-size: 15px;
-    position: relative;
-    width: 14px;
-    color: #000;
-}
-.nav-tabs .request-icons.bdrRadius #divPlanEditButtonHome .request-icon-link {
-    border-radius: 0 ;border-left:0; border-right:0
-}
-.nav-tabs li .request-icon-block a.request-btn-active {
-    background-color: #2384b8 !important; color:#fff !important;
-}
-.nav-tabs a.request-btn-active .fa.fa-thumbs-o-up, .nav-tabs a.request-btn-active .badge{color:#ffffff }
-
-.nav-tabs {
-    border-bottom:0px solid #ddd;
-}
-#exportcsv {
-    margin: 0 10px 0 0; float:right;cursor:pointer;
-}
-#exportcsv > span {
-    margin: 0;
-    padding: 0;
-}
-
-
-/* #2015 new style Icons  End*/
-
-/* style add for #2038 */
-#popupnewTactic #linkToTactic .fa-link:before {
-    position: absolute;
-    left: 9px;
-    top: 5px;
-}

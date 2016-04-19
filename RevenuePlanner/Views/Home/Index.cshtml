@@ -93,6 +93,10 @@
 @*@if (activeMenu.ToLower() == "plan")*@
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap2-toggle.min.js")"></script>
 <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">
+
+<link href="~/Content/css/jquery.mCustomScrollbar-new.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery.mCustomScrollbar.concat.min-new.js"></script>
+
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
@@ -1772,56 +1776,65 @@
     </div>
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
-
-            <div class="pull-left" id="divCollaborator" style="position: relative; display:none;">
-                <!-- position:relative = added by kapil -->
-            </div>
-
-            @* Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
-            <div class="pull-right toggle-status source-sans-proregular">
-                <div class="pull-left">
-                    @*pull-right Changed by #2015 Bhumika*@
-                    <a href="#" class="toggleStatusHide">Hide Status</a>
-                    <span class="status-created">Created</span>
-                    <span class="status-submitted">Submitted</span>
-                    <span class="status-approved">Approved</span>
-                    <span class="status-rejected">Declined</span>
+            <div class="calendar-table-top clearfix">
+                        @*div added by Bhumika #2112*@
+                <div id="scroll-Collaborator" class=""> @*div added by Bhumika #2112*@
+                    <div id="divCollaborator" style="display:none;">
+                        <!-- position:relative = added by kapil -->
+                    </div>
                 </div>
-                <a href="#" class="toggleStatus">Show Status</a>
-                <a href="#" onclick='CallPDF()' class="pdfExport"><i class="fa fa-external-link"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Export.pdf</span></a> @*Modified by Komal Rawal for 2013 Home/Plan Layout changes*@
-            </div>
-            @* End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
-
-            <div>
-                <div class="gantt-padding market-activity-main  cf lenght-div" style="min-height: 720px;">
-                    @* Modified by : Sohel Pathan on 29/10/2014 for PL ticket #899 *@
-
-                    <div id="gantt_here"></div>
-                    <div id="gantt_honey"></div>
-                    @*<div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
-                        </div>*@
+                <div id="divCollaboratorCount" style="display:none;" class="xxx">
+                    <!-- Added for #2112-->
 
                 </div>
-                <div class="shadow-scroll-gantt"></div>
-                <div class="table-row">
-                    <table id="table_activities" class="table table-striped table-hover bold" style="display:none">
-                        <thead>
-                            <tr>
-                                <th class="border-r show-modal">Title</th>
-                                <th class="show-modal">@Html.LabelForINQ("INQ")</th>
-                                <th class="show-modal">@Html.LabelForMQL("MQL")</th>
-                                <th class="show-modal">Revenue</th>
-                                <th class="border-r show-modal">Cost</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!--tr elements are add dinamically with javascript-->
-                        </tbody>
-                    </table>
+            
+                    @* Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
+                    <div class="pull-right toggle-status source-sans-proregular">
+                        <div class="pull-left">
+                            @*pull-right Changed by #2015 Bhumika*@
+                            <a href="#" class="toggleStatusHide">Hide Status</a>
+                            <span class="status-created">Created</span>
+                            <span class="status-submitted">Submitted</span>
+                            <span class="status-approved">Approved</span>
+                            <span class="status-rejected">Declined</span>
+                        </div>
+                        <a href="#" class="toggleStatus">Show Status</a>
+                        <a href="#" onclick='CallPDF()' class="pdfExport"><i class="fa fa-external-link"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Export.pdf</span></a> @*Modified by Komal Rawal for 2013 Home/Plan Layout changes*@
+                    </div>
+                </div>
+                @* End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
+
+            <div class="calendar-gant-table">
+                    <div class="gantt-padding market-activity-main  cf lenght-div" style="min-height: 720px;">
+                    @*"gantt-padding" class removed by Bhumika to remove 40px-top & 5px-left padding for #2112*@
+                        @* Modified by : Sohel Pathan on 29/10/2014 for PL ticket #899 *@
+
+                        <div id="gantt_here"></div>
+                        <div id="gantt_honey"></div>
+                        @*<div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
+                    </div>*@
+
+                    </div>
+                    <div class="shadow-scroll-gantt"></div>
+                    <div class="table-row">
+                        <table id="table_activities" class="table table-striped table-hover bold" style="display:none">
+                            <thead>
+                                <tr>
+                                    <th class="border-r show-modal">Title</th>
+                                    <th class="show-modal">@Html.LabelForINQ("INQ")</th>
+                                    <th class="show-modal">@Html.LabelForMQL("MQL")</th>
+                                    <th class="show-modal">Revenue</th>
+                                    <th class="border-r show-modal">Cost</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--tr elements are add dinamically with javascript-->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 <div id="Notabcontent" style="display: none;">
@@ -3157,16 +3170,39 @@
                         if ($('#gantt_here').html().length > 0)
                             $("#divCollaborator").css("display", "block");
                         $('#divCollaborator').empty(); // Clear collaborators div content
+                        $("#divCollaboratorCount").css("display", "inline-block");// Added for #2112
+                        $('#divCollaboratorCount').empty(); // Added for #2112 - Bhumika
                         ////  set collaborator's image
                         if (data.collaboratorsImage != null && data.collaboratorsImage != 'undefined') {
                             $.each(data.collaboratorsImage.Data, function () {
                                 SetCollaboratorImage(this, appendtag);//#416
-                            })
-                            $('#divCollaborator').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
-                            $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
+                            });
+                            //var tempHTML = '<a href="#" class="profile-info" title="" data-toggle="tooltip" data-original-title="hello hello"><img class="avatar-user img-border align_avatar_image" src="data:image/jpg;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAMMSURBVEhLpdZZqE1RHMfxYyZCpsyZikd58yKEeCDzlFmGJ0nmhBBCiQhvogxvplCSJ5lnIjJmSshU8mD4fnf3nvbdd52178mvPnXOvt29zl77v/5rFWqQWmiNgViP47iK2xX8fAIbMRhtUBv/lfZYiCt4gjNw8FmYWGEm1uIUHuM6lqITyk59TMBlPIQ37oF6cAay8Zp/64aVuAd/wDQ0RI3SDD7VK+xAF5SbDtiKl9iGloimMfbCf5juhUwaoA+c4sVYhOGwBkJx1p7hAJp7IRSndwNeYJgXMvHmq+GP+ptxCBZWE2QzANaHs+eDVcskvMHk5Fv1rMFvZAet9B2r4ANkMwLeey6qVLwV6LLwfYRiYd1CaMC0d+iHUNbB5dcz+UbqYgmsxHZeCGQMvGlosLRfWIZQWuEG/AHWSnLhGpymUnGtfkFosCxXRKkswF247AqD8BzFKQjE9/8RoYHSYk9sLFD7whS/2OrOwgZQKv1hZYYGS3uPcYjlMHb7wd7rvMfSGRcRGiztDnohFtuprTdpbb7DWNwgniI0WNpbjEQs4+EKKTzCWD9E4jqsSVV/gvUQy1C4mSQDu1xiaYGjiDWQP3CHcluMpTiwUz3DDznpi9h0O82+krwUp/okbId5qYNj8Mmyg3rtPJLGkBObVVJcW+AU2cHyMgSvkR3Yd5u3jCpzEHv84E7kFHb3S07c8D0cZAe2KTRFXqyV+0hercXgnDsFeXG6PQaFBi6536YyDw7sppN0rOW4ibZeiKQ33NizA9ux3Hdj8RRyCe75xeNQRzjw5uRb9bjHetK4gFBxyZlwWYYOA8ZDhDtglT3BzdnG7btONwB/5VTsxweEBkxzBzuC2UhvsTYg7z0f1YrYC5vg4vasNAen8Q2hQWJ+4hx8p6PxALvQCMFYmfvgL/+B0E3L4T0+wyWUe9L0YLAdsfZYDh8kr2iLcUp855Z+6GY14SvzXZcqtmi6wvOzJxSrOW+TkMffFUjW6v/EpuFyG4WdsHO5IXyFhecadqPxVGHb9NAQO82QQuEfoahY8wOVq8kAAAAASUVORK5CYII="></a>';
+                            //$("#divCollaborator").html($("#divCollaborator").html() + tempHTML); // commented by Bhumika #2112
+                            $('#divCollaboratorCount').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
+                            $('#divCollaboratorCount').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>'); // Changed ID for #2112
+                            //debugger;
+                            
+                            // Function Added for #2112 to show tooltip - Bhumika
+                            $(function () {
+                                $(".profile-info").tooltip({
+                                    placement: "bottom",
+                                    trigger: 'hover',
+                                    container: 'body',
+                                });
+                            });
+                            // #2112 Custome scrollbar for div - Bhumika                          
+                            $("#scroll-Collaborator").mCustomScrollbar({
+                                axis: "x",
+                                horizontalScroll: true,
+                                scrollButtons: { enable: true },
+                                theme: "light-3",                            
+                                advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
+                            });
+
                         }
                         //added by uday for #416
-                        ProfileAttachToolTip();//function written in scripts.js
+                        //ProfileAttachToolTip();//function written in scripts.js
                     }
                 }
             });
@@ -3186,13 +3222,13 @@
          + imgs + "'/>";
         // uday for ticket #416
 
-        var referencestart = "<a href='#' class=\"profile-info\">";
-        var referencenew = "<div class=\"profile-tooltip\">	<div class=\"profile-tooltip-arrow\"></div> <div class=\"profile-tooltip-inner\"> " +
-                                             " " + username + ', ' + title + "<br /></div> </div>";
+        var referencestart = "<a href='#' class=\"profile-info\" title=\""+ username + "', '" + title +"\" data-toggle=\"tooltip\">";
+        //var referencenew = "<div class=\"profile-tooltip\">	<div class=\"profile-tooltip-arrow\"></div> <div class=\"profile-tooltip-inner\"> " +
+        //                                     " " + username + ', ' + title + "<br /></div> </div>"; //Commented by Bhumika for #2112
         var endreference = "</a>";
         appendtag += referencestart;
         appendtag += collaboratorImage;
-        appendtag += referencenew;
+        //appendtag += referencenew;
         appendtag += endreference;
         $("#divCollaborator").html($("#divCollaborator").html() + appendtag);
     }
@@ -5258,6 +5294,7 @@
                             // $("#improvements").show();
                             $('#lblMarkringActivitiestitle').hide();
                             $('#divCollaborator').show();
+                            $('#divCollaboratorCount').show(); // Added for #2112
                             $("#NodatawithfilterCalendar").hide();
 
                             type = data.ViewBy.toString();
@@ -5407,6 +5444,7 @@
                             $("#improvements").hide();
                             $('#lblMarkringActivitiestitle').hide();
                             $('#divCollaborator').hide();
+                            $('#divCollaboratorCount').hide(); // Added for #2112
                             $("#NodatawithfilterCalendar").show();
                         }
                     }
