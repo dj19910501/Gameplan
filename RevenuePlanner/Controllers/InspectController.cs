@@ -13314,7 +13314,7 @@ namespace RevenuePlanner.Controllers
                 value = string.Empty;
             }
             var temp = "<input id=" + id + " title='" + name + "' " + enableCheck + "  type=checkbox  />" + name;
-            var AddWeightage = " <input value='" + value + "' type='text'  id= wt_" + id + " align='center' style='margin-top:9px; padding-right:4px;'>";
+            var AddWeightage = " <input value='" + value + "' type='text' alt_id = 'txtweight'  id= wt_" + id + " align='center' style='margin-top:9px; padding-right:4px;'>";
 
             List<string> datalist = new List<string>();
 
