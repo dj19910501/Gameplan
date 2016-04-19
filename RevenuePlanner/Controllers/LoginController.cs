@@ -125,6 +125,9 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult Index(LoginModel form, string returnUrl)
         {
+           
+            try
+            {
             //Added By komal rawal for password lockout feature #2107
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             bool IsEmailInvalid = false;
@@ -134,8 +137,6 @@ namespace RevenuePlanner.Controllers
             var ExpDays = Enums.AppConfiguration.Pwd_ExpiryDays.ToString();            
             var TotalAttempts = "";                      
             //End
-            try
-            {
                 Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
                 //Added By komal rawal for password lockout feature #2107
                 AppConfigObj = objBDSServiceClient.ValidateAppConfiguration(applicationId, form.UserEmail);
@@ -161,6 +162,28 @@ namespace RevenuePlanner.Controllers
                     if (obj == null)
                     {
                         ModelState.AddModelError("", Common.objCached.InvalidLogin);
+
+                        //Modified By komal rawal for password lockout feature #2107
+                        if (TotalAttempts != null && TotalAttempts != "" && Convert.ToInt32(TotalAttempts) != 0)
+                        {
+                            if (IsEmailInvalid == false)
+                            {
+                                TempData[form.UserEmail] = Convert.ToInt32(TempData[form.UserEmail]) + 1;
+
+                                if (Convert.ToInt32(TotalAttempts) == Convert.ToInt32(TempData[form.UserEmail]))
+                                {
+                                    TempData.Clear();
+                                    ModelState.AddModelError("", Common.objCached.LockedUser);
+                                    int Locked = objBDSServiceClient.LockUser(Sessions.ApplicationId, form.UserEmail);
+                                }
+                                else
+                                {
+                                    ModelState.AddModelError("", "You have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
+                                }
+                            }
+                            TempData.Keep(form.UserEmail);
+                        }
+                        //ENd
 
                     }
                     else if (obj.Email == "" )
@@ -365,7 +388,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                ModelState.AddModelError("", "you have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
+                                ModelState.AddModelError("", "You have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
                             }
                         }
                     TempData.Keep(form.UserEmail);
@@ -376,27 +399,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception e)
             {
-                //Modified By komal rawal for password lockout feature #2107
-                if (TotalAttempts != null && TotalAttempts != "" && Convert.ToInt32(TotalAttempts) != 0 )
-                {
-                    if(IsEmailInvalid == false)
-                    { 
-                    TempData[form.UserEmail] = Convert.ToInt32(TempData[form.UserEmail]) + 1;
 
-                    if (Convert.ToInt32(TotalAttempts) == Convert.ToInt32(TempData[form.UserEmail]))
-                {
-                    TempData.Clear();
-                    ModelState.AddModelError("", Common.objCached.LockedUser);
-                    int Locked = objBDSServiceClient.LockUser(Sessions.ApplicationId, form.UserEmail);
-                }
-                else
-                {
-                    ModelState.AddModelError("", "You have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
-                }
-                    }
-                TempData.Keep(form.UserEmail);
-                }
-            //ENd
                 ErrorSignal.FromCurrentContext().Raise(e);
 
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
