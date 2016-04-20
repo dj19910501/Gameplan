@@ -1601,8 +1601,16 @@ namespace RevenuePlanner.Controllers
                         { 
                             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                             string strModelStatus = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).Select(mdl=>mdl.Status).FirstOrDefault();
+                            int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
                             if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().Equals(strModelStatus))
                             {
+                                if (objModel.IntegrationInstanceId.HasValue)
+                                    sfdcInstanceId = objModel.IntegrationInstanceId.Value;
+                                if (objModel.IntegrationInstanceEloquaId.HasValue)
+                                    elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
+                                if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
+                                    workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
+
                                 List<int> lstTacticTypeIds = new List<int>();
                                 lstTacticTypeIds.Add(objTacticType.TacticTypeId);
                                 // Get list of tactics related to TacticType.
@@ -1617,11 +1625,29 @@ namespace RevenuePlanner.Controllers
                                         try
                                         {
                                             objDbMrpEntities.Configuration.AutoDetectChangesEnabled = false;
-                                            lstTactics.ForEach(tac =>
+                                            if (isDeployedToIntegration)
                                             {
-                                                tac.IsDeployedToIntegration = isDeployedToIntegration;
-                                                objDbMrpEntities.Entry(tac).State = EntityState.Modified;
-                                            });
+                                                lstTactics.ForEach(tac =>
+                                                {
+                                                    if (sfdcInstanceId > 0)
+                                                        tac.IsSyncSalesForce = true;         // Set SFDC setting to True if Salesforce instance mapped under Tactic's Model.
+                                                    if (elqaInstanceId > 0)
+                                                        tac.IsSyncEloqua = true;             // Set Eloqua setting to True if Eloqua instance mapped under Tactic's Model.
+                                                    if (workfrontInstanceId > 0)
+                                                        tac.IsSyncWorkFront = true;          // Set WorkFront setting to True if WorkFront instance mapped under Tactic's Model.
+                                                    tac.IsDeployedToIntegration = true;
+                                                    objDbMrpEntities.Entry(tac).State = EntityState.Modified;
+                                                });
+                                            }
+                                            else
+                                            {
+                                                lstTactics.ForEach(tac =>
+                                                {
+                                                    tac.IsDeployedToIntegration = false;
+                                                    tac.IsSyncSalesForce = tac.IsSyncEloqua = tac.IsSyncWorkFront = false;
+                                                    objDbMrpEntities.Entry(tac).State = EntityState.Modified;
+                                                });
+                                            }
                                         }
                                         finally
                                         {
@@ -1703,6 +1729,20 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
+                    string strModelStatus = objModel.Status.ToLower();
+                    int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
+                    #region "Get Integration Instance Set for Model"
+                    if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus))
+                    {
+                        if (objModel.IntegrationInstanceId.HasValue)
+                            sfdcInstanceId = objModel.IntegrationInstanceId.Value;
+                        if (objModel.IntegrationInstanceEloquaId.HasValue)
+                            elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
+                        if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
+                            workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value; 
+                    }
+                    #endregion
+
                     if (rejid.Length > 0)
                     {
                         #region "Declare local variables"
@@ -1721,6 +1761,7 @@ namespace RevenuePlanner.Controllers
                         if (lstRejTacticTypeIds != null && lstRejTacticTypeIds.Count > 0)
                             lstAllRejTactics = GetPlanTacticsByTacticType(objModel.ModelId, lstRejTacticTypeIds);
                         #endregion
+
                         for (int i = 0; i < rejid.Length; i++)
                         {
                             string[] strArr = rejid[i].Replace("rej", "").Split('_');
@@ -1739,7 +1780,7 @@ namespace RevenuePlanner.Controllers
                                     //#2063: Tactic 'Deployed To Integration' not defaulting to on
                                     // Added by Viral on 04/08/2016
                                     #region "Update DeployToIntegration settings for all tactics related to Model & TacticType"
-                                    string strModelStatus = objModel.Status.ToLower();
+                                    
                                     if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus) && lstAllRejTactics != null && lstAllRejTactics.Count >0)
                                     {
                                         // Get list of tactics related to TacticType.
@@ -1756,6 +1797,7 @@ namespace RevenuePlanner.Controllers
                                                     lstTactics.ForEach(tac =>
                                                     {
                                                         tac.IsDeployedToIntegration = false;
+                                                        tac.IsSyncEloqua = tac.IsSyncSalesForce = tac.IsSyncWorkFront= false;
                                                         objDbMrpEntities.Entry(tac).State = EntityState.Modified;
                                                     });
                                                 }
@@ -1858,7 +1900,6 @@ namespace RevenuePlanner.Controllers
                                 //#2063: Tactic 'Deployed To Integration' not defaulting to on
                                 // Added by Viral on 04/08/2016
                                 #region "Update DeployToIntegration settings for all tactics related to Model & TacticType"
-                                string strModelStatus = objModel.Status.ToLower();
                                 if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus) && lstAllTactics != null && lstAllTactics.Count>0)
                                 {
                                     // Get list of tactics related to TacticType.
@@ -1875,6 +1916,12 @@ namespace RevenuePlanner.Controllers
                                                 lstTactics.ForEach(tac =>
                                                 {
                                                     tac.IsDeployedToIntegration = IsDeployToIntegration;
+                                                    if (sfdcInstanceId > 0)
+                                                        tac.IsSyncSalesForce = true;
+                                                    if (workfrontInstanceId > 0)
+                                                        tac.IsSyncWorkFront = true;
+                                                    if (elqaInstanceId > 0)
+                                                        tac.IsSyncEloqua = true;
                                                     objDbMrpEntities.Entry(tac).State = EntityState.Modified;
                                                 });
                                             }
