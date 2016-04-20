@@ -5325,7 +5325,7 @@ namespace RevenuePlanner.Controllers
             //                                       campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted }).ToList();
             //Modified by Rahul Shah on 14/04/2016 for PL #2110
             var objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
-                                                   campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) && (!((tactic.EndDate < CalendarStartDate) || (tactic.StartDate > CalendarEndDate))) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted }).ToList();
+                                                   campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) && tactic.EndDate > CalendarStartDate && tactic.StartDate < CalendarEndDate && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted }).ToList();
             
             objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
@@ -5459,20 +5459,22 @@ namespace RevenuePlanner.Controllers
                         //differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
 
                         //differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+                        endDate = new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month));
                         differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM-yyyy"));
-
+                        
                         List<string> thismonthdifferenceItem = new List<string>();
-                        if (differenceItems.Count() > 12)
-                        {
-                            thismonthdifferenceItem = differenceItems.ToList();
-                            thismonthdifferenceItem.RemoveRange(12, thismonthdifferenceItem.Count - 12);
-                        }
-                        else
-                        {
-                            thismonthdifferenceItem = differenceItems.ToList();
-                        }
-
+                        //if (differenceItems.Count() > 12)
+                        //{
+                        //    thismonthdifferenceItem = differenceItems.ToList();
+                        //    thismonthdifferenceItem.RemoveRange(12, thismonthdifferenceItem.Count - 12);
+                        //}
+                        //else
+                        //{
+                        //    thismonthdifferenceItem = differenceItems.ToList();
+                        //}
+                        
                         //foreach (string objDifference in thismonthdifferenceItem)
+                        thismonthdifferenceItem = differenceItems.ToList();
                         int thismonthdifferenceItemCount = thismonthdifferenceItem.Count;
                         for (int monthdiffer = 0; monthdiffer < thismonthdifferenceItemCount; monthdiffer++)
                         {
@@ -5481,7 +5483,7 @@ namespace RevenuePlanner.Controllers
                             if (monthNo == DateTime.Now.Month)
                             {
                                 if (diffrenceitem[1] == System.DateTime.Now.Year.ToString())
-                                {
+                                {                                    
                                     if (monthNo == 1)
                                     {
                                         monthArray[0] = monthArray[0] + 1;
@@ -5491,10 +5493,10 @@ namespace RevenuePlanner.Controllers
                                         monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
                                     }
                                 }
-                                else
-                                {
-                                    monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
-                                }
+                                //else
+                                //{
+                                //    monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                //}
                             }
                         }
                         // }
@@ -6488,7 +6490,9 @@ namespace RevenuePlanner.Controllers
             //// Prepare array of months for seelcted quarter
             //if (startDateParam.Month == month1 || startDateParam.Month == month2 || startDateParam.Month == month3 || endDateParam.Month == month1 || endDateParam.Month == month2 || endDateParam.Month == month3)
             //{
+            endDateParam = new DateTime(endDateParam.Year, endDateParam.Month, DateTime.DaysInMonth(endDateParam.Year, endDateParam.Month));
                 differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDateParam.AddMonths(element)).TakeWhile(element => element <= endDateParam).Select(element => element.ToString("MM-yyyy"));
+           
 
                 List<string> thismonthdifferenceItem = new List<string>();
                 if (differenceItems.Count() > 12)
