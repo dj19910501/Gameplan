@@ -1161,20 +1161,41 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Service References/BDSService/Reference.svcmap">
       <publishTime>12/16/2013 12:52:43</publishTime>
     </File>
+    <File Include="Service References/BDSService/RevenuePlanner.BDSService.ApplicationActivity.datasource">
+      <publishTime>04/11/2016 13:39:05</publishTime>
+    </File>
     <File Include="Service References/BDSService/RevenuePlanner.BDSService.Client.datasource">
-      <publishTime>03/20/2014 16:49:43</publishTime>
+      <publishTime>04/11/2016 13:39:05</publishTime>
+    </File>
+    <File Include="Service References/BDSService/RevenuePlanner.BDSService.ClientDatabase.datasource">
+      <publishTime>04/11/2016 13:39:05</publishTime>
+    </File>
+    <File Include="Service References/BDSService/RevenuePlanner.BDSService.CustomRestriction.datasource">
+      <publishTime>04/11/2016 13:39:05</publishTime>
     </File>
     <File Include="Service References/BDSService/RevenuePlanner.BDSService.Menu.datasource">
-      <publishTime>03/20/2014 16:49:43</publishTime>
+      <publishTime>04/11/2016 13:39:05</publishTime>
+    </File>
+    <File Include="Service References/BDSService/RevenuePlanner.BDSService.PasswordResetRequest.datasource">
+      <publishTime>04/11/2016 13:39:05</publishTime>
     </File>
     <File Include="Service References/BDSService/RevenuePlanner.BDSService.Permission.datasource">
-      <publishTime>03/20/2014 16:49:43</publishTime>
+      <publishTime>04/11/2016 13:39:05</publishTime>
     </File>
     <File Include="Service References/BDSService/RevenuePlanner.BDSService.Role.datasource">
-      <publishTime>03/20/2014 16:49:43</publishTime>
+      <publishTime>04/11/2016 13:39:05</publishTime>
+    </File>
+    <File Include="Service References/BDSService/RevenuePlanner.BDSService.SecurityQuestion.datasource">
+      <publishTime>04/11/2016 13:39:05</publishTime>
     </File>
     <File Include="Service References/BDSService/RevenuePlanner.BDSService.User.datasource">
-      <publishTime>03/20/2014 16:49:43</publishTime>
+      <publishTime>04/11/2016 13:39:05</publishTime>
+    </File>
+    <File Include="Service References/BDSService/RevenuePlanner.BDSService.UserApplicationPermission.datasource">
+      <publishTime>04/11/2016 13:39:05</publishTime>
+    </File>
+    <File Include="Service References/BDSService/RevenuePlanner.BDSService.UserHierarchy.datasource">
+      <publishTime>04/11/2016 13:39:05</publishTime>
     </File>
     <File Include="Views/Home/Actual.cshtml">
       <publishTime>03/20/2014 16:49:43</publishTime>

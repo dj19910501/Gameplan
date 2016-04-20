@@ -208,16 +208,12 @@ namespace RevenuePlanner.Controllers
                             int totaldays = Convert.ToInt32((DateTime.Now - PasswordConfiguration.PasswordModifiedDate).TotalDays);
                             if (totaldays >= Convert.ToInt32(PasswordConfiguration.Config_Value))
                             {
-                                BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
-                                objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
-                                objPasswordResetRequest.UserId = obj.UserId;
-                                objPasswordResetRequest.AttemptCount = 0;
-                                objPasswordResetRequest.CreatedDate = DateTime.Now;
-                                objPasswordResetRequest.IsUsed = false;
-
-                                string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
-
-                                return RedirectToAction("ResetPassword", "Login", new { id = PasswordResetRequestId, PasswordExpired = true });
+                                //Modified By Maitri Gandhi on 18/4/2016
+                                Sessions.User = obj;
+                                ViewBag.Expired = Common.objCached.PasswordExpired;
+                                ResetPasswordModel ObjResetPwd = new ResetPasswordModel();
+                                ObjResetPwd.UserId = obj.UserId;
+                                return View("ResetPassword", ObjResetPwd);
                             }
                         }
                     }
@@ -1167,16 +1163,18 @@ namespace RevenuePlanner.Controllers
                     string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
                     /* ---------------------------------------------------------------*/
                     //Added By Maitri Gandhi on 8/4/2016 for #2105
-                    string returnMessage = objBDSServiceClient.CreatePasswordHistory(form.UserId, SingleHash_NewPassword, form.UserId);
+                    //string returnMessage = objBDSServiceClient.CreatePasswordHistory(form.UserId, SingleHash_NewPassword, form.UserId);
+                    //Modified by Maitri Gandhi on 19/4/2016
+                    string returnMessage = objBDSServiceClient._ResetPassword(form.UserId, SingleHash_NewPassword);
                     if (returnMessage != "Success")
                     {
                         ModelState.AddModelError("", returnMessage);
                     }
-                    else
+                    else if (returnMessage == "Success")
                     {
-                    objBDSServiceClient.ResetPassword(form.UserId, SingleHash_NewPassword);
+                        //objBDSServiceClient.ResetPassword(form.UserId, SingleHash_NewPassword);
 
-                    form.IsSuccess = true;
+                        form.IsSuccess = true;
                     }
                 }
 

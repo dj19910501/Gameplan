@@ -2154,6 +2154,24 @@ namespace RevenuePlanner.BDSService {
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="BDSService.IBDSService")]
     public interface IBDSService {
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetManagerList", ReplyAction="http://tempuri.org/IBDSService/GetManagerListResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetManagerList(System.Guid clientId, System.Guid applicationId, System.Guid userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetManagerList", ReplyAction="http://tempuri.org/IBDSService/GetManagerListResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetManagerListAsync(System.Guid clientId, System.Guid applicationId, System.Guid userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetOtherApplicationUsers", ReplyAction="http://tempuri.org/IBDSService/GetOtherApplicationUsersResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetOtherApplicationUsers(System.Guid clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetOtherApplicationUsers", ReplyAction="http://tempuri.org/IBDSService/GetOtherApplicationUsersResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetOtherApplicationUsersAsync(System.Guid clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/AssignUser", ReplyAction="http://tempuri.org/IBDSService/AssignUserResponse")]
+        int AssignUser(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/AssignUser", ReplyAction="http://tempuri.org/IBDSService/AssignUserResponse")]
+        System.Threading.Tasks.Task<int> AssignUserAsync(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictions", ReplyAction="http://tempuri.org/IBDSService/GetUserListWithCustomRestrictionsResponse")]
         System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListWithCustomRestrictions(System.Guid userId, System.Guid clientId, System.Guid applicationId, System.Collections.Generic.Dictionary<string, string> customRestrictionFieldIds);
         
@@ -2274,6 +2292,12 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/ChangePassword", ReplyAction="http://tempuri.org/IBDSService/ChangePasswordResponse")]
         System.Threading.Tasks.Task<int> ChangePasswordAsync(System.Guid userId, string newPassword, string currPassword);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_ChangePassword", ReplyAction="http://tempuri.org/IBDSService/_ChangePasswordResponse")]
+        string _ChangePassword(System.Guid userId, string newPassword, string currPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_ChangePassword", ReplyAction="http://tempuri.org/IBDSService/_ChangePasswordResponse")]
+        System.Threading.Tasks.Task<string> _ChangePasswordAsync(System.Guid userId, string newPassword, string currPassword);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CheckCurrentPassword", ReplyAction="http://tempuri.org/IBDSService/CheckCurrentPasswordResponse")]
         bool CheckCurrentPassword(System.Guid userId, string currentPassword);
         
@@ -2340,6 +2364,12 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreateUserWithPermission", ReplyAction="http://tempuri.org/IBDSService/CreateUserWithPermissionResponse")]
         System.Threading.Tasks.Task<int> CreateUserWithPermissionAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_CreateUserWithPermission", ReplyAction="http://tempuri.org/IBDSService/_CreateUserWithPermissionResponse")]
+        string _CreateUserWithPermission(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_CreateUserWithPermission", ReplyAction="http://tempuri.org/IBDSService/_CreateUserWithPermissionResponse")]
+        System.Threading.Tasks.Task<string> _CreateUserWithPermissionAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/UpdateUser", ReplyAction="http://tempuri.org/IBDSService/UpdateUserResponse")]
         int UpdateUser(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid modifiedBy);
         
@@ -2399,6 +2429,12 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/ResetPassword", ReplyAction="http://tempuri.org/IBDSService/ResetPasswordResponse")]
         System.Threading.Tasks.Task<int> ResetPasswordAsync(System.Guid userId, string SingleHash_NewPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_ResetPassword", ReplyAction="http://tempuri.org/IBDSService/_ResetPasswordResponse")]
+        string _ResetPassword(System.Guid userId, string SingleHash_NewPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_ResetPassword", ReplyAction="http://tempuri.org/IBDSService/_ResetPasswordResponse")]
+        System.Threading.Tasks.Task<string> _ResetPasswordAsync(System.Guid userId, string SingleHash_NewPassword);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetRoleDetails", ReplyAction="http://tempuri.org/IBDSService/GetRoleDetailsResponse")]
         RevenuePlanner.BDSService.Role GetRoleDetails(System.Guid roleId);
@@ -2573,24 +2609,6 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserHierarchy", ReplyAction="http://tempuri.org/IBDSService/GetUserHierarchyResponse")]
         System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.UserHierarchy>> GetUserHierarchyAsync(System.Guid clientId, System.Guid applicationId);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetManagerList", ReplyAction="http://tempuri.org/IBDSService/GetManagerListResponse")]
-        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetManagerList(System.Guid clientId, System.Guid applicationId, System.Guid userId);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetManagerList", ReplyAction="http://tempuri.org/IBDSService/GetManagerListResponse")]
-        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetManagerListAsync(System.Guid clientId, System.Guid applicationId, System.Guid userId);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetOtherApplicationUsers", ReplyAction="http://tempuri.org/IBDSService/GetOtherApplicationUsersResponse")]
-        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetOtherApplicationUsers(System.Guid clientId, System.Guid applicationId);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetOtherApplicationUsers", ReplyAction="http://tempuri.org/IBDSService/GetOtherApplicationUsersResponse")]
-        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetOtherApplicationUsersAsync(System.Guid clientId, System.Guid applicationId);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/AssignUser", ReplyAction="http://tempuri.org/IBDSService/AssignUserResponse")]
-        int AssignUser(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/AssignUser", ReplyAction="http://tempuri.org/IBDSService/AssignUserResponse")]
-        System.Threading.Tasks.Task<int> AssignUserAsync(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -2618,6 +2636,30 @@ namespace RevenuePlanner.BDSService {
         
         public BDSServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetManagerList(System.Guid clientId, System.Guid applicationId, System.Guid userId) {
+            return base.Channel.GetManagerList(clientId, applicationId, userId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetManagerListAsync(System.Guid clientId, System.Guid applicationId, System.Guid userId) {
+            return base.Channel.GetManagerListAsync(clientId, applicationId, userId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetOtherApplicationUsers(System.Guid clientId, System.Guid applicationId) {
+            return base.Channel.GetOtherApplicationUsers(clientId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetOtherApplicationUsersAsync(System.Guid clientId, System.Guid applicationId) {
+            return base.Channel.GetOtherApplicationUsersAsync(clientId, applicationId);
+        }
+        
+        public int AssignUser(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy) {
+            return base.Channel.AssignUser(UserId, RoleId, applicationId, createdBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> AssignUserAsync(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy) {
+            return base.Channel.AssignUserAsync(UserId, RoleId, applicationId, createdBy);
         }
         
         public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListWithCustomRestrictions(System.Guid userId, System.Guid clientId, System.Guid applicationId, System.Collections.Generic.Dictionary<string, string> customRestrictionFieldIds) {
@@ -2780,6 +2822,14 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.ChangePasswordAsync(userId, newPassword, currPassword);
         }
         
+        public string _ChangePassword(System.Guid userId, string newPassword, string currPassword) {
+            return base.Channel._ChangePassword(userId, newPassword, currPassword);
+        }
+        
+        public System.Threading.Tasks.Task<string> _ChangePasswordAsync(System.Guid userId, string newPassword, string currPassword) {
+            return base.Channel._ChangePasswordAsync(userId, newPassword, currPassword);
+        }
+        
         public bool CheckCurrentPassword(System.Guid userId, string currentPassword) {
             return base.Channel.CheckCurrentPassword(userId, currentPassword);
         }
@@ -2868,6 +2918,14 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.CreateUserWithPermissionAsync(user, applicationId, createdBy);
         }
         
+        public string _CreateUserWithPermission(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy) {
+            return base.Channel._CreateUserWithPermission(user, applicationId, createdBy);
+        }
+        
+        public System.Threading.Tasks.Task<string> _CreateUserWithPermissionAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy) {
+            return base.Channel._CreateUserWithPermissionAsync(user, applicationId, createdBy);
+        }
+        
         public int UpdateUser(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid modifiedBy) {
             return base.Channel.UpdateUser(user, applicationId, modifiedBy);
         }
@@ -2946,6 +3004,14 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<int> ResetPasswordAsync(System.Guid userId, string SingleHash_NewPassword) {
             return base.Channel.ResetPasswordAsync(userId, SingleHash_NewPassword);
+        }
+        
+        public string _ResetPassword(System.Guid userId, string SingleHash_NewPassword) {
+            return base.Channel._ResetPassword(userId, SingleHash_NewPassword);
+        }
+        
+        public System.Threading.Tasks.Task<string> _ResetPasswordAsync(System.Guid userId, string SingleHash_NewPassword) {
+            return base.Channel._ResetPasswordAsync(userId, SingleHash_NewPassword);
         }
         
         public RevenuePlanner.BDSService.Role GetRoleDetails(System.Guid roleId) {
@@ -3178,30 +3244,6 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.UserHierarchy>> GetUserHierarchyAsync(System.Guid clientId, System.Guid applicationId) {
             return base.Channel.GetUserHierarchyAsync(clientId, applicationId);
-        }
-        
-        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetManagerList(System.Guid clientId, System.Guid applicationId, System.Guid userId) {
-            return base.Channel.GetManagerList(clientId, applicationId, userId);
-        }
-        
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetManagerListAsync(System.Guid clientId, System.Guid applicationId, System.Guid userId) {
-            return base.Channel.GetManagerListAsync(clientId, applicationId, userId);
-        }
-        
-        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetOtherApplicationUsers(System.Guid clientId, System.Guid applicationId) {
-            return base.Channel.GetOtherApplicationUsers(clientId, applicationId);
-        }
-        
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetOtherApplicationUsersAsync(System.Guid clientId, System.Guid applicationId) {
-            return base.Channel.GetOtherApplicationUsersAsync(clientId, applicationId);
-        }
-        
-        public int AssignUser(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy) {
-            return base.Channel.AssignUser(UserId, RoleId, applicationId, createdBy);
-        }
-        
-        public System.Threading.Tasks.Task<int> AssignUserAsync(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy) {
-            return base.Channel.AssignUserAsync(UserId, RoleId, applicationId, createdBy);
         }
     }
 }
