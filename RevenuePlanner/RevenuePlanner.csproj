@@ -309,6 +309,7 @@
     <Content Include="Content\Common\CommonMessages.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Content\css\bootstrap-datetimepicker.css" />
     <Content Include="Content\css\bootstrap-responsive.css" />
     <Content Include="Content\css\bootstrap-responsive.min.css" />
     <Content Include="Content\css\bootstrap.css" />
@@ -323,7 +324,7 @@
     <Content Include="Content\css\DHTMLX\imgs\dhxcalendar_skyblue\dhxcalendar_selector_top.gif" />
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_asc.gif" />
     <Content Include="Content\css\jquery.mCustomScrollbar-new.css" />
-    <Content Include="Content\css\style_min_April3.css" />
+    <Content Include="Content\css\style_min_April4.css" />
     <Content Include="Content\css\style_extended_min_Oct1.css" />
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_desc.gif" />
     <Content Include="Content\css\JquryUI\images\ui-bg_glass_85_dfeffc_1x400.png" />
@@ -636,6 +637,7 @@
     <Content Include="Content\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <Content Include="RevenuePlanner.wpp.targets" />
+    <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.min.js.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.js" />
@@ -663,6 +665,7 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+    <Content Include="Scripts\moment.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

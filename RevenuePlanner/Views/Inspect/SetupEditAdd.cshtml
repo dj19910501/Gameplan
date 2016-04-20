@@ -98,7 +98,10 @@
 
 @using (Html.BeginForm())
 {
-    <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
+    @*<script src="~/Scripts/js/bootstrap-datepicker.js"></script>*@
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+    <link href="~/Content/css/bootstrap-datetimepicker.css" rel="stylesheet" />   
 
     bool ExtIntService = Model.ExtIntService;
     // @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
@@ -148,7 +151,7 @@
             <p class="margin-top-10">Description</p>
             @Html.TextArea("Description", Model.Description, new { placeholder = "Optional", @class = "span12 text-area-size input-setup", id = "Description" })   @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
         </div>
-        <div class="span3 no_margin_top" id="inspect-modal-left-column2">
+        <div class="span3 no_margin_top calendar_div" id="inspect-modal-left-column2">  @*Added By Maitri Gandhi for #2109*@
             <p>Tactic Type <span class="required-asterisk">*</span></p>
             <span style="min-width: 100%; position: relative; display: block;">
                 @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)Model.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
@@ -157,19 +160,33 @@
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Start Date</p>
             <span style="position: relative;">
-                <div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                @*<div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                     @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small" + resubmission + " input-setup", id = "t_startdate", label = "Start_Date" })
                     <span class="add-on">
                         <img src="~/Content/images/gray-calendar-icon.png">
                     </span>
+                </div>*@
+                <div class="form-group">
+                    <div class='input-group date' id='divStartDate'>
+                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control without-margin " + resubmission, id = "t_startdate", label = "Start_Date" })
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                </div>
                 </div>
             </span>
             <p class="clear-section" style="margin-top: 2px;">End Date</p>
             <span style="position: relative;">
-                <div class="dp  input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                @*<div class="dp  input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                     @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small" + resubmission + " input-setup", id = "t_enddate", label = "End_Date" })
                     <span class="add-on">
                         <img src="~/Content/images/gray-calendar-icon.png">
+                    </span>
+                </div>*@
+                 <div class='input-group date' id='divEndDate'>
+                    @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control without-margin "+ resubmission, id = "t_enddate", label = "End_Date" })                    
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
                     </span>
                 </div>
             </span>
@@ -495,8 +512,28 @@
 
     $(document).ready(
       function () {
-            //Commented By Maitri Gandhi for #2099                    
-          //Added By Maitri Gandhi for #2073 on 23/3/2016
+                               
+          //Datetime Picker Bhumika
+          $('#divStartDate').datetimepicker({
+              //debug: true,
+              format: 'MM/DD/YYYY',
+              useCurrent: false,
+              keepOpen: false
+          });
+          $('#divEndDate').datetimepicker({
+              format: 'MM/DD/YYYY',
+              useCurrent: false
+          });
+          $("#divStartDate").on("dp.change", function (e) {
+              $('#divEndDate').data("DateTimePicker").minDate(e.date);
+          });
+          $("#divEndDate").on("dp.change", function (e) {
+              $('#divStartDate').data("DateTimePicker").maxDate(e.date);
+          });
+          //Datetime Picker End Bhumika
+
+//Commented By Maitri Gandhi for #2099           
+//Added By Maitri Gandhi for #2073 on 23/3/2016
           //if ($('#ddlTacticType').val() != 0) {
           //    var tacticTypeId = $('#ddlTacticType').val();
           //    loadtacticdata(tacticTypeId);
@@ -532,8 +569,9 @@
           $('#txtCost').attr("title", $('#txtCost').val());
           //$(".selectBox select").selectbox();
 
-          $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
-          $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+          //Commented By Maitri Gandhi for #2109
+          //$("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
+          //$("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
 
           //// Assign default values to controls having classname = .resubmission
           assignDefaultValue(".resubmission");
@@ -549,15 +587,20 @@
              // $("#liSetup,#liReview,#liBudget,#liActuals").addClass('setdefultcursor');
           }*@
 
-          $('.dp').datepicker({
+          //Commented By Maitri Gandhi for #2109
+         @* $('.dp').datepicker({
               format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
               autoclose: true,
           }).on('changeDate', function (ev) {
               $(this).datepicker('hide');
-          });;
+          });;*@
 
           //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
           $('.input-setup').addClass('light-blue-background');
+          //Added By Maitri Gandhi for #2109
+          $('#t_enddate').addClass('light-blue-background');
+          $('#t_startdate').addClass('light-blue-background');
+
           $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
           //End - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
           /*hide the other datepicker in input onclick*/
@@ -588,135 +631,137 @@
               $("#txtmql").attr('title', mqlValue);
           }
 
+          //Commented By Maitri Gandhi for #2109
+          //$('#t_startdate').click(function () {
+          //    $('#dp_end').datepicker('hide');
+          //})
 
-          $('#t_startdate').click(function () {
-              $('#dp_end').datepicker('hide');
-          })
-
-          $('#t_enddate').click(function () {
-              $('#dp_start').datepicker('hide');
-          })
+          //$('#t_enddate').click(function () {
+          //    $('#dp_start').datepicker('hide');
+          //})
 
           //hide the other datepicker in add-on onclick
-          $('#dp_start .add-on').click(function () {
-              //debugger;
-              //$('#dp_start').datepicker('hide');/* Bhumika */
-              $('#dp_end').datepicker('hide');
-              $(".dropdown-menu").css("z-index", "25001");
-              var pos = $("#t_startdate").position();
-              var height = $("#t_startdate").height();
-              var scrollTop = $("#modal-container-186470").scrollTop();
-              var pos_top = pos.top + height + scrollTop + 10;
+          //$('#dp_start .add-on').click(function () {
+          //    //debugger;
+          //    //$('#dp_start').datepicker('hide');/* Bhumika */
+          //    $('#dp_end').datepicker('hide');
+          //    $(".dropdown-menu").css("z-index", "25001");
+          //    var pos = $("#t_startdate").position();
+          //    var height = $("#t_startdate").height();
+          //    var scrollTop = $("#modal-container-186470").scrollTop();
+          //    var pos_top = pos.top + height + scrollTop + 10;
 
-              setTimeout(function () {
-                  if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-                      $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
-                      $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
-                          //top: pos_top.toString() + 'px',	 /* Bhumika */
-                          display: 'block'
-                      });
-                  }
-                  else {
-                      $('#dp_start').find('.datepicker.dropdown-menu').css({
-                          //top: pos_top.toString() + 'px',
-                          display: 'block'
-                      });
-                  }
-                  set_start_date_Position();	  /* Bhumika */
-              }, 1);
+          //    setTimeout(function () {
+          //        if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+          //            $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
+          //            $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
+          //                //top: pos_top.toString() + 'px',	 /* Bhumika */
+          //                display: 'block'
+          //            });
+          //        }
+          //        else {
+          //            $('#dp_start').find('.datepicker.dropdown-menu').css({
+          //                //top: pos_top.toString() + 'px',
+          //                display: 'block'
+          //            });
+          //        }
+          //        set_start_date_Position();	  /* Bhumika */
+          //    }, 1);
 
-              //// To resolve issue of Ticket #1025, Pratik
-              $(".datepicker.dropdown-menu").last().css("display", "none");
-          })
+          //    //// To resolve issue of Ticket #1025, Pratik
+          //    $(".datepicker.dropdown-menu").last().css("display", "none");
+          //})
 
-          function set_start_date_Position() {
-              var scrollTop = $('.pop-body-wraper').scrollTop();
-             // alert(scrollTop);
-              var calender_div = $('#dp_start').find('.datepicker.dropdown-menu');
-              //alert(calender_div.html());
-              var topOffset = $('#dp_start').offset().top;
-              //alert(topOffset);
+          //Internal Issue Maitri
+          //function set_start_date_Position() {
+          //    var scrollTop = $('.pop-body-wraper').scrollTop();
+          //    // alert(scrollTop);
+          //    var calender_div = $('#dp_start').find('.datepicker.dropdown-menu');
+          //    //alert(calender_div.html());
+          //    var topOffset = $('#dp_start').offset().top;
+          //    //alert(topOffset);
 
-              var windowHeight = $('.pop-body-wraper').height();
-              // calculate the dropdown offset relative to window position
-              var relativeOffset = topOffset - scrollTop;
-              //debugger;
-              if (relativeOffset > windowHeight / 2 ) {
-                  //alert('5');
-                  //calender_div.css('top', 'auto');
-                  //calender_div.css('bottom', '100%');
-                  calender_div.removeClass('calender-dropdown');
-                  calender_div.addClass('calender-dropup');
-                  //$('#dp_start').datepicker('show');
-              }
-              else {
-                 // alert('6');
-                  //calender_div.css('top', '32px');
-                  //calender_div.css('bottom', 'auto');
-                  calender_div.removeClass('calender-dropup');
-                  calender_div.addClass('calender-dropdown');
-                  //$('#dp_start').datepicker('show');
-              }
-              scrollTop = 0;
-          }
-          function set_end_date_Position() {
-              var scrollTop = $('.pop-body-wraper').scrollTop();
-              // alert(scrollTop);
-              var calender_div = $('#dp_end').find('.datepicker.dropdown-menu');
-              //alert(calender_div.html());
-              var topOffset = $('#dp_end').offset().top;
-              //alert(topOffset);
-              var windowHeight = $('.pop-body-wraper').height();
-              // calculate the dropdown offset relative to window position
-              var relativeOffset = topOffset - scrollTop;
-              if (relativeOffset > windowHeight / 2 ) {
-                  // alert('5');
-                  //calender_div.css('top', 'auto');
-                  //calender_div.css('bottom', '100%');
-                  calender_div.removeClass('calender-dropdown');
-                  calender_div.addClass('calender-dropup');
-                  //$('#dp_end').datepicker('show');
-              }
-              else {
-                  // alert('6');
-                  //calender_div.css('top', '32px');
-                  //calender_div.css('bottom', 'auto');
-                  calender_div.removeClass('calender-dropup');
-                  calender_div.addClass('calender-dropdown');
-                  //$('#dp_end').datepicker('show');
-              }
-              scrollTop = 0;
-          }	 
+          //    var windowHeight = $('.pop-body-wraper').height();
+          //    // calculate the dropdown offset relative to window position
+          //    var relativeOffset = topOffset - scrollTop;
+          //    //debugger;
+          //    if (relativeOffset > windowHeight / 2) {
+          //        //alert('5');
+          //        //calender_div.css('top', 'auto');
+          //        //calender_div.css('bottom', '100%');
+          //        calender_div.removeClass('calender-dropdown');
+          //        calender_div.addClass('calender-dropup');
+          //        //$('#dp_start').datepicker('show');
+          //    }
+          //    else {
+          //        // alert('6');
+          //        //calender_div.css('top', '32px');
+          //        //calender_div.css('bottom', 'auto');
+          //        calender_div.removeClass('calender-dropup');
+          //        calender_div.addClass('calender-dropdown');
+          //        //$('#dp_start').datepicker('show');
+          //    }
+          //    scrollTop = 0;
+          //}
+          //function set_end_date_Position() {
+          //    var scrollTop = $('.pop-body-wraper').scrollTop();
+          //    // alert(scrollTop);
+          //    var calender_div = $('#dp_end').find('.datepicker.dropdown-menu');
+          //    //alert(calender_div.html());
+          //    var topOffset = $('#dp_end').offset().top;
+          //    //alert(topOffset);
+          //    var windowHeight = $('.pop-body-wraper').height();
+          //    // calculate the dropdown offset relative to window position
+          //    var relativeOffset = topOffset - scrollTop;
+          //    if (relativeOffset > windowHeight / 2) {
+          //        // alert('5');
+          //        //calender_div.css('top', 'auto');
+          //        //calender_div.css('bottom', '100%');
+          //        calender_div.removeClass('calender-dropdown');
+          //        calender_div.addClass('calender-dropup');
+          //        //$('#dp_end').datepicker('show');
+          //    }
+          //    else {
+          //        // alert('6');
+          //        //calender_div.css('top', '32px');
+          //        //calender_div.css('bottom', 'auto');
+          //        calender_div.removeClass('calender-dropup');
+          //        calender_div.addClass('calender-dropdown');
+          //        //$('#dp_end').datepicker('show');
+          //    }
+          //    scrollTop = 0;
+          //}
 /* Bhumika  End*/
-          $('#dp_end .add-on').click(function () {
-              $('#dp_start').datepicker('hide');
-              //$('#dp_end').datepicker('hide');		/* Bhumika */
-              $(".dropdown-menu").css("z-index", "25001");
-              var pos = $("#t_enddate").position();
-              var height = $("#t_enddate").height();
-              var scrollTop = $("#modal-container-186470").scrollTop();
-              var pos_top = pos.top + height + scrollTop + 10;
-              setTimeout(function () {
-                  if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-                      $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
-                      $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
-                          //top: pos_top.toString() + 'px', /* Bhumika */
-                          display: 'block'
-                      });
-                  }
-                  else {
-                      $('#dp_end').find('.datepicker.dropdown-menu').css({
-                          //top: pos_top.toString() + 'px',			  /* Bhumika */
-                          display: 'block'
-                      });
-                  }
-                  set_end_date_Position(); /* Bhumika */
-              }, 1);
+          //Internal Issue Maitri
+          //$('#dp_end .add-on').click(function () {
+          //    $('#dp_start').datepicker('hide');
+          //    //$('#dp_end').datepicker('hide');		/* Bhumika */
+          //    $(".dropdown-menu").css("z-index", "25001");
+          //    var pos = $("#t_enddate").position();
+          //    var height = $("#t_enddate").height();
+          //    var scrollTop = $("#modal-container-186470").scrollTop();
+          //    var pos_top = pos.top + height + scrollTop + 10;
+          //    setTimeout(function () {
+          //        if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+          //            $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
+          //            $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
+          //                //top: pos_top.toString() + 'px', /* Bhumika */
+          //                display: 'block'
+          //            });
+          //        }
+          //        else {
+          //            $('#dp_end').find('.datepicker.dropdown-menu').css({
+          //                //top: pos_top.toString() + 'px',			  /* Bhumika */
+          //                display: 'block'
+          //            });
+          //        }
+          //        set_end_date_Position(); /* Bhumika */
+          //    }, 1);
 
-              //// To resolve issue of Ticket #1025, Pratik
-              $(".datepicker.dropdown-menu").first().css("display", "none");
-          })
-
+          //    //// To resolve issue of Ticket #1025, Pratik
+          //    $(".datepicker.dropdown-menu").first().css("display", "none");
+          //})
+          //End
           var arLineitem = [];
           var arrClosedTaskString = null;
           var _customFieldValues = [];

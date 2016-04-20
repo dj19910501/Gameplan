@@ -14582,6 +14582,48 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     background:url("../images/icon-filter-search.gif") right 8px  no-repeat;
     }
 
+/* Date picker issue Bhumika 25-3-2015 Start*/
+#inspect-modal-left-column2 .ui-multiselect .ui-icon{z-index:1 !important}
+.bootsrape-datetimepicker-widget ul.list-unstyled, ul.list-unstyled li{list-style:none !important; list-style-type:none !important}
+.datepicker .fa {
+    font-size:16px !important;
+}
+.bootstrap-datetimepicker-widget {width: 96% !important;}
+.bootstrap-datetimepicker-widget ul.list-unstyled li:nth-child(2){display:none !important}
+
+
+ /* Bhumika */
+  .calendar_div .input-group {
+    border-collapse: separate;
+    display: table;
+    position: relative;
+}
+  .calendar_div .input-group .form-control:first-child, .calendar_div .input-group-addon:first-child{ 
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+.calendar_div .input-group-addon {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1;
+    padding: 6px 12px;
+    text-align: center;
+}
+ .calendar_div .input-group-addon{
+    vertical-align: middle;
+    white-space: nowrap;
+    width: 1%;
+}
+.calendar_div .input-group-addon,  .calendar_div .input-group .form-control {
+    display: table-cell; 
+}
+/* Date picker issue Bhumika 25-3-2015  End*/
+
+
+
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {
 
@@ -16175,3 +16217,5 @@ tbody.column2 {
 }
 /*End by Device 320 Mukesh 25-9-2015*/
 /************************************************ Responsive css End here **********************************************************/
+
+
