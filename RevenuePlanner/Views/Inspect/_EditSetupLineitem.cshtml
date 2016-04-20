@@ -333,6 +333,7 @@
                 var imgpath = '@Url.Content("~/codebase/imgs/")';
                 TreeViewDdl.setImagePath(imgpath);
                 TreeViewDdl.attachHeader("#text_filter,"); //Added by Rahul Shah to Apply search on budget filter
+                TreeViewDdl.setFiltrationLevel(-2);  //Modified BY Komal for #2098 not able to filter the root nodes
                 TreeViewDdl.setHeader("Item Name,Weight%");
                 TreeViewDdl.enableAutoHeight(true,400,true);
                 TreeViewDdl.enableAutoWidth(true);
@@ -389,13 +390,9 @@
                 TreeViewDdl.attachEvent("onFilterEnd", FilterEnd);                
             }
         });
-        OpenSelectedValues();
-       
 
-    }
-    function OpenSelectedValues()
-    {
         TreeViewDdl.expandAll();
+
         if ('@Model.PlanLineItemId' != 0 && !ValueChanged) {
             ListOfItmeCheck = {
                 Ids: [],
@@ -483,6 +480,14 @@
 
         TreeViewDdl.collapseAll();
 
+        OpenSelectedValues();
+       
+
+    }
+    
+    //Modified BY Komal for #2098 not able to check checkboxes after filter
+    function OpenSelectedValues()
+    {
         for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
             var optionId = ListOfItmeCheck.Ids[i];
             var ParentID = TreeViewDdl.getParentId(optionId);
@@ -490,15 +495,19 @@
         }
 
     }
+    //End
     //Added by Rahul on 19/04/2016 for PL #2098. to open the node which is filter by user.
     function FilterEnd(indexes, values) {
         var filterValue = $('#treeviewddl').find('.hdrcell').find('input[type=text]').val();
-        if (filterValue != "" && filterValue != undefined) {
+         if (filterValue != "" && filterValue != undefined) {
             TreeViewDdl.expandAll();
         }
         else
-        {
-            OpenSelectedValues();
+         {
+             //Modified BY Komal for #2098 not able to check checkboxes after filter
+             TreeViewDdl.collapseAll();
+             OpenSelectedValues();
+            // End
         }
     }
     //function ddlcheckboxclick(items)
