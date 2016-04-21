@@ -181,7 +181,7 @@ namespace RevenuePlanner.Helpers
         public static List<string> TOPPerformanceColumnList = new List<string>() { "Name", "Proj. vs Goal", "Trend" };
         public static List<string> TOPCostColumnList = new List<string>() { "Name", "Cost", "Trend" };
         public static List<string> TOPROIColumnList = new List<string>() { "Name", "ROI", "Trend" };
-
+        
         #region "Eloqua ClientID & ClientSecret"
         public static string eloquaClientIdLabel = "ClientId";
         public static string eloquaClientSecretLabel = "ClientSecret";
@@ -2273,14 +2273,18 @@ namespace RevenuePlanner.Helpers
             double TotalMQLs = 0, TotalBudget = 0;
             double? TotalPercentageMQLImproved = 0;
             int TotalTacticCount = 0;
-
-
+            DataSet dsPlanCampProgTac = new DataSet();
+            dsPlanCampProgTac = (DataSet)dataCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
             // Modify by Nishant sheth
-            // Desc :: to get correct count for tactic and for multiple years #1750
+            // Desc :: to get correct count for tactic and for multiple years #1750                      
+
             var planList = dataCache.Returncache(Enums.CacheObject.Plan.ToString()) as List<Plan>;
             var planData = planList.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == year).Select(a => a.PlanId).ToList();
             planIds = planList.Select(a => a.PlanId).ToList();
-            var campplist = ((List<Plan_Campaign>)dataCache.Returncache(Enums.CacheObject.Campaign.ToString())).Where(camp => (!((camp.EndDate < StartDate) || (camp.StartDate > EndDate))) && planIds.Contains(camp.PlanId)).Select(a => a).ToList();
+            
+            var campplist = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).Where(campaign => (!((campaign.EndDate < StartDate) || (campaign.StartDate > EndDate))) && planIds.Contains(campaign.PlanId)).ToList();
+            //var campplist = ((List<Plan_Campaign>)dataCache.Returncache(Enums.CacheObject.Campaign.ToString())).Where(camp => (!((camp.EndDate < StartDate) || (camp.StartDate > EndDate))) && planIds.Contains(camp.PlanId)).Select(a => a).ToList();
+            
             //campplist = campplist.Where(camp => (!((camp.EndDate < StartDate) || (camp.StartDate > EndDate))) && planIds.Contains(camp.PlanId)).Select(a => new { PlanCampaignId = a.PlanCampaignId, PlanId = a.PlanId }).ToList();
             //campplist = campplist.Where(camp => (!((camp.EndDate < StartDate) || (camp.StartDate > EndDate))) && planIds.Contains(camp.PlanId)).Select(a => a).ToList();
             var campplanid = campplist.Select(a => a.PlanId).ToList();
