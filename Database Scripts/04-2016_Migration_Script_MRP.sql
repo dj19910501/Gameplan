@@ -469,14 +469,31 @@ DECLARE @query nvarchar(max)
 
 	-- End Stuff Logic
 	
-	SELECT Name FROM CustomField WHERE ClientId=@ClientId
+--Modified By komal rawal if export is from honeycomb dont bring line item Custom fields
+  IF (@HoneyCombids IS NULL)
+  BEGIN
+  SELECT Name FROM CustomField WHERE ClientId=@ClientId
 AND IsDeleted=0
 AND EntityType <> 'Budget'
 ORDER BY (CASE EntityType WHEN 'Campaign' THEN 1
 	WHEN 'Program' THEN 2
 	WHEN 'Tactic' THEN 3
 	WHEN 'Lineitem' THEN 4
-	ELSE 5 END)
+	ELSE 5 END )
+  END
+
+  ELSE 
+  BEGIN
+  SELECT Name FROM CustomField WHERE ClientId=@ClientId
+AND IsDeleted=0
+AND EntityType <> 'Budget' 
+AND EntityType <> 'Lineitem'
+ORDER BY (CASE EntityType WHEN 'Campaign' THEN 1
+	WHEN 'Program' THEN 2
+	WHEN 'Tactic' THEN 3
+	ELSE 4 END )
+  END
+--End
 
 END
 

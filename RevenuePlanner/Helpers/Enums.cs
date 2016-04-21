@@ -1360,7 +1360,8 @@ namespace RevenuePlanner.Helpers
             EloquaId,
             SFDCId,
             EntityId,
-            Section
+            Section,
+            ExternalName //Added By Komal Rawal External Name not displayed in csv
         }
 
         public enum NotDownloadCSV

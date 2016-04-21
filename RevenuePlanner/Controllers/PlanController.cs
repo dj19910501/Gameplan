@@ -14329,6 +14329,11 @@ namespace RevenuePlanner.Controllers
             }
             dtTable.Columns.Remove(Enums.DownloadCSV.EntityId.ToString());
             dtTable.Columns.Remove(Enums.DownloadCSV.Section.ToString());
+            //Added By Komal rawal for 2102 for honey comb export line item column not required
+            if (HoneycombIds != null)
+            {
+                dtTable.Columns.Remove(Enums.DownloadCSV.Lineitem.ToString());
+            }
             Session["CSVDataTable"] = dtTable;
             Session["FileName"] = FileName;
             return Json(new { data = FileName }, JsonRequestBehavior.AllowGet); ;
