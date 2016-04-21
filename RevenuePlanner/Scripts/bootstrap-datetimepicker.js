@@ -2385,8 +2385,10 @@
             date: 'glyphicon glyphicon-calendar',
             up: 'glyphicon glyphicon-chevron-up',
             down: 'glyphicon glyphicon-chevron-down',
-            previous: 'glyphicon glyphicon-chevron-left',
-            next: 'glyphicon glyphicon-chevron-right',
+            //previous: 'glyphicon glyphicon-chevron-left', commented By Bhumika to add fontawsome icons //
+            //next: 'glyphicon glyphicon-chevron-right',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
             today: 'glyphicon glyphicon-screenshot',
             clear: 'glyphicon glyphicon-trash',
             close: 'glyphicon glyphicon-remove'

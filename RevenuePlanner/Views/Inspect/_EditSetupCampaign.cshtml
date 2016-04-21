@@ -444,12 +444,13 @@
               format: 'MM/DD/YYYY',
               useCurrent: false
           });
-          $("#divStartDate").on("dp.change", function (e) {
-              $('#divEndDate').data("DateTimePicker").minDate(e.date);
-          });
-          $("#divEndDate").on("dp.change", function (e) {
-              $('#divStartDate').data("DateTimePicker").maxDate(e.date);
-          });
+          //commented By Maitri Gandhi for #2099 on 21/4/2016
+          //$("#divStartDate").on("dp.change", function (e) {
+          //    $('#divEndDate').data("DateTimePicker").minDate(e.date);
+          //});
+          //$("#divEndDate").on("dp.change", function (e) {
+          //    $('#divStartDate').data("DateTimePicker").maxDate(e.date);
+          //});
           //Datetime Picker End Bhumika
 
           $('#ddlOwner').multiselect({
