@@ -719,6 +719,31 @@
         var returnpara = true;
         isInspectWin = false;
         if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
+            var iserror = false;
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+            $('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            });
+            if (iserror) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                return false;
+            }
             url = '@Url.Content("~/Inspect/LoadResubmission")';
             $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
             isInspectWin = true;
@@ -948,6 +973,31 @@
         isInspectNewLineItem = false;
         var returnpara = true;
         if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
+            var iserror = false;
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+            $('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            });
+            if (iserror) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                return false;
+            }
             url = '@Url.Content("~/Inspect/LoadResubmission")';
             $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
             isInspectNewLineItem = true;
@@ -964,16 +1014,52 @@
         }
     });
     //Added by Rahul Shah on 12/04/2016 for PL #2038
+    var isInspectNewTactic = false;
     $("#NewTacticfromPopup").on("click", function () {  
+        isInspectNewLineItem = false;
         var returnpara = true;
         var activeTab = $("#InspectTab li.active a").text();
+        if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
+            var iserror = false;
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+            $('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            });
+            if (iserror) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                return false;
+            }
+
+            url = '@Url.Content("~/Inspect/LoadResubmission")';
+            $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
+            isInspectNewLineItem = true;
+        }
+        else {
+            
         if (activeTab != null && activeTab != undefined && activeTab != '') {
             returnpara = SaveAllData(activeTab);
            
         }
+        }
         var ProgramId = @PlanProgramId;
         isCopyTactic = ProgramId;
-        if(returnpara){
+        if(returnpara && !isInspectNewLineItem){
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');       
         }
         return false;

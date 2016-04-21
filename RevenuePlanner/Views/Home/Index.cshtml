@@ -8625,15 +8625,16 @@ function () {
             ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, 0, '@RequestedModule');
         }
     }
-    function OpentCopyPopup(obj) {
-        //Added by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
+    var isLoadcopied = false;
+    var cloneObj = "";
+    function OpentCopyPopup(obj, isProceed) {       
+        cloneObj = obj;
         var redirectType = $(obj).attr('redirecttype');
         if (redirectType == "" || redirectType == undefined) {
             if ($('#IsGridView').val().toLowerCase() == "false") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                 scrollstate = gantt.getScrollState();
             }
             else {
-                //Modified by Rahul Shah on 12/04/2016 for PL #2038. campaign 'copy to' getting error on grid.
                 linkItemId = $(obj).attr('entityid');
                 if (linkItemId.indexOf("_") >= 0) {
                     linkItemId = linkItemId.split('_')[1];
@@ -8648,23 +8649,80 @@ function () {
                 state0 = ItemIndex;
             }
         }
-        // Added by Rahul Shah to save data when 'Copy To' or 'Link To' operation perform from the inspection window
-        var returnpara = true;
-        var activeTab = $("#InspectTab li.active a").text();
-        if (activeTab != null && activeTab != undefined && activeTab != '') {
-            returnpara = SaveAllData(activeTab);
-            $('#spanMessageSuccess').empty();
-            $("#successMessage").css("display", "none");
-            $('.btn-dropdwn').hide();
-        }
         var sectionType = $(obj).attr('sectionType');
         var entityId = $(obj).attr('entityId');
-        var popuptype = $(obj).attr('popupType');//Added by Rahul Shah for PL #1847
-        if (returnpara) {
+        var popuptype = $(obj).attr('popupType');        
+        var returnpara = true;
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '' && redirectType != undefined) {
+            if (sectionType == '@Enums.Section.Tactic.ToString()') {
+
+                if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true") && isProceed == undefined) {
+                    var iserror = false;
+                    $('form').find('input[type=text], select, textarea').each(function () {
+                        if ($(this).attr('require') == 'true') {
+                            if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                                $(this).addClass("error");
+                                iserror = true;
+                            }
+                            else {
+                                $(this).removeClass("error");
+                            }
+                        }
+                    });
+                    $('.dropdown_new_btn').each(function () {
+                        if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                            $(this).addClass("error");
+                            iserror = true;
+                        }
+                        else {
+                            $(this).removeClass("error");
+                        }
+                    });
+                    if (iserror) {
+                        ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                        return false;
+                    }
+
+                    url = '@Url.Content("~/Inspect/LoadResubmission")';
+                    $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
+                    isLoadcopied = true;
+                }
+                else {
+                    returnpara = SaveAllData(activeTab);
+                    $('#spanMessageSuccess').empty();
+                    $("#successMessage").css("display", "none");
+                }
+            }
+            else {
+                returnpara = SaveAllData(activeTab);
+                $('#spanMessageSuccess').empty();
+                $("#successMessage").css("display", "none");
+            }
+        }
+        if (returnpara && !isLoadcopied) {
             $("#dvCopyEntity").empty();
             var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
             $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype + "&RedirectType=" + redirectType); // section parameter added to open share tactic popup
         }
+        else {
+            $("#SuccessMsg").css("display", "none");
+            $("#successMessage").css("display", "none");
+            $('.btn-dropdwn').hide();
+        }
+    }
+    function OpentCopyPopuponProceed(obj) {
+        var redirectType = $(obj).attr('redirecttype');      
+        var sectionType = $(obj).attr('sectionType');
+        var entityId = $(obj).attr('entityId');
+        var popuptype = $(obj).attr('popupType');
+        var planTacticId = entityId.split('_')[1];
+        loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
+        $("#dvCopyEntity").empty();
+        var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
+        $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype + "&RedirectType=" + redirectType); // section parameter added to open share tactic popup
+        $("#SuccessMsg").css("display", "none");
+        $('.btn-dropdwn').hide();
     }
     function SaveAsPreset() {
 
@@ -8686,7 +8744,7 @@ function () {
     }
 
     function ClearAllPreset() {
-      
+
         BulkTTOperation(false);
         BulkStatusOperation(false);
         //Added vy kausha for ticket no #1836
@@ -8706,7 +8764,7 @@ function () {
             BulkPlanOperation(false);
 
         }
-      //End
+        //End
         $('#divCustomFieldsFilter').find("li").each(function (i) {
             $(this).removeClass("close-list");
             var chkid = $(this).find("input[type=checkbox]").attr("id");

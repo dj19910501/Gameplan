@@ -1092,7 +1092,7 @@
         });
         _customFieldValues = JSON.stringify(_customFieldValues);
         var isAssortment = true;       
-        if (!isInspectWin && !isInspectNewLineItem) {
+        if (!isInspectWin && !isInspectNewLineItem && !isLoadcopied) {
             _resubmissionLabelValues = [];
            
                 if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
@@ -1112,6 +1112,9 @@
             }
             if (isInspectNewLineItem) {
                 saveTactic(isInspectNewLineItem);
+            }
+            if (isLoadcopied) {
+                saveTactic(isLoadcopied);
             }
         }
         return returnparameter;

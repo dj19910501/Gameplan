@@ -84,7 +84,7 @@
             }
             else {
                 errorMsg = '@RevenuePlanner.Helpers.Common.objCached.NoPlanforLinking.ToString()';
-                ShowError(false, errorMsg);
+                ShowErrorC(false, errorMsg);
                 $('#nl-formCopyTacticPlan').hide();
                 $('#btncopySubmit').hide();
 
@@ -167,7 +167,7 @@
                 errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityNonSelctionErrorMessage.ToString()';
             }
             if (errorMsg != '') {
-                ShowError(false, errorMsg);
+                ShowErrorC(false, errorMsg);
             }
             else {
                 if (poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") {
@@ -235,6 +235,7 @@
                             $('#spanMsgSuccess').html(str);
                             $("#errorMessage1").css("display", "none");
                             $("#successMessage1").css("display", "none");
+                                                        
                             //}
                             $('#copytactic').hide();
                             isDataModified = true;
@@ -242,7 +243,7 @@
 
                         }
                         else {
-                            ShowError(issuccess, result.msg);
+                            ShowErrorC(issuccess, result.msg);
                         }
 
                     }
@@ -294,7 +295,7 @@
                             $("#successMessage1").css("display", "none");
                         }
                         else {
-                            ShowError(issuccess, result.msg);
+                            ShowErrorC(issuccess, result.msg);
                         }
 
                     }
@@ -302,7 +303,7 @@
             });
         }
 
-        function ShowError(isSuccess, value) {
+        function ShowErrorC(isSuccess, value) {
 
             if (isSuccess != null && isSuccess != 'undefined' && isSuccess) {
                 //$("#modal-container-1864701").scrollTop(0);

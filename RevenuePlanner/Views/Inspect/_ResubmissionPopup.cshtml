@@ -88,6 +88,10 @@
                     var ReturnParameter = SetupSavetactic(true);
                     loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", '@RevenuePlanner.Helpers.Enums.InspectPopupMode.Add.ToString()', $('#hdnPlanTacticId').val(), $("#hdnRequestedModule").val());
                 }
+                else if (isLoadcopied) {                    
+                    var ReturnParameter = SetupSavetactic(true);
+                    OpentCopyPopuponProceed(cloneObj);
+                }
                 else {
                     var ReturnParameter = saveTactic(true);
                 }

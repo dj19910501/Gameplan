@@ -7621,7 +7621,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.TacticTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Title);
             ViewBag.ProgramTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title);
             ViewBag.CampaignTitle = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title);
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(objPlan.PlanId)).Year;
+            ViewBag.Year = objPlan.Year;
 
             //// Set data to Plan_Campaign_Program_Tactic_LineItemModel to pass into PartialView.
             Plan_Campaign_Program_Tactic_LineItemModel pcptlm = new Plan_Campaign_Program_Tactic_LineItemModel();
@@ -13217,7 +13217,8 @@ namespace RevenuePlanner.Controllers
             List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
             List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId) && BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
             List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
-            List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
+            List<LineItem_Budget> SelectedLineItemBudgetNew = db.LineItem_Budget.Select(a => a).ToList();
+            List<LineItem_Budget> LineItemidBudgetList = SelectedLineItemBudgetNew.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();            
             List<int> LineItemids = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
 
             var Query = BudgetDetailList.Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
@@ -13229,15 +13230,12 @@ namespace RevenuePlanner.Controllers
                 List<int> PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == item.Id).Select(a => a.PlanLineItemId).ToList();
                 dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name });
             }
-            List<LineItem_Budget> SelectedLineItemBudgetNew = db.LineItem_Budget.Select(a => a).ToList();
 
             var items = GetTopLevelRows(dataTableMain, MinParentid)
                         .Select(row => CreateItem_New(dataTableMain, row, PlanLineItemID, SelectedLineItemBudgetNew))
                         .ToList();
 
             budgetMain.rows = items;
-
-
             return Json(new { data = budgetMain }, JsonRequestBehavior.AllowGet);
         }
 
