@@ -13217,22 +13217,23 @@ namespace RevenuePlanner.Controllers
             List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
             List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId) && BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
             List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
-            List<LineItem_Budget> SelectedLineItemBudgetNew = db.LineItem_Budget.Select(a => a).ToList();
-            List<LineItem_Budget> LineItemidBudgetList = SelectedLineItemBudgetNew.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();            
-            List<int> LineItemids = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+            //modified by Rahul shah on 22/04/2016 for code refactoring.
+            //List<LineItem_Budget> SelectedLineItemBudgetNew = db.LineItem_Budget.Select(a => a).ToList();
+            List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
+            //List<int> LineItemids = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
 
             var Query = BudgetDetailList.Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
-
+            BudgetAmount objBudgetAmount;
             foreach (var item in Query)
             {
 
-                BudgetAmount objBudgetAmount = new BudgetAmount();
-                List<int> PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == item.Id).Select(a => a.PlanLineItemId).ToList();
+                objBudgetAmount = new BudgetAmount();
+                //List<int> PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == item.Id).Select(a => a.PlanLineItemId).ToList();
                 dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name });
             }
 
             var items = GetTopLevelRows(dataTableMain, MinParentid)
-                        .Select(row => CreateItem_New(dataTableMain, row, PlanLineItemID, SelectedLineItemBudgetNew))
+                        .Select(row => CreateItem_New(dataTableMain, row, PlanLineItemID, LineItemidBudgetList))
                         .ToList();
 
             budgetMain.rows = items;
