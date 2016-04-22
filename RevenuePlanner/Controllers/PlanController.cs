@@ -10879,13 +10879,7 @@ namespace RevenuePlanner.Controllers
                             UpdateTacticPlannedCost(ref pcpobj, ref linkedTactic, ref totalLineitemCost, Cost.ToString(), tblTacticLineItem, linkedTacticId, yearDiff);
 
                         }
-                        string noneAllocated = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
-                        string defaultAllocated = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
-                        tacticCost = (pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpobj.PlanTacticId && s.IsDeleted == false)).Count() > 0
-                                                                    && pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != noneAllocated && pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != defaultAllocated
-                                                                    ?
-                                                                    ((pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpobj.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
-                                                                     : pcpobj.Cost;
+                        
                         if (linkedTacticId > 0 && tactictypeid > 0)
                         {
                             int destModelId = linkedTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId;
@@ -11082,7 +11076,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                         //// Calculate TotalLineItem cost.
-                        if (UpdateColumn == Enums.PlanGrid_Column["tacticplancost"])
+                        if (UpdateColumn == Enums.PlanGrid_Column["tacticplancost"] || UpdateColumn == Enums.PlanGrid_Column["tactictype"])
                         {
                             Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
                             if (objOtherLineItem == null)
@@ -11175,6 +11169,17 @@ namespace RevenuePlanner.Controllers
                     if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
                         OwnerName = GetOwnerName(UpdateVal);
+                    }
+                    //Added By Viral on 04/22/2016 for PL 2112
+                    string noneAllocated = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
+                    string defaultAllocated = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
+                    if (UpdateColumn == Enums.PlanGrid_Column["tactictype"])
+                    {
+                        tacticCost = (pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpobj.PlanTacticId && s.IsDeleted == false)).Count() > 0
+                                                                    && pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != noneAllocated && pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != defaultAllocated
+                                                                    ?
+                                                                    ((pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpobj.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
+                                                                     : pcpobj.Cost;
                     }
                     return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost, OwnerName = OwnerName,TacticCost=tacticCost }, JsonRequestBehavior.AllowGet);
                 }

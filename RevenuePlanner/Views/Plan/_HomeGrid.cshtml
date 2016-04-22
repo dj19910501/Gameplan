@@ -2303,8 +2303,59 @@
 
                             //Start - Added by Viral, To Resolve internal point: Change PlannedCost value based on TacticType.
                             var PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
+                            var oldPlanCost = HomeGrid.cells(rowid, PlannedCostColIndex).getValue();
                             HomeGrid.cells(rowid, PlannedCostColIndex).setValue(tacCost);
                             //End - Added by Viral, To Resolve internal point: Change PlannedCost value based on TacticType.
+
+                            // Start - Added by Viral related to PL ticket #2112.
+                            var PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
+                            var TotalchildRowIds = HomeGrid.getAllSubItems(rowid);
+                            if (tacCost < states.lineItemCost) {
+
+                                HomeGrid.cells(rowid, PlannedCostColIndex).setValue((oldPlanCost));
+                            }
+                                //Added by Rahul Shah for PL #1744.
+                            else if (tacCost == states.lineItemCost) {
+                                if (TotalchildRowIds != "") {
+                                    for (var i = 0; i < TotalchildRowIds.split(',').length; i++) {
+
+                                        //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                        if (HomeGrid.getUserData(TotalchildRowIds.split(',')[i], "IsOther") == "True") {
+                                            HomeGrid.deleteRow(TotalchildRowIds.split(',')[i]);
+                                        }
+                                    }
+                                }
+                                diff = parseInt(tacCost) - parseInt(oldPlanCost);
+                                SetColumUpdatedValue(PlannedCostColIndex, diff);
+                                HomeGrid.cells(progid, PlannedCostColIndex).setValue((newProgVal));
+                                HomeGrid.cells(campid, PlannedCostColIndex).setValue((newCampVal));
+                                HomeGrid.cells(planid, PlannedCostColIndex).setValue((newPlanVal));
+                                HomeGrid.cells(rowid, PlannedCostColIndex).setValue((tacCost));
+                            }
+                            else {
+
+                                diff = parseInt(tacCost) - parseInt(oldPlanCost);
+                                SetColumUpdatedValue(PlannedCostColIndex, diff);
+                                HomeGrid.cells(progid, PlannedCostColIndex).setValue((newProgVal));
+                                HomeGrid.cells(campid, PlannedCostColIndex).setValue((newCampVal));
+                                HomeGrid.cells(planid, PlannedCostColIndex).setValue((newPlanVal));
+                                HomeGrid.cells(rowid, PlannedCostColIndex).setValue((tacCost));
+                                if (TotalchildRowIds != "") {
+                                    for (var i = 0; i < TotalchildRowIds.split(',').length; i++) {
+
+                                        //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                        if (HomeGrid.getUserData(TotalchildRowIds.split(',')[i], "IsOther") == "True") {
+                                            HomeGrid.cells(TotalchildRowIds.split(',')[i], PlannedCostColIndex).setValue((states.OtherLineItemCost));
+                                        }
+                                    }
+                                }
+                            }
+                                
+                            ChangeTabView('liGrid'); 
+                            ItemIndex=HomeGrid.getRowIndex(rowid);
+                            state0=ItemIndex;
+                            // End - Added by Viral related to PL ticket #2112.
+
 
                             var PlanIds = HomeGrid.cells(planid,3).getValue()
                             $("#ulTacticType li input[type=checkbox]").each(function () {
