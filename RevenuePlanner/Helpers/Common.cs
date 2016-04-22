@@ -3508,7 +3508,7 @@ namespace RevenuePlanner.Helpers
             //Select the pre defined tactic stages from the stageList list
             List<int> inqVelocityStagelist = stageList.Where(s => s.Level >= 1 && s.Level < levelINQ).Select(s => s.StageId).ToList();
             List<int> mqlVelocityStagelist = stageList.Where(s => s.Level >= levelINQ && s.Level < levelMQL).Select(s => s.StageId).ToList();
-            List<int> cwVelocityStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
+            List<int> cwVelocityStagelist = stageList.Where(s => s.Level >= levelINQ && s.Level <= levelCW).Select(s => s.StageId).ToList(); //Modified By komal Rawal for #2124 caculate cw from INQ
 
             string CR = Enums.StageType.CR.ToString();
             string SV = Enums.StageType.SV.ToString();
