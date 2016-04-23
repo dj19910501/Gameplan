@@ -7577,11 +7577,20 @@ namespace RevenuePlanner.Controllers
                         objProjectedTrendModel.EndDate = tactic.EndDate;
                         objProjectedTrendModel.Year = tactic.StartDate.Year; // #1910
                         //// Calculate Trend calculation for month that is greater than current ruuning month.
-                        if (_trendMonth > tactic.StartMonth && ((_currentYear < tactic.Year) || (tactic.EndMonth > currentMonth && _trendMonth >= currentMonth && _currentYear == tactic.Year)))
+                        //Modified By Komal Rawal for #2125
+                        if (_trendMonth >= tactic.StartMonth && ((_currentYear < tactic.Year) || (tactic.EndMonth > currentMonth && _trendMonth >= currentMonth && _currentYear == tactic.Year)))
                         {
-                            TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
-                            _InvolvedTacticMonths = (_trendMonth - tactic.StartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
-                            objProjectedTrendModel.TrendValue = (tactic.Value / TotalTacticMonths) * _InvolvedTacticMonths; // Calculate TrendValue.
+                            if (tactic.StartMonth > currentMonth)
+                            {
+                                objProjectedTrendModel.TrendValue = tactic.Value;
+                            }
+                            else
+                            {
+                                TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
+                                _InvolvedTacticMonths = (_trendMonth - tactic.StartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
+                                objProjectedTrendModel.TrendValue = (tactic.Value / TotalTacticMonths) * _InvolvedTacticMonths; // Calculate TrendValue.
+                            }
+                          //ENd
                         }
                         else
                             objProjectedTrendModel.TrendValue = 0;
@@ -7838,7 +7847,7 @@ namespace RevenuePlanner.Controllers
                                 List<string> Quarters = new List<string>() { PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++) };
                                 // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
                                 _curntQuarterListActual = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : Convert.ToInt32("12"))).ToList(); // Modified By Nishant Sheth #1839
-                                _curntQuarterListProjected = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) > (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : Convert.ToInt32("12"))).ToList(); // Modified By Nishant Sheth #1839
+                                _curntQuarterListProjected = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) >= (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : Convert.ToInt32("12"))).ToList(); //Modified By Komal Rawal for #2125
                                 _curntQuarterListGoal = Quarters;
 
                                 _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate)) && _curntQuarterListActual.Contains(actual.Month)
@@ -7909,7 +7918,7 @@ namespace RevenuePlanner.Controllers
                                 _Actual = ActualTrendList.Where(actual => actual.Year == year && (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate))
                                     && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= (year == Convert.ToInt32(currentYear) ? currentEndMonth : Convert.ToInt32("12")) ? actual.Month.Equals(curntPeriod) : actual.Month.Equals("")).Sum(actual => actual.Value);
                                 _Projected = ProjectedTrendModelList.Where(_projected => _projected.Year == year && (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
-                                    && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) > (year == Convert.ToInt32(currentYear) ? currentEndMonth : Convert.ToInt32("12")) ? _projected.Month.Equals(curntPeriod) : _projected.Month.Equals("")).Sum(_projected => _projected.TrendValue);
+                                    && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) >= (year == Convert.ToInt32(currentYear) ? currentEndMonth : Convert.ToInt32("12")) ? _projected.Month.Equals(curntPeriod) : _projected.Month.Equals("")).Sum(_projected => _projected.TrendValue); //Modified By Komal Rawal for #2125
                                 // Modified By Nishant Sheth #1839
                                 _Goal = ProjectedTrendModelList.Where(_projected => _projected.Year == year && (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
                                     && _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
