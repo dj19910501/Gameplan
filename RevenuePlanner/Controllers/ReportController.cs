@@ -1174,9 +1174,9 @@ namespace RevenuePlanner.Controllers
                         List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
                         List<int> entityids = new List<int>();
                         //// get entity id based on custom field entity
-                        List<int> ReportPlanIds = Sessions.ReportPlanIds;  
-                       List<int> campaignlistIDs = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
-                    
+                        List<int> ReportPlanIds = Sessions.ReportPlanIds;
+                        List<int> campaignlistIDs = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
+
                         if (IsCampaign)
                         {
                             entityids = campaignlistIDs;
@@ -1475,7 +1475,7 @@ namespace RevenuePlanner.Controllers
                 //// Get Campaign list for dropdown
                 List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId
                     && (ListYear.Contains(t.StartDate.Year.ToString()) || ListYear.Contains(t.EndDate.Year.ToString()))).ToList();// Modified By Nishant Sheth #1839
-                List<int> campaignIds = db.Plan_Campaign.Where(t => t.Plan.Model.ClientId == Sessions.User.ClientId && t.IsDeleted == false && ReportPlanIds.Contains(t.PlanId)).ToList().Where(t=>(ListYear.Contains( t.StartDate.Year.ToString()) || ListYear.Contains(t.EndDate.Year.ToString()))).Select(t => t.PlanCampaignId).Distinct().ToList<int>();// Modified By Nishant Sheth #1839
+                List<int> campaignIds = db.Plan_Campaign.Where(t => t.Plan.Model.ClientId == Sessions.User.ClientId && t.IsDeleted == false && ReportPlanIds.Contains(t.PlanId)).ToList().Where(t => (ListYear.Contains(t.StartDate.Year.ToString()) || ListYear.Contains(t.EndDate.Year.ToString()))).Select(t => t.PlanCampaignId).Distinct().ToList<int>();// Modified By Nishant Sheth #1839
                 var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId) && pc.IsDeleted == false).ToList() // Modified by Viral Kadiya on 11/17/2015 for PL ticket #1754 - Deleted programs show up on report filters: Add "IsDeleted" filter to show only undeleted records in report filters.
                     .Where(pc => ListYear.Contains(pc.StartDate.Year.ToString()) || ListYear.Contains(pc.EndDate.Year.ToString()))// Modified By Nishant Sheth #1839
                         .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
@@ -1734,7 +1734,7 @@ namespace RevenuePlanner.Controllers
             // Modified by Arpita Soni  for Ticket #1148 on 01/28/2014
             //Common.GetReportStartEndDate(selectOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
             Common.GetselectedYearList(selectOption, ref selectedYearList);// Add By Nishant Sheth #1839
-         //   List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
+            //   List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
             List<int> programIds = new List<int>();
             if (id != null && id != "")
             {
@@ -2387,9 +2387,9 @@ namespace RevenuePlanner.Controllers
 
             var LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => TacticIds.Contains(lineitem.PlanTacticId) && lineitem.IsDeleted.Equals(false)).ToList();
             List<int> LineitemIds = LineItemList.Select(id => id.PlanLineItemId).ToList();
-          //  List<int> ProgramIds = tacticList.Select(tactic => tactic.PlanProgramId).ToList();
+            //  List<int> ProgramIds = tacticList.Select(tactic => tactic.PlanProgramId).ToList();
             var ProgramList = db.Plan_Campaign_Program.Where(program => ProgramIds.Contains(program.PlanProgramId) && program.IsDeleted.Equals(false)).ToList();
-           // List<int> CampaignIds = ProgramList.Select(tactic => tactic.PlanCampaignId).ToList();
+            // List<int> CampaignIds = ProgramList.Select(tactic => tactic.PlanCampaignId).ToList();
             var CampaignList = db.Plan_Campaign.Where(campaign => CampaignIds.Contains(campaign.PlanCampaignId) && campaign.IsDeleted.Equals(false)).ToList();
             List<int> PlanIdsInner = CampaignList.Select(campaign => campaign.PlanId).ToList();
 
@@ -5048,7 +5048,7 @@ namespace RevenuePlanner.Controllers
                                     StageCode = tac.StageCode,
                                     StartDate = tac.StartDate,
                                     EndDate = tac.EndDate,
-                                    Trend = tac.Trend
+                                    Trend = (tac.StartDate.Month > Convert.ToInt32(tac.Month.Replace("Y", "")) ? tac.Value : tac.Trend) // Add By Nishant Sheth Desc : To Resolve match overview value with tabs value
                                 }).ToList().Select(tac => new
                                 {
                                     Period = tac.Period,
@@ -6026,7 +6026,7 @@ namespace RevenuePlanner.Controllers
                     {
                         {
                             if (ListYear.Length > 1)
-                            _TacEndMonth = 12 * ListYear.Length;
+                                _TacEndMonth = 12 * ListYear.Length;
                             else
                             {
                                 _TacEndMonth = tactic.EndDate.AddDays(stageVelocity).Month;
@@ -7607,7 +7607,7 @@ namespace RevenuePlanner.Controllers
                 foreach (var tactic in TacticList)
                 {
                     ////Modified By Komal Rawal for #2125
-                    if( tactic.EndMonth < tactic.StartMonth)
+                    if (tactic.EndMonth < tactic.StartMonth)
                     {
                         for (int _TemptrendMonth = 1; _TemptrendMonth <= 12; _TemptrendMonth++)
                         {
@@ -7620,23 +7620,23 @@ namespace RevenuePlanner.Controllers
                             objProjectedTrendModel.Year = tactic.StartDate.Year; // #1910
 
                             if (_TemptrendMonth >= tactic.StartMonth && ((_currentYear < tactic.Year) || (_TemptrendMonth >= currentMonth && _currentYear == tactic.Year)))
-                             {
-                                 if (tactic.StartDate.Month > currentMonth)
-                                 {
-                                     objProjectedTrendModel.TrendValue = tactic.Value;
-                                 }
-                                 else
-                                 {
-                                     TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
-                                     _InvolvedTacticMonths = (_TemptrendMonth - tactic.StartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
-                                     objProjectedTrendModel.TrendValue = (tactic.Value / TotalTacticMonths) * _InvolvedTacticMonths; // Calculate TrendValue.
-                                 }
-                             }
-                             else
-                             {
-                                 objProjectedTrendModel.TrendValue = 0;
-                              
-                             }
+                            {
+                                if (tactic.StartDate.Month > currentMonth)
+                                {
+                                    objProjectedTrendModel.TrendValue = tactic.Value;
+                                }
+                                else
+                                {
+                                    TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
+                                    _InvolvedTacticMonths = (_TemptrendMonth - tactic.StartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
+                                    objProjectedTrendModel.TrendValue = (tactic.Value / TotalTacticMonths) * _InvolvedTacticMonths; // Calculate TrendValue.
+                                }
+                            }
+                            else
+                            {
+                                objProjectedTrendModel.TrendValue = 0;
+
+                            }
                             ProjectedTrendModelList.Add(objProjectedTrendModel);
                         }
                     }
@@ -7644,32 +7644,32 @@ namespace RevenuePlanner.Controllers
                     {
                         for (int _trendMonth = 1; _trendMonth <= tactic.EndMonth; _trendMonth++)
                         {
-                        objProjectedTrendModel = new ProjectedTrendModel();
-                        objProjectedTrendModel.PlanTacticId = tactic.TacticId;
-                        objProjectedTrendModel.Value = _trendMonth >= tactic.StartMonth ? tactic.Value : 0; // if trendmonth earlier than StartMonth then set Value to 0.
-                        objProjectedTrendModel.Month = PeriodPrefix + _trendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
-                        objProjectedTrendModel.StartDate = tactic.StartDate;
-                        objProjectedTrendModel.EndDate = tactic.EndDate;
-                        objProjectedTrendModel.Year = tactic.StartDate.Year; // #1910
-                        //// Calculate Trend calculation for month that is greater than current ruuning month.
-                        //Modified By Komal Rawal for #2125
-                        if (_trendMonth >= tactic.StartMonth && ((_currentYear < tactic.Year) || (tactic.EndMonth > currentMonth && _trendMonth >= currentMonth && _currentYear == tactic.Year)))
-                        {
-                            if (tactic.StartDate.Month > currentMonth)
+                            objProjectedTrendModel = new ProjectedTrendModel();
+                            objProjectedTrendModel.PlanTacticId = tactic.TacticId;
+                            objProjectedTrendModel.Value = _trendMonth >= tactic.StartMonth ? tactic.Value : 0; // if trendmonth earlier than StartMonth then set Value to 0.
+                            objProjectedTrendModel.Month = PeriodPrefix + _trendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
+                            objProjectedTrendModel.StartDate = tactic.StartDate;
+                            objProjectedTrendModel.EndDate = tactic.EndDate;
+                            objProjectedTrendModel.Year = tactic.StartDate.Year; // #1910
+                            //// Calculate Trend calculation for month that is greater than current ruuning month.
+                            //Modified By Komal Rawal for #2125
+                            if (_trendMonth >= tactic.StartMonth && ((_currentYear < tactic.Year) || (tactic.EndMonth > currentMonth && _trendMonth >= currentMonth && _currentYear == tactic.Year)))
                             {
-                                objProjectedTrendModel.TrendValue = tactic.Value;
+                                if (tactic.StartDate.Month > currentMonth)
+                                {
+                                    objProjectedTrendModel.TrendValue = tactic.Value;
+                                }
+                                else
+                                {
+                                    TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
+                                    _InvolvedTacticMonths = (_trendMonth - tactic.StartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
+                                    objProjectedTrendModel.TrendValue = (tactic.Value / TotalTacticMonths) * _InvolvedTacticMonths; // Calculate TrendValue.
+                                }
+                                //ENd
                             }
                             else
-                            {
-                                TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
-                                _InvolvedTacticMonths = (_trendMonth - tactic.StartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
-                                objProjectedTrendModel.TrendValue = (tactic.Value / TotalTacticMonths) * _InvolvedTacticMonths; // Calculate TrendValue.
-                            }
-                          //ENd
-                        }
-                        else
-                            objProjectedTrendModel.TrendValue = 0;
-                        ProjectedTrendModelList.Add(objProjectedTrendModel);
+                                objProjectedTrendModel.TrendValue = 0;
+                            ProjectedTrendModelList.Add(objProjectedTrendModel);
                         }
                     }
                 }
@@ -7819,7 +7819,7 @@ namespace RevenuePlanner.Controllers
             string currentyear = DateTime.Now.Year.ToString();
             string[] ListYear = timeframeOption.Split(',');
             int currentEndMonth = 12;
-            double _proj2; 
+            double _proj2;
             #endregion
             try
             {
@@ -8230,7 +8230,7 @@ namespace RevenuePlanner.Controllers
                         StageCode = tac.StageCode,
                         StartDate = tac.StartDate,
                         EndDate = tac.EndDate,
-                        Trend= tac.Trend
+                        Trend = tac.Trend
                     }).ToList().Select(tac => new
                     {
                         Period = tac.Period,
@@ -8407,7 +8407,7 @@ namespace RevenuePlanner.Controllers
                     List<int> entityids = new List<int>();
                     List<int> CampaignListIDs = new List<int>();
                     CampaignListIDs = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).Distinct().ToList();
-         
+
                     // Get Entity id base on Custom fields.
                     if (IsTacticCustomField)
                     {
@@ -10415,7 +10415,7 @@ namespace RevenuePlanner.Controllers
                 List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
                 _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
 
-                var campaignList = db.Plan_Campaign.Where(camp=>camp.IsDeleted == false && ReportPlanIds.Contains(camp.PlanId)).Select(t => new { PlanCampaignId = t.PlanCampaignId, Title = t.Title }).Distinct().OrderBy(pcp => pcp.Title).ToList();
+                var campaignList = db.Plan_Campaign.Where(camp => camp.IsDeleted == false && ReportPlanIds.Contains(camp.PlanId)).Select(t => new { PlanCampaignId = t.PlanCampaignId, Title = t.Title }).Distinct().OrderBy(pcp => pcp.Title).ToList();
                 campaignList = campaignList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
                 var lstCampaignList = campaignList;
                 lstCampaignList.Insert(0, new { PlanCampaignId = 0, Title = "All Campaigns" });
@@ -11368,7 +11368,7 @@ namespace RevenuePlanner.Controllers
                     if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                     {
                         int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                      
+
                         string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
                         campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
                         TacticData = TacticData.Where(t => campaignIds.Contains(t.TacticObj.Plan_Campaign_Program.PlanCampaignId)).ToList();
@@ -13611,9 +13611,9 @@ namespace RevenuePlanner.Controllers
             // Modified by Arpita Soni  for Ticket #1148 on 01/28/2014
             //Common.GetReportStartEndDate(selectOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
             Common.GetselectedYearList(selectOption, ref selectedYearList);// Add By Nishant Sheth #1839
-          //  List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
+            //  List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
             List<int> campaignIds = new List<int>();
-            List<int> ReportPlanIds = Sessions.ReportPlanIds;  
+            List<int> ReportPlanIds = Sessions.ReportPlanIds;
             campaignIds = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).Distinct().ToList<int>();
             if (masterCustomFieldOptionId > 0)
             {
@@ -13644,7 +13644,7 @@ namespace RevenuePlanner.Controllers
             // Modified by Arpita Soni  for Ticket #1148 on 01/28/2014
             //Common.GetReportStartEndDate(selectOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
             Common.GetselectedYearList(selectOption, ref selectedYearList);// Add By Nishant Sheth #1839
-          //  List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
+            //  List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
             List<Plan_Campaign_Program> ProgramList = new List<Plan_Campaign_Program>();
             if (id != null && id != "")
             {
@@ -13699,7 +13699,7 @@ namespace RevenuePlanner.Controllers
             //Common.GetReportStartEndDate(selectOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
             Common.GetselectedYearList(selectOption, ref selectedYearList);// Add By Nishant Sheth #1839
             List<Plan_Campaign_Program_Tactic> TacticList = GetTacticForReporting();
-            List<int> ReportPlanIds = Sessions.ReportPlanIds;  
+            List<int> ReportPlanIds = Sessions.ReportPlanIds;
             // Modified by Arpita Soni  for Ticket #1148 on 01/28/2014
             if (id != null && id != "")
             {
