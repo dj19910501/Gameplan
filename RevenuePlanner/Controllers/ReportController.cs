@@ -7627,7 +7627,10 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                    TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
+                                    int _mnthdiff = (12 - tactic.StartMonth) + tactic.EndMonth; //#2125
+                                    //TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
+                                    TotalTacticMonths = (_mnthdiff) + 1; // Get Total Months of Tactic. 
+                                    //TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
                                     _InvolvedTacticMonths = (_TemptrendMonth - tactic.StartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
                                     objProjectedTrendModel.TrendValue = (tactic.Value / TotalTacticMonths) * _InvolvedTacticMonths; // Calculate TrendValue.
                                 }
