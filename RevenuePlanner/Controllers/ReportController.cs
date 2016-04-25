@@ -1522,7 +1522,8 @@ namespace RevenuePlanner.Controllers
                     StartYear = tac.StartDate.Year,
                     StageCode = tac.StageCode,
                     StartDate = tac.StartDate,
-                    EndDate = tac.EndDate
+                    EndDate = tac.EndDate,
+                    Trend = tac.Trend
                 }).ToList().Select(tac => new
                 {
                     Period = tac.Period,
@@ -1532,7 +1533,8 @@ namespace RevenuePlanner.Controllers
                     StartYear = tac.StartYear,
                     StageCode = tac.StageCode,
                     StartDate = tac.StartDate,
-                    EndDate = tac.EndDate
+                    EndDate = tac.EndDate,
+                    Trend = tac.Trend
                 }).ToList().Select(tact => new ActualTrendModel
                 {
                     Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
@@ -1541,7 +1543,8 @@ namespace RevenuePlanner.Controllers
                     Value = tact.Value,
                     StageCode = tact.StageCode,
                     StartDate = tact.StartDate,
-                    EndDate = tact.EndDate
+                    EndDate = tact.EndDate,
+                    Trend = tact.Trend
                 }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                 #region "Revenue : Get Tacticwise Actual_Projected Vs Goal Model data "
                 ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, revStageCode);
@@ -8226,7 +8229,8 @@ namespace RevenuePlanner.Controllers
                         StartYear = tac.StartDate.Year,
                         StageCode = tac.StageCode,
                         StartDate = tac.StartDate,
-                        EndDate = tac.EndDate
+                        EndDate = tac.EndDate,
+                        Trend= tac.Trend
                     }).ToList().Select(tac => new
                     {
                         Period = tac.Period,
@@ -8236,7 +8240,8 @@ namespace RevenuePlanner.Controllers
                         StartYear = tac.StartYear,
                         StageCode = tac.StageCode,
                         StartDate = tac.StartDate,
-                        EndDate = tac.EndDate
+                        EndDate = tac.EndDate,
+                        Trend = tac.Trend
                     }).ToList().Select(tact => new ActualTrendModel
                     {
                         Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
@@ -8245,7 +8250,8 @@ namespace RevenuePlanner.Controllers
                         Value = tact.Value,
                         StageCode = tact.StageCode,
                         StartDate = tact.StartDate,
-                        EndDate = tact.EndDate
+                        EndDate = tact.EndDate,
+                        Trend = tact.Trend
                     }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
 
                     #region "Revenue : Get Tacticwise Actual_Projected Vs Goal Model data "
