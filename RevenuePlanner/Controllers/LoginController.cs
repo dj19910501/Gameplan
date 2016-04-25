@@ -183,6 +183,7 @@ namespace RevenuePlanner.Controllers
                             }
                             TempData.Keep(form.UserEmail);
                         }
+                        return View(form);  //Added By Maitri Gandhi for #2121 on 25/4/2016
                         //ENd
 
                     }
