@@ -7603,7 +7603,7 @@ namespace RevenuePlanner.Controllers
             {
                 foreach (var tactic in TacticList)
                 {
-                    //Modified By Komal Rawal for #2125
+                    ////Modified By Komal Rawal for #2125
                     if( tactic.EndMonth < tactic.StartMonth)
                     {
                         for (int _TemptrendMonth = 1; _TemptrendMonth <= 12; _TemptrendMonth++)
@@ -7618,7 +7618,7 @@ namespace RevenuePlanner.Controllers
 
                             if (_TemptrendMonth >= tactic.StartMonth && ((_currentYear < tactic.Year) || (_TemptrendMonth >= currentMonth && _currentYear == tactic.Year)))
                              {
-                                 if (tactic.StartMonth > currentMonth)
+                                 if (tactic.StartDate.Month > currentMonth)
                                  {
                                      objProjectedTrendModel.TrendValue = tactic.Value;
                                  }
@@ -7652,7 +7652,7 @@ namespace RevenuePlanner.Controllers
                         //Modified By Komal Rawal for #2125
                         if (_trendMonth >= tactic.StartMonth && ((_currentYear < tactic.Year) || (tactic.EndMonth > currentMonth && _trendMonth >= currentMonth && _currentYear == tactic.Year)))
                         {
-                            if (tactic.StartMonth > currentMonth)
+                            if (tactic.StartDate.Month > currentMonth)
                             {
                                 objProjectedTrendModel.TrendValue = tactic.Value;
                             }
