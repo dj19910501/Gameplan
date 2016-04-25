@@ -7567,8 +7567,44 @@ namespace RevenuePlanner.Controllers
             {
                 foreach (var tactic in TacticList)
                 {
-                    for (int _trendMonth = 1; _trendMonth <= tactic.EndMonth; _trendMonth++)
+                    //Modified By Komal Rawal for #2125
+                    if( tactic.EndMonth < tactic.StartMonth)
                     {
+                        for (int _TemptrendMonth = 1; _TemptrendMonth <= 12; _TemptrendMonth++)
+                        {
+                            objProjectedTrendModel = new ProjectedTrendModel();
+                            objProjectedTrendModel.PlanTacticId = tactic.TacticId;
+                            objProjectedTrendModel.Value = _TemptrendMonth >= tactic.StartMonth ? tactic.Value : 0; // if trendmonth earlier than StartMonth then set Value to 0.
+                            objProjectedTrendModel.Month = PeriodPrefix + _TemptrendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
+                            objProjectedTrendModel.StartDate = tactic.StartDate;
+                            objProjectedTrendModel.EndDate = tactic.EndDate;
+                            objProjectedTrendModel.Year = tactic.StartDate.Year; // #1910
+
+                            if (_TemptrendMonth >= tactic.StartMonth && ((_currentYear < tactic.Year) || (_TemptrendMonth >= currentMonth && _currentYear == tactic.Year)))
+                             {
+                                 if (tactic.StartMonth > currentMonth)
+                                 {
+                                     objProjectedTrendModel.TrendValue = tactic.Value;
+                                 }
+                                 else
+                                 {
+                                     TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
+                                     _InvolvedTacticMonths = (_TemptrendMonth - tactic.StartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
+                                     objProjectedTrendModel.TrendValue = (tactic.Value / TotalTacticMonths) * _InvolvedTacticMonths; // Calculate TrendValue.
+                                 }
+                             }
+                             else
+                             {
+                                 objProjectedTrendModel.TrendValue = 0;
+                              
+                             }
+                            ProjectedTrendModelList.Add(objProjectedTrendModel);
+                        }
+                    }
+                    else
+                    {
+                        for (int _trendMonth = 1; _trendMonth <= tactic.EndMonth; _trendMonth++)
+                        {
                         objProjectedTrendModel = new ProjectedTrendModel();
                         objProjectedTrendModel.PlanTacticId = tactic.TacticId;
                         objProjectedTrendModel.Value = _trendMonth >= tactic.StartMonth ? tactic.Value : 0; // if trendmonth earlier than StartMonth then set Value to 0.
@@ -7595,6 +7631,7 @@ namespace RevenuePlanner.Controllers
                         else
                             objProjectedTrendModel.TrendValue = 0;
                         ProjectedTrendModelList.Add(objProjectedTrendModel);
+                        }
                     }
                 }
             }
