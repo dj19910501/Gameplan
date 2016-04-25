@@ -765,6 +765,7 @@
         HomeGrid.setCustomSorting(sort_TacticType, 7);
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
+        HomeGrid.splitAt(2);       
         // added by bhavesh - 11-Nov-2015
         // Apply Distributed Parsing
         HomeGrid.attachEvent("onDistributedEnd", function () {
@@ -808,7 +809,7 @@
         //GridDataCsv={rows:[],head:[]};
         //GridDataCsv.head=JSON.parse(GridData).head;
         //GridDataCsv.rows=JSON.parse(GridData).rows;
-        HomeGrid.parse(GridDataHomeGrid, "json");
+        HomeGrid.parse(GridDataHomeGrid, "json");       
         //HomeGrid.splitAt(2);
         //Added by Maitri Gandhi for #2040 on 31/3/2016
         //HomeGrid.collapseAll();
@@ -1400,7 +1401,7 @@
     var value;
 
     var TacticName;
-    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {      
         var updatetype = rowId.split(".")[0];
         var Id;
         var UpdateColumn;
@@ -1517,7 +1518,7 @@
 
             if (nValue != null && nValue != "") {
 
-                //Added By Komal Rawal to Change the value in array if grid updated
+                //Added By Komal Rawal to Change the value in array if grid updated              
                 var NewValue = htmlDecode(nValue);
                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                 var TaskID = HomeGrid.cells(rowId,3).getValue();
