@@ -6116,10 +6116,41 @@ namespace RevenuePlanner.Controllers
                 TacticList = TacticData.Where(tac => TacticIds.Contains(tac.TacticObj.PlanTacticId)).Select(tac => tac.TacticObj).ToList();
                 int _TacEndMonth = 0, _planTacticId = 0, _TacStartMonth = 0;
 
+                double stageVelocity = 0;
+
+                if (strStageCode.Equals(Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()))
+                {
+                    // Get TacticDataTable list of Projected Revenue.
+                    stageVelocity = TacticData.Where(tac => TacticIds.Contains(tac.TacticObj.PlanTacticId)).Select(tac => tac.CWVelocity).FirstOrDefault();
+                }
+                else if (strStageCode.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()))
+                {
+                    // Get TacticDataTable list of Projected MQL.
+                    stageVelocity = TacticData.Where(tac => TacticIds.Contains(tac.TacticObj.PlanTacticId)).Select(tac => tac.MQLVelocity).FirstOrDefault();
+                }
+                else if (strStageCode.Equals(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()))
+                {
+                    // Get TacticDataTable list of Projected CW.
+                    stageVelocity = TacticData.Where(tac => TacticIds.Contains(tac.TacticObj.PlanTacticId)).Select(tac => tac.CWVelocity).FirstOrDefault();
+                }
+                else if (strStageCode.Equals(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()))
+                {
+                    // Get TacticDataTable list of Projected INQ.
+                    stageVelocity = TacticData.Where(tac => TacticIds.Contains(tac.TacticObj.PlanTacticId)).Select(tac => tac.INQVelocity).FirstOrDefault();
+                }
+
                 foreach (var tactic in TacticList)
                 {
                     {
-                        _TacEndMonth = 12 * ListYear.Length;
+                        //_TacEndMonth = 12 * ListYear.Length;
+                        //Added by Viral for PL ticket #2126.
+                        if (ListYear.Length > 1)
+                            _TacEndMonth = 12 * ListYear.Length;
+                        else
+                        {
+                            _TacEndMonth = tactic.EndDate.AddDays(stageVelocity).Month;
+                        }
+
                     }
                     _planTacticId = tactic.PlanTacticId;
                     _TacStartMonth = tactic.StartDate.Month;
@@ -6159,6 +6190,11 @@ namespace RevenuePlanner.Controllers
                         {
                             CurrentPeriod = PeriodPrefix + _trendMonth.ToString();
                             objActualTrendModel.Value = ActualTacticListbyTactic.Where(actual => actual.Period.Equals(CurrentPeriod)).Select(actual => actual.ActualValue).FirstOrDefault();
+                        }
+                        if (_trendMonth >= _TacStartMonth && _trendMonth <= currentMonth) // Set Same ActualValue as Trend value till current month from Tactic StartMonth.
+                        {
+                            CurrentPeriod = PeriodPrefix + _trendMonth.ToString();
+                            objActualTrendModel.Trend = ActualTacticListbyTactic.Where(actual => actual.Period.Equals(CurrentPeriod)).Select(actual => actual.ActualValue).FirstOrDefault();
                         }
                         ActualTrendModelList.Add(objActualTrendModel);
                     }
