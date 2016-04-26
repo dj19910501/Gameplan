@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 using RevenuePlanner.Models;
+using System.Web.Routing;
 
 namespace RevenuePlanner.Test.Controllers
 {
@@ -167,7 +168,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
 
-            var result = ReportController.GetRevenueData() as PartialViewResult;
+            var result = ReportController.GetRevenueData("2014") as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_Revenue", result.ViewName);
         }
@@ -193,7 +194,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
 
-            var result = ReportController.GetRevenueData(string.Empty, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
+            var result = ReportController.GetRevenueData("2015", Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_Revenue", result.ViewName);
         }
@@ -292,8 +293,10 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
+            ReportController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
-            var result = ReportController.GetRevenueToPlanByFilter() as PartialViewResult;
+            ReportController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), ReportController);
+            var result = ReportController.GetRevenueToPlanByFilter();
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -319,7 +322,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParent, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParent, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -345,7 +348,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParent, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParent, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -371,7 +374,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -397,7 +400,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -423,7 +426,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -452,9 +455,13 @@ namespace RevenuePlanner.Test.Controllers
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            Assert.AreEqual("_RevenueToPlan", result.ViewName);
+
+           
+                var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+                //// PartialViewResult shoud not be null and should match with Partial viewName
+                Assert.AreEqual("_RevenueToPlan", result.ViewName);
+            
+            
         }
         #endregion
 
@@ -482,7 +489,7 @@ namespace RevenuePlanner.Test.Controllers
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -512,7 +519,7 @@ namespace RevenuePlanner.Test.Controllers
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2015", string.Empty, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2014", string.Empty, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -542,7 +549,7 @@ namespace RevenuePlanner.Test.Controllers
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2015", invalidQuater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2014", invalidQuater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -573,7 +580,7 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2015", IsQuater, false, string.Empty, false, string.Empty, string.Empty, 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2014", IsQuater, false, string.Empty, false, string.Empty, string.Empty, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -1231,7 +1238,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetWaterFallData() function
             ReportController ReportController = new ReportController();
 
-            var result = ReportController.GetWaterFallData() as PartialViewResult;
+            var result = ReportController.GetWaterFallData("2014") as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ReportConversion", result.ViewName);
         }
@@ -1252,13 +1259,16 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(planId);
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
+            Common.PlanUserSavedViews = SetOFLastViews;
+            List<int> PlanIds = new List<int>();
+            PlanIds.Add(17314);            
+            Sessions.ReportPlanIds = PlanIds;
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             //int planId=DataHelper.GetPlanId();
             //// Call GetWaterFallData() function
             ReportController ReportController = new ReportController();
 
-            var result = ReportController.GetWaterFallData(string.Empty, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
+            var result = ReportController.GetWaterFallData("2014", Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ReportConversion", result.ViewName);
         }
@@ -1305,7 +1315,7 @@ namespace RevenuePlanner.Test.Controllers
             lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetWaterFallData("2015", string.Empty) as PartialViewResult;
+            var result = ReportController.GetWaterFallData("2014", string.Empty) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ReportConversion", result.ViewName);
         }
@@ -1328,7 +1338,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             string invalidQuater = "_InValidIsQuarterly";
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetWaterFallData("2015", invalidQuater) as PartialViewResult;
+            var result = ReportController.GetWaterFallData("2014", invalidQuater) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ReportConversion", result.ViewName);
         }
@@ -1352,7 +1362,7 @@ namespace RevenuePlanner.Test.Controllers
             Common.PlanUserSavedViews = SetOFLastViews; 
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetWaterFallData(string.Empty, string.Empty) as PartialViewResult;
+            var result = ReportController.GetWaterFallData("2014", string.Empty) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ReportConversion", result.ViewName);
         }
