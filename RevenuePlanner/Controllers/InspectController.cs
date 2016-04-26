@@ -13214,7 +13214,7 @@ namespace RevenuePlanner.Controllers
             dataTableMain.Columns.Add("Name", typeof(String));
             dataTableMain.Columns.Add("Weightage", typeof(String));
 
-            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
+            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false).Select(a => a.Id).ToList(); // Added IsDeleted Flag on 26-04-16
             List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId) && BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
             List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
             //modified by Rahul shah on 22/04/2016 for code refactoring.

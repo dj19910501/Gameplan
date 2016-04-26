@@ -6596,7 +6596,7 @@ namespace RevenuePlanner.Helpers
         {
 
             MRPEntities db = new MRPEntities();
-            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
+            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false).Select(a => a.Id).ToList();
             List<Budget_Detail> BudgetDetails = db.Budget_Detail.Where(a => BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
             List<int> SelectedOptionIDs = db.LineItem_Budget.Where(list => list.PlanLineItemId == Id).Select(list => list.BudgetDetailId).ToList();
             List<string> SelectedOptionValues = BudgetDetails.Where(Detaillist => SelectedOptionIDs.Contains(Detaillist.Id)).Select(Detaillist => Detaillist.Name).ToList();
