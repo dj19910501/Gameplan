@@ -830,6 +830,20 @@ namespace RevenuePlanner.Controllers
             // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             ViewBag.isForDelete = "false";
 
+            // Add By Nishant Sheth
+            // Desc :: To resolve the edit data not works Not check passsword expresion due to hash encoding
+            var errors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .Select(x => new { x.Key, x.Value.Errors })
+                .ToArray();
+            foreach (var error in errors)
+            {
+                if (error.Key == "Password" || error.Key == "ConfirmPassword")
+                {
+                    ModelState.Remove(error.Key);
+                }
+            }
+            // End By Nishant Sheth
             try
             {
                 if (ModelState.IsValid)
