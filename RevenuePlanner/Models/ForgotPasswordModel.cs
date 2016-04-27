@@ -47,7 +47,7 @@ namespace RevenuePlanner.Models
         //[MaxLength(255, ErrorMessage = "Password cannot contain more than 255 characters.")]
         [MaxLength(50, ErrorMessage = "Password cannot be more than 50 characters.")] //Added By Maitri Gandhi on 15/4/2016
         [MinLength(8, ErrorMessage = "Password should be atleast 8 characters.")]
-        [RegularExpression(@"(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&*_+|~=`:'\(\)\-\\\{\}\[\]\<\>\//]).*$", ErrorMessage = " ")]    //Added By Maitri Gandhi on 8/4/2016 for #2105
+        [RegularExpression(@"(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&*_+|~!?\.=`:'\(\)\-\\\{\}\[\]\<\>\//]).*$", ErrorMessage = " ")]    //Added By Maitri Gandhi on 8/4/2016 for #2105. Modified for #2131
         public string NewPassword { get; set; }
 
 
