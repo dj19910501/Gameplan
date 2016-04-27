@@ -186,7 +186,10 @@
         $(".selectBox select").selectbox();
         
         $('#btnSubmit').click(function () {
-            myApp.showPleaseWait();
+            //added by nishant Sheth 
+            if ($("form").valid()) {
+                myApp.showPleaseWait();
+            }
             var isValid = true;
 
             //ClientId Dropdown Required Validtion
@@ -245,7 +248,7 @@
             $("html, body").animate({ scrollTop: 0 }, 1000);
         }
 
-        $('#btnSubmit').click(function () {
+        $('#btnSubmit').click(function () {            
             $('#content :input').each(function () {
                 if (($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') && this.id != 'Phone') {     // Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                     var input = $(this).val();
@@ -463,7 +466,7 @@
         $('#result').removeClass()
         $('#result').html('')
         if ($('#Password').val() != '')
-            $('#result').html(checkStrength($('#Password').val()))
+            $('#result').html(checkStrength($('#Password').val())) 
     });
     //Added By Maitri Gandhi on 26/4/2016 for #2131
     $('#Password').focusout(function () {
@@ -488,6 +491,11 @@
             $("#PasswordValidatorMessage").text('Password should contain at least one lower case, one upper case, one digit and one special character.');
             $("#errorMessage").slideDown(400);
         }
+        //added by nishant Sheth 
+        if ($("#Password").val() == '') {
+            $("#result").removeClass();
+        }
+        //end
     });
     $('#ConfirmPassword').keyup(function (event) {
         $('#match').removeClass()
