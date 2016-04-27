@@ -12082,26 +12082,37 @@ namespace RevenuePlanner.Controllers
                                 StartDate = tac.StartDate,
                                 EndDate = tac.EndDate
                             }).Distinct().ToList();
-                            MqlProjected = GetProjectedTrendModel(_TacticList);
-                            MqlProjected = (from _prjTac in ProjectedTrendList
-                                            group _prjTac by new
-                                            {
-                                                _prjTac.PlanTacticId,
-                                                _prjTac.Month,
-                                                _prjTac.Value,
-                                                _prjTac.TrendValue,
-                                                _prjTac.StartDate,
-                                                _prjTac.EndDate
-                                            } into tac
-                                            select new ProjectedTrendModel
-                                            {
-                                                PlanTacticId = tac.Key.PlanTacticId,
-                                                Month = tac.Key.Month,
-                                                Value = tac.Key.Value,
-                                                TrendValue = tac.Key.TrendValue,
-                                                StartDate = tac.Key.StartDate,
-                                                EndDate = tac.Key.EndDate
-                                            }).Distinct().ToList();
+
+                            //ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, StageCode);
+                            if (StageCode != Enums.Stage.MQL.ToString())
+                            {
+                                MqlProjected = CalculateProjectedTrend(_tacticdata, includeMonth, Enums.Stage.MQL.ToString());
+                            }
+                            else
+                            {
+                                MqlProjected = ProjectedTrendList;
+                            }
+
+                            //MqlProjected = GetProjectedTrendModel(_TacticList);
+                            //MqlProjected = (from _prjTac in ProjectedTrendList
+                            //                group _prjTac by new
+                            //                {
+                            //                    _prjTac.PlanTacticId,
+                            //                    _prjTac.Month,
+                            //                    _prjTac.Value,
+                            //                    _prjTac.TrendValue,
+                            //                    _prjTac.StartDate,
+                            //                    _prjTac.EndDate
+                            //                } into tac
+                            //                select new ProjectedTrendModel
+                            //                {
+                            //                    PlanTacticId = tac.Key.PlanTacticId,
+                            //                    Month = tac.Key.Month,
+                            //                    Value = tac.Key.Value,
+                            //                    TrendValue = tac.Key.TrendValue,
+                            //                    StartDate = tac.Key.StartDate,
+                            //                    EndDate = tac.Key.EndDate
+                            //                }).Distinct().ToList();
                             MqlProjected = MqlProjected.Select(tac => new
                             {
                                 Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
