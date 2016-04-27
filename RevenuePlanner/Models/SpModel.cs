@@ -173,4 +173,14 @@ namespace RevenuePlanner.Models
         public string Value { get; set; }
         public string EntityType { get; set; }
     }
+
+    public class Custom_LineItem_Budget
+    {
+        public int Id { get; set; }
+        public int BudgetDetailId { get; set; }
+        public int PlanLineItemId { get; set; }
+        public System.DateTime CreatedDate { get; set; }
+        public Nullable<System.Guid> CreatedBy { get; set; }
+        public Nullable<byte> Weightage { get; set; }
+    }
 }

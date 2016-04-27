@@ -8052,6 +8052,21 @@ namespace RevenuePlanner.Helpers
 
             return CustomFieldEntityList;
         }
+
+        public static List<Custom_LineItem_Budget> GetSpLineItemBudgetList(DataTable dt)
+        {
+            var LineItemBudgetList = dt.AsEnumerable().Select(row => new Custom_LineItem_Budget
+            {
+                BudgetDetailId = Convert.ToInt32(row["BudgetDetailId"]),
+                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                Id = Convert.ToInt32(row["Id"]),
+                PlanLineItemId = Convert.ToInt32(row["PlanLineItemId"]),
+                Weightage = string.IsNullOrEmpty(Convert.ToString(row["Weightage"])) ? (byte?)null : byte.Parse(Convert.ToString(row["Weightage"]))
+            }).ToList();
+
+            return LineItemBudgetList;
+        }
         #endregion
     }
 
@@ -8309,7 +8324,37 @@ namespace RevenuePlanner.Helpers
             }
             return dataset;
         }
+        /// <summary>
+        /// Add By Nishant Sheth 
+        /// Desc:: Get list of budget list and line item budget list
+        /// </summary>
+        /// <param name="BudgetId"></param>
+        /// <returns></returns>
+        public DataSet GetBudgetListAndLineItemBudgetList(int BudgetId = 0)
+        {
+            DataTable datatable = new DataTable();
+            DataSet dataset = new DataSet();
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
 
+            command = new SqlCommand("GetBudgetListAndLineItemBudgetList", Connection);
+
+            using (command)
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                command.Parameters.AddWithValue("@BudgetId", BudgetId);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(dataset);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+            return dataset;
+        }
     }
     #endregion
 

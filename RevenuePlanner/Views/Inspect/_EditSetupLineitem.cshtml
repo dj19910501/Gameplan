@@ -187,8 +187,8 @@
     border-top:none !important;
      border-right: none !important;
     }
-    /*by bheru 19-10-2015*/ 
-    
+    /*by bheru 19-10-2015*/
+
 </style>
 @using (Html.BeginForm())
 {
@@ -226,19 +226,19 @@
         </div>
         <div class="span3 review_no_padding" id="inspect-modal-left-column3">
             @*Modified By Komal Rawal for #1974
-            Desc: To Enable edit owner feature from Lineitem popup*@
+                Desc: To Enable edit owner feature from Lineitem popup*@
             <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>
             @if (IsLineItemAddEdit)
             {
-                 <span style="min-width: 100%; position: relative; display: block;">
-                 @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)Model.OwnerList, "Id", "Name"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
-                 </span>
+                <span style="min-width: 100%; position: relative; display: block;">
+                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)Model.OwnerList, "Id", "Name"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                </span>
             }
             else
             {
-            @Html.TextBox("txtOwner", owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
+                @Html.TextBox("txtOwner", owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
             }
-            
+
             @if (!isOtherLineitem)
             {
                 <p>@Html.Raw("Line Item Cost")</p>
@@ -251,7 +251,7 @@
             }
         </div>
     </div>
-    
+
     <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
         <li class="pull-left">
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
@@ -259,7 +259,7 @@
     </ul>
 
     <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left">
-        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanLineItemId, Enums.EntityType.Lineitem.ToString().ToLower(),null, 0, Enums.InspectPopupMode.Edit.ToString())
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanLineItemId, Enums.EntityType.Lineitem.ToString().ToLower(), null, 0, Enums.InspectPopupMode.Edit.ToString())
     </div>
 
 
@@ -284,15 +284,15 @@
 }
 <script type="text/javascript">
     var TreeViewDdl;
-    var ListOfItmeCheck= {
+    var ListOfItmeCheck = {
         Ids: [],
-        values:[]
+        values: []
     };
 
-    var Weights= {
+    var Weights = {
         ChkId: [],
         txtId: [],
-        values:[]
+        values: []
     };
     var totalWeightage = 0;
     var ValueChanged = false;
@@ -304,8 +304,8 @@
             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
         }
     }
-   
-   
+
+
     //var DropdownTop = 0;
     //$(".pop-body-wraper").scroll(function () {
 
@@ -317,77 +317,73 @@
     //    }
     //    DropdownTop = DropdownToPos;
     //});
-    function LoadBudgetDropdown()
-    {
+    function LoadBudgetDropdown() {
         var GridData;
         TreeViewDdl = new dhtmlXGridObject('treeviewddl');
         $.ajax({
             dataType: 'json',
             url: '@Url.Content("~/Inspect/LoadBudgetDropdown/")',
             data: {
-                PlanLineItemID : '@Model.PlanLineItemId'
+                PlanLineItemID: '@Model.PlanLineItemId'
             },
-            async:false,
+            async: false,
             success: function (data) {
-                GridData=data.data;
+                GridData = data.data;
                 var imgpath = '@Url.Content("~/codebase/imgs/")';
                 TreeViewDdl.setImagePath(imgpath);
                 TreeViewDdl.attachHeader("#text_filter,"); //Added by Rahul Shah to Apply search on budget filter
                 TreeViewDdl.setFiltrationLevel(-2);  //Modified BY Komal for #2098 not able to filter the root nodes
                 TreeViewDdl.setHeader("Item Name,Weight%");
-                TreeViewDdl.enableAutoHeight(true,400,true);
+                TreeViewDdl.enableAutoHeight(true, 400, true);
                 TreeViewDdl.enableAutoWidth(true);
                 TreeViewDdl.enableTreeCellEdit(false)
                 TreeViewDdl.setImageSize(1, 1);
                 TreeViewDdl.setColTypes("tree,ro");
-                TreeViewDdl.setInitWidths("200,100");                
+                TreeViewDdl.setInitWidths("200,100");
                 TreeViewDdl.init();
-              
-             //  TreeViewDdl.insertColumn(1, '', 'ro');
+                TreeViewDdl.startFastOperations();
+                //  TreeViewDdl.insertColumn(1, '', 'ro');
                 //TreeViewDdl.setSkin("");
-                TreeViewDdl.parse(GridData, "json");                
-                TreeViewDdl.attachEvent("onOpenEnd", function (id,state) {                   
+                TreeViewDdl.parse(GridData, "json");
+                TreeViewDdl.attachEvent("onOpenEnd", function (id, state) {
                     TreeViewDdl.adjustColumnSize(0);
                     var SubItems = {
-                        values:[]
+                        values: []
                     };
 
                     var items = TreeViewDdl.getSubItems(id).split(',');
-                    SubItems.values = items ;
-                    for(i= 0; i< SubItems.values.length-1;i++)
-                    {
-                        var cell = TreeViewDdl.cells(SubItems.values[i],0);
+                    SubItems.values = items;
+                    for (i = 0; i < SubItems.values.length - 1; i++) {
+                        var cell = TreeViewDdl.cells(SubItems.values[i], 0);
                         var hascheckbox = cell.getInput();
                         //alert(hascheckbox);
-                        if(hascheckbox != undefined)
-                        {
+                        if (hascheckbox != undefined) {
 
 
-                            TreeViewDdl.forEachCell(SubItems.values[i],function(cellobj,ind){
-                                TreeViewDdl.setCellTextStyle(SubItems.values[i],ind,"border:none;");
+                            TreeViewDdl.forEachCell(SubItems.values[i], function (cellobj, ind) {
+                                TreeViewDdl.setCellTextStyle(SubItems.values[i], ind, "border:none;");
                             });
                         }
                     }
 
 
-                    for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
-                    {
-                     
-                        $('#'+Weights.txtId[i]).val(Weights.values[i]);
+                    for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
+
+                        $('#' + Weights.txtId[i]).val(Weights.values[i]);
                         var optionId = ListOfItmeCheck.Ids[i];
                         if (totalWeightage != 100) {
-                            $('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).addClass('error');
+                            $('#' + 'wt_' + ListOfItmeCheck.Ids[i]).addClass('error');
                         }
                         else {
-                            if ($('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).hasClass('error')) {
-                                $('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).removeClass('error')
+                            if ($('#' + 'wt_' + ListOfItmeCheck.Ids[i]).hasClass('error')) {
+                                $('#' + 'wt_' + ListOfItmeCheck.Ids[i]).removeClass('error')
                             }
                         }
                     }
 
                 });
-                
-                TreeViewDdl.attachEvent("onFilterEnd", FilterEnd);                
+
+                TreeViewDdl.attachEvent("onFilterEnd", FilterEnd);
             }
         });
 
@@ -481,13 +477,12 @@
         TreeViewDdl.collapseAll();
 
         OpenSelectedValues();
-       
+        TreeViewDdl.stopFastOperations();
 
     }
-    
+
     //Modified BY Komal for #2098 not able to check checkboxes after filter
-    function OpenSelectedValues()
-    {
+    function OpenSelectedValues() {
         for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
             var optionId = ListOfItmeCheck.Ids[i];
             var ParentID = TreeViewDdl.getParentId(optionId);
@@ -499,14 +494,13 @@
     //Added by Rahul on 19/04/2016 for PL #2098. to open the node which is filter by user.
     function FilterEnd(indexes, values) {
         var filterValue = $('#treeviewddl').find('.hdrcell').find('input[type=text]').val();
-         if (filterValue != "" && filterValue != undefined) {
+        if (filterValue != "" && filterValue != undefined) {
             TreeViewDdl.expandAll();
         }
-        else
-         {
-             //Modified BY Komal for #2098 not able to check checkboxes after filter
-             TreeViewDdl.collapseAll();
-             OpenSelectedValues();
+        else {
+            //Modified BY Komal for #2098 not able to check checkboxes after filter
+            TreeViewDdl.collapseAll();
+            OpenSelectedValues();
             // End
         }
     }
@@ -584,35 +578,32 @@
         }
     });
 
-    $('#treeviewddl1').find('input[alt_id=txtweight]').live("keyup", function (event) {
+    $('#treeviewddl').find('input[alt_id=txtweight]').live("keyup", function (event) {
         ValueChanged = true;
-        totalWeightage=0;
+        totalWeightage = 0;
         var inputText = $(this);
         var Code = inputText.attr('id').toString().split('_')[1].toString();
         var isAllColumnInputBlank = true;
 
-        for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
-        {
+        for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
             var optionId = ListOfItmeCheck.Ids[i];
             isAllColumnInputBlank = false;
-            var index=Weights.ChkId.indexOf(Code);
-            if(index>=0)
-            {
-                Weights.values[index]= parseFloat(inputText.val());
+            var index = Weights.ChkId.indexOf(Code);
+            if (index >= 0) {
+                Weights.values[index] = parseFloat(inputText.val());
             }
 
             totalWeightage += parseFloat(Weights.values[i]);
         }
 
-        for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
-        {
+        for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
             var optionId = ListOfItmeCheck.Ids[i];
             if (totalWeightage != 100 && !isAllColumnInputBlank) {
-                $('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).addClass('error');
+                $('#' + 'wt_' + ListOfItmeCheck.Ids[i]).addClass('error');
             }
             else {
-                if ($('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).hasClass('error')) {
-                    $('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).removeClass('error')
+                if ($('#' + 'wt_' + ListOfItmeCheck.Ids[i]).hasClass('error')) {
+                    $('#' + 'wt_' + ListOfItmeCheck.Ids[i]).removeClass('error')
                 }
             }
         }
@@ -621,38 +612,37 @@
 
     function DivideEqualInputValueForMapping() {
         ValueChanged = true;
-        Weights= {
+        Weights = {
             ChkId: [],
             txtId: [],
-            values:[]
+            values: []
         };
-        totalWeightage=0;
+        totalWeightage = 0;
         var checkedCheckbox = ListOfItmeCheck.Ids.length;
         var inputValues = parseInt(100 / checkedCheckbox);
         var residual = parseInt(100 % checkedCheckbox);
         var checkedResidualDiff = checkedCheckbox - residual;
         var res_counter = 0;
-        for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
-        {
+        for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
             res_counter += 1;
             var index = ListOfItmeCheck.Ids.indexOf(ListOfItmeCheck.Ids[i]);
             if (index >= 0) {
                 Weights.ChkId.push(ListOfItmeCheck.Ids[i]);
-                Weights.txtId.push('wt_'+ ListOfItmeCheck.Ids[i]);
+                Weights.txtId.push('wt_' + ListOfItmeCheck.Ids[i]);
                 if (res_counter <= checkedResidualDiff) {
-                    Weights.values[i]=(inputValues.toString());
-                    $("#"+Weights.txtId[i]).val((inputValues.toString()));
-                    $("#"+Weights.txtId[i]).removeClass('error');
-                }else{
-                    Weights.values[i]=((inputValues + 1).toString());
-                    $("#"+Weights.txtId[i]).val(((inputValues + 1).toString()));
-                    $("#"+Weights.txtId[i]).removeClass('error');
+                    Weights.values[i] = (inputValues.toString());
+                    $("#" + Weights.txtId[i]).val((inputValues.toString()));
+                    $("#" + Weights.txtId[i]).removeClass('error');
+                } else {
+                    Weights.values[i] = ((inputValues + 1).toString());
+                    $("#" + Weights.txtId[i]).val(((inputValues + 1).toString()));
+                    $("#" + Weights.txtId[i]).removeClass('error');
                 }
             }
-            else{
-                Weights.ChkId.splice( index, 1 );
-                Weights.txtId.splice( index, 1 );
-                Weights.values.splice( index, 1 );
+            else {
+                Weights.ChkId.splice(index, 1);
+                Weights.txtId.splice(index, 1);
+                Weights.values.splice(index, 1);
             }
             totalWeightage += parseFloat(Weights.values[i]);
         };
@@ -665,8 +655,8 @@
 
     $(document).ready(function () {
         LoadBudgetDropdown();
-        $(document).click(function(){
-            $("#treeviewddl").css("display","none");
+        $(document).click(function () {
+            $("#treeviewddl").css("display", "none");
         });
         $('#dropdown_new_btn_FieldMapping').on('click', function (e) {
             e.stopPropagation();
@@ -711,7 +701,7 @@
         //End
 
         var DropdownTop = 0;
-        $( ".pop-body-wraper" ).scroll(function() {
+        $(".pop-body-wraper").scroll(function () {
             //$('#dropdown_new_btn_FieldMapping').click(function () {
             //    alert('1');
             //    $('#treeviewddl').addClass('fieldmapping-dropdown');
@@ -738,7 +728,7 @@
                 var windowHeight = $('.pop-body-wraper').height();
                 // if the relative offset is greater than half the window height,
                 // reverse the dropdown.
-                if (relativeOffset > windowHeight / 2 ||(relativeOffset + 100) > windowHeight / 2) {
+                if (relativeOffset > windowHeight / 2 || (relativeOffset + 100) > windowHeight / 2) {
                     //alert('5');
                     dropdown_div.addClass("dropup");
                 }
@@ -748,7 +738,7 @@
                 }
             });
             //===== For Design Purpouse ======
-            //if(dropdowntop >= (windownheight - 200)) { 
+            //if(dropdowntop >= (windownheight - 200)) {
             //    $('.dropdown-wrapper').removeClass('dropup');
             //}
             //elseif (dropdowntop >= (windownheight - 300)) {
@@ -762,29 +752,27 @@
             //} else if (dropdowntop >= (windownheight - 300)) {
             //    alert('test2');
             //    $('.dropdown-wrapper').addClass('dropup')
-            //}             
+            //}
         });
 
         //Added BY Komal Rawal for #1617
         $('#dropdown_new_btn_FieldMapping').click(function () {
 
-            if($(this).next().css("display") == "none")
-            {
+            if ($(this).next().css("display") == "none") {
                 //$(this).next().css("width","auto");
                 //  $(this).next().addClass('dropdownAddborder');
                 var dropdown_field_top1 = $('#dropdown_new_btn_FieldMapping').offset().top;
                 var windownheight = $(window).height();
-                 $('#treeviewddl').addClass('fieldmapping-dropdown');
-            
-                $(this).next().css("display","block");
+                $('#treeviewddl').addClass('fieldmapping-dropdown');
+
+                $(this).next().css("display", "block");
                 //LoadBudgetDropdown();
             }
-            else
-            {
+            else {
                 //$(this).next().css("width","0px");
-                $(this).next().css("display","none");
+                $(this).next().css("display", "none");
             }
-        
+
         });
 
         $('#LineItemTypeId').next().css('width', '95%');
@@ -797,8 +785,8 @@
             $("#lblType").css("display", "none");
             $("#ddlTypeArea").css("display", "none");
             //$('#txtLineItemCost').attr("readonly", "true");
-        //    $("#lblLineitemTitle").css('display', 'block');
-        //    $("#txtTitle").css('display', 'none');
+            //    $("#lblLineitemTitle").css('display', 'block');
+            //    $("#txtTitle").css('display', 'none');
         }
         //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
         $('.input-setup').addClass('light-blue-background');
@@ -842,7 +830,7 @@
         $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
     });
     function ShowError(value) {
-      
+
         $("#modal-container-186470").scrollTop(0);
         $("#successMessageViewLineItem").slideUp(400);
         $("#spanSuccessMessageViewLineitem").empty();
@@ -862,60 +850,60 @@
         var iserror = false;
         var lineItemTitle = htmlEncode($('#txtTitle').val());
 
-      @*  //#1642 Added By Bhavesh 09-Oct-2015
+        @*  //#1642 Added By Bhavesh 09-Oct-2015
       if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
             var errorMsg = "You can't use 'Other' as title.";
             ShowError(errorMsg);
             return false;
         }*@
-        // //#1642 Added By Bhavesh 09-Oct-2015    
+        // //#1642 Added By Bhavesh 09-Oct-2015
         //if ($('#txtTitle').val().toString().toLowerCase().trim() != 'Common.DefaultLineItemTitle.ToLower()') {
-            $('form').find('input[type=text], select, textarea').each(function () {
-                if ($(this).attr('require') == 'true') {
-                    if ($(this).val() == '') {
-                        $(this).addClass("error");
-                        iserror = true;
-                    }
-                    else {
-                        $(this).removeClass("error");
-                    }
+        $('form').find('input[type=text], select, textarea').each(function () {
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                    iserror = true;
                 }
-            });
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
 
-            //$('form').find('.sbSelector').each(function () {
-            //    if ($(this).parent().prev().attr('require') == 'true') {
-            //        if ($(this).text() == 'Please Select') {
-            //            $(this).addClass("error");
-            //            iserror = true;
-            //        }
-            //        else {
-            //            $(this).removeClass("error");
-            //        }
-            //    }
-            //});
+        //$('form').find('.sbSelector').each(function () {
+        //    if ($(this).parent().prev().attr('require') == 'true') {
+        //        if ($(this).text() == 'Please Select') {
+        //            $(this).addClass("error");
+        //            iserror = true;
+        //        }
+        //        else {
+        //            $(this).removeClass("error");
+        //        }
+        //    }
+        //});
         //// RequireField validation for Owner Dropdown
         //Added By Komal Rawal for #1974
         //Desc: To Enable edit owner feature from Lineitem popup
-            if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
-                var OwnerValue = $('#ddlOwner').val();
-                if (OwnerValue == "") {
-                    $('#btnMultiselect_ddlOwner').addClass("error");
-                }
-                else {
-                    $('#btnMultiselect_ddlOwner').removeClass("error");
-                }
+        if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+            var OwnerValue = $('#ddlOwner').val();
+            if (OwnerValue == "") {
+                $('#btnMultiselect_ddlOwner').addClass("error");
             }
+            else {
+                $('#btnMultiselect_ddlOwner').removeClass("error");
+            }
+        }
         //End
-            if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
-                var LineItemTypeValue = $('#LineItemTypeId').val();
-                if (LineItemTypeValue == "") {
-                    $('#btnMultiselect_LineItemTypeId').addClass("error");
-                }
-                else {
-                    $('#btnMultiselect_LineItemTypeId').removeClass("error");
-                }
+        if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+            var LineItemTypeValue = $('#LineItemTypeId').val();
+            if (LineItemTypeValue == "") {
+                $('#btnMultiselect_LineItemTypeId').addClass("error");
             }
-   //     }
+            else {
+                $('#btnMultiselect_LineItemTypeId').removeClass("error");
+            }
+        }
+        //     }
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
@@ -923,22 +911,19 @@
         }
 
         //Added BY Komal Rawal for #1617
-        
+
         _FieldMappingValues = [];
-        if(ListOfItmeCheck.Ids.length != 0)
-        {
-            for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
-            {
+        if (ListOfItmeCheck.Ids.length != 0) {
+            for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
                 _FieldMappingValues.push({
                     Id: ListOfItmeCheck.Ids[i],
                     Name: ListOfItmeCheck.values[i],
-                    Weightage: Weights.values[i] != '' ?  Weights.values[i] : '100',
+                    Weightage: Weights.values[i] != '' ? Weights.values[i] : '100',
                 });
                 //   var IsWeightError = $('#'+ Weights.txtId[i]).hasClass('error');
             }
 
-            if(totalWeightage != 100)
-            {
+            if (totalWeightage != 100) {
                 ShowError('@Common.objCached.ValidateAttributeWeightSum'.replace('{0}', "Budget Account"));
                 return false;
             }
@@ -975,7 +960,7 @@
             type: 'POST',
             async: false,
             url: '@Url.Content("~/Inspect/SaveLineitem")',
-            data: $("form").serialize() + '&title='+escape(lineItemTitle)+ '&FieldMappingValues=' + escape(_FieldMappingValues) + '&customFieldInputs=' + escape(_customFieldValues) + '&tacticId=@Model.PlanTacticId'+'&UserId='+uId,
+            data: $("form").serialize() + '&title=' + escape(lineItemTitle) + '&FieldMappingValues=' + escape(_FieldMappingValues) + '&customFieldInputs=' + escape(_customFieldValues) + '&tacticId=@Model.PlanTacticId' + '&UserId=' + uId,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
@@ -1003,7 +988,7 @@
                         $("#hdnPlanLineItemID").val(planLineItemId);
                         $('#lblLineitemTitle').text(lineItemTitle);
                         // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                       @* if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
+                        @* if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
                             var ChangedTab = "Setup";
                             if (tabtext != "") {
                                 ChangedTab = tabtext;
@@ -1015,25 +1000,25 @@
                             loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                             //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);
                         }*@
-                       // else{
-                            //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                        // else{
+                        //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
 
-                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
-                                $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
-                                $("#hdnBudgetingIsSave").val("true");
-                            }
-                            else {
-                                //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
-                            }
-                            returnparameter = true;
+                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                            $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
+                            $("#hdnBudgetingIsSave").val("true");
+                        }
+                        else {
+                            //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                        }
+                        returnparameter = true;
                         //}
                     }
                     else {
-                       
+
                         ShowError(data.msg);
                         //if(data.strmsg != "")
                         //{
-                          
+
                         //    ShowError(data.strmsg);
                         //}
                         returnparameter = false;
@@ -1044,7 +1029,7 @@
         //   });
         return returnparameter;
     }
-    
+
     $(".table_drpdwn").each(function () {
         var chekcedCount = $(this).find('input:checked').length;
         if (chekcedCount > 1) {

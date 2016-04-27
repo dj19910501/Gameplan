@@ -179,15 +179,15 @@ namespace RevenuePlanner.Helpers
                 int quarterCounter = 1;
                 // Change by Nishant Sheth
                 // Desc ::#1765- to create month/quarter view as per year diffrence
-                  bool nextyearflag=false;
-                  int y = 0;
+                bool nextyearflag = false;
+                int y = 0;
                 int Quarteryear = StartYear;
                 for (int i = 0; i < (4 * (YearDiffrence + 1)); i++)
                 {
                     if (i % 4 == 0 && i != 0)
                     {
                         Quarteryear += 1;
-                        nextyearflag=true;
+                        nextyearflag = true;
                     }
                     if (nextyearflag)
                     {
@@ -197,7 +197,7 @@ namespace RevenuePlanner.Helpers
                     else
                     {
                         sb += "<div class=\"budget-month\"><span class=\"month\">" + Convert.ToString(QuarterPrefix + (i + 1)) + "-" + Quarteryear + "</span><span class=\"light-blue-background\"><input id=\"Y" + quarterCounter + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\" /></span></div>";
-                   
+
                     }
 
                     quarterCounter = quarterCounter + 3;
@@ -4293,11 +4293,11 @@ namespace RevenuePlanner.Helpers
         /// <param name="id">Plan Tactic Id or Plan Campaign Id or Plan Program Id</param>
         /// <param name="section">Parameter contains value from enum EntityType like Campaign or Program or Tactic.</param>
         /// <returns>If Plan Tactic or Plan Campaign or Plan Program contains custom fields than returns html string else empty string</returns>
-        public static MvcHtmlString GenerateCustomFieldsForInspectPopup(int id, string section,string Status, int fieldCounter = 0, string mode = "ReadOnly")
+        public static MvcHtmlString GenerateCustomFieldsForInspectPopup(int id, string section, string Status, int fieldCounter = 0, string mode = "ReadOnly")
         {
             //list of custom fields for particular campaign or Program or Tactic
             //Modified By Komal Rawal for #1292 dont apply isdeleted flag for tactics that are completed.
-            List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section,Status);
+            List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section, Status);
             StringBuilder sb = new StringBuilder(string.Empty);
 
 
@@ -4325,7 +4325,7 @@ namespace RevenuePlanner.Helpers
                     //var programId = pcpt.PlanProgramId;
                     //var CampignId = db.Plan_Campaign_Program.Where(pid => pid.PlanProgramId == programId).Select(pid => pid.PlanCampaignId).FirstOrDefault();
                     PlanID = pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId;
-                   
+
                 }
 
                 if (section == Enums.EntityType.Program.ToString().ToLower() && id != 0)
@@ -4356,11 +4356,11 @@ namespace RevenuePlanner.Helpers
                 {
                     DependencyDate = db.Plans.Where(pid => pid.PlanId.Equals(PlanID)).Select(pid => pid.DependencyDate).FirstOrDefault();
 
-                    if(DependencyDate != null)
+                    if (DependencyDate != null)
                     {
                         DependencyDate = DependencyDate.Value.Date;
                     }
-                   
+
                 }
 
                 if (EntityCreatedDate != null)
@@ -4520,7 +4520,7 @@ namespace RevenuePlanner.Helpers
                                 singlehover = "";
                                 trhover = "";
                                 footerclose = "";
-                                if ((item.value == null) || (item.value.Count <=1 && itemvaluelist.Count <= 1))//Modified BY komal rawal for #1962 design issue
+                                if ((item.value == null) || (item.value.Count <= 1 && itemvaluelist.Count <= 1))//Modified BY komal rawal for #1962 design issue
                                 {
                                     displayCheckbox = "style=\"display:none;\"";
                                     selectionMode = "Single";
@@ -4556,7 +4556,7 @@ namespace RevenuePlanner.Helpers
                                     #endregion
 
                                     item.option.Insert(0, objSelectOption);
-                                   
+
                                     foreach (var objOption in item.option)
                                     {
 
@@ -4596,10 +4596,10 @@ namespace RevenuePlanner.Helpers
                                         {
                                             isEditable = lstEditableRestrictions.Where(customRestriction => customRestriction.CustomFieldId == item.customFieldId && customRestriction.CustomFieldOptionId == objOption.customFieldOptionId).Any();
                                         }
-                                      
+
                                         if (isEditable) //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                                         {
-                                           
+
                                             enableCheck = string.Empty;
                                             inputcolorcss = "class=\"multiselect-input-text-color-grey\"";
                                             if ((item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString())) || (item.option.Count == 1 && item.isRequired))
@@ -4627,22 +4627,22 @@ namespace RevenuePlanner.Helpers
                                                 }
                                                 else
                                                 {
-                                                   if(IsDisplayBlock)
+                                                    if (IsDisplayBlock)
                                                     {
-                                                    name += objOption.value + ", ";
-                                                    enableCheck = "checked=\"checked\"";
-                                                    inputcolorcss = string.Empty;
+                                                        name += objOption.value + ", ";
+                                                        enableCheck = "checked=\"checked\"";
+                                                        inputcolorcss = string.Empty;
                                                     }
 
-                                            
+
 
                                                 }
                                             }
                                             NameList = new List<string>();
                                             if (name != "")
-                                                {
-                                                 NameList = name.Remove(name.Length - 2, 2).Split(',').ToList();
-                                                }
+                                            {
+                                                NameList = name.Remove(name.Length - 2, 2).Split(',').ToList();
+                                            }
 
                                             if (NameList.Count <= 1 && selectionMode != "Single" && item.value.Count <= 1) //Modified BY komal rawal for #1962 design issue
                                             {
@@ -4654,7 +4654,7 @@ namespace RevenuePlanner.Helpers
                                                 trhover = "trdropdownhover";
                                                 footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:none;\"><span class=\"swap-text\">X close</span></a>";
                                             }
-                                          
+
                                             //Modified By Komal Rawal for #1864
                                             var ParentOption = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? "0" : string.Join(",", objOption.ParentOptionId));
                                             sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + ParentOption + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
@@ -4665,7 +4665,7 @@ namespace RevenuePlanner.Helpers
                                     {
                                         footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:block;\"><span class=\"swap-text\">X close</span></a>";
                                     }
-                                    
+
                                     sb.Append("</tbody><tfoot class=\"dropdown-table-footer\"><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"" + selectionMode + "\"><span class=\"swap-text\">" + footerText + "</span>" + footerclose + "</a></td></tr></tfoot></table></div></div></div>");
                                     if (name.Length > 0)
                                     {
@@ -6596,7 +6596,7 @@ namespace RevenuePlanner.Helpers
         {
 
             MRPEntities db = new MRPEntities();
-            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
+            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted==false).Select(a => a.Id).ToList();
             List<Budget_Detail> BudgetDetails = db.Budget_Detail.Where(a => BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
             List<int> SelectedOptionIDs = db.LineItem_Budget.Where(list => list.PlanLineItemId == Id).Select(list => list.BudgetDetailId).ToList();
             List<string> SelectedOptionValues = BudgetDetails.Where(Detaillist => SelectedOptionIDs.Contains(Detaillist.Id)).Select(Detaillist => Detaillist.Name).ToList();

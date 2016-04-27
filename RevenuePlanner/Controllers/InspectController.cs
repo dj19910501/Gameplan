@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.IO;
 using System.Web.Script.Serialization;
+using System.Threading.Tasks;
 
 
 
@@ -13202,35 +13203,49 @@ namespace RevenuePlanner.Controllers
 
         #region TreeGridView for dropdown
         //Added By Komal Rawal for #1617
-        public JsonResult LoadBudgetDropdown(int BudgetId = 0, int PlanLineItemID = 0)
+        public async Task<JsonResult> LoadBudgetDropdown(int BudgetId = 0, int PlanLineItemID = 0)
         {
             MRPEntities db = new MRPEntities();
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
             var MinParentid = 0;
 
             var dataTableMain = new DataTable();
-            dataTableMain.Columns.Add("Id", typeof(Int32));
-            dataTableMain.Columns.Add("ParentId", typeof(Int32));
-            dataTableMain.Columns.Add("Name", typeof(String));
-            dataTableMain.Columns.Add("Weightage", typeof(String));
 
-            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
-            List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId) && BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
-            List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
+            #region Old Code
+            // Commented By Nishant Sheth
+            // Desc ::  For Line item performance issue
+            //dataTableMain.Columns.Add("Id", typeof(Int32));
+            //dataTableMain.Columns.Add("ParentId", typeof(Int32));
+            //dataTableMain.Columns.Add("Name", typeof(String));
+            //dataTableMain.Columns.Add("Weightage", typeof(String));
+
+            //List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
+            //List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId) && BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
+            //List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
             //modified by Rahul shah on 22/04/2016 for code refactoring.
             //List<LineItem_Budget> SelectedLineItemBudgetNew = db.LineItem_Budget.Select(a => a).ToList();
-            List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
+            //List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
             //List<int> LineItemids = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
 
-            var Query = BudgetDetailList.Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
-            BudgetAmount objBudgetAmount;
-            foreach (var item in Query)
-            {
+            //var Query = BudgetDetailList.Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
+            //BudgetAmount objBudgetAmount;
+            
+            //foreach (var item in Query)
+            //{
 
-                objBudgetAmount = new BudgetAmount();
-                //List<int> PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == item.Id).Select(a => a.PlanLineItemId).ToList();
-                dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name });
-            }
+            //    objBudgetAmount = new BudgetAmount();
+            //    //List<int> PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == item.Id).Select(a => a.PlanLineItemId).ToList();
+            //    dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name });
+            //}
+            #endregion
+            
+            // Add By Nishant Sheth
+            // Desc :: For performance issues #2128
+            DataSet dsBudgetItems = new DataSet();
+            dsBudgetItems = objSp.GetBudgetListAndLineItemBudgetList(BudgetId);
+            dataTableMain = dsBudgetItems.Tables[0];
+            List<Custom_LineItem_Budget> LineItemidBudgetList = Common.GetSpLineItemBudgetList(dsBudgetItems.Tables[1]);
+            // End By Nishant Sheth            
 
             var items = GetTopLevelRows(dataTableMain, MinParentid)
                         .Select(row => CreateItem_New(dataTableMain, row, PlanLineItemID, LineItemidBudgetList))
@@ -13290,7 +13305,7 @@ namespace RevenuePlanner.Controllers
             return new DhtmlxGridRowDataModel { id = Convert.ToString(id), data = datalist, rows = children };
 
         }
-        DhtmlxGridRowDataModel CreateItem_New(DataTable dataTable, DataRow row, int PlanLineItemID, List<LineItem_Budget> SelectedLineItemBudget)
+        DhtmlxGridRowDataModel CreateItem_New(DataTable dataTable, DataRow row, int PlanLineItemID, List<Custom_LineItem_Budget> SelectedLineItemBudget)
         {
             var enableCheck = string.Empty;
             var value = string.Empty;
@@ -13298,7 +13313,7 @@ namespace RevenuePlanner.Controllers
             var name = row.Field<String>("Name");
             var weightage = row.Field<String>("Weightage");
             //Modified by Maitri Gandhi on 22/3/2016 for #2076
-            List<LineItem_Budget> _SelectedLineItemBudget = new List<LineItem_Budget>();
+            List<Custom_LineItem_Budget> _SelectedLineItemBudget = new List<Custom_LineItem_Budget>();
             _SelectedLineItemBudget = SelectedLineItemBudget.Where(a => a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a).ToList();
             int SelectedID = _SelectedLineItemBudget.Select(a => a.BudgetDetailId).FirstOrDefault();
             var SelectedWeightage = _SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
