@@ -94,28 +94,28 @@ namespace RevenuePlanner.Controllers
             /* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
             //// Suggest Other Applications Users list.
             if (lstOtherUser != null && lstOtherUser.Count > 0)
-                {
-                    lstOtherUser.ForEach(a => a.DisplayName = a.FirstName + a.LastName);
-                    ViewBag.OtherUsers = lstOtherUser.OrderBy(a => a.DisplayName , new AlphaNumericComparer()).ToList();
+            {
+                lstOtherUser.ForEach(a => a.DisplayName = a.FirstName + a.LastName);
+                ViewBag.OtherUsers = lstOtherUser.OrderBy(a => a.DisplayName , new AlphaNumericComparer()).ToList();
 
-                    try
-                    {
+                try
+                {
                     //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                     ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId).OrderBy(role=>role.Title , new AlphaNumericComparer());
-                    }
-                    catch (Exception e)
-                    {
-                        ErrorSignal.FromCurrentContext().Raise(e);
+                }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
 
-                        //To handle unavailability of BDSService
-                        if (e is System.ServiceModel.EndpointNotFoundException)
-                        {
-                            return RedirectToAction("ServiceUnavailable", "Login");
-                        }
-                        else
-                        {
-                            TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
-                        }
+                    //To handle unavailability of BDSService
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        return RedirectToAction("ServiceUnavailable", "Login");
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                    }
                 }
             }
             else
@@ -157,54 +157,54 @@ namespace RevenuePlanner.Controllers
                 if (ModelState.IsValid && Sessions.User.UserId != null)
                 {
                     //// Compare NewPassword and ConfirmPassword fields.
-                        if (form.NewPassword != form.ConfirmNewPassword)
-                        {
-                            TempData["ErrorMessage"] = Common.objCached.UserPasswordDoNotMatch;
-                            return View(form);
-                        }
+                    if (form.NewPassword != form.ConfirmNewPassword)
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.UserPasswordDoNotMatch;
+                        return View(form);
+                    }
 
-                        /* ------------------ Single hash password ----------------------*/
-                        string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.CurrentPassword.ToString().Trim());
-                        string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
-                        /* ---------------------------------------------------------------*/
-                        //Added By Maitri Gandhi for #2105 on 11/4/2016
-                        string returnMessage = "Success";
-                       
-                        //returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
-                        //Modified by Maitri Gandhi on 19/4/2016
-                        returnMessage = objBDSServiceClient._ChangePassword(Sessions.User.UserId, SingleHash_NewPassword, SingleHash_CurrentPassword);
-                        if (returnMessage == "CurrentUserPasswordNotCorrect")
-                        {
-                            TempData["ErrorMessage"] = Common.objCached.CurrentUserPasswordNotCorrect;
-                        }
-                        else if (returnMessage != "Success")
-                        {
-                            TempData["ErrorMessage"] = returnMessage;
-                            return View(form);
-                        }
-                        else if(returnMessage == "Success")
-                        {                            
-                                ChangePasswordMail();
-                                //Redirect users logging in for the first time to the change password module
-                                if (Sessions.User.LastLoginDate == null && Sessions.RedirectToChangePassword)
-                                {
-                                    Sessions.RedirectToChangePassword = false;
-                                    //Update last login date for user
-                                    objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
+                    /* ------------------ Single hash password ----------------------*/
+                    string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.CurrentPassword.ToString().Trim());
+                    string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
+                    /* ---------------------------------------------------------------*/
+                    //Added By Maitri Gandhi for #2105 on 11/4/2016
+                    string returnMessage = "Success";
 
-                                    //Commented By Komal Rawal for #1457
-                                    //if (Sessions.User.SecurityQuestionId == null)
-                                    //{
-                                    //    Sessions.RedirectToSetSecurityQuestion = true;
-                                    //    return RedirectToAction("SetSecurityQuestion", "Login");
-                                    //}
+                    //returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
+                    //Modified by Maitri Gandhi on 19/4/2016
+                    returnMessage = objBDSServiceClient._ChangePassword(Sessions.User.UserId, SingleHash_NewPassword, SingleHash_CurrentPassword);
+                    if (returnMessage == "CurrentUserPasswordNotCorrect")
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.CurrentUserPasswordNotCorrect;
+                    }
+                    else if (returnMessage != "Success")
+                    {
+                        TempData["ErrorMessage"] = returnMessage;
+                        return View(form);
+                    }
+                    else if(returnMessage == "Success")
+                    {
+                        ChangePasswordMail();
+                        //Redirect users logging in for the first time to the change password module
+                        if (Sessions.User.LastLoginDate == null && Sessions.RedirectToChangePassword)
+                        {
+                            Sessions.RedirectToChangePassword = false;
+                            //Update last login date for user
+                            objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
 
-                                    return RedirectToAction("Index", "Home");
-                                }
-                               TempData["SuccessMessage"] = Common.objCached.UserPasswordChanged;                           
+                            //Commented By Komal Rawal for #1457
+                            //if (Sessions.User.SecurityQuestionId == null)
+                            //{
+                            //    Sessions.RedirectToSetSecurityQuestion = true;
+                            //    return RedirectToAction("SetSecurityQuestion", "Login");
+                            //}
+
+                            return RedirectToAction("Index", "Home");
                         }
+                        TempData["SuccessMessage"] = Common.objCached.UserPasswordChanged;
                     }
                 }
+            }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
@@ -294,7 +294,7 @@ namespace RevenuePlanner.Controllers
 
         //Commented By Komal Rawal for #1457
         //#region Security Question
-       
+
         ///// <summary>
         ///// Security Question
         ///// </summary>
@@ -312,7 +312,7 @@ namespace RevenuePlanner.Controllers
         //        {
         //            objSecurityQuestionListModel.Answer = Common.Decrypt(Sessions.User.Answer);
         //        }
-              
+
         //        objSecurityQuestionListModel.SecurityQuestionId = Convert.ToInt32(Sessions.User.SecurityQuestionId);
         //        objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
         //    }
@@ -793,7 +793,7 @@ namespace RevenuePlanner.Controllers
                         //// Flag to indicate unavailability of web service.
                         //// Added By: Maninder Singh Wadhva on 11/24/2014.
                         //// Ticket: 942 Exception handeling in Gameplan.
-                        return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);                       
+                        return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -805,7 +805,7 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
-            
+
             // Modified by Viral Kadiya on 11/04/2014 for PL ticket #917
             return PartialView("_UpdateUserDetails", objUserModel); // Client can edit user details from myaccount or team member details.
         }
@@ -830,6 +830,20 @@ namespace RevenuePlanner.Controllers
             // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             ViewBag.isForDelete = "false";
 
+            // Add By Nishant Sheth
+            // Desc :: To resolve the edit data not works Not check passsword expresion due to hash encoding
+            var errors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .Select(x => new { x.Key, x.Value.Errors })
+                .ToArray();
+            foreach (var error in errors)
+            {
+                if (error.Key == "Password" || error.Key == "ConfirmPassword")
+                {
+                    ModelState.Remove(error.Key);
+                }
+            }
+            // End By Nishant Sheth
             try
             {
                 if (ModelState.IsValid)
@@ -923,14 +937,14 @@ namespace RevenuePlanner.Controllers
                             objUser = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Sessions.ApplicationId);
                             if (objUser != null)
                                 Sessions.User = objUser;
-                            }
+                        }
 
                         //// Modified By Maninder Singh Wadhva to Address PL#203
                         System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_photo");
                         System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_name");
                         System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_bu");//uday #416
                         System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_jtitle");//uday #416
-                        
+
                         //Start Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
                         if (form.IsDeleted != null)
                         {
@@ -1075,24 +1089,24 @@ namespace RevenuePlanner.Controllers
 
                 //// Save User Notifications
                 if (!string.IsNullOrEmpty(notifications))
-                        {
-                            string[] arrNotify = notifications.Split(',');
-                            foreach (var notification in arrNotify)
-                            {
-                                int notificationId = Convert.ToInt32(notification);
+                {
+                    string[] arrNotify = notifications.Split(',');
+                    foreach (var notification in arrNotify)
+                    {
+                        int notificationId = Convert.ToInt32(notification);
 
                         //// Add User Notification data to table User_Notification.
-                                User_Notification objUser_Notification = new User_Notification();
-                                objUser_Notification.UserId = Sessions.User.UserId;
-                                objUser_Notification.NotificationId = notificationId;
-                                objUser_Notification.CreatedBy = Sessions.User.UserId;
-                                objUser_Notification.CreatedDate = DateTime.Now;
-                                db.Entry(objUser_Notification).State = EntityState.Added;
-                                db.User_Notification.Add(objUser_Notification);
-                                db.SaveChanges();
-                            }
-                        }
+                        User_Notification objUser_Notification = new User_Notification();
+                        objUser_Notification.UserId = Sessions.User.UserId;
+                        objUser_Notification.NotificationId = notificationId;
+                        objUser_Notification.CreatedBy = Sessions.User.UserId;
+                        objUser_Notification.CreatedDate = DateTime.Now;
+                        db.Entry(objUser_Notification).State = EntityState.Added;
+                        db.User_Notification.Add(objUser_Notification);
+                        db.SaveChanges();
                     }
+                }
+            }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
@@ -1220,19 +1234,19 @@ namespace RevenuePlanner.Controllers
                 if (imagebyte != null)
                     return File(imagebyte, "image/jpg");
             }
-                if (Session["ComponentContentStream"] != null)
-                {
-                    byte[] b = (byte[])Session["ComponentContentStream"];
-                    int length = (int)Session["ComponentContentLength"];
-                    string type = (string)Session["ComponentContentType"];
-                    Response.Buffer = true;
-                    Response.Charset = "";
-                    Response.Cache.SetCacheability(HttpCacheability.NoCache);
-                    Response.ContentType = type;
-                    Response.BinaryWrite(b);
-                    Response.Flush();
-                    Response.End();
-                    return Content("");
+            if (Session["ComponentContentStream"] != null)
+            {
+                byte[] b = (byte[])Session["ComponentContentStream"];
+                int length = (int)Session["ComponentContentLength"];
+                string type = (string)Session["ComponentContentType"];
+                Response.Buffer = true;
+                Response.Charset = "";
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.ContentType = type;
+                Response.BinaryWrite(b);
+                Response.Flush();
+                Response.End();
+                return Content("");
             }
             return View();
         }
