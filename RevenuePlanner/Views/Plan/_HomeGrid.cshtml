@@ -2301,6 +2301,20 @@
                         }
                         //added by Rahul Shah for PL #2058 on 15/03/2016.
                         if (UpdateColumn == "Type") {
+
+                            var PlanIds = HomeGrid.cells(planid,3).getValue()
+                            $("#ulTacticType li input[type=checkbox]").each(function () {
+                                var chkid = $(this).attr("id");
+                                if ($(this).attr('checked') != 'checked') {
+                                    filters.tempTacticTypeIds.push(chkid.replace("CbTT", ""));
+                                }
+
+                            });
+
+                            GetTacticTypelist(PlanIds, false);
+                            SaveLastSetofViews();
+
+
                             var tacCost = 0;
                             if(states.TacticCost != null && states.TacticCost != 'undefined'){
                                 tacCost =states.TacticCost;
@@ -2362,17 +2376,7 @@
                             // End - Added by Viral related to PL ticket #2112.
 
 
-                            var PlanIds = HomeGrid.cells(planid,3).getValue()
-                            $("#ulTacticType li input[type=checkbox]").each(function () {
-                                var chkid = $(this).attr("id");
-                                if ($(this).attr('checked') != 'checked') {
-                                    filters.tempTacticTypeIds.push(chkid.replace("CbTT", ""));
-                                }
-
-                            });
-
-                            GetTacticTypelist(PlanIds, false);
-                            SaveLastSetofViews();
+                           
                         }
                     }
                 });

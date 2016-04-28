@@ -636,6 +636,8 @@
     <Content Include="Content\fonts\fontawesome-webfont.eot" />
     <Content Include="Content\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\fonts\FontAwesome.otf" />
     <Content Include="RevenuePlanner.wpp.targets" />
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.min.js.map" />
