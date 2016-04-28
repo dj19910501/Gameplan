@@ -192,6 +192,7 @@ namespace RevenuePlanner.Controllers
                         IsEmailInvalid = true;
                         ModelState.AddModelError("", Common.objCached.InvalidEmailLogin);
                         obj = null;
+                        return View(form); // Added For internal issue by Maitri Gandhi on 28/4/2016
 
                     }
                     else if(obj.IsLocked == true)
@@ -199,6 +200,7 @@ namespace RevenuePlanner.Controllers
                         ModelState.AddModelError("", Common.objCached.LockedUser);
                         TotalAttempts = null;
                         obj = null;
+                        return View(form);// Added For internal issue by Maitri Gandhi on 28/4/2016
                     }
                     else
                     {
@@ -220,6 +222,9 @@ namespace RevenuePlanner.Controllers
                     }
                
                    //End
+                    //Added By Maitri for #2040 Observation
+                    Common.RemoveCookie("gridOpengridBox");
+                    Common.RemoveCookie("gridOpen");
 
                     //Start  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
                     System.Web.Security.FormsAuthentication.SetAuthCookie(obj.UserId.ToString(), false);
@@ -334,10 +339,7 @@ namespace RevenuePlanner.Controllers
 
                     //Update last login date for user
 
-                    objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
-                    //Added By Maitri for #2040 Observation
-                    //Common.RemoveCookie("gridOpen");
-                    //Common.RemoveCookie("gridOpengridBox");
+                    objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);                    
 
                     if ((!string.IsNullOrWhiteSpace(returnUrl)) && IsLocalUrl(returnUrl))
                     {
@@ -678,8 +680,8 @@ namespace RevenuePlanner.Controllers
             objCache.RemoveAllCurrentUserCache();
             Sessions.Clear();
             //Added By Maitri for #2040 Observation
-            //Common.RemoveCookie("gridOpen");
-            //Common.RemoveCookie("gridOpengridBox");
+            Common.RemoveCookie("gridOpengridBox");
+            Common.RemoveCookie("gridOpen");
             //Start Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
             System.Web.Security.FormsAuthentication.SignOut();
             //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented

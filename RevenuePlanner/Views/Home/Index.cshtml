@@ -584,21 +584,21 @@
 
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {            
             //Added by Maitri Gandhi for #2040 on 31/3/2016            
-            //var cookie = document.cookie;
-            //if (cookie.indexOf("gridOpen") > -1) {
-            //    var cookies = cookie.split(';');
-            //    for (var i = 0; i < cookies.length; i++) {
-            //        if (cookies[i].indexOf("gridOpen") > -1) {
-            //            cookies[i] = "gridOpen=plan.1";
-            //        }
-            //    }
-            //    //document.cookie = cookies.join(';');
-            //    document.cookie = "gridOpen=plan.1";
-            //}
-            //else {
-            //    //cookie += "; gridOpen=plan.1";
-            //    document.cookie = "gridOpen=plan.1";
-            //}
+            var cookie = document.cookie;
+            if (cookie.indexOf("gridOpengridbox") > -1) {
+                var cookies = cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    if (cookies[i].indexOf("gridOpengridbox") > -1) {
+                        cookies[i] = "gridOpengridbox=plan.1";
+                    }
+                }
+                //document.cookie = cookies.join(';');
+                document.cookie = "gridOpengridbox=plan.1";
+            }
+            else {
+                //cookie += "; gridOpen=plan.1";
+                document.cookie = "gridOpengridbox=plan.1";
+            }
 
             CurrentPlanId = $(this).attr('value');
             IsSavedPlan = $("#CurrentPlanId").val();
@@ -1983,7 +1983,7 @@
 <div id="divBackground" class="modal-backdrop fade in" style="display: none; z-index: 2502 !important;"></div>
 
 <script type="text/javascript">
-    //var IslineItemDelete = false;   //Added By Maitri for #2040 Observation
+    var IslineItemDelete = false;   //Added By Maitri for #2040 Observation
     var scrollstate = 0;
     var bodyscrollpos = 0;
     var divPartial = "#divPartial";
@@ -2320,21 +2320,21 @@
     function UpdatePlan() {
         //Added by Maitri Gandhi for #2040 on 31/3/2016
         
-        //var cookie = document.cookie;
-        //if (cookie.indexOf("gridOpen") > -1) {
-        //    var cookies = cookie.split(';');
-        //    for (var i = 0; i < cookies.length; i++) {
-        //        if (cookies[i].indexOf("gridOpen") > -1) {
-        //            cookies[i] = "gridOpen=plan.1";
-        //        }
-        //    }
-        //    //document.cookie = cookies.join(';');
-        //    document.cookie = "gridOpen=plan.1";
-        //}
-        //else {
-        //    //cookie += "; gridOpen=plan.1";
-        //    document.cookie = "gridOpen=plan.1";
-        //}
+        var cookie = document.cookie;
+        if (cookie.indexOf("gridOpengridbox") > -1) {
+            var cookies = cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                if (cookies[i].indexOf("gridOpengridbox") > -1) {
+                    cookies[i] = "gridOpengridbox=plan.1";
+                }
+            }
+            //document.cookie = cookies.join(';');
+            document.cookie = "gridOpengridbox=plan.1";
+        }
+        else {
+            //cookie += "; gridOpen=plan.1";
+            document.cookie = "gridOpengridbox=plan.1";
+        }
         IsUpdate = true;
         isRequest = false;
 

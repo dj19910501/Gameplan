@@ -746,6 +746,7 @@
     //var GridDataCsv;
     var GridDataHomeGrid;
     function BindHomeGrid() {
+        
         @*var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid))';*@
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
 
@@ -772,7 +773,7 @@
             // your code here
             LoadAfterParsing();
             // flag=false;
-
+            HomeGrid.loadOpenStates();
             // if(relativeOffsetscroll > 0)
             // {
 
@@ -783,12 +784,12 @@
                 HomeGrid.openItem(HomeGrid.getRowId(state0));//Added by Rahul Shah for PL #1744
             }
             //Added by Rahul Shah on 25/03/2016 for PL #2075
-            //if(!IslineItemDelete){  //Added By Maitri for #2040 Observation
+            if(!IslineItemDelete){  //Added By Maitri for #2040 Observation
             if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {
                 HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
                 HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
             }
-            //}
+            }
 
             //  }
             if ($("#gridbox").find(".rowselected").length >= 1) {
@@ -812,25 +813,26 @@
         HomeGrid.parse(GridDataHomeGrid, "json");       
         //HomeGrid.splitAt(2);
         //Added by Maitri Gandhi for #2040 on 31/3/2016
-        //HomeGrid.collapseAll();
-        //var cookie = document.cookie;
-        //if(cookie.indexOf("gridOpen") > -1){
-        //    var cookies = cookie.split(';');
-        //    for (var i = 0; i < cookies.length; i++) {
-        //        if (cookies[i] == "gridOpen") {
-        //            if (cookies[i].indexOf("|") > -1) {
-        //                cookies[i] = "gridOpen=plan.1";
-        //                document.cookie = "gridOpen=plan.1";   //  document.cookie = cookies.join(';');
-        //            }
-        //        }
-        //    }
-        //}
-        //else{
-        //    //cookie += "; gridOpen=plan.1";
-        //    document.cookie = "gridOpen=plan.1";
-        //}
-
-        //HomeGrid.loadOpenStates();
+        
+        HomeGrid.collapseAll();
+        var cookie = document.cookie;
+        if(cookie.indexOf("gridOpengridbox") > -1){
+            var cookies = cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                if (cookies[i] == "gridOpengridbox") {
+                    if (cookies[i].indexOf("|") > -1) {
+                        cookies[i] = "gridOpengridbox=plan.1";
+                        document.cookie = "gridOpengridbox=plan.1";   //  document.cookie = cookies.join(';');
+                    }
+                }
+            }
+        }
+        else{
+            //cookie += "; gridOpen=plan.1";
+            document.cookie = "gridOpengridbox=plan.1";
+        } 
+        setTimeout(function () {
+            HomeGrid.loadOpenStates();},1000);
 
         // HomeGrid.sortRows(1, 'str', 'asc');
         LoadAfterParsing();
@@ -1210,7 +1212,9 @@
             HomeGrid.detachEvent(editidonOpenEnd);
         }
         editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
-            //HomeGrid.saveOpenStates();  //Added by Maitri Gandhi for #2040 on 31/3/2016
+            
+            setTimeout(function () {
+                HomeGrid.saveOpenStates();},1000);  //Added by Maitri Gandhi for #2040 on 31/3/2016
             //Modified by komal Rawal for #1553
             $(".grid_Search").off("click");
             $(".grid_Search").click(function (e) {

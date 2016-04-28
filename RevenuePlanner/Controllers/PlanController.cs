@@ -10365,6 +10365,11 @@ namespace RevenuePlanner.Controllers
                                                     programrowsobj.rows = tacticrowsobjlist;
                                                 }
                                                 ProgCnt = ProgCnt + 1;
+                                                //Added By Maitri Gandhi for #2040 on 27/4/2016
+                                                if (programrowsobj.rows == null)
+                                                {
+                                                    programrowsobj.open = null;
+                                                }
                                                 programrowsobjlist.Add(programrowsobj);//Add for : To resolve filter issue for display grid
                                             }
                                             //programrowsobjlist.Add(programrowsobj); //Comment for : To resolve filter issue for display grid
@@ -10373,6 +10378,11 @@ namespace RevenuePlanner.Controllers
                                     }
 
                                     CampCnt = CampCnt + 1;
+                                    //Added By Maitri Gandhi for #2040 on 27/4/2016
+                                    if (campaignrowsobj.rows == null)
+                                    {
+                                        campaignrowsobj.open = null;
+                                    }
                                     campaignrowsobjlist.Add(campaignrowsobj);
                                 }
                                 //campaignrowsobjlist.Add(campaignrowsobj); //Comment for : To resolve filter issue for display grid
