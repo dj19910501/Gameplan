@@ -634,7 +634,7 @@ function LoadModelData(modelId, bool) {
  }).on('changeDate', function (ev) {
      $(this).datepicker('hide');
  });;
-     $(".savebtn").click(function (e) {
+    $(".savebtn").click(function (e) {
          if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
              var val = 0;
              var cntFill = 0;
@@ -783,12 +783,12 @@ function LoadModelData(modelId, bool) {
                      $(this).children('a').removeClass("error-form");
                  }
                  //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-                 if ($("#MarketingLeads").val() == '' || $("#MarketingLeads").val() == "0") {
+                 if ($("#MarketingLeads").val() == '' || $("#MarketingLeads").val() == "0" || $("#MarketingLeads").val() == "$0" || $("#MarketingLeads").val() == "$") {
                      $(this).children('a').addClass("error-form");
-                     needAlert = true;
+                     needAlert = true;                     
                  }
                  else {
-                     $(this).children('a').removeClass("error-form");
+                     $(this).children('a').removeClass("error-form");                     
                  }
              }
              else if ($(this).next().attr('datadefault') == "MS") {
@@ -801,7 +801,7 @@ function LoadModelData(modelId, bool) {
                      $(this).children('a').removeClass("error-form");
                  }
                  //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-                 if ($("#MarketingDealSize").val() == '' || $("#MarketingDealSize").val() == "0") {
+                 if ($("#MarketingDealSize").val() == '' || $("#MarketingDealSize").val() == "0" || $("#MarketingLeads").val() == "$0" || $("#MarketingLeads").val() == "$") {
                      $(this).children('a').addClass("error-form");
                      needAlert = true;
                  }
