@@ -81,25 +81,7 @@ namespace RevenuePlanner.Test.MockHelpers
 
             return HttpContext.Current;
         }
-        public static HttpContextBase SetUserAndPermission1()
-        {
-            RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
 
-
-            string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
-            string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
-            Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
-            string singlehash = DataHelper.ComputeSingleHash(password);
-
-
-            //HttpContext.Current = MockHelpers.FakeHttpContext();
-            //HttpContextBase.Current = FakeUrlHelper.FakeHttpContext();
-           // HttpContext.Current.Session["User"] = objBDSServiceClient.ValidateUser(applicationId, userName, singlehash);
-
-            //HttpContext.Current.Session["Permission"] = objBDSServiceClient.GetPermission(applicationId, ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).RoleId);
-
-            return FakeUrlHelper.FakeHttpContext();
-        }
         public static int GetModelId()
         {
             string published = Convert.ToString(Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower();
@@ -224,17 +206,17 @@ namespace RevenuePlanner.Test.MockHelpers
         public static string GetCustomRestrictionInViewEditForm(Guid userId)
         {
             StringBuilder sbCustomRestrictions = new StringBuilder(string.Empty);
-            
+
             using (MRPEntities objDB = new MRPEntities())
             {
                 var lstCustomRestriction = objDB.CustomRestrictions.Where(customRestriction => customRestriction.UserId == userId).Select(customRestriction => customRestriction).ToList();
                 if (lstCustomRestriction.Count > 0)
                 {
                     lstCustomRestriction.ForEach(customRestriction => sbCustomRestrictions.Append(2 + "_" + customRestriction.CustomFieldId + "_" + customRestriction.CustomFieldOptionId + ","));
-                    return sbCustomRestrictions.ToString().TrimEnd(",".ToCharArray());                
+                    return sbCustomRestrictions.ToString().TrimEnd(",".ToCharArray());
                 }
             }
-            
+
             return sbCustomRestrictions.ToString();
         }
 

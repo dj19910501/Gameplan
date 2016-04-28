@@ -42,9 +42,6 @@
     <Reference Include="Microsoft.CSharp">
       <Private>True</Private>
     </Reference>
-    <Reference Include="Moq">
-      <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
-    </Reference>
     <Reference Include="RestSharp">
       <HintPath>..\..\..\CloneDec2014\Gameplan\Integration\DLL\RestSharp.dll</HintPath>
     </Reference>
@@ -99,11 +96,12 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="OrderedTest.orderedtest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
     <None Include="Service References\BDSService\BDSService.wsdl" />
     <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>
