@@ -54,6 +54,8 @@ namespace RevenuePlanner.Models
         public Nullable<bool> IsSyncSalesForce { get; set; }
         public Nullable<bool> IsSyncEloqua { get; set; }
         public Nullable<bool> IsSyncWorkFront { get; set; }
+        public Nullable<bool> IsSyncMarketo { get; set; }
+        public string IntegrationInstanceMarketoID { get; set; }
     
         public virtual ICollection<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
         public virtual ICollection<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }

@@ -178,6 +178,7 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" />
         <AssociationConnector Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceMarketo" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

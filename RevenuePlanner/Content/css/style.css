@@ -7352,6 +7352,7 @@ input.icon-check-blue {
 
 .eloqua-img,
 .salesforce-img,
+.marketo-img,
 .workfront-img {
     height: 60px;
     cursor: pointer;
@@ -7373,6 +7374,10 @@ input.icon-check-blue {
     width: 134px;
 }
 
+.marketo-img{
+     background: url(../images/Marketo-Logo.jpg) no-repeat;
+    width: 134px;
+}
 .integration-review-imglink {
     height: 79px !important;
     text-align: left;

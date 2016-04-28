@@ -22,6 +22,7 @@
     List<RevenuePlanner.Models.CustomFieldReviewTab> topThreeCustomFields = ViewBag.TopThreeCustomFields;
     bool IsSyncSF = (bool)ViewBag.IsSyncSF;             // Get IsSyncSalesforce flag
     bool IsSyncEloqua = (bool)ViewBag.IsSyncEloqua;     // Get IsSyncEloqua flag
+    bool IsSyncMarketo = (bool)ViewBag.isSyncMarketo;     // Get IsSyncMarketo flag
     bool IsSyncWorkFront = (bool)ViewBag.IsSyncWorkFront; //Get IsSyncWorkFront flag - true if the tactic is integrated
     // start: Added by Viral for PL ticket #2108 scenario-1
     int SFDCId = 0,eloquaId=0,workfrontId=0;
@@ -374,6 +375,21 @@
                         </div><!--end workFrontDispaly div-->
                             <!--End PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
                     }
+                    else if (item.Key == Enums.IntegrationType.Marketo.ToString())
+                    {
+                        <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationtype="@item.Key" toggle-id="marketoIntegrationToggle" style="width:98%">
+
+                            <div class="span2 pull-left integration-review-imglink margin-right20">
+                                <a href=@item.Value onclick="window.open(this.href); return false;">
+                                    <div class="link_popup pull-right margin-bottom10"></div>
+                                    <div class="marketo-img margin-top10"></div>
+                                </a>
+                            </div>
+                            <div class="span1 margin-top16">
+                                <input id="marketoIntegrationToggle" type="checkbox">
+                            </div>
+                        </div>
+                    }
                  }
               }
         </div> <!--end integrationSettings div-->
@@ -626,6 +642,7 @@
         var isSyncSF = '@IsSyncSF';
         var isSyncEloqua = '@IsSyncEloqua';
         var isSyncWorkFront = '@IsSyncWorkFront';
+        var isSyncMarketo = '@IsSyncMarketo';
 
         if (isDeployIntegration) {
             $('.integration-SF-Eloqua-WF').each(function (key, val) {
@@ -653,6 +670,14 @@
                     }
                     else {
                         eleToggle.bootstrapToggle('off');           // Set Salesforce toggle button to OFF.
+                    }
+                }
+                if (_intgrtnType == '@Enums.IntegrationType.Marketo.ToString()') {
+                    if (isSyncMarketo.toLowerCase() == 'true') {
+                        eleToggle.bootstrapToggle('on');            // Set Marketo toggle button to ON.
+                    }
+                    else {
+                        eleToggle.bootstrapToggle('off');           // Set Marketo toggle button to OFF.
                     }
                 }
                 if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()') {
@@ -759,6 +784,9 @@
                     else if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()' && '@workfrontId' >0) {
                         eleToggle.bootstrapToggle('on');            // Set Eloqua toggle button to ON.
                     }
+                    else if (_intgrtnType == '@Enums.IntegrationType.Marketo.ToString()' && '@workfrontId' >0) {
+                        eleToggle.bootstrapToggle('on');            // Set Marketo toggle button to ON.
+                    }
                 });
             }
         });
@@ -838,6 +866,7 @@
             var isSyncSF = false;
             var isSyncEloqua = false;
             var isSyncWorkFront = false;
+            var isSyncMarketo = false;
             if (isDeployToIntegration) {
                 $('.integration-SF-Eloqua-WF').each(function (key, val) {
                     var _divToggle = $(this).find("div.integrationToggle");
@@ -858,6 +887,12 @@
                         var isOff = _divToggle.hasClass('off');
                         if (!isOff) {
                             isSyncWorkFront = true;
+                        }
+                    }
+                    if (_intgrtnType == '@Enums.IntegrationType.Marketo.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncMarketo = true;
                         }
                     }
                 });
@@ -896,6 +931,7 @@
                     isSyncSF:isSyncSF,
                     isSyncEloqua : isSyncEloqua,
                     isSyncWorkFront: isSyncWorkFront,
+                    isSyncMarketo: isSyncMarketo,
                     approvalBehaviorWorkFront: wfTacticApproval,
                     requestQueueWF: requestQueue,
                     assigneeWF: assignee
@@ -1046,6 +1082,7 @@
             var isSyncSF = false;
             var isSyncEloqua = false;
             var isSyncWorkFront = false;
+            var isSyncMarketo = false;
             if (isDeployToIntegration) {
                 $('.integration-SF-Eloqua-WF').each(function (key, val) {
                     var _divToggle = $(this).find("div.integrationToggle");
@@ -1066,6 +1103,12 @@
                         var isOff = _divToggle.hasClass('off');
                         if (!isOff) {
                             isSyncWorkFront = true;
+                        }
+                    }
+                    if (_intgrtnType == '@Enums.IntegrationType.Marketo.ToString()') {
+                        var isOff = _divToggle.hasClass('off');
+                        if (!isOff) {
+                            isSyncMarketo = true;
                         }
                     }
                 });
@@ -1100,6 +1143,7 @@
                     isSyncSF: isSyncSF,
                     isSyncEloqua: isSyncEloqua,
                     isSyncWorkFront: isSyncWorkFront,
+                    isSyncMarketo: isSyncMarketo,
                     approvalBehaviorWorkFront: wfTacticApproval,
                     requestQueueWF: requestQueue,
                     assigneeWF: assignee
@@ -1251,6 +1295,7 @@
         var isSyncSF = false;
         var isSyncEloqua = false;
         var isSyncWorkFront = false;
+        var isSyncMarketo = false;
         if (isDeployToIntegration) {
             $('.integration-SF-Eloqua-WF').each(function (key, val) {
                 var _divToggle = $(this).find("div.integrationToggle");
@@ -1271,6 +1316,12 @@
                     var isOff = _divToggle.hasClass('off');
                     if (!isOff) {
                         isSyncWorkFront = true;
+                    }
+                }
+                if (_intgrtnType == '@Enums.IntegrationType.Marketo.ToString()') {
+                    var isOff = _divToggle.hasClass('off');
+                    if (!isOff) {
+                        isSyncMarketo = true;
                     }
                 }
             });
@@ -1312,7 +1363,7 @@
             url: '@Url.Content("~/Inspect/SaveReviewIntegrationInfo/")',
             data: {
                 title: title, Id: planTacticId, isDeployToIntegration: isDeployToIntegration, isSyncSF: isSyncSF, isSyncEloqua: isSyncEloqua, isSyncWorkFront: isSyncWorkFront,
-                approvalBehaviorWorkFront: wfTacticApproval, requestQueueWF: requestQueue, assigneeWF: assignee
+                isSyncMarketo: isSyncMarketo, approvalBehaviorWorkFront: wfTacticApproval, requestQueueWF: requestQueue, assigneeWF: assignee
             },
             success: function (data) {
                 //debugger;

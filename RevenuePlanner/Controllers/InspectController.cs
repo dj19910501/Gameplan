@@ -3051,7 +3051,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
 
             // Start - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
-            bool isSyncSF = false, isSyncEloqua = false, isSyncWorkFront = false; //added isSyncWorkFront - 22 Jan 2016 Brad Gray PL#1922
+            bool isSyncSF = false, isSyncEloqua = false, isSyncWorkFront = false, isSyncMarketo = false; //added isSyncWorkFront - 22 Jan 2016 Brad Gray PL#1922
             if (IsDeployToIntegrationVisible)
             {
                 if (pcpt.IsSyncSalesForce != null && pcpt.IsSyncSalesForce.HasValue && pcpt.IsSyncSalesForce.Value)     // Get IsSyncSalesforce flag
@@ -3062,9 +3062,12 @@ namespace RevenuePlanner.Controllers
                 {
                     isSyncWorkFront = true;
                 }
+                if (pcpt.IsSyncMarketo != null && pcpt.IsSyncMarketo.HasValue && pcpt.IsSyncMarketo.Value)              // Get IsSyncMarketo flag
+                    isSyncMarketo = true;
             }
             ViewBag.IsSyncSF = isSyncSF;
             ViewBag.IsSyncEloqua = isSyncEloqua;
+            ViewBag.IsSyncMarketo = isSyncMarketo;
             ViewBag.IsSyncWorkFront = isSyncWorkFront; //added 22 Jan 2016 Brad Gray PL#1922
             // End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
 
@@ -3110,6 +3113,9 @@ namespace RevenuePlanner.Controllers
             //integrationinstance11 - Push Tactic Data Eloqua
             //integrationinstance4 - Project Management
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11); }
+            // Instance Marketo
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41); }
+
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false)
             {
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4);
@@ -3172,6 +3178,11 @@ namespace RevenuePlanner.Controllers
                 else if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.Eloqua.ToString())
                 {
                     string append = "/" + pcpt.IntegrationInstanceEloquaId;
+                    url = string.Concat(url, append);
+                }
+                else if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.Marketo.ToString())
+                {
+                    string append = "/" + pcpt.IntegrationInstanceMarketoID;
                     url = string.Concat(url, append);
                 }
                 if (!IntegrationLinkDictionary.ContainsKey(instance.IntegrationType.Code))
@@ -3262,7 +3273,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.TopThreeCustomFields = topThreeCustomFields;
 
             // Added by Viral Kadiya related to PL ticket #2108: Scenario1.
-            int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
+            int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0, marketoInstanceId = 0;
             #region "Get SFDC, Elqoua, & WorkFront InstanceId from Model"
             Model objModel = new Model();
             objModel = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model;
@@ -3274,10 +3285,13 @@ namespace RevenuePlanner.Controllers
                     elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
                 if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
                     workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
+                if (objModel.IntegrationInstanceMarketoID.HasValue)
+                    marketoInstanceId = objModel.IntegrationInstanceMarketoID.Value;
             }
             ViewBag.SFDCId = sfdcInstanceId;
             ViewBag.ElouqaId = elqaInstanceId;
             ViewBag.WorkfrontId=workfrontInstanceId;
+            ViewBag.MarketoId = marketoInstanceId;
             #endregion
 
             return PartialView("Review", _inspectmodel);
@@ -6690,9 +6704,9 @@ namespace RevenuePlanner.Controllers
             return null;
         }
 
-        public JsonResult SaveReviewIntegrationInfo(string title = "", string Id = "", string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
+        public JsonResult SaveReviewIntegrationInfo(string title = "", string Id = "", string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string isSyncMarketo = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
         {
-            bool IsSyncSF = false, IsSyncEloqua = false, IsSyncWorkFront = false, IsDeployToIntegration = false, IsDuplicate = false; // Declare local variables.
+            bool IsSyncSF = false, IsSyncEloqua = false, IsSyncWorkFront = false, IsDeployToIntegration = false, IsDuplicate = false, IsSyncMarketo = false; // Declare local variables.
             try
             {
                 // Save Tactic Title.
@@ -6709,10 +6723,12 @@ namespace RevenuePlanner.Controllers
                     IsSyncSF = !string.IsNullOrEmpty(isSyncSF) ? bool.Parse(isSyncSF) : false;                                        // Parse isSyncSF value
                     IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;                            // Parse isSyncEloqua value
                     IsSyncWorkFront = !string.IsNullOrEmpty(isSyncWorkFront) ? bool.Parse(isSyncWorkFront) : false;                   // Parse isSyncWorkFront value
+                    IsSyncMarketo = !string.IsNullOrEmpty(isSyncMarketo) ? bool.Parse(isSyncMarketo) : false;                         // Parse isSyncMarketo value
                     objTactic.IsDeployedToIntegration = IsDeployToIntegration;
                     objTactic.IsSyncEloqua = IsSyncEloqua;
                     objTactic.IsSyncSalesForce = IsSyncSF;
                     objTactic.IsSyncWorkFront = IsSyncWorkFront;
+                    objTactic.IsSyncMarketo = IsSyncMarketo;
                     objTactic.ModifiedBy = Sessions.User.UserId;
                     objTactic.ModifiedDate = DateTime.Now;
                     db.Entry(objTactic).State = EntityState.Modified;
@@ -6734,6 +6750,7 @@ namespace RevenuePlanner.Controllers
                         objLinkedTactic.IsSyncEloqua = IsSyncEloqua;
                         objLinkedTactic.IsSyncSalesForce = IsSyncSF;
                         objLinkedTactic.IsSyncWorkFront = IsSyncWorkFront;
+                        objLinkedTactic.IsSyncMarketo = IsSyncMarketo;
                         objLinkedTactic.ModifiedBy = Sessions.User.UserId;
                         objLinkedTactic.ModifiedDate = DateTime.Now;
                         db.Entry(objLinkedTactic).State = EntityState.Modified;
@@ -11090,7 +11107,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Plan Tactic Id.</param>
         /// <param name="section">Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <param name="IsDeployedToIntegration">bool value</param>
-        public JsonResult SaveSyncToIntegration(int id, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
+        public JsonResult SaveSyncToIntegration(int id, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string isSyncMarketo = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
         {
             bool returnValue = false;
             string strPlanEntity = string.Empty;
@@ -11101,7 +11118,7 @@ namespace RevenuePlanner.Controllers
                     //Start - Added by Viral Kadiya for PL ticket #2002 - Save integration settings on "Sync" button click.
                     #region "Save integration settings"
                     #region "Declare local variables"
-                    bool IsDeployedToIntegration = false, IsSyncSF = false, IsSyncEloqua = false, IsSyncWorkFront = false;
+                    bool IsDeployedToIntegration = false, IsSyncSF = false, IsSyncEloqua = false, IsSyncWorkFront = false, IsSyncMarketo = false;
                     #endregion
                     var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(_tactic => _tactic.PlanTacticId == id);
                     if (objTactic != null && objTactic.PlanTacticId > 0)
@@ -11114,6 +11131,8 @@ namespace RevenuePlanner.Controllers
                             IsSyncEloqua = Convert.ToBoolean(isSyncEloqua);
                         if (!string.IsNullOrEmpty(isSyncWorkFront))
                             IsSyncWorkFront = Convert.ToBoolean(isSyncWorkFront);
+                        if (!string.IsNullOrEmpty(isSyncMarketo))
+                            IsSyncMarketo = Convert.ToBoolean(isSyncMarketo);
                         if (IsSyncWorkFront)
                         {
                             SaveWorkFrontTacticReviewSettings(objTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
@@ -11122,6 +11141,7 @@ namespace RevenuePlanner.Controllers
                         objTactic.IsSyncSalesForce = IsSyncSF;
                         objTactic.IsSyncEloqua = IsSyncEloqua;
                         objTactic.IsSyncWorkFront = IsSyncWorkFront;
+                        objTactic.IsSyncMarketo = IsSyncMarketo;
                         db.Entry(objTactic).State = EntityState.Modified;
 
 
@@ -11134,6 +11154,7 @@ namespace RevenuePlanner.Controllers
                             objLinkedTactic.IsSyncEloqua = IsSyncEloqua;
                             objLinkedTactic.IsSyncSalesForce = IsSyncSF;
                             objLinkedTactic.IsSyncWorkFront = IsSyncWorkFront;
+                            objTactic.IsSyncMarketo = IsSyncMarketo;
                             objLinkedTactic.ModifiedBy = Sessions.User.UserId;
                             objLinkedTactic.ModifiedDate = DateTime.Now;
 
@@ -11687,7 +11708,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="section">Decide for wich section (tactic,program or campaign) status will be updated)</param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
         [HttpPost]
-        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
+        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string isSyncMarketo = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
         {
             int planid = 0;
             int result = 0;
@@ -11777,11 +11798,12 @@ namespace RevenuePlanner.Controllers
                                     DateTime todaydate = DateTime.Now;
 
                                     #region "Update Tactic Integration Settings"
-                                    bool IsSyncSF = false, IsSyncEloqua = false, IsDeployToIntegration = false, IsSyncWorkFront = false;              // Declare local variables.
+                                    bool IsSyncSF = false, IsSyncEloqua = false, IsDeployToIntegration = false, IsSyncWorkFront = false, IsSyncMarketo = false;              // Declare local variables.
                                     IsDeployToIntegration = !string.IsNullOrEmpty(isDeployToIntegration) ? bool.Parse(isDeployToIntegration) : false; // Parse isDeployToIntegration value.
                                     IsSyncSF = !string.IsNullOrEmpty(isSyncSF) ? bool.Parse(isSyncSF) : false;                                        // Parse isSyncSF value
                                     IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;                            // Parse isSyncEloqua value
                                     IsSyncWorkFront = !string.IsNullOrEmpty(isSyncWorkFront) ? bool.Parse(isSyncWorkFront) : false;                   // Parse isSyncWorkFront value
+                                    IsSyncMarketo = !string.IsNullOrEmpty(isSyncMarketo) ? bool.Parse(isSyncMarketo) : false;                         // Parse isSyncMarketo value
 
                                     if (IsSyncWorkFront)
                                     {
@@ -11792,6 +11814,7 @@ namespace RevenuePlanner.Controllers
                                     tactic.IsSyncEloqua = IsSyncEloqua;
                                     tactic.IsSyncSalesForce = IsSyncSF;
                                     tactic.IsSyncWorkFront = IsSyncWorkFront;
+                                    tactic.IsSyncMarketo = IsSyncMarketo;
                                     tactic.ModifiedBy = Sessions.User.UserId;
                                     tactic.ModifiedDate = DateTime.Now;
                                     db.Entry(tactic).State = EntityState.Modified;
@@ -11803,6 +11826,7 @@ namespace RevenuePlanner.Controllers
                                         Linkedtacticobj.IsSyncEloqua = IsSyncEloqua;
                                         Linkedtacticobj.IsSyncSalesForce = IsSyncSF;
                                         Linkedtacticobj.IsSyncWorkFront = IsSyncWorkFront;
+                                        Linkedtacticobj.IsSyncMarketo = IsSyncMarketo;
                                         Linkedtacticobj.ModifiedBy = Sessions.User.UserId;
                                         Linkedtacticobj.ModifiedDate = DateTime.Now;
 

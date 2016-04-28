@@ -325,7 +325,7 @@
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_asc.gif" />
     <Content Include="Content\css\jquery.mCustomScrollbar-new.css" />
     <Content Include="Content\css\style_min_April6.css" />
-    <Content Include="Content\css\style_extended_min_Oct1.css" />
+    <Content Include="Content\css\style_extended_min_May1.css" />
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_desc.gif" />
     <Content Include="Content\css\JquryUI\images\ui-bg_glass_85_dfeffc_1x400.png" />
     <Content Include="Content\css\JquryUI\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" />
@@ -517,6 +517,7 @@
     <Content Include="Content\images\loading.gif" />
     <Content Include="Content\images\magnifying_glass.png" />
     <Content Include="Content\images\maintenence-icon.png" />
+    <Content Include="Content\images\Marketo-Logo.jpg" />
     <Content Include="Content\images\meter-icon-active.png" />
     <Content Include="Content\images\meter-icon-blue.png" />
     <Content Include="Content\images\meter-icon.png" />
@@ -636,8 +637,8 @@
     <Content Include="Content\fonts\fontawesome-webfont.eot" />
     <Content Include="Content\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
-    <Content Include="Content\fonts\fontawesome-webfont.woff2" />
-    <Content Include="Content\fonts\FontAwesome.otf" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\fonts\FontAwesome.otf" />
     <Content Include="RevenuePlanner.wpp.targets" />
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.min.js.map" />

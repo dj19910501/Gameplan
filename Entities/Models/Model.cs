@@ -45,6 +45,7 @@ namespace RevenuePlanner.Models
         public double AverageDealSize { get; set; }
         public Nullable<int> IntegrationInstanceIdProjMgmt { get; set; }
         public Nullable<int> IntegrationInstanceEloquaId { get; set; }
+        public Nullable<int> IntegrationInstanceMarketoID { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstance IntegrationInstance1 { get; set; }
@@ -60,5 +61,6 @@ namespace RevenuePlanner.Models
         public virtual Model Model11 { get; set; }
         public virtual Model Model3 { get; set; }
         public virtual IntegrationInstance IntegrationInstance11 { get; set; }
+        public virtual IntegrationInstance IntegrationInstance41 { get; set; }
     }
 }

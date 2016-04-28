@@ -34,6 +34,7 @@ namespace RevenuePlanner.Models
             this.IntegrationWorkFrontRequestQueues = new HashSet<IntegrationWorkFrontRequestQueue>();
             this.IntegrationWorkFrontUsers = new HashSet<IntegrationWorkFrontUser>();
             this.IntegrationWorkFrontRequests = new HashSet<IntegrationWorkFrontRequest>();
+            this.Models41 = new HashSet<Model>();
         }
     
         public int IntegrationInstanceId { get; set; }
@@ -75,5 +76,6 @@ namespace RevenuePlanner.Models
         public virtual ICollection<IntegrationWorkFrontRequestQueue> IntegrationWorkFrontRequestQueues { get; set; }
         public virtual ICollection<IntegrationWorkFrontUser> IntegrationWorkFrontUsers { get; set; }
         public virtual ICollection<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
+        public virtual ICollection<Model> Models41 { get; set; }
     }
 }

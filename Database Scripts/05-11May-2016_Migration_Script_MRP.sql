@@ -34,6 +34,27 @@ AND BudgetDetail.Id=LineItemBudget.BudgetDetailId)BudgetDetail
 CROSS APPLY(SELECT Id,BudgetId FROM Budget AS Budget WITH (NOLOCK) WHERE ClientId=@ClientId AND Budget.IsDeleted=0 AND Budget.Id=BudgetDetail.BudgetId)Budget
 END
 GO
+-- Add By Nishant Sheth
+-- Desc :: Add column for marketo integration
+IF COL_LENGTH('Plan_Campaign_Program_Tactic', 'IsSyncMarketo') IS NULL
+BEGIN
+		ALTER TABLE Plan_Campaign_Program_Tactic
+        ADD [IsSyncMarketo] BIT NULL
+END
+GO
+IF COL_LENGTH('Plan_Campaign_Program_Tactic','IntegrationInstanceMarketoID') IS NULL
+BEGIN
+	ALTER TABLE [Plan_Campaign_Program_Tactic] ADD [IntegrationInstanceMarketoID] NVARCHAR(50) NULL
+END
+GO
+IF COL_LENGTH('Model','IntegrationInstanceMarketoID') IS NULL
+BEGIN
+	ALTER TABLE [Model] ADD [IntegrationInstanceMarketoID] INT NULL -- Add Column
+	-- Add reference
+	ALTER TABLE [Model]  WITH CHECK ADD  CONSTRAINT [FK_Model_IntegrationInstanceMarketo] FOREIGN KEY([IntegrationInstanceMarketoID])
+	REFERENCES [IntegrationInstance] ([IntegrationInstanceId])
+ END
+GO
 -- Added By : Maitri Gandhi
 -- Added Date : 2/22/2016
 -- Description :Ensure versioning table exists & Update versioning table with script version
