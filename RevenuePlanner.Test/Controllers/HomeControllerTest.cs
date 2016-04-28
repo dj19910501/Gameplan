@@ -1468,7 +1468,7 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(true,result.GetValue("isSuccess"));
-                Assert.AreEqual("Preset Test deleted successfuly", result.GetValue("msg"));
+                Assert.AreEqual("Preset Test deleted successfully", result.GetValue("msg")); //Modified by Maitri Gandhi on 28/4/2016 for #2136
             }
         }
 

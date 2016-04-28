@@ -8630,7 +8630,7 @@ namespace RevenuePlanner.Controllers
                     }
                     objDbMrpEntities.SaveChanges();
                     Common.PlanUserSavedViews = objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Userid == Sessions.User.UserId).ToList();// Add By Nishant Sheth #1915
-                    return Json(new { isSuccess = true, msg = "Preset " + PresetName + " deleted successfuly" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { isSuccess = true, msg = "Preset " + PresetName + " deleted successfully" }, JsonRequestBehavior.AllowGet); //Modified by Maitri Gandhi on 28/4/2016 for #2136
                 }
                 else
                 {
