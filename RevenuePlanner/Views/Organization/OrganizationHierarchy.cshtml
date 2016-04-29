@@ -203,8 +203,8 @@
 
     });
 
-    function showContactDetail(userId) {
-        $("#lblUserName").html($("#spnUserName" + userId).html());
+    function showContactDetail(userId) {        
+        $("#lblUserName").html($("#spnUserName" + userId).val());  @*Modified By Maitri Gandhi for #2147 on 29/4/2016*@
         $("#lblJobDetail").html($("#hdnJobTitle" + userId).val());
         $("#lblEmail").attr("href", "mailto:" + $("#hdnEmail" + userId).val());
         $("#lblEmail").html($("#hdnEmail" + userId).val());

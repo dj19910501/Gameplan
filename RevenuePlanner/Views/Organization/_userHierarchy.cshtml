@@ -23,7 +23,7 @@
         <span class="hitarea"></span>
     }
     @*<span id="@userLabelId">@Model.FirstName @Model.LastName</span>*@ @*commented by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
-
+    <input id="@userLabelId" type="hidden" value="@Model.FirstName @Model.LastName" /> @*Added By Maitri Gandhi for #2147 on 29/4/2016*@
     <span id="@userId" class="treeview hover" style="text-decoration:underline">@Model.FirstName @Model.LastName</span> @*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
     <span class="job-role" style="background-color:@Model.ColorCode">@Model.RoleTitle</span>
     @if ((bool)ViewBag.IsUserAdminAuthorized)
