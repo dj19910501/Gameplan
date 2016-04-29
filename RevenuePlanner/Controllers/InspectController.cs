@@ -1115,7 +1115,7 @@ namespace RevenuePlanner.Controllers
                                     objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
 
                                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
-                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);   
+                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != Sessions.User.UserId && form.OwnerId != Guid.Empty)
                                     {
@@ -1308,7 +1308,7 @@ namespace RevenuePlanner.Controllers
                                     objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
 
                                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
-                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);   
+                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
                                     {
@@ -1969,7 +1969,7 @@ namespace RevenuePlanner.Controllers
                                     objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
 
                                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
-                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);   
+                                    objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != Sessions.User.UserId && form.OwnerId != Guid.Empty)
                                     {
@@ -3290,7 +3290,7 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.SFDCId = sfdcInstanceId;
             ViewBag.ElouqaId = elqaInstanceId;
-            ViewBag.WorkfrontId=workfrontInstanceId;
+            ViewBag.WorkfrontId = workfrontInstanceId;
             ViewBag.MarketoId = marketoInstanceId;
             #endregion
 
@@ -4363,7 +4363,7 @@ namespace RevenuePlanner.Controllers
 
                                 // Added by Viral Kadiya related to PL ticket #2002: When we create a new tactic, then the integration need to look at the model. If under model integration, there are any integration mapped then the switched for these needs to be turned on as well.
                                 // WorkFront added 19 Feb 2016 for PL#2002. On tactic creation, look at WorkFront integration and set tactic defaults in the same manner as Salesforce and Eloqua
-                                int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
+                                int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0, marketoInstanceId = 0;
                                 #region "Get SFDC, Elqoua, & WorkFront InstanceId from Model by Plan"
                                 if (planid > 0)
                                 {
@@ -4380,6 +4380,8 @@ namespace RevenuePlanner.Controllers
                                                 sfdcInstanceId = objModel.IntegrationInstanceId.Value;
                                             if (objModel.IntegrationInstanceEloquaId.HasValue)
                                                 elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
+                                            if (objModel.IntegrationInstanceMarketoID.HasValue)
+                                                marketoInstanceId = objModel.IntegrationInstanceMarketoID.Value;
                                             if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
                                                 workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
                                         }
@@ -4425,6 +4427,8 @@ namespace RevenuePlanner.Controllers
                                         pcpobj.IsSyncSalesForce = true;         // Set SFDC setting to True if Salesforce instance mapped under Tactic's Model.
                                     if (elqaInstanceId > 0)
                                         pcpobj.IsSyncEloqua = true;             // Set Eloqua setting to True if Eloqua instance mapped under Tactic's Model.
+                                    if (marketoInstanceId > 0)
+                                        pcpobj.IsSyncMarketo = true;             // Set Marketo setting to True if Marketo instance mapped under Tactic's Model.
                                     if (workfrontInstanceId > 0)
                                         pcpobj.IsSyncWorkFront = true;          // Set WorkFront setting to True if WorkFront instance mapped under Tactic's Model.
                                 }
@@ -4838,7 +4842,7 @@ namespace RevenuePlanner.Controllers
                                 if (form.TacticTypeId != null && oldTacticTypeId != form.TacticTypeId)
                                 {
                                     // Added by Viral Kadiya related to PL ticket #2108: When we update tactic type, then the integration need to look at the model. If under model integration, there are any integration mapped then the switched for these needs to be turned on as well.
-                                    int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
+                                    int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0, marketoInstanceId = 0;
                                     #region "Get SFDC, Elqoua, & WorkFront InstanceId from Model by Plan"
                                     if (planid > 0)
                                     {
@@ -4855,6 +4859,8 @@ namespace RevenuePlanner.Controllers
                                                     sfdcInstanceId = objModel.IntegrationInstanceId.Value;
                                                 if (objModel.IntegrationInstanceEloquaId.HasValue)
                                                     elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
+                                                if (objModel.IntegrationInstanceMarketoID.HasValue)
+                                                    marketoInstanceId = objModel.IntegrationInstanceMarketoID.Value;
                                                 if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
                                                     workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
                                             }
@@ -4865,7 +4871,7 @@ namespace RevenuePlanner.Controllers
                                     #region "Get IsDeployedToIntegration by TacticTypeId"
                                     int TacticTypeId = 0;
                                     bool isDeployedToIntegration = false;
-                                    
+
                                     TacticTypeId = form.TacticTypeId;
                                     TacticType objTacType = new TacticType();
                                     objTacType = db.TacticTypes.Where(tacType => tacType.TacticTypeId == form.TacticTypeId).FirstOrDefault();
@@ -4874,7 +4880,7 @@ namespace RevenuePlanner.Controllers
                                         isDeployedToIntegration = true;
                                     }
                                     pcpobj.IsDeployedToIntegration = isDeployedToIntegration;
-                                    #endregion 
+                                    #endregion
 
                                     #region "Update Instnce toggle based on TacticType & Model settings"
                                     if (isDeployedToIntegration)
@@ -4883,6 +4889,8 @@ namespace RevenuePlanner.Controllers
                                             pcpobj.IsSyncSalesForce = true;         // Set SFDC setting to True if Salesforce instance mapped under Tactic's Model.
                                         if (elqaInstanceId > 0)
                                             pcpobj.IsSyncEloqua = true;             // Set Eloqua setting to True if Eloqua instance mapped under Tactic's Model.
+                                        if (marketoInstanceId > 0)
+                                            pcpobj.IsSyncMarketo = true;             // Set Marketo setting to True if Marketo instance mapped under Tactic's Model.
                                         if (workfrontInstanceId > 0)
                                             pcpobj.IsSyncWorkFront = true;          // Set WorkFront setting to True if WorkFront instance mapped under Tactic's Model.
                                     }
@@ -4890,12 +4898,13 @@ namespace RevenuePlanner.Controllers
                                     {
                                         pcpobj.IsSyncSalesForce = false;         // Set SFDC setting to false if isDeployedToIntegration false.
                                         pcpobj.IsSyncEloqua = false;             // Set Eloqua setting to True if isDeployedToIntegration false.
+                                        pcpobj.IsSyncMarketo = false;             // Set Marketo setting to True if isDeployedToIntegration false.
                                         pcpobj.IsSyncWorkFront = false;          // Set WorkFront setting to True if isDeployedToIntegration false.
                                     }
                                     #endregion
                                 }
                                 #endregion
-                                
+
                                 //// check that Tactic cost count greater than 0 OR Plan's AllocatedBy is None or Defaults.
                                 if ((db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).ToList()).Count() == 0 ||
                                     pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
@@ -5248,6 +5257,7 @@ namespace RevenuePlanner.Controllers
                                     linkedTactic.IsDeployedToIntegration = pcpobj.IsDeployedToIntegration;
                                     linkedTactic.IsSyncSalesForce = pcpobj.IsSyncSalesForce;
                                     linkedTactic.IsSyncEloqua = pcpobj.IsSyncEloqua;
+                                    linkedTactic.IsSyncMarketo = pcpobj.IsSyncMarketo;
                                     linkedTactic.IsSyncWorkFront = pcpobj.IsSyncWorkFront;
                                     //linkedTactic.StageId = form.StageId;
                                     linkedTactic.ProjectedStageValue = form.ProjectedStageValue;
@@ -6577,7 +6587,7 @@ namespace RevenuePlanner.Controllers
                                         objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
 
                                         var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
-                                        objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);   
+                                        objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
 
                                         scope.Complete();
                                         return Json(new { result = true }, JsonRequestBehavior.AllowGet);
@@ -6672,7 +6682,7 @@ namespace RevenuePlanner.Controllers
                                         objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
 
                                         var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
-                                        objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);  
+                                        objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
 
                                         scope.Complete();
                                         return Json(new { result = true }, JsonRequestBehavior.AllowGet);
@@ -8528,7 +8538,7 @@ namespace RevenuePlanner.Controllers
                                             db.Entry(objtacticCost).State = EntityState.Added;
                                             objTactic.Cost = objTactic.Cost + tacticlineitemcostmonth;
                                         }
-                                        
+
                                     }
                                     else if (form.Cost < objLineitem.Cost)
                                     {
@@ -11097,7 +11107,7 @@ namespace RevenuePlanner.Controllers
             }
             //Added by Rahul Shah on 12/04/2016 for PL #2038
             im.LinkedTacticId = objPlan_Campaign_Program_Tactic.LinkedTacticId;
-            im.PlanId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;            
+            im.PlanId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
             return PartialView("InspectPopup", im);
         }
 
@@ -12140,7 +12150,7 @@ namespace RevenuePlanner.Controllers
                             objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
 
                             var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
-                            objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);  
+                            objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
                             scope.Complete();
                             return Json(new { id = planTacticId, TabValue = "Review", msg = strmessage });
                         }
@@ -13253,7 +13263,7 @@ namespace RevenuePlanner.Controllers
 
             //var Query = BudgetDetailList.Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
             //BudgetAmount objBudgetAmount;
-            
+
             //foreach (var item in Query)
             //{
 
@@ -13262,7 +13272,7 @@ namespace RevenuePlanner.Controllers
             //    dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name });
             //}
             #endregion
-            
+
             // Add By Nishant Sheth
             // Desc :: For performance issues #2128
             DataSet dsBudgetItems = new DataSet();
