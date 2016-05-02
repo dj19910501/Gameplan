@@ -13,6 +13,7 @@
     string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
     ViewBag.PageTitle = "OrganizationHierarchy";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     ViewBag.ModuleTitle = "Organization";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
+
 }
 
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
@@ -118,7 +119,7 @@
                                         <span class="hitarea"></span>
                                     }
                                     @*<span id="@userLabelId">@UserHierarchy[i].FirstName @UserHierarchy[i].LastName</span>*@ @*Commented by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
-
+                                    <input id="@userLabelId" type="hidden" value="@UserHierarchy[i].FirstName @UserHierarchy[i].LastName" /> @*Added By Maitri Gandhi for #2147 observations on 2/5/2016*@
                                     <span id="@userId" class="treeview hover" style="text-decoration:underline">@UserHierarchy[i].FirstName @UserHierarchy[i].LastName</span> @*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
 
 
@@ -203,9 +204,10 @@
 
     });
 
-    function showContactDetail(userId) {        
-        $("#lblUserName").html($("#spnUserName" + userId).val());  @*Modified By Maitri Gandhi for #2147 on 29/4/2016*@
-        $("#lblJobDetail").html($("#hdnJobTitle" + userId).val());
+    function showContactDetail(userId) {
+        @*Added By Maitri Gandhi for #2147 observations on 2/5/2016*@
+        $("#lblUserName").text($("#spnUserName" + userId).val());  @*Modified By Maitri Gandhi for #2147 on 29/4/2016*@
+        $("#lblJobDetail").text($("#hdnJobTitle" + userId).val());
         $("#lblEmail").attr("href", "mailto:" + $("#hdnEmail" + userId).val());
         $("#lblEmail").html($("#hdnEmail" + userId).val());
         $("#lblPhone").html("<strong>Phone: </strong>" + $("#hdnPhone" + userId).val());
