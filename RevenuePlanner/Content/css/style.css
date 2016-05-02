@@ -14572,18 +14572,34 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 
 
 /*Added for #2112 (scrollbar on collaborater on Plan page )*/
+#divCollaborator{width:100%}
 #scroll-Collaborator {
     display: inline-block;
     height: auto;
-    max-width: 45%;
+    /*max-width: 45%;*/
+    max-width:600px;
     vertical-align: bottom;
     width: auto;
     float: left;
     margin-right: 5px;
 }
 
-#scroll-Collaborator .profile-info{display:inline-block; height:34px; }
+#scroll-Collaborator .profile-info{display:inline-block; height:34px; width:34px }
+
+@media (min-width: 1420px) and (max-width: 1590px) {
+  #scroll-Collaborator {    
+    max-width:450px ;    
+}
+}
+@media (min-width: 1200px) and (max-width: 1419px) {
+  #scroll-Collaborator {    
+    max-width:330px ;    
+}
+}
+
 .calendar-gant-table .gantt-padding{padding-top:15px}
+
+
  #treeviewddl .hdrcell.filter input {
     background:url("../images/icon-filter-search.gif") right 8px  no-repeat;
     }
