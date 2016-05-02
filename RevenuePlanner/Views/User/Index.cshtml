@@ -131,7 +131,7 @@
                                         <td class="userDelete">
                                             @if (item.IsManager == false)    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                                             {
-                                                <a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this User?');"> @*Modified by Maitri Gandhi on 28/4/2016 for #2145*@
+                                                <a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this user?');"> @*Modified by Maitri Gandhi on 2/5/2016 for #2145 Observation*@
                                                     <span class="x-icon hide pull-right" title="Delete Member"></span>
                                                 </a>
                                             }
