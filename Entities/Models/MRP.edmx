@@ -2187,6 +2187,10 @@
           <Parameter Name="BudgetDetailId" Type="int" Mode="In" />
           <Parameter Name="ClientId" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="DeleteLastViewedData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserId" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="PreviousIds" Type="nvarchar(max)" Mode="In" />
+        </Function>
         <Function Name="ELMAH_GetErrorsXml" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Application" Type="nvarchar" Mode="In" />
           <Parameter Name="PageIndex" Type="int" Mode="In" />
@@ -3161,6 +3165,10 @@
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="Model" EntitySet="Models" />
           </AssociationSet>
+          <FunctionImport Name="DeleteLastViewedData">
+            <Parameter Name="UserId" Mode="In" Type="String" />
+            <Parameter Name="PreviousIds" Mode="In" Type="String" />
+          </FunctionImport>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -6779,6 +6787,7 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="DeleteLastViewedData" FunctionName="MRPModel.Store.DeleteLastViewedData" />
          
         </EntityContainerMapping>
       </Mapping>

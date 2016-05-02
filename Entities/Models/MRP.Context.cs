@@ -206,5 +206,18 @@ namespace RevenuePlanner.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCollaboratorId_Result>("GetCollaboratorId", planIdParameter);
         }
+    
+        public virtual int DeleteLastViewedData(string userId, string previousIds)
+        {
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            var previousIdsParameter = previousIds != null ?
+                new ObjectParameter("PreviousIds", previousIds) :
+                new ObjectParameter("PreviousIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DeleteLastViewedData", userIdParameter, previousIdsParameter);
+        }
     }
 }

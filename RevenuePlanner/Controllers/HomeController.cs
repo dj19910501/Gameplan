@@ -8525,9 +8525,17 @@ namespace RevenuePlanner.Controllers
                 var isCheckinNew = NewCustomFieldData.Select(a => a.FilterValues).Except(prevCustomFieldList.Select(b => b.FilterValues)).Any();
                 if (isCheckinPrev == true || isCheckinNew == true)
                 {
+                    //Modified By Komal Rawal for #2138 remove concurrency issue
+                    var ids = prevCustomFieldList.Select(t => t.Id).ToList();
+                    string ListOfPreviousIDs = null;
+                    if(ids.Count > 0)
+                    {
+                        ListOfPreviousIDs = string.Join(",", ids);
+                    }
 
-                    prevCustomFieldList.ForEach(custmfield => objDbMrpEntities.Entry(custmfield).State = EntityState.Deleted);
+                    objDbMrpEntities.DeleteLastViewedData(Sessions.User.UserId.ToString(),ListOfPreviousIDs); //Sp to delete last viewed data before inserting new one.
                     objDbMrpEntities.SaveChanges();
+                    //End
                 }
                 else
                 {

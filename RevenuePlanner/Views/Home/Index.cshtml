@@ -5137,7 +5137,7 @@
     //// Function to make ajax request.
     function AjaxRequest() {
         //// Start - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
-        if (IsUpdate) {
+        //   if (IsUpdate) { //Modified By Komal rawal for 2104 as tactic did not load for new user
             filters.customFieldIds = [];
 
             $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
@@ -5181,7 +5181,7 @@
             $("#ulStatus li input:checkbox:checked").map(function () {
                 filters.StatusIds.push($(this).attr("id"));
             });
-        }
+     //   }
         //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
 
         //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
