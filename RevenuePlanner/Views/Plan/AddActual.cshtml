@@ -422,12 +422,12 @@
         });
 
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
-
-     
+        //Modified sequence by Maitri Gandhi on 2/5/2016 for #2160
+        LoadPlan();
         onClickPlanTitle();
         GetTacticTypelist(CurrentPlanId, false);
         GetOwnerListForFilter(CurrentPlanId, false);
-        LoadPlan();
+        //LoadPlan();
         GetLastSetofViews($('#FilterName').val());
         CallAjax();
     });//document ready
@@ -836,14 +836,12 @@
         var nlform = new NLForm(document.getElementById('nl-form2'));
         GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
         GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
-    }
-
-    function onClickPlanTitle() {
+    }    
+    function onClickPlanTitle() {        
         var IsSavedPlan = null;
 
         //Added by Rahul Shah for PL #1898
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-
             //Added by Maitri Gandhi for #2040 on 31/3/2016
             var cookie = document.cookie;
             if (cookie.indexOf("gridOpengridbox") > -1) {
