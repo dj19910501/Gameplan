@@ -421,13 +421,14 @@
             displayconfirm('@Url.Action("Assortment", "Plan")');
         });
 
-        NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
-        //Modified sequence by Maitri Gandhi on 2/5/2016 for #2160
-        LoadPlan();
-        onClickPlanTitle();
+        NumberFormatterTipsyTitle(".tipsyclassTitle", 27);        
+        
+        //onClickPlanTitle();
         GetTacticTypelist(CurrentPlanId, false);
         GetOwnerListForFilter(CurrentPlanId, false);
-        //LoadPlan();
+        //Modified sequence by Maitri Gandhi on 3/5/2016 for #2160 Observations
+        LoadPlan();
+        onClickPlanTitle();
         GetLastSetofViews($('#FilterName').val());
         CallAjax();
     });//document ready
@@ -776,7 +777,7 @@
         var ParentCustomFieldsIds = filters.parentCustomFieldsIds;
 
         $.ajax({
-            type: "GET",
+            type: "POST",   //Modified By Maitri Gandhi on 3/5/2016 for #2160 Observations
             cache: false,
             async: false,
             url: '@Url.Action("SaveLastSetofViews", "Home")',
