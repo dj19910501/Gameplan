@@ -801,7 +801,7 @@ function LoadModelData(modelId, bool) {
                      $(this).children('a').removeClass("error-form");
                  }
                  //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-                 if ($("#MarketingDealSize").val() == '' || $("#MarketingDealSize").val() == "0" || $("#MarketingLeads").val() == "$0" || $("#MarketingLeads").val() == "$") {
+                 if ($("#MarketingDealSize").val() == '' || $("#MarketingDealSize").val() == "0" || $("#MarketingDealSize").val() == "$0" || $("#MarketingDealSize").val() == "$") {
                      $(this).children('a').addClass("error-form");
                      needAlert = true;
                  }
