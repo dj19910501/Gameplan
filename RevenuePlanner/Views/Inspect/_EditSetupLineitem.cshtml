@@ -188,7 +188,6 @@
      border-right: none !important;
     }
     /*by bheru 19-10-2015*/
-
 </style>
 @using (Html.BeginForm())
 {
@@ -699,6 +698,20 @@
         var spanOwner = $('#multipleselect_ddlOwner');
         $('#btnMultiselect_ddlOwner').after(spanOwner);
         //End
+        //Added BY Komal Rawal for #1617
+        $('#dropdown_new_btn_FieldMapping').click(function () {
+            $('#treeviewddl').addClass('dropdown-wrapper'); //changed by Bhumika to solve topoffset error 3-5-2016
+            //if ($(this).next().css("display") == "none") {
+            if ($('.dropdown-wrapper').css("display") == "none") {     
+                //$('#treeviewddl').addClass('fieldmapping-dropdown');
+                $('.dropdown-wrapper').css("display", "block");
+                //LoadBudgetDropdown();
+            }
+            else {               
+                $('.dropdown-wrapper').css("display", "none");
+            }
+            
+        });
 
         var DropdownTop = 0;
         $(".pop-body-wraper").scroll(function () {
@@ -718,7 +731,7 @@
                 //$(this).each(function () {
                 // alert('hi3');
                 // get the top offset of the dropdown (distance from top of the page)
-                var dropdown_div = $(this).next('.fieldmapping-dropdown');
+                var dropdown_div = $(this).next('.dropdown-wrapper');               
                 //dropdown_div.css('cssText', 'display: block !important');
                 //var dropdown_height = dropdown_div.height();
                 var topOffset = dropdown_div.offset().top;
@@ -755,25 +768,7 @@
             //}
         });
 
-        //Added BY Komal Rawal for #1617
-        $('#dropdown_new_btn_FieldMapping').click(function () {
-
-            if ($(this).next().css("display") == "none") {
-                //$(this).next().css("width","auto");
-                //  $(this).next().addClass('dropdownAddborder');
-                var dropdown_field_top1 = $('#dropdown_new_btn_FieldMapping').offset().top;
-                var windownheight = $(window).height();
-                $('#treeviewddl').addClass('fieldmapping-dropdown');
-
-                $(this).next().css("display", "block");
-                //LoadBudgetDropdown();
-            }
-            else {
-                //$(this).next().css("width","0px");
-                $(this).next().css("display", "none");
-            }
-
-        });
+        
 
         $('#LineItemTypeId').next().css('width', '95%');
         $('#LineItemTypeId').next().css('min-height', '30px');

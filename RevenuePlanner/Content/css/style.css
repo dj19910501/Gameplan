@@ -11021,7 +11021,12 @@ font-size: 20px;
   width:auto !important;
   margin-bottom: 5px;
 }
-
+#CustomHtmlHelperfieldforMapping .dropdown-wrapper{
+    bottom: 100%;
+    height: auto !important;
+    width:auto !important;
+    margin-bottom: 5px;
+}
 .drop-down_header {
     border: 1px solid #dfdfdf;
     border-radius: 6px;
