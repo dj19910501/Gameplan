@@ -6590,6 +6590,8 @@ namespace RevenuePlanner.Controllers
             //// Owner filter criteria.
             List<Guid> filteredOwner = string.IsNullOrWhiteSpace(ownerId) ? new List<Guid>() : ownerId.Split(',').Select(owner => Guid.Parse(owner)).ToList();
             //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
+            string stageMQL = Enums.Stage.MQL.ToString();
+            int levelMQL = objDbMrpEntities.Stages.FirstOrDefault(s => s.ClientId.Equals(Sessions.User.ClientId) && s.IsDeleted == false && s.Code.Equals(stageMQL)).Level.Value;
 
             List<Plan_Campaign_Program_Tactic> TacticList = new List<Plan_Campaign_Program_Tactic>();
             List<string> tacticStatus = Common.GetStatusListAfterApproved();
@@ -6766,7 +6768,9 @@ namespace RevenuePlanner.Controllers
                     individualId = tactic.CreatedBy,
                     tacticTypeId = tactic.TacticTypeId,
                     ////Modified by Mitesh Vaishnav for PL ticket #743,When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
-                    modifiedBy = Common.TacticModificationMessage(tactic.PlanTacticId, userName),
+                    //Commented and Added by Rahul Shah on 02/05/2016 for PL #2111
+                    //modifiedBy = Common.TacticModificationMessage(tactic.PlanTacticId, userName),
+                    modifiedBy = Common.TacticModificationMessageActual(tactic.PlanTacticId, userName, tacticLineItemActual, tacticActuals),
 
                     // Change by Nishant sheth
                     // Desc :: #1765 - add period condition to get value
@@ -6781,7 +6785,9 @@ namespace RevenuePlanner.Controllers
                     }).Select(planTacticActual => planTacticActual).Distinct(),
                     ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
                     LastSync = tactic.LastSyncDate == null ? string.Empty : ("Last synced with integration " + Common.GetFormatedDate(tactic.LastSyncDate) + "."),
-                    stageTitle = Common.GetTacticStageTitle(tactic.PlanTacticId),
+                    //Commented and Added by Rahul Shah on 02/05/2016 for PL #2111
+                    //stageTitle = Common.GetTacticStageTitle(tactic.PlanTacticId),
+                    stageTitle = Common.GetTacticStageTitleActual(tactic.PlanTacticId, Convert.ToInt32(tactic.Stage.Level), levelMQL),
                     tacticStageId = tactic.Stage.StageId,
                     tacticStageTitle = tactic.Stage.Title,
                     projectedStageValue = tactic.ProjectedStageValue,

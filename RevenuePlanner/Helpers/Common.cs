@@ -3426,6 +3426,38 @@ namespace RevenuePlanner.Helpers
 
             return lstStageTitle;
         }
+        #endregion
+
+        #region TacticStageTitleforActualTab
+        /// <summary>
+        /// Function to get dynamic stage titles.
+        /// added by Rahul Shah Ticket #2111
+        /// </summary>
+        /// <param name="tacticId"></param>
+        /// <param name="tStagelevel"></param>
+        /// <param name="levelMQL"></param>
+        /// <returns></returns>
+        public static List<string> GetTacticStageTitleActual(int tacticId,int tStagelevel,int levelMQL)
+        {           
+            List<string> lstStageTitle = new List<string>();           
+            int tacticStageLevel = Convert.ToInt32(tStagelevel); 
+            if (tacticStageLevel < levelMQL)
+            {
+                lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString());
+                lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString());
+            }
+            else if (tacticStageLevel == levelMQL)
+            {
+                lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString());
+            }
+            else if (tacticStageLevel > levelMQL)
+            {
+                lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString());
+            }
+            lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString());
+            lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString());
+            return lstStageTitle;
+        }
 
         #endregion
 
@@ -6086,6 +6118,95 @@ namespace RevenuePlanner.Helpers
 
             return lastModifiedMessage;
         }
+        /// <summary>
+        /// Function to generate message for modification of tactic from Actual tab.
+        /// Added by Rahul Shah         
+        /// </summary>
+        /// <param name="tacticId">Plan Tactic Id.</param>
+        /// <param name="userList">List of user object.</param>
+        /// <param name="userList">List of lineitemActual object.</param>
+         /// <param name="userList">List of tactic Actual object.</param>
+        /// <returns>If any tactic actual or LineItem exist then it return string message else empty string </returns>
+        public static string TacticModificationMessageActual(int tacticId, List<User> userList = null, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lineItemActList = null, List<Plan_Campaign_Program_Tactic_Actual> tacticActList = null)
+        {            
+            string lastModifiedMessage = string.Empty;
+            string createdBy = null;
+            DateTime? modifiedDate = null;
+
+            //// Checking whether line item actuals exists.
+            var lineItemListActuals = lineItemActList.Where(lineitemActual => lineitemActual.Plan_Campaign_Program_Tactic_LineItem.PlanTacticId == tacticId &&
+                                                                                            lineitemActual.Plan_Campaign_Program_Tactic_LineItem.IsDeleted == false)
+                                                                                     .OrderByDescending(la => la.CreatedDate).FirstOrDefault();
+            if (lineItemListActuals != null)
+            {
+                modifiedDate = lineItemListActuals.CreatedDate;
+                createdBy = lineItemListActuals.CreatedBy.ToString();
+            }
+            else
+            {
+                ////Checking whether Tactic Actual exist.
+                var tacticActualList = tacticActList.Where(tacticActual => tacticActual.PlanTacticId == tacticId)
+                                                                             .OrderByDescending(ta => ta.ModifiedDate)
+                                                                             .ThenBy(ta => ta.CreatedDate)
+                                                                             .FirstOrDefault();
+                if (tacticActualList != null)
+                {
+                    if (tacticActualList.ModifiedDate != null)
+                    {
+                        modifiedDate = tacticActualList.ModifiedDate;
+                        createdBy = tacticActualList.ModifiedBy.ToString();
+                    }
+                    else
+                    {
+                        modifiedDate = tacticActualList.CreatedDate;
+                        createdBy = tacticActualList.CreatedBy.ToString();
+                    }
+                }
+
+            }
+
+            if (createdBy != null && modifiedDate != null)
+            {
+                ////Checking if created by is empty then system generated modification
+                if (Guid.Parse(createdBy) == Guid.Empty)
+                {
+                    lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), GameplanIntegrationService);
+                    return lastModifiedMessage;
+                }
+                else
+                {
+                    bool isGetFromBDSService = false;////functiona perameter userList have "createdby" user
+                    if (userList != null && userList.Count != 0)
+                    {
+                        User user = userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault();
+                        if (user != null)
+                        {
+                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().FirstName, userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().LastName);
+                            return lastModifiedMessage;
+                        }
+                        else
+                        {
+                            isGetFromBDSService = true;
+                        }
+                    }
+                    else
+                    {
+                        isGetFromBDSService = true;
+                    }
+
+                    if (isGetFromBDSService)
+                    {
+                        BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+                        User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
+                        lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), objUser.FirstName, objUser.LastName);
+                        return lastModifiedMessage;
+                    }
+                }
+            }
+
+            return lastModifiedMessage;
+        }
+
 
         //Created By : Kalpesh Sharma
         //Get the specific char from the string based upon it's index.

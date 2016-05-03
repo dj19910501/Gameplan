@@ -1122,40 +1122,6 @@ function LoadPage() {
 
     /*change mask if toogle is open*/
     $(".accordion-actuals .accordion-heading a").click(function () {
-        /*set mask shadows width*/
-        $('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
-        $('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
-        /*set mask height*/
-        $('.table-actual-mask').css({ "height": "0px" });
-        /*set left titles from header if toogle  is open*/
-        $(".accordion-actuals .accordion-group .in").prev().
-                                                find(".table-titles-actual-left")
-                                                        .css({ "color": "#ffffff" });
-        /*set glass icon from header if toogle  is open*/
-        $(".accordion-actuals .accordion-group .in").prev().
-                                                        find(".glass-icon")
-                                                                .css({ "visibility": "hidden" });
-        /*set visibility on scroll over mask*/
-        $(".table-actual-mask").css({ "overflow-x": "hidden" });
-
-        $('.shadow-scroll-table-mask-right').each(function () {
-            //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-            $(this).removeClass("resetVisibility");
-        });
-
-        $('.shadow-scroll-table-mask-left').each(function () {
-            //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-            $(this).removeClass("resetVisibility");
-        });
-
-        //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-        $(".accordion-actuals .accordion-group .in").prev().
-                                         find(".shadow-scroll-table-mask-right").addClass("resetVisibility");
-
-        //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-        $(".accordion-actuals .accordion-group .in").prev().
-                         find(".shadow-scroll-table-mask-left").addClass("resetVisibility");
-
 
         var that = this,
             mask = $(that).next().find(".table-actual-mask"),
@@ -1186,7 +1152,64 @@ function LoadPage() {
             var heights = ($(CurrentID).find(".accordion-inner").height()) + 10;
             animateMask($(mask), heights);
         }
+        //Added by Rahul Shah on 03/05/2016 for PL #2016
+        var curId = $(this).attr('href');
 
+        $(curId).prev().find('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
+        $(curId).prev().find('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
+        /*set mask height*/
+        $('.table-actual-mask').css({ "height": "0px" });
+        /*set left titles from header if toogle  is open*/
+        $(".accordion-actuals .accordion-group .in").prev().
+                                                find(".table-titles-actual-left")
+                                                        .css({ "color": "#ffffff" });
+        /*set glass icon from header if toogle  is open*/
+        $(".accordion-actuals .accordion-group .in").prev().
+                                                        find(".glass-icon")
+                                                                .css({ "visibility": "hidden" });
+        /*set visibility on scroll over mask*/
+        $(curId).prev().find(".table-actual-mask").css({ "overflow-x": "hidden" });
+
+     
+        //$('.shadow-scroll-table-mask-right').removeClass("resetVisibility");
+
+        //$('.shadow-scroll-table-mask-left').removeClass("resetVisibility");
+
+        ////Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+        //$(".accordion-actuals .accordion-group .in").prev().
+        //                                 find(".shadow-scroll-table-mask-right").addClass("resetVisibility");
+
+        ////Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+        //$(".accordion-actuals .accordion-group .in").prev().
+        //                 find(".shadow-scroll-table-mask-left").addClass("resetVisibility");
+                
+        $(curId).find('.addFormatterActualCurrency').each(function () {
+            SetBudget($(this));
+        });
+        $(curId).find('.addFormatterActualNumber').each(function () {
+            SetPriceValue($(this));
+        });
+        $(curId).find('.setBudget').each(function () {
+            SetBudget("#" + $(this).attr('id'));
+        });
+
+        var curId1 = curId.replace('collapse', 'divTable');
+        $(curId1).find('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+        $(curId1).find('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+
+        $(curId1).find('.currency_dollarCost').each(function () {
+            var txtvalue = $(this).val();
+            $(this).attr('title', txtvalue);
+        });
+        $(curId1).find('.priceValue').each(function () {
+            var txtvalue = $(this).val();
+            $(this).attr('title', txtvalue);
+        });
+        $(curId1).find('.currency_dollar').each(function () {
+            var txtvalue = $(this).val();
+            $(this).attr('title', txtvalue);
+        });
+        $(curId1).find('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
 
     });
 
@@ -1235,29 +1258,29 @@ function LoadPage() {
         maskWidht();
 
     }
-
+    //Commented by Rahul Shah on 03/05/2016 for PL #2111
     // For Format Price & Total Input
-    $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
-    $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+    //$('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+    //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
 
-    $('.currency_dollarCost').each(function () {
-        var txtvalue = $(this).val();
-        $(this).attr('title', txtvalue);
-    });
+    //$('.currency_dollarCost').each(function () {
+    //    var txtvalue = $(this).val();
+    //    $(this).attr('title', txtvalue);
+    //});
 
-    $('.priceValue').each(function () {
-        var txtvalue = $(this).val();
-        $(this).attr('title', txtvalue);//uday 2-7-2014 internal poinmt to add tooltip title...
-    });
+    //$('.priceValue').each(function () {
+    //    var txtvalue = $(this).val();
+    //    $(this).attr('title', txtvalue);//uday 2-7-2014 internal poinmt to add tooltip title...
+    //});
 
-    $('.currency_dollar').each(function () {
-        var txtvalue = $(this).val();
-        $(this).attr('title', txtvalue);//uday 3-7-2014 internal poinmt to add tooltip title...
-    });
+    //$('.currency_dollar').each(function () {
+    //    var txtvalue = $(this).val();
+    //    $(this).attr('title', txtvalue);//uday 3-7-2014 internal poinmt to add tooltip title...
+    //});
 
-    $('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
-    $('.accordion').find('input').each(function () {
-
+    //$('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
+    
+    $('.accordion-actuals').find('input').each(function () {
         $(this).keyup(function () {
             var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
             currentValue = currentValue == '' ? "0" : currentValue; // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
@@ -1511,7 +1534,8 @@ function LoadPage() {
                 else {
                     if (data != 'undefined') {
                         if (data.id != 0) {
-                            CallAjax();
+                            //Commented by Rahul Shah on 03/05/2016 for PL #2111
+                            //CallAjax();
                             //$("#successMessage").css("display", "block");
                             //$("#spanMessageSuccess").empty();
                             //$("#spanMessageSuccess").text(data.msg);
@@ -1575,24 +1599,27 @@ function fillActualsTable() {
 
                 $tableActuals.append($html);
             }
+        //Commented by Rahul Shah on 03/05/2016 for PL #2111
+        //start
             //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
-            $('.addFormatterActualCurrency').each(function () {
-                //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-                SetBudget($(this)); // Modfified by Sohel Pathan on 10/09/2014 for Internal Review Points  
-                //debugger;
-                //FormatCurrency($(this).innerHTML, true);
-            });
+            //$('.addFormatterActualCurrency').each(function () {
+            //    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+            //    SetBudget($(this)); // Modfified by Sohel Pathan on 10/09/2014 for Internal Review Points  
+            //    //debugger;
+            //    //FormatCurrency($(this).innerHTML, true);
+            //});
 
-            $('.addFormatterActualNumber').each(function () {
-                //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-                SetPriceValue($(this));
-            });
+            //$('.addFormatterActualNumber').each(function () {
+            //    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+            //    SetPriceValue($(this));
+            //});
 
-            // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
-            $('.setBudget').each(function () {
-                SetBudget("#" + $(this).attr('id'));    // Modified By : Viral Kadiya Internal Review Points 10/29/2014
-            });
+            //// Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
+            //$('.setBudget').each(function () {
+            //    SetBudget("#" + $(this).attr('id'));    // Modified By : Viral Kadiya Internal Review Points 10/29/2014
+            //});
             // End - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
+        //end
         }
     }
     //add row in actuals table
