@@ -783,8 +783,8 @@ namespace RevenuePlanner.Controllers
             }
 
             if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) || viewBy.Equals(PlanGanttTypes.Request.ToString(), StringComparison.OrdinalIgnoreCase))
-            {
-                lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+            {            
+                lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]).Where(prog => (!((prog.EndDate < CalendarStartDate) || (prog.StartDate > CalendarEndDate)))).ToList();
                 //var lstProgram = ((List<Plan_Campaign_Program>)objCache.Returncache(Enums.CacheObject.Program.ToString())).ToList();
                 // Add By Nishant Sheth // Desc:: For get values from cache
                 objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
@@ -795,10 +795,9 @@ namespace RevenuePlanner.Controllers
                                                                        lstProgramId.Contains(tactic.PlanProgramId) &&
                                                                        (filterOwner.Contains(tactic.CreatedBy)) &&
                                                                        (filterTacticType.Contains(tactic.TacticTypeId)) &&
-                                                                       (filterStatus.Contains(tactic.Status))).ToList();
-                
+                                                                       (filterStatus.Contains(tactic.Status)) &&
+                                                                       (!((tactic.EndDate < CalendarStartDate) || (tactic.StartDate > CalendarEndDate)))).ToList();
                 objCache.AddCache(Enums.CacheObject.Tactic.ToString(), lstTacticPer.ToList());
-
                 if (int.TryParse(listYear[0], out checklistyear))
                 {
                     lstTacticPer = lstTacticPer.Where(tactic => listYear.Contains(tactic.StartDate.Year.ToString())
@@ -933,7 +932,7 @@ namespace RevenuePlanner.Controllers
                 //lstProgram = objDbMrpEntities.Plan_Campaign_Program.Where(program => lstCampaignId.Contains(program.PlanCampaignId) && program.IsDeleted.Equals(false) && (!((program.EndDate < CalendarStartDate) || (program.StartDate > CalendarEndDate))))
                 //                                  .Select(program => program)
                 //                                  .ToList();
-                lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]).Where(prog => (!((prog.EndDate < CalendarStartDate) || (prog.StartDate > CalendarEndDate)))).ToList();
                 objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
                 lstProgramId = lstProgramPer.Select(program => program.PlanProgramId).ToList();
                 //lstTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
@@ -956,14 +955,15 @@ namespace RevenuePlanner.Controllers
                 //                                                           }).ToList();
 
                 lstTacticPer = ((List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.CustomTactic.ToString()))
-                                                                      .Where(tactic => tactic.IsDeleted.Equals(false) &&
-                                                                           lstProgramId.Contains(tactic.PlanProgramId) &&
-                                                                           ( filterOwner.Contains(tactic.CreatedBy)) &&
-                                                                      ( filterTacticType.Contains(tactic.TacticTypeId)) &&
-                                                                      ( filterStatus.Contains(tactic.Status))).ToList();
-
+                                                                       .Where(tactic => tactic.IsDeleted.Equals(false) &&
+                                                                       lstProgramId.Contains(tactic.PlanProgramId) &&
+                                                                       ( filterOwner.Contains(tactic.CreatedBy)) &&
+                                                                       ( filterTacticType.Contains(tactic.TacticTypeId)) &&
+                                                                       ( filterStatus.Contains(tactic.Status)) &&
+                                                                       (!((tactic.EndDate < CalendarStartDate) || (tactic.StartDate > CalendarEndDate)))).ToList();
+                
                 objCache.AddCache(Enums.CacheObject.Tactic.ToString(), lstTacticPer.ToList());
-
+                               
                 if (int.TryParse(listYear[0], out checklistyear))
                 {
                     lstTacticPer = lstTacticPer.Where(tactic => listYear.Contains(tactic.StartDate.Year.ToString())
