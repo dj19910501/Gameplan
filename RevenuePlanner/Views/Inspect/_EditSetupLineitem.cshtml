@@ -653,6 +653,9 @@
     //End
 
     $(document).ready(function () {
+        // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+        $('#btnEditlineItem').removeClass('SpanDisable');
+        $('#InspectTab').removeClass('SpanDisable');
         LoadBudgetDropdown();
         $(document).click(function () {
             $("#treeviewddl").css("display", "none");
@@ -902,6 +905,7 @@
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 
@@ -920,6 +924,7 @@
 
             if (totalWeightage != 100) {
                 ShowError('@Common.objCached.ValidateAttributeWeightSum'.replace('{0}', "Budget Account"));
+                $('#InspectTab').removeClass('SpanDisable');
                 return false;
             }
         }
@@ -943,6 +948,7 @@
         if (descriptionvalue.search(regex) >= 0) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
             $("#txtDescription").addClass("error");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 

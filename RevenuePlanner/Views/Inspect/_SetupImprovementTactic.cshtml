@@ -163,6 +163,8 @@
 
     $(document).ready(
       function () {
+          $('#btnEditImrovement').removeClass('SpanDisable');
+          $('#InspectTab').removeClass('SpanDisable');
           $(".datepicker.dropdown-menu").each(function () {
               $(this).remove();
           });
@@ -429,6 +431,7 @@
         }
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 
@@ -438,15 +441,21 @@
         if (descriptionvalue.search(regex) >= 0) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
             $("#txtDescription").addClass("error");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 
         var sdate = $('#txtDate').val();
         if (!isDate(sdate)) {
             alert('@Common.objCached.ValidateEffectiveDate');
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
-        if (!CheckDateYear(sdate, @hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+        if (!CheckDateYear(sdate, @hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear"))
+        {
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
         $("#txtCost").val(ReplaceCC($("#txtCost").val()));
         
         document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());

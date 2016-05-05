@@ -94,6 +94,8 @@
 <script type="text/javascript">
     $(document).ready(
       function () {
+          $('#EditProgram').removeClass('SpanDisable');
+          $('#InspectTab').removeClass('SpanDisable');
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
           $(".selectBox select").selectbox();

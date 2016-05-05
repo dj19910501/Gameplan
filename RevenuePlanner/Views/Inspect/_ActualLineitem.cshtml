@@ -310,6 +310,7 @@
 
         var ReturnParameter = SaveTitle();
         if (ReturnParameter == false) {
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
             var iserror = false;
@@ -338,6 +339,7 @@
 
             if (iserror) {
                 ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                $('#InspectTab').removeClass('SpanDisable');
                 return false;
             }
             $.ajax({

@@ -453,6 +453,7 @@
               errorMsgForLowBudget = errorMsgForLowBudget.substring(0, errorMsgForLowBudget.length - removeLength);
               errorMsgForLowBudget += '.';
               ShowError(errorMsgForLowBudget);
+              $('#InspectTab').removeClass('SpanDisable');
               return false;
           }
 
@@ -489,6 +490,7 @@
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 

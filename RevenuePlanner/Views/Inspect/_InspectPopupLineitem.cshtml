@@ -112,14 +112,14 @@
 
                     @if (IsPlanEditable)
                     {
-                        <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px; cursor: pointer;"></span>
+                        <span class="edit-icon-white btn-blue btn-large SpanDisable" href="#" id="btnEditlineItem" style="margin-right: 15px; cursor: pointer;"></span>
                     }
                 </span>
             }
 
             @if (string.IsNullOrEmpty(lineitemTitle))
             {
-                <span class="Save-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px; cursor: pointer;"></span>
+                <span class="Save-icon-white btn-blue btn-large SpanDisable" href="#" id="btnEditlineItem" style="margin-right: 15px; cursor: pointer;"></span>
 
             }
 
@@ -145,7 +145,7 @@
         </form>
 
         <div>
-            <ul class="nav nav-tabs new-margin no-position" id="InspectTab">
+            <ul class="nav nav-tabs new-margin no-position SpanDisable" id="InspectTab">
                 <li class="active pull-left" id="liSetup">
                     <a>Setup</a>
                 </li>
@@ -200,6 +200,7 @@
             if (activeTab == TabSetup) {
                 var ReturnParameter = SetupSaveLineitem();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -207,6 +208,7 @@
             else if (activeTab == TabBudget) {
                 var ReturnParameter = SaveLineitemBudget();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -227,6 +229,7 @@
                     var ReturnParameter = SaveTitle();
                 }
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -301,6 +304,7 @@
                 //// Ticket: 942 Exception handeling in Gameplan.
                 window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
             }
+            $('#InspectTab').removeClass('SpanDisable');
         });
     }
     // Close event for Error Message & Success Message Close button
@@ -375,30 +379,35 @@
          tabtext = ($("#li" + InspectValue).children('a').text());
          $('#div' + tabtext).css({ display: "block" });
          $("#liSetup,#liReview,#liBudget,#liActuals").on("click", function () {
-             var activeTab = $("#InspectTab li.active a").text();
-             tabtext = ($(this).children('a').text());
-             // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
-             var returnpara = true;
-             if (tabtext != activeTab) {
-                 var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal
-             }
+             // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+             if ($('#InspectTab').hasClass('SpanDisable') == false) {
 
-             PlanLineItemId = $("#hdnPlanLineItemID").val();
-             if (PlanLineItemId != 0 || tabtext != activeTab) {
-                 if (returnpara) {
-                     $("#successMessageViewCampaign").slideUp(50);
-                     $("#errorMessageEditCampaign").slideUp(50);
-                     RemoveTabClass();
-                     $(this).removeClass("pull-left");
-                     $(this).addClass("active pull-left");
-                     $("#errorMessage").css("display", "none");
-                     $("#successMessage").css("display", "none");
-                     loadReview(PlanLineItemId, tabtext);
+                 $('#btnEditlineItem').removeClass('SpanDisable');
+                 $('#InspectTab').addClass('SpanDisable');
+                 var activeTab = $("#InspectTab li.active a").text();
+                 tabtext = ($(this).children('a').text());
+                 // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
+                 var returnpara = true;
+                 if (tabtext != activeTab) {
+                     var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal
                  }
-             }
-             else
-             {
-                 loadAddSetup();
+
+                 PlanLineItemId = $("#hdnPlanLineItemID").val();
+                 if (PlanLineItemId != 0 || tabtext != activeTab) {
+                     if (returnpara) {
+                         $("#successMessageViewCampaign").slideUp(50);
+                         $("#errorMessageEditCampaign").slideUp(50);
+                         RemoveTabClass();
+                         $(this).removeClass("pull-left");
+                         $(this).addClass("active pull-left");
+                         $("#errorMessage").css("display", "none");
+                         $("#successMessage").css("display", "none");
+                         loadReview(PlanLineItemId, tabtext);
+                     }
+                 }
+                 else {
+                     loadAddSetup();
+                 }
              }
          });
 
@@ -495,102 +504,105 @@
          });
 
          $("#btnEditlineItem").on("click", function () {
-             isDataModified = true;
-             var activeTab = $("#InspectTab li.active a").text();
-             if ($('#btnEditlineItem').hasClass('edit-icon-white')) {
-                 $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
-                 $('#btnEditlineItem').addClass('Save-icon-white');
-                 $("#errorMessage").css("display", "none");
-                 $("#successMessage").css("display", "none");
-                 $("#hdnLineitemOpt").val("Edit");
-                 var InspectValue = $("#hdnInspectPopup").val();
-                 var tabtext = ($("#li" + InspectValue).children('a').text());
-                 if (tabtext == "Setup") {
-                     url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
-                     $("#divTab").empty();
-                     $("#divTab").load(url + '?id=' + PlanLineItemId, function (response, status, xhr) {
-                         if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                             //// Call function to redirect on service unavailibility.
-                             //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                             //// Ticket: 942 Exception handeling in Gameplan.
-                             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+             // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+             if ($(this).hasClass('SpanDisable') == false) {
+                 isDataModified = true;
+                 var activeTab = $("#InspectTab li.active a").text();
+                 if ($('#btnEditlineItem').hasClass('edit-icon-white')) {
+                     $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                     $('#btnEditlineItem').addClass('Save-icon-white');
+                     $("#errorMessage").css("display", "none");
+                     $("#successMessage").css("display", "none");
+                     $("#hdnLineitemOpt").val("Edit");
+                     var InspectValue = $("#hdnInspectPopup").val();
+                     var tabtext = ($("#li" + InspectValue).children('a').text());
+                     if (tabtext == "Setup") {
+                         url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
+                         $("#divTab").empty();
+                         $("#divTab").load(url + '?id=' + PlanLineItemId, function (response, status, xhr) {
+                             if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                                 //// Call function to redirect on service unavailibility.
+                                 //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                 //// Ticket: 942 Exception handeling in Gameplan.
+                                 window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                             }
+                         });
+                     }
+                     else if (tabtext == "Budget") {
+                         url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
+                         $("#divTab").empty();
+                         $("#divTab").load(url + '?id=' + PlanLineItemId);
+                     }
+                     else if (tabtext == "Actuals") {
+                         //// Modified By: Arpita Soni on 1/17/2015.
+                         //// Ticket: 1067
+                         var hdnTacticStatus = $("#hdnParentTacticStatus").val();
+                         var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                         var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                         var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                         if ((hdnTacticStatus == null || hdnTacticStatus == '') || (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus)) {
+                             loadReview(PlanLineItemId, TabSetup);
                          }
-                     });
+                         else {
+                             loadReview(PlanLineItemId, TabActual);
+                         }
+                     }
+
+                     //  $("#btnEditlineItem").css("display", "none");
+                     $('#txtTitle').css('display', 'block');
+                     $('#lblLineitemTitle').css('display', 'none');
+                     $("#txtTitle").prop('readonly', false);
+                     //  $("#AddForm").css("display", "none");
+                     //  $("#divDeleteProgram").css("display", "none");
+                     $("#txtTitle").removeClass('error');
+                     return false;
                  }
-                 else if (tabtext == "Budget") {
-                     url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
-                     $("#divTab").empty();
-                     $("#divTab").load(url + '?id=' + PlanLineItemId);
-                 }
-                 else if (tabtext == "Actuals") {
-                     //// Modified By: Arpita Soni on 1/17/2015.
-                     //// Ticket: 1067
-                     var hdnTacticStatus = $("#hdnParentTacticStatus").val();
-                     var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-                     var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-                     var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-                     if ((hdnTacticStatus == null || hdnTacticStatus == '') || (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus)) {
-                         loadReview(PlanLineItemId, TabSetup);
-                     }
-                     else {
-                         loadReview(PlanLineItemId, TabActual);
-                     }
-                 }
+                 else {
+                     if (activeTab == TabSetup) {
+                         var ReturnParameter = SetupSaveLineitem();
+                         if (ReturnParameter == false) {
+                             return false;
+                         }
+                         else {
+                             $('.close-x-big-icon').trigger('click');
 
-                 //  $("#btnEditlineItem").css("display", "none");
-                 $('#txtTitle').css('display', 'block');
-                 $('#lblLineitemTitle').css('display', 'none');
-                 $("#txtTitle").prop('readonly', false);
-                 //  $("#AddForm").css("display", "none");
-                 //  $("#divDeleteProgram").css("display", "none");
-                 $("#txtTitle").removeClass('error');
-                 return false;
-             }
-             else {
-                 if (activeTab == TabSetup) {
-                     var ReturnParameter = SetupSaveLineitem();
-                     if (ReturnParameter == false) {
-                         return false;
+                         }
                      }
-                     else {
-                         $('.close-x-big-icon').trigger('click');
 
-                     }
-                 }
-
-                 else if (activeTab == TabBudget) {
-                     var ReturnParameter = SaveLineitemBudget();
-                     if (ReturnParameter == false) {
-                         return false;
-                     }
-                     else {
-                         $('.close-x-big-icon').trigger('click');
+                     else if (activeTab == TabBudget) {
+                         var ReturnParameter = SaveLineitemBudget();
+                         if (ReturnParameter == false) {
+                             return false;
+                         }
+                         else {
+                             $('.close-x-big-icon').trigger('click');
 
 
+                         }
                      }
-                 }
 
-                 else if (activeTab == TabActual) {
-                     var hdnTacticStatus = $("#hdnParentTacticStatus").val();
-                     var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-                     var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-                     var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-                     if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
-                         var ReturnParameter = SaveLineitemActual();
-                     }
-                     else {
-                         var ReturnParameter = SaveTitle();
-                     }
-                     if (ReturnParameter == false) {
-                         return false;
-                     }
-                     else {
-                         $('.close-x-big-icon').trigger('click');
+                     else if (activeTab == TabActual) {
+                         var hdnTacticStatus = $("#hdnParentTacticStatus").val();
+                         var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                         var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                         var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                         if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
+                             var ReturnParameter = SaveLineitemActual();
+                         }
+                         else {
+                             var ReturnParameter = SaveTitle();
+                         }
+                         if (ReturnParameter == false) {
+                             return false;
+                         }
+                         else {
+                             $('.close-x-big-icon').trigger('click');
+
+                         }
 
                      }
 
                  }
-
              }
          });
 
@@ -710,6 +722,7 @@
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
         $.ajax({

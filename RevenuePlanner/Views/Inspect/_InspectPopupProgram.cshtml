@@ -108,7 +108,7 @@
                       }
                     @if (IsPlanEditable)
                     {
-                       <span class="edit-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px;cursor:pointer;"></span>
+                       <span class="edit-icon-white btn-blue btn-large SpanDisable" href="#" id="EditProgram" style="margin-right: 15px;cursor:pointer;"></span>
                         //  @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large",style="margin-right:10px;" })
                     }
 
@@ -120,7 +120,7 @@
 
             @if (programMaster.PlanProgramId == 0)
             {
-                <span class="Save-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px; cursor:pointer;"></span>
+                <span class="Save-icon-white btn-blue btn-large SpanDisable" href="#" id="EditProgram" style="margin-right: 15px; cursor:pointer;"></span>
                @* @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "Save-icon-white btn-blue btn-large",style="margin-right:10px;" })*@
             }
 
@@ -175,19 +175,19 @@
 }
 <div>
 
-    <ul class="nav nav-tabs new-margin no-position" id="InspectTab">
+    <ul class="nav nav-tabs new-margin no-position SpanDisable" id="InspectTab">
         <li class="active pull-left" id="liSetup">
             <a>Setup</a>
         </li>
         <li class="pull-left" id="liReview">
             <a>Review</a>
         </li>
-           @if (!Sessions.IsBudgetShow)
-           {
-        <li class="pull-left" id="liBudget">
-            <a>Budget</a>
-        </li>
-           }
+        @if (!Sessions.IsBudgetShow)
+        {
+            <li class="pull-left" id="liBudget">
+                <a>Budget</a>
+            </li>
+        }
     </ul>
 
     <div id="divTab">
@@ -225,41 +225,50 @@
 
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liBudget").on("click", function () {
-              var activeTab = $("#InspectTab li.active a").text();
-              tabtext = ($(this).children('a').text());
-              // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
-              var returnpara = true;
-              if (tabtext != activeTab) {
-                  var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1325
-              }
+              // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+              if($('#InspectTab').hasClass('SpanDisable') == false)
+                      {
+                      $('#EditProgram').removeClass('SpanDisable');
+                      var activeTab = $("#InspectTab li.active a").text();
+                      //   alert(activeTab);
+                      tabtext = ($(this).children('a').text());
+                   
 
-              var planProgramId = $("#hdnPlanProgramId").val();
-              if (planProgramId != 0 || tabtext != activeTab) {
-                  if (returnpara) {
-                      RemoveTabClass();
-                      $(this).removeClass("pull-left");
-                      $(this).addClass("active pull-left");
-                      $("#successMessageViewProgram").css("display", "none");
-                      $("#errorMessageEditProgram").css("display", "none");
-                      $("#errorMessage").css("display", "none");
-                      $("#successMessage").css("display", "none");
-                      /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                      //var tabtext = ($(this).children('a').text());
+                      $('#InspectTab').addClass('SpanDisable');
+                      // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
+                      var returnpara = true;
+                      if (tabtext != activeTab) {
+                          var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1325
+                      }
 
-                      loadReview(planProgramId, tabtext);
-                  }
-              }
-              else
-              {
-                  loadAddSetup();
-              }
+                      var planProgramId = $("#hdnPlanProgramId").val();
+                      if (planProgramId != 0 || tabtext != activeTab) {
+                          if (returnpara) {
+                              RemoveTabClass();
+                              $(this).removeClass("pull-left");
+                              $(this).addClass("active pull-left");
+                              $("#successMessageViewProgram").css("display", "none");
+                              $("#errorMessageEditProgram").css("display", "none");
+                              $("#errorMessage").css("display", "none");
+                              $("#successMessage").css("display", "none");
+                              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                              //var tabtext = ($(this).children('a').text());
 
+                              loadReview(planProgramId, tabtext);
+                          }
+                      }
+                      else
+                      {
+                          loadAddSetup();
+                      }
+
+                      }          
           });
 
           //Added By Komal Rawal for #1325
-          
 
-        
+    
+          
           //End
           if ($("#hdnPlanProgramId").val() != '0') {
               if ($('#EditProgram').hasClass('edit-icon-white') && $("#hdnProgramOpt").val() == '@Enums.InspectPopupMode.Edit.ToString()') {
@@ -277,92 +286,96 @@
 
              // $("#liReview,#liBudget,#liSetup").unbind('click');
               loadAddSetup();
-          }
+          }       
           $("#EditProgram").on("click", function () {
-              isDataModified = true;
-              var activeTab = $("#InspectTab li.active a").text();
-              var planProgramId = $("#hdnPlanProgramId").val();
-              if ($('#EditProgram').hasClass('edit-icon-white')) {
-                  $('#EditProgram').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
-                  $('#EditProgram').addClass('Save-icon-white');
-              var url;
-              $("#successMessageViewProgram").slideUp(50);
-              $("#errorMessageEditProgram").slideUp(50);
-              $("#successMessage").css("display", "none");
-              $("#txtProgramTitle").removeClass("error");
-              $("#hdnProgramOpt").val("Edit");
-              var InspectValue = $("#hdnInspectPopup").val();
-              var tabtext = ($("#li" + InspectValue).children('a').text());
+              // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+              if($(this).hasClass('SpanDisable') == false)
+              {
+                  isDataModified = true;
+                  var activeTab = $("#InspectTab li.active a").text();
+                  var planProgramId = $("#hdnPlanProgramId").val();
+                  if ($('#EditProgram').hasClass('edit-icon-white')) {
+                      $('#EditProgram').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                      $('#EditProgram').addClass('Save-icon-white');
+                      var url;
+                      $("#successMessageViewProgram").slideUp(50);
+                      $("#errorMessageEditProgram").slideUp(50);
+                      $("#successMessage").css("display", "none");
+                      $("#txtProgramTitle").removeClass("error");
+                      $("#hdnProgramOpt").val("Edit");
+                      var InspectValue = $("#hdnInspectPopup").val();
+                      var tabtext = ($("#li" + InspectValue).children('a').text());
 
-              if (tabtext == "Setup") {
-                  url = '@Url.Content("~/Inspect/LoadSetupProgramEdit/")';
-                  $("#divTab").empty();
-                  $("#divTab").load(url + '?id=' + planProgramId);
-              }
-              else if (tabtext == "Budget") {
-                  url = '@Url.Content("~/Inspect/LoadSetupProgramBudget/")';
-                      $("#divTab").empty();
-                      $("#divTab").load(url + '?id=' + planProgramId);
-                  }
-              else if (tabtext == "Review") {
-                  url = '@Url.Content("~/Inspect/LoadSetupProgramEdit/")';
-                  $("#divTab").empty();
-                  $("#divTab").load(url + '?id=' + planProgramId);
-                  RemoveTabClass();
-                  $("#liSetup").removeClass('pull-left');
-                  $("#liSetup").addClass('active pull-left');
-              }
-
-                  //  $("#EditProgram").css("display", "none");
-                  //  $("#DeleteForm").css("display", "none");
-                  //   $("#AddForm").css("display", "none");
-              $('#txtProgramTitle').css('display', 'block');
-              $('#lblProgramTitle').css('display', 'none');
-              $("#txtProgramTitle").prop('readonly', false);
-                 // $('#divDeleteProgram').css('display', 'none');
-              return false;
-              }
-
-                  //Added by komal Rawal for #1325 - To save the Active Tab on Save Button
-              else {
-                  if (activeTab == TabSetup) {
-                      var ReturnParameter = SetupSaveProgram();
-                      if (ReturnParameter == false) {
-                          return false;
+                      if (tabtext == "Setup") {
+                          url = '@Url.Content("~/Inspect/LoadSetupProgramEdit/")';
+                          $("#divTab").empty();
+                          $("#divTab").load(url + '?id=' + planProgramId);
                       }
-                      else {
-                          $('.close-x-big-icon').trigger('click');
+                      else if (tabtext == "Budget") {
+                          url = '@Url.Content("~/Inspect/LoadSetupProgramBudget/")';
+                          $("#divTab").empty();
+                          $("#divTab").load(url + '?id=' + planProgramId);
+                      }
+                      else if (tabtext == "Review") {
+                          url = '@Url.Content("~/Inspect/LoadSetupProgramEdit/")';
+                          $("#divTab").empty();
+                          $("#divTab").load(url + '?id=' + planProgramId);
+                          RemoveTabClass();
+                          $("#liSetup").removeClass('pull-left');
+                          $("#liSetup").addClass('active pull-left');
+                      }
+
+                      //  $("#EditProgram").css("display", "none");
+                      //  $("#DeleteForm").css("display", "none");
+                      //   $("#AddForm").css("display", "none");
+                      $('#txtProgramTitle').css('display', 'block');
+                      $('#lblProgramTitle').css('display', 'none');
+                      $("#txtProgramTitle").prop('readonly', false);
+                      // $('#divDeleteProgram').css('display', 'none');
+                      return false;
+                  }
+
+                      //Added by komal Rawal for #1325 - To save the Active Tab on Save Button
+                  else {
+                      if (activeTab == TabSetup) {
+                          var ReturnParameter = SetupSaveProgram();
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                          else {
+                              $('.close-x-big-icon').trigger('click');
                          
 
+                          }
                       }
-                  }
 
-                  else if (activeTab == TabBudget) {
-                      var ReturnParameter = SaveProgramBudget();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                      else {
-                          $('.close-x-big-icon').trigger('click');
+                      else if (activeTab == TabBudget) {
+                          var ReturnParameter = SaveProgramBudget();
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                          else {
+                              $('.close-x-big-icon').trigger('click');
                           
 
+                          }
                       }
-                  }
 
-                  else if (activeTab == TabReview) {
-                      var ReturnParameter = SaveTitle();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                      else {
-                          $('.close-x-big-icon').trigger('click');
+                      else if (activeTab == TabReview) {
+                          var ReturnParameter = SaveTitle();
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                          else {
+                              $('.close-x-big-icon').trigger('click');
                        
+                          }
+
                       }
 
                   }
-
               }
-          });
+          });   
 
           // Close event for Error Message & Success Message Close button 
           $(".alert").find(".close").on("click", function (e) {
@@ -468,6 +481,7 @@
             if (activeTab == TabSetup) {
                 var ReturnParameter = SetupSaveProgram();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -475,6 +489,7 @@
             else if (activeTab == TabBudget) {
                 var ReturnParameter = SaveProgramBudget();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -482,6 +497,7 @@
             else if (activeTab = TabReview) {
                 var ReturnParameter = SaveTitle();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -510,6 +526,7 @@
         }
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
         $.ajax({
@@ -601,7 +618,9 @@
                   //// Added By: Maninder Singh Wadhva on 11/24/2014.
                   //// Ticket: 942 Exception handeling in Gameplan.
                   window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                    }
+              }
+              // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+              $('#InspectTab').removeClass('SpanDisable');
           });
       }
     function loadAddSetup() {

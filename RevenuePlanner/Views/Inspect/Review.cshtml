@@ -1262,6 +1262,7 @@
 
         if(ValidateFields()==false)
         {
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 
@@ -1283,6 +1284,7 @@
         }
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
         // End - Get & Validate Tactic Title

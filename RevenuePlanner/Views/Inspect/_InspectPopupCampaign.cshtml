@@ -113,7 +113,7 @@
                     }
                     @if (IsPlanEditable)
                     {
-                        <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px; cursor: pointer;"></span>
+                        <span class="edit-icon-white btn-blue btn-large SpanDisable" href="#" id="btnEditCampaign" style="margin-right: 15px; cursor: pointer;"></span>
                     }
 
 
@@ -124,7 +124,7 @@
 
             @if (campaignMaster.PlanCampaignId == 0)
             {
-                <span class="Save-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;"></span>
+                <span class="Save-icon-white btn-blue btn-large SpanDisable" href="#" id="btnEditCampaign" style="margin-right: 15px;"></span>
             }
 
             <button class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></button> @*Modified by Bhumika #2003 from "buttom" to "button"  *@
@@ -177,7 +177,7 @@
             </div>
         }
         <div>
-            <ul class="nav nav-tabs new-margin no-position" id="InspectTab">
+            <ul class="nav nav-tabs new-margin no-position SpanDisable" id="InspectTab">
                 <li class="active pull-left" id="liSetup">
                     <a>Setup</a>
                 </li>
@@ -228,37 +228,42 @@
 
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liBudget").on("click", function () {
-              var activeTab = $("#InspectTab li.active a").text();
-              tabtext = ($(this).children('a').text());
-              // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
-              var returnpara = true;
-              if (tabtext != activeTab) {
-                  var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1324
-              }
+              // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+              if($('#InspectTab').hasClass('SpanDisable') == false)
+              {
+                  $('#btnEditCampaign').removeClass('SpanDisable');
+                  $('#InspectTab').addClass('SpanDisable');
+                  var activeTab = $("#InspectTab li.active a").text();
+                  tabtext = ($(this).children('a').text());
+                  // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
+                  var returnpara = true;
+                  if (tabtext != activeTab) {
+                      var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1324
+                  }
 
-              // If condition for campaign id , added by komal rawal for blank setup page on click of setup tab when we create new campaign . Date : 29-jan-2016.Ticket: #1938
-              var campaignId = $("#hdnPlanCampaignId").val();
-              if (campaignId != 0 || tabtext != activeTab) {
-                  if (returnpara) {
+                  // If condition for campaign id , added by komal rawal for blank setup page on click of setup tab when we create new campaign . Date : 29-jan-2016.Ticket: #1938
+                  var campaignId = $("#hdnPlanCampaignId").val();
+                  if (campaignId != 0 || tabtext != activeTab) {
+                      if (returnpara) {
 
-                      //$("#successMessageViewCampaign").slideUp(50);
-                      //$("#errorMessageEditCampaign").slideUp(50);
-                      RemoveTabClass();
-                      $(this).removeClass("pull-left");
-                      $(this).addClass("active pull-left");
-                      $("#errorMessage").css("display", "none");
-                      $("#successMessage").css("display", "none");
-                      $("#successMessageViewCampaign").css("display", "none");
-                      $("#errorMessageEditCampaign").css("display", "none");
-                      /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                          //$("#successMessageViewCampaign").slideUp(50);
+                          //$("#errorMessageEditCampaign").slideUp(50);
+                          RemoveTabClass();
+                          $(this).removeClass("pull-left");
+                          $(this).addClass("active pull-left");
+                          $("#errorMessage").css("display", "none");
+                          $("#successMessage").css("display", "none");
+                          $("#successMessageViewCampaign").css("display", "none");
+                          $("#errorMessageEditCampaign").css("display", "none");
+                          /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
 
-                      loadReview(campaignId, tabtext);
+                          loadReview(campaignId, tabtext);
+                      }
+                  }
+                  else {
+                      loadAddSetup();
                   }
               }
-              else {
-                  loadAddSetup();
-              }
-
           });
 
 
@@ -280,102 +285,106 @@
               loadAddSetup();
           }
           $("#btnEditCampaign").on("click", function () {
-              isDataModified = true;
-              var activeTab = $("#InspectTab li.active a").text();
-              if ($('#btnEditCampaign').hasClass('edit-icon-white')) {
-                  $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
-                  $('#btnEditCampaign').addClass('Save-icon-white');
-                  $("#errorMessage").css("display", "none");
-                  $("#successMessage").css("display", "none");
-                  $("#hdnCampaignOpt").val("Edit");
-                  var InspectValue = $("#hdnInspectPopup").val();
-                  var tabtext = ($("#li" + InspectValue).children('a').text());
+              // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+              if($(this).hasClass('SpanDisable') == false)
+              {
+                  isDataModified = true;
+                  var activeTab = $("#InspectTab li.active a").text();
+                  if ($('#btnEditCampaign').hasClass('edit-icon-white')) {
+                      $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                      $('#btnEditCampaign').addClass('Save-icon-white');
+                      $("#errorMessage").css("display", "none");
+                      $("#successMessage").css("display", "none");
+                      $("#hdnCampaignOpt").val("Edit");
+                      var InspectValue = $("#hdnInspectPopup").val();
+                      var tabtext = ($("#li" + InspectValue).children('a').text());
 
-                  if (tabtext == "Setup") {
-                      url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
-                      $("#divTab").empty();
-                      $("#divTab").load(url + '?id=' + planCampaignId
-    , function (response, status, xhr) {
-        if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-            //// Call function to redirect on service unavailibility.
-            //// Added By: Maninder Singh Wadhva on 11/24/2014.
-            //// Ticket: 942 Exception handeling in Gameplan.
-            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-        }
-    });
-
-                  }
-                  else if (tabtext == "Budget") {
-                      url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
-                      $("#divTab").empty();
-                      $("#divTab").load(url + '?id=' + planCampaignId);
-                  }
-                  else if (tabtext == "Review") {
-                      url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
-                      $("#divTab").empty();
-                      $("#divTab").load(url + '?id=' + planCampaignId
-    , function (response, status, xhr) {
-        if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-            //// Call function to redirect on service unavailibility.
-            //// Added By: Maninder Singh Wadhva on 11/24/2014.
-            //// Ticket: 942 Exception handeling in Gameplan.
-            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-        }
-    });
-
-                      RemoveTabClass();
-                      $("#liSetup").removeClass('pull-left');
-                      $("#liSetup").addClass('active pull-left');
-
-                  }
-
-                  //   $("#btnEditCampaign").css("display", "none");
-                  //  $("#AddForm").css("display", "none");
-                  $('#txtTitle').css('display', 'block');
-                  $('#lblCampaignTitle').css('display', 'none');
-                  $("#txtTitle").prop('readonly', false);
-                  //  $('#divDeleteCampaign').css('display', 'none');
-                  return false;
-              }
-                  //Added by komal Rawal for #1324 - To save the Active Tab on Save Button
-              else {
-
-                  if (activeTab == TabSetup) {
-                      var ReturnParameter = SetupCampaignSave();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                      else {
-                          $('.close-x-big-icon').trigger('click');
-
+                      if (tabtext == "Setup") {
+                          url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
+                          $("#divTab").empty();
+                          $("#divTab").load(url + '?id=' + planCampaignId
+        , function (response, status, xhr) {
+            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });
 
                       }
-                  }
-
-                  else if (activeTab == TabBudget) {
-                      var ReturnParameter = BudgetCampaignSave();
-                      if (ReturnParameter == false) {
-                          return false;
+                      else if (tabtext == "Budget") {
+                          url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
+                          $("#divTab").empty();
+                          $("#divTab").load(url + '?id=' + planCampaignId);
                       }
-                      else {
-                          $('.close-x-big-icon').trigger('click');
+                      else if (tabtext == "Review") {
+                          url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
+                          $("#divTab").empty();
+                          $("#divTab").load(url + '?id=' + planCampaignId
+        , function (response, status, xhr) {
+            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });
 
-
-                      }
-                  }
-
-                  else if (activeTab == TabReview) {
-                      var ReturnParameter = SaveTitle();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                      else {
-                          $('.close-x-big-icon').trigger('click');
+                          RemoveTabClass();
+                          $("#liSetup").removeClass('pull-left');
+                          $("#liSetup").addClass('active pull-left');
 
                       }
 
+                      //   $("#btnEditCampaign").css("display", "none");
+                      //  $("#AddForm").css("display", "none");
+                      $('#txtTitle').css('display', 'block');
+                      $('#lblCampaignTitle').css('display', 'none');
+                      $("#txtTitle").prop('readonly', false);
+                      //  $('#divDeleteCampaign').css('display', 'none');
+                      return false;
                   }
+                      //Added by komal Rawal for #1324 - To save the Active Tab on Save Button
+                  else {
 
+                      if (activeTab == TabSetup) {
+                          var ReturnParameter = SetupCampaignSave();
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                          else {
+                              $('.close-x-big-icon').trigger('click');
+
+
+                          }
+                      }
+
+                      else if (activeTab == TabBudget) {
+                          var ReturnParameter = BudgetCampaignSave();
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                          else {
+                              $('.close-x-big-icon').trigger('click');
+
+
+                          }
+                      }
+
+                      else if (activeTab == TabReview) {
+                          var ReturnParameter = SaveTitle();
+                          if (ReturnParameter == false) {
+                              return false;
+                          }
+                          else {
+                              $('.close-x-big-icon').trigger('click');
+
+                          }
+
+                      }
+
+                  }
               }
 
           });
@@ -476,6 +485,7 @@
             if (activeTab == TabSetup) {
                 var ReturnParameter = SetupCampaignSave();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -483,6 +493,7 @@
             else if (activeTab == TabBudget) {
                 var ReturnParameter = BudgetCampaignSave();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -491,6 +502,7 @@
 
                 var ReturnParameter = SaveTitle();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -518,6 +530,7 @@
         }
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
         $.ajax({
@@ -604,6 +617,8 @@
                 //// Ticket: 942 Exception handeling in Gameplan.
                 window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
             }
+
+            $('#InspectTab').removeClass('SpanDisable');
         });
     }
     function loadAddSetup() {

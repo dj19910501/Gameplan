@@ -93,6 +93,9 @@
 <script type="text/javascript">
     $(document).ready(
       function () {
+          // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+          $('#EditForm').removeClass('SpanDisable');
+          $('#InspectTab').removeClass('SpanDisable');
           $('.new_tag').each(function () {
               $(this).on('click', function (e) {
                   var dropdownMenu= $(this).parent().find('.dropdown-wrapper');

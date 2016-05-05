@@ -433,7 +433,9 @@
 
     $(document).ready(
       function () {
-
+         // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+          $('#btnEditCampaign').removeClass('SpanDisable');
+          $('#InspectTab').removeClass('SpanDisable');
           //Datetime Picker Bhumika
           $('#divStartDate').datetimepicker({
               format: 'MM/DD/YYYY',
@@ -794,6 +796,7 @@
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 
@@ -808,6 +811,7 @@
         if (descriptionvalue.search(regex) >= 0) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
             $("#txtDescription").addClass("error");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 
@@ -821,27 +825,40 @@
         $('#t_startdate').removeClass("error");
         if (!isDate(sdate)) {
             alert('@Common.objCached.ValidateStartDate');
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
         if (!isDate(edate)) {
             alert('@Common.objCached.ValidateEndDate');
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
-        if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-        if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+        if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) {
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) {
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
         if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) {
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
         if (!validateDateCompare(sdate, psdate, "@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate")) {
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
         if (!validateDateCompare(pedate, edate, "@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate")) {
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
         if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) {
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
         if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) {
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 

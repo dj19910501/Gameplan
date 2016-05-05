@@ -438,7 +438,10 @@
     }
 
     $(document).ready(function () {
-
+        $('#EditProgram').removeClass('SpanDisable');
+        $('#InspectTab').removeClass('SpanDisable');
+        
+        
         //Datetime Picker Bhumika
         $('#divStartDate').datetimepicker({
             format: 'MM/DD/YYYY',
@@ -648,6 +651,7 @@
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 
@@ -659,12 +663,13 @@
         var regex = /(>|<)/m;
 
         var descriptionvalue = $("#Description").val();
-        if (descriptionvalue.search(regex) >= 0) {
-            ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
-            $("#Description").addClass("error");
-            return false;
-        }
-
+            if (descriptionvalue.search(regex) >= 0) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
+                $("#Description").addClass("error");
+                $('#InspectTab').removeClass('SpanDisable');
+                return false;
+            }
+        
         sdate = $('#t_startdate').val();
         edate = $('#t_enddate').val();
         var tsdate = $('#hdnTStartDate').val();
@@ -673,18 +678,35 @@
 
         if (!isDate(sdate)) {
             alert('@Common.objCached.ValidateStartDate');
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
         if (!isDate(edate)) {
             alert('@Common.objCached.ValidateEndDate');
+            $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
 
-        if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-        if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
-        if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
-        if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) return false;
-        if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) return false;
+        if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) {
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) {
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) {
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) {
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) {
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
 
         $("#txtProgramBudget").val(ReplaceCC($("#txtProgramBudget").val()));
         $("#hdnDescription").val(htmlEncode($('#Description').val()));       // Added by Viral Kadiya on 11/15/2014 to resolve PL ticket #794.

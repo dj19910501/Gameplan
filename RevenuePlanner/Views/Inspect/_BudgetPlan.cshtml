@@ -298,6 +298,7 @@
         
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
         }
         else {
             $("#errorMessage").css("display", "none");
@@ -348,6 +349,7 @@
                         errorMsg += '. <br />If you want to continue, hit Save below.';
                         ShowBudgetError(errorMsg);
                         SavePlanFlag = false;
+                        $('#InspectTab').removeClass('SpanDisable');
                         return false;
                     }
                 }

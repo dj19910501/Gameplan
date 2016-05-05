@@ -118,13 +118,13 @@
 
                     if (IsPlanEditable)
                     {
-                    <span class="edit-icon-white btn-blue btn-large" style="display: block; cursor: pointer;" id="EditForm"></span>
+                        <span class="edit-icon-white btn-blue btn-large SpanDisable" style="display: block; cursor: pointer;" id="EditForm"></span>
                     }
                 }
 
                 @if (InspectMode == Enums.InspectPopupMode.Add.ToString())
                 {
-                    <span class="Save-icon-white btn-blue btn-large" style="display: block; cursor: pointer;" id="EditForm"></span>
+                    <span class="Save-icon-white btn-blue btn-large SpanDisable" style="display: block; cursor: pointer;" id="EditForm"></span>
                 }
 
             </span>
@@ -199,7 +199,7 @@
 
         <div>
 
-            <ul class="nav nav-tabs new-margin no-position" id="InspectTab">
+            <ul class="nav nav-tabs new-margin no-position SpanDisable" id="InspectTab">
                 <li class="active pull-left" id="liSetup">
                     <a>Setup</a>
                 </li>
@@ -213,12 +213,12 @@
                         <a>Actuals</a>
                     </li>
                 }
-                 @if(!Sessions.IsBudgetShow)
+                @if(!Sessions.IsBudgetShow)
                 {
-                <li class="pull-left" id="liBudget">
-                    <a>Budget</a>
-                </li>
-                 }
+                    <li class="pull-left" id="liBudget">
+                        <a>Budget</a>
+                    </li>
+                }
             </ul>
             <div id="divTab">
             </div>
@@ -266,34 +266,40 @@
           }
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
-              var activeTab = $("#InspectTab li.active a").text();
-              tabtext = ($(this).children('a').text());
-              isclickfrompopup = true;
-              //if (activeTab == 'Actuals') {
-              //    displayConfirm('topTabsClick("' + tabtext + '","' + activeTab + '");');
-              //}
-              // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
-              var returnpara = true;
-              if (tabtext != activeTab) {
-                  returnpara = SaveAllData(activeTab); //Added By Komal Rawal for #1213 to save data to tab click
-              }
-              if (returnpara) {
-                  RemoveTabClass();
-                  $(this).removeClass("pull-left");
-                  $(this).addClass("active pull-left");
-                  //  $("#errorMessage").css("display", "none");
-                  $("#successMessage").css("display", "none");
-                  $('#MultiSelectProcced').css("display", "none");
-                  var planTacticId = $("#hdnPlanTacticId").val();
-                  if (planTacticId != 0) {
-                      InspectMode = "@Enums.InspectPopupMode.Edit.ToString()";
+              // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+              if($('#InspectTab').hasClass('SpanDisable') == false)
+              {
+                  $('#EditForm').removeClass('SpanDisable');
+                  $('#InspectTab').addClass('SpanDisable');
+                  var activeTab = $("#InspectTab li.active a").text();
+                  tabtext = ($(this).children('a').text());
+                  isclickfrompopup = true;
+                  //if (activeTab == 'Actuals') {
+                  //    displayConfirm('topTabsClick("' + tabtext + '","' + activeTab + '");');
+                  //}
+                  // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
+                  var returnpara = true;
+                  if (tabtext != activeTab) {
+                      returnpara = SaveAllData(activeTab); //Added By Komal Rawal for #1213 to save data to tab click
                   }
-                  else
-                  {
-                      InspectMode = "@Enums.InspectPopupMode.Add.ToString()";
-                  }
+                  if (returnpara) {
+                      RemoveTabClass();
+                      $(this).removeClass("pull-left");
+                      $(this).addClass("active pull-left");
+                      //  $("#errorMessage").css("display", "none");
+                      $("#successMessage").css("display", "none");
+                      $('#MultiSelectProcced').css("display", "none");
+                      var planTacticId = $("#hdnPlanTacticId").val();
+                      if (planTacticId != 0) {
+                          InspectMode = "@Enums.InspectPopupMode.Edit.ToString()";
+                      }
+                      else
+                      {
+                          InspectMode = "@Enums.InspectPopupMode.Add.ToString()";
+                      }
 
-                  loadReview(planTacticId, tabtext);
+                      loadReview(planTacticId, tabtext);
+                  }
               }
 
           });
@@ -316,6 +322,9 @@
           //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
           $('#EditForm').on("click", function (e) {
+              // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+              if($(this).hasClass('SpanDisable') == false)
+              {
               isDataModified = true;
               //Modified for #1318 by Komal Rawal to handle the Save function
               var activeTab = $("#InspectTab li.active a").text()
@@ -418,7 +427,7 @@
                   }
               }
 
-              //  }
+              }
           });
 
 
@@ -432,6 +441,7 @@
 
                 var ReturnParameter = SetupSavetactic();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -439,6 +449,7 @@
             else if (activeTab == TabBudget) {
                 var ReturnParameter = TacticBudgetSave();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -456,6 +467,7 @@
 
                 }
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -464,6 +476,7 @@
                 var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
 
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -501,6 +514,7 @@
         if (iserror) {
             if (iserror) {
                 ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                $('#InspectTab').removeClass('SpanDisable');
                 return false;
             }
         }
@@ -577,11 +591,14 @@
         $("#li" + tabValue).removeClass("pull-left");
         $("#li" + tabValue).addClass("active pull-left");
         $('#div' + tabValue).css({ display: "block" });
-
+        // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
         if (tabValue == TabSetup) {
             if (InspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
                 url = '@Url.Content("~/Inspect/CreateTactic/")';
-                $("#divTab").load(url + '?id=' + "@PlanProgramId");
+                $("#divTab").load(url + '?id=' + "@PlanProgramId", function (response, status, xhr) {
+
+                    $('#InspectTab').removeClass('SpanDisable');
+                });;
             }
             else if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
 
@@ -594,6 +611,7 @@
                         //// Ticket: 942 Exception handeling in Gameplan.
                         window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
+                    $('#InspectTab').removeClass('SpanDisable');
                 });
                 //  TacticBudgetSave()
             }
@@ -606,6 +624,7 @@
                         //// Ticket: 942 Exception handeling in Gameplan.
                         window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
+                    $('#InspectTab').removeClass('SpanDisable');
                 });
             }
         }
@@ -627,6 +646,7 @@
                     //// Ticket: 942 Exception handeling in Gameplan.
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
+                $('#InspectTab').removeClass('SpanDisable');
             });
         }
         if (tabValue == TabActual) {
@@ -648,6 +668,8 @@
                     //// Ticket: 942 Exception handeling in Gameplan.
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
+
+                $('#InspectTab').removeClass('SpanDisable');
             });
         }
 
@@ -658,7 +680,9 @@
             }
 
             url = '@Url.Content("~/Inspect/LoadTacticBudgetAllocation/")';
-            $("#divTab").load(url + '?id=' + id);
+            $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
+                $('#InspectTab').removeClass('SpanDisable');
+            });
         }
     }
 

@@ -95,6 +95,9 @@
 <script type="text/javascript">
     var requestedModule = $("#hdnRequestedModule").val();
     $(document).ready(function () {
+
+        $('#EditForm').removeClass('SpanDisable');
+        $('#InspectTab').removeClass('SpanDisable');
         //Modified by Rahul Shah on 09/03/2016 for PL #1939
         $('#ddlOwner').multiselect({
             multiple: false,
@@ -185,6 +188,7 @@
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
         }
         else {
             $("#errorMessage").css("display", "none");
@@ -230,6 +234,7 @@
                     errorMsg += '.';
 
                     ShowBudgetError(errorMsg);
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
 

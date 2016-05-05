@@ -85,12 +85,12 @@
                 {
                     <div style="float: right; position: relative;">
                         @{
-                            string classbutton = "edit-icon-white";
-                            if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
-                            {
-                                classbutton = "Save-icon-white";
-                            }
-                        <span id="EditForm" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" class="@classbutton btn-blue btn-large"></span>
+                    string classbutton = "edit-icon-white";
+                    if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+                    {
+                        classbutton = "Save-icon-white";
+                    }
+                    <span id="EditForm" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" class="@classbutton btn-blue btn-large SpanDisable"></span>
                         }
                         <div id="popupeditplan" style="display: none; position: absolute; top: 35px;z-index:1;width:154px;" class="btn-dropdwn">
                             <ul style="margin: 0;">
@@ -136,16 +136,16 @@
             </div>
 </form>
 <div>
-    <ul class="nav nav-tabs new-margin no-position" id="InspectTab">
+    <ul class="nav nav-tabs new-margin no-position SpanDisable" id="InspectTab">
         <li class="active pull-left" id="liSetup">
             <a>Setup</a>
         </li>
-         @if(!Sessions.IsBudgetShow)
+        @if(!Sessions.IsBudgetShow)
         {
-        <li class="pull-left" id="liBudget">
-            <a>Budget</a>
-        </li>
-         }
+            <li class="pull-left" id="liBudget">
+                <a>Budget</a>
+            </li>
+        }
     </ul>
     <div id="divTab">
     </div>
@@ -212,25 +212,32 @@
                 //// Ticket: 942 Exception handeling in Gameplan.
                 window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
             }
+            // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+            $('#InspectTab').removeClass('SpanDisable');
         });
     }
 
     // Click on Tab Partialview Refresh Based On Selected Tab
     $("#liSetup,#liBudget").on("click", function () {
-        var activeTab = $("#InspectTab li.active a").text();
-        var tabtext = ($(this).children('a').text());
-        var planId = $("#hdnPlanId").val();
-        // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
-        var returnpara = true;
-        if (tabtext != activeTab) {
-            var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1327
-        }
-        if (returnpara) {
-        RemoveTabClass();
-        $(this).removeClass("pull-left");
-        $(this).addClass("active pull-left");
-        HideAllMessages();
-        loadInnerTabs(planId, tabtext);
+        // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+        if ($('#InspectTab').hasClass('SpanDisable') == false) {
+            $('#EditForm').removeClass('SpanDisable');
+            $('#InspectTab').addClass('SpanDisable');
+            var activeTab = $("#InspectTab li.active a").text();
+            var tabtext = ($(this).children('a').text());
+            var planId = $("#hdnPlanId").val();
+            // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
+            var returnpara = true;
+            if (tabtext != activeTab) {
+                var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1327
+            }
+            if (returnpara) {
+                RemoveTabClass();
+                $(this).removeClass("pull-left");
+                $(this).addClass("active pull-left");
+                HideAllMessages();
+                loadInnerTabs(planId, tabtext);
+            }
         }
     });
 
@@ -242,6 +249,7 @@
             if (activeTab == TabSetup) {
                 var ReturnParameter = SetupPlanSave();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -249,6 +257,7 @@
             else if (activeTab == TabBudget) {
                 var ReturnParameter = SavePlanBudget();
                 if (ReturnParameter == false) {
+                    $('#InspectTab').removeClass('SpanDisable');
                     return false;
                 }
             }
@@ -277,45 +286,47 @@
     }
 
     $('#EditForm').click(function () {
-       
-        var activeTab = $("#InspectTab li.active a").text();
-        var planId = $("#hdnPlanId").val();
-      //  var requestedModule = $("#hdnRequestedModule").val();
-        if ($('#EditForm').hasClass('edit-icon-white')) {
-        if ($('#popupeditplan').css('display') == 'none') {
-                $('#popupeditplan').css('display', 'block');
-        }
-        else {
+        // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+        if ($(this).hasClass('SpanDisable') == false) {
+            var activeTab = $("#InspectTab li.active a").text();
+            var planId = $("#hdnPlanId").val();
+            //  var requestedModule = $("#hdnRequestedModule").val();
+            if ($('#EditForm').hasClass('edit-icon-white')) {
+                if ($('#popupeditplan').css('display') == 'none') {
+                    $('#popupeditplan').css('display', 'block');
+                }
+                else {
+                    $('#popupeditplan').css('display', 'none');
+                }
+            }
+            else {      //Modified for #1327 to save the data on save button
                 $('#popupeditplan').css('display', 'none');
+                if (activeTab == TabSetup) {
+                    var ReturnParameter = SetupPlanSave();
+                    if (ReturnParameter == false) {
+                        return false;
+                    }
+                    else {
+                        $('.close-x-big-icon').trigger('click');
+
+
+                    }
+                }
+
+                else if (activeTab == TabBudget) {
+                    var ReturnParameter = SavePlanBudget();
+                    if (ReturnParameter == false) {
+                        return false;
+                    }
+                    else {
+                        $('.close-x-big-icon').trigger('click');
+
+                    }
+                }
+
             }
+            updatePlanNameDrp();
         }
-        else {      //Modified for #1327 to save the data on save button
-            $('#popupeditplan').css('display', 'none');
-            if (activeTab == TabSetup) {
-                var ReturnParameter = SetupPlanSave();
-                if (ReturnParameter == false) {
-                    return false;
-                }
-                else {
-                    $('.close-x-big-icon').trigger('click');
-                    
-
-                }
-            }
-
-            else if (activeTab == TabBudget) {
-                var ReturnParameter = SavePlanBudget();
-                if (ReturnParameter == false) {
-                    return false;
-                }
-                else {
-                    $('.close-x-big-icon').trigger('click');
-                    
-                }
-            }
-
-        }
-        updatePlanNameDrp();
     });
 
     function updatePlanNameDrp() {

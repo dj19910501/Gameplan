@@ -706,7 +706,8 @@
         var _decimalRegex = '^(0|[0-9][0-9]*)[.]?[0-9]*$';
         var _IntgerRegex = '^(0|[0-9][0-9]*)$';
         var ReturnParameter = SaveTitle();
-            if (ReturnParameter == false) {
+        if (ReturnParameter == false) {
+              $('#InspectTab').removeClass('SpanDisable');
                 return false;
             }
         
@@ -797,6 +798,7 @@
                 $("#errorMessage").css("display", "block");
                 /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
                 $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
+                $('#InspectTab').removeClass('SpanDisable');
                 return false;
             }
             if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
@@ -804,6 +806,7 @@
                 var msgdisplay = msg.replace('{0}', FormatCommas(totalMQLActual.toString())).replace('{1}', '@ViewBag.TacticStageTitle').replace('{3}', '@ViewBag.TacticStageTitle').replace('{2}', FormatCommas(totalProjectedStageValueActual.toString())).replace(/{4\}/g, '@MQlTitle');
                 $("#spanMessageError").text(msgdisplay);
                 $("#errorMessage").css("display", "block");
+                $('#InspectTab').removeClass('SpanDisable');
                 return false;
             }
             if (!isData) {
