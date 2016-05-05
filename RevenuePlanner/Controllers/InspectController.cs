@@ -16,6 +16,7 @@ using System.Text;
 using System.IO;
 using System.Web.Script.Serialization;
 using System.Threading.Tasks;
+using System.Web.Caching;
 
 
 
@@ -23,6 +24,23 @@ namespace RevenuePlanner.Controllers
 {
     public class InspectController : CommonController
     {
+        public InspectController()
+        {
+
+            if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
+            {
+
+                Common.xmlMsgFilePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");
+                Common.objCached.loadMsg(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
+                CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache.Insert("CommonMsg", Common.objCached, dependency);
+            }
+            else
+            {
+                Common.objCached = (Message)System.Web.HttpContext.Current.Cache["CommonMsg"];
+            }
+        }
         //
         // GET: /Inspect/
 

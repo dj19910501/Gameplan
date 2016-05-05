@@ -109,6 +109,16 @@ namespace RevenuePlanner.Test.MockHelpers
             return year;
         }
 
+        /// <summary>
+        /// Get Plan Year
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        public static string GetPlanYear()
+        {
+            string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
+            return Convert.ToString(db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.Year).FirstOrDefault());
+        }
 
         /// <summary>
         /// Get comma separated published plan id list.

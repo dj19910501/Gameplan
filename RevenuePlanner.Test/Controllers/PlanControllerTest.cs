@@ -56,13 +56,13 @@ namespace RevenuePlanner.Test.Controllers
             if (Convert.ToBoolean(planId))
             {
 
-                Debug.WriteLine("Pass – Debug WriteLine");
-                Console.WriteLine("Pass – Console WriteLine");
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + planId);
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
-                Console.WriteLine("Fail – Console WriteLine");
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + planId);
             }
 
         }
@@ -103,13 +103,13 @@ namespace RevenuePlanner.Test.Controllers
             if (Convert.ToBoolean(planId))
             {
 
-                Debug.WriteLine("Pass – Debug WriteLine");
-                Console.WriteLine("Pass – Console WriteLine");
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + planId);
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
-                Console.WriteLine("Fail – Console WriteLine");
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + planId);
             }
 
 
@@ -153,13 +153,13 @@ namespace RevenuePlanner.Test.Controllers
             if (Convert.ToBoolean(planId))
             {
 
-                Debug.WriteLine("Pass – Debug WriteLine");
-                Console.WriteLine("Pass – Console WriteLine");
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + planId);
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
-                Console.WriteLine("Fail – Console WriteLine");
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + planId);
             }
 
         }
@@ -200,12 +200,12 @@ namespace RevenuePlanner.Test.Controllers
             if (true)
             {
 
-                Debug.WriteLine("Pass – Debug WriteLine");
+
                 Console.WriteLine("Pass – Console WriteLine");
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
+
                 Console.WriteLine("Fail – Console WriteLine");
             }
 
@@ -231,12 +231,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
-                Debug.WriteLine("Pass – Debug WriteLine");
+
                 Console.WriteLine("Pass – Console WriteLine");
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
+
                 Console.WriteLine("Fail – Console WriteLine");
             }
 
@@ -263,13 +263,13 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
-                Debug.WriteLine("Pass – Debug WriteLine");
-                Console.WriteLine("Pass – Console WriteLine");
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
-                Console.WriteLine("Fail – Console WriteLine");
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
 
 
@@ -298,13 +298,13 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
-                Debug.WriteLine("Pass – Debug WriteLine");
-                Console.WriteLine("Pass – Console WriteLine");
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
-                Console.WriteLine("Fail – Console WriteLine");
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
 
         }
@@ -334,12 +334,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
-                Debug.WriteLine("Pass – Debug WriteLine");
+
                 Console.WriteLine("Pass – Console WriteLine");
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
+
                 Console.WriteLine("Fail – Console WriteLine");
             }
 
@@ -381,12 +381,13 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //     data object should not be null in json result
-                Assert.IsNotNull(result,"Pass");
-                Debug.WriteLine("Pass – Debug WriteLine");
+                Assert.IsNotNull(result, "Pass");
+
                 Console.WriteLine("Pass – Console WriteLine");
             }
-            else {
-                Debug.WriteLine("Fail – Debug WriteLine");
+            else
+            {
+
                 Console.WriteLine("Fail – Console WriteLine");
             }
 
@@ -408,13 +409,13 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
-                Debug.WriteLine("Pass – Debug WriteLine");
+
                 Console.WriteLine("Pass – Console WriteLine");
 
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
+
                 Console.WriteLine("Fail – Console WriteLine");
             }
 
@@ -448,12 +449,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual("~/Views/Plan/_CopyEntity.cshtml", result.ViewName);
-                Debug.WriteLine("Pass – Debug WriteLine");
+
                 Console.WriteLine("Pass – Console WriteLine");
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
+
                 Console.WriteLine("Fail – Console WriteLine");
             }
         }
@@ -476,12 +477,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.IsNotNull(result.Data);
-                Debug.WriteLine("Pass – Debug WriteLine");
+
                 Console.WriteLine("Pass – Console WriteLine");
             }
             else
             {
-                Debug.WriteLine("Fail – Debug WriteLine");
+
                 Console.WriteLine("Fail – Console WriteLine");
             }
         }

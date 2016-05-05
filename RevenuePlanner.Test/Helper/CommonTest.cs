@@ -74,13 +74,13 @@ namespace RevenuePlanner.Test.Helper
             Assert.AreEqual(0, CustomFields.Count);
         }
 
-        [TestMethod]
-        public void GetAllCustomFields_With_NULL_TacticIds_List()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(null, null, null);
-            Assert.AreEqual(0, CustomFields.Count);
-        }
+        //[TestMethod] This is a invalid test case List is can be empty but never null.
+        //public void GetAllCustomFields_With_NULL_TacticIds_List()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(null, null, null);
+        //    Assert.AreEqual(0, CustomFields.Count);
+        //}
 
         [TestMethod]
         public void GetAllCustomFields_With_TacticIds_List()

@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 using RevenuePlanner.Models;
+using System.Web.Routing;
 
 namespace RevenuePlanner.Test.Controllers
 {
@@ -22,6 +23,11 @@ namespace RevenuePlanner.Test.Controllers
         MRPEntities db = new MRPEntities();
         #region "GetOverviewData function TestCases"
         #region GetOverviewData section with TimeFrame Empty
+        string PlanYear = string.Empty;
+        public ReportControllerTest()
+        {
+            this.PlanYear = DataHelper.GetPlanYear();
+        }
         /// <summary>
         /// To check GetOverviewData function with no timeframeOption
         /// This test case return "Object Reference not set to an instance of an Object" error due to Common.objCached.RevenueSparklineChartHeader becomes null.
@@ -37,7 +43,7 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(9775);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
-            
+
             #region "Old Code: Load Cache Data"
             ////Common.objCached.RevenueSparklineChartHeader ="Top {0} by";
 
@@ -51,10 +57,10 @@ namespace RevenuePlanner.Test.Controllers
             //Message objMessage = new Message();
             //System.Web.HttpContext.Current.Cache.Insert("CommonMsg", objCommon, dependency); 
             #endregion
-            
+
             //// Call GetOverviewData() function
             ReportController ReportController = new ReportController();
-            
+
             var result = ReportController.GetOverviewData(string.Empty, Enums.ViewByAllocated.Quarterly.ToString()) as Task<ActionResult>;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreNotEqual("_Overview", result);
@@ -77,7 +83,7 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(9775);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
-            
+
             //Common.objCached.RevenueSparklineChartHeader = "Top {0} by";
 
             string _InvalidTimeFrame = "InValid";
@@ -109,7 +115,7 @@ namespace RevenuePlanner.Test.Controllers
             ///Common.objCached.RevenueSparklineChartHeader = "Top {0} by";
             //// Call GetOverviewData() function
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetOverviewData("2015", string.Empty) as Task<ActionResult>;
+            var result = ReportController.GetOverviewData(PlanYear, string.Empty) as Task<ActionResult>;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreNotEqual("_Overview", result);
         }
@@ -135,7 +141,7 @@ namespace RevenuePlanner.Test.Controllers
             ///Common.objCached.RevenueSparklineChartHeader = "Top {0} by";
             //// Call GetOverviewData() function
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetOverviewData("2015", _InValidIsQuarterly) as Task<ActionResult>;
+            var result = ReportController.GetOverviewData(PlanYear, _InValidIsQuarterly) as Task<ActionResult>;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreNotEqual("_Overview", result);
         }
@@ -159,7 +165,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
+            Common.PlanUserSavedViews = SetOFLastViews;
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
             lst.Add(planId);
@@ -167,7 +173,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
 
-            var result = ReportController.GetRevenueData() as PartialViewResult;
+            var result = ReportController.GetRevenueData("2014") as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_Revenue", result.ViewName);
         }
@@ -184,16 +190,17 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
+            int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
-            lst.Add(9775);
+            lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
+            Common.PlanUserSavedViews = SetOFLastViews;
 
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
 
-            var result = ReportController.GetRevenueData(string.Empty, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
+            var result = ReportController.GetRevenueData(PlanYear, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_Revenue", result.ViewName);
         }
@@ -236,15 +243,15 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Set session value
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
-          
+            Common.PlanUserSavedViews = SetOFLastViews;
+            int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
-            lst.Add(9775);
+            lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ///Common.objCached.RevenueSparklineChartHeader = "Top {0} by";
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetRevenueData("2015", string.Empty) as PartialViewResult;
+            var result = ReportController.GetRevenueData(PlanYear, string.Empty) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_Revenue", result.ViewName);
         }
@@ -261,13 +268,14 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
+            int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
-            lst.Add(9775);
+            lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             string _InValidIsQuarterly = "InValidQuarterly";
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetRevenueData("2015", _InValidIsQuarterly) as PartialViewResult;
+            var result = ReportController.GetRevenueData(PlanYear, _InValidIsQuarterly) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_Revenue", result.ViewName);
         }
@@ -288,12 +296,14 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(planId);
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
+            Common.PlanUserSavedViews = SetOFLastViews;
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
+            ReportController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
-            var result = ReportController.GetRevenueToPlanByFilter() as PartialViewResult;
+            ReportController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), ReportController);
+            var result = ReportController.GetRevenueToPlanByFilter("Campaign", "", "", "2014");
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -319,7 +329,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParent, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParent, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -340,12 +350,12 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
-            string StrParent ="Invalid";
+            string StrParent = "Invalid";
             string Isquater = Enums.ViewByAllocated.Quarterly.ToString();
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParent, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParent, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -371,7 +381,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -397,7 +407,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -423,7 +433,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -446,15 +456,19 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             string StrParentLabel = Enums.PlanEntity.Campaign.ToString();
             string Isquater = Enums.ViewByAllocated.Quarterly.ToString();
-            
+
             ReportController ReportController = new ReportController();
             List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+
+
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
+
+
         }
         #endregion
 
@@ -482,7 +496,7 @@ namespace RevenuePlanner.Test.Controllers
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2015", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2014", Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -503,7 +517,7 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
-            
+
 
             string StrParentLabel = Enums.PlanEntity.Campaign.ToString();
             string StrChildLabel = Enums.PlanEntity.Campaign.ToString();
@@ -512,7 +526,7 @@ namespace RevenuePlanner.Test.Controllers
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2015", string.Empty, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2014", string.Empty, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -542,7 +556,7 @@ namespace RevenuePlanner.Test.Controllers
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2015", invalidQuater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2014", invalidQuater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -573,7 +587,7 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
-            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2015", IsQuater, false, string.Empty, false, string.Empty, string.Empty, 0) as PartialViewResult;
+            var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", "2014", IsQuater, false, string.Empty, false, string.Empty, string.Empty, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
@@ -601,7 +615,7 @@ namespace RevenuePlanner.Test.Controllers
             List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
 
             // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-           
+
             //// Calculate Value for ecah tactic
             List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
@@ -610,7 +624,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> ActualStageCodeList = new List<string>();
             ActualStageCodeList.Add("MQL");
             List<string> includemonth = new List<string>();
-            includemonth.Add("2015");
+            includemonth.Add(PlanYear);
 
             List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
@@ -619,11 +633,11 @@ namespace RevenuePlanner.Test.Controllers
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
             ProjectedTrendList = reportController.CalculateProjectedTrend(tacticStageList, includemonth, "MQL");
-            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, "2015", ActualStageCodeList, true);
+            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, PlanYear, ActualStageCodeList, true);
 
             ActualTacticTrendList = reportController.GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList);
-          
-            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, "2015", true, "Campaign", false, "", 0);
+
+            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, PlanYear, true, "Campaign", false, "", 0);
             reportController.TempData["RevenueCardList"] = CardSectionListModel;
             ////// Call SearchSortPaginataionRevenue() function
             ////string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
@@ -664,7 +678,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> ActualStageCodeList = new List<string>();
             ActualStageCodeList.Add("MQL");
             List<string> includemonth = new List<string>();
-            includemonth.Add("2015");
+            includemonth.Add(PlanYear);
 
             List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
@@ -673,11 +687,11 @@ namespace RevenuePlanner.Test.Controllers
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
             ProjectedTrendList = reportController.CalculateProjectedTrend(tacticStageList, includemonth, "MQL");
-            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, "2015", ActualStageCodeList, true);
+            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, PlanYear, ActualStageCodeList, true);
 
             ActualTacticTrendList = reportController.GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList);
 
-            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, "2015", true, "Campaign", false, "", 0);
+            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, PlanYear, true, "Campaign", false, "", 0);
             reportController.TempData["RevenueCardList"] = CardSectionListModel;
             string shortBy = Enums.SortByRevenue.Revenue.ToString();
             ////// Call SearchSortPaginataionRevenue() function
@@ -713,7 +727,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> ActualStageCodeList = new List<string>();
             ActualStageCodeList.Add("MQL");
             List<string> includemonth = new List<string>();
-            includemonth.Add("2015");
+            includemonth.Add(PlanYear);
 
             List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
@@ -722,11 +736,11 @@ namespace RevenuePlanner.Test.Controllers
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
             ProjectedTrendList = reportController.CalculateProjectedTrend(tacticStageList, includemonth, "MQL");
-            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, "2015", ActualStageCodeList, true);
+            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, PlanYear, ActualStageCodeList, true);
 
             ActualTacticTrendList = reportController.GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList);
 
-            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, "2015", true, "Campaign", false, "", 0);
+            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, PlanYear, true, "Campaign", false, "", 0);
             reportController.TempData["RevenueCardList"] = CardSectionListModel;
             string shortBy = Enums.SortByRevenue.Cost.ToString();
             ////// Call SearchSortPaginataionRevenue() function
@@ -763,7 +777,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> ActualStageCodeList = new List<string>();
             ActualStageCodeList.Add("MQL");
             List<string> includemonth = new List<string>();
-            includemonth.Add("2015");
+            includemonth.Add(PlanYear);
 
             List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
@@ -772,11 +786,11 @@ namespace RevenuePlanner.Test.Controllers
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
             ProjectedTrendList = reportController.CalculateProjectedTrend(tacticStageList, includemonth, "MQL");
-            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, "2015", ActualStageCodeList, true);
+            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, PlanYear, ActualStageCodeList, true);
 
             ActualTacticTrendList = reportController.GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList);
 
-            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, "2015", true, "Campaign", false, "", 0);
+            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, PlanYear, true, "Campaign", false, "", 0);
             reportController.TempData["RevenueCardList"] = CardSectionListModel;
             string shortBy = Enums.SortByRevenue.ROI.ToString();
             ////// Call SearchSortPaginataionRevenue() function
@@ -813,7 +827,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> ActualStageCodeList = new List<string>();
             ActualStageCodeList.Add("MQL");
             List<string> includemonth = new List<string>();
-            includemonth.Add("2015");
+            includemonth.Add(PlanYear);
 
             List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
@@ -822,11 +836,11 @@ namespace RevenuePlanner.Test.Controllers
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
             ProjectedTrendList = reportController.CalculateProjectedTrend(tacticStageList, includemonth, "MQL");
-            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, "2015", ActualStageCodeList, true);
+            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, PlanYear, ActualStageCodeList, true);
 
             ActualTacticTrendList = reportController.GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList);
 
-            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, "2015", true, "Campaign", false, "", 0);
+            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, PlanYear, true, "Campaign", false, "", 0);
             reportController.TempData["RevenueCardList"] = CardSectionListModel;
             string shortBy = "Invalid";
             ////// Call SearchSortPaginataionRevenue() function
@@ -852,7 +866,7 @@ namespace RevenuePlanner.Test.Controllers
             lst.Add(14936);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
 
-           
+
             ReportController reportController = new ReportController();
             List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
             // Fetch the respectives Campaign Ids and Program Ids from the tactic list
@@ -862,7 +876,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> ActualStageCodeList = new List<string>();
             ActualStageCodeList.Add("MQL");
             List<string> includemonth = new List<string>();
-            includemonth.Add("2015");
+            includemonth.Add(PlanYear);
 
             List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
@@ -871,11 +885,11 @@ namespace RevenuePlanner.Test.Controllers
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
             ProjectedTrendList = reportController.CalculateProjectedTrend(tacticStageList, includemonth, "MQL");
-            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, "2015", ActualStageCodeList, true);
+            ActualTacticStageList = reportController.GetActualListInTacticInterval(tacticStageList, PlanYear, ActualStageCodeList, true);
 
             ActualTacticTrendList = reportController.GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList);
 
-            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, "2015", true, "Campaign", false, "", 0);
+            CardSectionListModel = reportController.GetCardSectionDefaultData(tacticStageList, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, PlanYear, true, "Campaign", false, "", 0);
             reportController.TempData["RevenueCardList"] = CardSectionListModel;
             string shortBy = Enums.SortByRevenue.Revenue.ToString();
             ////// Call SearchSortPaginataionRevenue() function
@@ -925,14 +939,14 @@ namespace RevenuePlanner.Test.Controllers
         //    ReportController reportController = new ReportController();
         //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
         //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-          
+
         //    //// Calculate Value for ecah tactic
         //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
         //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
         //    //TempData["ReportData"] = tacticStageList;
         //    reportController.TempData["ReportData"] = tacticStageList;
         //    string Parentlbl = Common.TacticCustomTitle.ToString();
-        //    var result = reportController.LoadRevenueContribution(Parentlbl,"2015");
+        //    var result = reportController.LoadRevenueContribution(Parentlbl,PlanYear);
         //    Assert.IsNotNull(result.Data);
 
         //}
@@ -963,7 +977,7 @@ namespace RevenuePlanner.Test.Controllers
         //    //TempData["ReportData"] = tacticStageList;
         //    reportController.TempData["ReportData"] = tacticStageList;
         //    string Parentlbl = Common.CampaignCustomTitle.ToString();
-        //    var result = reportController.LoadRevenueContribution(Parentlbl, "2015");
+        //    var result = reportController.LoadRevenueContribution(Parentlbl, PlanYear);
         //    Assert.IsNotNull(result.Data);
 
         //}
@@ -994,7 +1008,7 @@ namespace RevenuePlanner.Test.Controllers
         //    //TempData["ReportData"] = tacticStageList;
         //    reportController.TempData["ReportData"] = tacticStageList;
         //    string Parentlbl = Common.ProgramCustomTitle.ToString();
-        //    var result = reportController.LoadRevenueContribution(Parentlbl, "2015");
+        //    var result = reportController.LoadRevenueContribution(Parentlbl, PlanYear);
         //    Assert.IsNotNull(result.Data);
 
         //}
@@ -1025,7 +1039,7 @@ namespace RevenuePlanner.Test.Controllers
         //    //TempData["ReportData"] = tacticStageList;
         //    reportController.TempData["ReportData"] = tacticStageList;
         //    string Parentlbl = Common.CampaignCustomTitle.ToString();
-        //   var result= reportController.GetRevenueToPlan(Parentlbl,"0","2015","");
+        //   var result= reportController.GetRevenueToPlan(Parentlbl,"0",PlanYear,"");
         //   Assert.IsNotNull(result.Data);
 
         //}
@@ -1056,7 +1070,7 @@ namespace RevenuePlanner.Test.Controllers
         //    //TempData["ReportData"] = tacticStageList;
         //    reportController.TempData["ReportData"] = tacticStageList;
         //    string Parentlbl = Common.CampaignCustomTitle.ToString();
-        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", "2015", "");
+        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", PlanYear, "");
         //    Assert.IsNotNull(result.Data);
 
         //}
@@ -1087,7 +1101,7 @@ namespace RevenuePlanner.Test.Controllers
         //    //TempData["ReportData"] = tacticStageList;
         //    reportController.TempData["ReportData"] = tacticStageList;
         //    string Parentlbl = Common.ProgramCustomTitle.ToString();
-        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", "2015", "");
+        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", PlanYear, "");
         //    Assert.IsNotNull(result.Data);
 
         //}
@@ -1118,7 +1132,7 @@ namespace RevenuePlanner.Test.Controllers
         //    //TempData["ReportData"] = tacticStageList;
         //    reportController.TempData["ReportData"] = tacticStageList;
         //    string Parentlbl = Common.TacticCustomTitle.ToString();
-        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", "2015", "");
+        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", PlanYear, "");
         //    Assert.IsNotNull(result.Data);
 
         //}
@@ -1148,7 +1162,7 @@ namespace RevenuePlanner.Test.Controllers
         //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
         //    //TempData["ReportData"] = tacticStageList;
         //    reportController.TempData["ReportData"] = tacticStageList;
-         
+
         //    var result = reportController.GetRevenueSummaryDataRevenueReport("","","");
         //    Assert.IsNotNull(result.Data);
         //}
@@ -1196,13 +1210,13 @@ namespace RevenuePlanner.Test.Controllers
         {
             ReportController reportcontroller = new ReportController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
-           
-            var result = reportcontroller.GetChildLabelDataViewByModel("","");
+
+            var result = reportcontroller.GetChildLabelDataViewByModel("", "");
             Assert.IsNotNull(result);
         }
         #endregion
 
-       
+
 
 
         #endregion
@@ -1225,13 +1239,13 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(planId);
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
+            Common.PlanUserSavedViews = SetOFLastViews;
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             //int planId=DataHelper.GetPlanId();
             //// Call GetWaterFallData() function
             ReportController ReportController = new ReportController();
 
-            var result = ReportController.GetWaterFallData() as PartialViewResult;
+            var result = ReportController.GetWaterFallData("2014") as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ReportConversion", result.ViewName);
         }
@@ -1252,13 +1266,16 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(planId);
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
+            Common.PlanUserSavedViews = SetOFLastViews;
+            List<int> PlanIds = new List<int>();
+            PlanIds.Add(17314);
+            Sessions.ReportPlanIds = PlanIds;
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             //int planId=DataHelper.GetPlanId();
             //// Call GetWaterFallData() function
             ReportController ReportController = new ReportController();
 
-            var result = ReportController.GetWaterFallData(string.Empty, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
+            var result = ReportController.GetWaterFallData("2014", Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ReportConversion", result.ViewName);
         }
@@ -1305,7 +1322,7 @@ namespace RevenuePlanner.Test.Controllers
             lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetWaterFallData("2015", string.Empty) as PartialViewResult;
+            var result = ReportController.GetWaterFallData("2014", string.Empty) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ReportConversion", result.ViewName);
         }
@@ -1328,7 +1345,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             string invalidQuater = "_InValidIsQuarterly";
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetWaterFallData("2015", invalidQuater) as PartialViewResult;
+            var result = ReportController.GetWaterFallData("2014", invalidQuater) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ReportConversion", result.ViewName);
         }
@@ -1349,10 +1366,10 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(planId);
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
+            Common.PlanUserSavedViews = SetOFLastViews;
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetWaterFallData(string.Empty, string.Empty) as PartialViewResult;
+            var result = ReportController.GetWaterFallData("2014", string.Empty) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ReportConversion", result.ViewName);
         }
@@ -1375,7 +1392,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
 
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(string.Empty, "Campaign", "", "2015", Enums.ViewByAllocated.Quarterly.ToString(), Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(string.Empty, "Campaign", "", PlanYear, Enums.ViewByAllocated.Quarterly.ToString(), Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
 
@@ -1399,7 +1416,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
             string _InvalidParentbl = "_Invalid";
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(_InvalidParentbl, "Campaign", "", "2015", Enums.ViewByAllocated.Quarterly.ToString(), Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(_InvalidParentbl, "Campaign", "", PlanYear, Enums.ViewByAllocated.Quarterly.ToString(), Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
 
@@ -1450,7 +1467,7 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
 
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", "2015", "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
 
@@ -1477,7 +1494,7 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
 
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", "2015", "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
 
@@ -1504,7 +1521,7 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
 
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", "2015", "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
@@ -1530,7 +1547,7 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
 
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", "2015", "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
@@ -1567,7 +1584,7 @@ namespace RevenuePlanner.Test.Controllers
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "", "2015", "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
@@ -1599,7 +1616,7 @@ namespace RevenuePlanner.Test.Controllers
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(string.Empty, string.Empty, "", "2015", "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(string.Empty, string.Empty, "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
@@ -1633,7 +1650,7 @@ namespace RevenuePlanner.Test.Controllers
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "", "2015", "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
@@ -1704,7 +1721,7 @@ namespace RevenuePlanner.Test.Controllers
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "0", "2015", InvalidQuater, InvalidCode, false, null, false, null, null, 0) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "0", PlanYear, InvalidQuater, InvalidCode, false, null, false, null, null, 0) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
@@ -1740,7 +1757,7 @@ namespace RevenuePlanner.Test.Controllers
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
-            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "0", "2015", InvalidQuater, string.Empty, false, null, false, null, null, -1) as PartialViewResult;
+            var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "0", PlanYear, InvalidQuater, string.Empty, false, null, false, null, null, -1) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
@@ -1778,7 +1795,7 @@ namespace RevenuePlanner.Test.Controllers
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, "2015", false, StrCampaign, false, "", 0);
+            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, PlanYear, false, StrCampaign, false, "", 0);
             ReportController.TempData["ConverstionCardList"] = CardSectionListModel;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.SearchSortPaginataionConverstion() as PartialViewResult;
@@ -1819,7 +1836,7 @@ namespace RevenuePlanner.Test.Controllers
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, "2015", false, StrCampaign, false, "", 0);
+            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, PlanYear, false, StrCampaign, false, "", 0);
             ReportController.TempData["ConverstionCardList"] = CardSectionListModel;
             string shortBy = Enums.SortByWaterFall.INQ.ToString();
 
@@ -1860,7 +1877,7 @@ namespace RevenuePlanner.Test.Controllers
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, "2015", false, StrCampaign, false, "", 0);
+            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, PlanYear, false, StrCampaign, false, "", 0);
             ReportController.TempData["ConverstionCardList"] = CardSectionListModel;
             string shortBy = Enums.SortByWaterFall.MQL.ToString();
 
@@ -1901,7 +1918,7 @@ namespace RevenuePlanner.Test.Controllers
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, "2015", false, StrCampaign, false, "", 0);
+            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, PlanYear, false, StrCampaign, false, "", 0);
             ReportController.TempData["ConverstionCardList"] = CardSectionListModel;
             string shortBy = Enums.SortByWaterFall.CW.ToString();
 
@@ -1942,7 +1959,7 @@ namespace RevenuePlanner.Test.Controllers
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, "2015", false, StrCampaign, false, "", 0);
+            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, PlanYear, false, StrCampaign, false, "", 0);
             ReportController.TempData["ConverstionCardList"] = CardSectionListModel;
             string shortBy = "_Invalid";
 
@@ -1983,7 +2000,7 @@ namespace RevenuePlanner.Test.Controllers
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, "2015", false, StrCampaign, false, "", 0);
+            CardSectionListModel = ReportController.GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, PlanYear, false, StrCampaign, false, "", 0);
             ReportController.TempData["ConverstionCardList"] = CardSectionListModel;
             string shortBy = "_Invalid";
 
