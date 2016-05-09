@@ -17,6 +17,7 @@ using System.IO;
 using System.Web.Script.Serialization;
 using System.Threading.Tasks;
 using System.Web.Caching;
+using System.Reflection;
 
 
 
@@ -30,7 +31,7 @@ namespace RevenuePlanner.Controllers
             if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
             {
 
-                Common.xmlMsgFilePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");
+                Common.xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");//Modify by Akashdeep Kadia on 09/05/2016 to resolve PL ticket #989.
                 Common.objCached.loadMsg(Common.xmlMsgFilePath);
                 System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
                 CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
