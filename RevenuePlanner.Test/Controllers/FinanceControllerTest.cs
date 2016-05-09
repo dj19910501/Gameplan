@@ -904,7 +904,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1138;
+            int budgetId = 395;
             string IsQuaterly = "quarters";
             string nValue = "Budget Test";
             string oValue = "Budget Test123";
@@ -964,7 +964,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1138;
+            int budgetId = 395;
             string IsQuaterly = "quarters";
 
             string oValue = "Budget Test123";
@@ -998,7 +998,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1138;
+            int budgetId = 395;
             string IsQuaterly = "quarters";
             string nValue = "Budget Test";
 
@@ -1032,7 +1032,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1138;
+            int budgetId = 395;
             string IsQuaterly = "quarters";
             string nValue = "Budget Test";
             string oValue = "Budget Test123";
