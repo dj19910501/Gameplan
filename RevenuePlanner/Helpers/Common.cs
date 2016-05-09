@@ -8232,21 +8232,22 @@ namespace RevenuePlanner.Helpers
     #region Cache methods
     public class CacheObject
     {
+        //Modified By Komal Rawal for #2138 solve caching issue for different browser.
         public object Returncache(string objectName)
         {
-            return HttpRuntime.Cache[objectName + "-" + Sessions.User.UserId.ToString()];
+            return HttpRuntime.Cache[objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString()];
         }
         public void AddCache(string objectName, object CacheObject)
         {
-            HttpRuntime.Cache.Remove(objectName + "-" + Sessions.User.UserId.ToString());
-            HttpRuntime.Cache.Insert(objectName + "-" + Sessions.User.UserId.ToString(), CacheObject, null, DateTime.Now.AddHours(3), Cache.NoSlidingExpiration);
+            HttpRuntime.Cache.Remove(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
+            HttpRuntime.Cache.Insert(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString(), CacheObject, null, DateTime.Now.AddHours(3), Cache.NoSlidingExpiration);
         }
         public void RemoveAllCurrentUserCache()
         {
             string[] names = Enum.GetNames(typeof(Enums.CacheObject));
             for (int i = 0; i < names.Length; i++)
             {
-                HttpRuntime.Cache.Remove(names[i] + "-" + Sessions.User.UserId.ToString());
+                HttpRuntime.Cache.Remove(names[i] + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
             }
         }
     }
