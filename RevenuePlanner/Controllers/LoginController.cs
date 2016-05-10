@@ -182,7 +182,12 @@ namespace RevenuePlanner.Controllers
                                 }
                             }
                             TempData.Keep(form.UserEmail);
-                        return View(form);  //Added By Maitri Gandhi for #2121 on 25/4/2016
+                        
+                          //Modified By Komal Rawal for #2181 to check current version before returning form incase of wrong attempt
+                          string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
+                          ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
+                      
+                          return View(form);  //Added By Maitri Gandhi for #2121 on 25/4/2016
                         }                        
                         //ENd
 
@@ -192,6 +197,11 @@ namespace RevenuePlanner.Controllers
                         IsEmailInvalid = true;
                         ModelState.AddModelError("", Common.objCached.InvalidEmailLogin);
                         obj = null;
+
+                        //Modified By Komal Rawal for #2181 to check current version before returning form incase of wrong attempt
+                        string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
+                        ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
+
                         return View(form); // Added For internal issue by Maitri Gandhi on 28/4/2016
 
                     }
@@ -200,6 +210,11 @@ namespace RevenuePlanner.Controllers
                         ModelState.AddModelError("", Common.objCached.LockedUser);
                         TotalAttempts = null;
                         obj = null;
+
+                        //Modified By Komal Rawal for #2181 to check current version before returning form incase of wrong attempt
+                        string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
+                        ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
+
                         return View(form);// Added For internal issue by Maitri Gandhi on 28/4/2016
                     }
                     else
