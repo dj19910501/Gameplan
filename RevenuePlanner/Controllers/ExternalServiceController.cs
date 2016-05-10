@@ -75,6 +75,7 @@ namespace RevenuePlanner.Controllers
         {
             UpdateIntegrationInstacneLastSyncStatus();
             //// Get Integration Instance List.
+            
             var IntegrationInstanceList = db.IntegrationInstances
                                             .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId)
                                             .Select(ii => ii).ToList();
@@ -157,7 +158,10 @@ namespace RevenuePlanner.Controllers
                         strForceSyncUser = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
                     objInst.ForceSyncUser = strForceSyncUser;
                     #endregion
-                    returnList.Add(objInst);
+                    if (objInst != null)
+                    {
+                        returnList.Add(objInst);
+                    }
                 }
                 if (returnList != null && returnList.Count > 0)
                 {
