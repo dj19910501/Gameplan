@@ -17,7 +17,8 @@ using System.IO;
 using System.Web.Script.Serialization;
 using System.Threading.Tasks;
 using System.Web.Caching;
-using System.Reflection;
+using System.Reflection;	 
+using System.Data.SqlClient;
 
 
 
@@ -1211,7 +1212,11 @@ namespace RevenuePlanner.Controllers
                 {
                     using (MRPEntities mrp = new MRPEntities())
                     {
-                        using (var scope = new TransactionScope())
+                        //Modified By Komal Rawal for #2166 Transaction deadlock elmah error
+                        var TransactionOption = new System.Transactions.TransactionOptions();
+                        TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+
+                        using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
                         {
                             //// Get PlanId by PlanCampaignId.
                             planId = db.Plan_Campaign.Where(_plan => _plan.PlanCampaignId.Equals(form.PlanCampaignId)).FirstOrDefault().PlanId;
@@ -1457,7 +1462,12 @@ namespace RevenuePlanner.Controllers
             {
                 using (MRPEntities mrp = new MRPEntities())
                 {
-                    using (var scope = new TransactionScope())
+                    //Modified By Komal Rawal for #2166 Transaction deadlock elmah error
+                    var TransactionOption = new System.Transactions.TransactionOptions();
+                    TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+
+                    using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
+                   // using (var scope = new TransactionScope())
                     {
                         //// Get Campaign data to check duplication.
                         var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(db.Plan_Campaign.Where(_campaign => _campaign.PlanCampaignId == form.PlanCampaignId).Select(_campaign => _campaign.PlanId).FirstOrDefault()) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(form.PlanCampaignId))).FirstOrDefault();
@@ -2048,7 +2058,12 @@ namespace RevenuePlanner.Controllers
                 {
                     using (MRPEntities mrp = new MRPEntities())
                     {
-                        using (var scope = new TransactionScope())
+                        //Modified By Komal Rawal for #2166 Transaction deadlock elmah error
+                        var TransactionOption = new System.Transactions.TransactionOptions();
+                        TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+
+                        using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
+                       // using (var scope = new TransactionScope())
                         {
                             //// Get duplicate record.
                             var pcpvar = (from pcp in db.Plan_Campaign_Program
@@ -2507,7 +2522,12 @@ namespace RevenuePlanner.Controllers
             {
                 using (MRPEntities mrp = new MRPEntities())
                 {
-                    using (var scope = new TransactionScope())
+                    //Modified By Komal Rawal for #2166 Transaction deadlock elmah error
+                    var TransactionOption = new System.Transactions.TransactionOptions();
+                    TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+
+                    using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
+                   // using (var scope = new TransactionScope())
                     {
                         //// Get duplicate record.
                         var pcpvar = (from pcp in db.Plan_Campaign_Program
@@ -4642,7 +4662,11 @@ namespace RevenuePlanner.Controllers
                 {
                     using (MRPEntities mrp = new MRPEntities())
                     {
-                        using (var scope = new TransactionScope())
+                        //Modified By Komal Rawal for #2166 Transaction deadlock elmah error
+                        var TransactionOption = new System.Transactions.TransactionOptions();
+                        TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+
+                        using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
                         {
                             int linkedTacticId = 0;
                             //List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false).ToList();
@@ -5879,7 +5903,12 @@ namespace RevenuePlanner.Controllers
                 //end
                 using (MRPEntities mrp = new MRPEntities())
                 {
-                    using (var scope = new TransactionScope())
+                    //Modified By Komal Rawal for #2166 Transaction deadlock elmah error
+                    var TransactionOption = new System.Transactions.TransactionOptions();
+                    TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+
+                    using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
+                   // using (var scope = new TransactionScope())
                     {
 
                         //List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false).ToList();
@@ -6985,7 +7014,11 @@ namespace RevenuePlanner.Controllers
 
                     using (MRPEntities mrp = new MRPEntities())
                     {
-                        using (var scope = new TransactionScope())
+                        //Modified By Komal Rawal for #2166 Transaction deadlock elmah error
+                        var TransactionOption = new System.Transactions.TransactionOptions();
+                        TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+
+                        using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
                         {
 
                             int planId = (from p in db.Plan_Improvement_Campaign_Program
@@ -8450,7 +8483,11 @@ namespace RevenuePlanner.Controllers
                 {
                     using (MRPEntities mrp = new MRPEntities())
                     {
-                        using (var scope = new TransactionScope())
+                        //Modified By Komal Rawal for #2166 Transaction deadlock elmah error
+                        var TransactionOption = new System.Transactions.TransactionOptions();
+                        TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+
+                        using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
                         {
 
 
