@@ -1915,7 +1915,7 @@ namespace RevenuePlanner.Controllers
                             if (pcpvar != null)
                             {
                                 string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { IsSaved = false, errormsg = strDuplicateMessage });
+                                return Json(new { IsSaved = false, errormsg = strDuplicateMessage, PlanId = planid }); //Modified By Komal Rawal for #2174 to get correct PlanId
                             }
                             else
                             {
@@ -2049,7 +2049,7 @@ namespace RevenuePlanner.Controllers
                                 Common.ChangeCampaignStatus(pcpobj.PlanCampaignId, false);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                return Json(new { IsSaved = true, Msg = strMessage, programID = programid, campaignID = campaignId }, JsonRequestBehavior.AllowGet);
+                                return Json(new { IsSaved = true, Msg = strMessage, programID = programid, campaignID = campaignId, PlanId = planid }, JsonRequestBehavior.AllowGet); //Modified By Komal Rawal for #2174 to get correct PlanId
                             }
                         }
                     }
@@ -2075,7 +2075,7 @@ namespace RevenuePlanner.Controllers
                             if (pcpvar != null)
                             {
                                 string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                                return Json(new { IsSaved = false, errormsg = strDuplicateMessage }, JsonRequestBehavior.AllowGet);
+                                return Json(new { IsSaved = false, errormsg = strDuplicateMessage, PlanId = planid }, JsonRequestBehavior.AllowGet);
                             }
                             else
                             {
@@ -2236,7 +2236,7 @@ namespace RevenuePlanner.Controllers
                                     Common.ChangeCampaignStatus(pcpobj.PlanCampaignId, false);
                                     scope.Complete();
                                     string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                    return Json(new { IsSaved = true, Msg = strMessage, campaignID = campaignId, EndDatediff = EndDatediff }, JsonRequestBehavior.AllowGet);// Modified By Nishant Sheth Desc:: #1812 refresh time frame dropdown
+                                    return Json(new { IsSaved = true, Msg = strMessage, campaignID = campaignId, EndDatediff = EndDatediff, PlanId = planid }, JsonRequestBehavior.AllowGet);// Modified By Nishant Sheth Desc:: #1812 refresh time frame dropdown
                                 }
                             }
                         }

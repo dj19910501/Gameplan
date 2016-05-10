@@ -433,7 +433,7 @@
 
     $(document).ready(
       function () {
-         // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+          // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
           $('#btnEditCampaign').removeClass('SpanDisable');
           $('#InspectTab').removeClass('SpanDisable');
           //Datetime Picker Bhumika
@@ -650,7 +650,7 @@
     //    }
     //    scrollTop = 0;
     //}
-	///* Bhumika End */
+    ///* Bhumika End */
     //$('#dp_end .add-on').click(function () {
     //    $('#dp_start').datepicker('hide');
     //    //$('#dp_end').datepicker('hide');	/* Bhumika */
@@ -901,7 +901,7 @@
                         }
                         $("#hdnPlanCampaignId").val(planCampaignId);
                         // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                     @* if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
+                        @* if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
                             var ChangedTab = "Setup";
                             if (tabtext != "") {
                                 ChangedTab = tabtext;
@@ -926,22 +926,22 @@
                             loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                             //RefreshCurrentTab(requestedModule, 0, 0, 0);
                         }*@
-                       // else {
-                            $("#successMessage").css("display", "block");
-                            $("#spanMessageSuccess").empty();
-                            $("#spanMessageSuccess").text(data.msg);
-                            $("#errorMessageEditCampaign").css("display", "none");
+                        // else {
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                        $("#errorMessageEditCampaign").css("display", "none");
 
-                            $("#liReview,#liBudget,#liSetup").bind('click');
+                        $("#liReview,#liBudget,#liSetup").bind('click');
 
-                            //   loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", TabBudget, "@Enums.InspectPopupMode.Edit.ToString()", 0, requestedModule);
+                        //   loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", TabBudget, "@Enums.InspectPopupMode.Edit.ToString()", 0, requestedModule);
 
-                            //// if new record save then set Refresh flag to true.
-                            var _planCampaignId = $("#PlanCampaignId").val();
-                            if (_planCampaignId == '' || _planCampaignId == null || _planCampaignId == '0' || _planCampaignId == 'undefined')
-                                $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                        //// if new record save then set Refresh flag to true.
+                        var _planCampaignId = $("#PlanCampaignId").val();
+                        if (_planCampaignId == '' || _planCampaignId == null || _planCampaignId == '0' || _planCampaignId == 'undefined')
+                            $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
 
-                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                 $("#hdnBudgetingExpandId").val("campaign" + planCampaignId);
                                 $("#hdnBudgetingIsSave").val("true");
                             }
@@ -953,9 +953,9 @@
                      //   }
                         // Add By Nishant Sheth
                         // Desc :: #1812 refresh dropdown with change of date diffrence
-                        if (!(data.EndDatediff == 0)) {
-                            BindUpcomingActivites(pid);// Uncomment by bhavesh Ticket #1812,date 09-jan-2015
-                           @* $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid, function (response, status, xhr) {
+                            if (!(data.EndDatediff == 0)) {
+                                BindUpcomingActivites('@Model.PlanId');// Uncomment by bhavesh Ticket #1812,date 09-jan-2015 //Modified By Komal Rawal for #2174 to get correct PlanId
+                            @* $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid, function (response, status, xhr) {
                                 if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                                     //// Call function to redirect on service unavailibility.
                                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';

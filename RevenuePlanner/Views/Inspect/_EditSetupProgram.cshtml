@@ -799,8 +799,8 @@
                   //  }
                     // Add By Nishant Sheth
                     // Desc :: #1812 refresh dropdown with change of date diffrence
-                    if (!(data.EndDatediff == 0)) {
-                        BindUpcomingActivites(pid);// Uncomment by bhavesh Ticket #1812,date 09-jan-2015
+                        if (!(data.EndDatediff == 0)) {
+                            BindUpcomingActivites(data.PlanId);// Uncomment by bhavesh Ticket #1812,date 09-jan-2015 //Modified By Komal Rawal for #2174 to get correct PlanId
                         @*$('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid, function (response, status, xhr) {
                             if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                                 //// Call function to redirect on service unavailibility.
