@@ -284,10 +284,21 @@ namespace RevenuePlanner.Test.Controllers
             //// Set Parameter IntegrationTypeId for Eloqua
             int IntegrationTypeId = DataHelper.GetIntegrationTypeId(Enums.IntegrationType.Eloqua.ToString());
             var result = controller.editIntegration(0, IntegrationTypeId) as ViewResult;
-            Assert.AreEqual("edit", result.ViewName, true);
+            if (result != null)
+            {
+                Assert.AreEqual("edit", result.ViewName, true);
 
-            //// Check for the integrationTypeId view bag, if it is null then view can give an error
-            Assert.IsNotNull(result.ViewBag.integrationTypeId);
+                //// Check for the integrationTypeId view bag, if it is null then view can give an error
+                Assert.IsNotNull(result.ViewBag.integrationTypeId);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.integrationTypeId);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
+            
+
         }
         #endregion
 
@@ -310,7 +321,16 @@ namespace RevenuePlanner.Test.Controllers
             //// Set Parameter IntegrationInstanceId for Eloqua
             int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.Eloqua.ToString());
             var result = controller.SaveDataMappingPulling(lstGameplanDataTypePullModel, IntegrationInstanceId, Enums.IntegrationType.Eloqua.ToString());
-            Assert.IsNotNull(result.Data);
+            
+            if (result != null)
+            {
+                Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
         }
         #endregion
 
@@ -336,10 +356,19 @@ namespace RevenuePlanner.Test.Controllers
             //// Set Parameter IntegrationInstanceId for Eloqua
             int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.Eloqua.ToString());
             var result = controller.SaveDataMappingPulling(lstGameplanDataTypePullModel, IntegrationInstanceId, Enums.IntegrationType.Eloqua.ToString());
+            if (result != null)
+            {
+                Assert.IsNotNull(result.Data);
 
-            Assert.IsNotNull(result.Data);
+                Assert.IsNotNull(result.GetValue("status").ToString(), "1");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("status").ToString());
+            }
+            else
+            {
 
-            Assert.IsNotNull(result.GetValue("status").ToString(), "1");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
+            
         }
         #endregion
 

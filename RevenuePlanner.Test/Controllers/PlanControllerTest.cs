@@ -197,16 +197,16 @@ namespace RevenuePlanner.Test.Controllers
             int planId = result.GetValue<int>("id");
 
             Assert.IsTrue(Convert.ToBoolean(planId));
-            if (true)
+            if (Convert.ToBoolean(planId))
             {
 
 
-                Console.WriteLine("Pass – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + planId);
             }
             else
             {
 
-                Console.WriteLine("Fail – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + planId);
             }
 
         }
@@ -232,12 +232,12 @@ namespace RevenuePlanner.Test.Controllers
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
 
-                Console.WriteLine("Pass – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
             }
             else
             {
 
-                Console.WriteLine("Fail – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
 
 
@@ -335,12 +335,12 @@ namespace RevenuePlanner.Test.Controllers
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
 
-                Console.WriteLine("Pass – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
             }
             else
             {
 
-                Console.WriteLine("Fail – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
 
         }
@@ -383,12 +383,12 @@ namespace RevenuePlanner.Test.Controllers
                 //     data object should not be null in json result
                 Assert.IsNotNull(result, "Pass");
 
-                Console.WriteLine("Pass – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
             }
             else
             {
 
-                Console.WriteLine("Fail – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Status);
             }
 
         }
@@ -410,13 +410,12 @@ namespace RevenuePlanner.Test.Controllers
                 // data object should not be null in json result
                 Assert.IsNotNull(result.Data);
 
-                Console.WriteLine("Pass – Console WriteLine");
-
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
             }
             else
             {
 
-                Console.WriteLine("Fail – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
 
 
@@ -450,12 +449,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 Assert.AreEqual("~/Views/Plan/_CopyEntity.cshtml", result.ViewName);
 
-                Console.WriteLine("Pass – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
             }
             else
             {
 
-                Console.WriteLine("Fail – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.ViewName);
             }
         }
 
@@ -478,12 +477,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 Assert.IsNotNull(result.Data);
 
-                Console.WriteLine("Pass – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
             }
             else
             {
 
-                Console.WriteLine("Fail – Console WriteLine");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
         }
 

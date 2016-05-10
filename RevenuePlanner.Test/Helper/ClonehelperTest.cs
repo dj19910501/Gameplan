@@ -26,7 +26,10 @@ namespace RevenuePlanner.Test.Helper
             HttpContext.Current = DataHelper.SetUserAndPermission();
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.ToClone(string.Empty, string.Empty, 0, 0);
+
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
+            
         }
 
         /// <summary>
@@ -43,6 +46,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.ToClone(_invalidsuffixyparam, _invalidcopyparam, 0, 0);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -57,6 +61,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.PlanClone(0, string.Empty, Guid.Empty, string.Empty, string.Empty);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -73,6 +78,7 @@ namespace RevenuePlanner.Test.Helper
             int planid = DataHelper.GetPlanId();
             int _clone = Clonehelper.PlanClone(planid, string.Empty, UserId, string.Empty, string.Empty);
             Assert.IsNotNull(_clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -90,6 +96,7 @@ namespace RevenuePlanner.Test.Helper
             int planid = DataHelper.GetPlanId();
             int _clone = Clonehelper.PlanClone(planid, _invalidparam, UserId, _invalidparam, _invalidparam);
             Assert.IsNotNull(_clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -104,6 +111,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.CampaignClone(0, string.Empty, Guid.Empty, 0, string.Empty);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -120,6 +128,7 @@ namespace RevenuePlanner.Test.Helper
             int planid = DataHelper.GetPlanId();
             int _clone = Clonehelper.CampaignClone(planid, string.Empty, UserId, 0, string.Empty);
             Assert.IsNotNull(_clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -137,6 +146,7 @@ namespace RevenuePlanner.Test.Helper
             int planid = DataHelper.GetPlanId();
             int _clone = Clonehelper.CampaignClone(planid, invalidparam, UserId, 0, invalidparam);
             Assert.IsNotNull(_clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
 
@@ -152,6 +162,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.ProgramClone(0, string.Empty, Guid.Empty, 0, string.Empty);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -168,6 +179,7 @@ namespace RevenuePlanner.Test.Helper
             Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
             int _clone = Clonehelper.ProgramClone(planid, string.Empty, UserId, 0, string.Empty);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -182,6 +194,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.TacticClone(0, string.Empty, Guid.Empty, 0, string.Empty);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -196,6 +209,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.LineItemClone(0, string.Empty, Guid.Empty, 0, string.Empty);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -210,6 +224,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.CloneToOtherPlan(null, string.Empty, 0, 0, 0, false);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -234,6 +249,7 @@ namespace RevenuePlanner.Test.Helper
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
             int _clone = Clonehelper.CloneToOtherPlan(null, clonetype, Convert.ToInt32(entityId.Split('_')[1]), Convert.ToInt32(entityId.Split('_')[0]), 0, false);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -248,6 +264,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.CloneTacticToOtherPlan(0, Guid.Empty, 0, 0, string.Empty, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -264,6 +281,7 @@ namespace RevenuePlanner.Test.Helper
             Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
             int _clone = Clonehelper.CloneTacticToOtherPlan(planid, UserId, 0, 0, string.Empty, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -286,6 +304,7 @@ namespace RevenuePlanner.Test.Helper
 
             int _clone = Clonehelper.CloneTacticToOtherPlan(Convert.ToInt32(entityId.Split('_')[0]), UserId, Convert.ToInt32(entityId.Split('_')[1]), 0, string.Empty, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -300,6 +319,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.CloneCampaignToOtherPlan(0, Guid.Empty, 0, 0, string.Empty, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -316,6 +336,7 @@ namespace RevenuePlanner.Test.Helper
             Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
             int _clone = Clonehelper.CloneCampaignToOtherPlan(planid, UserId, 0, 0, string.Empty, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -330,6 +351,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.CloneProgramToOtherPlan(0, Guid.Empty, 0, 0, string.Empty, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -346,6 +368,7 @@ namespace RevenuePlanner.Test.Helper
             Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
             int _clone = Clonehelper.CloneProgramToOtherPlan(planid, UserId, 0, 0, string.Empty, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -360,6 +383,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.LinkToOtherPlan(null, string.Empty, 0, 0, 0, false);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -381,6 +405,7 @@ namespace RevenuePlanner.Test.Helper
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
             int _clone = Clonehelper.LinkToOtherPlan(null, string.Empty, Convert.ToInt32(entityId.Split('_')[1]), Convert.ToInt32(entityId.Split('_')[0]), 0, false);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -395,6 +420,7 @@ namespace RevenuePlanner.Test.Helper
             RevenuePlanner.Helpers.Clonehelper Clonehelper = new Helpers.Clonehelper();
             int _clone = Clonehelper.LinkTacticToOtherPlan(0, Guid.Empty, 0, 0, string.Empty, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -411,6 +437,7 @@ namespace RevenuePlanner.Test.Helper
             Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
             int _clone = Clonehelper.LinkTacticToOtherPlan(planid, UserId, 0, 0, string.Empty, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
         /// <summary>
         ///  To check to identify Link the Tactic and it's All Child element with invalid parameter
@@ -427,6 +454,7 @@ namespace RevenuePlanner.Test.Helper
             string _invalid = "invalid";
             int _clone = Clonehelper.LinkTacticToOtherPlan(planid, UserId, 0, 0, _invalid, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
 
         /// <summary>
@@ -449,6 +477,7 @@ namespace RevenuePlanner.Test.Helper
 
             int _clone = Clonehelper.LinkTacticToOtherPlan(Convert.ToInt32(entityId.Split('_')[0]), UserId, Convert.ToInt32(entityId.Split('_')[1]), 0, string.Empty, false, null);
             Assert.AreEqual(0, _clone);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + _clone);
         }
     }
 }

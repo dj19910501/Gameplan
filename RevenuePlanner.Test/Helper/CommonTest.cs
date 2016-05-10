@@ -72,6 +72,7 @@ namespace RevenuePlanner.Test.Helper
             List<int> tacticIds = new List<int>();
             List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(tacticIds, tacticIds, tacticIds);
             Assert.AreEqual(0, CustomFields.Count);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + CustomFields.Count);
         }
 
         //[TestMethod] This is a invalid test case List is can be empty but never null.
@@ -97,6 +98,7 @@ namespace RevenuePlanner.Test.Helper
             tacticIds.Add(objTactic.Plan_Campaign_Program.PlanCampaignId);
             List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(tacticIds, programIds, campaignIds);
             Assert.IsNotNull(CustomFields.Count);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + CustomFields.Count);
         }
     }
 }

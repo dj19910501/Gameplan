@@ -49,6 +49,12 @@ namespace RevenuePlanner.Test.Controllers
                 }
 
                 Assert.IsNotNull(result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.ActiveMenu);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.ViewBag.ActiveMenu);
             }
         }
         #endregion
@@ -86,6 +92,12 @@ namespace RevenuePlanner.Test.Controllers
                 }
 
                 Assert.IsNotNull(result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.ActiveMenu);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.ViewBag.ActiveMenu);
             }
         }
         #endregion
@@ -107,7 +119,7 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             int planId = DataHelper.GetPlanId();
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
+            Common.PlanUserSavedViews = SetOFLastViews;
             var result = objHomeController.Index(Enums.ActiveMenu.Plan, planId) as ViewResult;
 
             if (result != null)
@@ -125,6 +137,12 @@ namespace RevenuePlanner.Test.Controllers
                 }
 
                 Assert.IsNotNull(result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.ActiveMenu);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.ViewBag.ActiveMenu);
             }
         }
         #endregion
@@ -151,6 +169,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -176,6 +200,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -200,6 +230,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -235,6 +271,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -270,6 +312,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -301,6 +349,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
 
@@ -334,6 +388,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -365,6 +425,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
 
@@ -397,6 +463,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
 
@@ -440,6 +512,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -481,6 +559,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -527,6 +611,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -573,6 +663,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -598,6 +694,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -623,6 +725,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -648,6 +756,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -683,6 +797,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -718,6 +838,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -750,6 +876,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -782,6 +914,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -813,6 +951,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
 
@@ -845,6 +989,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
 
@@ -888,6 +1038,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -929,6 +1085,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -975,6 +1137,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -1021,6 +1189,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -1068,7 +1242,7 @@ namespace RevenuePlanner.Test.Controllers
             PlanController objHomeController = new PlanController();
             Sessions.PlanId = DataHelper.GetPlanId();
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
+            Common.PlanUserSavedViews = SetOFLastViews;
             var result = objHomeController.AddActual(Convert.ToInt32(Sessions.PlanId)) as ViewResult;
 
             if (result != null)
@@ -1081,6 +1255,12 @@ namespace RevenuePlanner.Test.Controllers
                 Assert.IsNotNull(objModel);
 
                 Assert.IsNotNull(result.ViewBag.IsPlanEditable);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.IsPlanEditable);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.ViewBag.IsPlanEditable);
             }
         }
         #endregion
@@ -1107,6 +1287,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
         }
         #endregion
@@ -1133,6 +1319,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
         }
         #endregion
@@ -1160,6 +1352,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
         }
         #endregion
@@ -1187,6 +1385,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
         }
         #endregion
@@ -1209,8 +1413,14 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                //// Json result data should not be null
-                //Assert.IsNotNull(result.Data);
+                // Json result data should not be null
+                Assert.IsNotNull(result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Status);
             }
         }
 
@@ -1230,6 +1440,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
         }
         #endregion
@@ -1250,7 +1466,13 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// Json result data should not be null
-                //  Assert.IsNotNull(result.Data);
+                Assert.IsNotNull(result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Status);
             }
         }
 
@@ -1269,7 +1491,13 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// Json result data should not be null
-                // Assert.IsNotNull(result.Data);
+                Assert.IsNotNull(result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Status);
             }
         }
         #endregion
@@ -1314,11 +1542,17 @@ namespace RevenuePlanner.Test.Controllers
 
             string Status = string.Join(",", lststatus);
 
-            var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status, "","","") as JsonResult;
+            var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status, "", "", "") as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
         }
 
@@ -1335,12 +1569,18 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
 
-            var result = objHomeController.SaveLastSetofViews("", "", "", "", "", "","","") as JsonResult;
+            var result = objHomeController.SaveLastSetofViews("", "", "", "", "", "", "", "") as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName                
                 Assert.AreEqual(true, result.GetValue("isSuccess"));
                 Assert.AreEqual("", result.GetValue("ViewName"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
             }
         }
 
@@ -1357,11 +1597,17 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
 
-            var result = objHomeController.SaveLastSetofViews(null, null, null, null, null, null,null,null) as JsonResult;
+            var result = objHomeController.SaveLastSetofViews(null, null, null, null, null, null, null, null) as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.AreEqual(null, result.GetValue("ViewName"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("ViewName"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
         }
 
@@ -1381,7 +1627,7 @@ namespace RevenuePlanner.Test.Controllers
             //// ViewResult shoud not be null and should match with viewName
             Assert.IsNotNull(result);
         }
-        
+
         /// <summary>
         /// To Render last set of view
         /// </summary>
@@ -1412,9 +1658,15 @@ namespace RevenuePlanner.Test.Controllers
             var result = objHomeController.SaveDefaultPreset(presetName) as JsonResult;
             if (result != null)
             {
-                Assert.AreEqual(true,result.GetValue("isSuccess"));
+                Assert.AreEqual(true, result.GetValue("isSuccess"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("isSuccess"));
             }
-        }        
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
+        }
 
         /// <summary>
         /// To Set Filter Preset Name
@@ -1447,10 +1699,16 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(true, result.GetValue("isSuccess"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("isSuccess"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
         }
 
-       
+
         #region --Delete Preset Data---
         /// <summary>
         /// To delete Preset data
@@ -1467,8 +1725,14 @@ namespace RevenuePlanner.Test.Controllers
             var result = objHomeController.DeletePreset("Test") as JsonResult;
             if (result != null)
             {
-                Assert.AreEqual(true,result.GetValue("isSuccess"));
+                Assert.AreEqual(true, result.GetValue("isSuccess"));
                 Assert.AreEqual("Preset Test deleted successfully", result.GetValue("msg")); //Modified by Maitri Gandhi on 28/4/2016 for #2136
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("msg"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
         }
 
@@ -1488,6 +1752,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(false, result.GetValue("isSuccess"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("isSuccess"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
         }
 
@@ -1507,6 +1777,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(false, result.GetValue("isSuccess"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("isSuccess"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
         }
         #endregion
@@ -1526,7 +1802,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
-            
+
             string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
@@ -1535,7 +1811,13 @@ namespace RevenuePlanner.Test.Controllers
             var result = objHomeController.GetHeaderDataforHoneycombPDF(tactictypeids, "2016");
             if (result != null)
             {
-                Assert.AreEqual(0,result.GetValue("TotalCount"));
+                Assert.AreEqual(0, result.GetValue("TotalCount"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("TotalCount"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
         }
 
@@ -1556,6 +1838,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(0, result.GetValue("TotalCount"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("TotalCount"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
         }
 
@@ -1576,6 +1864,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(0, result.GetValue("TotalCount"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("TotalCount"));
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
         }
 
