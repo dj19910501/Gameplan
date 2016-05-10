@@ -150,7 +150,8 @@
         }
         else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
             // var ligridclass=$("#liGrid").attr("class");
-            newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
+            @*newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';*@
+            newUrl = '@Url.Action("GetPlanByPlanIDPerformance", "Plan")';// Change By Nishant Sheth // Desc :: Get records from cache memory 
             selectedPlanIds = parseInt(CurrentPlanId);
         }
         if(selectedPlanIds == '')
@@ -609,7 +610,8 @@
             }
             else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
                 // var ligridclass=$("#liGrid").attr("class");
-                newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
+                //newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
+                newUrl = '@Url.Action("GetPlanByPlanIDPerformance", "Plan")';// Change By Nishant Sheth // Desc :: Get records from cache memory 
                 selectedPlanIds = parseInt(CurrentPlanId);
             }
             if(selectedPlanIds == '')

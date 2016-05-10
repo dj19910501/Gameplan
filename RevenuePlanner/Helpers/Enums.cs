@@ -1339,7 +1339,8 @@ namespace RevenuePlanner.Helpers
             dsPlanCampProgTac,
             CustomField,
             CustomFieldEntity,
-            CustomFieldOption
+            CustomFieldOption,
+            StageList
         }
 
         public enum DownloadCSV

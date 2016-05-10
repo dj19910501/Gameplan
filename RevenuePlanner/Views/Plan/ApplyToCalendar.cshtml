@@ -145,7 +145,8 @@
         {
             type: "GET",
             cache: false,
-            url: '@Url.Action("GetPlanByPlanID", "Plan")',
+            @*url: '@Url.Action("GetPlanByPlanID", "Plan")',*@
+            url:  '@Url.Action("GetPlanByPlanIDPerformance", "Plan")', // Change By Nishant Sheth // Desc :: Get records from cache memory 
             data: {
                 planid: intplanid
 

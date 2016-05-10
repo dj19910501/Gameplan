@@ -431,7 +431,90 @@
         onClickPlanTitle();
         GetLastSetofViews($('#FilterName').val());
         CallAjax();
+       
     });//document ready
+    // Add By Nishant Sheth
+    // Desc :: Toggle for tactic name
+    function anchorclick(obj)
+    {
+        $(".glass-icon").css({ "visibility": "hidden" });   
+        $(".table-titles-actual-left").css({ "color": "#ffffff" });
+        
+        var that = obj,
+            mask = $(that).next().find(".table-actual-mask"),
+            titles = $(that).find(".table-titles-actual-left"),
+            glassIcon = $(that).find(".glass-icon"),
+            shadowRight = $(that).next().find(".shadow-scroll-table-mask-right"),
+            shadowLeft = $(that).next().find(".shadow-scroll-table-mask-left");
+        var styles = { visibility: "hidden", width: "0px", height: "0px" };
+
+        if ($(that).parent().parent().parent().next().hasClass("in")) {
+            /*set mask shadows width*/
+            $('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
+            $('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
+            glassIcon.css({ "visibility": "hidden" });
+            titles.css({ "color": "#ffffff" });
+            mask.css({ "overflow-x": "hidden" });
+            shadowRight.css(styles);
+            shadowLeft.css(styles);
+            animateMask($(mask), 0);
+        } else {
+            /*set mask shadows width*/
+            glassIcon.css({ "visibility": "visible" });
+            titles.css({ "color": "#908D88" });
+            mask.css({ "height": "0px" });
+            mask.css({ "overflow-x": "scroll" });
+            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+            var CurrentID = $(obj).attr('href');
+            var heights = ($(CurrentID).find(".accordion-inner").height()) + 10;
+            animateMask($(mask), heights);
+        }
+        //Added by Rahul Shah on 03/05/2016 for PL #2016
+        var curId = $(obj).attr('href');
+
+        $(curId).prev().find('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
+        $(curId).prev().find('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
+        /*set mask height*/
+        $('.table-actual-mask').css({ "height": "0px" });
+        /*set left titles from header if toogle  is open*/
+        $(".accordion-actuals .accordion-group .in").prev().
+                                                find(".table-titles-actual-left")
+                                                        .css({ "color": "#ffffff" });
+        /*set glass icon from header if toogle  is open*/
+        $(".accordion-actuals .accordion-group .in").prev().
+                                                        find(".glass-icon")
+                                                                .css({ "visibility": "hidden" });
+        /*set visibility on scroll over mask*/
+        $(curId).prev().find(".table-actual-mask").css({ "overflow-x": "hidden" });
+
+        $(curId).find('.addFormatterActualCurrency').each(function () {
+            SetBudget($(this));
+        });
+        $(curId).find('.addFormatterActualNumber').each(function () {
+            SetPriceValue($(this));
+        });
+        $(curId).find('.setBudget').each(function () {
+            SetBudget("#" + $(this).attr('id'));
+        });
+
+        var curId1 = curId.replace('collapse', 'divTable');
+        $(curId1).find('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+        $(curId1).find('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+
+        $(curId1).find('.currency_dollarCost').each(function () {
+            var txtvalue = $(this).val();
+            $(this).attr('title', txtvalue);
+        });
+        $(curId1).find('.priceValue').each(function () {
+            var txtvalue = $(this).val();
+            $(this).attr('title', txtvalue);
+        });
+        $(curId1).find('.currency_dollar').each(function () {
+            var txtvalue = $(this).val();
+            $(this).attr('title', txtvalue);
+        });
+        $(curId1).find('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
+    }
 
         function GetTacticTypelist(Planids, ifexists) {
             var asyncval = false;
@@ -1103,6 +1186,431 @@
             }
         });
 }
+    // Add By Nishant Sheth
+    // Desc ::#2111 Taking more time to load for large number of tactics
+    function LoadPagePerformance(id){
+        //fillActualsTable();
+        NumberFormatterTipsyTitle(".actualtipsyclassTitle", 24);
+        maskWidht();
+        $(".glass-icon").css({ "visibility": "hidden" });   
+        $(".table-titles-actual-left").css({ "color": "#ffffff" });
+        /*if a toogle is open the first time page loads, change css of mask*/
+        
+        //$(".accordion-actuals .accordion-group .in").prev()
+        $("#accordion"+id+"").find(".accordion-heading")
+                                                    .find(".table-actual-mask")
+                                                        .css({ "height": "254px" });
+
+        ///*change left titles from header if toogle  is open*/
+        //$(".accordion-actuals .accordion-group .in").prev().
+        $("#accordion"+id+"").find(".accordion-heading").
+                                                     find(".table-titles-actual-left")
+                                                             .css({ "color": "#908D88" });
+
+
+
+
+        /*change mask if toogle is open*/
+        //$(".accordion-actuals .accordion-heading a").click(function () {
+            
+            var that = $("#accordion"+id+"").find(".accordion-heading").find("a"),
+                mask = $(that).next().find(".table-actual-mask"),
+                titles = $(that).find(".table-titles-actual-left"),
+                glassIcon = $(that).find(".glass-icon"),
+                shadowRight = $(that).next().find(".shadow-scroll-table-mask-right"),
+                shadowLeft = $(that).next().find(".shadow-scroll-table-mask-left");
+            var styles = { visibility: "hidden", width: "0px", height: "0px" };
+
+            if ($(that).parent().parent().parent().next().hasClass("in")) {
+                /*set mask shadows width*/
+                $('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
+                $('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
+                glassIcon.css({ "visibility": "hidden" });
+                titles.css({ "color": "#ffffff" });
+                mask.css({ "overflow-x": "hidden" });
+                shadowRight.css(styles);
+                shadowLeft.css(styles);
+                animateMask($(mask), 0);
+            } else {
+                /*set mask shadows width*/
+                glassIcon.css({ "visibility": "visible" });
+                titles.css({ "color": "#908D88" });
+                mask.css({ "height": "0px" });
+                mask.css({ "overflow-x": "scroll" });
+                //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                var CurrentID = $(that).attr('href');
+                var heights = ($(CurrentID).find(".accordion-inner").height()) + 10;
+                animateMask($(mask), heights);
+            }
+            //Added by Rahul Shah on 03/05/2016 for PL #2016
+            var curId = $(that).attr('href');
+
+            $(curId).prev().find('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
+            $(curId).prev().find('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
+            /*set mask height*/
+            $('.table-actual-mask').css({ "height": "0px" });
+            /*set left titles from header if toogle  is open*/
+            //$(".accordion-actuals .accordion-group .in").prev().
+            //$("#accordion"+id+"").find(".accordion-heading").
+            //                                        find(".table-titles-actual-left")
+            //                                                .css({ "color": "#ffffff" });
+            /*set glass icon from header if toogle  is open*/
+            //$(".accordion-actuals .accordion-group .in").prev().
+            //$("#accordion"+id+"").find(".accordion-heading").
+            //                                                find(".glass-icon")
+            //                                                        .css({ "visibility": "hidden" });
+            /*set visibility on scroll over mask*/
+            $(curId).prev().find(".table-actual-mask").css({ "overflow-x": "hidden" });
+
+     
+                
+            $(curId).find('.addFormatterActualCurrency').each(function () {
+                SetBudget($(this));
+            });
+            $(curId).find('.addFormatterActualNumber').each(function () {
+                SetPriceValue($(this));
+            });
+            $(curId).find('.setBudget').each(function () {
+                SetBudget("#" + $(this).attr('id'));
+            });
+
+            var curId1 = curId.replace('collapse', 'divTable');
+            $(curId1).find('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+            $(curId1).find('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+
+            $(curId1).find('.currency_dollarCost').each(function () {
+                var txtvalue = $(this).val();
+                $(this).attr('title', txtvalue);
+            });
+            $(curId1).find('.priceValue').each(function () {
+                var txtvalue = $(this).val();
+                $(this).attr('title', txtvalue);
+            });
+            $(curId1).find('.currency_dollar').each(function () {
+                var txtvalue = $(this).val();
+                $(this).attr('title', txtvalue);
+            });
+            $(curId1).find('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
+
+        //});
+           
+
+        /*click event on mask*/
+        /*change mask if toogle is open*/
+        //$(".table-actual-mask").click(function (event) {
+        //    event.preventDefault();
+        //    event.stopPropagation();
+        //});
+
+        /*shadow on table*/
+        $(".accordion-actuals .accordion-heading").find('.table-actual-mask').scroll(function () {
+            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+            var TacticSideBorderHeight = ($($(this).parent().prev().attr("href")).find(".accordion-inner").height()) + 10 + "px";
+            var styles = { visibility: "visible", widht: "15px", height: TacticSideBorderHeight };
+            var styles1 = { visibility: "hidden", widht: "15px", height: TacticSideBorderHeight };
+            if ($(this).scrollLeft() > 0) {
+                /*set shadows*/
+                $(this).prev().css(styles);
+                $(this).next().css(styles);
+                $(this).next().css({ "margin-left": $(".table-actual-mask").width() });
+            }
+            if ($(this).scrollLeft() == 0) {
+                $(this).prev().css(styles1);
+            }
+            if ($(this).scrollLeft() == 1800 - $(".table-actual-mask").width()) {
+                $(this).next().css(styles1);
+            }
+
+        });
+
+        window.onresize = function () {
+            function maskWidht() {
+                var widthHeader = $("#accordion2").width(),
+
+               //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
+               widthRigth = widthHeader - 662;
+
+                $(".header-toogle-actual-right").width(widthRigth);
+                $(".table-actual-mask").width(widthRigth);
+                $('.table-actual-mask').scrollLeft(0);
+                $(".accordion-actuals .accordion-heading").find('.table-actual-mask').next().css({ "margin-left": widthRigth });
+
+                return this;
+            };
+            maskWidht();
+
+        }
+      
+        $('.accordion-actuals').find('input').each(function () {
+            $(this).keyup(function () {
+                var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                currentValue = currentValue == '' ? "0" : currentValue; // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
+                //if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                if (currentValue.match(_decmlRegex)) {
+                    var costlbl = (this).id.replace('ActuallblCCost', '');
+                    if ((this).id.replace(costlbl, '') != "ActuallblCCost") {
+                        var arr = (this).id.split('-');
+                        costlbl = arr[0];
+                        var formatValue = "P";
+                        if (arr[1] == 'Revenue') {
+                            formatValue = "C";
+                        }
+                        var ida = "Actuallbl" + formatValue + arr[1] + arr[0];
+                        var totalvalue = 0;
+                        $('#tr' + arr[0] + arr[1]).find('input').each(function () {
+                            var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                            if (!isNaN(cvalue)) {
+                                totalvalue = cvalue + parseFloat(totalvalue);
+                            }
+                        });
+
+                        if (arr[1] == 'Revenue') {
+                            document.getElementById(ida).innerHTML = totalvalue;
+                            document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
+                            SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in # 1755
+                            $('#' + ida).attr('orignal-value', totalvalue);
+                        }
+
+                            //If Tactic has not any line item at that time application will update the Actual cost and Projected Cost.
+                        else if (arr[1] == 'Cost') {
+                            costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
+                            var updateActalCost = "ActuallblCCost" + costlbl;
+                            document.getElementById(updateActalCost).innerHTML = totalvalue;
+                            document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, true);
+                            SetBudget('#' + updateActalCost);   //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
+                            $('#' + updateActalCost).attr('orignal-value', totalvalue);
+                        }
+                        else if (arr[1] != 'Revenue' && arr[1] != 'Cost' && arr[1] != 'ProjectedStageValue' && arr[1] != 'MQL' &&
+                            arr[1] != 'CW' && arr[1] != 'INQ') {
+                            //Update the Actual Cost and apply currency format.
+                            document.getElementById(ida).innerHTML = totalvalue;
+                            document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
+                            SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points //AdUncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
+
+                            costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
+
+                            //Update the line item for the appropriate Period (Y1,Y2....Y12)
+                            var ActualsName = 'ActuallblP' + arr[1] + arr[0];
+                            $('#' + ActualsName).attr('linevalue', totalvalue);
+                            var lineItemTotal = 0;
+                            var LineClassName = costlbl + 'Line-' + arr[2];
+                            $('.' + LineClassName).each(function () {
+                                var lineItemvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', '').replace(/!/g, "_"));
+                                if (!isNaN(lineItemvalue)) {
+                                    lineItemTotal = lineItemvalue + parseFloat(lineItemTotal);
+                                }
+                            });
+
+                            var lineId = costlbl + "Cost-" + arr[2];
+                            document.getElementById(lineId).innerHTML = lineItemTotal;
+                            document.getElementById(lineId).innerHTML = FormatCurrency(document.getElementById(lineId).innerHTML, true);
+                            SetBudget('#' + lineId);    //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
+
+                            //Update the Actual cost value based upon Line item actual sum.
+
+                            var updateActalCost = "ActuallblCCost" + costlbl;
+                            var updateActalCostValueTotal = 0;
+                            var currentTacticLineItemsDv = '.lineItemActualsValues' + costlbl;
+                            $(currentTacticLineItemsDv).each(function () {
+                                var updateActalCostValue = parseFloat($(this).attr('linevalue').trim().replace(/,/g, '').replace('$', ''));
+                                if (!isNaN(updateActalCostValue)) {
+                                    updateActalCostValueTotal = updateActalCostValue + parseFloat(updateActalCostValueTotal);
+                                }
+                            });
+
+                            //Update the value and apply currency formatter on it .
+                            document.getElementById(updateActalCost).innerHTML = updateActalCostValueTotal;
+                            document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, true);
+                            SetBudget('#' + updateActalCost);   //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
+                            $('#' + updateActalCost).attr('orignal-value', updateActalCostValueTotal);
+                        }
+                        else {
+                            $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
+                            document.getElementById(ida).innerHTML = totalvalue;
+                            document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
+                            SetPriceValue(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                        }
+                    }
+                    calculateRIO(costlbl);
+                }
+            });
+        });
+
+        // Modified by dharmraj for implement new formula to calculate ROI, #533
+        function calculateRIO(id) {
+            var pcost = $("#hdnProjectedlblCCost" + id).val();  // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
+            if (pcost != 0 && !isNaN(pcost)) {
+                var prevenue = $("#hdnProjectedlblValueRevenue" + id).val();    // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
+                var roip = (prevenue - pcost) / pcost;
+                $("#ProjectedROI" + id).text(FormatCommas(roip.toFixed(2).toString()));
+            }
+
+            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+            pcost = parseFloat(ReplaceCC($("#ActuallblCCost" + id).attr("orignal-value")));
+            if (pcost != 0 && !isNaN(pcost)) {
+                var prevenue = parseFloat(ReplaceCC($("#ActuallblCRevenue" + id).attr("orignal-value")));
+                var roiT = (prevenue - pcost) / pcost;
+                $("#ActualROI" + id).text(FormatCommas(roiT.toFixed(2).toString()));
+                SetPriceValue($("#ActualROI" + id));  //Added By Maitri for #1755 on 2/3/2016
+            }
+        }
+
+        $("[id^='BtnShareTactic']").click(function () {
+            $("#errorMsg").css("display", "none");
+            $("#SuccessMsg").css("display", "none");
+            $("#DivPartialShareTactic").empty();
+            var url = '@Url.Content("~/Inspect/ShowShareTactic/")';
+            $("#DivPartialShareTactic").load(url + '?planTacticId=' + $(this).attr('tacticId') + '&section=@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()');
+        });
+
+
+        $("[id^='UpdateResult']").click(function () {
+            $("#errorMsg").css("display", "none");
+            $("#SuccessMsg").css("display", "none");
+            var _LineItems = [];
+            var title = htmlEncode($('#txtTacticTitle').val());
+            var _tactic = []
+            var tacticId = $(this).attr('tacticId');
+            var stageId = $(this).attr('stageId');
+            isError = false;
+            var isData = false;
+            //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
+            var totalProjectedStageValueActual = $("#hdnActuallblPProjectedStageValue" + tacticId).val();
+            var ProjectedStageValueTitle = $("#hdnProjectedStageValueTitle" + tacticId).val();
+            //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
+            var totalMQLActual = $("#hdnActuallblPMQL" + tacticId).val();
+            var totalCWActual = ReplaceCC($("#ActuallblPCW" + tacticId).text());
+            var totalRevenueActual = ReplaceCC($("#ActuallblCRevenue" + tacticId).text());
+            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+            var totalCostActual = 0;
+            if (IsLineItemActual) {
+                totalCostActual = ReplaceCC($("#ActuallblCCost" + tacticId).val());
+            }
+            else {
+                totalCostActual = ReplaceCC($("#ActuallblCCost" + tacticId).text());
+            }
+
+            var totalROI = ReplaceCC($("#ProjectedROI" + tacticId).text());
+            var totalROIActual = ReplaceCC($("#ActualROI" + tacticId).text());
+            var tableId = "#divTable" + tacticId;
+            $(tableId).find('input').each(function () {
+                if ($(this).val().trim() != '') {
+                    var _isCurrency = $(this).hasClass("currency_dollar");
+                    var thisValue = ReplaceCC($(this).val());
+                    if ((!_isCurrency) && thisValue.match('^(0|[0-9][0-9]*)$')) {
+                        $(this).removeClass("error");
+                    }
+                    else if ((_isCurrency) && thisValue.match(_decmlRegex)) {
+                        $(this).removeClass("error");
+                    }
+                    else {
+                        $(this).addClass("error");
+                        isError = true;
+                    }
+                    var arr = (this).id.split('-');
+                    if (thisValue != '') {
+                        var lineitemclass = tacticId + '_Line';
+                        if (!$(this).hasClass(lineitemclass)) {
+                            _tactic.push({
+                                PlanTacticId: tacticId,
+                                StageTitle: arr[1],
+                                Period: arr[2],
+                                ActualValue: thisValue,
+                                TotalProjectedStageValueActual: totalProjectedStageValueActual,
+                                TotalMQLActual: totalMQLActual,
+                                TotalCWActual: totalCWActual,
+                                TotalRevenueActual: totalRevenueActual,
+                                TotalCostActual: totalCostActual,
+                                ROI: totalROI,
+                                ROIActual: totalROIActual,
+                                IsActual: true,
+                                StageId: stageId
+                                //PlanLineItemId: arr[0]
+                            });
+                            isData = true;
+                        }
+                        else {
+                            _LineItems.push({
+                                PlanLineItemId: arr[0],
+                                Period: arr[2],
+                                Value: thisValue
+                            });
+                            isLineItem = true;
+                        }
+                    }
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            });
+            if (isError) {
+               @* $("#errorMessage").css("display", "block");
+                $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");*@
+                ShowMessage(isError, "@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField")
+                return false;
+            }
+            if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
+                isError = true;
+                var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
+                var msgdisplay = msg.replace('{0}', FormatCommas(totalMQLActual.toString())).replace('{1}', ProjectedStageValueTitle).replace('{3}', ProjectedStageValueTitle).replace('{2}', FormatCommas(totalProjectedStageValueActual.toString())).replace(/{4\}/g, MQlTitle);
+                //$("#spanMessageError").text(msgdisplay);
+                //$("#errorMessage").css("display", "block");
+                ShowMessage(isError, msgdisplay)
+                return false;
+            }
+            if (!isData) {
+                _tactic.push({
+                    PlanTacticId: tacticId,
+                    StageTitle: 0,
+                    Period: 0,
+                    ActualValue: 0,
+                    TotalProjectedStageValueActual: totalProjectedStageValueActual,
+                    TotalMQLActual: totalMQLActual,
+                    TotalCWActual: totalCWActual,
+                    TotalRevenueActual: totalRevenueActual,
+                    TotalCostActual: totalCostActual,
+                    ROI: totalROI,
+                    ROIActual: totalROIActual,
+                    IsActual: false,
+                    StageId: stageId
+                });
+            }
+            $("#errorMsg").css("display", "none");
+            //_tactic = JSON.stringify({ 'tacticactual': _tactic });
+
+            var Tactic_title = $(".colTitle" + tacticId).attr('Tactitle');
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                async: false,
+                type: 'POST',
+                //url: '@Url.Content("~/Inspect/UploadResult/")?UserId=' + $(window).attr('name'),
+                url: '@Url.Content("~/Inspect/UploadResult/")',
+                //data: _tactic,
+                data: JSON.stringify({ tacticactual: _tactic, lineItemActual: _LineItems, tactictitle: Tactic_title }),
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                        if (data != 'undefined') {
+                            if (data.id != 0) {
+                                //Commented by Rahul Shah on 03/05/2016 for PL #2111
+                                CallAjax();
+                                //$("#successMessage").css("display", "block");
+                                //$("#spanMessageSuccess").empty();
+                                //$("#spanMessageSuccess").text(data.msg);
+                                ShowMessage(isError, data.msg)
+                            }
+                        }
+                    }
+                }
+            });
+
+
+        });
+    
+    }
 function LoadPage() {
     fillActualsTable();
     NumberFormatterTipsyTitle(".actualtipsyclassTitle", 24);
@@ -1568,7 +2076,9 @@ function fillActualsTable() {
             for (i in actuals) {
                 indexValue = indexValue + 1;
                 isFilterFound = true;
-                addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle, actuals[i].IsTacticEditable, actuals[i].LineItemsData, actuals[i].costActualData, actuals[i].YearDiffrence, actuals[i].StartYear);
+                // Modified By Nishant Sheth
+                // Desc :: #2111 replace function for display only list of tactic name without table
+                addRowActualPerformance(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle, actuals[i].IsTacticEditable, actuals[i].LineItemsData, actuals[i].costActualData, actuals[i].YearDiffrence, actuals[i].StartYear);
             }
             if (!isFilterFound) {
                 $html += '@RevenuePlanner.Helpers.Common.objCached.NoTacticFound';
@@ -1623,8 +2133,300 @@ function fillActualsTable() {
         //end
         }
     }
+    // Add By Nishant Sheth
+    // Desc :: Add row for tactic name #2111
+    function addRowActualPerformance(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData, _YearDiffrence, _StartYear) {
+        var $tableActuals = $('.accordion-actuals');
+        var num = parseInt(_index);
+        var $html = '<div class="accordion-group" id="accordion'+_id+'">' +
+                      '<div class="accordion-heading">' +
+                      '<div class="accordion-toggle">' +
+                                  '<div class="header-toogle-actual">' +
+                                   '<a data-toggle="collapse" class="chevron-right" data-parent="#accordion2" href="#collapse' + _id + '" onclick="renderactualtable(' + _id + ')"> ' +
+                                      '<div class="header-toogle-actual-left">' +
+                                      '<span class="font-black">' + num + '.</span><span class="actualtipsyclassTitle">' + _title +
+                                      '</span><span class="glass-icon"></span>' +
+                                          '<span class="table-titles-actual-left">' +
+                                              '<label>Projected</label>' +
+                                              '<label>Actual</label>' +
+                                          '</span>' +
+                                      '</div>' +
+                                  '</a>'+
+                                  '</div>'+
+                                  '</div>'+
+                                  '</div>'+
+                                  '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" Tactitle="' + _title + '"><div>'+
+                                  '</div>';
+        $tableActuals.append($html);
+    }
+    // Add By Nishant Sheth
+    // Desc :: Call function for Render table for selected tacics #2111
+    function renderactualtable(id)
+    {
+        
+        //var actualData = $.grep(actuals, function (e) { return e.id == id; });
+        if(!$("#divTable"+id+"").length>0)
+        {
+            var atcualIndex=parseInt(actuals.map((el) => el.id).indexOf(id));
+            //debugger;
+            var index=atcualIndex+1;
+            //alert(i);
+            addRowActualExpand(index,id,actuals[atcualIndex].title, actuals[atcualIndex].projectedStageValue, actuals[atcualIndex].projectedStageValueActual, actuals[atcualIndex].mqlProjected, actuals[atcualIndex].mqlActual, actuals[atcualIndex].cwProjected, actuals[atcualIndex].cwActual, actuals[atcualIndex].revenueProjected, actuals[atcualIndex].revenueActual, actuals[atcualIndex].costProjected, actuals[atcualIndex].costActual, actuals[atcualIndex].roiProjected, actuals[atcualIndex].roiActual, actuals[atcualIndex].actualData, actuals[atcualIndex].modifiedBy, actuals[atcualIndex].LastSync, actuals[atcualIndex].stageTitle, actuals[atcualIndex].tacticStageId, actuals[atcualIndex].tacticStageTitle, actuals[atcualIndex].IsTacticEditable, actuals[atcualIndex].LineItemsData, actuals[atcualIndex].costActualData, actuals[atcualIndex].YearDiffrence, actuals[atcualIndex].StartYear);
+          
+        }
+    }
+    // Add By Nishant Sheth
+    // Desc :: Render table of selected tacics #2111
+    function addRowActualExpand(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData, _YearDiffrence, _StartYear) {
+        //debugger;
+        var $tableActuals = $('#accordion'+_id);
+        $tableActuals.html('');
+        var num = parseInt(_index);
+        var $html = '' +
+                        '<div class="accordion-heading">' +
+                        '<div class="accordion-toggle">' +
+                                    '<div class="header-toogle-actual">' +
+                                     '<a data-toggle="collapse" class="chevron-right" data-parent="#accordion2" href="#collapse' + _id + '" onclick="anchorclick(this)">' +
+                                        '<div class="header-toogle-actual-left">' +
+                                        '<span class="font-black">' + num + '.</span><span class="actualtipsyclassTitle">' + _title +
+                                        '</span><span class="glass-icon"></span>' +
+                                            '<span class="table-titles-actual-left">' +
+                                                '<label>Projected</label>' +
+                                                '<label>Actual</label>' +
+                                            '</span>' +
+                                        '</div>' +
+                                    '</a>';
+
+        $html += '<div class="header-toogle-actual-right">' +
+        '<div class="shadow-scroll-table-mask-left"></div>' +
+        '<div class="table-actual-mask">' +
+        '<div id="divTable' + _id + '">' +
+           '<table id="table_actuals" class="table" tableTacticId="tableActual' + _id + '">' +
+            '<thead>' +
+            '<tr>';
+        for (var i = 0; i < parseInt(_YearDiffrence + 1) ; i++) {
+
+            $html += '<th>Jan - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Feb - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Mar - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Apr - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>May - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Jun - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Jul - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Aug - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Sep - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Oct - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Nov - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Dec - ' + (parseInt(_StartYear) + i) + '  </th>'
+        }
+
+        $html += '</tr>' +
+                '</thead>' +
+                '<tbody>';
+        var arrStage = stageTitle;
+        for (var p = 0; p < arrStage.length; p = p + 1) {
+            var idtr = "tr" + _id + arrStage[p];
+            $html += '<tr id=' + idtr + '>';
+            for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
+                var tdId = _id + "-" + arrStage[p] + "-Y" + j;
+                $html += '<td><input id="' + tdId + '" placeholder="---" ';     // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
+                if (arrStage[p] == 'Revenue') {
+                    $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
+                }
+                else {
+                    $html += ' class="priceValue"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
+                }
+
+                for (k in _actualData) {
+                    var comStr1 = _actualData[k].title + _actualData[k].period;
+                    var comStr2 = arrStage[p] + "Y" + j;
+                    if (comStr1 == comStr2) {
+                        $html += 'value="' + _actualData[k].actualValue + '"';
+                    }
+                    //updateBy = _actualData[k].UpdateBy;
+                    stat = _actualData[k].IsUpdate;
+                }
+                $html += ' ></input></td>';
+            }
+            $html += '</tr>';
+        }
+
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        $html += '<tr id=' + "tr" + _id + "Cost" + ' TacticId=' + _id + '>';
+        for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
+            var newCounterTactic = j - 1;
+            var tdId = _id + "-" + "Cost" + "-Y" + j;
+            var divId = _id + "Cost-Y" + j;
+            $html += '<td>';
+            if (_LineItemsData.length <= 0) {
+                $html += '<input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
+                $html += ' class="currency_dollar "  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
+                $html += 'value="' + FormatCurrency(_costActualData[newCounterTactic].Cost, true) + '"';
+                $html += ' ></input>';
+            }
+            else {
+                $html += '<div id="' + divId + '" class="table-info-actual-left addFormatterActualCurrency " style="float: right;">' + FormatCurrency(_costActualData[newCounterTactic].Cost, true) + '</div>';
+            }
+            $html += '</td>';
+        }
+        $html += '</tr>';
+
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        for (var p = 0; p < _LineItemsData.length; p = p + 1) {
+            //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
+            var TacticId = _id;
+            var idtr = "tr" + _LineItemsData[p].id + TacticId;
+            $html += '<tr id=' + idtr + ' TacticId=' + _id + '>';
+            for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
+                var tdId = _LineItemsData[p].id + "-" + TacticId + "-Y" + j;
+                var ClassName = "currency_dollar" + " " + _id + "Line-Y" + j;
+                ClassName = _id + "_Line " + ClassName;
+                $html += '<td><input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
+                $html += ' class="' + ClassName + '"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
+
+                var newCounter = j - 1;
+                var Data = _LineItemsData[p].LineItemActual[newCounter];
+
+                if (typeof Data != 'undefined') {
+                    var val = _LineItemsData[p].LineItemActual[newCounter].Cost;
+                    if (val != null && val != 'undefined' && val.length > 0) {
+                        $html += 'value="' + FormatCurrency(_LineItemsData[p].LineItemActual[newCounter].Cost, true) + '"';
+                    }
+                    //$html += 'value="' +  + '"';
+                }
+                else {
+                    $html += 'value="' + 0 + '"';
+                }
+
+                $html += ' ></input></td>';
+            }
+            $html += '</tr>';
+        }
+
+        $html += '</tbody>' +
+            '</table>' +
+            '</div>' +
+            '</div>' +
+            '<div class="shadow-scroll-table-mask-right"></div>' +
+            '</div>' +
+            '</div>' +
+        '</div>' +
+    '</div>' +
+    '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" Tactitle="' + _title + '">' +
+      '<div class="accordion-inner">';
+        //Modified by Bhumika for #1755 on 4/3/2016 for UI issues.
+        for (var i = 0; i < arrStage.length; i++) {
+            if (arrStage[i] == '@Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()') {
+                $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">' + tacticStageTitle + '</span><input type="hidden" id="hdnProjectedStageValueTitle' + _id + '" value="' + tacticStageTitle + '" /><span class="table-info-actual-left-wraper">' +
+                                                                  '<span class="table-info-actual-left truncate addFormatterActualNumber" id="lblProjectedStageValue' + _id + '">' +
+                                                _projectedStageValue +
+                                        '</span>' +
+                                            '<span class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPProjectedStageValue' + _id + '">' +
+                                                _projectedStageValueActual +
+                                        '</span>' +
+                                        '<input type="hidden" id="hdnActuallblPProjectedStageValue' + _id + '" value=" ' + _projectedStageValueActual + ' " />' +   //// Added by Sohel Pathan on 27/08/2014 for Internal Review Points
+                                    '</span>' +
+                                '</div></div>';
+            }
+            else if (arrStage[i].toLowerCase() == '@Common.StageCodeMQL') {
+                MQlTitle = '@Html.LabelForMQL("MQL")';
+                $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">' + MQlTitle + '</span><span class="table-info-actual-left-wraper">' +
+                                                '<span class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblPMQL' + _id + '">' +
+                                                    _mqlProjected +
+                                                '</span>' +
+                                                '<span class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPMQL' + _id + '">' +
+                                                    _mqlActual +
+                                                '</span>' +
+                                                '<input type="hidden" id="hdnActuallblPMQL' + _id + '" value=" ' + _mqlActual + ' " />' +       //// Added by Sohel Pathan on 27/08/2014 for Internal Review Points
+                                            '</span>' +
+                                        '</div></div>';
+            }
+        }
+
+        $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">@Html.LabelForCW("CW")</span><span class="table-info-actual-left-wraper">' +
+                                        '<span class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblValueCW' + _id + '">' +
+                                            number_format(_cwProjected, 0, 0, ',') +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                        '</span>' +
+                                        '<span class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPCW' + _id + '">' +
+                                            _cwActual +
+                                        '</span>' +
+                                    '</span>' +
+                                '</div></div>';
+
+        $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">Revenue</span><span class="table-info-actual-left-wraper">' +
+                                        '<span class="table-info-actual-left truncate setBudget" id="ProjectedlblValueRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                            FormatCurrency(_revenueProjected, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                        '</span>' +
+                                        '<span orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate setBudget" id="ActuallblCRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                            FormatCurrency(_revenueActual, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                        '</span>' +
+                                        '<input type="hidden" id="hdnProjectedlblValueRevenue' + _id + '" value=" ' + _revenueProjected + ' " />' +       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
+                                    '</span>' +
+                                '</div></div>';
+
+        $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">Cost</span>' +
+                            '<span id="border-right" class="table-info-actual-left-wraper">' +
+                                '<span class="table-info-actual-left truncate setBudget" id="ProjectedlblCCost' + _id + '">' +   // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
+                                    FormatCurrency(_costProjected, true) +  // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
+                                '</span>';
+
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        $html += '<span orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(_costActual, true) + '</span>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+        $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + _costProjected + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
+        $html += '</span>' +
+                        '</div></div>';
+
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        for (line in _LineItemsData) {
+            //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
+            var TacticId = _id;
+            $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="inner-lineItem truncate testTacticTitle"  title="' + _LineItemsData[line].Title + '">' + _LineItemsData[line].Title +
+                                         '</span><span id="border-right" class="table-info-actual-left-wraper">' +
+                                             '<span class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                                 FormatCurrency(_LineItemsData[line].LineItemCost, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                             '</span>' +
+                                             '<span lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues' + TacticId + '" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
+                                              FormatCurrency(_LineItemsData[line].LineItemActualCost, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                '</span>' +
+                            '</span>' +
+                        '</div></div>';
+        }
+
+        $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">ROI</span>' +
+                                '<span id="border-right" class="table-info-actual-left-wraper">' +
+                                    '<span class="table-info-actual-left truncate" id="ProjectedROI' + _id + '">' +
+                                        _roiProjected.toFixed(2) +
+                                    '</span>' +
+                                    '<span class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber " id="ActualROI' + _id + '">' +
+                                        _roiActual.toFixed(2) +
+                                    '</span>' +
+                                '</span>' +
+                            '</div></div>';
+
+        $html += '<div class="body-toogle-actual">' +
+                        '<div class="wrapper-toogle-actual-buttons">' +
+                        '<div class="pull-left" style="width:315px;">' +
+                        '<label id="last-synced" class="pull-left margin-top6 margin-bottom0" style="line-height:10px;">' + _LastSync + '</label>' +
+                        '<label id="last-updated" class="pull-left margin-bottom0">' + _modifiedBy + '</label></div>';
+
+        if (IsTacticEditable) {
+            $html += '<button id="BtnShareTactic' + _id + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>' +
+                     '<button id="UpdateResult" stageId="' + tacticStageId + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-right20" type="button"><span class="flag-icon"></span>Update Actuals</button>';
+        }
+
+        $html += '</div>' +
+                   '</div>' +
+                   '</div>' +
+               '</div>' +
+             '';
+        
+        $tableActuals.html($html);
+        LoadPagePerformance(_id);
+        AssignDefaultValue();
+    }
     //add row in actuals table
     //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+    //addRowActual
     function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData, _YearDiffrence, _StartYear) {
         var $tableActuals = $('.accordion-actuals');
         var num = parseInt(_index);
@@ -1865,6 +2667,7 @@ function fillActualsTable() {
                    '</div>' +
                '</div>' +
              '</div>';
+            
         $tableActuals.append($html);
 
     }//addRowActual

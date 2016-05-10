@@ -990,6 +990,25 @@ namespace RevenuePlanner.Controllers
             return Json(new { }, JsonRequestBehavior.AllowGet);
 
         }
+        // Add By Nishant Sheth
+        // Desc :: To get data from cache memory
+        public async Task<JsonResult> GetPlanByPlanIDPerformance(int planid, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "", bool IsHeaderActuals = false)
+        {
+            try
+            {
+                await Task.Delay(1);
+                return Json(new
+                {
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValuePerformance(planid, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, TabId: TabId, IsHeaderActuals: IsHeaderActuals),// Modified By Nishant Sheth Desc header value wrong with plan tab
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { }, JsonRequestBehavior.AllowGet);
+
+        }
 
         #endregion
 

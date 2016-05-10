@@ -6609,7 +6609,17 @@ namespace RevenuePlanner.Controllers
             List<Guid> filteredOwner = string.IsNullOrWhiteSpace(ownerId) ? new List<Guid>() : ownerId.Split(',').Select(owner => Guid.Parse(owner)).ToList();
             //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
             string stageMQL = Enums.Stage.MQL.ToString();
-            int levelMQL = objDbMrpEntities.Stages.FirstOrDefault(s => s.ClientId.Equals(Sessions.User.ClientId) && s.IsDeleted == false && s.Code.Equals(stageMQL)).Level.Value;
+
+            // Add By Nishant Sheth
+            // Desc :: To get performance regarding #2111 add stagelist into cache memory
+            CacheObject dataCache = new CacheObject();
+            List<Stage> stageList = dataCache.Returncache(Enums.CacheObject.StageList.ToString()) as List<Stage>;
+            if (stageList == null)
+            {
+                stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+            }
+            dataCache.AddCache(Enums.CacheObject.StageList.ToString(), stageList);
+            int levelMQL = stageList.FirstOrDefault(s => s.ClientId.Equals(Sessions.User.ClientId) && s.IsDeleted == false && s.Code.Equals(stageMQL)).Level.Value;
 
             List<Plan_Campaign_Program_Tactic> TacticList = new List<Plan_Campaign_Program_Tactic>();
             List<string> tacticStatus = Common.GetStatusListAfterApproved();
@@ -6680,7 +6690,6 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
 
                 string TitleProjectedStageValue = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
                 string TitleCW = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString();
@@ -6837,7 +6846,7 @@ namespace RevenuePlanner.Controllers
                     // Desc:: 1765 get year difrrence
                     YearDiffrence = Convert.ToInt32(Convert.ToInt32(tactic.EndDate.Year) - Convert.ToInt32(tactic.StartDate.Year)),
                     StartYear = Convert.ToInt32(tactic.StartDate.Year)
-                });
+                }).ToList();
 
                 //// Prepare final Tactic Actual list
                 var lstTactic = tacticObj.Select(tacticActual => new
@@ -6871,12 +6880,12 @@ namespace RevenuePlanner.Controllers
                     LineItemsData = tacticActual.LineItemsData,
                     YearDiffrence = tacticActual.YearDiffrence,
                     StartYear = tacticActual.StartYear
-                });
+                }).ToList();
 
-                var openTactics = lstTactic.Where(tactic => tactic.actualData.ToList().Count == 0).OrderBy(tactic => tactic.title);
-                var allTactics = lstTactic.Where(tactic => tactic.actualData.ToList().Count != 0);
+                var openTactics = lstTactic.Where(tactic => tactic.actualData.ToList().Count == 0).OrderBy(tactic => tactic.title).ToList();
+                var allTactics = lstTactic.Where(tactic => tactic.actualData.ToList().Count != 0).ToList();
 
-                var result = openTactics.Concat(allTactics);
+                var result = openTactics.Concat(allTactics).ToList();
 
                 return Json(result, JsonRequestBehavior.AllowGet);
             }
