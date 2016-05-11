@@ -6211,6 +6211,13 @@ namespace RevenuePlanner.Controllers
                     else
                     {
                         _TacEndMonth = tactic.EndDate.AddDays(stageVelocity).Month;
+                        // Add by Nishant Sheth
+                        // Desc :: #2178 Not Capturing Multi Month Actuals
+                        int TacticEndMonth = tactic.EndDate.Month;
+                        if (_TacEndMonth < TacticEndMonth)
+                        {
+                            _TacEndMonth = TacticEndMonth;
+                        }
                     }
 
                     _planTacticId = tactic.PlanTacticId;
