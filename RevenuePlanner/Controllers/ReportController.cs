@@ -9260,7 +9260,6 @@ namespace RevenuePlanner.Controllers
 
                 #region "Get Cost by LineItem"
                 TacticCostData = GetActualCostDataByWeightage(_CustomfieldId, _TacticOptionObject.CustomFieldOptionid.ToString(), _CustomFieldType, fltrTacticData, tblTacticLineItemList, tblLineItemActualList, _IsTacticCustomField);
-                TacticCostData = GetActualCostData(TacticData, tblTacticLineItemList, tblLineItemActualList);
                 // Modified By Nishant Sheth
                 // Desc :: #2179 Not showing actual costs
                 TacticCostData = TacticCostData.ToList().Select(tact => new TacticMonthValue
