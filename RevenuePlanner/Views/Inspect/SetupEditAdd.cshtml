@@ -1108,7 +1108,7 @@
             }
         });
         _customFieldValues = JSON.stringify(_customFieldValues);
-        var isAssortment = true;       
+        var isAssortment = true;
         if (!isInspectWin && !isInspectNewLineItem && !isLoadcopied) {
             _resubmissionLabelValues = [];
            
@@ -1354,41 +1354,43 @@
         });
     }
 
-    function checkChangeValue(classname, withResubmissionLabel) {      
-        _resubmissionLabelValues = [];
-        var resubmit = false;
-        if (withResubmissionLabel) {
-            $('form').find(classname).each(function () {
-                var oldValue = $(this).attr("oldValue");
-                var value = "";
-                if ($(this).prop('tagName') != 'A') {
-                    value = $(this).val();
-                }
-                else {
-                    value = $(this).text();
-                }
-                if (oldValue != value) {
-                    _resubmissionLabelValues.push({
-                        Key: htmlEncode($(this).attr("label").replace(/ /g, "_").toString()),
-                        Value: htmlEncode($(this).attr("label").replace(/ /g, "_").toString())
-                    });
+    //Commented By Komal for #2182
+    //function checkChangeValue(classname, withResubmissionLabel) {
+    //    _resubmissionLabelValues = [];
+    //    var resubmit = false;
+    //    if (withResubmissionLabel) {
+    //        $('form').find(classname).each(function () {
+    //            var oldValue = $(this).attr("oldValue");
+    //            var value = "";
+    //            if ($(this).prop('tagName') != 'A') {
+    //                value = $(this).val();
+    //            }
+    //            else {
+    //                value = $(this).text();
+    //            }
+    //            if (oldValue != value) {
+    //                _resubmissionLabelValues.push({
+    //                    Key: htmlEncode($(this).attr("label").replace(/ /g, "_").toString()),
+    //                    Value: htmlEncode($(this).attr("label").replace(/ /g, "_").toString())
+    //                });
 
-                    resubmit = true;
-                }
-            });
-            _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
-            return resubmit;
-        }
-        else {
-            $('form').find(classname).each(function () {
-                var oldValue = $(this).attr("oldValue");
-                var value = $(this).val();
-                if (oldValue != value) {
-                    return resubmit = true;
-                }
-            });
-        }
-    }
+    //                resubmit = true;
+    //            }
+    //        });
+    //        _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
+    //        return resubmit;
+    //    }
+    //    else {
+    //        $('form').find(classname).each(function () {
+    //            var oldValue = $(this).attr("oldValue");
+    //            var value = $(this).val();
+    //            if (oldValue != value) {
+    //                return resubmit = true;
+    //            }
+    //        });
+    //    }
+    //}
+
     $("#TacticCost").focusout(function () {
         var tacticBudgetValue = ReplaceCC($("#TacticCost").val());
         if (tacticBudgetValue == '' || typeof tacticBudgetValue == 'undefined') {

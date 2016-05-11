@@ -738,7 +738,43 @@
         }
     }
 
-    //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
+    //Modified By Komal Rawal for #2182 
+    function checkChangeValue(classname, withResubmissionLabel) {
+        _resubmissionLabelValues = [];
+        var resubmit = false;
+        if (withResubmissionLabel) {
+            $('form').find(classname).each(function () {
+                var oldValue = $(this).attr("oldValue");
+                var value = "";
+                if ($(this).prop('tagName') != 'A') {
+                    value = $(this).val();
+                }
+                else {
+                    value = $(this).text();
+                }
+                if (oldValue != value) {
+                    _resubmissionLabelValues.push({
+                        Key: htmlEncode($(this).attr("label").replace(/ /g, "_").toString()),
+                        Value: htmlEncode($(this).attr("label").replace(/ /g, "_").toString())
+                    });
+
+                    resubmit = true;
+                }
+            });
+            _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
+            return resubmit;
+        }
+        else {
+            $('form').find(classname).each(function () {
+                var oldValue = $(this).attr("oldValue");
+                var value = $(this).val();
+                if (oldValue != value) {
+                    return resubmit = true;
+                }
+            });
+        }
+    }
+    //End
        
     var isInspectWin = false;
     $('#CloneTactic').click(function () {        
