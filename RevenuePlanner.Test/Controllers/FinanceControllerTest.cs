@@ -1000,7 +1000,7 @@ namespace RevenuePlanner.Test.Controllers
           
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.EditBudgetGridData(0, null, null) as JsonResult;
+            var result = objFinanceController.EditBudgetGridData(0, "", "") as JsonResult;
 
             if (result != null)
             {
