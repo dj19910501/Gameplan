@@ -438,7 +438,16 @@ namespace RevenuePlanner.Controllers
 
                 ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
                 //End
+                //Added By Maitri Gandhi for #2167
+                if (LastSetOfPlanSelected.Count() == 1)
+                {
+                    if (LastSetOfPlanSelected.Contains(currentPlan.PlanId.ToString()) == false)
+                    {
+                        var LastViewedPlan = activePlan.Where(plan => LastSetOfPlanSelected.Contains(plan.PlanId.ToString())).Select(plan => plan).FirstOrDefault();
+                        currentPlan = LastViewedPlan;
 
+                    }
+                }
             }
 
             //// Added by Bhavesh, Current year first plan select in dropdown
@@ -5292,6 +5301,11 @@ namespace RevenuePlanner.Controllers
                 int PlanId = !string.IsNullOrEmpty(planid) ? int.Parse(planid) : 0;
                 //// Get planyear of the selected Plan
                 var Plan = planData.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId));
+                //Added By Maitri Gandhi for #2167
+                if (Plan == null)
+                {
+                    Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId));
+                }
                 planYear = Plan.Year;
                 var CampaignList = lstCampaign.ToList(); //Modified by komal to check is deleted flag
 
@@ -6084,8 +6098,14 @@ namespace RevenuePlanner.Controllers
 
                         int PlanId = !string.IsNullOrEmpty(planid) ? int.Parse(planid) : 0;
                         //// Get planyear of the selected Plan
-                        planYear = planData.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId)).Year;
-
+                        //planYear = planData.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId)).Year;
+                        //Modified By Maitri Gandhi for #2167
+                        var Plan = planData.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId));
+                        if (Plan == null)
+                        {
+                            Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId));
+                        }
+                        planYear = Plan.Year;
                         /// if strparam value null then set planYear as default value.
                         if (string.IsNullOrEmpty(multipleyear[i]))
                             multipleyear[i] = planYear;
