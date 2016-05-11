@@ -16,6 +16,7 @@
         var PlanTacticId = 0;
         var IsResubmitableStatus = false;
         bool IsPlanEditable = false;
+        bool IsTacticActualsAddEditAuthorized = false;
         var PlanId = 0;
        
 
@@ -53,7 +54,9 @@
         var EntityId = PlanId + "_" + PlanTacticId;
         var LinkTacticPermission = ((tacticMaster.EndDate.Year - tacticMaster.StartDate.Year) > 0) ? true : false;
         var LinkedTacticId = tacticMaster.LinkedTacticId;
-        bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
+        if (ViewBag.IsTacticActualsAddEditAuthorized != null) { 
+         IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
+        }
 
         //Added By komal Rawal For #1213 - To maintain the mode on tab change after review
         string ProgramOpt = "";
