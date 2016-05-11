@@ -1427,6 +1427,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_HeaderData_With_MultiplePlanIds()
         {
+            MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1434,6 +1435,7 @@ namespace RevenuePlanner.Test.Controllers
             PlanController objPlanController = new PlanController();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             string Year = DataHelper.GetYear();
+            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
             var result = objPlanController.GetPlanByMultiplePlanIDs(CommaSeparatedPlanId, Enums.ActiveMenu.Home.ToString(), Year) as JsonResult;
 
             if (result != null)
@@ -1568,7 +1570,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
-
+            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
             var result = objHomeController.SaveLastSetofViews("", "", "", "", "", "", "", "") as JsonResult;
             if (result != null)
             {
@@ -1625,7 +1627,16 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = objHomeController.LastSetOfViews() as JsonResult;
             //// ViewResult shoud not be null and should match with viewName
-            Assert.IsNotNull(result);
+
+            if (result != null)
+            {
+                Assert.IsNotNull(result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
         }
 
         /// <summary>
@@ -1722,6 +1733,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
+            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
             var result = objHomeController.DeletePreset("Test") as JsonResult;
             if (result != null)
             {

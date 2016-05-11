@@ -1325,7 +1325,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1138;
+            int budgetId = 395;
             string IsQuaterly = "quarters";
             string nValue = "Budget Test";
 

@@ -817,7 +817,7 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
 
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
+                Assert.AreEqual("_ReportCardSection", result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
             }
             else
@@ -1436,8 +1436,17 @@ namespace RevenuePlanner.Test.Controllers
             ReportController reportcontroller = new ReportController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
-            var result = reportcontroller.GetChildLabelDataViewByModel("", "");
-            Assert.IsNotNull(result);
+            var result = reportcontroller.GetChildLabelDataViewByModel("", "");            
+            if (result != null)
+            {
+
+                Assert.IsNotNull(result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Count);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
         }
         #endregion
 

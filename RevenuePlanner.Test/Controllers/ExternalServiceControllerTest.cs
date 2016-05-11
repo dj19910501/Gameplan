@@ -33,10 +33,20 @@ namespace RevenuePlanner.Test.Controllers
 
             //Eloqua
             var result = controller.GetIntegrationFolder(0, 1) as ViewResult;
-            Assert.AreEqual("IntegrationFolder", result.ViewName);
+            if (result != null)
+            {
+                Assert.AreEqual("IntegrationFolder", result.ViewName);
 
-            //Check for the Year view bag, if it is null then view can give an error
-            Assert.IsNotNull(controller.ViewBag.Year);
+                //Check for the Year view bag, if it is null then view can give an error
+                Assert.IsNotNull(controller.ViewBag.Year);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.integrationTypeCode);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
+            
         }
 
         /// <summary>
@@ -52,10 +62,20 @@ namespace RevenuePlanner.Test.Controllers
 
             //Eloqua
             var result = controller.GetIntegrationFolder(1) as ViewResult;
-            Assert.AreEqual("IntegrationFolder", result.ViewName);
+            if (result != null)
+            {
+                Assert.AreEqual("IntegrationFolder", result.ViewName);
 
-            //Check for the Year view bag, if it is null then view can give an error
-            Assert.IsNotNull(controller.ViewBag.Year);
+                //Check for the Year view bag, if it is null then view can give an error
+                Assert.IsNotNull(controller.ViewBag.Year);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.integrationTypeCode);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
+            
         }
 
         /// <summary>
@@ -71,10 +91,20 @@ namespace RevenuePlanner.Test.Controllers
 
             //Eloqua
             var result = controller.GetIntegrationFolder(1, 0) as ViewResult;
-            Assert.AreEqual("IntegrationFolder", result.ViewName);
+            if (result != null)
+            {
+                Assert.AreEqual("IntegrationFolder", result.ViewName);
 
-            //Check for the Integration Type Code view bag, if it is null then view can give an error
-            Assert.IsNotNull(controller.ViewBag.IntegrationTypeCode);
+                //Check for the Integration Type Code view bag, if it is null then view can give an error
+                Assert.IsNotNull(controller.ViewBag.IntegrationTypeCode);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.integrationTypeCode);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
+            
         }
 
         #endregion
@@ -92,7 +122,17 @@ namespace RevenuePlanner.Test.Controllers
             ExternalServiceController controller = new ExternalServiceController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             var result = controller.GetIntegrationFolderPlanList(DateTime.Now.Year.ToString()) as PartialViewResult;
-            Assert.AreEqual("_IntegrationFolderPlanList", result.ViewName);
+            if (result != null)
+            {
+                Assert.AreEqual("_IntegrationFolderPlanList", result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
+            
         }
 
         #endregion
@@ -187,12 +227,21 @@ namespace RevenuePlanner.Test.Controllers
 
             //Parameter IntegrationInstancesId = 0
             var result = controller.SyncNow(0) as JsonResult;
+            if (result != null)
+            {
+                // Check Json result data should not be null
+                Assert.IsNotNull(result.Data);
 
-            // Check Json result data should not be null
-            Assert.IsNotNull(result.Data);
+                // Check sync status is success or not
+                Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("status").ToString());
+            }
+            else
+            {
 
-            // Check sync status is success or not
-            Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+            }
+            
         }
         #endregion
 
@@ -211,22 +260,32 @@ namespace RevenuePlanner.Test.Controllers
             // Set Parameter IntegrationInstancesId
             int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.Salesforce.ToString());
             var result = controller.SyncNow(IntegrationInstanceId) as JsonResult;
-
-            // Check Json result data object is null or not
-            Assert.IsNotNull(result.Data);
-
-            // Check sync status is success or not
-            if (result.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
+            if (result != null)
             {
-                Assert.AreEqual("Success", result.GetValue("status").ToString(), true);
-            }
-            else if(result.GetValue("status").ToString().Equals("In-Progress", StringComparison.OrdinalIgnoreCase)){
-                Assert.AreEqual("In-Progress", result.GetValue("status").ToString(), true);
+                // Check Json result data object is null or not
+                Assert.IsNotNull(result.Data);
+
+                // Check sync status is success or not
+                if (result.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
+                {
+                    Assert.AreEqual("Success", result.GetValue("status").ToString(), true);
+                }
+                else if (result.GetValue("status").ToString().Equals("In-Progress", StringComparison.OrdinalIgnoreCase))
+                {
+                    Assert.AreEqual("In-Progress", result.GetValue("status").ToString(), true);
+                }
+                else
+                {
+                    Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
+                }
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("status").ToString());
             }
             else
             {
-                Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
+            
         }
         #endregion
 
@@ -245,22 +304,30 @@ namespace RevenuePlanner.Test.Controllers
             // Set Parameter IntegrationInstancesId
             int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.Eloqua.ToString());
             var result = controller.SyncNow(IntegrationInstanceId) as JsonResult;
-
-            // Check Json result data object is null or not
-            Assert.IsNotNull(result.Data);
-
-            // Check sync status is success or not
-            if (result.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
+            if (result != null)
             {
-                Assert.AreEqual("Success", result.GetValue("status").ToString(), true);
-            }
-            else if (result.GetValue("status").ToString().Equals("In-Progress", StringComparison.OrdinalIgnoreCase))
-            {
-                Assert.AreEqual("In-Progress", result.GetValue("status").ToString(), true);
+                // Check Json result data object is null or not
+                Assert.IsNotNull(result.Data);
+
+                // Check sync status is success or not
+                if (result.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
+                {
+                    Assert.AreEqual("Success", result.GetValue("status").ToString(), true);
+                }
+                else if (result.GetValue("status").ToString().Equals("In-Progress", StringComparison.OrdinalIgnoreCase))
+                {
+                    Assert.AreEqual("In-Progress", result.GetValue("status").ToString(), true);
+                }
+                else
+                {
+                    Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
+                }
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("status").ToString());
             }
             else
             {
-                Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
         }
         #endregion
