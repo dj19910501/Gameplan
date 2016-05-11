@@ -1844,6 +1844,34 @@ namespace RevenuePlanner.Controllers
                     ActualData.ForEach(actual => listmonthwise.Add(new TacticMonthValue { Id = id, Month = tactic.TacticYear + actual.Period, Value = actual.ActualValue, StartDate = tactic.TacticObj.StartDate, EndDate = tactic.TacticObj.EndDate })); // Modified By Nishant Sheth #1839
                 }
             }
+            // Add By Nishant sheth
+            // Desc :: #2179 Not showing actual costs 
+            listmonthwise = listmonthwise.Select(tac => new
+            {
+                Period = Convert.ToInt32(tac.Month.Remove(0, 4).Replace("Y", "")),
+                Id = tac.Id,
+                Value = tac.Value,
+                StartYear = tac.StartDate.Year,
+                StartDate = tac.StartDate,
+                EndDate = tac.EndDate
+            }).ToList().Select(tac => new
+            {
+                Period = tac.Period,
+                NumPeriod = (tac.Period / 13),
+                Id = tac.Id,
+                Value = tac.Value,
+                StartYear = tac.StartDate.Year,
+                StartDate = tac.StartDate,
+                EndDate = tac.EndDate
+            }).ToList().Select(tact => new TacticMonthValue
+            {
+                Month = (tact.StartYear + tact.NumPeriod) + PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                Year = tact.StartYear + tact.NumPeriod,
+                Id = tact.Id,
+                Value = tact.Value,
+                StartDate = tact.StartDate,
+                EndDate = tact.EndDate
+            }).ToList();
             return listmonthwise;
         }
 
@@ -1879,6 +1907,34 @@ namespace RevenuePlanner.Controllers
                     innerTacticActualList.ForEach(actual => listmonthwise.Add(new TacticMonthValue { Id = id, Month = tactic.TacticYear + actual.Period, Value = actual.Actualvalue, StartDate = actual.Plan_Campaign_Program_Tactic.StartDate, EndDate = actual.Plan_Campaign_Program_Tactic.EndDate }));
                 }
             }
+            // Add By Nishant sheth
+            // Desc :: #2179 Not showing actual costs 
+            listmonthwise = listmonthwise.Select(tac => new
+            {
+                Period = Convert.ToInt32(tac.Month.Remove(0, 4).Replace("Y", "")),
+                Id = tac.Id,
+                Value = tac.Value,
+                StartYear = tac.StartDate.Year,
+                StartDate = tac.StartDate,
+                EndDate = tac.EndDate
+            }).ToList().Select(tac => new
+            {
+                Period = tac.Period,
+                NumPeriod = (tac.Period / 13),
+                Id = tac.Id,
+                Value = tac.Value,
+                StartYear = tac.StartDate.Year,
+                StartDate = tac.StartDate,
+                EndDate = tac.EndDate
+            }).ToList().Select(tact => new TacticMonthValue
+            {
+                Month = (tact.StartYear + tact.NumPeriod) + PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                Year = tact.StartYear + tact.NumPeriod,
+                Id = tact.Id,
+                Value = tact.Value,
+                StartDate = tact.StartDate,
+                EndDate = tact.EndDate
+            }).ToList();
             return listmonthwise;
         }
 
@@ -6030,6 +6086,13 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 _TacEndMonth = tactic.EndDate.AddDays(stageVelocity).Month;
+                                // Add by Nishant Sheth
+                                // Desc :: #2178 Not Capturing Multi Month Actuals
+                                int TacticEndMonth = tactic.EndDate.Month;
+                                if (_TacEndMonth < TacticEndMonth)
+                                {
+                                    _TacEndMonth = TacticEndMonth;
+                                }
                             }
                         }
                         _planTacticId = tactic.PlanTacticId;
@@ -9190,32 +9253,14 @@ namespace RevenuePlanner.Controllers
 
                 #region "Get Cost by LineItem"
                 TacticCostData = GetActualCostDataByWeightage(_CustomfieldId, _TacticOptionObject.CustomFieldOptionid.ToString(), _CustomFieldType, fltrTacticData, tblTacticLineItemList, tblLineItemActualList, _IsTacticCustomField);
-                TacticCostData = TacticCostData.Select(tac => new
+                TacticCostData = GetActualCostData(TacticData, tblTacticLineItemList, tblLineItemActualList);
+                // Modified By Nishant Sheth
+                // Desc :: #2179 Not showing actual costs
+                TacticCostData = TacticCostData.ToList().Select(tact => new TacticMonthValue
                 {
-                    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
-                    TacticId = tac.Id,
-                    Value = tac.Value,
-                    StartYear = tac.StartDate.Year,
-                    StartDate = tac.StartDate,
-                    EndDate = tac.EndDate,
-                    StartMonth = tac.StartMonth,
-                    EndMonth = tac.EndMonth
-                }).ToList().Select(tac => new
-                {
-                    Period = tac.Period,
-                    NumPeriod = (tac.Period / 13),
-                    TacticId = tac.TacticId,
-                    Value = tac.Value,
-                    StartYear = tac.StartDate.Year,
-                    StartDate = tac.StartDate,
-                    EndDate = tac.EndDate,
-                    StartMonth = tac.StartMonth,
-                    EndMonth = tac.EndMonth
-                }).ToList().Select(tact => new TacticMonthValue
-                {
-                    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                    Year = tact.StartYear + tact.NumPeriod,
-                    Id = tact.TacticId,
+                    Month = tact.Month,
+                    Year = tact.Year,
+                    Id = tact.Id,
                     Value = tact.Value,
                     StartYear = tact.StartDate.Year,
                     StartDate = tact.StartDate,
@@ -9797,39 +9842,20 @@ namespace RevenuePlanner.Controllers
 
                 #region "Get ActualCost Data"
                 TacticCostData = GetActualCostData(TacticData, tblTacticLineItemList, tblLineItemActualList);
-                TacticCostData = TacticCostData.Select(tac => new
-                {
-                    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
-                    TacticId = tac.Id,
-                    Value = tac.Value,
-                    StartYear = tac.StartDate.Year,
-                    StartDate = tac.StartDate,
-                    EndDate = tac.EndDate,
-                    StartMonth = tac.StartMonth,
-                    EndMonth = tac.EndMonth
-                }).ToList().Select(tac => new
-                {
-                    Period = tac.Period,
-                    NumPeriod = (tac.Period / 13),
-                    TacticId = tac.TacticId,
-                    Value = tac.Value,
-                    StartYear = tac.StartDate.Year,
-                    StartDate = tac.StartDate,
-                    EndDate = tac.EndDate,
-                    StartMonth = tac.StartMonth,
-                    EndMonth = tac.EndMonth
-                }).ToList().Select(tact => new TacticMonthValue
-                {
-                    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                    Year = tact.StartYear + tact.NumPeriod,
-                    Id = tact.TacticId,
-                    Value = tact.Value,
-                    StartYear = tact.StartDate.Year,
-                    StartDate = tact.StartDate,
-                    EndDate = tact.EndDate,
-                    StartMonth = tact.StartMonth,
-                    EndMonth = tact.EndMonth
-                }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
+                // Modified By Nishant Sheth
+                // Desc :: #2179 Not showing actual costs
+                TacticCostData = TacticCostData.ToList().Select(tact => new TacticMonthValue
+               {
+                   Month = tact.Month,
+                   Year = tact.Year,
+                   Id = tact.Id,
+                   Value = tact.Value,
+                   StartYear = tact.StartDate.Year,
+                   StartDate = tact.StartDate,
+                   EndDate = tact.EndDate,
+                   StartMonth = tact.StartMonth,
+                   EndMonth = tact.EndMonth
+               }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
 
                 CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)
                     && ListYear.Contains(Convert.ToString(actual.Year))).ToList();
