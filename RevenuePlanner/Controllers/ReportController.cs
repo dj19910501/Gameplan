@@ -457,6 +457,7 @@ namespace RevenuePlanner.Controllers
             public int EndYear { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
+            public double VeloCity { get; set; }
         }
 
         /// <summary>
@@ -473,6 +474,7 @@ namespace RevenuePlanner.Controllers
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
             public int Year { get; set; }
+            public double VeloCity { get; set; }
         }
 
         /// <summary>
@@ -489,7 +491,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (tactic.StartMonth == tactic.EndMonth)
                     {
-                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear + PeriodPrefix + tactic.StartMonth, Value = tactic.Value, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear, StartDate = tactic.StartDate, EndDate = tactic.EndDate });
+                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear + PeriodPrefix + tactic.StartMonth, Value = tactic.Value, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear, StartDate = tactic.StartDate, EndDate = tactic.EndDate, VeloCity = tactic.VeloCity });
                     }
                     else
                     {
@@ -497,21 +499,22 @@ namespace RevenuePlanner.Controllers
                         double totalValue = (double)tactic.Value / (double)totalMonth;
                         for (var i = tactic.StartMonth; i <= tactic.EndMonth; i++)
                         {
-                            listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear, StartDate = tactic.StartDate, EndDate = tactic.EndDate });
+                            listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear, StartDate = tactic.StartDate, EndDate = tactic.EndDate, VeloCity = tactic.VeloCity });
                         }
                     }
                 }
                 else
                 {
-                    int totalMonth = (12 - tactic.StartMonth) + tactic.EndMonth + 1;
+                    int _TacEndMonth = tactic.EndDate.AddDays(tactic.VeloCity).Month;
+                    int totalMonth = (12 - tactic.StartMonth) + _TacEndMonth + 1;
                     double totalValue = (double)tactic.Value / (double)totalMonth;
                     for (var i = tactic.StartMonth; i <= 12; i++)
                     {
-                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear, StartDate = tactic.StartDate, EndDate = tactic.EndDate });
+                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.StartYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear, StartDate = tactic.StartDate, EndDate = tactic.EndDate, VeloCity = tactic.VeloCity });
                     }
                     for (var i = 1; i <= tactic.EndMonth + 1; i++)
                     {
-                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.EndYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear, StartDate = tactic.StartDate, EndDate = tactic.EndDate });
+                        listTacticMonthValue.Add(new TacticMonthValue { Id = tactic.TacticId, Month = tactic.EndYear.ToString() + PeriodPrefix + i, Value = totalValue, StartMonth = tactic.StartMonth, EndMonth = tactic.EndMonth, StartYear = tactic.StartYear, StartDate = tactic.StartDate, EndDate = tactic.EndDate, VeloCity = tactic.VeloCity });
                     }
                 }
             }
@@ -725,7 +728,8 @@ namespace RevenuePlanner.Controllers
                                                     StartYear = tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Year,
                                                     EndYear = tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Year,
                                                     StartDate = tactic.TacticObj.StartDate,
-                                                    EndDate = tactic.TacticObj.EndDate  // Add By Nishant Sheth #1838
+                                                    EndDate = tactic.TacticObj.EndDate,  // Add By Nishant Sheth #1838
+                                                    VeloCity = tactic.CWVelocity
                                                 }).ToList();
 
             return GetMonthWiseValueList(tacticdata);
@@ -751,7 +755,8 @@ namespace RevenuePlanner.Controllers
                                                     StartYear = tactic.TacticObj.StartDate.AddDays(tactic.INQVelocity).Year,
                                                     EndYear = tactic.TacticObj.EndDate.AddDays(tactic.INQVelocity).Year,
                                                     StartDate = tactic.TacticObj.StartDate,
-                                                    EndDate = tactic.TacticObj.EndDate  // Add By Nishant Sheth #1838
+                                                    EndDate = tactic.TacticObj.EndDate,  // Add By Nishant Sheth #1838
+                                                    VeloCity = tactic.INQVelocity
                                                 }).ToList();
 
             return GetMonthWiseValueList(tacticdata);
@@ -780,7 +785,8 @@ namespace RevenuePlanner.Controllers
                                                     StartYear = tactic.TacticObj.StartDate.AddDays(tactic.MQLVelocity).Year,
                                                     EndYear = tactic.TacticObj.EndDate.AddDays(tactic.MQLVelocity).Year,
                                                     StartDate = tactic.TacticObj.StartDate,
-                                                    EndDate = tactic.TacticObj.EndDate  // Add By Nishant Sheth #1838
+                                                    EndDate = tactic.TacticObj.EndDate,  // Add By Nishant Sheth #1838
+                                                    VeloCity = tactic.MQLVelocity
                                                 }).ToList();
 
             return GetMonthWiseValueList(tacticdata);
@@ -806,7 +812,8 @@ namespace RevenuePlanner.Controllers
                                                     StartYear = tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Year,
                                                     EndYear = tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Year,
                                                     StartDate = tactic.TacticObj.StartDate,
-                                                    EndDate = tactic.TacticObj.EndDate  // Add By Nishant Sheth #1838
+                                                    EndDate = tactic.TacticObj.EndDate,  // Add By Nishant Sheth #1838
+                                                    VeloCity = tactic.CWVelocity
                                                 }).ToList();
 
             return GetMonthWiseValueList(tacticdata);
@@ -4536,6 +4543,7 @@ namespace RevenuePlanner.Controllers
                     // Add By Nishant Sheth #1839
                     objTacticdt.StartDate = objTactic.TacticObj.StartDate;
                     objTacticdt.EndDate = objTactic.TacticObj.EndDate;
+                    objTacticdt.VeloCity = objTactic.INQVelocity;
                     // End By Nishant Sheth
                     tacticdata.Add(objTacticdt);
                 }
@@ -4568,6 +4576,7 @@ namespace RevenuePlanner.Controllers
                     // Add By Nishant Sheth #1839
                     objTacticdt.StartDate = objTactic.TacticObj.StartDate;
                     objTacticdt.EndDate = objTactic.TacticObj.EndDate;
+                    objTacticdt.VeloCity = objTactic.MQLVelocity;
                     // End By Nishant Sheth
                     tacticdata.Add(objTacticdt);
                 }
@@ -4600,6 +4609,7 @@ namespace RevenuePlanner.Controllers
                     // Add By Nishant Sheth #1839
                     objTacticdt.StartDate = objTactic.TacticObj.StartDate;
                     objTacticdt.EndDate = objTactic.TacticObj.EndDate;
+                    objTacticdt.VeloCity = objTactic.CWVelocity;
                     // End By Nishant Sheth
                     tacticdata.Add(objTacticdt);
                 }
@@ -4632,6 +4642,7 @@ namespace RevenuePlanner.Controllers
                     // Add By Nishant Sheth #1839
                     objTacticdt.StartDate = objTactic.TacticObj.StartDate;
                     objTacticdt.EndDate = objTactic.TacticObj.EndDate;
+                    objTacticdt.VeloCity = objTactic.CWVelocity;
                     // End By Nishant Sheth
                     tacticdata.Add(objTacticdt);
                 }
@@ -6752,7 +6763,8 @@ namespace RevenuePlanner.Controllers
                             StartMonth = tac.StartMonth,
                             EndMonth = tac.EndMonth,
                             Value = tac.Value,
-                            Year = tac.StartYear
+                            Year = tac.StartYear,
+                            VeloCity = tac.VeloCity
                         }).Distinct().ToList();
                         ProjectedRevenueTrendList = GetProjectedTrendModel(TacticList);
                         ProjectedRevenueTrendList = (from _prjTac in ProjectedRevenueTrendList
@@ -6853,7 +6865,8 @@ namespace RevenuePlanner.Controllers
                         StartMonth = tac.StartMonth,
                         EndMonth = tac.EndMonth,
                         Value = tac.Value,
-                        Year = tac.StartYear
+                        Year = tac.StartYear,
+                        VeloCity = tac.VeloCity
                     }).Distinct().ToList();
 
                     List<ProjectedTrendModel> lstTotalProjectedTrendModel = GetProjectedTrendModel(lstTotalTacticModel);
@@ -7413,7 +7426,8 @@ namespace RevenuePlanner.Controllers
                                  _prjTac.Value,
                                  _prjTac.StartYear,
                                  _prjTac.StartDate,
-                                 _prjTac.EndDate
+                                 _prjTac.EndDate,
+                                 _prjTac.VeloCity
                              } into tac
                              select new ProjectedTacticModel
                              {
@@ -7423,7 +7437,8 @@ namespace RevenuePlanner.Controllers
                                  Value = tac.Key.Value,
                                  Year = tac.Key.StartYear,
                                  StartDate = tac.Key.StartDate,
-                                 EndDate = tac.Key.EndDate
+                                 EndDate = tac.Key.EndDate,
+                                 VeloCity = tac.Key.VeloCity
                              }).Distinct().ToList();
 
                 // Get Projected Revenue Trend List.
@@ -7785,7 +7800,15 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                    TotalTacticMonths = (tactic.EndMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
+                                    // #2186 Set End month for multi year
+                                    int TacticEndMonth = tactic.EndDate.Month;
+                                    int VelocityMonth = 0;
+                                    if (tactic.VeloCity > 0)
+                                    {
+                                        VelocityMonth = tactic.EndDate.AddDays(tactic.VeloCity).Month;
+                                    }
+
+                                    TotalTacticMonths = (tactic.EndMonth + VelocityMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
                                     _InvolvedTacticMonths = (_trendMonth - tactic.StartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
                                     objProjectedTrendModel.TrendValue = (tactic.Value / TotalTacticMonths) * _InvolvedTacticMonths; // Calculate TrendValue.
                                 }
@@ -8726,7 +8749,8 @@ namespace RevenuePlanner.Controllers
                             Value = tac.Value,
                             Year = tac.StartYear,
                             StartDate = tac.StartDate,
-                            EndDate = tac.EndDate
+                            EndDate = tac.EndDate,
+                            VeloCity = tac.VeloCity
                         }).Distinct().ToList();
                         ProjectedTrendList = GetProjectedTrendModel(_TacticList);
                         ProjectedTrendList = (from _prjTac in ProjectedTrendList
@@ -12062,7 +12086,8 @@ namespace RevenuePlanner.Controllers
                                 Value = tac.Value,
                                 Year = tac.StartYear,
                                 StartDate = tac.StartDate,
-                                EndDate = tac.EndDate
+                                EndDate = tac.EndDate,
+                                VeloCity = tac.VeloCity
                             }).Distinct().ToList();
                             ProjectedTrendList = GetProjectedTrendModel(_TacticList);
                             ProjectedTrendList = (from _prjTac in ProjectedTrendList
@@ -12129,7 +12154,8 @@ namespace RevenuePlanner.Controllers
                                 Value = tac.Value,
                                 Year = tac.StartYear,
                                 StartDate = tac.StartDate,
-                                EndDate = tac.EndDate
+                                EndDate = tac.EndDate,
+                                VeloCity = tac.VeloCity
                             }).Distinct().ToList();
 
                             //ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, StageCode);
@@ -12697,7 +12723,8 @@ namespace RevenuePlanner.Controllers
                             Value = tac.Value,
                             Year = tac.StartYear,
                             StartDate = tac.StartDate,
-                            EndDate = tac.EndDate
+                            EndDate = tac.EndDate,
+                            VeloCity = tac.VeloCity
                         }).Distinct().ToList();
                         ProjectedTrendList = GetProjectedTrendModel(_TacticList);
                         ProjectedTrendList = (from _prjTac in ProjectedTrendList
@@ -12824,7 +12851,8 @@ namespace RevenuePlanner.Controllers
                             Value = tac.Value,
                             Year = tac.StartYear,
                             StartDate = tac.StartDate,
-                            EndDate = tac.EndDate
+                            EndDate = tac.EndDate,
+                            VeloCity = tac.VeloCity
                         }).Distinct().ToList();
                         ProjectedTrendList = GetProjectedTrendModel(_TacticList);
                         ProjectedTrendList = (from _prjTac in ProjectedTrendList
@@ -12955,7 +12983,8 @@ namespace RevenuePlanner.Controllers
                             Value = tac.Value,
                             Year = tac.StartYear,
                             StartDate = tac.StartDate,
-                            EndDate = tac.EndDate
+                            EndDate = tac.EndDate,
+                            VeloCity = tac.VeloCity
                         }).Distinct().ToList();
                         ProjectedTrendList = GetProjectedTrendModel(_TacticList);
                         ProjectedTrendList = (from _prjTac in ProjectedTrendList
@@ -13327,7 +13356,8 @@ namespace RevenuePlanner.Controllers
                             Value = tac.Value,
                             Year = tac.StartYear,
                             StartDate = tac.StartDate, // Add By Nishant Sheth #1839
-                            EndDate = tac.EndDate
+                            EndDate = tac.EndDate,
+                            VeloCity = tac.VeloCity
                         }).Distinct().ToList();
                         ProjectedTrendList = GetProjectedTrendModel(_TacticList);
                         ProjectedTrendList = (from _prjTac in ProjectedTrendList
