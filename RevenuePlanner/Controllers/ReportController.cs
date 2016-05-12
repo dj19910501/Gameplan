@@ -718,8 +718,10 @@ namespace RevenuePlanner.Controllers
                                                 {
                                                     TacticId = tactic.TacticObj.PlanTacticId,
                                                     Value = tactic.RevenueValue,
-                                                    StartMonth = tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month,
-                                                    EndMonth = tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month,
+                                                    StartMonth = tactic.TacticObj.StartDate.Month > tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month ? tactic.TacticObj.StartDate.Month : tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month,
+                                                    EndMonth = tactic.TacticObj.EndDate.Month > tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month ? tactic.TacticObj.EndDate.Month : tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month,
+                                                    //StartYear = tactic.TacticObj.StartDate.Month > tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month ? tactic.TacticObj.StartDate.Year : tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Year,
+                                                    //EndYear = tactic.TacticObj.EndDate.Month > tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month ? tactic.TacticObj.EndDate.Year : tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Year,
                                                     StartYear = tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Year,
                                                     EndYear = tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Year,
                                                     StartDate = tactic.TacticObj.StartDate,
@@ -742,8 +744,10 @@ namespace RevenuePlanner.Controllers
                                                 {
                                                     TacticId = tactic.TacticObj.PlanTacticId,
                                                     Value = tactic.INQValue,
-                                                    StartMonth = tactic.TacticObj.StartDate.AddDays(tactic.INQVelocity).Month,
-                                                    EndMonth = tactic.TacticObj.EndDate.AddDays(tactic.INQVelocity).Month,
+                                                    StartMonth = tactic.TacticObj.StartDate.Month > tactic.TacticObj.StartDate.AddDays(tactic.INQVelocity).Month ? tactic.TacticObj.StartDate.Month : tactic.TacticObj.StartDate.AddDays(tactic.INQVelocity).Month,
+                                                    EndMonth = tactic.TacticObj.EndDate.Month > tactic.TacticObj.EndDate.AddDays(tactic.INQVelocity).Month ? tactic.TacticObj.EndDate.Month : tactic.TacticObj.EndDate.AddDays(tactic.INQVelocity).Month,
+                                                    //StartYear = tactic.TacticObj.StartDate.Month > tactic.TacticObj.StartDate.AddDays(tactic.INQVelocity).Month ? tactic.TacticObj.StartDate.Year : tactic.TacticObj.StartDate.AddDays(tactic.INQVelocity).Year,
+                                                    //EndYear = tactic.TacticObj.EndDate.Month > tactic.TacticObj.EndDate.AddDays(tactic.INQVelocity).Month ? tactic.TacticObj.EndDate.Year : tactic.TacticObj.EndDate.AddDays(tactic.INQVelocity).Year,
                                                     StartYear = tactic.TacticObj.StartDate.AddDays(tactic.INQVelocity).Year,
                                                     EndYear = tactic.TacticObj.EndDate.AddDays(tactic.INQVelocity).Year,
                                                     StartDate = tactic.TacticObj.StartDate,
@@ -766,10 +770,13 @@ namespace RevenuePlanner.Controllers
             List<TacticDataTable> tacticdata = (from tactic in planTacticList
                                                 select new TacticDataTable
                                                 {
+
                                                     TacticId = tactic.TacticObj.PlanTacticId,
                                                     Value = tactic.MQLValue,
-                                                    StartMonth = tactic.TacticObj.StartDate.AddDays(tactic.MQLVelocity).Month,
-                                                    EndMonth = tactic.TacticObj.EndDate.AddDays(tactic.MQLVelocity).Month,
+                                                    StartMonth = tactic.TacticObj.StartDate.Month > tactic.TacticObj.StartDate.AddDays(tactic.MQLVelocity).Month ? tactic.TacticObj.StartDate.Month : tactic.TacticObj.StartDate.AddDays(tactic.MQLVelocity).Month,
+                                                    EndMonth = tactic.TacticObj.EndDate.Month > tactic.TacticObj.EndDate.AddDays(tactic.MQLVelocity).Month ? tactic.TacticObj.EndDate.Month : tactic.TacticObj.EndDate.AddDays(tactic.MQLVelocity).Month,
+                                                    //StartYear = tactic.TacticObj.StartDate.Month > tactic.TacticObj.StartDate.AddDays(tactic.MQLVelocity).Month ? tactic.TacticObj.StartDate.Year : tactic.TacticObj.StartDate.AddDays(tactic.MQLVelocity).Year,
+                                                    //EndYear = tactic.TacticObj.EndDate.Month > tactic.TacticObj.EndDate.AddDays(tactic.MQLVelocity).Month ? tactic.TacticObj.EndDate.Year : tactic.TacticObj.EndDate.AddDays(tactic.MQLVelocity).Year,
                                                     StartYear = tactic.TacticObj.StartDate.AddDays(tactic.MQLVelocity).Year,
                                                     EndYear = tactic.TacticObj.EndDate.AddDays(tactic.MQLVelocity).Year,
                                                     StartDate = tactic.TacticObj.StartDate,
@@ -792,8 +799,10 @@ namespace RevenuePlanner.Controllers
                                                 {
                                                     TacticId = tactic.TacticObj.PlanTacticId,
                                                     Value = tactic.CWValue,
-                                                    StartMonth = tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month,
-                                                    EndMonth = tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month,
+                                                    StartMonth = tactic.TacticObj.StartDate.Month > tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month ? tactic.TacticObj.StartDate.Month : tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month,
+                                                    EndMonth = tactic.TacticObj.EndDate.Month > tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month ? tactic.TacticObj.EndDate.Month : tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month,
+                                                    //StartYear = tactic.TacticObj.StartDate.Month > tactic.TacticObj.StartDate.AddDays(tactic.INQVelocity).Month ? tactic.TacticObj.StartDate.Year : tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Year,
+                                                    //EndYear = tactic.TacticObj.EndDate.Month > tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month ? tactic.TacticObj.EndDate.Year : tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Year,
                                                     StartYear = tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Year,
                                                     EndYear = tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Year,
                                                     StartDate = tactic.TacticObj.StartDate,
@@ -4518,8 +4527,10 @@ namespace RevenuePlanner.Controllers
                     StageValue = (objTactic.INQValue * weightage.Value) / 100;
                     objTacticdt.TacticId = objTactic.TacticObj.PlanTacticId;
                     objTacticdt.Value = StageValue;
-                    objTacticdt.StartMonth = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.INQVelocity).Month : objTactic.TacticObj.StartDate.Month;
-                    objTacticdt.EndMonth = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.INQVelocity).Month : objTactic.TacticObj.EndDate.Month;
+                    objTacticdt.StartMonth = IsVelocity ? (objTactic.TacticObj.StartDate.Month > objTactic.TacticObj.StartDate.AddDays(objTactic.INQVelocity).Month ? objTactic.TacticObj.StartDate.Month : objTactic.TacticObj.StartDate.AddDays(objTactic.INQVelocity).Month) : objTactic.TacticObj.StartDate.Month;
+                    objTacticdt.EndMonth = IsVelocity ? (objTactic.TacticObj.EndDate.Month > objTactic.TacticObj.EndDate.AddDays(objTactic.INQVelocity).Month ? objTactic.TacticObj.EndDate.Month : objTactic.TacticObj.EndDate.AddDays(objTactic.INQVelocity).Month) : objTactic.TacticObj.EndDate.Month;
+                    //objTacticdt.StartYear = IsVelocity ? (objTactic.TacticObj.StartDate.Month > objTactic.TacticObj.StartDate.AddDays(objTactic.INQVelocity).Month ? objTactic.TacticObj.StartDate.Year : objTactic.TacticObj.StartDate.AddDays(objTactic.INQVelocity).Year) : objTactic.TacticObj.StartDate.Year;
+                    //objTacticdt.EndYear = IsVelocity ? (objTactic.TacticObj.EndDate.Month > objTactic.TacticObj.EndDate.AddDays(objTactic.INQVelocity).Month ? objTactic.TacticObj.EndDate.Year : objTactic.TacticObj.EndDate.AddDays(objTactic.INQVelocity).Year) : objTactic.TacticObj.EndDate.Year;
                     objTacticdt.StartYear = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.INQVelocity).Year : objTactic.TacticObj.StartDate.Year;
                     objTacticdt.EndYear = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.INQVelocity).Year : objTactic.TacticObj.EndDate.Year;
                     // Add By Nishant Sheth #1839
@@ -4548,8 +4559,10 @@ namespace RevenuePlanner.Controllers
                     StageValue = (objTactic.MQLValue * weightage.Value) / 100;
                     objTacticdt.TacticId = objTactic.TacticObj.PlanTacticId;
                     objTacticdt.Value = StageValue;
-                    objTacticdt.StartMonth = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.MQLVelocity).Month : objTactic.TacticObj.StartDate.Month;
-                    objTacticdt.EndMonth = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.MQLVelocity).Month : objTactic.TacticObj.EndDate.Month;
+                    objTacticdt.StartMonth = IsVelocity ? (objTactic.TacticObj.StartDate.Month > objTactic.TacticObj.StartDate.AddDays(objTactic.MQLVelocity).Month ? objTactic.TacticObj.StartDate.Month : objTactic.TacticObj.StartDate.AddDays(objTactic.MQLVelocity).Month) : objTactic.TacticObj.StartDate.Month;
+                    objTacticdt.EndMonth = IsVelocity ? (objTactic.TacticObj.EndDate.Month > objTactic.TacticObj.EndDate.AddDays(objTactic.MQLVelocity).Month ? objTactic.TacticObj.EndDate.Month : objTactic.TacticObj.EndDate.AddDays(objTactic.MQLVelocity).Month) : objTactic.TacticObj.EndDate.Month;
+                    //objTacticdt.StartYear = IsVelocity ? (objTactic.TacticObj.StartDate.Month > objTactic.TacticObj.StartDate.AddDays(objTactic.MQLVelocity).Month ? objTactic.TacticObj.StartDate.Year : objTactic.TacticObj.StartDate.AddDays(objTactic.MQLVelocity).Year) : objTactic.TacticObj.StartDate.Year;
+                    //objTacticdt.EndYear = IsVelocity ? (objTactic.TacticObj.EndDate.Month > objTactic.TacticObj.EndDate.AddDays(objTactic.MQLVelocity).Month ? objTactic.TacticObj.EndDate.Year : objTactic.TacticObj.EndDate.AddDays(objTactic.MQLVelocity).Year) : objTactic.TacticObj.EndDate.Year;
                     objTacticdt.StartYear = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.MQLVelocity).Year : objTactic.TacticObj.StartDate.Year;
                     objTacticdt.EndYear = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.MQLVelocity).Year : objTactic.TacticObj.EndDate.Year;
                     // Add By Nishant Sheth #1839
@@ -4578,8 +4591,10 @@ namespace RevenuePlanner.Controllers
                     StageValue = (objTactic.CWValue * weightage.Value) / 100;
                     objTacticdt.TacticId = objTactic.TacticObj.PlanTacticId;
                     objTacticdt.Value = StageValue;
-                    objTacticdt.StartMonth = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Month : objTactic.TacticObj.StartDate.Month;
-                    objTacticdt.EndMonth = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Month : objTactic.TacticObj.EndDate.Month;
+                    objTacticdt.StartMonth = IsVelocity ? (objTactic.TacticObj.StartDate.Month > objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Month ? objTactic.TacticObj.StartDate.Month : objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Month) : objTactic.TacticObj.StartDate.Month;
+                    objTacticdt.EndMonth = IsVelocity ? (objTactic.TacticObj.EndDate.Month > objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Month ? objTactic.TacticObj.EndDate.Month : objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Month) : objTactic.TacticObj.EndDate.Month;
+                    //objTacticdt.StartYear = IsVelocity ? (objTactic.TacticObj.StartDate.Month > objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Month ? objTactic.TacticObj.StartDate.Year : objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Year) : objTactic.TacticObj.StartDate.Year;
+                    //objTacticdt.EndYear = IsVelocity ? (objTactic.TacticObj.EndDate.Month > objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Month ? objTactic.TacticObj.EndDate.Year: objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Year) : objTactic.TacticObj.EndDate.Year;
                     objTacticdt.StartYear = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Year : objTactic.TacticObj.StartDate.Year;
                     objTacticdt.EndYear = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Year : objTactic.TacticObj.EndDate.Year;
                     // Add By Nishant Sheth #1839
@@ -4608,8 +4623,10 @@ namespace RevenuePlanner.Controllers
                     StageValue = (objTactic.RevenueValue * weightage.Value) / 100;
                     objTacticdt.TacticId = objTactic.TacticObj.PlanTacticId;
                     objTacticdt.Value = StageValue;
-                    objTacticdt.StartMonth = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Month : objTactic.TacticObj.StartDate.Month;
-                    objTacticdt.EndMonth = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Month : objTactic.TacticObj.EndDate.Month;
+                    objTacticdt.StartMonth = IsVelocity ? (objTactic.TacticObj.StartDate.Month > objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Month ? objTactic.TacticObj.StartDate.Month : objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Month) : objTactic.TacticObj.StartDate.Month;
+                    objTacticdt.EndMonth = IsVelocity ? (objTactic.TacticObj.EndDate.Month > objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Month ? objTactic.TacticObj.EndDate.Month : objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Month) : objTactic.TacticObj.EndDate.Month;
+                    //objTacticdt.StartYear = IsVelocity ? (objTactic.TacticObj.StartDate.Month > objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Month ? objTactic.TacticObj.EndDate.Year: objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Year) : objTactic.TacticObj.StartDate.Year;
+                    //objTacticdt.EndYear = IsVelocity ? (objTactic.TacticObj.EndDate.Month > objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Month ? objTactic.TacticObj.EndDate.Year : objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Year) : objTactic.TacticObj.EndDate.Year;
                     objTacticdt.StartYear = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Year : objTactic.TacticObj.StartDate.Year;
                     objTacticdt.EndYear = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Year : objTactic.TacticObj.EndDate.Year;
                     // Add By Nishant Sheth #1839
