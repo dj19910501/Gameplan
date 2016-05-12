@@ -1435,6 +1435,8 @@ namespace RevenuePlanner.Test.Controllers
             PlanController objPlanController = new PlanController();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             string Year = DataHelper.GetYear();
+            int planId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(planId);
             Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
             var result = objPlanController.GetPlanByMultiplePlanIDs(CommaSeparatedPlanId, Enums.ActiveMenu.Home.ToString(), Year) as JsonResult;
 
@@ -1447,7 +1449,7 @@ namespace RevenuePlanner.Test.Controllers
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
             }
         }
         #endregion

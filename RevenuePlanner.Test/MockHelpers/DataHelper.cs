@@ -216,17 +216,17 @@ namespace RevenuePlanner.Test.MockHelpers
         public static string GetCustomRestrictionInViewEditForm(Guid userId)
         {
             StringBuilder sbCustomRestrictions = new StringBuilder(string.Empty);
-            
+
             using (MRPEntities objDB = new MRPEntities())
             {
                 var lstCustomRestriction = objDB.CustomRestrictions.Where(customRestriction => customRestriction.UserId == userId).Select(customRestriction => customRestriction).ToList();
                 if (lstCustomRestriction.Count > 0)
                 {
                     lstCustomRestriction.ForEach(customRestriction => sbCustomRestrictions.Append(2 + "_" + customRestriction.CustomFieldId + "_" + customRestriction.CustomFieldOptionId + ","));
-                    return sbCustomRestrictions.ToString().TrimEnd(",".ToCharArray());                
+                    return sbCustomRestrictions.ToString().TrimEnd(",".ToCharArray());
                 }
             }
-            
+
             return sbCustomRestrictions.ToString();
         }
 
@@ -320,5 +320,22 @@ namespace RevenuePlanner.Test.MockHelpers
             return tacticList;
         }
         #endregion
+
+        /// <summary>
+        /// Get a ClientId for the given PlanId
+        /// Added by Akashdeep Kadia Date:- 12/05/2016 for PL Ticket #989 & 2129
+        /// </summary>
+        /// <param name="PlanId">PlanId</param>
+        /// <returns>returns an ClientId for given PlanId</returns>
+        public static Guid GetClientId(int PlanId)
+        {
+            var ClientId = (from i in db.Models
+                                         join t in db.Plans on i.ModelId equals t.ModelId
+                                         where i.IsDeleted == false && t.IsDeleted == false && t.PlanId == PlanId
+                                         select i.ClientId).FirstOrDefault();
+            return ClientId;
+        }
+
+
     }
 }
