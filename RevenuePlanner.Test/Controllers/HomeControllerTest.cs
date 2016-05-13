@@ -27,6 +27,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Home_View_With_No_Parameters()
         {
+            Console.WriteLine("To check to retrieve Home view with no parameters.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -49,12 +50,12 @@ namespace RevenuePlanner.Test.Controllers
                 }
 
                 Assert.IsNotNull(result.ViewBag.ActiveMenu);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.ActiveMenu);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewBag.ActiveMenu);
             }
         }
         #endregion
@@ -68,6 +69,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Home_View_For_Home_Screen_With_PlanId()
         {
+            Console.WriteLine("To check to retrieve Home view with plan id.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -92,12 +94,12 @@ namespace RevenuePlanner.Test.Controllers
                 }
 
                 Assert.IsNotNull(result.ViewBag.ActiveMenu);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.ActiveMenu);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewBag.ActiveMenu);
             }
         }
         #endregion
@@ -111,6 +113,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Home_View_For_Plan_Screen_With_PlanId()
         {
+            Console.WriteLine("To check to retrieve Plan view with plan id.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -137,12 +140,12 @@ namespace RevenuePlanner.Test.Controllers
                 }
 
                 Assert.IsNotNull(result.ViewBag.ActiveMenu);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.ActiveMenu);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewBag.ActiveMenu);
             }
         }
         #endregion
@@ -156,6 +159,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen viewby tactic.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -169,12 +173,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -188,6 +192,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_ViewBy_CustomField()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen viewby custom field.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -200,12 +205,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -219,6 +224,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_ViewBy_Status()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen viewby Status.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -230,12 +236,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -249,6 +255,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_status_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen  status viewby tactic.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -271,12 +278,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -290,6 +297,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_status_ViewBy_Custom()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen  status viewby custom field.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -312,12 +320,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -331,6 +339,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_TacticType_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType viewby tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -349,12 +358,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
 
@@ -369,6 +378,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_TacticType_ViewBy_Custom()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType viewby Custom field.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -388,12 +398,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -407,6 +417,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_Owner_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen  Owner viewby tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -425,12 +436,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
 
@@ -445,6 +456,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_Owner_ViewBy_Custom()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen  Owner viewby Custom field.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -463,12 +475,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
 
@@ -483,6 +495,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_TacticType_Status_ViewBy_Custom()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType  and Status  viewby Custom field.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -512,12 +525,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -531,6 +544,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_TacticType_Status_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType and status viewby tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -559,12 +573,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -578,6 +592,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_TacticType_Status__Owner_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType ,Status and Owner  viewby tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -611,12 +626,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -630,6 +645,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Home_Screen_TacticType_Status__Owner_ViewBy_Custom()
         {
+            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType ,Status and Owner  viewby Custom field.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -663,12 +679,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -682,6 +698,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for Plan Screen viewby tactic.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -694,12 +711,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -713,6 +730,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_ViewBy_CustomField()
         {
+            Console.WriteLine("To check to retrieve calendar data for Plan Screen viewby custom field.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -725,12 +743,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -744,6 +762,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_ViewBy_Status()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen viewby Status.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -756,12 +775,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -775,6 +794,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_status_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen  status viewby tactic.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -797,12 +817,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -816,6 +836,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_status_ViewBy_Custom()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen  status viewby custom field.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -838,12 +859,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -857,6 +878,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_TacticType_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType viewby tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -876,12 +898,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -895,6 +917,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_TacticType_ViewBy_Custom()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType viewby Custom field.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -914,12 +937,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -933,6 +956,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_Owner_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen  Owner viewby tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -951,12 +975,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
 
@@ -971,6 +995,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_Owner_ViewBy_Custom()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen  Owner viewby Custom field.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -989,12 +1014,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
 
@@ -1009,6 +1034,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_TacticType_Status_ViewBy_Custom()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType  and Status  viewby Custom field.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1038,12 +1064,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -1057,6 +1083,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_TacticType_Status_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType and status viewby tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1085,12 +1112,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -1104,6 +1131,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_TacticType_Status__Owner_ViewBy_Tactic()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType ,Status and Owner  viewby tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1137,12 +1165,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -1156,6 +1184,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_Calendar_For_Plan_Screen_TacticType_Status__Owner_ViewBy_Custom()
         {
+            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType ,Status and Owner  viewby Custom field.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1189,12 +1218,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.Data);
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.GetValue("taskData"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
             }
         }
         #endregion
@@ -1203,6 +1232,7 @@ namespace RevenuePlanner.Test.Controllers
 
         public JsonResult LoadFunction(string ViewBy, string OwnerIds, string Activemenu, bool getViewByList, string Tactictypeids, string Statusids)
         {
+            Console.WriteLine("Common function.\n");
             HomeController objHomeController = new HomeController();
             string CommaSeparatedPlanId = "";
             string Year = DataHelper.GetYear();
@@ -1234,6 +1264,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Add_Actual_View()
         {
+            Console.WriteLine("To check to retrieve Add actual view.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1255,12 +1286,12 @@ namespace RevenuePlanner.Test.Controllers
                 Assert.IsNotNull(objModel);
 
                 Assert.IsNotNull(result.ViewBag.IsPlanEditable);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.IsPlanEditable);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.IsPlanEditable);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.ViewBag.IsPlanEditable);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewBag.IsPlanEditable);
             }
         }
         #endregion
@@ -1274,6 +1305,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Add_Actual_Tactic_With_No_Filter_Parameter_For_OpenTactic_Tab()
         {
+            Console.WriteLine("To check to retrieve add actual tactics with no filter paramters for open tactic tab.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1287,12 +1319,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
         }
         #endregion
@@ -1306,6 +1338,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Add_Actual_Tactic_With_No_Filter_Parameter_For_AllTactic_Tab()
         {
+            Console.WriteLine("To check to retrieve add actual tactics with no filter paramters for all tactic tab.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1319,12 +1352,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
         }
         #endregion
@@ -1338,6 +1371,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Add_Actual_Tactic_With_Filter_Parameters_For_OpenTactic_Tab()
         {
+            Console.WriteLine("To check to retrieve add actual tactics with filter paramters for open tactic tab.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1352,12 +1386,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
         }
         #endregion
@@ -1371,6 +1405,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Add_Actual_Tactic_With_Filter_Parameters_For_AllTactic_Tab()
         {
+            Console.WriteLine("To check to retrieve add actual tactics with filter paramters for all tactic tab.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1385,12 +1420,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
         }
         #endregion
@@ -1403,6 +1438,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_HeaderData_With_PlanId()
         {
+            Console.WriteLine("To check to retrieve Header Data.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1415,18 +1451,19 @@ namespace RevenuePlanner.Test.Controllers
             {
                 // Json result data should not be null
                 Assert.IsNotNull(result.Status);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Status);
             }
         }
 
         [TestMethod]
         public void Get_HeaderData_With_MultiplePlanIds()
         {
+            Console.WriteLine("To check to retrieve Header Data with multiple planids.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1444,12 +1481,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1458,6 +1495,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_ActivityDistributionData()
         {
+            Console.WriteLine("To check to retrieve Header Data with Activity distribution data.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1471,18 +1509,19 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Status);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Status);
             }
         }
 
         [TestMethod]
         public void Get_ActivityDistributionData_WithMultiplePlans()
         {
+            Console.WriteLine("To check to retrieve Header Data with Activity distribution data with multiple planids.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1496,12 +1535,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Status);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Status);
             }
         }
         #endregion
@@ -1518,6 +1557,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SaveLastSetOfViews()
         {
+            Console.WriteLine("To Save last set data.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1551,12 +1591,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
         }
 
@@ -1568,6 +1608,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SaveLastSetOfViews_With_EmptyValues()
         {
+            Console.WriteLine("To Save last set data with empty planid.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1579,12 +1620,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName                
                 Assert.AreEqual(true, result.GetValue("isSuccess"));
                 Assert.AreEqual("", result.GetValue("ViewName"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
         }
 
@@ -1596,6 +1637,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SaveLastSetOfViews_With_Null_CustomFields_Tactictypeid()
         {
+            Console.WriteLine("To Save last set data with null CustomFields and tactictypeid.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1606,12 +1648,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.AreEqual(null, result.GetValue("ViewName"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("ViewName"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("ViewName"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -1623,6 +1665,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Render_LastSetofViews()
         {
+            Console.WriteLine("To Render last set of view.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
@@ -1633,11 +1676,11 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -1649,6 +1692,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SaveDefaultPreset()
         {
+            Console.WriteLine("To Render last set of view.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1672,12 +1716,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(true, result.GetValue("isSuccess"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("isSuccess"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("isSuccess"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -1689,6 +1733,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SetFilterPresetName()
         {
+            Console.WriteLine("To Set Filter Preset Name.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1712,12 +1757,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(true, result.GetValue("isSuccess"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("isSuccess"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("isSuccess"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -1731,6 +1776,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void DeletePreset()
         {
+            Console.WriteLine("To delete Preset data.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1741,12 +1787,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 Assert.AreEqual(true, result.GetValue("isSuccess"));
                 Assert.AreEqual("Preset Test deleted successfully", result.GetValue("msg")); //Modified by Maitri Gandhi on 28/4/2016 for #2136
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("msg"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("msg"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -1758,6 +1804,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void DeletePreset_empty_PrestName()
         {
+            Console.WriteLine("delete Preset data with empty PrestName.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1766,12 +1813,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(false, result.GetValue("isSuccess"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("isSuccess"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("isSuccess"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -1783,6 +1830,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void DeletePreset_null_PrestName()
         {
+            Console.WriteLine("To delete Preset data with null PrestName.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1791,12 +1839,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(false, result.GetValue("isSuccess"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("isSuccess"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("isSuccess"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1812,6 +1860,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetHeaderDataforHoneycombPDF()
         {
+            Console.WriteLine("To Get Header Data for HoneyComb Pdf.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1826,12 +1875,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(0, result.GetValue("TotalCount"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("TotalCount"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("TotalCount"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -1843,6 +1892,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetHeaderDataforHoneycombPDF_With_Empty_TacticId()
         {
+            Console.WriteLine("To Get Header Data for HoneyComb Pdf with empty Tactic Id.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1852,12 +1902,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(0, result.GetValue("TotalCount"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("TotalCount"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("TotalCount"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -1869,6 +1919,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetHeaderDataforHoneycombPDF_With_Null_TacticId()
         {
+            Console.WriteLine("To Get Header Data for HoneyComb Pdf with null Tactic Id.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1878,12 +1929,12 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 Assert.AreEqual(0, result.GetValue("TotalCount"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("TotalCount"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("TotalCount"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 

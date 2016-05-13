@@ -32,6 +32,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Finance_View_With_No_Parameters()
         {
+            Console.WriteLine("To check to retrieve Finance view with no parameters.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -53,12 +54,12 @@ namespace RevenuePlanner.Test.Controllers
                 }
 
                 Assert.IsNotNull(result.ViewBag.ActiveMenu);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.ActiveMenu);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -80,6 +81,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Create_Budget_With_Empty_Budget_Name()
         {
+            Console.WriteLine("To check to budget creating with Empty Budget name.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -90,12 +92,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewBag.ActiveMenu);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.ActiveMenu);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -145,6 +147,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Budget_Details_with_Valid_Parameter()
         {
+            Console.WriteLine("save budget details.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             string BudgetId = "";
@@ -157,12 +160,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -180,6 +183,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Budget_Details_with_Null_Value()
         {
+            Console.WriteLine("Save Budget Details with Null Values.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -190,12 +194,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -213,6 +217,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Budget_Details_with_Null_BudgetId()
         {
+            Console.WriteLine("Save Budget Details with Null BudgetId.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             
@@ -225,12 +230,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -249,6 +254,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Budget_Details_with_Null_BudgetName()
         {
+            Console.WriteLine("Save Budget Details with Null Budget Name.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             string BudgetID = "59";
@@ -261,12 +267,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -284,6 +290,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Budget_Details_with_Empty_ParentID()
         {
+            Console.WriteLine("Save Budget Details with Empty ParentID.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             
@@ -296,12 +303,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -348,6 +355,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Budget_Details_with_Empty_BudgetId()
         {
+            Console.WriteLine("Save Budget Details with Empty BudgetId.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             
@@ -360,12 +368,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -384,6 +392,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Budget_Details_with_Empty_BudgetName()
         {
+            Console.WriteLine("Save Budget Details with Empty Budget Name.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             string BudgetId = "59";
@@ -396,12 +405,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -421,6 +430,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Refresh_MainGrid_With_Empty_Value()
         {
+            Console.WriteLine("To check to refresh main grid with Empty Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
           
@@ -431,12 +441,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -451,6 +461,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Refresh_MainGrid_With_Empty_SelectedRowID()
         {
+            Console.WriteLine("To check to refresh main grid with Null SelectedRowID.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -461,12 +472,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -481,6 +492,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Refresh_MainGrid_With_Null_SelectedRowID()
         {
+            Console.WriteLine("To check to refresh main grid with Null SelectedRowID.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
       
@@ -491,12 +503,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -512,6 +524,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Refresh_MainGrid_With_Invalid_SelectedRowID()
         {
+            Console.WriteLine("To check to refresh main grid with Invalid SelectedRowID.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             
@@ -522,12 +535,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -542,6 +555,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Refresh_MainGrid_With_Valid_Parameter()
         {
+            Console.WriteLine("To check to refresh main grid with Valid Parameter.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -552,12 +566,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -630,6 +644,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Finance_Header_Value_With_Without_Parameter()
         {
+            Console.WriteLine("To Get Finance Header Value With Without Parameter.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -642,12 +657,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -662,6 +677,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Finance_Header_Value_With_Empty_Value()
         {
+            Console.WriteLine("To Get Finance Header Value With Empty Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             
@@ -674,12 +690,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -694,6 +710,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Finance_Header_Value_With_Null_Value()
         {
+            Console.WriteLine("To Get Finance Header Value With Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
           
@@ -706,12 +723,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -726,6 +743,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Finance_Header_Value_With_Valid_Value()
         {
+            Console.WriteLine("To Get Finance Header Value With Valid Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 0;
@@ -741,12 +759,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -765,6 +783,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Child_Budget_With_Valid_Parameter()
         {
+            Console.WriteLine("To Get Child Budget DropDown Value with Valid Parameter.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 1;
@@ -777,12 +796,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -797,6 +816,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Child_Budget_With_No_Parameter()
         {
+            Console.WriteLine("To Get Child Budget DropDown Value without parameter.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             
@@ -809,12 +829,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -829,6 +849,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Parent_Budget_With_Valid_Parameter()
         {
+            Console.WriteLine("To Get Child Budget DropDown Value without parameter.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             
@@ -841,12 +862,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -861,6 +882,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Parent_Budget_With_No_Parameter()
         {
+            Console.WriteLine("To Get Parent Budget DropDown Value without Parameter.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 1;
@@ -873,12 +895,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -893,6 +915,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Child_TimeFrame()
         {
+            Console.WriteLine("To Get Child Time Frame.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -905,12 +928,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -929,6 +952,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Edit_BudgetForecast_Griddata_With_Valid_Value()
         {
+            Console.WriteLine("To edit Budget/Forecast Griddata with Valid Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 1138;
@@ -943,12 +967,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -963,6 +987,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Edit_BudgetForecast_Griddata_With_Empty_Value()
         {
+            Console.WriteLine("To edit Budget/Forecast Griddata with Empty Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
            
@@ -975,12 +1000,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -995,6 +1020,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Edit_BudgetForecast_Griddata_With_Null_Value()
         {
+            Console.WriteLine("To edit Budget/Forecast Griddata with Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
           
@@ -1007,12 +1033,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1027,6 +1053,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Edit_BudgetForecast_Griddata_With_Empty_SelectedRowId()
         {
+            Console.WriteLine("To edit Budget/Forecast Data with Empty selected Row data.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 1138;
@@ -1040,12 +1067,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1064,6 +1091,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_BudgetForecast_Griddata_With_Valid_Value()
         {
+            Console.WriteLine("To Update Budget/Forecast Data With Valid Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 395;
@@ -1082,12 +1110,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1103,6 +1131,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_BudgetForecast_Griddata_With_Empty_Value()
         {
+            Console.WriteLine("To Update Budget/Forecast Data With Empty Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             string nValue = "Budget Test";
@@ -1115,12 +1144,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1136,6 +1165,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_BudgetForecast_Griddata_With_Empty_nValue()
         {
+            Console.WriteLine("To Update Budget/Forecast Data With Empty nValue.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 395;
@@ -1155,12 +1185,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1176,6 +1206,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_BudgetForecast_Griddata_With_Empty_oValue()
         {
+            Console.WriteLine("To Update Budget/Forecast Data With Empty oValue.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 395;
@@ -1195,12 +1226,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1216,6 +1247,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_BudgetForecast_Griddata_With_Empty_ColumnName()
         {
+            Console.WriteLine("To Update Budget/Forecast Data With Empty Column Name.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 395;
@@ -1235,12 +1267,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1256,6 +1288,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_BudgetForecast_Griddata_With_Null_Value()
         {
+            Console.WriteLine("To Update Budget/Forecast Data With Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1268,12 +1301,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1323,6 +1356,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_BudgetForecast_Griddata_With_Null_oValue()
         {
+            Console.WriteLine("To Update Budget/Forecast Data With Null oValue.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 395;
@@ -1342,12 +1376,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1402,6 +1436,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_Budget_Details_With_Valid_Values()
         {
+            Console.WriteLine("To Update Budget Details With Valid Values.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             string budgetId = "1138";
@@ -1418,12 +1453,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1438,6 +1473,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_Budget_Details_With_Empty_Values()
         {
+            Console.WriteLine("To Update Budget Details Empty Values.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1450,12 +1486,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1470,6 +1506,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_Budget_Details_With_Null_Values()
         {
+            Console.WriteLine("To Update Budget Details With Null Values.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1482,12 +1519,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1506,6 +1543,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Amount_Value_With_Valid_Value()
         {
+            Console.WriteLine("To Get Amount value With Valid Value.\n");
             //// Set session value
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1545,12 +1583,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(obj);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + obj.Budget);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + obj.Budget);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + obj);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + obj);
             }
 
         }
@@ -1565,6 +1603,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Amount_Value_With_Null_Value()
         {
+            Console.WriteLine("To Get Amount value With Null Value.\n");
             //// Set session value
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1578,12 +1617,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(obj);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + obj.Budget);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + obj.Budget);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + obj);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + obj);
             }
 
         }
@@ -1598,6 +1637,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_MainGrid_Amount_Value_With_Valid_Value()
         {
+            Console.WriteLine("To Get MainGrid Amount value With Valid Value.\n");
             //// Set session value
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1639,12 +1679,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(obj);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + obj.Budget);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + obj.Budget);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + obj);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + obj);
             }
 
         }
@@ -1659,6 +1699,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_MainGrid_Amount_Value_With_Null_Value()
         {
+            Console.WriteLine("To Get MainGrid Amount value With Null Value.\n");
             //// Set session value
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1672,12 +1713,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(obj);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + obj.Budget);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + obj.Budget);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + obj);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + obj);
             }
 
         }
@@ -1692,6 +1733,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Edit_Permission_With_Null_Value()
         {
+            Console.WriteLine("Edit Permission With Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1702,12 +1744,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1722,6 +1764,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Delete_Budget_Permission_With_Null_Value()
         {
+            Console.WriteLine("Delete Budget detail Permission with Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1733,12 +1776,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
 
         }
@@ -1753,6 +1796,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Record_With_Null_Value()
         {
+            Console.WriteLine("Get specific of user record on selection of dropdown list with Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1764,12 +1808,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
 
         }
@@ -1784,6 +1828,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SaveDetail_With_Null_Value()
         {
+            Console.WriteLine("Save record in Budget_Permission table with Null Value with Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1795,12 +1840,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
 
         }
@@ -1815,6 +1860,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void DrpFilterByBudget_With_Null_Value()
         {
+            Console.WriteLine("Get specific record based on dropdown selection value of budgetdetail id with Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1826,12 +1872,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
 
         }
@@ -1846,6 +1892,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetColumn_With_Null_Value()
         {
+            Console.WriteLine("Get Column with Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1857,12 +1904,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
 
         }
@@ -1877,6 +1924,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void DeleteBudgetForecastData_With_Null_Value()
         {
+            Console.WriteLine("DeleteBudgetForecastData with Null Value with Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1888,12 +1936,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
 
         }
@@ -1908,6 +1956,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void EditBudget_With_Null_Value()
         {
+            Console.WriteLine("EditBudget with Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1919,12 +1968,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1939,6 +1988,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetParentLineItemList_With_Null_Value()
         {
+            Console.WriteLine("GetParentLineItemList with Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1950,12 +2000,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
 
         }
@@ -1970,6 +2020,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetChildLineItemList_With_Null_Value()
         {
+            Console.WriteLine("GetChildLineItemList with Null Value.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -1981,12 +2032,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
 
         }
