@@ -262,13 +262,13 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             Sessions.PlanId = DataHelper.GetPlanId();
-            var result = controller.Budgeting(Sessions.PlanId) as JsonResult;
+            var result = controller.Budgeting(Sessions.PlanId) as ViewResult;
             if (result != null)
             {
                 // data object should not be null in json result
-                Assert.IsNotNull(result.Data);
+                Assert.IsNotNull(result);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Model);
             }
             else
             {
@@ -511,21 +511,29 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
 
-            //string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
-            //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            //var tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(t =>
-            //    new  { 
-            //        TacticId = t.PlanTacticId,
-            //        PlanProgramId = t.Plan_Campaign_Program.PlanProgramId,
-            //        PlanId = t.Plan_Campaign_Program.Plan_Campaign.PlanId,
-            //        Title = t.Title
-            //    }).ToList();
+            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            var tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(t =>
+                new
+                {
+                    TacticId = t.PlanTacticId,
+                    PlanProgramId = t.Plan_Campaign_Program.PlanProgramId,
+                    PlanId = t.Plan_Campaign_Program.Plan_Campaign.PlanId,
+                    Title = t.Title
+                }).ToList();
 
-            //var result = controller.ClonetoOtherPlan(Enums.Section.Tactic.ToString(), tactic[0].TacticId.ToString(), tactic[1].TacticId.ToString(), tactic[0].PlanId.ToString(), tactic[1].PlanId.ToString(), tactic[0].Title);
-            //if (result != null)
-            //{
+            var result = controller.ClonetoOtherPlan(Enums.Section.Tactic.ToString(), tactic[0].TacticId.ToString(), tactic[1].TacticId.ToString(), tactic[0].PlanId.ToString(), tactic[1].PlanId.ToString(), tactic[0].Title);
+            if (result != null)
+            {
+                Assert.IsNotNull(result.Data);
 
-            //}
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+            }
         }
 
         #endregion

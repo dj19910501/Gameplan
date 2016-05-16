@@ -28,6 +28,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Integration_Folder_View_Name_With_Param()
         {
+            Console.WriteLine("To check that it returns a proper view for the main screen or not.\n");
             ExternalServiceController controller = new ExternalServiceController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -57,6 +58,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Integration_Folder_View_Name_With_Out_Param()
         {
+            Console.WriteLine("To check that it returns a proper view for the main screen or not.\n");
             ExternalServiceController controller = new ExternalServiceController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -86,6 +88,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Integration_Folder_Check_Integration_Type_Code()
         {
+            Console.WriteLine("To check that it returns a proper integration code for view in the main screen or not.\n");
             ExternalServiceController controller = new ExternalServiceController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -119,6 +122,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Get_Integration_Folder_Plan_List_View_Name()
         {
+            Console.WriteLine("To check that it returns a proper partial view for plan listing or not.\n");
             ExternalServiceController controller = new ExternalServiceController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             var result = controller.GetIntegrationFolderPlanList(DateTime.Now.Year.ToString()) as PartialViewResult;
@@ -222,6 +226,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Sync_Interation_Instance_Without_Interation_Instance_Id()
         {
+            Console.WriteLine("To check whether sync method properly handles exception or not in case of no integrationInstance selected.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
 
@@ -254,6 +259,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Sync_Interation_Instance_With_Interation_Instance_Id_SalesForce()
         {
+            Console.WriteLine("To check sync method of salesforce intrgration.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
 
@@ -298,6 +304,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Sync_Interation_Instance_With_Interation_Instance_Id_Eloqua()
         {
+            Console.WriteLine("To check sync method of eloqua intrgration.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
 
@@ -345,6 +352,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Create_Integration_Instance_View()
         {
+            Console.WriteLine("Set Parameter IntegrationTypeId for Eloqua.\n");
             ExternalServiceController controller = new ExternalServiceController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -378,6 +386,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Pull_MQL_Repsones_With_Null_Form_Data()
         {
+            Console.WriteLine("To check that SaveDataMappingPulling method save data with null form data.\n");
             ExternalServiceController controller = new ExternalServiceController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -410,6 +419,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Pull_MQL_Repsones_With_Form_Data()
         {
+            Console.WriteLine("To check that SaveDataMappingPulling method save data with form data.\n");
             ExternalServiceController controller = new ExternalServiceController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
 

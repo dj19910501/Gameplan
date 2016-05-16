@@ -96,11 +96,11 @@ namespace RevenuePlanner.Test.Controllers
             OrganizationController objOrganizationController = new OrganizationController();
             var result = objOrganizationController.ViewEditPermission(Guid.Empty.ToString(), Enums.UserPermissionMode.Edit.ToString()) as ViewResult;
 
-            if (result != null)
+            if (result == null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.AreEqual("ViewEditPermission", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNull(result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else
             {
@@ -125,13 +125,13 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
-            var result = objOrganizationController.ViewEditPermission(Sessions.User.UserId.ToString(), Enums.UserPermissionMode.Edit.ToString()) as ViewResult;
+            var result = objOrganizationController.ViewEditPermission(Sessions.User.UserId.ToString(), Enums.UserPermissionMode.Edit.ToString()) as ActionResult;
 
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.AreEqual("ViewEditPermission", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else
             {
