@@ -3224,7 +3224,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="integrationInstanceId"></param>
         /// <param name="deleteIntegrationInstanceModel"></param>
         /// <returns></returns>
-        public static bool DeleteIntegrationInstance(int integrationInstanceId, bool deleteIntegrationInstanceModel = false, int modelId = 0, bool iseloquainstance = false)
+        public static bool DeleteIntegrationInstance(int integrationInstanceId, bool deleteIntegrationInstanceModel = false, int modelId = 0, bool iseloquainstance = false, bool isMarketoinstance = false)
         {
             try
             {
@@ -3239,6 +3239,10 @@ namespace RevenuePlanner.Helpers
                             if (iseloquainstance)
                             {
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
+                            else if (isMarketoinstance) //Added by Komal Rawal for PL#2190
+                            {
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceMarketoID = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
                             }
                             else
                             {
@@ -3280,6 +3284,13 @@ namespace RevenuePlanner.Helpers
                                     List<Model> elqModelsList = ModelsList.Where(a => a.IntegrationInstanceEloquaId == integrationInstanceId && a.IntegrationInstanceEloquaId != null).ToList();
                                     elqModelsList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
                                 }
+                                else if (isMarketoinstance) //Added by Komal Rawal for PL#2190
+                                {
+                                    // Get Marketo related Models and set null value for that records.
+                                    List<Model> MarketoModelList = ModelsList.Where(a => a.IntegrationInstanceMarketoID == integrationInstanceId && a.IntegrationInstanceMarketoID != null).ToList();
+                                    MarketoModelList.ForEach(a => { a.IntegrationInstanceMarketoID = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                }
                                 else
                                 {
                                     // Get Salesforce related Models and set null value for that records.
@@ -3296,6 +3307,10 @@ namespace RevenuePlanner.Helpers
                             if (iseloquainstance)
                             {
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
+                            else if (isMarketoinstance) //Added by Komal Rawal for PL#2190
+                            {
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceMarketoID = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
                             }
                             else
                             {

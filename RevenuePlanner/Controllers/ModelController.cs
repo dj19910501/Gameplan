@@ -2683,7 +2683,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="IsIntegrationChanged">IsIntegrationChanged flag</param>
         /// <returns>returns json result object</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]
-        public JsonResult SaveIntegration(int id, BaselineModel objBaselineModel, bool IsIntegrationChanged = false, bool IsIntegrationEloquaChanged = false)
+        public JsonResult SaveIntegration(int id, BaselineModel objBaselineModel, bool IsIntegrationChanged = false, bool IsIntegrationEloquaChanged = false, bool IsIntegrationMarketoChanged = false)
         {
             //// set values of objDbMrpEntities.Model object as per posted values and update objDbMrpEntities.Model
             string message = string.Empty;
@@ -2702,6 +2702,11 @@ namespace RevenuePlanner.Controllers
                         int integrationId = Convert.ToInt32(objModel.IntegrationInstanceEloquaId);
                         Common.DeleteIntegrationInstance(integrationId, false, id, true);
                     }
+                    if (IsIntegrationMarketoChanged) //Added by Komal Rawal for PL#2190
+                    {
+                        int integrationId = Convert.ToInt32(objModel.IntegrationInstanceMarketoID);
+                        Common.DeleteIntegrationInstance(integrationId, false, id, false,true);
+                    }
                     if (objModel != null)
                     {
                         objModel.IntegrationInstanceId = objBaselineModel.IntegrationInstanceId;
@@ -2710,6 +2715,7 @@ namespace RevenuePlanner.Controllers
                         objModel.IntegrationInstanceIdMQL = objBaselineModel.IntegrationInstanceIdMQL;
                         objModel.IntegrationInstanceIdProjMgmt = objBaselineModel.IntegrationInstanceIdProjMgmt; //added Brad Gray 22 July 2015 for PL#1448
                         objModel.IntegrationInstanceEloquaId = objBaselineModel.IntegrationInstanceEloquaId; //added Bhavesh Dobariya #1534
+                        objModel.IntegrationInstanceMarketoID = objBaselineModel.IntegrationInstanceMarketoID; //added Komal Rawal #2190
                         objModel.ModifiedBy = Sessions.User.UserId;
                         objModel.ModifiedDate = DateTime.Now;
                         objDbMrpEntities.Entry(objModel).State = EntityState.Modified;
@@ -2770,7 +2776,7 @@ namespace RevenuePlanner.Controllers
             }
 
             List<IntegrationSelectionModel> lstIntegrationOverview = new List<IntegrationSelectionModel>();
-            List<int?> ModelInstances = new List<int?>() { objModel.IntegrationInstanceId, objModel.IntegrationInstanceIdCW, objModel.IntegrationInstanceIdINQ, objModel.IntegrationInstanceIdMQL, objModel.IntegrationInstanceIdProjMgmt, objModel.IntegrationInstanceEloquaId };
+            List<int?> ModelInstances = new List<int?>() { objModel.IntegrationInstanceId, objModel.IntegrationInstanceIdCW, objModel.IntegrationInstanceIdINQ, objModel.IntegrationInstanceIdMQL, objModel.IntegrationInstanceIdProjMgmt, objModel.IntegrationInstanceEloquaId, objModel.IntegrationInstanceMarketoID }; //Modified by Komal Rawal for PL#2190
 
             //// creating List of model integration instance 
             var lstInstance = (from integrationInstance in objDbMrpEntities.IntegrationInstances
@@ -2816,6 +2822,26 @@ namespace RevenuePlanner.Controllers
                         objIntSelection.LastSync = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
                     }
                     lstIntegrationOverview.Add(objIntSelection);
+                }
+                else if (key.ToString() == "IntegrationInstanceMarketoId") //Added by Komal Rawal for PL#2190
+                {
+                    var objInstance = lstInstance.Where(instance => instance.IntegrationInstanceId == objModel.IntegrationInstanceMarketoID).FirstOrDefault();
+                    objIntSelection.Setup = Enums.IntegrationActivity[key].ToString();
+                    if (objInstance != null)
+                    {
+                        objIntSelection.Instance = objInstance.Instance;
+                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString(Common.DateFormatForModelIntegrationLastSync) : "---";
+
+                    }
+                    else
+                    {
+                        objIntSelection.Instance = Common.TextForModelIntegrationInstanceNull;
+                        objIntSelection.IntegrationType = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                    }
+                    lstIntegrationOverview.Add(objIntSelection);
+
                 }
                 else if (key.ToString() == "IntegrationInstanceIdINQ")
                 {
@@ -2936,6 +2962,7 @@ namespace RevenuePlanner.Controllers
             objBaselineModel.IntegrationInstanceIdMQL = objModel.IntegrationInstanceIdMQL;
             objBaselineModel.IntegrationInstanceIdProjMgmt = objModel.IntegrationInstanceIdProjMgmt; //Added Brad Gray 23 July 2015 PL#1448
             objBaselineModel.IntegrationInstanceEloquaId = objModel.IntegrationInstanceEloquaId; //Added Bhavesh #1534 27aug 2015
+            objBaselineModel.IntegrationInstanceMarketoID = objModel.IntegrationInstanceMarketoID;//Added by Komal #2190 12May 2016
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
             ViewBag.ModelPublishCreateNew = Common.objCached.ModelPublishCreateNew;
             ViewBag.ModelPublishComfirmation = Common.objCached.ModelPublishComfirmation;
@@ -2968,10 +2995,12 @@ namespace RevenuePlanner.Controllers
             string insType = Enums.IntegrationInstanceType.Salesforce.ToString();
             string elqType = Enums.IntegrationInstanceType.Eloqua.ToString();
             string workfrontType = Enums.IntegrationInstanceType.WorkFront.ToString(); //Added by Brad Gray for PL#1448
+            string MarketoType = Enums.IntegrationInstanceType.Marketo.ToString(); //Added by Komal Rawal for PL#2190
             ViewData["IntegrationInstancesSalesforce"] = lstInstance.Where(instance => instance.Code == insType);
             ViewData["IntegrationInstancesProjMgmt"] = lstInstance.Where(instance => instance.Code == workfrontType); //Added by Brad Gray for PL#1448
-            ViewData["IntegrationInstancesWithoutProjMgmt"] = lstInstance.Where(instance => instance.Code != workfrontType); //Added by Brad Gray for PL#1448
+            ViewData["IntegrationInstancesWithoutProjMgmt"] = lstInstance.Where(instance => instance.Code != workfrontType && instance.Code != MarketoType); //Added by Brad Gray for PL#1448
             ViewData["IntegrationInstancesEloqua"] = lstInstance.Where(instance => instance.Code == elqType);
+            ViewData["IntegrationInstancesMarketo"] = lstInstance.Where(instance => instance.Code == MarketoType);//Added by Komal Rawal for PL#2190
 
             #region "Filtered MQL Eloqua Integration Instances based on Client Integration Permisssion"
             Guid clientId = Sessions.User.ClientId;

@@ -396,6 +396,7 @@ namespace RevenuePlanner.Helpers
         {
             {"IntegrationInstanceId","Push Tactic Data - Salesforce"},
             {"IntegrationInstanceEloquaId","Push Tactic Data - Eloqua"},
+            {"IntegrationInstanceMarketoId","Push Tactic Data - Marketo"}, //Added by Komal Rawal for PL#2190
             {"IntegrationInstanceIdINQ","Pull Responses"},
             {"IntegrationInstanceIdMQL","Pull Qualified Leads"},
             {"IntegrationInstanceIdCW","Pull Closed Deals"},
@@ -1380,6 +1381,11 @@ namespace RevenuePlanner.Helpers
             Pwd_MaxAttempts,
             PasswordHistoryCount,
             Pwd_ExpiryDays
+        }
+
+        public enum ApiIntegrationData
+        {
+            CampaignFolderList
         }
     }
 

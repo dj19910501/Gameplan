@@ -185,6 +185,7 @@ namespace RevenuePlanner.Models
         public int? WorkFrontRequestAssignee { get; set; }
         public string WorkFrontTacticApprovalBehavior { get; set; }
         public Nullable<int> LinkedTacticId { get; set; } //Added by Rahul Shah on 12/04/2016 for PL #2038
+        public string CampaignfolderValue{get;set;}
     }
 
     public class InspectReviewModel

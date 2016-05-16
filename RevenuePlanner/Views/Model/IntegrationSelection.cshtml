@@ -93,6 +93,14 @@
 
                 </div>
                 <div class="cf inputs-aligned-horizontal">
+                   <label>Push Tactic Data - Marketo</label>
+
+                  <div class="selectBox" id="ddlIntegrationInstanceMarketo">
+                    @Html.DropDownListFor(model => model.IntegrationInstanceMarketoID, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesMarketo"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
+                  </div>
+
+                </div>
+                <div class="cf inputs-aligned-horizontal">
                     <label>Pull Responses</label>
 
                     <div class="selectBox" id="ddlIntegrationInstanceINQ">
@@ -172,25 +180,30 @@
             /*Check for Integration instanse of pushing tactic data is changed than confirm process*/
             var iseloqua = true;
             var issalesforce = true;
+            var ismarketo = true; //Modified by Komal Rawal for PL#2190
             if ('@Model.IntegrationInstanceId.ToString()' == $('#IntegrationInstanceId').val() || '@Model.IntegrationInstanceId' == null || '@Model.IntegrationInstanceId' == '') {
                 issalesforce = false;
             }
             if ('@Model.IntegrationInstanceEloquaId.ToString()' == $('#IntegrationInstanceEloquaId').val() || '@Model.IntegrationInstanceEloquaId' == null || '@Model.IntegrationInstanceEloquaId' == '') {
                 iseloqua = false;
             }
-            if (!iseloqua && !issalesforce) {
-                SaveIntegration(false,false);
+            
+                if ('@Model.IntegrationInstanceMarketoID.ToString()' == $('#IntegrationInstanceMarketoID').val() || '@Model.IntegrationInstanceMarketoID' == null || '@Model.IntegrationInstanceMarketoID' == '') {
+                ismarketo = false;
+            }
+            if (!iseloqua && !issalesforce && !ismarketo) {
+                SaveIntegration(false,false,false);
             }
             else {
                 var confirmMessage = confirm('@Common.objCached.ConfirmationForModifyTargetIntegration');
                 if (confirmMessage == true) {
-                    SaveIntegration(issalesforce, iseloqua);
+                    SaveIntegration(issalesforce, iseloqua,ismarketo);
                 }
             }
             return false;
         });
 
-        function SaveIntegration(IsIntegrationChanged, IsIntegrationEloquaChanged) {
+        function SaveIntegration(IsIntegrationChanged, IsIntegrationEloquaChanged ,IsIntegrationMarketoChanged) {
             var modelId = parseInt('@modelId');
             var ajaxData = $("form").serialize() + "&id=" + modelId;
 
@@ -199,6 +212,9 @@
             }
             if (IsIntegrationEloquaChanged) {
                 ajaxData = ajaxData + "&IsIntegrationEloquaChanged=" + true;
+            }
+            if (IsIntegrationMarketoChanged) {
+                ajaxData = ajaxData + "&IsIntegrationMarketoChanged=" + true;
             }
 
             $.ajax({
