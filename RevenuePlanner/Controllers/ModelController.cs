@@ -1730,7 +1730,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     string strModelStatus = objModel.Status.ToLower();
-                    int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
+                    int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0, marketoInstanceId = 0;
                     #region "Get Integration Instance Set for Model"
                     if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus))
                     {
@@ -1739,7 +1739,9 @@ namespace RevenuePlanner.Controllers
                         if (objModel.IntegrationInstanceEloquaId.HasValue)
                             elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
                         if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
-                            workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value; 
+                            workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
+                        if (objModel.IntegrationInstanceMarketoID.HasValue)  //added by Rahul Shah on 17/05/2016 for PL #2189 
+                            marketoInstanceId = objModel.IntegrationInstanceMarketoID.Value;
                     }
                     #endregion
 
@@ -1922,6 +1924,8 @@ namespace RevenuePlanner.Controllers
                                                         tac.IsSyncWorkFront = true;
                                                     if (elqaInstanceId > 0)
                                                         tac.IsSyncEloqua = true;
+                                                    if (marketoInstanceId > 0)  //added by Rahul Shah on 17/05/2016 for PL #2189
+                                                        tac.IsSyncMarketo = true;
                                                     objDbMrpEntities.Entry(tac).State = EntityState.Modified;
                                                 });
                                             }
