@@ -17,7 +17,7 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class InspectControllerTest : CommonController
     {
-        
+
         #region Save Plan
         /// <summary>
         /// To Save the Plan
@@ -27,6 +27,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Plan()
         {
+            Console.WriteLine("To Save the Plan.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -57,12 +58,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -81,6 +82,7 @@ namespace RevenuePlanner.Test.Controllers
         public void Save_Campaign()
         {
 
+            Console.WriteLine("To Save the Campaign.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -106,12 +108,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -125,6 +127,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Campaign_Check_Duplicate()
         {
+            Console.WriteLine("To check the duplicate Campaign.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -149,12 +152,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
                 //Assert.IsNotNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -168,6 +171,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_Campaign()
         {
+            Console.WriteLine("To Update Campaign.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -194,12 +198,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -213,7 +217,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Campaign_Budget_Allocation()
         {
-
+            Console.WriteLine("To Save the Plan.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -237,12 +241,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -257,6 +261,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Comment_Campaign()
         {
+            Console.WriteLine("To Save  comment in Review Tab.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -271,12 +276,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -298,6 +303,7 @@ namespace RevenuePlanner.Test.Controllers
         public void Save_Program()
         {
 
+            Console.WriteLine("To Save the Program.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -323,12 +329,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -342,6 +348,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Program_Check_Duplicate()
         {
+            Console.WriteLine("To check the duplicate Program.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -366,12 +373,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -385,6 +392,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_Program()
         {
+            Console.WriteLine("To Update Program.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -413,12 +421,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -432,7 +440,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Program_Budget_Allocation()
         {
-
+            Console.WriteLine("To Save the Program.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -455,12 +463,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -475,6 +483,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Comment_Program()
         {
+            Console.WriteLine("To Save  comment in Review Tab.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -490,12 +499,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -516,7 +525,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Tactic()
         {
-
+            Console.WriteLine("To Save the Tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -553,12 +562,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -572,6 +581,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Tactic_Check_Duplicate()
         {
+            Console.WriteLine("To check the duplicate Tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -597,12 +607,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -616,6 +626,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_Tactic()
         {
+            Console.WriteLine("To Update Tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -656,12 +667,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -676,6 +687,7 @@ namespace RevenuePlanner.Test.Controllers
         public void Save_Tactic_Budget_Allocation()
         {
 
+            Console.WriteLine("To Save the Tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -704,12 +716,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -724,6 +736,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Comment_Tactic()
         {
+            Console.WriteLine("To Save  comment in Review Tab.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -739,12 +752,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -761,6 +774,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Tactic_Actuals()
         {
+            Console.WriteLine("To Save Tactic Actual data.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -792,12 +806,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -816,6 +830,7 @@ namespace RevenuePlanner.Test.Controllers
         public void Save_LineItem()
         {
 
+            Console.WriteLine("To Save the LineItem.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -848,12 +863,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -867,6 +882,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_LineItem_Check_Duplicate()
         {
+            Console.WriteLine("To check the duplicate LineItem.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -897,12 +913,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -916,6 +932,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_LineItem()
         {
+            Console.WriteLine("To Update LineItem.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -949,12 +966,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -968,7 +985,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_LineItem_Budget_Allocation()
         {
-
+            Console.WriteLine("To Save the LineItem Budget Allocation.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -996,12 +1013,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -1016,6 +1033,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_LineItem_Actuals()
         {
+            Console.WriteLine("To Save LineItem Actual data.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1052,12 +1070,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1075,7 +1093,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_ImprovementTactic()
         {
-
+            Console.WriteLine("To Save the Improvement Tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1101,12 +1119,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1120,6 +1138,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_ImprovementTactic_Check_Duplicate()
         {
+            Console.WriteLine("To check the duplicate Improvement Tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1148,12 +1167,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1167,6 +1186,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Update_ImprovementTactic()
         {
+            Console.WriteLine("To Update Improvement Tactic.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1192,12 +1212,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1212,6 +1232,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Comment_ImprovementTactic()
         {
+            Console.WriteLine("To Save  comment in Review Tab.\n");
             MRPEntities db = new MRPEntities();
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
@@ -1227,12 +1248,12 @@ namespace RevenuePlanner.Test.Controllers
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 

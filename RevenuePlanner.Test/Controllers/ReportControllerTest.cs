@@ -38,6 +38,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetOverviewData_TimeFrame_Empty()
         {
+            Console.WriteLine("To check GetOverviewData function with no timeframeOption.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             List<int> lst = new List<int>();
@@ -63,16 +64,17 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = ReportController.GetOverviewData(string.Empty, Enums.ViewByAllocated.Quarterly.ToString()) as Task<ActionResult>;
             //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null) {
+            if (result != null)
+            {
 
                 Assert.AreNotEqual("_Overview", result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-            
+
         }
         #endregion
 
@@ -87,6 +89,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetOverviewData_TimeFrame_InValid()
         {
+            Console.WriteLine("To check GetOverviewData function with InValide value of timeframeOption.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             List<int> lst = new List<int>();
@@ -105,11 +108,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreNotEqual("_Overview", result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -125,6 +128,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetOverviewData_IsQuarterly_Empty()
         {
+            Console.WriteLine("To check GetOverviewData function with no timeframeOption.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             List<int> lst = new List<int>();
@@ -139,11 +143,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreNotEqual("_Overview", result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -159,6 +163,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetOverviewData_IsQuarterly_InValid()
         {
+            Console.WriteLine("To check GetOverviewData function with no timeframeOption.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             List<int> lst = new List<int>();
@@ -174,11 +179,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreNotEqual("_Overview", result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Status);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -198,6 +203,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueData_No_Parameter()
         {
+            Console.WriteLine("GetRevenueData section with TimeFrame Empty.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
@@ -215,11 +221,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_Revenue", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -233,6 +239,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueData_TimeFrame_Empty()
         {
+            Console.WriteLine("GetRevenueData section with TimeFrame Empty.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -251,11 +258,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_Revenue", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -294,6 +301,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueData_IsQuarterly_Empty()
         {
+            Console.WriteLine("GetRevenueData section with IsQuarterly Empty.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Set session value
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
@@ -311,11 +319,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_Revenue", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -329,6 +337,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueData_IsQuarterly_InValid()
         {
+            Console.WriteLine("GetRevenueData section with IsQuarterly InValid.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -344,11 +353,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_Revenue", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -362,6 +371,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_No_Parameter()
         {
+            Console.WriteLine("GetRevenueToPlanByFilter No Parameter.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -381,11 +391,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -399,6 +409,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_Parentltype_Empty()
         {
+            Console.WriteLine("GetRevenueToPlanByFilter No Parameter.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -416,11 +427,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -434,6 +445,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_Invalid_Parentltype()
         {
+            Console.WriteLine("Retrieve data to render view by Invalid ParentLabel.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -451,11 +463,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -469,6 +481,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_By_Campaign()
         {
+            Console.WriteLine("Retrieve data to render view by ParentLabel as Campaign.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -486,11 +499,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -504,6 +517,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_By_TacticCustom()
         {
+            Console.WriteLine("Retrieve data to render view by ParentLabel as Tactic Custom.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -521,11 +535,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -539,6 +553,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_By_ProgramCustom()
         {
+            Console.WriteLine("Retrieve data to render view by ParentLabel as Program Custom.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -556,11 +571,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -574,6 +589,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_By_CampaignCustom()
         {
+            Console.WriteLine("Retrieve data to render view by ParentLabel as Campaign Custom.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -596,11 +612,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
 
@@ -616,6 +632,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_By_Child_CampaignCustom()
         {
+            Console.WriteLine("Retrieve data to render view by Child as Campaign Custom.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -637,11 +654,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -655,6 +672,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_By_Empty_Quater()
         {
+            Console.WriteLine("Retrieve data to render view by Empty Quater.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -676,11 +694,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -694,6 +712,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_By_Invalid_Quater()
         {
+            Console.WriteLine("Retrieve data to render view by Invalid Quater.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -715,11 +734,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -733,6 +752,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetRevenueToPlanByFilter_By_Empty_BackHeadTitle_DrpChange_marsterCustomField_masterCustomFieldOptionId()
         {
+            Console.WriteLine("Retrieve data to render view by  Empty BackHeadTitle,DrpChange,marsterCustomField,masterCustomFieldOptionId.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -755,11 +775,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -774,6 +794,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionRevenue_No_Parameter()
         {
+            Console.WriteLine("Retrieve data to render to check data with empty parameter.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -818,11 +839,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -837,6 +858,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionRevenue_ShortBy_Revenue()
         {
+            Console.WriteLine("Retrieve data to render view to check data with Short by Revenue.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -882,11 +904,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -901,6 +923,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionRevenue_ShortBy_Cost()
         {
+            Console.WriteLine("Retrieve data to render view to check data with Short by Cost.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -939,11 +962,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -958,6 +981,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionRevenue_ShortBy_ROI()
         {
+            Console.WriteLine("Retrieve data to render view to check data with Short by ROI.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -998,11 +1022,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1017,6 +1041,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionRevenue_ShortBy_Invalid_Param()
         {
+            Console.WriteLine("Retrieve data to render view to check data with Short by Invalid Parameter.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1057,11 +1082,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1076,6 +1101,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionRevenue_Empty_Search_Param()
         {
+            Console.WriteLine("Retrieve data to render view to check data with Empty Search Parameter.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1115,11 +1141,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1433,19 +1459,20 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetChildLabelDataViewByModel_empty()
         {
+            Console.WriteLine("Get data check with Empty Parameter.\n");
             ReportController reportcontroller = new ReportController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
-            var result = reportcontroller.GetChildLabelDataViewByModel("", "");            
+            var result = reportcontroller.GetChildLabelDataViewByModel("", "");
             if (result != null)
             {
 
                 Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.Count);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Count);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1468,6 +1495,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetWaterFallData_No_Parameter()
         {
+            Console.WriteLine("GetWaterFallData section with No Parameter.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1485,11 +1513,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportConversion", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1504,6 +1532,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetWaterFallData_Timeframe_Empty()
         {
+            Console.WriteLine("GetWaterFallData section with timeframe empty.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1524,11 +1553,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportConversion", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1568,6 +1597,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetWaterFallData_Empty_Quaterly()
         {
+            Console.WriteLine("GetWaterFallData section with Empty Quaterly.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1580,11 +1610,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportConversion", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1599,6 +1629,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetWaterFallData_InvalidQuaterly()
         {
+            Console.WriteLine("GetWaterFallData section with Invalid Quaterly.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1612,11 +1643,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportConversion", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1631,6 +1662,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetWaterFallData_Empty_Quater_andTimeframe()
         {
+            Console.WriteLine("GetWaterFallData section with both empty Quaterly and timeframe.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1645,11 +1677,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportConversion", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1664,6 +1696,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_EmptyParentlbl()
         {
+            Console.WriteLine("GetTopConversionToPlanByCustomFilter section with both empty parent label.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1677,11 +1710,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1697,6 +1730,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_InvalidParentlbl()
         {
+            Console.WriteLine("GetTopConversionToPlanByCustomFilter section with both invalid parent label.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1710,11 +1744,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1731,6 +1765,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_with_NoParameter()
         {
+            Console.WriteLine("GetTopConversionToPlanByCustomFilter section with No Parameter.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
@@ -1744,11 +1779,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1763,6 +1798,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_ByCampaign()
         {
+            Console.WriteLine("Retrieve data to render view by ParentLabel as Campaign.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1779,11 +1815,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1799,6 +1835,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_ByTacticCustom()
         {
+            Console.WriteLine("Retrieve data to render view by ParentLabel as Tactic Custom.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1815,11 +1852,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
 
         }
@@ -1835,6 +1872,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_ByProgramCustom()
         {
+            Console.WriteLine("Retrieve data to render view by ParentLabel as Program Custom.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1851,11 +1889,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1870,6 +1908,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_ByCampaignCustom()
         {
+            Console.WriteLine("Retrieve data to render view by ParentLabel as Program Campaign Custom.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1886,11 +1925,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1905,6 +1944,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_By_ChildCampaignCustom()
         {
+            Console.WriteLine("Retrieve data to render view by Child Type as Campaign Custom.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1932,11 +1972,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1951,6 +1991,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_By_Parent_Child_Empty()
         {
+            Console.WriteLine("Retrieve data to render view by Parent Label and Child Type are empty.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -1973,11 +2014,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -1992,6 +2033,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_ChildId_Empty()
         {
+            Console.WriteLine("Retrieve data to render view by childId with empty.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -2016,11 +2058,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2035,6 +2077,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void GetTopConversionToPlanByCustomFilter_Timeframe_Qauter_Empty()
         {
+            Console.WriteLine("Retrieve data to render view by Timeframe and Quater with empty.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -2059,11 +2102,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2079,6 +2122,7 @@ namespace RevenuePlanner.Test.Controllers
         public void GetTopConversionToPlanByCustomFilter_InvalidQuater_Code()
         {
 
+            Console.WriteLine("Retrieve data to render view by Invalid Quater and Code.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -2105,11 +2149,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2125,6 +2169,7 @@ namespace RevenuePlanner.Test.Controllers
         public void GetTopConversionToPlanByCustomFilter_Empty_Code_BackHeadTitle_DrpChange_marsterCustomField_masterCustomFieldOptionId()
         {
 
+            Console.WriteLine("Retrieve data to render view by Empty Code,BackHeadTitle,DrpChange,marsterCustomField,masterCustomFieldOptionId.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -2150,11 +2195,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2169,7 +2214,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionConverstion_Empty_Parameter()
         {
-
+            Console.WriteLine("Retrieve data to render to check data with empty parameter.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -2200,11 +2245,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2219,7 +2264,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionConverstion_Shortby_INQ()
         {
-
+            Console.WriteLine("Retrieve data to render view to check data with Short by INQ.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -2251,11 +2296,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2270,6 +2315,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionConverstion_Shortby_MQL()
         {
+            Console.WriteLine("Retrieve data to render view to check data with Short by MQL.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -2301,11 +2347,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2320,6 +2366,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionConverstion_Shortby_CW()
         {
+            Console.WriteLine("Retrieve data to render view to check data with Short by CW.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -2351,11 +2398,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2370,6 +2417,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionConverstion_Invalid_Shortby()
         {
+            Console.WriteLine("Retrieve data to render view to check data with Invalid Shortby.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -2401,11 +2449,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2420,6 +2468,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void SearchSortPaginataionConverstion_Invalid_Shortby_empty_SearchContent()
         {
+            Console.WriteLine("Retrieve data to render view to check data with empty SerachContent and invalid shortby.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -2451,11 +2500,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2470,6 +2519,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void LoadReportCardSectionPartial_Empty()
         {
+            Console.WriteLine("Retrieve data to render view to check with empty parameter.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ReportController ReportController = new ReportController();
             var result = ReportController.LoadReportCardSectionPartial() as PartialViewResult;
@@ -2478,11 +2528,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -2497,6 +2547,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void LoadConverstionCardSectionPartial_Empty()
         {
+            Console.WriteLine("Retrieve data to render view to check with empty parameter.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ReportController ReportController = new ReportController();
             var result = ReportController.LoadConverstionCardSectionPartial() as PartialViewResult;
@@ -2505,11 +2556,11 @@ namespace RevenuePlanner.Test.Controllers
             {
 
                 Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion

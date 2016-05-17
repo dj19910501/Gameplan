@@ -165,6 +165,7 @@ namespace RevenuePlanner.Test.Integration
         [TestMethod]
         public void Get_Eloqua_Contact_List_for_Correct_Ids()
         {
+            Console.WriteLine("Get contact list for correct Ids.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
 
             //// Enter view id and contact list id.
@@ -174,14 +175,14 @@ namespace RevenuePlanner.Test.Integration
             if (result != null)
             {
                 Assert.AreNotEqual(null, result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.StatusCode);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.StatusCode);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-            
+
         }
 
         /// <summary>
@@ -190,6 +191,7 @@ namespace RevenuePlanner.Test.Integration
         [TestMethod]
         public void Get_Eloqua_Contact_List_for_InCorrect_Ids()
         {
+            Console.WriteLine("Get contact list for correct Ids.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
 
             //// Enter view id and contact list id.
@@ -200,12 +202,12 @@ namespace RevenuePlanner.Test.Integration
             if (result != null)
             {
                 Assert.AreNotEqual(null, result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.StatusCode);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.StatusCode);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -215,6 +217,7 @@ namespace RevenuePlanner.Test.Integration
         [TestMethod]
         public void Get_Eloqua_Contact_List_Details_for_Correct_Id()
         {
+            Console.WriteLine("Get contact list detail for correct Id.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
 
             //// Enter contact list id.
@@ -225,12 +228,12 @@ namespace RevenuePlanner.Test.Integration
             if (result != null)
             {
                 Assert.AreNotEqual(null, result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.StatusCode);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.StatusCode);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
 
@@ -240,6 +243,7 @@ namespace RevenuePlanner.Test.Integration
         [TestMethod]
         public void Get_Eloqua_Contact_List_Details_for_InCorrect_Id()
         {
+            Console.WriteLine("Get contact list detail for correct Ids.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
 
             //// Enter contact list id.
@@ -250,14 +254,14 @@ namespace RevenuePlanner.Test.Integration
             if (result != null)
             {
                 Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.StatusCode);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.StatusCode);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-            
+
         }
 
         /// <summary>
@@ -266,6 +270,7 @@ namespace RevenuePlanner.Test.Integration
         [TestMethod]
         public void Put_Eloqua_Contact_List_Details_with_Correct_Id()
         {
+            Console.WriteLine("Put contact list detail for correct Ids.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
 
             //// Enter contact list id.
@@ -290,7 +295,7 @@ namespace RevenuePlanner.Test.Integration
             controller.PutEloquaContactListDetails(contactListDetailModel, elouqaContactListId);
 
             Assert.IsTrue(true);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + true);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + true);
         }
 
         /// <summary>
@@ -299,6 +304,7 @@ namespace RevenuePlanner.Test.Integration
         [TestMethod]
         public void Put_Eloqua_Contact_List_Details_with_InCorrect_Id()
         {
+            Console.WriteLine("Put contact list detail for incorrect Ids.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
 
             //// Enter contact list id.
@@ -335,6 +341,7 @@ namespace RevenuePlanner.Test.Integration
         [TestMethod]
         public void Convert_Timestamp_To_DateTime()
         {
+            Console.WriteLine("Convert Time stamp to DateTime.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient(_integrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
 
             //// Enter date time time stamp.
@@ -342,16 +349,16 @@ namespace RevenuePlanner.Test.Integration
 
             DateTime dateTime = controller.ConvertTimestampToDateTime(dateTimeTimestamp);
 
-            
+
             if (dateTime != null)
             {
                 Assert.AreNotEqual(null, dateTime);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + dateTime);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + dateTime);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + dateTime);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + dateTime);
             }
         }
 

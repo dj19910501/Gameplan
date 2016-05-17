@@ -26,6 +26,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void ViewEditPermission_View_Mode_With_No_User_Id()
         {
+            Console.WriteLine("To check ViewEditPermission in View Mode with no userId.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -37,12 +38,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.AreEqual("ViewEditPermission", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -56,6 +57,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void ViewEditPermission_View_Mode_With_Valid_User_Id()
         {
+            Console.WriteLine("To check ViewEditPermission in View Mode with valid user id.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -67,12 +69,12 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// ViewResult shoud not be null and should match with viewName
                 Assert.AreEqual("ViewEditPermission", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -86,6 +88,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void ViewEditPermission_Edit_Mode_With_No_User_Id()
         {
+            Console.WriteLine("To check ViewEditPermission in Edit Mode with no userId.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -93,16 +96,16 @@ namespace RevenuePlanner.Test.Controllers
             OrganizationController objOrganizationController = new OrganizationController();
             var result = objOrganizationController.ViewEditPermission(Guid.Empty.ToString(), Enums.UserPermissionMode.Edit.ToString()) as ViewResult;
 
-            if (result != null)
+            if (result == null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.AreEqual("ViewEditPermission", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Assert.IsNull(result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -116,23 +119,24 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void ViewEditPermission_Edit_Mode_With_Valid_User_Id()
         {
+            Console.WriteLine("To check ViewEditPermission in Edit Mode with valid user id.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
-            var result = objOrganizationController.ViewEditPermission(Sessions.User.UserId.ToString(), Enums.UserPermissionMode.Edit.ToString()) as ViewResult;
+            var result = objOrganizationController.ViewEditPermission(Sessions.User.UserId.ToString(), Enums.UserPermissionMode.Edit.ToString()) as ActionResult;
 
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.AreEqual("ViewEditPermission", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.ViewName);
+                Assert.IsNotNull(result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -146,6 +150,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_User_Permission_And_Custom_Restricion_With_Empty_Parameters()
         {
+            Console.WriteLine("To check Save user permission and custom restriction with Empty Parameters.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -160,12 +165,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// Json result data should contain status property
                 Assert.IsNotNull(result.GetValue("status"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("status"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("status"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion
@@ -179,6 +184,7 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_User_Permission_And_Custom_Restricion_With_ViewEdit_Rights()
         {
+            Console.WriteLine("To check Save user permission and custom restriction with View/Edit rights.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
@@ -194,12 +200,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 //// Json result data should contain status property
                 Assert.IsNotNull(result.GetValue("status"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + result.GetValue("status"));
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("status"));
             }
             else
             {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Fail – And result value is " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
         #endregion

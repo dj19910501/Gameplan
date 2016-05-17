@@ -24,11 +24,13 @@ namespace RevenuePlanner.Test.Helper
         [TestMethod]
         public void Generate_Custom_Name_With_NULL_Object()
         {
+            Console.WriteLine("To Check Generate custom name with null object.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             Guid clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ClientId;
             string result = controller.TestGenerateCustomName(null, clientId);
             Assert.AreEqual(string.Empty, result);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
         }
 
         /// <summary>
@@ -39,9 +41,11 @@ namespace RevenuePlanner.Test.Helper
         [TestMethod]
         public void Generate_Custom_Name_With_NULL_Object_And_Empty_GUID()
         {
+            Console.WriteLine("To Check Generate custom name with null object and empty GUID.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient();
             string result = controller.TestGenerateCustomName(null, Guid.Empty);
             Assert.AreEqual(string.Empty, result);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
         }
 
         /// <summary>
@@ -52,27 +56,30 @@ namespace RevenuePlanner.Test.Helper
         [TestMethod]
         public void Generate_Custom_Name_With_Tactic_Object()
         {
+            Console.WriteLine("To Check Generate custom name with tactic object.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             Guid clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ClientId;
             Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
-            objTactic=DataHelper.GetPlanTactic(clientId);
+            objTactic = DataHelper.GetPlanTactic(clientId);
             string result = controller.TestGenerateCustomName(objTactic, clientId);
             Assert.IsTrue(string.IsNullOrEmpty(result));
-            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
+
         }
 
-        
+
         #endregion
 
         [TestMethod]
         public void GetAllCustomFields_With_Empty_TacticIds_List()
         {
+            Console.WriteLine("To Get All custom fields name with empty tactic object.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             List<int> tacticIds = new List<int>();
             List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(tacticIds, tacticIds, tacticIds);
             Assert.AreEqual(0, CustomFields.Count);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + CustomFields.Count);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + CustomFields.Count);
         }
 
         //[TestMethod] This is a invalid test case List is can be empty but never null.
@@ -86,6 +93,7 @@ namespace RevenuePlanner.Test.Helper
         [TestMethod]
         public void GetAllCustomFields_With_TacticIds_List()
         {
+            Console.WriteLine("To Get All custom fields name with tactic object.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             Guid clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ClientId;
             Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
@@ -98,7 +106,7 @@ namespace RevenuePlanner.Test.Helper
             tacticIds.Add(objTactic.Plan_Campaign_Program.PlanCampaignId);
             List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(tacticIds, programIds, campaignIds);
             Assert.IsNotNull(CustomFields.Count);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " Pass – And result value is " + CustomFields.Count);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + CustomFields.Count);
         }
     }
 }
