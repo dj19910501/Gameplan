@@ -43,10 +43,7 @@ namespace RevenuePlanner.Controllers
         private const double _PlotBandToValue = 5;
         // Add By Nishant Sheth
         // Desc #1842
-        private DateTime startDate1;
-        private DateTime endDate1;
-        private DateTime startDate2;
-        private DateTime endDate2;
+        
         private string[] selectedYearList;
         // End By Nishant Sheth
         #endregion
@@ -3450,7 +3447,7 @@ namespace RevenuePlanner.Controllers
         public List<Budgetdataobj> PlanMonthReport(List<BudgetModelReport> model, string Activitytype, string activityId, List<Budgetdataobj> BudgetDataObjList, string Tab)
         {
             int incrementCount = 1;
-            bool isQuarter = false;
+            //bool isQuarter;
             double actualValue = 0;
             double plannedValue = 0;
             double childAllocatedValue = 0;
@@ -3462,7 +3459,7 @@ namespace RevenuePlanner.Controllers
             if (ViewBag.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
                 incrementCount = 3;
-                isQuarter = true;
+              //  isQuarter = true;
             }
             BudgetModelReport budgetPlan = model.SingleOrDefault(pl => pl.ActivityType == Activitytype && pl.ActivityId == activityId);
             for (int i = 1; i <= 12; i += incrementCount)
@@ -3603,7 +3600,7 @@ namespace RevenuePlanner.Controllers
         public List<Budgetdataobj> ParentMonthReport(BudgetModelReport budgetPlan, string Activitytype, List<Budgetdataobj> BudgetDataObjList, string Tab)
         {
             int incrementCount = 1;
-            bool isQuarter = false;
+            //bool isQuarter = false;
             double allocatedValue = 0;
             double actualValue = 0;
             double plannedValue = 0;
@@ -3616,7 +3613,7 @@ namespace RevenuePlanner.Controllers
             if (ViewBag.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
                 incrementCount = 3;
-                isQuarter = true;
+                //isQuarter = true;
             }
             //foreach (BudgetModelReport budgetPlan in model.Where(pl => pl.ActivityType == Activitytype && pl.ParentActivityId == activityId))
             if (budgetPlan != null)
@@ -8960,7 +8957,7 @@ namespace RevenuePlanner.Controllers
             List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
             List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
             List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-            double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, TotalTrendQ1 = 0, TotalTrendQ2 = 0, TotalTrendQ3 = 0, TotalTrendQ4 = 0;
+            //double ActualQ1 = 0, ActualQ2 = 0, TotalTrendQ1 = 0, TotalTrendQ2 = 0, TotalTrendQ3 = 0, TotalTrendQ4 = 0;
             List<double> ActualList = new List<double>();
             List<double> GoalList = new List<double>();
             #endregion
@@ -8994,7 +8991,7 @@ namespace RevenuePlanner.Controllers
                 #region "Evaluate Customfield Option wise Sparkline chart data"
                 #region "Get Revenue Data by CustomfieldOption  wise"
                 List<double> _monthTrendList = new List<double>();
-                TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                //TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
                 #region "Calculate Trend for Single CustomFieldOption value"
 
                 #region "Calcualte Actual & Projected value Quarterly"
@@ -9160,7 +9157,7 @@ namespace RevenuePlanner.Controllers
                 List<TacticDataTable> TacticDataTable = new List<TacticDataTable>();
                 List<TacticStageValue> fltrTacticData = new List<TacticStageValue>();
                 List<TacticMonthValue> TacticListMonth = new List<TacticMonthValue>();
-                double GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
+               // double GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
                 #endregion
 
                 #region "Evaluate Customfield Option wise Sparkline chart data"
@@ -9178,7 +9175,7 @@ namespace RevenuePlanner.Controllers
                 {
                     #region "if timeframe Quarterly"
 
-                    GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
+                  //  GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
 
                     #region "Calculate Trend Quarterly"
 
@@ -9294,7 +9291,7 @@ namespace RevenuePlanner.Controllers
                 tblLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineActual => LineItemIds.Contains(lineActual.PlanLineItemId)).ToList();
 
                 _monthTrendList = new List<double>();
-                TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                //TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
                 #region "Calculate Trend for Single CustomFieldOption value"
                 fltrTacticData = TacticData.Where(tac => _TacticOptionObject.planTacticList.Contains(tac.TacticObj.PlanTacticId)).ToList();
@@ -9322,7 +9319,7 @@ namespace RevenuePlanner.Controllers
                 #region "Calcualte Actual & Projected value Quarterly"
                 if (IsQuarterly)
                 {
-                    ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = 0;
+                    //ActualQ1 = ActualQ2 = 0;
 
                     //ActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
                     //ActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
@@ -9334,7 +9331,7 @@ namespace RevenuePlanner.Controllers
                     //TotalTrendQ3 = TotalTrendQ3 + (ActualQ3);
                     //TotalTrendQ4 = TotalTrendQ4 + (ActualQ4);
                     // Add By Nishant Sheth #1839
-                    int ListIndex = 0; double Total = 0; bool Quarteryvalues = false;
+                     bool Quarteryvalues = false;
                     foreach (var year in ListYear)
                     {
                         string YearName = year;
@@ -9442,7 +9439,7 @@ namespace RevenuePlanner.Controllers
                 #region "Code for ROI"
 
                 #region "Declare Local Variables"
-                double costActualQ1 = 0, costActualQ2 = 0, costActualQ3 = 0, costActualQ4 = 0;
+                //double costActualQ1 = 0, costActualQ2 = 0, costActualQ3 = 0, costActualQ4 = 0;
                 List<string> ROIList = new List<string>();
                 #endregion
 
@@ -9451,9 +9448,9 @@ namespace RevenuePlanner.Controllers
                 #region "Calcualte Actual & Projected value Quarterly"
                 if (IsQuarterly)
                 {
-                    costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = 0;
+                  //  costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = 0;
 
-                    TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                    //TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
                     //// Get Actual Revenue value upto currentmonth by Quarterly.
 
@@ -9595,7 +9592,7 @@ namespace RevenuePlanner.Controllers
             List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
             List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
             List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-            double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, TotalTrendQ1 = 0, TotalTrendQ2 = 0, TotalTrendQ3 = 0, TotalTrendQ4 = 0;
+            //double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, TotalTrendQ1 = 0, TotalTrendQ2 = 0, TotalTrendQ3 = 0, TotalTrendQ4 = 0;
             List<double> ActualList = new List<double>();
             List<double> GoalList = new List<double>();
             #endregion
@@ -9626,7 +9623,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
 
-                TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                //TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
                 #region "Calcualte Actual & Projected value Quarterly"
                 //added by  Dashrath Prajapati- PL #1422
@@ -9763,7 +9760,7 @@ namespace RevenuePlanner.Controllers
                 #region "Code for Top Performance"
                 #region "Declare Local Variables"
 
-                double GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
+                //double GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
                 #endregion
 
                 #region "Calculate Total for Proj.Vs Goal & Trend"
@@ -9772,7 +9769,7 @@ namespace RevenuePlanner.Controllers
                 if (IsQuarterly)
                 {
                     #region "if timeframe Quarterly"
-                    GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
+                   // GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
 
                     #region "Calculate Trend Quarterly"
                     #region "Newly added Code"
@@ -9885,7 +9882,7 @@ namespace RevenuePlanner.Controllers
                 LineItemIds = tblTacticLineItemList.Select(line => line.PlanLineItemId).ToList();
                 tblLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineActual => LineItemIds.Contains(lineActual.PlanLineItemId)).ToList();
 
-                TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                //TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
                 #region "Get ActualCost Data"
                 TacticCostData = GetActualCostData(TacticData, tblTacticLineItemList, tblLineItemActualList);
@@ -9912,7 +9909,7 @@ namespace RevenuePlanner.Controllers
                 #region "Calcualte Actual & Projected value Quarterly"
                 if (IsQuarterly)
                 {
-                    ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = 0;
+                   // ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = 0;
                     //ActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
                     //// return record from list which contains Q1 or Q2 months : Summed Up (Q1 + Q2) Actuals Value
                     //ActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
@@ -9931,7 +9928,7 @@ namespace RevenuePlanner.Controllers
                     //CostList.Add(TotalTrendQ4.ToString());
 
                     // Add By Nishant Sheth #1839
-                    int ListIndex = 0; double Total = 0; bool Quarteryvalues = false;
+                    bool Quarteryvalues = false;
                     foreach (var year in ListYear)
                     {
                         string YearName = year;
@@ -10015,7 +10012,7 @@ namespace RevenuePlanner.Controllers
 
                 #region "Code for ROI"
                 #region "Declare Local Variables"
-                double costActualQ1 = 0, costActualQ2 = 0, costActualQ3 = 0, costActualQ4 = 0;
+               // double costActualQ1 = 0, costActualQ2 = 0, costActualQ3 = 0, costActualQ4 = 0;
                 #endregion
 
                 #region "Declare Local variables for ROI Trend"
@@ -10026,9 +10023,9 @@ namespace RevenuePlanner.Controllers
                 #region "Calcualte Actual & Projected value Quarterly"
                 if (IsQuarterly)
                 {
-                    costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = 0;
+                   // costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = 0;
 
-                    TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                   // TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
                     //// Get Actual Revenue value upto currentmonth by Quarterly.
                     //// Get Actual Cost value upto currentmonth by Quarterly.
@@ -10768,7 +10765,7 @@ namespace RevenuePlanner.Controllers
             List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
             List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
             List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-            double TotalTrendQ1 = 0, TotalTrendQ2 = 0, TotalTrendQ3 = 0, TotalTrendQ4 = 0;
+            //double TotalTrendQ1 = 0, TotalTrendQ2 = 0, TotalTrendQ3 = 0, TotalTrendQ4 = 0;
             List<double> ActualList = new List<double>();
             List<double> GoalList = new List<double>();
             string[] ListYear = timeFrameOption.Split(',');
@@ -10787,7 +10784,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 List<double> _monthTrendList = new List<double>();
-                TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+               // TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
                 #region "Calcualte Actual & Projected value Quarterly"
                 ActualList = BasicModelData.ActualList; //added by  Dashrath Prajapati- PL #1422
@@ -10936,7 +10933,7 @@ namespace RevenuePlanner.Controllers
                 #region "Declare Local Variables"
                 List<TacticMonthValue> TacticListMonth = new List<TacticMonthValue>();
                 List<string> includeMonth = GetMonthListForReport(timeFrameOption);
-                double GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
+                //double GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
                 #endregion
 
                 #region "Calculate Total for Proj.Vs Goal & Trend"
@@ -10945,7 +10942,7 @@ namespace RevenuePlanner.Controllers
                 if (IsQuarterly)
                 {
                     #region "if timeframe Quarterly"
-                    GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
+                    //GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
 
                     #region "Calculate Trend Quarterly"
                     #region "Newly added Code"
@@ -11057,7 +11054,7 @@ namespace RevenuePlanner.Controllers
             List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
             List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
             List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-            double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, TotalTrendQ1 = 0, TotalTrendQ2 = 0, TotalTrendQ3 = 0, TotalTrendQ4 = 0;
+            //double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, TotalTrendQ1 = 0, TotalTrendQ2 = 0, TotalTrendQ3 = 0, TotalTrendQ4 = 0;
             List<double> ActualList = new List<double>();
             List<double> GoalList = new List<double>();
             string[] ListYear = timeFrameOption.Split(',');
@@ -11088,14 +11085,14 @@ namespace RevenuePlanner.Controllers
                 #region "Evaluate Customfield Option wise Sparkline chart data"
                 #region "Get Revenue Data by CustomfieldOption  wise"
                 List<double> _monthTrendList = new List<double>();
-                TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                //TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
                 #region "Calculate Trend for Single CustomFieldOption value"
                 #region "Calcualte Actual & Projected value Quarterly"
                 //added by  Dashrath Prajapati- PL #1422
                 ActualList = _BasicModel.ActualList;
                 if (IsQuarterly)
                 {
-                    ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = 0;
+                    //ActualQ1 = ActualQ2 = ActualQ3 =0;
 
                     //ActualQ1 = ActualList.ToList()[0];
                     //ActualQ2 = ActualList.ToList()[1];
@@ -11271,7 +11268,7 @@ namespace RevenuePlanner.Controllers
                 List<TacticDataTable> TacticDataTable = new List<TacticDataTable>();
                 List<TacticStageValue> fltrTacticData = new List<TacticStageValue>();
                 List<TacticMonthValue> TacticListMonth = new List<TacticMonthValue>();
-                double Act_ProjQ1 = 0, Act_ProjQ2 = 0, Act_ProjQ3 = 0, Act_ProjQ4 = 0, GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
+                double Act_ProjQ1 = 0, Act_ProjQ2 = 0, Act_ProjQ3 = 0, Act_ProjQ4 = 0, GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0;
                 #endregion
 
                 #region "Evaluate Customfield Option wise Sparkline chart data"
@@ -11288,7 +11285,7 @@ namespace RevenuePlanner.Controllers
                 if (IsQuarterly)
                 {
                     #region "if timeframe Quarterly"
-                    Act_ProjQ1 = Act_ProjQ2 = Act_ProjQ3 = Act_ProjQ4 = GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
+                    Act_ProjQ1 = Act_ProjQ2 = Act_ProjQ3 = Act_ProjQ4 = GoalQ1 = GoalQ2 = GoalQ3;
 
                     #region "Calculate Trend Quarterly"
                     #region "Newly added Code"
@@ -11350,7 +11347,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     #region "Get Total Trend value on Monthly basis"
-                    double _totalActual = 0, _TotalTrendValue = 0, _totalGoal = 0;
+                    double _TotalTrendValue = 0, _totalGoal = 0;
 
                     //for (int i = 1; i <= 12; i++)
                     //{

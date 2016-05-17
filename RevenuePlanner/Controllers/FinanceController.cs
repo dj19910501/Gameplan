@@ -3600,7 +3600,7 @@ namespace RevenuePlanner.Controllers
                         {
                             objCustomFieldEnity = new CustomField_Entity();
                             objCustomFieldEnity.CustomFieldId = CustomCol.CustomFieldId;
-                            objCustomFieldEnity.EntityId = (BudgetId != null ? BudgetId : 0);
+                            objCustomFieldEnity.EntityId = BudgetId;
                             objCustomFieldEnity.Value = nValue;
                             objCustomFieldEnity.CreatedBy = Sessions.User.UserId;
                             objCustomFieldEnity.CreatedDate = System.DateTime.Now;

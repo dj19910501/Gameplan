@@ -125,7 +125,7 @@ namespace IntegrationWinService
                 write.Flush();
                 write.Close();
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
         }
     }
 }

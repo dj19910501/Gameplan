@@ -2116,7 +2116,7 @@ namespace RevenuePlanner.Controllers
 
                 DateTime MaxEndDateForCustomField;
                 int _PlanTacticId = 0, _PlanProgramId = 0, _TypeId = 0;
-                List<Custom_Plan_Campaign_Program_Tactic> fltrTactic, fltrplantacic;
+                List<Custom_Plan_Campaign_Program_Tactic> fltrTactic;
                 //// Prepare tactic task list for CustomField to be used in rendering of gantt chart. 
                 List<int> PlanIds = lstProcessedCustomFieldTactics.Select(_tac => _tac.tactic.PlanId).ToList();
                 List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();

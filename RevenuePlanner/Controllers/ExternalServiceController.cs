@@ -1601,7 +1601,7 @@ namespace RevenuePlanner.Controllers
                 else
                     pickList = new List<string>();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

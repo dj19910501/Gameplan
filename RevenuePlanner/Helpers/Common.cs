@@ -5960,10 +5960,10 @@ namespace RevenuePlanner.Helpers
             var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && (m.IsDeleted == false || m.IsDeleted == null)).Select(m => m.Id).ToList();
             var tblBudgetDetail = db.Budget_Detail.Where(a => a.IsDeleted == false && budgeparentids.Contains(a.BudgetId)).Select(a => a).ToList();
             int? ParentId = 0;
-            var checkParent = tblBudgetDetail.Where(a => a.Id == BudgetId && (a.IsDeleted == false || a.IsDeleted == null)).Select(a => a.ParentId).ToList();
+            var checkParent = tblBudgetDetail.Where(a => a.Id == BudgetId && (a.IsDeleted == false)).Select(a => a.ParentId).ToList();
             ParentId = checkParent.Count > 0 ? checkParent[0] : 0;
 
-            var customfieldlist = tblBudgetDetail.Where(a => (ParentId > 0 ? a.ParentId == (ParentId != null ? ParentId : null) : a.ParentId == null) && (a.IsDeleted == false || a.IsDeleted == null) && !string.IsNullOrEmpty(a.Name)).Select(a => new { a.Id, a.Name }).ToList();
+            var customfieldlist = tblBudgetDetail.Where(a => (ParentId > 0 ? a.ParentId == (ParentId != null ? ParentId : null) : a.ParentId == null) && (a.IsDeleted == false) && !string.IsNullOrEmpty(a.Name)).Select(a => new { a.Id, a.Name }).ToList();
 
             lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
 

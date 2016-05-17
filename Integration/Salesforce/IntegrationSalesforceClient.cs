@@ -6841,7 +6841,7 @@ namespace Integration.Salesforce
                 #endregion
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

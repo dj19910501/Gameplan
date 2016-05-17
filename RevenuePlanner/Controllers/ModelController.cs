@@ -1597,7 +1597,7 @@ namespace RevenuePlanner.Controllers
                         //#2063: Tactic 'Deployed To Integration' not defaulting to on
                         // Added by Viral on 04/08/2016
                         #region "Update DeployToIntegration settings for all tactics related to Model & TacticType"
-                        if (isDeployedToModel && isDeployedToIntegration != null)
+                        if (isDeployedToModel)
                         { 
                             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                             string strModelStatus = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).Select(mdl=>mdl.Status).FirstOrDefault();

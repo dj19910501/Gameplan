@@ -1067,6 +1067,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
+                await Task.Delay(1);
                 return Json(new
                 {
                     lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlansPer(planIds, activeMenu, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds),
@@ -10699,7 +10700,7 @@ namespace RevenuePlanner.Controllers
             int oldCampaignId = 0;
             UpdateColumn = UpdateColumn.Trim();
             int yearDiff = 0, perdNum = 12, cntr = 0;
-            bool isMultiYearlinkedTactic = false, IsError = false;
+            bool isMultiYearlinkedTactic = false;
             List<string> lstLinkedPeriods = new List<string>();
             try
             {
@@ -10944,7 +10945,7 @@ namespace RevenuePlanner.Controllers
 
                         // Added by Viral Kadiya related to PL ticket #2108.
                         #region "Update DeployToIntegration & Instnace toggle on Tactic Type update"
-                        if (tactictypeid != null && oldTactictypeId != tactictypeid)
+                        if (tactictypeid > 0 && oldTactictypeId != tactictypeid)
                         {
                             // Added by Viral Kadiya related to PL ticket #2108: When we update tactic type, then the integration need to look at the model. If under model integration, there are any integration mapped then the switched for these needs to be turned on as well.
                             int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
@@ -14182,7 +14183,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                if (modelId == 0 || modelId == null)
+                if (modelId == 0)
                 {
                     modelId = PlanTactics.Select(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).FirstOrDefault();
                 }
@@ -14405,7 +14406,7 @@ namespace RevenuePlanner.Controllers
 
                     if (columns[j].ToString() == MqlColName)
                     {
-                        if (row[columns["Lineitem"].ToString()] != null && row[columns["Lineitem"].ToString()] != "")
+                        if (!string.IsNullOrEmpty(Convert.ToString(row[columns["Lineitem"].ToString()])))
                         {
                             row[columns[j].ToString()] = "--";
                         }
@@ -14416,7 +14417,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (columns[j].ToString() == Enums.DownloadCSV.Revenue.ToString())
                     {
-                        if (row[columns["Lineitem"].ToString()] != null && row[columns["Lineitem"].ToString()] != "")
+                        if (!string.IsNullOrEmpty(Convert.ToString(row[columns["Lineitem"].ToString()])))
                         {
                             row[columns[j].ToString()] = "--";
                         }

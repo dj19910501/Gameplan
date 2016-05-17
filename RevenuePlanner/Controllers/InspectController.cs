@@ -17,7 +17,7 @@ using System.IO;
 using System.Web.Script.Serialization;
 using System.Threading.Tasks;
 using System.Web.Caching;
-using System.Reflection;	 
+using System.Reflection;
 using System.Data.SqlClient;
 
 
@@ -1467,7 +1467,7 @@ namespace RevenuePlanner.Controllers
                     TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
 
                     using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
-                   // using (var scope = new TransactionScope())
+                    // using (var scope = new TransactionScope())
                     {
                         //// Get Campaign data to check duplication.
                         var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(db.Plan_Campaign.Where(_campaign => _campaign.PlanCampaignId == form.PlanCampaignId).Select(_campaign => _campaign.PlanId).FirstOrDefault()) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(form.PlanCampaignId))).FirstOrDefault();
@@ -2063,7 +2063,7 @@ namespace RevenuePlanner.Controllers
                         TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
 
                         using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
-                       // using (var scope = new TransactionScope())
+                        // using (var scope = new TransactionScope())
                         {
                             //// Get duplicate record.
                             var pcpvar = (from pcp in db.Plan_Campaign_Program
@@ -2527,7 +2527,7 @@ namespace RevenuePlanner.Controllers
                     TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
 
                     using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
-                   // using (var scope = new TransactionScope())
+                    // using (var scope = new TransactionScope())
                     {
                         //// Get duplicate record.
                         var pcpvar = (from pcp in db.Plan_Campaign_Program
@@ -4431,7 +4431,7 @@ namespace RevenuePlanner.Controllers
                                 #region "Get IsDeployedToIntegration by TacticTypeId"
                                 int TacticTypeId = 0;
                                 bool isDeployedToIntegration = false;
-                                if (form.TacticTypeId != null)
+                                if (form.TacticTypeId > 0)
                                 {
                                     TacticTypeId = form.TacticTypeId;
                                     TacticType objTacType = new TacticType();
@@ -4882,7 +4882,7 @@ namespace RevenuePlanner.Controllers
                                 #endregion
 
                                 #region "Update DeployToIntegration & Instnace toggle on Tactic Type update"
-                                if (form.TacticTypeId != null && oldTacticTypeId != form.TacticTypeId)
+                                if (form.TacticTypeId > 0 && oldTacticTypeId != form.TacticTypeId)
                                 {
                                     // Added by Viral Kadiya related to PL ticket #2108: When we update tactic type, then the integration need to look at the model. If under model integration, there are any integration mapped then the switched for these needs to be turned on as well.
                                     int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0, marketoInstanceId = 0;
@@ -4997,7 +4997,7 @@ namespace RevenuePlanner.Controllers
                                     }
 
                                     //Add linked Tactic TacticCost data
-                                    int yearDiff = 0, perdNum = 12, cntr = 0;
+                                    int yearDiff = 0;
                                     bool isMultiYearlinkedTactic = false;
                                     if (linkedTacticId > 0)
                                     {
@@ -5052,7 +5052,7 @@ namespace RevenuePlanner.Controllers
                                             //END
                                         }
 
-                                        int yearDiff = 0, perdNum = 12, cntr = 0;
+                                        int yearDiff = 0;
                                         bool isMultiYearlinkedTactic = false;
                                         if (linkedTacticId > 0)
                                         {
@@ -5908,7 +5908,7 @@ namespace RevenuePlanner.Controllers
                     TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
 
                     using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
-                   // using (var scope = new TransactionScope())
+                    // using (var scope = new TransactionScope())
                     {
 
                         //List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false).ToList();
@@ -6208,8 +6208,8 @@ namespace RevenuePlanner.Controllers
                                 List<Plan_Campaign_Program_Tactic_Budget> lstBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == form.PlanTacticId).ToList();
                                 if (lstBudgetData != null && lstBudgetData.Count > 0)
                                 {
-                                    double totalLinkedBudget = 0;
-                                    bool islinkedBudgetModified = false;
+                                    //double totalLinkedBudget = 0;
+                                    //bool islinkedBudgetModified = false;
                                     List<Plan_Campaign_Program_Tactic_Budget> linkedBudgetData = new List<Plan_Campaign_Program_Tactic_Budget>();
                                     Plan_Campaign_Program_Tactic_Budget objlinkedBudget = null;
                                     if (isMultiYearlinkedTactic)
@@ -13293,7 +13293,7 @@ namespace RevenuePlanner.Controllers
 
         #region TreeGridView for dropdown
         //Added By Komal Rawal for #1617
-        public async Task<JsonResult> LoadBudgetDropdown(int BudgetId = 0, int PlanLineItemID = 0)
+        public JsonResult LoadBudgetDropdown(int BudgetId = 0, int PlanLineItemID = 0)
         {
             MRPEntities db = new MRPEntities();
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
