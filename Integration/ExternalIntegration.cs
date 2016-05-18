@@ -38,7 +38,8 @@ namespace Integration
         Pull_Responses,
         Pull_ClosedWon,
         Import_Cost,
-        Pull_QualifiedLeads
+        Pull_QualifiedLeads,
+        Get_SFDCID_For_Marketo
     }
 
 
@@ -1030,6 +1031,20 @@ namespace Integration
                 return lstContactFields;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Get SFDC Id with tactic name from salesforce and update ids into plan
+        /// Created by : Nishant Sheth
+        /// </summary>
+        public void SyncSFDCMarketo()
+        {
+            IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(_id, 0, _entityType, _userId, 0, _applicationId);
+            if(integrationSalesforceClient.IsAuthenticated)
+            {
+                integrationSalesforceClient.SyncSFDCMarketo();
+            }
+
         }
     }
 }
