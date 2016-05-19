@@ -1272,6 +1272,38 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
+                else if (form.IntegrationType.Code.Equals(Integration.Helper.Enums.IntegrationType.Marketo.ToString()) && form.IntegrationTypeAttributes != null)
+                {  
+                    //Added by Rahul shah on 16/05/2016 for PL#2184. to check Marketo Authentication.
+                    if (form.IntegrationTypeAttributes.Count > 0)
+                    {
+                        List<int> attributeIds = form.IntegrationTypeAttributes.Select(attr => attr.IntegrationTypeAttributeId).ToList();
+                        List<IntegrationTypeAttribute> integrationTypeAttributes = db.IntegrationTypeAttributes.Where(attr => attributeIds.Contains(attr.IntegrationTypeAttributeId)).ToList();
+                        string marketoClientId, marketoClientSecret;
+                        marketoClientId = marketoClientSecret = string.Empty;                      
+                        foreach (IntegrationTypeAttribute integrationTypeAttribute in integrationTypeAttributes)
+                        {
+                            if (integrationTypeAttribute.Attribute.ToUpper().Equals(Common.eloquaClientIdLabel.ToUpper()))
+                            {
+                                marketoClientId = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                            }
+                            if (integrationTypeAttribute.Attribute.ToUpper().Equals((Common.eloquaClientSecretLabel.ToUpper())))
+                            {
+                                marketoClientSecret = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(marketoClientId) && !string.IsNullOrWhiteSpace(marketoClientSecret))
+                        {
+                            ApiIntegration AI = new ApiIntegration();
+                            AI._host = GetIntegrationTypeById(form.IntegrationTypeId).APIURL;
+                            AI._clientid = marketoClientId;
+                            AI._clientsecret = marketoClientSecret;
+                            AI.AuthenticateforMarketo();
+                            isAuthenticated = AI.IsAuthenticated;                            
+                            
+                        }
+                    }
+                }
             }
 
             return isAuthenticated;
@@ -1696,6 +1728,7 @@ namespace RevenuePlanner.Controllers
                 //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
                 #region "Set Enum Variables"
                 string Eloqua = Enums.IntegrationType.Eloqua.ToString();
+                string Marketo = Enums.IntegrationType.Marketo.ToString(); //Added by Rahul Shah on 13/05/2016 for PL #2184
                 string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
                 string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
                 string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
@@ -1733,12 +1766,13 @@ namespace RevenuePlanner.Controllers
 
                 //// Get GamePlan Custom Fields data.
                 // Updated 23 March 2016 PL#2083 by Brad Gray to not retrieve fields where custom field 'IsGet' == true
+                //Modified by Rahul Shah for PL #2184. here on tactic customfied list displayed for Marketo.
                 List<GameplanDataTypeModel> listGameplanDataTypeCustomFields = new List<GameplanDataTypeModel>();
                 listGameplanDataTypeCustomFields = (from custm in db.CustomFields
                                                     join m1 in db.IntegrationInstanceDataTypeMappings on custm.CustomFieldId equals m1.CustomFieldId into mapping
                                                     from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
                                                     where custm.IsDeleted == false && custm.ClientId == Sessions.User.ClientId && custm.IsGet == false &&
-                                                    (integrationTypeCode == Eloqua ? (custm.EntityType == Tactic_EntityType) : 1 == 1)
+                                                    (integrationTypeCode == Eloqua ? (custm.EntityType == Tactic_EntityType) : 1 == 1 || integrationTypeCode == Marketo ? (custm.EntityType == Tactic_EntityType) : 1 == 1)
                                                     select new GameplanDataTypeModel
                                                     {
                                                         GameplanDataTypeId = custm.CustomFieldId,   // For Custom Fields CustomFieldId is GameplanDataType Id in Mapping
@@ -2214,6 +2248,11 @@ namespace RevenuePlanner.Controllers
                                 objIntegrationInstance.IntegrationTypeId = form.IntegrationTypeId;
                                 //// Added By : Kalpesh Sharma #781 Synchronization with Scheduler
                                 objIntegrationInstance.CreatedBy = Sessions.User.UserId;
+                                //Added by RahuL Shah for PL #2184
+                                if (form.IntegrationType.Code == Enums.IntegrationInstanceType.Marketo.ToString()) 
+                                {
+                                    objIntegrationInstance.CustomNamingPermission = true;
+                                }
                             }
                             else
                             {

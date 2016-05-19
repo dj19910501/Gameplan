@@ -124,6 +124,164 @@ BEGIN
 	AND Tactic.Status IN('Approved','In-Progress','Complete')
 END
 GO
+-- =============================================
+-- Author:		Rahul Shah
+-- Create date: 19-May-2016
+-- Description:	insert Markto type in integration type table
+-- =============================================
+GO
+DECLARE @Title nvarchar (50) = 'Marketo'
+DECLARE @Description nvarchar (50) = null
+DECLARE @isDeleted  bit = 0
+DECLARE @APIVersion nvarchar (50) = null
+DECLARE @APIURL nvarchar (50) = 'https://138-cmd-587.mktorest.com/'
+DECLARE @Code nvarchar (50) = 'Marketo'
+DECLARE @FrontEndUrl nvarchar (50) = 'https://login.marketo.com'
+
+IF (NOT EXISTS(SELECT * FROM [IntegrationType] WHERE Code like @Code and isDeleted = @isDeleted)) 
+BEGIN 
+
+	INSERT INTO [IntegrationType] (Title,Description,IsDeleted,APIVersion,APIURL,Code,FrontEndUrl) VALUES (@Title,@Description,@isDeleted,@APIVersion,@APIURL,@Code,@FrontEndUrl);
+End
+ElSE
+BEGIN 
+
+	UPDATE [IntegrationType] SET Title = @Title,Description = @Description,APIVersion = @APIVersion,APIURL = @APIURL,FrontEndUrl= @FrontEndUrl WHERE Code like @Code and isDeleted = @isDeleted;
+End
+GO
+-- =============================================
+-- Author:		Rahul Shah
+-- Create date: 19-May-2016
+-- Description:	insert Markto Attributes in integration type Attribute table
+-- =============================================
+GO
+--Please do not make any change below variables and its values.    
+DECLARE @IntegrationRow int=0
+DECLARE @RowCount as int=1
+DECLARE @IntegrationTypeIdValue int
+DECLARE @Code nvarchar (50) = 'Marketo'
+DECLARE @Attribute1 nvarchar (50) = 'ClientId'
+DECLARE @Attribute2 nvarchar (50) = 'ClientSecret'
+DECLARE @AttributeType nvarchar (50) = 'textbox'
+DECLARE @isDeleted  bit = 0
+SELECT @IntegrationTypeIdValue = IntegrationTypeId FROM IntegrationType WHERE Code=@Code
+	IF NOT EXISTS (SELECT * FROM IntegrationTypeAttribute WHERE IntegrationTypeId = @IntegrationTypeIdValue AND Attribute = @Attribute1 AND isDeleted = @isDeleted)
+	BEGIN
+		INSERT INTO IntegrationTypeAttribute (IntegrationTypeId,Attribute,AttributeType,IsDeleted) 
+			VALUES(@IntegrationTypeIdValue,@Attribute1,@AttributeType,@isDeleted)
+	END
+	
+	IF NOT EXISTS (SELECT * FROM IntegrationTypeAttribute WHERE IntegrationTypeId = @IntegrationTypeIdValue AND Attribute = @Attribute2 AND isDeleted = @isDeleted)
+	BEGIN
+
+		INSERT INTO IntegrationTypeAttribute (IntegrationTypeId,Attribute,AttributeType,IsDeleted) 
+			 VALUES(@IntegrationTypeIdValue,@Attribute2,@AttributeType,@isDeleted)
+	END
+GO
+-- =============================================
+-- Author:		Rahul Shah
+-- Create date: 19-May-2016
+-- Description:	insert Markto Data in GameplanDatatypeTable
+-- =============================================
+GO
+--Please do not make any change below variables and its values.    
+DECLARE @IntegrationRow int=0
+DECLARE @RowCount as int=1
+DECLARE @IntegrationTypeIdValue int
+DECLARE @Code nvarchar (50) = 'Marketo'
+DECLARE @TableName_Global nvarchar (50) = 'Global'
+DECLARE @TableName_Tactic nvarchar (50) = 'Plan_Campaign_Program_Tactic'
+DECLARE @ExternaleName_Actual nvarchar (50) = 'Name' 
+DECLARE @ExternaleName_Display nvarchar (50) = 'External Name'
+DECLARE @Description nvarchar (50) = 'Description' 
+DECLARE @ProgramTypeActual nvarchar (50) = 'ProgramType' 
+DECLARE @ProgramTypeDisplay nvarchar (50) = 'Program Type' 
+DECLARE @Channel nvarchar (50) = 'Channel'         
+DECLARE @status nvarchar (50) = 'Status'
+DECLARE @ownerActual nvarchar (50) = 'CreatedBy'
+DECLARE @ownerDisplay nvarchar (50) = 'Owner'
+DECLARE @ActivityTypeActual nvarchar (50) = 'ActivityType'
+DECLARE @ActivityTypeDisplay nvarchar (50) = 'Activity Type'
+DECLARE @planNameActual nvarchar (50) = 'PlanName'
+DECLARE @planNameDisplay nvarchar (50) = 'Plan Name'
+DECLARE @costPlanned_Actual nvarchar (50) = 'Cost'
+DECLARE @costPlanned_Display nvarchar (50) = 'Cost(Planned)'
+DECLARE @tacticTypeActual nvarchar (50) = 'TacticType'
+DECLARE @tacticTypeDisplay nvarchar (50) = 'Tactic Type'
+
+DECLARE @isGet  bit = 0
+DECLARE @isDeleted  bit = 0
+DECLARE @isImprovement  bit = 0
+
+SELECT @IntegrationTypeIdValue = IntegrationTypeId FROM IntegrationType WHERE Code=@Code
+	IF NOT EXISTS (SELECT * FROM GameplanDataType WHERE IntegrationTypeId = @IntegrationTypeIdValue AND TableName = @TableName_Global AND ActualFieldName = @ExternaleName_Actual AND DisplayFieldName = @ExternaleName_Display AND IsGet = @isGet AND isDeleted = @isDeleted AND IsImprovement = @isImprovement)
+	BEGIN
+		INSERT INTO GameplanDataType (IntegrationTypeId,TableName,ActualFieldName,DisplayFieldName,IsGet,IsDeleted,IsImprovement) 
+			VALUES(@IntegrationTypeIdValue,@TableName_Global,@ExternaleName_Actual,@ExternaleName_Display,@isGet,@isDeleted,@isImprovement)
+	END
+	---Insert script for Channel 2 
+	IF NOT EXISTS (SELECT * FROM GameplanDataType WHERE IntegrationTypeId = @IntegrationTypeIdValue AND TableName = @TableName_Global AND ActualFieldName = @Description AND DisplayFieldName = @Description AND IsGet = @isGet AND isDeleted = @isDeleted AND IsImprovement = @isImprovement)
+	BEGIN
+		INSERT INTO GameplanDataType (IntegrationTypeId,TableName,ActualFieldName,DisplayFieldName,IsGet,IsDeleted,IsImprovement) 
+			VALUES(@IntegrationTypeIdValue,@TableName_Global,@Description,@Description,@isGet,@isDeleted,@isImprovement)
+	END
+
+	---Insert script for Progran Type 1
+	IF NOT EXISTS (SELECT * FROM GameplanDataType WHERE IntegrationTypeId = @IntegrationTypeIdValue AND TableName = @TableName_Global AND ActualFieldName = @ProgramTypeActual AND DisplayFieldName = @ProgramTypeDisplay AND IsGet = @isGet AND isDeleted = @isDeleted AND IsImprovement = @isImprovement)
+	BEGIN
+		INSERT INTO GameplanDataType (IntegrationTypeId,TableName,ActualFieldName,DisplayFieldName,IsGet,IsDeleted,IsImprovement) 
+			VALUES(@IntegrationTypeIdValue,@TableName_Global,@ProgramTypeActual,@ProgramTypeDisplay,@isGet,@isDeleted,@isImprovement)
+	END
+	---Insert script for Channel 2 
+	IF NOT EXISTS (SELECT * FROM GameplanDataType WHERE IntegrationTypeId = @IntegrationTypeIdValue AND TableName = @TableName_Global AND ActualFieldName = @Channel AND DisplayFieldName = @Channel AND IsGet = @isGet AND isDeleted = @isDeleted AND IsImprovement = @isImprovement)
+	BEGIN
+		INSERT INTO GameplanDataType (IntegrationTypeId,TableName,ActualFieldName,DisplayFieldName,IsGet,IsDeleted,IsImprovement) 
+			VALUES(@IntegrationTypeIdValue,@TableName_Global,@Channel,@Channel,@isGet,@isDeleted,@isImprovement)
+	END
+
+	---Insert script for status 3 
+	IF NOT EXISTS (SELECT * FROM GameplanDataType WHERE IntegrationTypeId = @IntegrationTypeIdValue AND TableName = @TableName_Global AND ActualFieldName = @status AND DisplayFieldName = @status AND IsGet = @isGet AND isDeleted = @isDeleted AND IsImprovement = @isImprovement)
+	BEGIN
+		INSERT INTO GameplanDataType (IntegrationTypeId,TableName,ActualFieldName,DisplayFieldName,IsGet,IsDeleted,IsImprovement) 
+			VALUES(@IntegrationTypeIdValue,@TableName_Global,@status,@status,@isGet,@isDeleted,@isImprovement)
+	END
+
+	---Insert script for owner 4
+	IF NOT EXISTS (SELECT * FROM GameplanDataType WHERE IntegrationTypeId = @IntegrationTypeIdValue AND TableName = @TableName_Global AND ActualFieldName = @ownerActual AND DisplayFieldName = @ownerDisplay AND IsGet = @isGet AND isDeleted = @isDeleted AND IsImprovement = @isImprovement)
+	BEGIN
+		INSERT INTO GameplanDataType (IntegrationTypeId,TableName,ActualFieldName,DisplayFieldName,IsGet,IsDeleted,IsImprovement) 
+			VALUES(@IntegrationTypeIdValue,@TableName_Global,@ownerActual,@ownerDisplay,@isGet,@isDeleted,@isImprovement)
+	END
+
+	---Insert script for Activity Type 5
+	IF NOT EXISTS (SELECT * FROM GameplanDataType WHERE IntegrationTypeId = @IntegrationTypeIdValue AND TableName = @TableName_Global AND ActualFieldName = @ActivityTypeActual AND DisplayFieldName = @ActivityTypeDisplay AND IsGet = @isGet AND isDeleted = @isDeleted AND IsImprovement = @isImprovement)
+	BEGIN
+		INSERT INTO GameplanDataType (IntegrationTypeId,TableName,ActualFieldName,DisplayFieldName,IsGet,IsDeleted,IsImprovement) 
+			VALUES(@IntegrationTypeIdValue,@TableName_Global,@ActivityTypeActual,@ActivityTypeDisplay,@isGet,@isDeleted,@isImprovement)
+	END
+
+	---Insert script for Plan Name 6
+	IF NOT EXISTS (SELECT * FROM GameplanDataType WHERE IntegrationTypeId = @IntegrationTypeIdValue AND TableName = @TableName_Global AND ActualFieldName = @planNameActual AND DisplayFieldName = @planNameDisplay AND IsGet = @isGet AND isDeleted = @isDeleted AND IsImprovement = @isImprovement)
+	BEGIN
+		INSERT INTO GameplanDataType (IntegrationTypeId,TableName,ActualFieldName,DisplayFieldName,IsGet,IsDeleted,IsImprovement) 
+			VALUES(@IntegrationTypeIdValue,@TableName_Global,@planNameActual,@planNameDisplay,@isGet,@isDeleted,@isImprovement)
+	END
+
+	---Insert script for Tactic Planned Cost 7
+	IF NOT EXISTS (SELECT * FROM GameplanDataType WHERE IntegrationTypeId = @IntegrationTypeIdValue AND TableName = @TableName_Tactic AND ActualFieldName = @costPlanned_Actual AND DisplayFieldName = @costPlanned_Display AND IsGet = @isGet AND isDeleted = @isDeleted AND IsImprovement = @isImprovement)
+	BEGIN	
+		INSERT INTO GameplanDataType (IntegrationTypeId,TableName,ActualFieldName,DisplayFieldName,IsGet,IsDeleted,IsImprovement) 
+			VALUES(@IntegrationTypeIdValue,@TableName_Tactic,@costPlanned_Actual,@costPlanned_Display,@isGet,@isDeleted,@isImprovement)
+	END
+
+	---Insert script for Tactic Activity Type 8
+	IF NOT EXISTS (SELECT * FROM GameplanDataType WHERE IntegrationTypeId = @IntegrationTypeIdValue AND TableName = @TableName_Tactic AND ActualFieldName = @tacticTypeActual AND DisplayFieldName = @tacticTypeDisplay AND IsGet = @isGet AND isDeleted = @isDeleted AND IsImprovement = @isImprovement)
+	BEGIN	
+		INSERT INTO GameplanDataType (IntegrationTypeId,TableName,ActualFieldName,DisplayFieldName,IsGet,IsDeleted,IsImprovement) 
+			VALUES(@IntegrationTypeIdValue,@TableName_Tactic,@tacticTypeActual,@tacticTypeDisplay,@isGet,@isDeleted,@isImprovement)
+	END
+GO
+
 
 
 

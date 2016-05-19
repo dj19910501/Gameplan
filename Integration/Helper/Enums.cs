@@ -16,7 +16,8 @@ namespace Integration.Helper
         {
             Salesforce,
             Eloqua,
-            WorkFront
+            WorkFront,
+            Marketo
         }
 
         public enum WorkFrontTacticApprovalObject

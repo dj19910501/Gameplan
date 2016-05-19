@@ -954,7 +954,15 @@ namespace Integration
                 IntegrationWorkFrontSession integrationWorkFrontClient = new IntegrationWorkFrontSession(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 return integrationWorkFrontClient.getWorkFrontFields();
             }
+            else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Marketo.ToString())) //Added by Rahul Shah on 18/05/2016 for PL#2184
+            {
 
+                ApiIntegration integrationMarketoClient = new ApiIntegration(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
+                //if (integrationMarketoClient.IsAuthenticated)
+                {
+                    return integrationMarketoClient.GetTargetCustomTags().Select(ext => ext.Key).ToList();                    
+                }
+            }
             return null;
         }
 
