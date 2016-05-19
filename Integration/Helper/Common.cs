@@ -685,6 +685,25 @@ namespace Integration.Helper
         #endregion
     }
 
+    // Add By Nishant Sheth
+    // Desc :: common methods for stroed procedures
+    #region stored procedures methods
+    public class StoredProcedure
+    {
+        public void ExecuteStoreProcedure(MRPEntities context, string storeProcName, params object[] parameters)
+        {
+
+            string command = "EXEC " + storeProcName;
+            foreach (var parameter in parameters)
+            {
+                command += " @" + parameter + ",";
+            }
+            command = command.TrimEnd(',');
+            context.Database.ExecuteSqlCommand(command, parameters);
+            
+        }
+    }
+    #endregion
     public class CRM_EloquaMapping
     {
         public string CRMId { get; set; }

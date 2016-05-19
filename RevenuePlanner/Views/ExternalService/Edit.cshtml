@@ -85,7 +85,7 @@
                     }
 
                     @* Modified by Brad Gray on 07/22/2015 for PL ticket #1453*@
-                    if (Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString())
+                    if (Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
                     {
                        @Html.Partial("~/Views/ExternalService/_ClosedDeals.cshtml", Model.GameplanDataTypePullModelList)@* Added by Dharmraj on 06/08/2014 for PL ticket #658*@
                     }

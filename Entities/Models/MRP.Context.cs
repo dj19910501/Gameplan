@@ -105,6 +105,7 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
         public DbSet<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
+        public DbSet<MarketoEntityValueMapping> MarketoEntityValueMappings { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

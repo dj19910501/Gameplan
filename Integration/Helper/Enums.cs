@@ -16,7 +16,8 @@ namespace Integration.Helper
         {
             Salesforce,
             Eloqua,
-            WorkFront
+            WorkFront,
+            Marketo
         }
 
         public enum WorkFrontTacticApprovalObject
@@ -251,5 +252,11 @@ namespace Integration.Helper
         {
             PlanName
         }
+
+        public enum ApiIntegrationData
+        {
+            CampaignFolderList
+        }
+
     }
 }

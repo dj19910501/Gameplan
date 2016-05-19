@@ -187,6 +187,9 @@
     <Compile Include="Models\LineItem_Budget.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MarketoEntityValueMapping.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\MasterTacticType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
