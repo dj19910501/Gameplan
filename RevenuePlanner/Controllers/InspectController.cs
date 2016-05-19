@@ -3170,7 +3170,34 @@ namespace RevenuePlanner.Controllers
             //integrationinstance4 - Project Management
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11); }
             // Instance Marketo
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41); }
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41.IsDeleted == false) {
+                
+                modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41);
+
+                //Added By Komal Rawal for #2134 to get list of dropdown using api
+                ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.CampaignFolderList.ToString(), pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceMarketoID);
+                MarketoDataObject CampaignFolderList = ObjApiintegration.GetddllistData();
+
+                ViewBag.CampaignFolderList = CampaignFolderList.folders.Select(list => new
+                {
+                    id = list.Value,
+                    CampaignFolderName = list.Key
+                });
+
+                ViewBag.DDLProgramType = CampaignFolderList.program.Select(list => new
+                {
+                    Text = list.Key,
+                    Value = list.Value,
+                }).ToList();
+
+
+                ViewBag.DDLChannel = CampaignFolderList.channels.Select(list => new
+                {
+                    id = list.id,
+                    ChannelName = list.name,
+                    Parentprogramid = list.applicableProgramType
+                });
+            }
 
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false)
             {
@@ -3197,29 +3224,7 @@ namespace RevenuePlanner.Controllers
                                         .Distinct().OrderBy(u => u.WorkFrontUserName).ToList();
 
 
-                //Added By Komal Rawal for #2134 to get list of dropdown using api
-                ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.CampaignFolderList.ToString(), pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceMarketoID);
-                MarketoDataObject CampaignFolderList = ObjApiintegration.GetddllistData();
-
-                ViewBag.CampaignFolderList = CampaignFolderList.folders.Select(list => new
-                {
-                    id = list.Value,
-                    CampaignFolderName = list.Key
-                });
-
-                ViewBag.DDLProgramType = CampaignFolderList.program.Select(list => new
-                {
-                    Text = list.Key,
-                    Value = list.Value,
-                }).ToList();
               
-
-                ViewBag.DDLChannel = CampaignFolderList.channels.Select(list => new
-                {
-                    id = list.id,
-                    ChannelName = list.name,
-                    Parentprogramid = list.applicableProgramType
-                });
 
             }
             else { ViewBag.IsModelIntegratedWorkFront = false; } //Added 29 Dec 2015 by Brad Gray PL#1851
