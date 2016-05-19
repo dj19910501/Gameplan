@@ -37,23 +37,12 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call index method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.Index() as ViewResult;
-            if (result != null)
+            var result = objFinanceController.Index() as PartialViewResult;
+            if (result == null)
             {
-                //// ViewResult shoud not be null and should match with viewName
-                if (!(result.ViewName.Equals("Index") || result.ViewName.Equals("Finance")))
-                {
-                    Assert.Fail();
-                }
-                else if (result.ViewName.Equals("Index"))
-                {
-                    Assert.IsNotNull(result.Model);
-                    HomePlanModel objModel = (HomePlanModel)result.Model;
-                    Assert.AreNotEqual(0, objModel.PlanId);
-                }
-
-                Assert.IsNotNull(result.ViewBag.ActiveMenu);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.ActiveMenu);
+                
+                Assert.IsNull(result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else
             {
@@ -498,10 +487,10 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.RefreshMainGridData(0, null) as ViewResult;
-            if (result != null)
+            if (result == null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
+                Assert.IsNull(result);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
