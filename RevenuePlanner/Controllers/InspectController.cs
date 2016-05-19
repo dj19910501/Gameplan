@@ -3155,6 +3155,9 @@ namespace RevenuePlanner.Controllers
 
             }
 
+            ViewBag.CampaignFolderList = "";
+            ViewBag.DDLProgramType = "";
+            ViewBag.DDLChannel = "";
             ///Begin Added by Brad Gray 08-10-2015 for PL#1462
             Dictionary<string, string> IntegrationLinkDictionary = new Dictionary<string, string>();
 
@@ -13238,7 +13241,7 @@ namespace RevenuePlanner.Controllers
         {
             string returnValue = string.Empty;
 
-            if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null && objModel.IntegrationInstanceIdProjMgmt == null && objModel.IntegrationInstanceEloquaId == null) ////Modiefied by Mitesh Vaishnav on 12/08/2014 for PL ticket #690 and Brad Gray 07/23/2015 PL#1448 and Viral Kadiya 09/04/2015 PL ticket #1583.
+            if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null && objModel.IntegrationInstanceIdProjMgmt == null && objModel.IntegrationInstanceEloquaId == null && objModel.IntegrationInstanceMarketoID == null) ////Modiefied by Mitesh Vaishnav on 12/08/2014 for PL ticket #690 and Brad Gray 07/23/2015 PL#1448 and Viral Kadiya 09/04/2015 PL ticket #1583.
                 returnValue = "N/A";
             else
             {
