@@ -282,8 +282,27 @@ SELECT @IntegrationTypeIdValue = IntegrationTypeId FROM IntegrationType WHERE Co
 	END
 GO
 
+-- =============================================
+-- Author: Komal Rawal
+-- Create date: 19-May-2016
+-- Description:	Create table for MarketoEntity Mapping
+-- =============================================
+IF (NOT EXISTS (SELECT *  FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND  TABLE_NAME = 'MarketoEntityValueMapping'))
+BEGIN
+CREATE TABLE [dbo].[MarketoEntityValueMapping](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[EntityID] [int] NULL,
+	[EntityType] [nvarchar](255) NULL,
+	[MarketoCampaignFolderName] [nvarchar](max) NULL,
+	[IsDeleted] [bit] NULL CONSTRAINT [DF_MarketoEntityValueMapping_IsDeleted]  DEFAULT ((0)),
+ CONSTRAINT [PK_MarketoEntityValueMapping] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
 
-
+Go
 
 -- Added By : Maitri Gandhi
 -- Added Date : 2/22/2016

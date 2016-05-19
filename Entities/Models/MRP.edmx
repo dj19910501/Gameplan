@@ -589,6 +589,18 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
         </EntityType>
+        <EntityType Name="MarketoEntityValueMapping">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EntityID" Type="int" />
+          <Property Name="EntityType" Type="nvarchar" MaxLength="255" />
+          <Property Name="MarketoCampaignFolderId" Type="nvarchar" MaxLength="255" />
+          <Property Name="ProgramType" Type="nvarchar" MaxLength="1000" />
+          <Property Name="Channel" Type="nvarchar" MaxLength="1000" />
+          <Property Name="IsDeleted" Type="bit" />
+        </EntityType>
         <EntityType Name="MasterTacticType">
           <Key>
             <PropertyRef Name="MasterTacticTypeId" />
@@ -2263,6 +2275,7 @@
           <EntitySet Name="IntegrationWorkFrontUsers" EntityType="Self.IntegrationWorkFrontUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineItem_Budget" EntityType="Self.LineItem_Budget" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineItemType" EntityType="Self.LineItemType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MarketoEntityValueMapping" EntityType="Self.MarketoEntityValueMapping" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MasterTacticType" EntityType="Self.MasterTacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Model" EntityType="Self.Model" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Model_Stage" EntityType="Self.Model_Stage" Schema="dbo" store:Type="Tables" />
@@ -3169,6 +3182,7 @@
             <Parameter Name="UserId" Mode="In" Type="String" />
             <Parameter Name="PreviousIds" Mode="In" Type="String" />
           </FunctionImport>
+          <EntitySet Name="MarketoEntityValueMappings" EntityType="MRPModel.MarketoEntityValueMapping" />
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -5621,6 +5635,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="MarketoEntityValueMapping">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EntityID" Type="Int32" />
+          <Property Name="EntityType" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="MarketoCampaignFolderId" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ProgramType" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="Channel" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="IsDeleted" Type="Boolean" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6788,6 +6814,19 @@
             </ResultMapping>
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="DeleteLastViewedData" FunctionName="MRPModel.Store.DeleteLastViewedData" />
+          <EntitySetMapping Name="MarketoEntityValueMappings">
+            <EntityTypeMapping TypeName="MRPModel.MarketoEntityValueMapping">
+              <MappingFragment StoreEntitySet="MarketoEntityValueMapping">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="Channel" ColumnName="Channel" />
+                <ScalarProperty Name="ProgramType" ColumnName="ProgramType" />
+                <ScalarProperty Name="MarketoCampaignFolderId" ColumnName="MarketoCampaignFolderId" />
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="EntityID" ColumnName="EntityID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
          
         </EntityContainerMapping>
       </Mapping>

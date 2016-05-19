@@ -252,5 +252,11 @@ namespace Integration.Helper
         {
             PlanName
         }
+
+        public enum ApiIntegrationData
+        {
+            CampaignFolderList
+        }
+
     }
 }
