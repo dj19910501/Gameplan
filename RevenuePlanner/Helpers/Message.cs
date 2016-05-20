@@ -1937,6 +1937,18 @@ namespace RevenuePlanner.Helpers
                 _ConfirmationForModifyTargetIntegration = value;
             }
         }
+        private string _MarketoSelectionValidation;
+        public string MarketoSelectionValidation
+        {
+            get
+            {
+                return _MarketoSelectionValidation;
+            }
+            set
+            {
+                _MarketoSelectionValidation = value;
+            }
+        }
         private string _ConfirmationForDeleteImprovementTactic;
         public string ConfirmationForDeleteImprovementTactic
         {
@@ -3253,6 +3265,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "ConfirmationForDeleteImprovementTactic":
                                             _ConfirmationForDeleteImprovementTactic = strMsgValue;
+                                            break;
+                                        case "MarketoSelectionValidation":
+                                            _MarketoSelectionValidation = strMsgValue;
                                             break;
                                         // End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65
                                         // Start -Added By Mitesh Vaishnav on 21/07/2014 for functional review point 65

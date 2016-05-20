@@ -152,7 +152,7 @@
 <script type="text/javascript">
     var lastModelId = '@modelId';
     $(document).ready(function () {
-
+      
         if ('@message' != null && '@message' != '') {
             var msgspan = '@message';
             $('#cSuccess').html('<strong>Success!</strong> ' + $('#cSuccess').html())
@@ -187,10 +187,21 @@
             if ('@Model.IntegrationInstanceEloquaId.ToString()' == $('#IntegrationInstanceEloquaId').val() || '@Model.IntegrationInstanceEloquaId' == null || '@Model.IntegrationInstanceEloquaId' == '') {
                 iseloqua = false;
             }
-            
-                if ('@Model.IntegrationInstanceMarketoID.ToString()' == $('#IntegrationInstanceMarketoID').val() || '@Model.IntegrationInstanceMarketoID' == null || '@Model.IntegrationInstanceMarketoID' == '') {
+
+            if ('@Model.IntegrationInstanceMarketoID.ToString()' == $('#IntegrationInstanceMarketoID').val() || '@Model.IntegrationInstanceMarketoID' == null || '@Model.IntegrationInstanceMarketoID' == '') {
                 ismarketo = false;
+                }
+
+            //Added by komal Rawal for #2190 marketo and salesforce cannot be selected together
+            if ($('#IntegrationInstanceId').val() != "" && $('#IntegrationInstanceMarketoID').val() != "")
+            {
+                $("#successMessage").slideUp();
+                $("#cError").html('<strong>Error! </strong>' + '@Common.objCached.MarketoSelectionValidation')
+                $("#errorMessage").slideDown(400);
+                return false;
             }
+
+
             if (!iseloqua && !issalesforce && !ismarketo) {
                 SaveIntegration(false,false,false);
             }
@@ -229,10 +240,10 @@
                             Value: data.Id
                         });
                     formSubmitEvent(url, queryStringArr);
-                   @* window.location = '@Url.Content("~/Model/IntegrationSelection?id=")' + data.Id;*@
+                    @* window.location = '@Url.Content("~/Model/IntegrationSelection?id=")' + data.Id;*@
                 }
             });
-            }
+        }
 
         var ismsg = $("#hdnMsg").val();
         if ($('#cSuccess').html() != '') {
@@ -376,28 +387,28 @@
 
         var ModelId = '@modelId';
 
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Model/ModelPublish/")',
-                data: 'ModelId=' + ModelId + '&EffectiveDate=' + $("#EffectiveDate").val(),
-                success: function (data) {
-                    if (data.errorMessage != undefined) {
-                        url = '@Url.Content("~/Model/IntegrationSelection")';
-                        var queryStringArr = [];
-                        queryStringArr.push(
-                            {
-                                key: 'id',
-                                Value: ModelId
-                            });
-                        formSubmitEvent(url, queryStringArr);
-                        //window.location.href = url + '?id=' + ModelId;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Model/ModelPublish/")',
+            data: 'ModelId=' + ModelId + '&EffectiveDate=' + $("#EffectiveDate").val(),
+            success: function (data) {
+                if (data.errorMessage != undefined) {
+                    url = '@Url.Content("~/Model/IntegrationSelection")';
+                    var queryStringArr = [];
+                    queryStringArr.push(
+                        {
+                            key: 'id',
+                            Value: ModelId
+                        });
+                    formSubmitEvent(url, queryStringArr);
+                    //window.location.href = url + '?id=' + ModelId;
                 }
                 else {
                     url = '@Url.Content("~/Model/ModelZero")';
                     window.location.href = url;
                 }
             }
-            });
+        });
 
     }
     /*Function for create duplicate model*/

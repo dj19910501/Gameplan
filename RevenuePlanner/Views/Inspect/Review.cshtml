@@ -37,6 +37,12 @@
     #divInnerComment.all-height {
         height: 94% !important;
     }
+    .dd-Wraper{
+        width:180px;float:left;
+    }
+     .dd-Wraper .ui-multiselect{
+        width:150px;
+    }
 </style>
 
 <style type="text/css">
@@ -392,7 +398,7 @@
                                 <input id="marketoIntegrationToggle" type="checkbox" onchange=toggleMarketoSettings()>
                             </div>
 
-                            <div id="MarketoCampaignFolder" class="span2 margin-bottom20" style="padding-left: 20px; display : none">
+                            <div id="MarketoCampaignFolder" class="dd-Wraper margin-bottom20" style="padding-left: 20px; display : none">
                                 <div class="cf form-group">
                                     <label>Campaign Folder<span class="required-asterisk"> * </span></label>
                                     <span style="min-width: 100%; position: relative; display: block;">
@@ -401,16 +407,16 @@
                         </div>
                             </div>
 
-                            <div id="MarketoProgramType" class="span2 margin-bottom20" style="padding-left: 20px; display : none">
+                            <div id="MarketoProgramType" class="dd-Wraper margin-bottom20" style="padding-left: 20px; display : none">
                                 <div class="cf form-group">
                                     <label>Program Type<span class="required-asterisk"> * </span></label>
                                     <span style="min-width: 100%; position: relative; display: block;">
                                         @Html.DropDownListFor(m => m.programType, new SelectList(ViewBag.DDLProgramType, "Value", "Text"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "ddlprogramtype", require = "true" })
-                                      </span>
+                                    </span>
                                 </div>
                             </div>
 
-                            <div id="MarketoChannel" class="span2 margin-bottom20" style="padding-left: 20px; display : none">
+                            <div id="MarketoChannel" class="dd-Wraper margin-bottom20" style="padding-left: 20px; display : none">
                                 <div class="cf form-group">
                                     <label>Channel<span class="required-asterisk"> * </span></label>
                                     <span style="min-width: 100%; position: relative; display: block;">
@@ -635,6 +641,7 @@
 <script type="text/javascript">
     var strViewMode = 'View';
     $(document).ready(function () {
+        $('#EditForm').removeClass('SpanDisable');
         var el = document.getElementById('integrationInfo');
         if ($('#t_integration_status').hasClass("icon-check-blue")) {
             el.style.display = 'table';
