@@ -2444,7 +2444,7 @@ namespace Integration.Salesforce
             List<string> statusList = Common.GetStatusListAfterApproved();
             // Get list of marketo ids which not have salesforce id (IntegrationInstanceTacticId)
             var ListOfMarketoTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IntegrationInstanceMarketoID != null && tac.IsDeleted == false
-                && tac.IsSyncSalesForce == true && tac.IntegrationInstanceTacticId == null && tac.IsDeployedToIntegration == true
+                 && tac.IntegrationInstanceTacticId == null && tac.IsDeployedToIntegration == true
                 && statusList.Contains(tac.Status) && MarketoModelIds.Contains(tac.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId)).ToList();
 
             if (ListOfMarketoTactic.Count > 0)
