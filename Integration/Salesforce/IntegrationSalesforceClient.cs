@@ -2467,7 +2467,7 @@ namespace Integration.Salesforce
                     jobj = JObject.Parse(resultin.ToString());
                     try
                     {
-                        var UpdateRecord = ListOfMarketoTactic.Where(tac => tac.Title == Convert.ToString(jobj["Name"])).FirstOrDefault();
+                        var UpdateRecord = ListOfMarketoTactic.Where(tac => tac.TacticCustomName == Convert.ToString(jobj["Name"])).FirstOrDefault();
                         if (UpdateRecord != null)
                         {
                             UpdateRecord.IntegrationInstanceTacticId = Convert.ToString(jobj["Id"]);
