@@ -255,7 +255,8 @@ namespace Integration.Helper
 
         public enum ApiIntegrationData
         {
-            CampaignFolderList
+            CampaignFolderList,
+            Progrmatype
         }
 
     }

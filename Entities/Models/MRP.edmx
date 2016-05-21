@@ -600,6 +600,9 @@
           <Property Name="ProgramType" Type="nvarchar" MaxLength="1000" />
           <Property Name="Channel" Type="nvarchar" MaxLength="1000" />
           <Property Name="IsDeleted" Type="bit" />
+          <Property Name="IntegrationInstanceId" Type="int" />
+          <Property Name="LastModifiedBy" Type="uniqueidentifier" />
+          <Property Name="LastModifiedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="MasterTacticType">
           <Key>
@@ -1715,6 +1718,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_MarketoEntityValueMapping_IntegrationInstance">
+          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="0..1" />
+          <End Role="MarketoEntityValueMapping" Type="Self.MarketoEntityValueMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="MarketoEntityValueMapping">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Model_Category_Stage_Stage">
           <End Role="Stage" Type="Self.Stage" Multiplicity="1" />
           <End Role="Model_Stage" Type="Self.Model_Stage" Multiplicity="*" />
@@ -2516,6 +2531,10 @@
             <End Role="Model" EntitySet="Model" />
             <End Role="LineItemType" EntitySet="LineItemType" />
           </AssociationSet>
+          <AssociationSet Name="FK_MarketoEntityValueMapping_IntegrationInstance" Association="Self.FK_MarketoEntityValueMapping_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="MarketoEntityValueMapping" EntitySet="MarketoEntityValueMapping" />
+          </AssociationSet>
           <AssociationSet Name="FK_Model_Category_Stage_Stage" Association="Self.FK_Model_Category_Stage_Stage">
             <End Role="Stage" EntitySet="Stage" />
             <End Role="Model_Stage" EntitySet="Model_Stage" />
@@ -3183,6 +3202,10 @@
             <Parameter Name="PreviousIds" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="MarketoEntityValueMappings" EntityType="MRPModel.MarketoEntityValueMapping" />
+          <AssociationSet Name="FK_MarketoEntityValueMapping_IntegrationInstance" Association="MRPModel.FK_MarketoEntityValueMapping_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="MarketoEntityValueMapping" EntitySet="MarketoEntityValueMappings" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -3449,6 +3472,7 @@
           <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequest" />
           <Property Type="Guid" Name="ForceSyncUser" />
           <NavigationProperty Name="Models41" Relationship="MRPModel.FK_Model_IntegrationInstanceMarketo" FromRole="IntegrationInstance" ToRole="Model" />
+          <NavigationProperty Name="MarketoEntityValueMappings" Relationship="MRPModel.FK_MarketoEntityValueMapping_IntegrationInstance" FromRole="IntegrationInstance" ToRole="MarketoEntityValueMapping" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -5646,7 +5670,23 @@
           <Property Name="ProgramType" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Name="Channel" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Name="IsDeleted" Type="Boolean" />
+          <Property Name="IntegrationInstanceId" Type="Int32" />
+          <Property Name="LastModifiedBy" Type="Guid" />
+          <Property Name="LastModifiedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_MarketoEntityValueMapping_IntegrationInstance" FromRole="MarketoEntityValueMapping" ToRole="IntegrationInstance" />
         </EntityType>
+        <Association Name="FK_MarketoEntityValueMapping_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
+          <End Type="MRPModel.MarketoEntityValueMapping" Role="MarketoEntityValueMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="MarketoEntityValueMapping">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6817,6 +6857,9 @@
           <EntitySetMapping Name="MarketoEntityValueMappings">
             <EntityTypeMapping TypeName="MRPModel.MarketoEntityValueMapping">
               <MappingFragment StoreEntitySet="MarketoEntityValueMapping">
+                <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="Channel" ColumnName="Channel" />
                 <ScalarProperty Name="ProgramType" ColumnName="ProgramType" />

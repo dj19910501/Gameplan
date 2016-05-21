@@ -173,10 +173,10 @@ namespace Integration
         /// 13-05-2016
         /// To Get data with Api for dropdowns.
         /// </summary>
-        public MarketoDataObject GetddllistData()
+        public MarketoDataObject GetProgramChannellistData()
         {
             MarketoDataObject ListOfData = new MarketoDataObject();
-            if (_TypeofData == Enums.ApiIntegrationData.CampaignFolderList.ToString())
+            if (_TypeofData == Enums.ApiIntegrationData.Progrmatype.ToString())
             {
                 if (HttpContext.Current.Session["MarketoToken"] != null)
                 {
@@ -191,15 +191,14 @@ namespace Integration
                 marketoCredentialDictionary.Add("clientid", _clientid);
                 marketoCredentialDictionary.Add("clientsecret", _clientsecret);
                 marketoCredentialDictionary.Add("token", _marketoToken);
-                marketoCredentialDictionary.Add("rootfolder", "Marketing Activities");
+            //    marketoCredentialDictionary.Add("rootfolder", "Marketing Activities");
 
 
                 HttpClient client = new HttpClient();
                 string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
                 Uri baseAddress = new Uri(marketoIntegrstionApi);
-               // Uri baseAddress = new Uri("http://121.244.200.162:8085/IntegrationApi/");
                 client.BaseAddress = baseAddress;
-                HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/GetFolder_Program_Channel_List", marketoCredentialDictionary).Result;
+                HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Get_Program_Channel_List", marketoCredentialDictionary).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var responseobj = response.Content.ReadAsStringAsync().Result;
@@ -220,7 +219,6 @@ namespace Integration
     {
         public bool status { get; set; }
         public List<LogDetails> lstLogDetails;
-        public Dictionary<string, string> folders;
         public List<channel> channels;
         public Dictionary<string, string> program;
     }

@@ -3175,14 +3175,14 @@ namespace RevenuePlanner.Controllers
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41);
 
                 //Added By Komal Rawal for #2134 to get list of dropdown using api
-                ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.CampaignFolderList.ToString(), pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceMarketoID);
-                MarketoDataObject CampaignFolderList = ObjApiintegration.GetddllistData();
+                ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Progrmatype.ToString(), pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceMarketoID);
+                MarketoDataObject CampaignFolderList = ObjApiintegration.GetProgramChannellistData();
 
-                ViewBag.CampaignFolderList = CampaignFolderList.folders.Select(list => new
-                {
-                    id = list.Value,
-                    CampaignFolderName = list.Key
-                });
+                //ViewBag.CampaignFolderList = CampaignFolderList.folders.Select(list => new
+                //{
+                //    id = list.Value,
+                //    CampaignFolderName = list.Key
+                //});
 
                 ViewBag.DDLProgramType = CampaignFolderList.program.Select(list => new
                 {

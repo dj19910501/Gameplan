@@ -35,6 +35,7 @@ namespace RevenuePlanner.Models
             this.IntegrationWorkFrontUsers = new HashSet<IntegrationWorkFrontUser>();
             this.IntegrationWorkFrontRequests = new HashSet<IntegrationWorkFrontRequest>();
             this.Models41 = new HashSet<Model>();
+            this.MarketoEntityValueMappings = new HashSet<MarketoEntityValueMapping>();
         }
     
         public int IntegrationInstanceId { get; set; }
@@ -77,5 +78,6 @@ namespace RevenuePlanner.Models
         public virtual ICollection<IntegrationWorkFrontUser> IntegrationWorkFrontUsers { get; set; }
         public virtual ICollection<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
         public virtual ICollection<Model> Models41 { get; set; }
+        public virtual ICollection<MarketoEntityValueMapping> MarketoEntityValueMappings { get; set; }
     }
 }

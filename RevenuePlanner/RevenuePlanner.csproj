@@ -203,6 +203,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\NoAccessController.cs" />
+    <Compile Include="Controllers\objDbMrpEntities.cs" />
     <Compile Include="Controllers\OrganizationController.cs" />
     <Compile Include="Controllers\PlanController.cs" />
     <Compile Include="Controllers\ReportController.cs" />

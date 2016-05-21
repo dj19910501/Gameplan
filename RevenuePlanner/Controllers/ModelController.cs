@@ -1153,7 +1153,8 @@ namespace RevenuePlanner.Controllers
             int Modelid = id;
             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == Modelid).Select(model => model).FirstOrDefault();
             //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683 and Brad Gray on 07/23/2015 for PL#1448
-            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null)
+          
+           if (objModel != null && (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null))
             {
                 ViewBag.IsModelIntegrated = true;
             }
@@ -1280,18 +1281,28 @@ namespace RevenuePlanner.Controllers
             Tactic_TypeModel objTacticTypeMdoel = new Tactic_TypeModel();
             try
             {
+                bool isIntegratedWithMarketo = false;
                 var objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
+                ViewBag.CampaignFolderList = "";
+                ViewBag.DDLProgramType = "";
+                ViewBag.DDLChannel = "";
                 //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
-                if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null)
+                if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null || objModel.IntegrationInstanceMarketoID != null)
                 {
                     ViewBag.IsModelIntegrated = true;
                     //Begin added by Brad Gray 7/28/2015 PL#1374, #1373
                     IntegrationInstance intInstanceProjMgmt = objModel.IntegrationInstance4;
                      bool isIntegratedWithWorkFront = false;
+                     var Marketoinstance = objModel.IntegrationInstance41;
+                  
                      List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>(); 
                      if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString())) 
                      {
                          isIntegratedWithWorkFront = true;
+                     }
+                     if (Marketoinstance != null && (Marketoinstance.IntegrationType.Code == Enums.IntegrationInstanceType.Marketo.ToString()))
+                     {
+                         isIntegratedWithMarketo = true;
                      }
                      workFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
                                                                    modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name).ToList();
@@ -1299,6 +1310,26 @@ namespace RevenuePlanner.Controllers
                      ViewBag.WorkFrontTemplates = workFrontTemplates.Select(modelTemplate => new { modelTemplate.ID, modelTemplate.Template_Name }).Distinct().ToList();
                     ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
                     //End addition by Brad Gray for PL#1734
+                    ViewBag.isIntegratedWithMarketo = isIntegratedWithMarketo;
+                    if (objModel.IntegrationInstanceMarketoID != null)
+                    {
+                        ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Progrmatype.ToString(), objModel.IntegrationInstanceMarketoID);
+                        MarketoDataObject CampaignFolderList = ObjApiintegration.GetProgramChannellistData();
+
+                        ViewBag.DDLProgramType = CampaignFolderList.program.Select(list => new
+                        {
+                            Text = list.Key,
+                            Value = list.Value,
+                        }).OrderBy(model => model.Text , new AlphaNumericComparer()).ToList();
+
+
+                        ViewBag.DDLChannel = CampaignFolderList.channels.Select(list => new
+                        {
+                            id = list.id,
+                            ChannelName = list.name,
+                            Parentprogramid = list.applicableProgramType
+                        }).OrderBy(model => model.ChannelName, new AlphaNumericComparer()).ToList();
+                    }
                 }
                 else
                 {
@@ -1342,6 +1373,20 @@ namespace RevenuePlanner.Controllers
                 }
                 //// End Manoj Limbachiya 05May2014 PL#458
 
+                //Added By Komal Rawal for #2216 
+                MarketoEntityValueMapping SelectCampaignFolderValue;
+                if (isIntegratedWithMarketo)
+                {
+                    var EntityType = Enums.FilterLabel.TacticType.ToString();
+                    SelectCampaignFolderValue = objDbMrpEntities.MarketoEntityValueMappings.Where(val => val.EntityID == objTacticTypeMdoel.TacticTypeId && val.EntityType == EntityType && val.IsDeleted == false).FirstOrDefault();
+                    if (SelectCampaignFolderValue != null)
+                    {
+
+                        objTacticTypeMdoel.programType = SelectCampaignFolderValue.ProgramType;
+                        objTacticTypeMdoel.Channel = SelectCampaignFolderValue.Channel;
+                    }
+
+                }
                 //// Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
                 ViewBag.ModelStatus = objModel.Status;
                 ViewBag.TacticTypeStageId = objTacticType.StageId;
@@ -1366,21 +1411,48 @@ namespace RevenuePlanner.Controllers
         {
             var objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
             //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
-            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null)
+            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null || objModel.IntegrationInstanceMarketoID != null)
             {
                 ViewBag.IsModelIntegrated = true;
                 var intInstanceProjMgmt = objModel.IntegrationInstance4;
+                var Marketoinstance = objModel.IntegrationInstance41;
                 bool isIntegratedWithWorkFront = false;
+                bool isIntegratedWithMarketo = false;
                 List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
                 if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString()))
                 {
                     isIntegratedWithWorkFront = true;
+                }
+                if (Marketoinstance != null && (Marketoinstance.IntegrationType.Code == Enums.IntegrationInstanceType.Marketo.ToString()))
+                {
+                    isIntegratedWithMarketo = true;
                 }
                 ViewBag.WorkFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
                                                              modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name)
                                                  .Select(modelTemplate => new { modelTemplate.ID, modelTemplate.Template_Name }).Distinct().ToList();
                 ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
                 //End addition by Brad Gray for PL#1734
+                ViewBag.isIntegratedWithMarketo = isIntegratedWithMarketo;
+                //Added By Komal Rawal for #2134 to get list of dropdown using api
+                if (objModel.IntegrationInstanceMarketoID != null)
+                {
+                    ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Progrmatype.ToString(), objModel.IntegrationInstanceMarketoID);
+                    MarketoDataObject CampaignFolderList = ObjApiintegration.GetProgramChannellistData();
+
+                    ViewBag.DDLProgramType = CampaignFolderList.program.Select(list => new
+                    {
+                        Text = list.Key,
+                        Value = list.Value,
+                    }).OrderBy(model => model.Text , new AlphaNumericComparer()).ToList();
+
+
+                    ViewBag.DDLChannel = CampaignFolderList.channels.Select(list => new
+                    {
+                        id = list.id,
+                        ChannelName = list.name,
+                        Parentprogramid = list.applicableProgramType
+                    }).OrderBy(model => model.ChannelName, new AlphaNumericComparer()).ToList();
+                }
             }
             else
             {
@@ -1457,6 +1529,12 @@ namespace RevenuePlanner.Controllers
                 objTacticTypeDB.ModifiedDate = DateTime.Now;
                 objDbMrpEntities.TacticTypes.Attach(objTacticTypeDB);
                 objDbMrpEntities.Entry(objTacticTypeDB).State = EntityState.Modified;
+                //Modified By Komal rawal for #2216 deleting tactic type marketo mapping 
+                string EntityType = Enums.FilterLabel.TacticType.ToString();
+                MarketoEntityValueMapping DeleteTacticTypeMapping = objDbMrpEntities.MarketoEntityValueMappings.Where(Entity => Entity.EntityID == id && Entity.EntityType == EntityType).FirstOrDefault();
+                objDbMrpEntities.Entry(DeleteTacticTypeMapping).State = EntityState.Deleted;
+                //End
+
                 objDbMrpEntities.SaveChanges();
 
                 Common.InsertChangeLog(Sessions.ModelId, 0, objTacticTypeDB.TacticTypeId, objTacticTypeDB.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
@@ -1490,7 +1568,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns json result object</returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult SaveTactic(string Title, string Description, int? StageId, double ProjectedStageValue, double ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel, string WorkFrontTemplate)
+        public ActionResult SaveTactic(string Title, string Description, int? StageId, double ProjectedStageValue, double ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel, string WorkFrontTemplate, string ProgramType = "", string Channel = "")
         {
             try
             {
@@ -1523,10 +1601,10 @@ namespace RevenuePlanner.Controllers
                     objtactic.WorkFrontTemplateId = parsedTemplateId; //added Brad Gray 07/24/2015 PL#1374 tactic type to workfront template mapping - updated 1/7/2016 by Brad GrayPL#1856
                 }
                 //end PL#1856
-
+                Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                 if (!isDeployedToModel)
                 {
-                    Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
+                    
                     if (objModel != null)
                     {
                         if (objModel.Status.ToLower() == Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower())
@@ -1540,6 +1618,8 @@ namespace RevenuePlanner.Controllers
                     }
                 }
                 ////End Manoj Limbachiya PL # 486
+
+           
 
                 //// Added by Dharmraj for ticket #433 Integration - Model Screen Tactic List
                 objtactic.IsDeployedToIntegration = isDeployedToIntegration;
@@ -1566,9 +1646,21 @@ namespace RevenuePlanner.Controllers
                         string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    //// Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
                         return Json(new { errormsg = strDuplicateMessage });
                     }
+                    //Added By Komal Rawal for #2216  saving of channel and program type
+                   if(objModel.IntegrationInstanceMarketoID != null)
+                   {
+                       SaveMarketoSettings(objtactic.TacticTypeId,objModel.IntegrationInstanceMarketoID, Enums.FilterLabel.TacticType.ToString(), ProgramType, Channel);
+                   }
+                   
                 }
                 else
                 {
+                    //Added By Komal Rawal for #2216  saving of channel and program type
+                    if (objModel.IntegrationInstanceMarketoID != null)
+                    {
+                        SaveMarketoSettings(TacticTypeId,objModel.IntegrationInstanceMarketoID, Enums.FilterLabel.TacticType.ToString(), ProgramType, Channel);
+                    }
+                   
                     var existingTacticTypes = objDbMrpEntities.TacticTypes.Where(tacticType => (tacticType.ModelId == ModelId) && tacticType.Title.ToLower() == Title.ToLower() && tacticType.TacticTypeId != TacticTypeId && (tacticType.IsDeleted == null || tacticType.IsDeleted == false)).ToList();
 
                     //// TFS Bug - 179 : Improper behavior when editing Tactic in model 
@@ -1599,7 +1691,7 @@ namespace RevenuePlanner.Controllers
                         #region "Update DeployToIntegration settings for all tactics related to Model & TacticType"
                         if (isDeployedToModel)
                         { 
-                            Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
+                            //Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                             string strModelStatus = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).Select(mdl=>mdl.Status).FirstOrDefault();
                             int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
                             if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().Equals(strModelStatus))
@@ -3060,6 +3152,44 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+
+        //Added By Komal Rawal for #2134 to save marketo settings
+        public void SaveMarketoSettings(int EntityId,int? InstanceId, string EntityType, string ProgramType, string Channel)
+        {
+            try
+            {
+                using(objDbMrpEntities = new MRPEntities())
+                {
+                    MarketoEntityValueMapping MarketoValueExists = objDbMrpEntities.MarketoEntityValueMappings.Where(set => set.EntityID == EntityId && set.IsDeleted == false).FirstOrDefault();
+
+                    MarketoEntityValueMapping ObjMarketoSettings;
+                    if (MarketoValueExists == null) //If no tactic type entry exists for Marketo in the database. Create a new one
+                    {
+                        ObjMarketoSettings = new MarketoEntityValueMapping();
+                        objDbMrpEntities.Entry(ObjMarketoSettings).State = EntityState.Added;
+                    }
+                    else
+                    {
+                        ObjMarketoSettings = MarketoValueExists;
+                        objDbMrpEntities.Entry(ObjMarketoSettings).State = EntityState.Modified;
+                    }
+
+                    ObjMarketoSettings.EntityID = EntityId;
+                    ObjMarketoSettings.IntegrationInstanceId = InstanceId;
+                    ObjMarketoSettings.EntityType = EntityType;
+                    ObjMarketoSettings.ProgramType = ProgramType;
+                    ObjMarketoSettings.Channel = Channel;
+                    ObjMarketoSettings.LastModifiedDate = DateTime.Now;
+                    ObjMarketoSettings.LastModifiedBy = Sessions.User.UserId;
+                    ObjMarketoSettings.IsDeleted = false;
+                    objDbMrpEntities.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+        }
     }
 
 }

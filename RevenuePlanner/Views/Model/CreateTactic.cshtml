@@ -10,6 +10,7 @@
     //Start Manoj Limbachiya PL # 486
     bool IsDeplyed = ViewBag.IsDeployed;
     bool IsWorkFront = ViewBag.isIntegratedWithWorkFront != null ? ViewBag.isIntegratedWithWorkFront : false; // Update by bhavesh #1727
+    bool IsMarketo = ViewBag.isIntegratedWithMarketo != null ? ViewBag.isIntegratedWithMarketo : false;         //Added By Komal RAwal 
     //End Manoj Limbachiya PL # 486
     // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
     string ModelStatus = Convert.ToString(ViewBag.ModelStatus);
@@ -101,13 +102,35 @@
             <span class="simpleSelectBox">
             @Html.DropDownListFor(m => m.WorkFrontTemplateId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontTemplates, "ID", "Template_Name"), "Please Select", new { @class = "ddlStyle hide", @id = "WorkFrontTemplateId", require = "true" })
             </span>
-          }
+        }
         //End Brad Gray PL # 1374
-      }
+
+        //Start Komal Rawal  PL #2216
+        if (IsMarketo == true)
+        {
+            <label>Marketo Program Type</label>
+            <span class="simpleSelectBox">
+                @Html.DropDownListFor(m => m.programType, new SelectList(ViewBag.DDLProgramType, "Value", "Text"), "Please Select", new { @class = "ddlStyle", @id = "ddlprogramtype", require = "true" })
+            </span>
+        }
+
+        if (IsMarketo == true)
+        {
+            <label>Marketo Channel</label>
+            <span class="simpleSelectBox" id="Spanchannel">
+                @Html.DropDownListFor(m => m.Channel, new SelectList((System.Collections.IEnumerable)ViewBag.DDLChannel, "ChannelName", "ChannelName"), "Please Select", new { @class = "ddlStyle", @id = "ddlchannel", require = "true" })
+                <span style="display:none">
+                    @Html.DropDownList("ParentChannel", new SelectList((System.Collections.IEnumerable)ViewBag.DDLChannel, "Parentprogramid", "ChannelName"), "Please Select", new { @class = "ddlStyle hide", @id = "getchannelparent" })
+                </span>
+                </span>
+        }
+        
+        
+    }
 
 
 
-                }
+}
                 </div>
                         <!--End content-->
 
@@ -143,8 +166,15 @@
 }
 
 <script type="text/javascript">
-
+  
     $(document).ready(function () {
+        //Added By Komal Rawal for #2134 for channel and program type dropdown dependency
+        var LiCount = 0;
+        var Parentprogramtype = [];
+        var Valuesinlist = [];
+        var ProgramTypeValue = "";
+        var LiValue = "";
+        var SelectedValue = "";
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
@@ -392,7 +422,15 @@
                 TemplateId = 'null';
             }
             //End added Brad Gray 07/24/2015 PL # 1374
-            
+            //var Campainfoldervalue = "";
+            //var ProgramType = "";
+            //var Channel = "";
+          
+            var ProgramType = $('#ddlprogramtype').attr('value');
+            var Channel = $('#ddlchannel').attr('value');
+
+
+          
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
             //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
             var ProjectedStageValue = ReplaceCC($("#hdnProjectedStageValue").val());
@@ -401,6 +439,7 @@
             if (isCreated == 'True') {
                 TacticTypeId = 0;
             }
+
             var clientId = $("#hdnClientId").val();
             var modelID = $("#hdnModelId").val();
 
@@ -426,7 +465,7 @@
                             data: 'Title=' + escape(Title) + '&Description=' + escape(Description) + '&StageId=' + StageId + '&ProjectedStageValue=' + ProjectedStageValue
                             + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
                            + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
-                            + '&isDeployedToModel=' + isDeployedToModel + '&WorkFrontTemplate=' + TemplateId,
+                            + '&isDeployedToModel=' + isDeployedToModel + '&WorkFrontTemplate=' + TemplateId + '&ProgramType=' + ProgramType + '&Channel=' + Channel,
                             success: function (data) {
 
                                 if (data.redirect) {
@@ -466,7 +505,79 @@
             $("#spanMessage").empty();
             $("#spanMessage").text(value);
         }
+
+        //Added By Komal Rawal for #2216 for channel and program type dropdown dependency
+            ProgramTypeValue = $('#ddlprogramtype').val();
+            LiCount = 0;
+            Parentprogramtype = [];
+            Valuesinlist = [];
+            $("#getchannelparent option[value = '" + ProgramTypeValue + "']").each(function () {
+
+                Parentprogramtype.push($(this).text().toLowerCase());
+            })
+            $("#Spanchannel div ul li").each(function () {
+                LiValue = $(this).find('a').text();
+                if (LiValue != undefined && LiValue != 'undefined') {
+                    if (Parentprogramtype.indexOf(LiValue.toLowerCase()) >= 0 || LiValue == "Please Select") {
+                        $(this).css('display', 'block');
+                        if (LiValue != "Please Select") {
+                            Valuesinlist.push(LiValue);
+                            LiCount++;
+                        }
+                    }
+                    else {
+                        $(this).css('display', 'none');
+                    }
+                }
+            });
+
+           
+            SelectedValue = $('#ddlchannel').val();
+            if (LiCount == 0 || Valuesinlist.indexOf(SelectedValue) < 0) {
+                $('#Spanchannel div .sbSelector').text("Please Select");
+                $("#ddlchannel").val("");
+            }
+
+      
+
     });
+
+
+  
+    $('#ddlprogramtype').on('change', function () {
+        ProgramTypeValue = $(this).val();
+        LiCount = 0;
+        Parentprogramtype = [];
+        Valuesinlist = [];
+        $("#getchannelparent option[value = '" + ProgramTypeValue + "']").each(function () {
+
+            Parentprogramtype.push($(this).text().toLowerCase());
+        })
+        $("#Spanchannel div ul li").each(function () {
+            LiValue = $(this).find('a').text();
+            if (LiValue != undefined && LiValue != 'undefined') {
+                if (Parentprogramtype.indexOf(LiValue.toLowerCase()) >= 0 || LiValue == "Please Select") {
+                    $(this).css('display', 'block');
+                    if (LiValue != "Please Select") {
+                        Valuesinlist.push(LiValue);
+                        LiCount++;
+                    }
+                }
+                else {
+                      $(this).css('display', 'none');
+                     }
+            }
+        });
+
+        SelectedValue = $('#ddlchannel').val();
+        if (LiCount == 0 || Valuesinlist.indexOf(SelectedValue) < 0) {
+            $('#Spanchannel div .sbSelector').text("Please Select");
+            $("#ddlchannel").val("");
+        }
+
+    });
+    //End
+
 </script>
 
 

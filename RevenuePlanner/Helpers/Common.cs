@@ -3346,7 +3346,12 @@ namespace RevenuePlanner.Helpers
                             Plan_Improvement_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; });
                         }
 
-
+                        if (isMarketoinstance)
+                        {
+                            string EntityType = Enums.FilterLabel.TacticType.ToString();
+                            MarketoEntityValueMapping DeleteTacticTypeMapping = db.MarketoEntityValueMappings.Where(Entity => Entity.IntegrationInstanceId == integrationInstanceId && Entity.EntityType == EntityType ).FirstOrDefault();
+                            db.Entry(DeleteTacticTypeMapping).State = EntityState.Deleted;
+                        }
 
                         db.SaveChanges();
                         scope.Complete();
