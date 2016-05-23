@@ -26,10 +26,12 @@
     bool IsSyncMarketo = (bool)ViewBag.isSyncMarketo;     // Get IsSyncMarketo flag
     bool IsSyncWorkFront = (bool)ViewBag.IsSyncWorkFront; //Get IsSyncWorkFront flag - true if the tactic is integrated
     // start: Added by Viral for PL ticket #2108 scenario-1
-    int SFDCId = 0,eloquaId=0,workfrontId=0;
+    int SFDCId = 0, eloquaId = 0, workfrontId = 0;
+    int MarketoID = 0;
     SFDCId = ViewBag.SFDCId;
     eloquaId = ViewBag.ElouqaId;
     workfrontId = ViewBag.WorkfrontId;
+    MarketoID = ViewBag.MarketoId;
     // end: Added by Viral for PL ticket #2108 scenario-1
 }
 @*Added BY Bhumika for #2043 reduce white space in comment section.*@
@@ -793,7 +795,7 @@
                     else if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()' && '@workfrontId' >0) {
                         eleToggle.bootstrapToggle('on');            // Set Eloqua toggle button to ON.
                     }
-                    else if (_intgrtnType == '@Enums.IntegrationType.Marketo.ToString()' && '@workfrontId' >0) {
+                    else if (_intgrtnType == '@Enums.IntegrationType.Marketo.ToString()' && '@MarketoID' >0) {
                         eleToggle.bootstrapToggle('on');            // Set Marketo toggle button to ON.
                     }
                 });

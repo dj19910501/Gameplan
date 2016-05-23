@@ -8,6 +8,7 @@
     bool IsModelIntegrated = ViewBag.IsModelIntegrated;
     //string ModelIntegrationType = ViewBag.ModelIntegrationType;
     //Start Manoj Limbachiya PL # 486
+    
     bool IsDeplyed = ViewBag.IsDeployed;
     bool IsWorkFront = ViewBag.isIntegratedWithWorkFront != null ? ViewBag.isIntegratedWithWorkFront : false; // Update by bhavesh #1727
     bool IsMarketo = ViewBag.isIntegratedWithMarketo != null ? ViewBag.isIntegratedWithMarketo : false;         //Added By Komal RAwal 
@@ -61,13 +62,13 @@
             @Html.HiddenFor(model => model.ModelId, new { id = "hdnModelId" })
             @Html.HiddenFor(model => model.ClientId, new { id = "hdnClientId" })
 
-            <label>Title</label>
+            <label>Title <span class="required-asterisk">*</span></label>
             @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255" })@*maxlength added by uday for functinal review point 69 17-7-2014*@
 
             <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional" })
 
-            <label>Target Stages</label>
+            <label>Target Stages <span class="required-asterisk">*</span></label>
            
             <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId","Title" ), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
 
@@ -98,7 +99,7 @@
         //Start Brad Gray PL # 1374
         if (IsWorkFront == true)
         {
-            <label>WorkFront Template</label>
+            <label>WorkFront Template <span class="required-asterisk">*</span></label> //Modified by Komal Rawal to display asterik as required field
             <span class="simpleSelectBox">
             @Html.DropDownListFor(m => m.WorkFrontTemplateId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontTemplates, "ID", "Template_Name"), "Please Select", new { @class = "ddlStyle hide", @id = "WorkFrontTemplateId", require = "true" })
             </span>
@@ -108,7 +109,7 @@
         //Start Komal Rawal  PL #2216
         if (IsMarketo == true)
         {
-            <label>Marketo Program Type</label>
+            <label>Marketo Program Type <span class="required-asterisk">*</span></label>
             <span class="simpleSelectBox">
                 @Html.DropDownListFor(m => m.programType, new SelectList(ViewBag.DDLProgramType, "Value", "Text"), "Please Select", new { @class = "ddlStyle", @id = "ddlprogramtype", require = "true" })
             </span>
@@ -116,7 +117,7 @@
 
         if (IsMarketo == true)
         {
-            <label>Marketo Channel</label>
+            <label>Marketo Channel <span class="required-asterisk">*</span></label>
             <span class="simpleSelectBox" id="Spanchannel">
                 @Html.DropDownListFor(m => m.Channel, new SelectList((System.Collections.IEnumerable)ViewBag.DDLChannel, "ChannelName", "ChannelName"), "Please Select", new { @class = "ddlStyle", @id = "ddlchannel", require = "true" })
                 <span style="display:none">

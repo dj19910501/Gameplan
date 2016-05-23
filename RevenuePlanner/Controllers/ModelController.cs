@@ -1655,12 +1655,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    //Added By Komal Rawal for #2216  saving of channel and program type
-                    if (objModel.IntegrationInstanceMarketoID != null)
-                    {
-                        SaveMarketoSettings(TacticTypeId,objModel.IntegrationInstanceMarketoID, Enums.FilterLabel.TacticType.ToString(), ProgramType, Channel);
-                    }
-                   
+                                  
                     var existingTacticTypes = objDbMrpEntities.TacticTypes.Where(tacticType => (tacticType.ModelId == ModelId) && tacticType.Title.ToLower() == Title.ToLower() && tacticType.TacticTypeId != TacticTypeId && (tacticType.IsDeleted == null || tacticType.IsDeleted == false)).ToList();
 
                     //// TFS Bug - 179 : Improper behavior when editing Tactic in model 
@@ -1752,6 +1747,12 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                         #endregion
+
+                        //Added By Komal Rawal for #2216  saving of channel and program type
+                        if (objModel.IntegrationInstanceMarketoID != null)
+                        {
+                            SaveMarketoSettings(TacticTypeId, objModel.IntegrationInstanceMarketoID, Enums.FilterLabel.TacticType.ToString(), ProgramType, Channel);
+                        }
                     }
                     else
                     {
