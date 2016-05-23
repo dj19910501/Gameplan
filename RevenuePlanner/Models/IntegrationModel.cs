@@ -114,6 +114,7 @@ namespace RevenuePlanner.Models
         public string FolderPath { get; set; }
         public int Permission { get; set; }
         public Guid BUId { get; set; }
+        public string CampaignfolderValue { get; set; }
     }
     //End :Added by Pratik for PL ticket #998
     //Start :Added by Rahul for PL ticket #2017

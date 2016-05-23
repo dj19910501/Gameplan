@@ -2299,6 +2299,17 @@ namespace RevenuePlanner.Helpers
 
         //// End - Ticket #998, by Pratik chauhan
 
+        //// Start - Ticket #2220, by Nishant Sheth
+        private string _MarketoCampaignSaved;
+
+        public string MarketoCampaignSaved
+        {
+            get { return _MarketoCampaignSaved; }
+            set { _MarketoCampaignSaved = value; }
+        }
+
+        //// End - Ticket #2220, by Nishant Sheth
+
         // Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
         private string _CrossClientLoginForInspectPopup;
 
@@ -3418,6 +3429,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "IntegrationFolderPathSaved":
                                             _IntegrationFolderPathSaved = strMsgValue;
+                                            break;
+                                        case "MarketoCampaignSaved":
+                                            _MarketoCampaignSaved = strMsgValue;
                                             break;
                                         // Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
                                         case "CrossClientLoginForInspectPopup":

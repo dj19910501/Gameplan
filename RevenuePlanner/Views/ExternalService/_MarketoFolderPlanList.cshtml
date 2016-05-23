@@ -1,0 +1,158 @@
+﻿@using RevenuePlanner.Helpers
+@using RevenuePlanner.Models
+@model List<IntegrationPlanList>
+<style type="text/css">
+    #table_baseline tbody tr {
+        cursor: default;
+        font-size: 18px;
+    }
+
+    .table th, .table td {
+        padding: 4px;
+        vertical-align: middle;
+    }
+
+    #IntegrationFolderPlanList #table_baseline .ui-multiselect {
+        min-width: 165px;
+    }
+</style>
+@{
+    var IntegrationInstanceId = ViewBag.IntegrationInstanceId;
+    List<SelectListItem> FolderList = new List<SelectListItem>();
+    FolderList = ViewBag.CampaignFolderList;
+    if (FolderList == null)
+    {
+        FolderList.Add(new SelectListItem { Selected = true, Text = "Please Select", Value = "0" });
+    }
+}
+@if (Model.Count > 0)
+{
+
+    <div class="span10 content-colum-right" style="width: 95% ! important; padding-top: 20px;">
+        <table id="table_baseline" class="table table-striped table-hover integration" style="margin-bottom: 10px;">
+            <thead>
+                <tr>
+                    <th style="padding-left: 20px;">Plan Name</th>
+                    <th style="padding-right:90px;">Campaign Folder</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+
+                    if (item.CampaignfolderValue == null)
+                    {
+                        item.CampaignfolderValue = "";
+                    }
+                    <tr id="@item.PlanId">
+                        <td style="padding-left: 20px;">
+                            <span class="truncate" style="width: 40%;">@item.PlanTitle</span>
+                        </td>
+                        <td style="width: 45%;">
+                            @if (item.Permission == (int)Enums.CustomRestrictionPermission.ViewOnly)
+                            {
+                                @Html.DropDownList("ViewCmpFolder_" + item.PlanId, new SelectList(FolderList, "Text", "Value", item.CampaignfolderValue), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "ViewFolderList" + item.PlanId })
+                            }
+                            else
+                            {
+                                @Html.DropDownList("CmpFolder_" + item.PlanId, new SelectList(FolderList, "Text", "Value", item.CampaignfolderValue), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "CmpFolder_" + item.PlanId })
+                            }
+
+                            @*<button style="float: left; margin-left: 5px;" class="ClassClear clear-button-grid" type="button">Clear</button>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+    <div style="width: 100%; clear: both" class="wraper-btns cf">
+        <div class="span2 btn-save" style="min-width: 80px; padding-left: 0px;">
+            <button id="btnSavePlan" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23" style="min-width: 60px;" type="button">Save</button>
+        </div>
+    </div>
+}
+else
+{
+
+    <div class="span10 content-colum-right" style="width: 95% ! important; padding-top: 20px;">
+        <span>No published plan exist.</span>
+    </div>
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        TruncateTitle();
+        $('select[id^="CmpFolder_"]').multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1,
+            CustomName: '@Common.CustomTitle'
+        }).multiselectfilter();
+        var spanMarketo = $('div[id^="multipleselect_CmpFolder_"]');
+        $('#button[id^="btnMultiselect_CmpFolder_"]').after(spanMarketo);
+    });
+
+    $(document).on("click", ".ClassClear", function () {
+        var id = "#txt_" + $(this).parent().parent().attr('id');
+        $(id).val("");
+    });
+
+
+    function TruncateTitle() {
+        $("#table_baseline").find('.truncate').each(function () {
+            var title = $(this).text();
+            var mainText = title;
+            if (title.length >= 32) {
+                title = title.substring(0, 32) + "...";
+                $(this).prop('title', mainText);
+            }
+            $(this).text(title);
+        });
+    }
+
+    $("#btnSavePlan").click(function () {
+        var _tactic = [];
+        var year = $('.sbSelector').html();
+
+        $('#IntegrationFolderPlanList').find('select').each(function () {
+
+            var planId = $(this).parent().parent().attr('id');
+            _tactic.push({
+                PlanId: planId,
+                CampaignfolderValue: $(this).val().trim(),
+                Year: year
+            });
+        });
+
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            url: '@Url.Content("~/ExternalService/SaveMarketoCampaignFolderPlanList/")',
+            data: JSON.stringify({ IntegrationPlanList: _tactic, IntegrationInstanceId: '@IntegrationInstanceId' }),
+            success: function (data) {
+                if (data.IsSaved) {
+                    $("#successMessage").slideDown(400);
+                    $("#errorMessage").slideUp(400);
+                    $("#successMessage").css("display", "block");
+                    $("#errorMessage").css("display", "none");
+                    $("#cSuccess").empty();
+                    $("#cSuccess").text(data.Message);
+                    LoadPlanData(year);
+                }
+                else {
+                    $("#successMessage").slideUp(400);
+                    $("#errorMessage").slideDown(400);
+                    $("#errorMessage").css("display", "block");
+                    $("#successMessage").css("display", "none");
+                    $("#cError").empty();
+                    $("#cError").text(data.Message);
+                }
+            }
+        });
+    });
+
+</script>

@@ -191,7 +191,7 @@ namespace Integration
                 marketoCredentialDictionary.Add("clientid", _clientid);
                 marketoCredentialDictionary.Add("clientsecret", _clientsecret);
                 marketoCredentialDictionary.Add("token", _marketoToken);
-            //    marketoCredentialDictionary.Add("rootfolder", "Marketing Activities");
+                //    marketoCredentialDictionary.Add("rootfolder", "Marketing Activities");
 
 
                 HttpClient client = new HttpClient();
@@ -203,6 +203,50 @@ namespace Integration
                 {
                     var responseobj = response.Content.ReadAsStringAsync().Result;
                     MarketoDataObject objData = JsonConvert.DeserializeObject<MarketoDataObject>(responseobj);
+                    HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("Token")).Select(th => th.Description).FirstOrDefault();
+                    ListOfData = objData;
+                }
+            }
+            return ListOfData;
+        }
+
+        /// <summary>
+        /// Created By Nishant Sheth
+        /// Created Date : 21-May-2016
+        /// Get list of marketo campaign folder with api
+        /// </summary>
+        /// <returns></returns>
+        public ReturnObject GetMarketoCampaignFolderList()
+        {
+            ReturnObject ListOfData = new ReturnObject();
+            if (_TypeofData == Enums.ApiIntegrationData.CampaignFolderList.ToString())
+            {
+                if (HttpContext.Current.Session["MarketoToken"] != null)
+                {
+                    _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
+                }
+                else
+                {
+                    _marketoToken = "";
+                }
+                Dictionary<string, string> marketoCredentialDictionary = new Dictionary<string, string>();
+                marketoCredentialDictionary.Add("host", _host);
+                marketoCredentialDictionary.Add("clientid", _clientid);
+                marketoCredentialDictionary.Add("clientsecret", _clientsecret);
+                marketoCredentialDictionary.Add("token", _marketoToken);
+                marketoCredentialDictionary.Add("rootfolder", "Marketing Activities");
+
+
+                HttpClient client = new HttpClient();
+                string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                Uri baseAddress = new Uri(marketoIntegrstionApi);
+                // Uri baseAddress = new Uri("http://121.244.200.162:8085/IntegrationApi/");
+                client.BaseAddress = baseAddress;
+                HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_GetFolders_MarketingActivity", marketoCredentialDictionary).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseobj = response.Content.ReadAsStringAsync().Result;
+                    ReturnObject objData = JsonConvert.DeserializeObject<ReturnObject>(responseobj);
                     HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("Token")).Select(th => th.Description).FirstOrDefault();
                     ListOfData = objData;
                 }

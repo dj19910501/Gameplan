@@ -674,10 +674,10 @@
 		<Name>ConfirmationForModifyTargetIntegration</Name>
 		<value>Modifying target integration will reset sync details configured at plan level. Are you sure you want to proceed?</value>
 	</Field>
-  <Field>
-    <Name>MarketoSelectionValidation</Name>
-    <value>Both salesforce and marketo cannot be selected together as a target for pushing plan data</value>
-  </Field>
+	<Field>
+		<Name>MarketoSelectionValidation</Name>
+		<value>Both salesforce and marketo cannot be selected together as a target for pushing plan data</value>
+	</Field>
 	<Field>
 		<Name>ConfirmationForDeleteImprovementTactic</Name>
 		<value>Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.</value>
@@ -883,6 +883,12 @@
 		<value>Folder paths saved.</value>
 	</Field>
 	<!--End Added by Pratik -->
+	<!-- Add By Nishant Sheth PL#2220-->
+	<Field>
+		<Name>MarketoCampaignSaved</Name>
+		<value>Campaign folder saved.</value>
+	</Field>
+	<!-- End By Nishant Sheth-->
 	<!--Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 -->
 	<Field>
 		<Name>CrossClientLoginForInspectPopup</Name>

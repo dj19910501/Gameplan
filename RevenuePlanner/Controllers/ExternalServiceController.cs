@@ -365,6 +365,201 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+        #region Markto Folder Plan List
+
+        /// <summary>
+        /// This will return view for Marketo folder.
+        /// </summary>
+        /// <param name="id">Integration id.</param>
+        /// <param name="TypeId">Integration type id.</param>        
+        /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]
+        [HttpPost]
+        public ActionResult GetMarketoFolder(int TypeId, int id = 0)
+        {
+            try
+            {
+                ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+                string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
+                ViewBag.IntegrationInstanceId = id;
+                ViewBag.IntegrationTypeId = TypeId;
+
+                IntegrationType integrationTypeObj = GetIntegrationTypeById(TypeId);
+
+                if (integrationTypeObj != null)
+                {
+                    ViewBag.IntegrationTypeCode = integrationTypeObj.Code;
+                }
+
+                Guid clientId = Sessions.User.ClientId;
+
+                ////Get published plan list year for logged in client.
+                var objPlan = (from _pln in db.Plans
+                               join _mdl in db.Models on _pln.ModelId equals _mdl.ModelId
+                               where _mdl.ClientId == clientId && _mdl.IsDeleted == false && _pln.IsDeleted == false && _pln.Status == status
+                               select _pln).OrderBy(_pln => _pln.Year).ToList().Select(_pln => _pln.Year).Distinct().ToList();
+
+                ViewBag.Year = objPlan;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return View("MarketoFolder");
+        }
+
+        /// <summary>
+        /// Created By Nishant Sheth
+        /// Created Date : 21-May-2016
+        /// This method will return the partial view for Marketo Integration Folder published Plan listing for selected year
+        /// </summary>
+        /// <param name="Year">Year.</param>
+        /// <returns>Return partial view.</returns>
+        public PartialViewResult GetMarketoFolderPlanList(string Year, int IntegrationInstanceId = 0)
+        {
+            List<IntegrationPlanList> objIntegrationPlanList = new List<IntegrationPlanList>();
+
+            try
+            {
+                Guid clientId = Sessions.User.ClientId;
+                string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
+                int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
+
+                // Get the list of plan, filtered by Year selected and published plan for logged in client.
+                if (Int_Year > 0)
+                {
+                    string EntityType = Enums.EntityType.Plan.ToString();
+
+                    var ListMarketoEntity = db.MarketoEntityValueMappings.Where(a => a.IntegrationInstanceId == IntegrationInstanceId).ToList();
+
+                    objIntegrationPlanList = (from _pln in db.Plans
+                                              join _mdl in db.Models on _pln.ModelId equals _mdl.ModelId
+                                              where
+                                              _mdl.ClientId == clientId && _mdl.IsDeleted == false &&
+                                              _pln.IsDeleted == false && _pln.Year == Year && _pln.Status == status
+                                              select new { _pln, _mdl })
+                                                 .OrderByDescending(d => d._pln.ModifiedDate ?? d._pln.CreatedDate).ThenBy(d => d._pln.Title).ToList()
+                                                 .Select(d => new IntegrationPlanList
+                                                 {
+                                                     PlanId = d._pln.PlanId,
+                                                     PlanTitle = d._pln.Title,
+                                                     CampaignfolderValue = ListMarketoEntity.Where(a => int.Parse(a.EntityID.ToString()) == d._pln.PlanId && a.EntityType == EntityType).Select(a => a.MarketoCampaignFolderId).FirstOrDefault()
+                                                 }).ToList();
+
+                    //// Set permission for the plan on bases of BU permission
+                    foreach (var item in objIntegrationPlanList)
+                    {
+                        item.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                    }
+
+                    ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.CampaignFolderList.ToString(), IntegrationInstanceId);
+
+                    var CampaignFolderList = ObjApiintegration.GetMarketoCampaignFolderList().data.ToList();
+
+                    ViewBag.CampaignFolderList = CampaignFolderList.Select(list => new SelectListItem
+                    {
+                        Text = list.Value,
+                        Value = list.Key
+                    }).ToList();
+
+                    ViewBag.IntegrationInstanceId = IntegrationInstanceId;
+
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return PartialView("_MarketoFolderPlanList", objIntegrationPlanList);
+        }
+
+        /// <summary>
+        /// This will save plan list for eloqua folder path.
+        /// </summary>
+        /// <param name="IntegrationPlanList">IntegrationPlanList Model list.</param>
+        /// <returns>Return json value.</returns>
+        [HttpPost]
+        public JsonResult SaveMarketoCampaignFolderPlanList(List<IntegrationPlanList> IntegrationPlanList, int IntegrationInstanceId = 0)
+        {
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        if (IntegrationPlanList.Count > 0)
+                        {
+                            // save the marketo campaign folder values for plan in database
+                            MarketoEntityValueMapping objMarketoEntity = null;
+
+                            // Get list of plan ids from database with IntegrationInstanceId and EntityType.
+                            string EntityType = Enums.EntityType.Plan.ToString();
+                            var lstCampaignFolderPlan = mrp.MarketoEntityValueMappings.Where(data => data.IntegrationInstanceId == IntegrationInstanceId && data.EntityType == EntityType).ToList();
+
+                            // Get list of model list
+                            var SelectedPlanList = IntegrationPlanList.Where(data => data.CampaignfolderValue != null && int.Parse(data.CampaignfolderValue) > 0).ToList();
+
+                            // Get List of planid which have allready value in database but in model set as 0
+                            var lstDeleteEntityId = lstCampaignFolderPlan.Select(dbData => int.Parse(dbData.EntityID.ToString())).Except(SelectedPlanList.Select(data => data.PlanId)).ToList();
+
+                            // Set list for remove planids entry from database
+                            List<MarketoEntityValueMapping> lstDeleteCampaignFolderPlan = lstCampaignFolderPlan.
+                                Where(data => lstDeleteEntityId.Contains(int.Parse(data.EntityID.ToString()))).ToList();
+
+                            // Set state for Delete
+                            lstDeleteCampaignFolderPlan.ForEach(data =>
+                                {
+                                    mrp.Entry(data).State = EntityState.Deleted;
+                                });
+
+                            List<MarketoEntityValueMapping> lstUpdateCampaignFolderPlan = new List<MarketoEntityValueMapping>(); // list for update records
+                            List<MarketoEntityValueMapping> lstAddCampaignFolderPlan = new List<MarketoEntityValueMapping>(); // list for add records
+                            var objAddCampaign = new MarketoEntityValueMapping();
+
+                            foreach (var item in SelectedPlanList)
+                            {
+                                var CheckisExist = lstCampaignFolderPlan.Where(data => int.Parse(data.EntityID.ToString()) == item.PlanId).FirstOrDefault();
+                                if (CheckisExist != null)
+                                {
+                                    CheckisExist.MarketoCampaignFolderId = item.CampaignfolderValue;
+                                    lstUpdateCampaignFolderPlan.Add(CheckisExist);
+                                }
+                                else
+                                {
+                                    objAddCampaign = new MarketoEntityValueMapping();
+                                    objAddCampaign.MarketoCampaignFolderId = item.CampaignfolderValue;
+                                    objAddCampaign.LastModifiedBy = Sessions.User.UserId;
+                                    objAddCampaign.LastModifiedDate = DateTime.Now.Date;
+                                    objAddCampaign.EntityType = Enums.EntityType.Plan.ToString();
+                                    objAddCampaign.EntityID = item.PlanId;
+                                    objAddCampaign.IntegrationInstanceId = IntegrationInstanceId;
+                                    lstAddCampaignFolderPlan.Add(objAddCampaign);
+                                }
+                            }
+
+                            lstUpdateCampaignFolderPlan.ForEach(data => { mrp.Entry(data).State = EntityState.Modified; }); // set state for update
+                            lstAddCampaignFolderPlan.ForEach(data => { mrp.Entry(data).State = EntityState.Added; });// set state for add
+
+                            mrp.SaveChanges();
+                        }
+
+                        scope.Complete();
+                        return Json(new { IsSaved = true, Message = Common.objCached.MarketoCampaignSaved.ToString() });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(new { IsSaved = false, Message = Common.objCached.ErrorOccured });
+        }
+        #endregion
+
         #region Add Integration
 
         /// <summary>

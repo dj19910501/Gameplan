@@ -923,6 +923,8 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
+    <Content Include="Views\ExternalService\MarketoFolder.cshtml" />
+    <Content Include="Views\ExternalService\_MarketoFolderPlanList.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

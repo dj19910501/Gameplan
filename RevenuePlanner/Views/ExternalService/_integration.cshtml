@@ -2,9 +2,14 @@
 @{
     string integrationInstanceId = "0";
     string integrationTypeId = "0";
+    string MarketoLinkClass = "disable-a";
     if (ViewBag.IntegrationInstanceId!=null)
     {
         integrationInstanceId = ViewBag.IntegrationInstanceId.ToString();
+        if (integrationInstanceId != "0")
+        {
+            MarketoLinkClass = "enable-a";
+        }
     }
     if (ViewBag.IntegrationTypeId!=null)
     {
@@ -12,7 +17,16 @@
     }
 }
 <!DOCTYPE html>
+<style>
+    .nav-pills > li a.disable-a {
+        color: #908d88 !important;
+    }
 
+        .nav-pills > li a.disable-a:hover, .nav-pills > li a.disable-a:focus, .nav-pills > li.active a.disable-a {
+            background-color: transparent !important;
+            cursor: default !important;
+        }
+</style>
 <div class="span2">
     <div class="width217">
         <ul class="nav nav-pills nav-stacked width217">
@@ -50,6 +64,29 @@
                     <a id="lnkIntegrationFolder" href="#">Integration Folders (Eloqua only)</a>
                     }
                 }
+            </li>
+            <li id="MarketoFolder">
+                @if ((ViewBag.PageTitle == "MarketoFolder"))
+                {
+                    if (ViewBag.IntegrationTypeCode == Enums.IntegrationType.Marketo.ToString())
+                    {
+
+                        <a id="lnkMarketoFolder" href="#" class="@MarketoLinkClass">Marketo Campaign Folders (Marketo only)</a>
+                    }
+                    else
+                    {
+                        Response.Redirect(Url.Action("Index", "ExternalService"));
+                    }
+                }
+                else
+                {
+                    if (ViewBag.IntegrationTypeCode == Enums.IntegrationType.Marketo.ToString())
+                    {
+
+                        <a id="lnkMarketoFolder" href="#" class="@MarketoLinkClass">Marketo Campaign Folders (Marketo only)</a>
+                    }
+                }
+
             </li>
             <li id="MdataType" style="display: none;">
                 @if (ViewBag.PageTitle == "Edit")
@@ -101,9 +138,17 @@
                 $('#Icredential').removeClass('active');
 
             });
+            $("#MarketoFolder").on("click", function () {
+                if ("@MarketoLinkClass" == 'enable-a') {
+                    $('#MarketoFolder').addClass('active');
+                    $('#Icredential').removeClass('active');
+                }
+
+            });
 
             $("#Icredential").on("click", function () {
                 $('#IntegrationFolder').removeClass('active');
+                $('#MarketoFolder').removeClass('active');
                 $('#Icredential').addClass('active');
             });
             $('#lnkIntegrationFolder').on("click", function () {
@@ -118,6 +163,21 @@
                      Value: '@integrationTypeId'
                  });
                 formSubmitEvent(url, queryStringArr);
+                });
+                $('#lnkMarketoFolder').on("click", function () {
+                    if ("@MarketoLinkClass" == 'enable-a') {
+                        var url = '@Url.Content("~/ExternalService/GetMarketoFolder")';
+                        var queryStringArr = [];
+                        queryStringArr.push({
+                            key: 'id',
+                            Value: '@integrationInstanceId'
+                        },
+                         {
+                             key: 'TypeId',
+                             Value: '@integrationTypeId'
+                         });
+                        formSubmitEvent(url, queryStringArr);
+                    }
             });
             $('#lnkIntegrationSetting').on("click", function () {
                 var url = '@Url.Content("~/ExternalService/editIntegration/")';

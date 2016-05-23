@@ -879,6 +879,12 @@
 		<value>Folder paths saved.</value>
 	</Field>
 	<!--End Added by Pratik -->
+  <!-- Add By Nishant Sheth PL#2220-->
+  <Field>
+    <Name>MarketoCampaignSaved</Name>
+    <value>Campaign folder saved.</value>
+  </Field>
+  <!-- End By Nishant Sheth-->
 	<!--Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 -->
 	<Field>
 		<Name>CrossClientLoginForInspectPopup</Name>
