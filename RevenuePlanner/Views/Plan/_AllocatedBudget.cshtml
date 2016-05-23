@@ -14,9 +14,35 @@
     double planAllocation = 0;
     double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
     planAllocation = (sumMonth == 0 && plan.Allocated == 0) ? 0 : (sumMonth > 0 && plan.Allocated == 0) ? 101 : sumMonth / plan.Allocated * 100;
-}
 
-<div class="tab-content all-height cf">
+    BudgetDHTMLXGridModel TestModel = (BudgetDHTMLXGridModel)Session["TestGrid"];
+}
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
+
+<style>
+    /* To set orange corner on Grid Table start */
+    /*#gridbox.financeReportGrid .objbox div.planLevel{*/
+    /*#gridbox.financeReportGrid .objbox td{
+        position:relative;
+    }*/
+    #gridbox.financeReportGrid .objbox td .topCornner {
+        position: relative;
+    }
+
+    #gridbox.financeReportGrid .objbox div.topCornner .orange-corner-budget,
+    #gridbox.financeReportGrid .objbox div.topCornner .red-corner-budget {
+        right: -4px;
+        top: -1px;
+    }
+    /* To set orange corner on Grid Table End  */
+
+      .clickmeAnchor {
+        color: #000 !important;
+        cursor: pointer;
+    }
+</style>
+@*<div class="tab-content all-height cf">
     <div class="tab-pane active all-height" id="panel-656352">
         <div id="paln-populated-collaborators-panel-wrapper" class="pl20 cf">
             <div class="cf all-height lenght-div">
@@ -58,11 +84,12 @@
 
                     </table>
                     <div style="clear: both;"></div>
-                </div>
-            </div>
+                </div>*@
+                <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
+            @*</div>
         </div>
     </div>
-</div>
+</div>*@
 <div id="loadme" class="loadme-true" style="display: none;">
     <h3 class="source-sans-proregular"></h3>
     <div class="tooltip-field">
@@ -79,11 +106,11 @@
 
                     <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed; overflow:hidden;">
                         <div class="partial_wrapper">
-                            <div id="successMessage" class="alert alert-success  messagewidth" >
+                            <div id="successMessage" class="alert alert-success  messagewidth">
                                 <a class="close">×</a>
                                 <strong>Success.</strong> <span id="spanMessageSuccess"></span>
                             </div>
-                            <div id="errorMessage" class="alert alert-error hide  messagewidth" >
+                            <div id="errorMessage" class="alert alert-error hide  messagewidth">
                                 <a class="close">×</a>
                                 <strong>Error!</strong> <span id="spanMessageError">@Common.objCached.ValidateForEmptyField</span>
                             </div>
@@ -99,6 +126,9 @@
         </div>
     </div>
 </div>
+
+
+
 <script type="text/javascript">
 
     var heights = $('.column1').find('div').map(function () {
@@ -126,6 +156,7 @@
             $("#divCostBudget").attr('style', 'display:none;')
         }
         SetHeader();
+        BindBudgetGrid();
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
@@ -143,6 +174,9 @@
             isquarter = true;
         }
         $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter });
+        $('.clickmeAnchor').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter });
+      // $('.orange-corner-budget').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter });
+
         $('.accordionClick').on('click', function () {
             var accordionId = $(this).parent().attr('id');
             $('table').find(".sub[data-parent='" + accordionId + "']").fadeToggle(100);
@@ -169,26 +203,69 @@
             //column1Width = column1Width.replace('px', '');
             //modified by Rahul Shah on 25/09/2015 for PL #900.. remove try..catch for handle elmah log
             //try {
-                $('.display-table-row').removeClass('display-table-row');
-                //if (parseInt(column1Width) < maxHeight) {
-                //    //$('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
-                //    //$('#div2PlanDetails').css('width', parseInt(maxHeight) + 15);
-                //    //if ($('.column1 .programLevel').length > 0)
-                //    //    $('.column1 .programLevel').css('width', parseInt(maxHeight) - parseInt($(".programLevel").css("padding-left").replace("px", "")) - parseInt($(".programLevel").css("padding-right").replace("px", "")) + 15);
-                //    //if ($('.column1 .campaignLevel').length > 0)
-                //    //    $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
-                //    //if ($('.column1 .program-lvl').length > 0)
-                //    //    $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
-                //    $('.display-table-row').removeClass('display-table-row');
-                //}
-                //else {
-                //    $('.display-table-row').removeClass('display-table-row');
-                //}
+            $('.display-table-row').removeClass('display-table-row');
+            //if (parseInt(column1Width) < maxHeight) {
+            //    //$('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
+            //    //$('#div2PlanDetails').css('width', parseInt(maxHeight) + 15);
+            //    //if ($('.column1 .programLevel').length > 0)
+            //    //    $('.column1 .programLevel').css('width', parseInt(maxHeight) - parseInt($(".programLevel").css("padding-left").replace("px", "")) - parseInt($(".programLevel").css("padding-right").replace("px", "")) + 15);
+            //    //if ($('.column1 .campaignLevel').length > 0)
+            //    //    $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
+            //    //if ($('.column1 .program-lvl').length > 0)
+            //    //    $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
+            //    $('.display-table-row').removeClass('display-table-row');
+            //}
+            //else {
+            //    $('.display-table-row').removeClass('display-table-row');
+            //}
             //} catch (e) {
 
             //}
         }
     });
+
+    @*function cluetipClick(test) {
+        debugger
+        var isquarter = false;
+        if ('@isquarter' == 'True') {
+            isquarter = true;
+        }
+        $(test).cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter });
+    }*@
+
+    //Added By Maitri Gandhi on  13/5/2016 for
+    function BindBudgetGrid() {
+        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(TestModel.Grid))';
+        HomeGrid = new dhtmlXGridObject('gridbox');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        HomeGrid.setImagePath(imgpath);
+        HomeGrid.setImageSize(1, 1);
+        HomeGrid.setHeader('@TestModel.SetHeader');
+        HomeGrid.setColTypes('@TestModel.ColType');
+        HomeGrid.setInitWidths('@TestModel.Width');
+        HomeGrid.setColSorting('@TestModel.ColSorting');
+        HomeGrid.enableAutoHeight(true);
+        HomeGrid.enableAutoWidth(false);
+        HomeGrid.setEditable(false);
+        HomeGrid.init();
+        setTimeout(function () {
+            HomeGrid.setSizes();
+        }, 200);
+
+
+        HomeGrid.enableDistributedParsing(true, 10, 0.1);
+
+        var mainGridData = JsonModel;
+        mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+
+        HomeGrid.parse(GridDataHomeGrid, "json");
+        HomeGrid.splitAt(3);
+        HomeGrid.setColumnHidden(0, true);
+
+
+    }
+
     function SetHeader() {
         $('#divViewBy').hide();
         if ('@allocatedBy' != '@strDefault') {
@@ -205,7 +282,7 @@
 
             $('#planCostValue').html(sumMonth + '/' + allocated);
             $('#divPlanProgress').css("width", "@planAllocation%");
-        if ('@planAllocation' > 100) {
+            if ('@planAllocation' > 100) {
                 $('#divPlanProgress').css("width", "100%");
                 $('#divPlanProgress').css("background", "#ff1e26");
             }
@@ -243,13 +320,13 @@
                 else if (i == 2) {
                     strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
                     if ('@PercAllocated.Feb' <= 100)
-                            strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;"></span></div>';
-                        else
-                            strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;background-color:#FF931E;" class="error"></span></div>';
-                    }
-                    else if (i == 3) {
-                        strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
-                        if ('@PercAllocated.Mar' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;background-color:#FF931E;" class="error"></span></div>';
+                }
+                else if (i == 3) {
+                    strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
+                    if ('@PercAllocated.Mar' <= 100)
                         strMonthHTML += '<div title="@PercAllocated.Mar%"><span style="width:@PercAllocated.Mar%;"></span></div>';
                     else
                         strMonthHTML += '<div title="@PercAllocated.Mar%"><span style="width:@PercAllocated.Mar%;background-color:#FF931E;" class="error"></span></div>';
@@ -299,28 +376,28 @@
                 else if (i == 10) {
                     strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
                     if ('@PercAllocated.Oct' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;background-color:#FF931E;" class="error"></span></div>';
+                        strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;background-color:#FF931E;" class="error"></span></div>';
+                }
+                else if (i == 11) {
+                    strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
+                    if ('@PercAllocated.Nov' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Nov%"><span style="width:@PercAllocated.Nov%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Nov%"><span style="width:@PercAllocated.Nov%;background-color:#FF931E;" class="error"></span></div>';
+                }
+                else if (i == 12) {
+                    strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
+                    if ('@PercAllocated.Dec' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Dec%"><span style="width:@PercAllocated.Dec%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Dec%"><span style="width:@PercAllocated.Dec%;background-color:#FF931E;" class="error"></span></div>';
+                }
+                strMonthHTML += '</div>';
             }
-            else if (i == 11) {
-                strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
-                if ('@PercAllocated.Nov' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Nov%"><span style="width:@PercAllocated.Nov%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Nov%"><span style="width:@PercAllocated.Nov%;background-color:#FF931E;" class="error"></span></div>';
-            }
-            else if (i == 12) {
-                strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
-                if ('@PercAllocated.Dec' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Dec%"><span style="width:@PercAllocated.Dec%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Dec%"><span style="width:@PercAllocated.Dec%;background-color:#FF931E;" class="error"></span></div>';
-            }
-    strMonthHTML += '</div>';
-}
-}
-else if ('@allocatedBy' == '@strQuarters') {
+        }
+        else if ('@allocatedBy' == '@strQuarters') {
             for (var i = 1; i <= 4; i++) {
                 strMonthHTML += '<div class="budgetMonth">';
                 if (i == 1) {
@@ -333,13 +410,13 @@ else if ('@allocatedBy' == '@strQuarters') {
                 else if (i == 2) {
                     strMonthHTML += '<span class="title source-sans-proregular">Q2</span>';
                     if ('@PercAllocated.Apr' <= 100)
-                            strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;"></span></div>';
-                        else
-                            strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;background-color:#FF931E;" class="error"></span></div>';
-                    }
-                    else if (i == 3) {
-                        strMonthHTML += '<span class="title source-sans-proregular">Q3</span>';
-                        if ('@PercAllocated.Jul' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;background-color:#FF931E;" class="error"></span></div>';
+                }
+                else if (i == 3) {
+                    strMonthHTML += '<span class="title source-sans-proregular">Q3</span>';
+                    if ('@PercAllocated.Jul' <= 100)
                         strMonthHTML += '<div title="@PercAllocated.Jul%"><span style="width:@PercAllocated.Jul%;"></span></div>';
                     else
                         strMonthHTML += '<div title="@PercAllocated.Jul%"><span style="width:@PercAllocated.Jul%;background-color:#FF931E;" class="error"></span></div>';
@@ -352,73 +429,73 @@ else if ('@allocatedBy' == '@strQuarters') {
                         strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;background-color:#FF931E;" class="error"></span></div>';
                 }
 
-    strMonthHTML += '</div>';
-}
-}
-else {
-    for (var i = 1; i <= 12; i++) {
-        strMonthHTML += '<div class="budgetMonth">';
-        if (i == 1) {
-            strMonthHTML += '<span class="title source-sans-proregular">JAN</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                strMonthHTML += '</div>';
+            }
         }
-        else if (i == 2) {
-            strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 3) {
-            strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 4) {
-            strMonthHTML += '<span class="title source-sans-proregular">APR</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 5) {
-            strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 6) {
-            strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        else {
+            for (var i = 1; i <= 12; i++) {
+                strMonthHTML += '<div class="budgetMonth">';
+                if (i == 1) {
+                    strMonthHTML += '<span class="title source-sans-proregular">JAN</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 2) {
+                    strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 3) {
+                    strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 4) {
+                    strMonthHTML += '<span class="title source-sans-proregular">APR</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 5) {
+                    strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 6) {
+                    strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
 
-        }
-        else if (i == 7) {
-            strMonthHTML += '<span class="title source-sans-proregular">JUL</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 7) {
+                    strMonthHTML += '<span class="title source-sans-proregular">JUL</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
 
-        }
-        else if (i == 8) {
-            strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 8) {
+                    strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
 
-        }
-        else if (i == 9) {
-            strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 9) {
+                    strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
 
-        }
-        else if (i == 10) {
-            strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 10) {
+                    strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
 
-        }
-        else if (i == 11) {
-            strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 11) {
+                    strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
 
-        }
-        else if (i == 12) {
-            strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 12) {
+                    strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
 
+                }
+                strMonthHTML += '</div>';
+            }
         }
-        strMonthHTML += '</div>';
+        $('#monthContainer').html(strMonthHTML);
+
     }
-}
-    $('#monthContainer').html(strMonthHTML);
-
-}
 
 </script>
 <script type="text/javascript">
@@ -436,18 +513,32 @@ else {
         var id = CurrentPlanId;
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
+    //Added By Maitri Gandhi on 19/5/2016 for #2197
+    function OpenPlanInspectPopup() {
+        var id = CurrentPlanId;
+        alert(id);
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+    }
 
-     function AssignDefaultValue() {
-         $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
-             $(this).attr("myValue", $(this).val());
-         });
-     }
+    function AssignDefaultValue() {
+        $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
+            $(this).attr("myValue", $(this).val());
+        });
+    }
 
-     $("[linktype=campaign],[linktype=program],[linktype=tactic]").click(function (e) {
-         var section = $(this).attr('linktype');
-         var id = $(this).attr('id');
-         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+    $("[linktype=campaign],[linktype=program],[linktype=tactic]").click(function (e) {
+        var section = $(this).attr('linktype');
+        var id = $(this).attr('id');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
+    //Added By Maitri Gandhi on 19/5/2016 for #2197
+    function OpenOtherInspectPopup(id, section) {
+        alert(id + " " + section);
+        var section = section;
+        var id = id;//$(this).attr('id');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+    }
+
     $('#btnClueTip').click(function () {
         var entityId = $('#entityDetails').val();
         var section = $('#entityDetails').attr('section').toString();
@@ -543,5 +634,60 @@ else {
     });
     $('.column2,.column1').scroll(function () {
         $('.cluetip').css('display', 'none');
+    });
+
+    HomeGrid.attachEvent("onOpenEnd", function (id, state) {
+        debugger;
+        var isquarter = false;
+        if ('@isquarter' == 'True') {
+            isquarter = true;
+        }
+
+        var selfClickMe = $('.clickmeAnchor');
+        if (!selfClickMe.data('cluetip-initd')) {
+            selfClickMe.cluetip({
+                activation: 'click',
+                arrows: true,
+                dropShadow: false,
+                sticky: true,
+                mouseOutClose: false,
+                local: true,
+                isQuarter: isquarter,
+                positionBy: "mouse"
+            }).data('cluetip-initd', true);
+        }
+
+        //var selfProgram = $('.clickmeprogram');
+
+        //if (!selfProgram.data('cluetip-initd')) {
+        //    selfProgram.cluetip({
+        //        activation: 'click',
+        //        arrows: true,
+        //        dropShadow: false,
+        //        sticky: true,
+        //        mouseOutClose: false,
+        //        local: true,
+        //        isQuarter: isquarter,
+        //        positionBy: "mouse"
+        //    }).data('cluetip-initd', true);
+        //}
+
+        //var selfTactic = $('.clickmetactic');
+
+        //if (!selfTactic.data('cluetip-initd')) {
+        //    selfTactic.cluetip({
+        //        activation: 'click',
+        //        arrows: true,
+        //        dropShadow: false,
+        //        sticky: true,
+        //        mouseOutClose: false,
+        //        local: true,
+        //        isQuarter: isquarter,
+        //        positionBy: "mouse"
+        //    }).data('cluetip-initd', true);
+        //}
+
+
+
     });
 </script>
