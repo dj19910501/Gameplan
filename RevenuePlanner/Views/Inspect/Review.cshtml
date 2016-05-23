@@ -395,37 +395,8 @@
                                 </a>
                             </div>
                             <div class="span1 margin-top16">
-                                <input id="marketoIntegrationToggle" type="checkbox" onchange=toggleMarketoSettings()>
+                                <input id="marketoIntegrationToggle" type="checkbox" >
                             </div>
-
-                            <div id="MarketoCampaignFolder" class="dd-Wraper margin-bottom20" style="padding-left: 20px; display : none">
-                                <div class="cf form-group">
-                                    <label>Campaign Folder<span class="required-asterisk"> * </span></label>
-                                    <span style="min-width: 100%; position: relative; display: block;">
-                                        @Html.DropDownListFor(m => m.CampaignfolderValue, new SelectList((System.Collections.IEnumerable)ViewBag.CampaignFolderList, "id", "CampaignFolderName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "CampaignFolderList", require = "true" })
-                                    </span>
-                        </div>
-                            </div>
-
-                            <div id="MarketoProgramType" class="dd-Wraper margin-bottom20" style="padding-left: 20px; display : none">
-                                <div class="cf form-group">
-                                    <label>Program Type<span class="required-asterisk"> * </span></label>
-                                    <span style="min-width: 100%; position: relative; display: block;">
-                                        @Html.DropDownListFor(m => m.programType, new SelectList(ViewBag.DDLProgramType, "Value", "Text"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "ddlprogramtype", require = "true" })
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div id="MarketoChannel" class="dd-Wraper margin-bottom20" style="padding-left: 20px; display : none">
-                                <div class="cf form-group">
-                                    <label>Channel<span class="required-asterisk"> * </span></label>
-                                    <span style="min-width: 100%; position: relative; display: block;">
-                                        @Html.DropDownListFor(m => m.Channel, new SelectList((System.Collections.IEnumerable)ViewBag.DDLChannel, "ChannelName", "ChannelName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "ddlchannel", require = "true" })
-                                        @Html.DropDownList("ParentChannel", new SelectList((System.Collections.IEnumerable)ViewBag.DDLChannel, "Parentprogramid", "ChannelName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect hide", @id = "getchannelparent", require = "true" })
-                                    </span>
-                                </div>
-                            </div>
-
                         </div>
                      
                     }
@@ -670,35 +641,6 @@
             CustomName: '@Common.CustomTitle'
         }).multiselectfilter();
 
-        $('#CampaignFolderList').multiselect({
-            multiple: false,
-            noneSelectedText: "Please Select",
-            selectedList: 1,
-            CustomName: '@Common.CustomTitle'
-        }).multiselectfilter();
-        var spanMarketo = $('#multipleselect_CampaignFolderList');
-        $('#btnMultiselect_CampaignFolderList').after(spanMarketo); // to create dropdown menu under selectbox
-
-
-        $('#ddlprogramtype').multiselect({
-            multiple: false,
-            noneSelectedText: "Please Select",
-            selectedList: 1,
-            CustomName: '@Common.CustomTitle'
-        }).multiselectfilter();
-        var spanprogramMarketo = $('#multipleselect_ddlprogramtype');
-        $('#btnMultiselect_ddlprogramtype').after(spanprogramMarketo); // to create dropdown menu under selectbox
-
-
-        $('#ddlchannel').multiselect({
-            multiple: false,
-            noneSelectedText: "Please Select",
-            selectedList: 1,
-            CustomName: '@Common.CustomTitle'
-        }).multiselectfilter();
-        var spanchannelMarketo = $('#multipleselect_ddlchannel');
-        $('#btnMultiselect_ddlchannel').after(spanchannelMarketo); // to create dropdown menu under selectbox
-
 
         var spanWorkFrontRequestAssignee = $('#multipleselect_WorkFrontRequestAssignee');
         $('#btnMultiselect_WorkFrontRequestAssignee').after(spanWorkFrontRequestAssignee); // to create dropdown menu under selectbox
@@ -743,15 +685,9 @@
                 if (_intgrtnType == '@Enums.IntegrationType.Marketo.ToString()') {
                     if (isSyncMarketo.toLowerCase() == 'true') {
                         eleToggle.bootstrapToggle('on');            // Set Marketo toggle button to ON.
-                        $("#MarketoCampaignFolder").css('display','block');
-                        $("#MarketoProgramType").css('display','block');
-                        $("#MarketoChannel").css('display','block');
                     }
                     else {
                         eleToggle.bootstrapToggle('off');           // Set Marketo toggle button to OFF.
-                        $("#MarketoCampaignFolder").css('display','none');
-                        $("#MarketoProgramType").css('display','none');
-                        $("#MarketoChannel").css('display','none');
                     }
                 }
                 if (_intgrtnType == '@Enums.IntegrationType.WorkFront.ToString()') {
@@ -994,19 +930,6 @@
                 }
             }
             // End - Added by Viral Kaidya for #2002 - Save Sync settings for Workfront on Sync button click
-
-            var Campainfoldervalue = "";
-            var ProgramType = "";
-            var Channel = "";
-            if(isSyncMarketo == true)
-            {
-                Campainfoldervalue = $('#CampaignFolderList').attr('value');
-                ProgramType = $('#ddlprogramtype').attr('value');
-                Channel = $('#ddlchannel').attr('value');
-
-
-            }
-
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/SaveSyncToIntegration/")',
@@ -1020,10 +943,7 @@
                     isSyncMarketo: isSyncMarketo,
                     approvalBehaviorWorkFront: wfTacticApproval,
                     requestQueueWF: requestQueue,
-                    assigneeWF: assignee,
-                    Campainfoldervalue: Campainfoldervalue,
-                    ProgramType: ProgramType,
-                    Channel: Channel
+                    assigneeWF: assignee
                 },
                 success: function (data) {
                     if (data.result) {
@@ -1221,16 +1141,6 @@
                 }
             }
 
-            var Campainfoldervalue = "";
-            var ProgramType = "";
-            var Channel = "";
-            if(isSyncMarketo == true)
-            {
-                Campainfoldervalue = $('#CampaignFolderList').attr('value');
-                ProgramType = $('#ddlprogramtype').attr('value');
-                Channel =  $('#ddlchannel').attr('value');
-
-            }
             //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919 & #1921.
             $.ajax({
                 type: 'POST',
@@ -1246,10 +1156,8 @@
                     isSyncMarketo: isSyncMarketo,
                     approvalBehaviorWorkFront: wfTacticApproval,
                     requestQueueWF: requestQueue,
-                    assigneeWF: assignee,
-                    Campainfoldervalue : Campainfoldervalue,
-                    ProgramType: ProgramType,
-                    Channel: Channel
+                    assigneeWF: assignee
+                  
                 },
                 success: function (data) {
                     if (data != 'undefined') {
@@ -1317,84 +1225,7 @@
         $('.accordion').on('shown.bs.collapse', toggleChevron);
 
     });
-    //Added By Komal Rawal for #2134 for channel and program type dropdown dependency
-    var LiCount = 0;
-    var Parentprogramtype = [];
-    var Valuesinlist = [];
-    var ProgramTypeValue = "";
-    var LiValue = "";
-    var SelectedValue = "";
-    $('#ddlprogramtype').on('change', function () {
-         ProgramTypeValue = $(this).val();
-         LiCount = 0;
-         Parentprogramtype = [];
-         Valuesinlist = [];
-        $("#getchannelparent option[value = '"+ ProgramTypeValue +"']").each(function(){
-
-            Parentprogramtype.push($(this).text().toLowerCase());
-        })
-        $('#multipleselect_ddlchannel ul li').each(function () {
-            LiValue = $(this).find('input').val();
-            if(LiValue != undefined && LiValue != 'undefined')
-            {
-                if ( Parentprogramtype.indexOf(LiValue.toLowerCase()) >= 0|| LiValue == "") {
-                    if(LiValue != "")
-                    {
-                        Valuesinlist.push(LiValue);
-                        LiCount++;
-                    }
-                  
-                }
-            }
-        });
-
-        SelectedValue =  $('#btnMultiselect_ddlchannel span').text();
-        if(LiCount == 0 || Valuesinlist.indexOf(SelectedValue) < 0)
-        {
-            $('#btnMultiselect_ddlchannel span').text("Please Select");
-            $("#ddlchannel").val("");
-        }
-
-    });
-
-    $('#btnMultiselect_ddlchannel').on('click', function () {
-         LiCount = 0;
-         ProgramTypeValue = $('#ddlprogramtype').val();
-         Parentprogramtype = [];
-         Valuesinlist = [];
-        $("#getchannelparent option[value = '"+ ProgramTypeValue +"']").each(function(){
-
-            Parentprogramtype.push($(this).text().toLowerCase());
-        })
-        $('#multipleselect_ddlchannel ul li').each(function () {
-            LiValue = $(this).find('input').val();
-            if(LiValue != undefined && LiValue != 'undefined')
-            {
-                if ( Parentprogramtype.indexOf(LiValue.toLowerCase()) >= 0|| LiValue == "") {
-                    $(this).css('display','block');
-                    if(LiValue != "")
-                    {
-                        Valuesinlist.push(LiValue);
-                        LiCount++;
-                    }
-                  
-                }
-                else {
-                    $(this).css('display','none');
-                }
-            }
-           
-        });
-
-        SelectedValue =  $('#btnMultiselect_ddlchannel span').text();
-        if(LiCount == 0 || Valuesinlist.indexOf(SelectedValue) < 0)
-        {
-            $('#btnMultiselect_ddlchannel span').text("Please Select");
-            $("#ddlchannel").val("");
-        }
-    });
-
-    //End
+ 
 
     function showHide(id) {
         var el = document.getElementById(id);
@@ -1419,23 +1250,23 @@
         }
     }
 
-    function toggleMarketoSettings(){
-        var wfToggle = document.getElementById('marketoIntegrationToggle');
-        var wfChecked = wfToggle.checked;
-        if(wfChecked)
-        {
-            $("#MarketoCampaignFolder").css('display','block');
-            $("#MarketoProgramType").css('display','block');
-            $("#MarketoChannel").css('display','block');
-        }
-        else
-        {
-            $("#MarketoCampaignFolder").css('display','none');
-            $("#MarketoProgramType").css('display','none');
-            $("#MarketoChannel").css('display','none');
-        }
+    //function toggleMarketoSettings(){
+    //    var wfToggle = document.getElementById('marketoIntegrationToggle');
+    //    var wfChecked = wfToggle.checked;
+    //    if(wfChecked)
+    //    {
+    //        $("#MarketoCampaignFolder").css('display','block');
+    //        $("#MarketoProgramType").css('display','block');
+    //        $("#MarketoChannel").css('display','block');
+    //    }
+    //    else
+    //    {
+    //        $("#MarketoCampaignFolder").css('display','none');
+    //        $("#MarketoProgramType").css('display','none');
+    //        $("#MarketoChannel").css('display','none');
+    //    }
 
-    }
+    //}
 
     function toggleRequestOptions() {
         var request = document.getElementById('workFrontRequestOnApproval');
@@ -1554,16 +1385,7 @@
         //if ($(this).hasClass("icon-check-blue")) { // if Deployed To Integration 'No'.
         //    isDeployToIntegration = false;
         //}
-        var Campainfoldervalue = "";
-        var ProgramType = "";
-        var Channel = "";
-        if(isSyncMarketo == true)
-        {
-            Campainfoldervalue = $('#CampaignFolderList').attr('value');
-            ProgramType = $('#ddlprogramtype').attr('value');
-            Channel =  $('#ddlchannel').attr('value');
-
-        }
+    
 
         $.ajax({
             async: false,
@@ -1571,8 +1393,7 @@
             url: '@Url.Content("~/Inspect/SaveReviewIntegrationInfo/")',
             data: {
                 title: title, Id: planTacticId, isDeployToIntegration: isDeployToIntegration, isSyncSF: isSyncSF, isSyncEloqua: isSyncEloqua, isSyncWorkFront: isSyncWorkFront,
-                isSyncMarketo: isSyncMarketo, approvalBehaviorWorkFront: wfTacticApproval, requestQueueWF: requestQueue, assigneeWF: assignee,Campainfoldervalue:Campainfoldervalue,  ProgramType: ProgramType,
-                Channel: Channel
+                isSyncMarketo: isSyncMarketo, approvalBehaviorWorkFront: wfTacticApproval, requestQueueWF: requestQueue, assigneeWF: assignee
             },
             success: function (data) {
                 if (!data.IsDuplicate) {
@@ -1631,24 +1452,6 @@
                 }
             }
 
-            //Modified By komal Rawal for #2134 add folder in inspect popup
-            if  (MarketoToggle !=null && MarketoToggle.checked == true) {
-                if($('#CampaignFolderList').val() == "")
-                {
-                    $('#btnMultiselect_CampaignFolderList').addClass('error');
-                    errorCount++;
-                }
-                if($('#ddlprogramtype').val() == "")
-                {
-                    $('#btnMultiselect_ddlprogramtype').addClass('error');
-                    errorCount++;
-                }
-                if($('#ddlchannel').val() == "")
-                {
-                    $('#btnMultiselect_ddlchannel').addClass('error');
-                    errorCount++;
-                }
-            }
 
         }
 

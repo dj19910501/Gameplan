@@ -20,7 +20,6 @@ namespace RevenuePlanner.Models
         public string MarketoCampaignFolderId { get; set; }
         public string ProgramType { get; set; }
         public string Channel { get; set; }
-        public Nullable<bool> IsDeleted { get; set; }
         public Nullable<int> IntegrationInstanceId { get; set; }
         public Nullable<System.Guid> LastModifiedBy { get; set; }
         public Nullable<System.DateTime> LastModifiedDate { get; set; }

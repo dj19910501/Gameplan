@@ -14648,8 +14648,14 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     display: table-cell; 
 }
 /* Date picker issue Bhumika 25-3-2015  End*/
-
-
+#frm_tactics .content label{
+    margin-bottom: 0;
+    margin-top: 14px;
+}
+#frm_tactics .content  label:first-child{ margin-top: 0;}
+#frm_tactics .content > input, #frm_tactics .content textarea{
+    margin-bottom: 1px;
+}
 
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {

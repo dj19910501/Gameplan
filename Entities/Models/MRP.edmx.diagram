@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="bb8fdfed9bf64c98807c1b637575aba9" Name="Diagram1" ZoomLevel="69">
+      <Diagram DiagramId="bb8fdfed9bf64c98807c1b637575aba9" Name="Diagram1" ZoomLevel="43">
         <EntityTypeShape EntityType="MRPModel.BestInClass" Width="1.5" PointX="4.8502290532226811" PointY="23.631975199855852" />
         <EntityTypeShape EntityType="MRPModel.CampaignNameConvention" Width="1.5" PointX="9.2341701673502889" PointY="18.545508214526581" />
         <EntityTypeShape EntityType="MRPModel.ChangeLog" Width="1.5" PointX="11.991676596920787" PointY="30.812232240481411" />
@@ -179,7 +179,7 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" />
         <AssociationConnector Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceMarketo" />
-        <EntityTypeShape EntityType="MRPModel.MarketoEntityValueMapping" Width="1.5" PointX="18.375" PointY="0.75" />
+        <EntityTypeShape EntityType="MRPModel.MarketoEntityValueMapping" Width="1.5" PointX="7.25" PointY="48.875" />
         <AssociationConnector Association="MRPModel.FK_MarketoEntityValueMapping_IntegrationInstance" />
         </Diagram>
     </edmx:Diagrams>

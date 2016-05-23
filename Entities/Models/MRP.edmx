@@ -599,7 +599,6 @@
           <Property Name="MarketoCampaignFolderId" Type="nvarchar" MaxLength="255" />
           <Property Name="ProgramType" Type="nvarchar" MaxLength="1000" />
           <Property Name="Channel" Type="nvarchar" MaxLength="1000" />
-          <Property Name="IsDeleted" Type="bit" />
           <Property Name="IntegrationInstanceId" Type="int" />
           <Property Name="LastModifiedBy" Type="uniqueidentifier" />
           <Property Name="LastModifiedDate" Type="datetime" />
@@ -5669,7 +5668,6 @@
           <Property Name="MarketoCampaignFolderId" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="ProgramType" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Name="Channel" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
-          <Property Name="IsDeleted" Type="Boolean" />
           <Property Name="IntegrationInstanceId" Type="Int32" />
           <Property Name="LastModifiedBy" Type="Guid" />
           <Property Name="LastModifiedDate" Type="DateTime" Precision="3" />
@@ -6860,7 +6858,6 @@
                 <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
                 <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
                 <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="Channel" ColumnName="Channel" />
                 <ScalarProperty Name="ProgramType" ColumnName="ProgramType" />
                 <ScalarProperty Name="MarketoCampaignFolderId" ColumnName="MarketoCampaignFolderId" />

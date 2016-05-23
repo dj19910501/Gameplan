@@ -1378,7 +1378,7 @@ namespace RevenuePlanner.Controllers
                 if (isIntegratedWithMarketo)
                 {
                     var EntityType = Enums.FilterLabel.TacticType.ToString();
-                    SelectCampaignFolderValue = objDbMrpEntities.MarketoEntityValueMappings.Where(val => val.EntityID == objTacticTypeMdoel.TacticTypeId && val.EntityType == EntityType && val.IsDeleted == false).FirstOrDefault();
+                    SelectCampaignFolderValue = objDbMrpEntities.MarketoEntityValueMappings.Where(val => val.EntityID == objTacticTypeMdoel.TacticTypeId && val.EntityType == EntityType).FirstOrDefault();
                     if (SelectCampaignFolderValue != null)
                     {
 
@@ -3160,7 +3160,7 @@ namespace RevenuePlanner.Controllers
             {
                 using(objDbMrpEntities = new MRPEntities())
                 {
-                    MarketoEntityValueMapping MarketoValueExists = objDbMrpEntities.MarketoEntityValueMappings.Where(set => set.EntityID == EntityId && set.IsDeleted == false).FirstOrDefault();
+                    MarketoEntityValueMapping MarketoValueExists = objDbMrpEntities.MarketoEntityValueMappings.Where(set => set.EntityID == EntityId).FirstOrDefault();
 
                     MarketoEntityValueMapping ObjMarketoSettings;
                     if (MarketoValueExists == null) //If no tactic type entry exists for Marketo in the database. Create a new one
@@ -3181,7 +3181,6 @@ namespace RevenuePlanner.Controllers
                     ObjMarketoSettings.Channel = Channel;
                     ObjMarketoSettings.LastModifiedDate = DateTime.Now;
                     ObjMarketoSettings.LastModifiedBy = Sessions.User.UserId;
-                    ObjMarketoSettings.IsDeleted = false;
                     objDbMrpEntities.SaveChanges();
                 }
             }

@@ -3140,24 +3140,7 @@ namespace RevenuePlanner.Controllers
                 tSetting = null;
                 tRequest = null;
             }
-			//Added By Komal Rawal for #2134
-            MarketoEntityValueMapping SelectCampaignFolderValue;
-            if (isSyncMarketo)
-            {
-                var EntityType = Enums.EntityType.Tactic.ToString();
-                SelectCampaignFolderValue = db.MarketoEntityValueMappings.Where(val => val.EntityID == pcpt.PlanTacticId && val.EntityType == EntityType && val.IsDeleted == false).FirstOrDefault();
-                if (SelectCampaignFolderValue != null)
-                {
-                    _inspectmodel.CampaignfolderValue = SelectCampaignFolderValue.MarketoCampaignFolderId;
-                    _inspectmodel.programType = SelectCampaignFolderValue.ProgramType;
-                    _inspectmodel.Channel = SelectCampaignFolderValue.Channel;
-                }
-
-            }
-
-            ViewBag.CampaignFolderList = "";
-            ViewBag.DDLProgramType = "";
-            ViewBag.DDLChannel = "";
+		
             ///Begin Added by Brad Gray 08-10-2015 for PL#1462
             Dictionary<string, string> IntegrationLinkDictionary = new Dictionary<string, string>();
 
@@ -3174,29 +3157,6 @@ namespace RevenuePlanner.Controllers
                 
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance41);
 
-                //Added By Komal Rawal for #2134 to get list of dropdown using api
-                ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Progrmatype.ToString(), pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceMarketoID);
-                MarketoDataObject CampaignFolderList = ObjApiintegration.GetProgramChannellistData();
-
-                //ViewBag.CampaignFolderList = CampaignFolderList.folders.Select(list => new
-                //{
-                //    id = list.Value,
-                //    CampaignFolderName = list.Key
-                //});
-
-                ViewBag.DDLProgramType = CampaignFolderList.program.Select(list => new
-                {
-                    Text = list.Key,
-                    Value = list.Value,
-                }).ToList();
-
-
-                ViewBag.DDLChannel = CampaignFolderList.channels.Select(list => new
-                {
-                    id = list.id,
-                    ChannelName = list.name,
-                    Parentprogramid = list.applicableProgramType
-                });
             }
 
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false)
@@ -6810,7 +6770,7 @@ namespace RevenuePlanner.Controllers
             return null;
         }
 
-        public JsonResult SaveReviewIntegrationInfo(string title = "", string Id = "", string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string isSyncMarketo = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "", string Campainfoldervalue = "", string ProgramType = "", string Channel = "")
+        public JsonResult SaveReviewIntegrationInfo(string title = "", string Id = "", string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string isSyncMarketo = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
         {
             bool IsSyncSF = false, IsSyncEloqua = false, IsSyncWorkFront = false, IsDeployToIntegration = false, IsDuplicate = false, IsSyncMarketo = false; // Declare local variables.
             try
@@ -6843,11 +6803,7 @@ namespace RevenuePlanner.Controllers
                     {
                         SaveWorkFrontTacticReviewSettings(objTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
                     }
-                    if (IsSyncMarketo)
-                    {
-                        SaveMarketoReviewSettings(objTactic.PlanTacticId, Enums.EntityType.Tactic.ToString(), Campainfoldervalue, ProgramType, Channel);
-
-                    }
+                  
 
 
 
@@ -6871,10 +6827,7 @@ namespace RevenuePlanner.Controllers
                         {
                             SaveWorkFrontTacticReviewSettings(objLinkedTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);
                         }
-                        if (IsSyncMarketo)
-                        {
-                            SaveMarketoReviewSettings(objLinkedTactic.PlanTacticId, Enums.EntityType.Tactic.ToString(), Campainfoldervalue, ProgramType, Channel);
-                        }
+                      
 
                     }
                     #endregion
@@ -6970,38 +6923,7 @@ namespace RevenuePlanner.Controllers
             }
         }
 
-        //Added By Komal Rawal for #2134 to save marketo settings
-        public void SaveMarketoReviewSettings(int EntityId, string EntityType, string MarketoCampaignFolderName, string ProgramType, string Channel)
-        {
-            try
-            {
-                MarketoEntityValueMapping MarketoValueExists = db.MarketoEntityValueMappings.Where(set => set.EntityID == EntityId && set.IsDeleted == false).FirstOrDefault();
-
-                MarketoEntityValueMapping ObjMarketoSettings;
-                if (MarketoValueExists == null) //If no tactic entry exists for Marketo in the database. Create a new one
-                {
-                    ObjMarketoSettings = new MarketoEntityValueMapping();
-                    db.Entry(ObjMarketoSettings).State = EntityState.Added;
-                }
-                else
-                {
-                    ObjMarketoSettings = MarketoValueExists;
-                    db.Entry(ObjMarketoSettings).State = EntityState.Modified;
-                }
-
-                ObjMarketoSettings.EntityID = EntityId;
-                ObjMarketoSettings.EntityType = EntityType;
-                ObjMarketoSettings.MarketoCampaignFolderId = MarketoCampaignFolderName;
-                ObjMarketoSettings.ProgramType = ProgramType;
-                ObjMarketoSettings.Channel = Channel;
-                ObjMarketoSettings.IsDeleted = false;
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-            }
-        }
+     
         #endregion
 
         #region "Improvement Tactic related Functions"
@@ -11263,7 +11185,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Plan Tactic Id.</param>
         /// <param name="section">Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <param name="IsDeployedToIntegration">bool value</param>
-        public JsonResult SaveSyncToIntegration(int id, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string isSyncMarketo = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "", string Campainfoldervalue = "", string ProgramType = "", string Channel = "")
+        public JsonResult SaveSyncToIntegration(int id, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string isSyncMarketo = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
         {
             bool returnValue = false;
             string strPlanEntity = string.Empty;
@@ -11293,11 +11215,7 @@ namespace RevenuePlanner.Controllers
                         {
                             SaveWorkFrontTacticReviewSettings(objTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
                         }
-                        if (IsSyncMarketo)
-                        {
-                            SaveMarketoReviewSettings(objTactic.PlanTacticId, Enums.EntityType.Tactic.ToString(), Campainfoldervalue, ProgramType, Channel);
-
-                        }
+                      
                         objTactic.IsDeployedToIntegration = IsDeployedToIntegration;
                         objTactic.IsSyncSalesForce = IsSyncSF;
                         objTactic.IsSyncEloqua = IsSyncEloqua;
@@ -11323,11 +11241,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 SaveWorkFrontTacticReviewSettings(objLinkedTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
                             }
-                            if (IsSyncMarketo)
-                            {
-                                SaveMarketoReviewSettings(objLinkedTactic.PlanTacticId, Enums.EntityType.Tactic.ToString(), Campainfoldervalue, ProgramType, Channel);
-
-                            }
+                       
                             db.Entry(objLinkedTactic).State = EntityState.Modified;
                         }
                         #endregion
@@ -11873,7 +11787,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="section">Decide for wich section (tactic,program or campaign) status will be updated)</param>
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
         [HttpPost]
-        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string isSyncMarketo = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "", string Campainfoldervalue = "", string ProgramType = "", string Channel = "")
+        public JsonResult ApprovedTactic(int planTacticId, string status, string section, string isDeployToIntegration = "", string isSyncSF = "", string isSyncEloqua = "", string isSyncWorkFront = "", string isSyncMarketo = "", string approvalBehaviorWorkFront = "", string requestQueueWF = "", string assigneeWF = "")
         {
             int planid = 0;
             int result = 0;
@@ -11974,11 +11888,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         SaveWorkFrontTacticReviewSettings(tactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
                                     }
-                                    if (IsSyncMarketo)
-                                    {
-                                        SaveMarketoReviewSettings(tactic.PlanTacticId, Enums.EntityType.Tactic.ToString(), Campainfoldervalue, ProgramType, Channel);
-
-                                    }
+                                 
 
                                     tactic.IsDeployedToIntegration = IsDeployToIntegration;
                                     tactic.IsSyncEloqua = IsSyncEloqua;
@@ -12004,11 +11914,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             SaveWorkFrontTacticReviewSettings(Linkedtacticobj, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
                                         }
-                                        if (IsSyncMarketo)
-                                        {
-                                            SaveMarketoReviewSettings(Linkedtacticobj.PlanTacticId, Enums.EntityType.Tactic.ToString(), Campainfoldervalue, ProgramType, Channel);
-
-                                        }
+                                       
 
                                         db.Entry(Linkedtacticobj).State = EntityState.Modified;
                                     }

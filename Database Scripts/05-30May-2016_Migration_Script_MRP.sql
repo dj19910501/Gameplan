@@ -293,13 +293,23 @@ CREATE TABLE [dbo].[MarketoEntityValueMapping](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[EntityID] [int] NULL,
 	[EntityType] [nvarchar](255) NULL,
-	[MarketoCampaignFolderName] [nvarchar](max) NULL,
-	[IsDeleted] [bit] NULL CONSTRAINT [DF_MarketoEntityValueMapping_IsDeleted]  DEFAULT ((0)),
+	[MarketoCampaignFolderId] [nvarchar](255) NULL,
+	[ProgramType] [nvarchar](1000) NULL,
+	[Channel] [nvarchar](1000) NULL,
+	[IntegrationInstanceId] [int] NULL,
+	[LastModifiedBy] [uniqueidentifier] NULL,
+	[LastModifiedDate] [datetime] NULL,
  CONSTRAINT [PK_MarketoEntityValueMapping] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
+
+ALTER TABLE [dbo].[MarketoEntityValueMapping]  WITH CHECK ADD  CONSTRAINT [FK_MarketoEntityValueMapping_IntegrationInstance] FOREIGN KEY([IntegrationInstanceId])
+REFERENCES [dbo].[IntegrationInstance] ([IntegrationInstanceId])
+
+ALTER TABLE [dbo].[MarketoEntityValueMapping] CHECK CONSTRAINT [FK_MarketoEntityValueMapping_IntegrationInstance]
+
 END
 
 Go
