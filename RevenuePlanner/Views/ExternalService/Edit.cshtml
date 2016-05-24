@@ -129,8 +129,9 @@
 
 <script type="text/javascript">
 
-    $(document).ready(function () {
-
+    $(document).ready(function () {       
+        var InstanceType = '@Model.IntegrationType.Code';
+        var InstanceMarketo = '@Enums.IntegrationType.Marketo.ToString()';
         /* Start - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
         $('.sbSelector').click(function () {
             if ($('.integrationAccordion').find('.collapse.in').css('overflow') != 'visible') {
@@ -240,17 +241,18 @@
             $(this).addClass("icon-check-blue");
             $(this).removeClass("icon-check-gray");
         }
-
-        if ($('#IsImportActuals').val().toString().toLowerCase() == "false") {
-            $(this).val("Inactive");
-            $('#IsImportActuals').val(false);
-            $(this).addClass("icon-check-gray");
-            $(this).removeClass("icon-check-blue");
-        } else {
-            $(this).val("Active");
-            $('#IsImportActuals').val(true);
-            $(this).addClass("icon-check-blue");
-            $(this).removeClass("icon-check-gray");
+        if (InstanceType != InstanceMarketo) {
+            if ($('#IsImportActuals').val().toString().toLowerCase() == "false") {
+                $(this).val("Inactive");
+                $('#IsImportActuals').val(false);
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+            } else {
+                $(this).val("Active");
+                $('#IsImportActuals').val(true);
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+            }
         }
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");

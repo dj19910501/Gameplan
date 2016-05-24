@@ -265,16 +265,16 @@ namespace Integration.Helper
             FieldMapping,
             DataMapping,
             SystemError,
-            MisMatchColumns,
             NoRecord,
-            RequiredFieldsNotExists,
             GetProgramDataFromPlan,
             Token,
             InvalidConnection,
             ErrorInSettingDestinationConnectin,
-            TagType,
-            MarketoIssue,
-            RequiredTagNotExist
+            RequiredTagNotExist,
+            FetchUserInfo,
+            Parameter,
+            InsertProgram,
+            UpdateProgram
         }
     }
 }

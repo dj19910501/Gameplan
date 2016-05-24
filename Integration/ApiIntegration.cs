@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -24,7 +25,7 @@ namespace Integration
     public class LogDetails
     {
         public int? SourceId { get; set; }
-        public int? ProgramId { get; set; }
+        public int? EntityId { get; set; }
         public DateTime StartTimeStamp { get; set; }
         public DateTime EndTimeStamp { get; set; }
         public string EventName { get; set; }
@@ -137,29 +138,29 @@ namespace Integration
             marketoCredentialDictionary.Add("clientsecret", _clientsecret);
             marketoCredentialDictionary.Add("token", _marketoToken);
             HttpClient client = new HttpClient();
+           
             string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
-            Uri baseAddress = new Uri(marketoIntegrstionApi);
-            //Uri baseAddress = new Uri("http://121.244.200.162:8085/IntegrationApi/");
-
-            client.BaseAddress = baseAddress;
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-            HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_Authentication", marketoCredentialDictionary).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                ReturnObject objData = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
-                if (objData.status == true)
+            if (Directory.Exists(marketoIntegrstionApi)) {
+                Uri baseAddress = new Uri(marketoIntegrstionApi);
+                client.BaseAddress = baseAddress;
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_Authentication", marketoCredentialDictionary).Result;
+                if (response.IsSuccessStatusCode)
                 {
-                    _isAuthenticated = true;
-                    HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("Token")).Select(th => th.Description).FirstOrDefault();
+                    ReturnObject objData = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
+                    if (objData.status == true)
+                    {
+                        _isAuthenticated = true;
+                        HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("Token")).Select(th => th.Description).FirstOrDefault();
 
-                }
-                else
-                {
-                    _isAuthenticated = false;
-                    //_ErrorMessage = objData.lstLogDetails.Select(err => err.Description.ToString()).FirstOrDefault();
+                    }
+                    else
+                    {
+                        _isAuthenticated = false;
+                        //_ErrorMessage = objData.lstLogDetails.Select(err => err.Description.ToString()).FirstOrDefault();
+                    }
                 }
             }
-
         }
 
         public Dictionary<string, string> GetTargetCustomTags()

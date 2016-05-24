@@ -2469,8 +2469,16 @@ namespace RevenuePlanner.Controllers
                             objIntegrationInstance.Instance = form.Instance;
                             objIntegrationInstance.IsImportActuals = form.IsImportActuals;
                             objIntegrationInstance.IsActive = form.IsActive;
-                            objIntegrationInstance.Password = Common.Encrypt(form.Password);
-                            objIntegrationInstance.Username = form.Username;
+                            if (form.IntegrationType.Code != Enums.IntegrationInstanceType.Marketo.ToString())
+                            {
+                                objIntegrationInstance.Password = Common.Encrypt(form.Password);
+                                objIntegrationInstance.Username = form.Username;
+                            }
+                            else {
+                                objIntegrationInstance.Password = Common.Encrypt("Marketo");
+                                objIntegrationInstance.Username = "Marketo";
+
+                            }
 
                             if (IsAddOperation)
                             {
