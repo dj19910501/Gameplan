@@ -140,7 +140,7 @@ namespace Integration
             HttpClient client = new HttpClient();
            
             string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
-            if (Directory.Exists(marketoIntegrstionApi)) {
+            if (marketoIntegrstionApi != null) {
                 Uri baseAddress = new Uri(marketoIntegrstionApi);
                 client.BaseAddress = baseAddress;
                 ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
