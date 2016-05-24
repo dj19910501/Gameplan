@@ -2784,7 +2784,7 @@ namespace RevenuePlanner.Controllers
         {
             //// set values of objDbMrpEntities.Model object as per posted values and update objDbMrpEntities.Model
             string message = string.Empty;
-            using (TransactionScope scope = new TransactionScope())
+           // using (TransactionScope scope = new TransactionScope())
             {
                 try
                 {
@@ -2834,7 +2834,7 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessageIntegration"] = message;
                 }
 
-                scope.Complete();
+               // scope.Complete();
             }
 
             return Json(new { status = false, Id = id }, JsonRequestBehavior.AllowGet);
