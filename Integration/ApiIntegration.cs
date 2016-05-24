@@ -142,7 +142,7 @@ namespace Integration
             //Uri baseAddress = new Uri("http://121.244.200.162:8085/IntegrationApi/");
 
             client.BaseAddress = baseAddress;
-            //ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_Authentication", marketoCredentialDictionary).Result;
             if (response.IsSuccessStatusCode)
             {
@@ -177,6 +177,7 @@ namespace Integration
             Uri baseAddress = new Uri(marketoIntegrstionApi);
             //Uri baseAddress = new Uri("http://121.244.200.162:8085/IntegrationApi/");
             client.BaseAddress = baseAddress;
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_GetProgramFields", marketoCredentialDictionary).Result;
             if (response.IsSuccessStatusCode)
             {
@@ -217,6 +218,7 @@ namespace Integration
                 string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
                 Uri baseAddress = new Uri(marketoIntegrstionApi);
                 client.BaseAddress = baseAddress;
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_Get_Program_Channels", marketoCredentialDictionary).Result;
                 if (response.IsSuccessStatusCode)
                 {
@@ -261,6 +263,7 @@ namespace Integration
                 Uri baseAddress = new Uri(marketoIntegrstionApi);
                 // Uri baseAddress = new Uri("http://121.244.200.162:8085/IntegrationApi/");
                 client.BaseAddress = baseAddress;
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_GetFolders_MarketingActivity", marketoCredentialDictionary).Result;
                 if (response.IsSuccessStatusCode)
                 {
@@ -294,6 +297,7 @@ namespace Integration
             Uri baseAddress = new Uri(marketoIntegrstionApi);
             //Uri baseAddress = new Uri("http://localhost:54371/");
             client.BaseAddress = baseAddress;
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_PushMarketoPrograms ", objParams).Result;
             ReturnObject ro = new ReturnObject();
             if (response.IsSuccessStatusCode)

@@ -24,8 +24,8 @@
 
                 @Html.TextBoxFor(model => model.Instance, new { maxlength = "255", tabindex = "1" })
             </div>
-            if (Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString()) //Added by Rahul Shah for PL #2184
-            {
+            //if (Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString()) //Added by Rahul Shah for PL #2184
+           // {
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Username)
 
@@ -37,7 +37,7 @@
 
                 @Html.TextBoxFor(model => model.Password, new { type = "password", maxlength = "255", tabindex = "3" })
             </div>
-            }
+          //  }
             
                                                                 for (int i = 0; i < Model.IntegrationTypeAttributes.Count; i++)
                                                                 {
@@ -157,10 +157,10 @@
 <script type="text/javascript">
 
     function testIntegration() {
-        var isValid = false;
+        @*var isValid = false;*@
         var testIntegrationValidation = true;
-        var Instance = '@Model.IntegrationType.Code';
-    var InstanceMarketo = '@Enums.IntegrationType.Marketo.ToString()';
+        @*var Instance = '@Model.IntegrationType.Code';
+        var InstanceMarketo = '@Enums.IntegrationType.Marketo.ToString()';*@
         $('#content #integrationForm :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
                 if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
@@ -183,16 +183,16 @@
             return false;
         }
         //Added by Rahul Shah for PL #2184
-        if (Instance == InstanceMarketo) {
-            if ($('#integrationForm #Instance').val().trim() != "") {
-                isValid = true;
-            }
-        }
-        else if ($('#integrationForm #Instance').val().trim() != "" && $('#integrationForm #Username').val().trim() != "" && $('#integrationForm #Password').val().trim() != "") {
-            isValid = true;
-        }
+        //if (Instance == InstanceMarketo) {
+        //    if ($('#integrationForm #Instance').val().trim() != "") {
+        //        isValid = true;
+        //    }
+        //}
+        //else if ($('#integrationForm #Instance').val().trim() != "" && $('#integrationForm #Username').val().trim() != "" && $('#integrationForm #Password').val().trim() != "") {
+        //    isValid = true;
+        //}
 
-        if (isValid) {
+        if ($('#integrationForm #Instance').val().trim() != "" && $('#integrationForm #Username').val().trim() != "" && $('#integrationForm #Password').val().trim() != "") {
             $.ajax({
                 cache: false,
                 cache: false,
@@ -401,34 +401,34 @@
                                     key: 'TypeId',
                                     Value: '@Model.IntegrationTypeId'
                                 });
-                                 formSubmitEvent(url, queryStringArr);
-                                 AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
-                             }
-                             else if (data.status == 3) {
-                                 var URL = "@Url.Content("~/ExternalService/Index/")";
-                 window.location.href = URL;
-             }
-             else {
-                 $("#cSuccessGeneralSettings").html('');
-                 $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
-                 $("#successMessageGeneralSettings").slideDown(1200);
-                 $("#errorMessageGeneralSettings").slideUp(1);
-                 $('#IntegrationInstanceId').val(data.Id);
-                 AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
-             }
-         return true;
-     }
-     else {
-         $('#cErrorGeneralSettings').html('');
-         $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
-         $("#errorMessageGeneralSettings").slideDown(400);
-         $("#successMessageGeneralSettings").slideUp(1);
-         return true;
-     }
- }
+                                formSubmitEvent(url, queryStringArr);
+                                AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                            }
+                            else if (data.status == 3) {
+                                var URL = "@Url.Content("~/ExternalService/Index/")";
+                                window.location.href = URL;
+                            }
+                            else {
+                                $("#cSuccessGeneralSettings").html('');
+                                $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
+                                $("#successMessageGeneralSettings").slideDown(1200);
+                                $("#errorMessageGeneralSettings").slideUp(1);
+                                $('#IntegrationInstanceId').val(data.Id);
+                                AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                            }
+                            return true;
+                        }
+                        else {
+                            $('#cErrorGeneralSettings').html('');
+                            $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
+                            $("#errorMessageGeneralSettings").slideDown(400);
+                            $("#successMessageGeneralSettings").slideUp(1);
+                            return true;
+                        }
+                    }
                 }
             });
-}
+        }
 
         function CheckActiveStatus() {
             if (($('#hdnIsActiveIntact').val().toLowerCase().toString() != $('#IsActive').val().toLowerCase().toString()) &&
