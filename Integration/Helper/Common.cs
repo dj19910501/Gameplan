@@ -701,7 +701,7 @@ namespace Integration.Helper
             }
             command = command.TrimEnd(',');
             context.Database.ExecuteSqlCommand(command, parameters);
-            
+            context.SaveChanges();
         }
         // Add By Rahul Shah
         // Desc :: get FieldMappings data for Marketo
