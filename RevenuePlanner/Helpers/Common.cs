@@ -8306,209 +8306,248 @@ namespace RevenuePlanner.Helpers
 
         public static List<Plan> GetSpPlanList(DataTable dsPlanCampProgTac)
         {
-            var PlanList = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan
+            var PlanList = new List<Plan>();
+
+            if (dsPlanCampProgTac != null && dsPlanCampProgTac.Rows.Count > 0)
             {
-                AllocatedBy = Convert.ToString(row["AllocatedBy"]),
-                Budget = Convert.ToDouble(Convert.ToString(row["Budget"])),
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
-                CreatedDate = Convert.ToDateTime(Convert.ToString(row["CreatedDate"])),
-                DependencyDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["DependencyDate"])) ? (DateTime?)null : row["DependencyDate"]),
-                Description = (Convert.ToString(row["Description"])),
-                EloquaFolderPath = (Convert.ToString(row["EloquaFolderPath"])),
-                GoalType = (Convert.ToString(row["GoalType"])),
-                GoalValue = Convert.ToDouble(Convert.ToString(row["GoalValue"])),
-                IsActive = Convert.ToBoolean(Convert.ToString(row["IsActive"])),
-                IsDeleted = Convert.ToBoolean(Convert.ToString(row["IsDeleted"])),
-                ModelId = int.Parse(Convert.ToString(row["ModelId"])),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
-                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
-                PlanId = int.Parse(Convert.ToString(row["PlanId"])),
-                Status = Convert.ToString(row["Status"]),
-                Title = Convert.ToString(row["Title"]),
-                Version = Convert.ToString(row["Version"]),
-                Year = Convert.ToString(row["Year"])
-            }).ToList();
+                PlanList = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan
+                {
+                    AllocatedBy = Convert.ToString(row["AllocatedBy"]),
+                    Budget = Convert.ToDouble(Convert.ToString(row["Budget"])), // Change
+                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])), // Change
+                    CreatedDate = Convert.ToDateTime(Convert.ToString(row["CreatedDate"])),
+                    DependencyDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["DependencyDate"])) ? (DateTime?)null : row["DependencyDate"]),
+                    Description = (Convert.ToString(row["Description"])),
+                    EloquaFolderPath = (Convert.ToString(row["EloquaFolderPath"])),
+                    GoalType = (Convert.ToString(row["GoalType"])),
+                    GoalValue = Convert.ToDouble(Convert.ToString(row["GoalValue"])),
+                    IsActive = Convert.ToBoolean(Convert.ToString(row["IsActive"])),
+                    IsDeleted = Convert.ToBoolean(Convert.ToString(row["IsDeleted"])),
+                    ModelId = Convert.ToInt32(Convert.ToString(row["ModelId"])), // Change
+                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                    PlanId = Convert.ToInt32(Convert.ToString(row["PlanId"])), // Change
+                    Status = Convert.ToString(row["Status"]),
+                    Title = Convert.ToString(row["Title"]),
+                    Version = Convert.ToString(row["Version"]),
+                    Year = Convert.ToString(row["Year"])
+                }).ToList();
+            }
 
             return PlanList;
         }
 
         public static List<Plan_Campaign> GetSpCampaignList(DataTable dsPlanCampProgTac)
         {
-            var lstCampaign = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan_Campaign
+            var lstCampaign = new List<Plan_Campaign>();
+
+            if (dsPlanCampProgTac != null && dsPlanCampProgTac.Rows.Count > 0)
             {
-                Abbreviation = Convert.ToString(row["Abbreviation"]),
-                CampaignBudget = Convert.ToDouble(row["CampaignBudget"]),
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
-                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                Description = Convert.ToString(row["Description"]),
-                EndDate = Convert.ToDateTime(row["EndDate"]),
-                IntegrationInstanceCampaignId = Convert.ToString(row["IntegrationInstanceCampaignId"]),
-                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
-                IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
-                LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
-                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
-                PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
-                PlanId = Convert.ToInt32(row["PlanId"]),
-                StartDate = Convert.ToDateTime(row["StartDate"]),
-                Status = Convert.ToString(row["Status"]),
-                Title = Convert.ToString(row["Title"])
-            }).ToList();
+                lstCampaign = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan_Campaign
+                {
+                    Abbreviation = Convert.ToString(row["Abbreviation"]),
+                    CampaignBudget = Convert.ToDouble(Convert.ToString(row["CampaignBudget"])),
+                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])), // Change
+                    CreatedDate = Convert.ToDateTime(Convert.ToString(row["CreatedDate"])), // Change
+                    Description = Convert.ToString(Convert.ToString(row["Description"])),
+                    EndDate = Convert.ToDateTime(Convert.ToString(row["EndDate"])), // Change
+                    IntegrationInstanceCampaignId = Convert.ToString(row["IntegrationInstanceCampaignId"]),
+                    IsDeleted = Convert.ToBoolean(Convert.ToString(row["IsDeleted"])), // Change
+                    IsDeployedToIntegration = Convert.ToBoolean(Convert.ToString(row["IsDeployedToIntegration"])),
+                    LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
+                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                    PlanCampaignId = Convert.ToInt32(Convert.ToString(row["PlanCampaignId"])), // Change
+                    PlanId = Convert.ToInt32(Convert.ToString(row["PlanId"])), // Change
+                    StartDate = Convert.ToDateTime(Convert.ToString(row["StartDate"])), // Change
+                    Status = Convert.ToString(row["Status"]),
+                    Title = Convert.ToString(row["Title"])
+                }).ToList();
+            }
 
             return lstCampaign;
         }
 
         public static List<Plan_Campaign_Program> GetSpProgramList(DataTable dsPlanCampProgTac)
         {
-            var programList = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan_Campaign_Program
+            var programList = new List<Plan_Campaign_Program>();
+
+            if (dsPlanCampProgTac != null && dsPlanCampProgTac.Rows.Count > 0)
             {
-                Abbreviation = Convert.ToString(row["Abbreviation"]),
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
-                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                Description = Convert.ToString(row["Description"]),
-                EndDate = Convert.ToDateTime(row["EndDate"]),
-                IntegrationInstanceProgramId = Convert.ToString(row["IntegrationInstanceProgramId"]),
-                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
-                IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
-                LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
-                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
-                PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
-                PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
-                ProgramBudget = Convert.ToDouble(row["ProgramBudget"]),
-                StartDate = Convert.ToDateTime(row["StartDate"]),
-                Status = Convert.ToString(row["Status"]),
-                Title = Convert.ToString(row["Title"])
-            }).ToList();
+                programList = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan_Campaign_Program
+                {
+                    Abbreviation = Convert.ToString(row["Abbreviation"]),
+                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])), // Change
+                    CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                    Description = Convert.ToString(row["Description"]),
+                    EndDate = Convert.ToDateTime(row["EndDate"]),
+                    IntegrationInstanceProgramId = Convert.ToString(row["IntegrationInstanceProgramId"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
+                    LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
+                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                    PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
+                    PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
+                    ProgramBudget = Convert.ToDouble(row["ProgramBudget"]),
+                    StartDate = Convert.ToDateTime(row["StartDate"]),
+                    Status = Convert.ToString(row["Status"]),
+                    Title = Convert.ToString(row["Title"])
+                }).ToList();
+            }
 
             return programList;
         }
 
         public static List<Custom_Plan_Campaign_Program> GetSpCustomProgramList(DataTable dsPlanCampProgTac)
         {
-            var lstProgramPer = dsPlanCampProgTac.AsEnumerable().Select(row => new Custom_Plan_Campaign_Program
+            var lstProgramPer = new List<Custom_Plan_Campaign_Program>();
+
+            if (dsPlanCampProgTac != null && dsPlanCampProgTac.Rows.Count > 0)
             {
-                Abbreviation = Convert.ToString(row["Abbreviation"]),
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
-                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                Description = Convert.ToString(row["Description"]),
-                EndDate = Convert.ToDateTime(row["EndDate"]),
-                IntegrationInstanceProgramId = Convert.ToString(row["IntegrationInstanceProgramId"]),
-                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
-                IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
-                LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
-                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
-                PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
-                PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
-                ProgramBudget = Convert.ToDouble(row["ProgramBudget"]),
-                StartDate = Convert.ToDateTime(row["StartDate"]),
-                Status = Convert.ToString(row["Status"]),
-                Title = Convert.ToString(row["Title"]),
-                PlanId = Convert.ToInt32(row["PlanId"])
-            }).ToList();
+                lstProgramPer = dsPlanCampProgTac.AsEnumerable().Select(row => new Custom_Plan_Campaign_Program
+                {
+                    Abbreviation = Convert.ToString(row["Abbreviation"]),
+                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])),
+                    CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                    Description = Convert.ToString(row["Description"]),
+                    EndDate = Convert.ToDateTime(row["EndDate"]),
+                    IntegrationInstanceProgramId = Convert.ToString(row["IntegrationInstanceProgramId"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
+                    LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
+                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                    PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
+                    PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
+                    ProgramBudget = Convert.ToDouble(row["ProgramBudget"]),
+                    StartDate = Convert.ToDateTime(row["StartDate"]),
+                    Status = Convert.ToString(row["Status"]),
+                    Title = Convert.ToString(row["Title"]),
+                    PlanId = Convert.ToInt32(row["PlanId"])
+                }).ToList();
+            }
 
             return lstProgramPer;
         }
 
         public static List<Custom_Plan_Campaign_Program_Tactic> GetSpCustomTacticList(DataTable dsPlanCampProgTac)
         {
+            var customtacticList = new List<Custom_Plan_Campaign_Program_Tactic>();
 
-            var customtacticList = dsPlanCampProgTac.AsEnumerable().Select(row => new Custom_Plan_Campaign_Program_Tactic
+            if (dsPlanCampProgTac != null && dsPlanCampProgTac.Rows.Count > 0)
             {
-                Cost = Convert.ToDouble(row["Cost"]),
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
-                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                Description = Convert.ToString(row["Description"]),
-                EndDate = Convert.ToDateTime(row["EndDate"]),
-                IntegrationInstanceEloquaId = Convert.ToString(row["IntegrationInstanceEloquaId"]),
-                IntegrationInstanceTacticId = Convert.ToString(row["IntegrationInstanceEloquaId"]),
-                IntegrationWorkFrontProjectID = Convert.ToString(row["IntegrationWorkFrontProjectID"]),
-                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
-                IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
-                IsSyncEloqua = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncEloqua"])) ? (bool?)null : row["IsSyncEloqua"]),
-                IsSyncSalesForce = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncSalesForce"])) ? (bool?)null : row["IsSyncSalesForce"]),
-                IsSyncWorkFront = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncWorkFront"])) ? (bool?)null : row["IsSyncWorkFront"]),
-                LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
-                LinkedPlanId = string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : int.Parse(Convert.ToString(row["LinkedPlanId"])),
-                LinkedTacticId = string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : int.Parse(Convert.ToString(row["LinkedTacticId"])),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
-                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
-                PlanProgramId = int.Parse(row["PlanProgramId"].ToString()),
-                PlanTacticId = int.Parse(row["PlanTacticId"].ToString()),
-                ProjectedStageValue = string.IsNullOrEmpty(Convert.ToString(row["ProjectedStageValue"])) ? (double?)null : double.Parse(Convert.ToString(row["ProjectedStageValue"])),
-                StageId = int.Parse(row["StageId"].ToString()),
-                StartDate = Convert.ToDateTime(Convert.ToString(row["StartDate"])),
-                Status = Convert.ToString(row["Status"]),
-                TacticBudget = Convert.ToDouble(row["TacticBudget"]),
-                TacticCustomName = Convert.ToString(row["TacticCustomName"]),
-                TacticTypeId = int.Parse(row["TacticTypeId"].ToString()),
-                Title = Convert.ToString(row["Title"]),
-                PlanId = int.Parse(row["PlanId"].ToString()),
-                PlanCampaignId = int.Parse(row["PlanCampaignId"].ToString()),
-                TacticTypeTtile = Convert.ToString(row["TacticTypeTtile"]),
-                ColorCode = Convert.ToString(row["ColorCode"]),
-                PlanYear = Convert.ToString(row["PlanYear"]),
-                ModelId = int.Parse(row["ModelId"].ToString()),
-                CampaignTitle = Convert.ToString(row["CampaignTitle"]),
-                ProgramTitle = Convert.ToString(row["ProgramTitle"]),
-                PlanTitle = Convert.ToString(row["PlanTitle"]),
-                StageTitle = Convert.ToString(row["StageTitle"])
-            }).ToList();
+                customtacticList = dsPlanCampProgTac.AsEnumerable().Select(row => new Custom_Plan_Campaign_Program_Tactic
+                {
+                    Cost = Convert.ToDouble(row["Cost"]),
+                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Convert.ToString(Guid.Empty) : Convert.ToString(row["CreatedBy"])),
+                    CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                    Description = Convert.ToString(row["Description"]),
+                    EndDate = Convert.ToDateTime(row["EndDate"]),
+                    IntegrationInstanceEloquaId = Convert.ToString(row["IntegrationInstanceEloquaId"]),
+                    IntegrationInstanceTacticId = Convert.ToString(row["IntegrationInstanceEloquaId"]),
+                    IntegrationWorkFrontProjectID = Convert.ToString(row["IntegrationWorkFrontProjectID"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
+                    IsSyncEloqua = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncEloqua"])) ? (bool?)null : row["IsSyncEloqua"]),
+                    IsSyncSalesForce = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncSalesForce"])) ? (bool?)null : row["IsSyncSalesForce"]),
+                    IsSyncWorkFront = Convert.ToBoolean(string.IsNullOrEmpty(Convert.ToString(row["IsSyncWorkFront"])) ? (bool?)null : row["IsSyncWorkFront"]),
+                    LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
+                    LinkedPlanId = string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : int.Parse(Convert.ToString(row["LinkedPlanId"])),
+                    LinkedTacticId = string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : int.Parse(Convert.ToString(row["LinkedTacticId"])),
+                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Convert.ToString(Guid.Empty) : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                    PlanProgramId = Convert.ToInt32(Convert.ToString(row["PlanProgramId"])),
+                    PlanTacticId = Convert.ToInt32(Convert.ToString(row["PlanTacticId"])),
+                    ProjectedStageValue = string.IsNullOrEmpty(Convert.ToString(row["ProjectedStageValue"])) ? (double?)null : double.Parse(Convert.ToString(row["ProjectedStageValue"])),
+                    StageId = Convert.ToInt32(Convert.ToString(row["StageId"])),
+                    StartDate = Convert.ToDateTime(Convert.ToString(row["StartDate"])),
+                    Status = Convert.ToString(row["Status"]),
+                    TacticBudget = Convert.ToDouble(row["TacticBudget"]),
+                    TacticCustomName = Convert.ToString(row["TacticCustomName"]),
+                    TacticTypeId = Convert.ToInt32(Convert.ToString(row["TacticTypeId"])),
+                    Title = Convert.ToString(row["Title"]),
+                    PlanId = Convert.ToInt32(Convert.ToString(row["PlanId"])),
+                    PlanCampaignId = Convert.ToInt32(Convert.ToString(row["PlanCampaignId"])),
+                    TacticTypeTtile = Convert.ToString(row["TacticTypeTtile"]),
+                    ColorCode = Convert.ToString(row["ColorCode"]),
+                    PlanYear = Convert.ToString(row["PlanYear"]),
+                    ModelId = Convert.ToInt32(Convert.ToString(row["ModelId"])),
+                    CampaignTitle = Convert.ToString(row["CampaignTitle"]),
+                    ProgramTitle = Convert.ToString(row["ProgramTitle"]),
+                    PlanTitle = Convert.ToString(row["PlanTitle"]),
+                    StageTitle = Convert.ToString(row["StageTitle"])
+                }).ToList();
+            }
 
             return customtacticList;
         }
 
         public static List<CustomField> GetSpCustomFieldList(DataTable dsCustomfield)
         {
-            var CustomFieldList = dsCustomfield.AsEnumerable().Select(row => new CustomField
+            var CustomFieldList = new List<CustomField>();
+
+            if (dsCustomfield != null && dsCustomfield.Rows.Count > 0)
             {
-                AbbreviationForMulti = Convert.ToString(row["AbbreviationForMulti"]),
-                ClientId = Guid.Parse(Convert.ToString(row["ClientId"])),
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
-                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
-                CustomFieldTypeId = Convert.ToInt32(row["CustomFieldTypeId"]),
-                Description = Convert.ToString(row["Description"]),
-                EntityType = Convert.ToString(row["EntityType"]),
-                IsDefault = Convert.ToBoolean(row["IsDefault"]),
-                IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
-                IsDisplayForFilter = Convert.ToBoolean(row["IsDisplayForFilter"]),
-                IsGet = Convert.ToBoolean(row["IsGet"]),
-                IsRequired = Convert.ToBoolean(row["IsRequired"]),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
-                ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
-                Name = Convert.ToString(row["Name"])
-            }).ToList();
+                CustomFieldList = dsCustomfield.AsEnumerable().Select(row => new CustomField
+                {
+                    AbbreviationForMulti = Convert.ToString(row["AbbreviationForMulti"]),
+                    ClientId = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ClientId"])) ? Guid.Empty.ToString() : Convert.ToString(row["ClientId"])),
+                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])),
+                    CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                    CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
+                    CustomFieldTypeId = Convert.ToInt32(row["CustomFieldTypeId"]),
+                    Description = Convert.ToString(row["Description"]),
+                    EntityType = Convert.ToString(row["EntityType"]),
+                    IsDefault = Convert.ToBoolean(row["IsDefault"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    IsDisplayForFilter = Convert.ToBoolean(row["IsDisplayForFilter"]),
+                    IsGet = Convert.ToBoolean(row["IsGet"]),
+                    IsRequired = Convert.ToBoolean(row["IsRequired"]),
+                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
+                    Name = Convert.ToString(row["Name"])
+                }).ToList();
+            }
 
             return CustomFieldList;
         }
 
         public static List<CacheCustomField> GetSpCustomFieldEntityList(DataTable dsCustomfieldEntity)
         {
-            var CustomFieldEntityList = dsCustomfieldEntity.AsEnumerable().Select(row => new CacheCustomField
+            var CustomFieldEntityList = new List<CacheCustomField>();
+
+            if (dsCustomfieldEntity != null && dsCustomfieldEntity.Rows.Count > 0)
             {
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
-                CustomFieldEntityId = Convert.ToInt32(row["CustomFieldEntityId"]),
-                CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
-                EntityId = Convert.ToInt32(row["EntityId"]),
-                Value = Convert.ToString(row["Value"])
-            }).ToList();
+                CustomFieldEntityList = dsCustomfieldEntity.AsEnumerable().Select(row => new CacheCustomField
+                {
+                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])),
+                    CustomFieldEntityId = Convert.ToInt32(row["CustomFieldEntityId"]),
+                    CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
+                    EntityId = Convert.ToInt32(row["EntityId"]),
+                    Value = Convert.ToString(row["Value"])
+                }).ToList();
+            }
 
             return CustomFieldEntityList;
         }
 
         public static List<Custom_LineItem_Budget> GetSpLineItemBudgetList(DataTable dt)
         {
-            var LineItemBudgetList = dt.AsEnumerable().Select(row => new Custom_LineItem_Budget
+            var LineItemBudgetList = new List<Custom_LineItem_Budget>();
+
+            if (dt != null && dt.Rows.Count > 0)
             {
-                BudgetDetailId = Convert.ToInt32(row["BudgetDetailId"]),
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
-                CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                Id = Convert.ToInt32(row["Id"]),
-                PlanLineItemId = Convert.ToInt32(row["PlanLineItemId"]),
-                Weightage = string.IsNullOrEmpty(Convert.ToString(row["Weightage"])) ? (byte?)null : byte.Parse(Convert.ToString(row["Weightage"]))
-            }).ToList();
+                LineItemBudgetList = dt.AsEnumerable().Select(row => new Custom_LineItem_Budget
+                {
+                    BudgetDetailId = Convert.ToInt32(row["BudgetDetailId"]),
+                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])),
+                    CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                    Id = Convert.ToInt32(row["Id"]),
+                    PlanLineItemId = Convert.ToInt32(row["PlanLineItemId"]),
+                    Weightage = string.IsNullOrEmpty(Convert.ToString(row["Weightage"])) ? (byte?)null : byte.Parse(Convert.ToString(row["Weightage"]))
+                }).ToList();
+            }
 
             return LineItemBudgetList;
         }
