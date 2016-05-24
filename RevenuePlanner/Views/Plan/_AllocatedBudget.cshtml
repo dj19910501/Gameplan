@@ -515,8 +515,7 @@
     });
     //Added By Maitri Gandhi on 19/5/2016 for #2197
     function OpenPlanInspectPopup() {
-        var id = CurrentPlanId;
-        alert(id);
+        var id = CurrentPlanId;        
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     }
 
@@ -533,8 +532,7 @@
     });
     //Added By Maitri Gandhi on 19/5/2016 for #2197
     function OpenOtherInspectPopup(id, section) {
-        alert(id + " " + section);
-        var section = section;
+                var section = section;
         var id = id;//$(this).attr('id');
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     }

@@ -7616,7 +7616,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (bm.isEditable)
                         {
-                            Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel = #loadme mnth = " + Enums.YearMonths[i] + " txt = " + planMonth[i].ToString() + "></span>";
+                            Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel = #loadme mnth='" + Enums.YearMonths[i] + "' txt = " + planMonth[i].ToString() + "></span>";
                             //Span = "<span class = orange-corner-budget onClick=cluetipClick(this) rel = #loadme mnth = " + Enums.YearMonths[i] + " txt = " + planMonth[i].ToString() + "></span>";
                         }
                         else
@@ -7645,26 +7645,28 @@ namespace RevenuePlanner.Controllers
                 for (int i = 1; i <= 11; i += 3)
                 {
                     BudgetDataObj = new Budgetdataobj();
-                    if (activityType == ActivityType.ActivityPlan)
-                    {
-                        div = "<div id =" + activityType + ActivityId.ToString() + " class='planLevel topCornner clueallocated'";
-                        QueryActivityType = ActivityType.ActivityCampaign.ToString();
-                    }
-                    else if (activityType == ActivityType.ActivityCampaign)
-                    {
-                        div = "<div id =" + activityType + ActivityId.ToString() + " class='campaignLevel topCornner clueallocated'";
-                        QueryActivityType = ActivityType.ActivityProgram.ToString();
-                    }
-                    else if (activityType == ActivityType.ActivityProgram)
-                    {
-                        div = "<div id =" + activityType + ActivityId.ToString() + " class='programLevel topCornner clueallocated'";
-                        QueryActivityType = ActivityType.ActivityTactic.ToString();
-                    }
-                    else if (activityType == ActivityType.ActivityTactic)
-                    {
-                        div = "<div id =" + activityType + ActivityId.ToString() + " class='tacticLevel topCornner clueallocated'";
-                    }
-                    //div = "<div id =" + activityType + ActivityId.ToString() + " class='planLevel topCornner clueallocated'";
+                    //Modified by Maitri Gandhi
+                    //if (activityType == ActivityType.ActivityPlan)
+                    //{
+                    //    div = "<div id =" + activityType + ActivityId.ToString() + " class='planLevel topCornner clueallocated'";
+                    //    QueryActivityType = ActivityType.ActivityCampaign.ToString();
+                    //}
+                    //else if (activityType == ActivityType.ActivityCampaign)
+                    //{
+                    //    div = "<div id =" + activityType + ActivityId.ToString() + " class='campaignLevel topCornner clueallocated'";
+                    //    QueryActivityType = ActivityType.ActivityProgram.ToString();
+                    //}
+                    //else if (activityType == ActivityType.ActivityProgram)
+                    //{
+                    //    div = "<div id =" + activityType + ActivityId.ToString() + " class='programLevel topCornner clueallocated'";
+                    //    QueryActivityType = ActivityType.ActivityTactic.ToString();
+                    //}
+                    //else if (activityType == ActivityType.ActivityTactic)
+                    //{
+                    //    div = "<div id =" + activityType + ActivityId.ToString() + " class='tacticLevel topCornner clueallocated'";
+                    //}
+
+                    div = "<div id =" + activityType + ActivityId.ToString() + " class='planLevel topCornner clueallocated'";
                     divValue = isEditable ? NewClueTipAnchorTag(Enums.YearQuarters[i], campaignMonth[i].ToString(formatThousand)) : campaignMonth[i].ToString(formatThousand);
                     double totalChildBudget = 0;
                     if (i == 1)
@@ -7687,7 +7689,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (bm.isEditable)
                         {
-                            Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel=#loadme mnth=" + Enums.YearQuarters[i] + " txt=" + campaignMonth[i].ToString() + "></span>";
+                            Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel=#loadme mnth='" + Enums.YearQuarters[i] + "' txt=" + campaignMonth[i].ToString() + "></span>";
                             //Span = "<span class = orange-corner-budget onClick = cluetipClick(this) rel=#loadme mnth=" + Enums.YearQuarters[i] + " txt=" + campaignMonth[i].ToString() + "></span>";
                         }
                         else
@@ -7712,7 +7714,7 @@ namespace RevenuePlanner.Controllers
                     if (className.Contains("budgetError"))
                     {
                         className = className.Replace(budgetError, "");
-                        div = div + "class = budgetError";
+                        div = div + " class = budgetError";
                     }
                     divValue = "---";
                     div = div + ">" + divValue + "</div>";
@@ -7744,7 +7746,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (unallocated < 0)
                         {
-                            div = div + "class = budgetError";
+                            div = div + "class=budgetError";
                         }
                     }
                     else
@@ -7752,7 +7754,7 @@ namespace RevenuePlanner.Controllers
                         unallocated = tab == "2" ? plan.MainBudgeted - sumMonth : plan.MainBudgeted - plan.Allocated;
                         if (unallocated < 0)
                         {
-                            div = div + "class = budgetError";
+                            div = div + "class=budgetError";
                         }
                     }
                     divValue = unallocated.ToString(formatThousand);
