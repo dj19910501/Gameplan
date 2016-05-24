@@ -1760,9 +1760,10 @@ namespace RevenuePlanner.Controllers
                 List<int> campaignlist = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).ToList();
                 programIds = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(tactic => tactic.PlanProgramId).Distinct().ToList<int>();
             }
-            var programList = db.Plan_Campaign_Program.Where(pc => programIds.Contains(pc.PlanProgramId))
+            //Modified by Maitri Gandhi on 24/5/2016 for #2193
+            var programList = db.Plan_Campaign_Program.Where(pc => programIds.Contains(pc.PlanProgramId) && pc.IsDeleted==false)
                     .Select(program => new { PlanProgramId = program.PlanProgramId, Title = program.Title })
-                    .OrderBy(pcp => pcp.Title).ToList();
+                    .OrderBy(pcp => pcp.Title).ToList();            
             if (programList == null)
                 return Json(new { });
             programList = programList.Where(program => !string.IsNullOrEmpty(program.Title)).OrderBy(program => program.Title, new AlphaNumericComparer()).ToList();
