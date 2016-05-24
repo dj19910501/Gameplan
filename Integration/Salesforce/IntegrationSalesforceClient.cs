@@ -7099,6 +7099,7 @@ namespace Integration.Salesforce
                     cmd.Parameters.AddWithValue("@strCreateComment", Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString());
                     cmd.Parameters.AddWithValue("@isAutoSync", Common.IsAutoSync);
                     cmd.Parameters.AddWithValue("@userId", _userId);
+                    cmd.Parameters.AddWithValue("@integrationType", Enums.IntegrationType.Salesforce.ToString()); //Added by Rahul Shah for PL #2194
                     cmd.ExecuteNonQuery();
                     conn.Close();
                     mp.Dispose();

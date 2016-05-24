@@ -258,6 +258,23 @@ namespace Integration.Helper
             CampaignFolderList,
             Progrmatype
         }
-
+        public enum MarketoAPIEventNames
+        {
+            APIcall,
+            Authentication,
+            FieldMapping,
+            DataMapping,
+            SystemError,
+            MisMatchColumns,
+            NoRecord,
+            RequiredFieldsNotExists,
+            GetProgramDataFromPlan,
+            Token,
+            InvalidConnection,
+            ErrorInSettingDestinationConnectin,
+            TagType,
+            MarketoIssue,
+            RequiredTagNotExist
+        }
     }
 }

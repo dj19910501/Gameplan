@@ -9,6 +9,7 @@ using Integration.WorkFront;
 using Integration.Helper;
 using System.Text;
 using System.Threading;
+using Integration.Marketo;
 
 namespace Integration
 {
@@ -73,6 +74,7 @@ namespace Integration
         private List<SyncError> _lstAllSyncError = new List<SyncError>();
         MRPEntities db = new MRPEntities();
         private bool IsInActiveInstance = false;
+        public bool _isAuthenticationError = false;
         private bool _isInActiveInstance
         {
             get
@@ -654,7 +656,29 @@ namespace Integration
                         _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationWorkFrontClient.errorMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
-
+                else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Marketo.ToString())) //Added by Rahul Shah for PL #2194
+                {
+                    ApiIntegration MarketoAPI = new ApiIntegration(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
+                    MarketoAPI.AuthenticateforMarketo();
+                    //_isAuthenticationError = MarketoAPI.IsAuthenticated;
+                    if (MarketoAPI.IsAuthenticated)
+                    {
+                    IntegrationMarketoClient integrationMarketoClient = new IntegrationMarketoClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
+                    Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Data Start.");
+                    List<SyncError> lstSyncError = new List<SyncError>();
+                    _isResultError = integrationMarketoClient.SyncData(out lstSyncError);
+                    _lstAllSyncError.AddRange(lstSyncError);
+                    Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Data End.");
+                    }
+                    else
+                    {
+                        LogEndErrorDescription = "Authentication Failed." ;
+                        Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
+                        _isResultError = true;
+                        IsAuthenticationError = true;
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed." , Enums.SyncStatus.Error, DateTime.Now));
+                    }
+                }
                 int integrationinstanceId = Convert.ToInt32(_integrationInstanceId);
                 using (MRPEntities dbouter = new MRPEntities())
                 {

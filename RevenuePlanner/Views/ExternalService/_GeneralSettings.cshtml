@@ -24,6 +24,8 @@
 
                 @Html.TextBoxFor(model => model.Instance, new { maxlength = "255", tabindex = "1" })
             </div>
+            if (Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString()) //Added by Rahul Shah for PL #2184
+            {
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Username)
 
@@ -35,7 +37,7 @@
 
                 @Html.TextBoxFor(model => model.Password, new { type = "password", maxlength = "255", tabindex = "3" })
             </div>
-            
+            }
             
                                                                 for (int i = 0; i < Model.IntegrationTypeAttributes.Count; i++)
                                                                 {
@@ -94,6 +96,8 @@
                     @Html.TextBoxFor(model => model.SyncFrequency.Day, new { style = "width:130px !important", maxlength = "255", tabindex = "9", placeholder = "Enter date of month" })
                 </div>
             </div>
+            if (Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())//Added by Rahul Shah for PL #2184
+            {
             <div class="cf inputs-aligned-horizontal content">
                 @Html.LabelFor(model => model.IsImportActuals, new { id = "lblImportActuals" })
                 @if (Model.IsImportActuals == true)
@@ -110,7 +114,7 @@
             <div class="cf inputs-aligned-horizontal">
                 <p>Note that imported values override user-generated values.</p>
             </div>
-            		
+            	}
                 if (Model.IntegrationInstanceId > 0)
                 {
             <div class="cf inputs-aligned-horizontal">
@@ -153,7 +157,10 @@
 <script type="text/javascript">
 
     function testIntegration() {
+        var isValid = false;
         var testIntegrationValidation = true;
+        var Instance = '@Model.IntegrationType.Code';
+    var InstanceMarketo = '@Enums.IntegrationType.Marketo.ToString()';
         $('#content #integrationForm :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
                 if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
@@ -175,8 +182,17 @@
             $("#errorMessageGeneralSettings").slideDown(400);
             return false;
         }
+        //Added by Rahul Shah for PL #2184
+        if (Instance == InstanceMarketo) {
+            if ($('#integrationForm #Instance').val().trim() != "") {
+                isValid = true;
+            }
+        }
+        else if ($('#integrationForm #Instance').val().trim() != "" && $('#integrationForm #Username').val().trim() != "" && $('#integrationForm #Password').val().trim() != "") {
+            isValid = true;
+        }
 
-        if ($('#integrationForm #Instance').val().trim() != "" && $('#integrationForm #Username').val().trim() != "" && $('#integrationForm #Password').val().trim() != "") {
+        if (isValid) {
             $.ajax({
                 cache: false,
                 cache: false,

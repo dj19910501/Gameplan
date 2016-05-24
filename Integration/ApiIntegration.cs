@@ -4,7 +4,9 @@ using RevenuePlanner.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,8 +30,24 @@ namespace Integration
         public string EventName { get; set; }
         public string Status { get; set; }
         public string Description { get; set; }
+        public string Mode { get; set; }
+    }
+    public class Parameters
+    {
+        public Dictionary<string, string> credentials { get; set; }       
+        public string applicationId { get; set; }
+        public string clientId { get; set; }
+        public List<fieldMapping> fieldMapList;
+        public string spName { get; set; }
+        public List<SpParameters> lstPramtereLilst;
     }
 
+    public class fieldMapping
+    {
+        public string sourceFieldName { get; set; }
+        public string destinationFieldName { get; set; }
+        public string marketoFieldType { get; set; }
+    }
     public class ApiIntegration
     {
         string _TypeofData;
@@ -124,7 +142,8 @@ namespace Integration
             //Uri baseAddress = new Uri("http://121.244.200.162:8085/IntegrationApi/");
 
             client.BaseAddress = baseAddress;
-            HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/AuthenticateMarketo", marketoCredentialDictionary).Result;
+            //ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_Authentication", marketoCredentialDictionary).Result;
             if (response.IsSuccessStatusCode)
             {
                 ReturnObject objData = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
@@ -158,7 +177,7 @@ namespace Integration
             Uri baseAddress = new Uri(marketoIntegrstionApi);
             //Uri baseAddress = new Uri("http://121.244.200.162:8085/IntegrationApi/");
             client.BaseAddress = baseAddress;
-            HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/GetProgramFieldsFromMarketo", marketoCredentialDictionary).Result;
+            HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_GetProgramFields", marketoCredentialDictionary).Result;
             if (response.IsSuccessStatusCode)
             {
                 ReturnObject objData = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
@@ -198,7 +217,7 @@ namespace Integration
                 string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
                 Uri baseAddress = new Uri(marketoIntegrstionApi);
                 client.BaseAddress = baseAddress;
-                HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Get_Program_Channel_List", marketoCredentialDictionary).Result;
+                HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_Get_Program_Channels", marketoCredentialDictionary).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var responseobj = response.Content.ReadAsStringAsync().Result;
@@ -254,6 +273,39 @@ namespace Integration
             return ListOfData;
         }
 
+        //Added by Rahul Shah for PL #2194 
+        public List<LogDetails> MarketoData_Push(string spName, List<fieldMapping> lstFieldsMap, Guid _clientId, List<SpParameters> spParams)
+        {
+            Parameters objParams = new Parameters();
+            List<LogDetails> logdetails = new List<LogDetails>();
+            Dictionary<string, string> marketoCredentialDictionary = new Dictionary<string, string>();
+            marketoCredentialDictionary.Add("host", _host);
+            marketoCredentialDictionary.Add("clientid", _clientid);
+            marketoCredentialDictionary.Add("clientsecret", _clientsecret);
+            marketoCredentialDictionary.Add("token", _marketoToken);
+            objParams.credentials = marketoCredentialDictionary;
+            objParams.applicationId = _applicationId.ToString();
+            objParams.clientId = _clientId.ToString();
+            objParams.fieldMapList = lstFieldsMap;
+            objParams.spName = spName;
+            objParams.lstPramtereLilst = spParams;
+            HttpClient client = new HttpClient();
+            string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+            Uri baseAddress = new Uri(marketoIntegrstionApi);
+            //Uri baseAddress = new Uri("http://localhost:54371/");
+            client.BaseAddress = baseAddress;
+            HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_PushMarketoPrograms ", objParams).Result;
+            ReturnObject ro = new ReturnObject();
+            if (response.IsSuccessStatusCode)
+            {
+                ReturnObject obj2 = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
+
+                logdetails = obj2.lstLogDetails;
+                //string json = JsonConvert.DeserializeObject(response.);
+
+            }
+            return logdetails;
+        }
     }
 
 

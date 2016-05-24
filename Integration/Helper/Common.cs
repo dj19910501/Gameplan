@@ -13,6 +13,7 @@ using System.Web;
 using System.Net.Configuration;
 using System.Configuration;
 using System.Net;
+using System.Data.SqlClient;
 
 namespace Integration.Helper
 {
@@ -702,6 +703,37 @@ namespace Integration.Helper
             context.Database.ExecuteSqlCommand(command, parameters);
             
         }
+        // Add By Rahul Shah
+        // Desc :: get FieldMappings data for Marketo
+        public DataSet GetFieldMappings(string entityType, Guid clientId, int IntegrationTypeId, int IntegrationInstanceID)
+        {
+            string clientid = clientId.ToString();
+            DataTable datatable = new DataTable();
+            DataSet dataset = new DataSet();
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+
+            command = new SqlCommand("GetFieldMappings", Connection);
+
+            using (command)
+            {
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@entityType", entityType);
+                command.Parameters.AddWithValue("@clientId", clientid);
+                command.Parameters.AddWithValue("@integrationTypeId", IntegrationTypeId);
+                command.Parameters.AddWithValue("@id", IntegrationInstanceID);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(dataset);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+            return dataset;
+        }       
     }
     #endregion
     public class CRM_EloquaMapping
@@ -750,5 +782,11 @@ namespace Integration.Helper
         public string fieldname { get; set; }
         public bool IsPicklistExist { get; set; }
         public List<string> pickList { get; set; }
+    }
+    public class SpParameters
+    {
+        public string name { get; set; }
+        public dynamic parameterValue { get; set; }
+     
     }
 }
