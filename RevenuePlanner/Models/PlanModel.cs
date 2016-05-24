@@ -151,6 +151,7 @@ namespace RevenuePlanner.Models
         public int PlanProgramId { get; set; }
         public int PlanCampaignId { get; set; }
         public int PlanTacticId { get; set; }
+        public int PlanId { get; set; } // Added by Arpita Soni for Ticket #2212 on 05/24/2016 
 
         public string TacticTitle { get; set; }
         public string ProgramTitle { get; set; }
@@ -224,6 +225,7 @@ namespace RevenuePlanner.Models
         public DateTime CEndDate { get; set; }
         public string AllocatedBy { get; set; }
         public bool IsOtherLineItem { get; set; }
+        public int PlanId { get; set; }  // Added by Arpita Soni for Ticket #2212 on 05/24/2016 
         //Added By Komal Rawal for #1974
         //Desc: To Enable edit owner feature from Lineitem popup.
         public bool IsLineItemAddEdit { get; set; }

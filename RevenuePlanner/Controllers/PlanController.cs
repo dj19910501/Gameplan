@@ -6719,8 +6719,13 @@ namespace RevenuePlanner.Controllers
         /// View fro the initial render page 
         /// </summary>
         /// <returns></returns>
-        public ActionResult Budgeting(int PlanId, bool isGridView = false) // Added by Komal Rawal for 2013 to identify grid view
+        public ActionResult Budgeting(int PlanId = 0, bool isGridView = false) // Added by Komal Rawal for 2013 to identify grid view
         {
+            // Added by Arpita Soni for Ticket #2202 on 05/24/2016 
+            if (PlanId == 0)
+            {
+                PlanId = Sessions.PlanId;
+            }
             ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
             HomePlanModel planmodel = new Models.HomePlanModel();
             try

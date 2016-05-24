@@ -516,7 +516,8 @@ span.info-icon {
     margin: 0 auto;
 }
 
-.main-nav ul li.finance:hover a .icon {
+.main-nav ul li.finance:hover a .icon,  /*Edited for #2202 by Bhumika*/
+.main-nav ul li.finance.open a .icon{
     background-position: -204px -25px;
     margin: 0 auto;
 }
@@ -526,7 +527,36 @@ span.info-icon {
 .main-nav ul li.pref:hover a .icon {
     background-position: -170px -30px;
 }
+/* ======== For dropdown menu  #2202 Start============ */
+.main-nav .dropdown-menu {
+    background-color: #1a405c;
+    border: 0;
+    border-radius: 0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    margin-top: 0;
+ 
+}
+.main-nav ul ul.dropdown-menu li{
+    width:100%;
+    border-right:0;
+    margin:1px 0;
+}
+.main-nav ul ul.dropdown-menu li a{
+    height: auto;
+    padding: 2px 10px ;
+    border:0;
+    color:#fff;
+    width:87%;
+    background: transparent;
+}
+.main-nav ul ul.dropdown-menu li a:hover {
+    background:#2384b8 ;
+}
+.main-nav > ul li.open a{
+    background: #1a405c none repeat scroll 0 0; color:#fff;
+}
 
+/* ======== #2202 End ======== */
 .nav-gray > li > a {
     height: 40px;
     background: #ddd;
@@ -14657,6 +14687,14 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     margin-bottom: 1px;
 }
 
+.gotoLink { /* For #2212 */
+    border-bottom: 1px solid;
+    clear: both;
+    display: block;
+    float: left;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {
 

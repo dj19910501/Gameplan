@@ -125,18 +125,18 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult Index(LoginModel form, string returnUrl)
         {
-           
+
             try
             {
-            //Added By komal rawal for password lockout feature #2107
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            bool IsEmailInvalid = false;
-            List<BDSService.AppConfiguration> AppConfigObj = new List<BDSService.AppConfiguration>();
-            int FailedAttempts = Convert.ToInt32(TempData[form.UserEmail]);
-            var MaxAttempts = Enums.AppConfiguration.Pwd_MaxAttempts.ToString();
-            var ExpDays = Enums.AppConfiguration.Pwd_ExpiryDays.ToString();            
-            var TotalAttempts = "";                      
-            //End
+                //Added By komal rawal for password lockout feature #2107
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                bool IsEmailInvalid = false;
+                List<BDSService.AppConfiguration> AppConfigObj = new List<BDSService.AppConfiguration>();
+                int FailedAttempts = Convert.ToInt32(TempData[form.UserEmail]);
+                var MaxAttempts = Enums.AppConfiguration.Pwd_MaxAttempts.ToString();
+                var ExpDays = Enums.AppConfiguration.Pwd_ExpiryDays.ToString();
+                var TotalAttempts = "";
+                //End
                 Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
                 //Added By komal rawal for password lockout feature #2107
                 AppConfigObj = objBDSServiceClient.ValidateAppConfiguration(applicationId, form.UserEmail);
@@ -148,17 +148,17 @@ namespace RevenuePlanner.Controllers
                                                 Config_Value = a.Config_Value,
                                                 PasswordModifiedDate = a.PasswordModifiedDate
                                             }).FirstOrDefault();
-              
+
                 if (ModelState.IsValid)
-                {                    
+                {
                     BDSService.User obj = new BDSService.User();
-                    
+
                     string singlehash = Common.ComputeSingleHash(form.Password.ToString().Trim());
 
 
                     //Modified By komal rawal for password lockout feature #2107
                     obj = objBDSServiceClient.Validate_User(applicationId, form.UserEmail.Trim(), singlehash);
-                   
+
                     if (obj == null)
                     {
                         ModelState.AddModelError("", Common.objCached.InvalidLogin);
@@ -182,17 +182,17 @@ namespace RevenuePlanner.Controllers
                                 }
                             }
                             TempData.Keep(form.UserEmail);
-                        
-                          //Modified By Komal Rawal for #2181 to check current version before returning form incase of wrong attempt
-                          string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
-                          ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
-                      
-                          return View(form);  //Added By Maitri Gandhi for #2121 on 25/4/2016
-                        }                        
+
+                            //Modified By Komal Rawal for #2181 to check current version before returning form incase of wrong attempt
+                            string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
+                            ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
+
+                            return View(form);  //Added By Maitri Gandhi for #2121 on 25/4/2016
+                        }
                         //ENd
 
                     }
-                    else if (obj.Email == "" )
+                    else if (obj.Email == "")
                     {
                         IsEmailInvalid = true;
                         ModelState.AddModelError("", Common.objCached.InvalidEmailLogin);
@@ -205,7 +205,7 @@ namespace RevenuePlanner.Controllers
                         return View(form); // Added For internal issue by Maitri Gandhi on 28/4/2016
 
                     }
-                    else if(obj.IsLocked == true)
+                    else if (obj.IsLocked == true)
                     {
                         ModelState.AddModelError("", Common.objCached.LockedUser);
                         TotalAttempts = null;
@@ -235,8 +235,8 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                     }
-               
-                   //End
+
+                    //End
                     //Added By Maitri for #2040 Observation
                     Common.RemoveCookie("gridOpengridBox");
                     Common.RemoveCookie("gridOpen");
@@ -301,10 +301,19 @@ namespace RevenuePlanner.Controllers
                         }
 
                         //Added by Rahul Shah on 02/10/2015 for PL #1650
+                        // Modified by Arpita Soni on 05/23/2016 for Ticket #2202
                         isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
                               AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView) ||
                               AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
                               AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView));
+
+                        item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.AdvancedBudget.ToString().ToUpper());
+                        if (item != null && !isAuthorized)
+                        {
+                            Sessions.AppMenus.Remove(item);
+                        }
+
+                        isAuthorized = Sessions.AppMenus.Select(x => x.Code.ToLower()).Contains(Enums.ActiveMenu.Plan.ToString().ToLower());
                         item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Finance.ToString().ToUpper());
                         if (item != null && !isAuthorized)
                         {
@@ -354,7 +363,7 @@ namespace RevenuePlanner.Controllers
 
                     //Update last login date for user
 
-                    objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);                    
+                    objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
 
                     if ((!string.IsNullOrWhiteSpace(returnUrl)) && IsLocalUrl(returnUrl))
                     {
@@ -375,7 +384,7 @@ namespace RevenuePlanner.Controllers
                         {
                             return RedirectToAction(defaultURL.actionName, defaultURL.controllerName);
                         }
-                    }                    
+                    }
                 }
                 else
                 {
@@ -405,7 +414,7 @@ namespace RevenuePlanner.Controllers
                                 ModelState.AddModelError("", "You have maximum " + Convert.ToInt32(TotalAttempts) + " failed attempts allowed after which your account will be locked.");
                             }
                         }
-                    TempData.Keep(form.UserEmail);
+                        TempData.Keep(form.UserEmail);
                     }
                     //End                                
 
@@ -691,7 +700,7 @@ namespace RevenuePlanner.Controllers
             //l.RemoveSession(Session.SessionID, Sessions.User.UserId.ToString());
             // Add By Nishant Sheth
             // Desc:: Remove user cache memory
-            CacheObject objCache= new CacheObject();
+            CacheObject objCache = new CacheObject();
             objCache.RemoveAllCurrentUserCache();
             Sessions.Clear();
             //Added By Maitri for #2040 Observation
@@ -1115,7 +1124,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                            objPasswordResetRequest.IsUsed = true;
+                                objPasswordResetRequest.IsUsed = true;
                             }
                             objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
                             //Guid UserId = Guid.Parse(TempData["UserId"].ToString());                      //Commented by Rahul Shah on 09/09/2015 for #1577

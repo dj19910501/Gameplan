@@ -1,29 +1,49 @@
 ﻿@using RevenuePlanner.Helpers
 @using RevenuePlanner.BDSService
+
+<!-- Added by Arpita Soni for Ticket #2202 on 05/23/2016 -->
 <nav class="main-nav">
     <ul class="cf">
         @if (Sessions.AppMenus != null && Sessions.AppMenus.Count() > 0)
         {
-            foreach (Menu o in Sessions.AppMenus)
+            foreach (Menu o in Sessions.AppMenus.Where(x => x.ParentApplicationId == null))
             {
                 string menuname = Convert.ToString(o.Name);
-                //if (o.IsEnable)
-                //int code = Sessions.RolePermission.Where(m => m.Code == o.Code).Select(m => m.PermissionCode).SingleOrDefault();
-                //if (code != 0)
-                //{  
-                    <li class="@menuname.ToLower()"><a href="@Url.Action(Convert.ToString(o.ActionName), Convert.ToString(o.ControllerName))">
-                        <div class="icon"></div>
-                        <span class="source-sans-probold">@menuname.ToUpper()</span></a></li>@*/*changed - added by uday #559**@
-                //}
+                string hrefLink = "#";
+                if (!Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Any())
+                {
+                    hrefLink = Url.Action(Convert.ToString(o.ActionName), Convert.ToString(o.ControllerName));
+                }
+            <li class="@menuname.ToLower()">
+                <a href="@hrefLink">
+                    <div class="icon"></div>
+                    <span class="source-sans-probold">@menuname.ToUpper()</span>
+                </a>
+                <ul class="dropdown-menu">
+                    @foreach (Menu submenu in Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId))
+                    {
+                        <li>
+                            <a href="@Url.Action(Convert.ToString(submenu.ActionName), Convert.ToString(submenu.ControllerName))">
+                                @submenu.Name
+                            </a>
+                        </li>                 
+                    }
+                </ul>
+            </li>
+                    
             }
         }
     </ul>
 </nav>
 
+<script>
+    $(document).ready(function () {
+        //$('.dropdown-menu').toggleClass('dropdown-menu');
+        $('.finance').click(
+              function () {
+                  $(this).addClass('dropdown');
+                  $(this).toggleClass('open');
+              });
+    });
 
-@* else
-                {
-                     <li class="@menuname.ToLower()"><a href="#">
-                        <div class="icon"></div>
-                        <span class="source-sans-probold text-shadow-white">@menuname.ToUpper()</span></a></li>
-                }*@
+</script>

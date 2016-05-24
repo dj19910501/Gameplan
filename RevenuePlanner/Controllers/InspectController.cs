@@ -4132,8 +4132,8 @@ namespace RevenuePlanner.Controllers
             ippctm.customFieldWeightage = JsonConvert.SerializeObject(customFeildsWeightage);
 
             /*End : Added by Mitesh Vaishnav for PL ticket #1073*/
-
-
+            // Added by Arpita Soni for Ticket #2212 on 05/24/2016 
+            ippctm.PlanId = pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId;
             ippctm.PlanProgramId = pcpt.PlanProgramId;
             ippctm.ProgramTitle = HttpUtility.HtmlDecode(planprogramobj.Title);
             ippctm.PlanCampaignId = plancampaignobj.PlanCampaignId;
@@ -7655,7 +7655,8 @@ namespace RevenuePlanner.Controllers
             pcptlm.CEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate;
             pcptlm.IsOtherLineItem = pcptl.LineItemTypeId != null ? false : true;
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(objPlan.PlanId)).Year; //Sessions.PlanId
-
+            // Added by Arpita Soni for Ticket #2212 on 05/24/2016 
+            pcptlm.PlanId = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
 
             User userName = new User();
             try
@@ -7741,7 +7742,8 @@ namespace RevenuePlanner.Controllers
             pcptlm.CEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate;
             pcptlm.IsLineItemAddEdit = true;
             pcptlm.OwnerId = pcptl.CreatedBy;
-
+            // Added by Arpita Soni for Ticket #2212 on 05/24/2016 
+            pcptlm.PlanId = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
             User userName = new User();
             try
             {
@@ -11403,6 +11405,8 @@ namespace RevenuePlanner.Controllers
 
                     imodel = new InspectModel()
                               {
+                                  // Added by Arpita Soni for Ticket #2212 on 05/24/2016 
+                                  PlanId = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId ,
                                   PlanTacticId = pcpt.PlanTacticId,
                                   TacticTitle = pcpt.Title,
                                   TacticTypeTitle = pcpt.TacticType.Title,
