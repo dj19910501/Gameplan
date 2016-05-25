@@ -126,7 +126,7 @@ namespace Integration
             {
 
                 Plan_Campaign_Program_Tactic tacticForIntegration = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id);
-                int? sfdcInstanceId = 0, eloquaInstanceId = 0, workfrontInstanceId = 0;
+                int? sfdcInstanceId = 0, eloquaInstanceId = 0, workfrontInstanceId = 0,marketoInstanceId=0;
                 Model objModel = new Model();
                 objModel = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model;
                 #region "Get Salesforce & Eloqua InstanceId from Plan_Campaign_Program_Tactic table"
@@ -136,6 +136,7 @@ namespace Integration
                     sfdcInstanceId = objModel.IntegrationInstanceId;
                     eloquaInstanceId = objModel.IntegrationInstanceEloquaId;
                     workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt; //added Brad Gray 10-13-2015 PL#1514
+                    marketoInstanceId = objModel.IntegrationInstanceMarketoID;
                 }
                 #endregion
 
@@ -166,7 +167,16 @@ namespace Integration
                         SyncTactic(workfrontInstanceId.Value);
                         Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with WorkFront started - Initiated by Approved Flow");
                     }
-                } 
+                }
+                if (marketoInstanceId.HasValue && marketoInstanceId.Value > 0)
+                {
+                    if (tacticForIntegration.IsSyncMarketo != null && (bool)tacticForIntegration.IsSyncMarketo == true)
+                    {
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Marketo started - Initiated by Approved Flow");
+                        SyncTactic(marketoInstanceId.Value);
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Marketo started - Initiated by Approved Flow");
+                    }
+                }
                 #endregion
             }
             // Start : These below functions(i.e For Program & Campaign) not call in current functiopnality - To be used in future
@@ -789,7 +799,7 @@ namespace Integration
             if (isImport)
             {
                 #region "Get Client wise MQL Permission"
-		        int IntegrationTypeId=0;
+                int IntegrationTypeId=0;
                 Guid ClientId = new Guid();
                 IntegrationInstance objInstance = db.IntegrationInstances.Where(inst => inst.IntegrationInstanceId == _integrationInstanceId.Value).FirstOrDefault();
                 bool isMQLPermission = false;
@@ -803,7 +813,7 @@ namespace Integration
                         isMQLPermission = true;
                     }
                 } 
-	            #endregion
+                #endregion
 
                 if (integrationInstanceType.Equals(Enums.IntegrationType.Eloqua.ToString()))
                 {

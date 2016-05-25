@@ -160,7 +160,7 @@ namespace Integration.Marketo
                         
                         //Common message (Single time)
                         strErrorConnection = Enums.MarketoAPIEventNames.ErrorInSettingDestinationConnectin.ToString();
-                        strGetProgramData = Enums.MarketoAPIEventNames.GetProgramDataFromPlan.ToString();
+                        strGetProgramData = Enums.MarketoAPIEventNames.GetProgramData.ToString();
                         strInvalidConnection = Enums.MarketoAPIEventNames.InvalidConnection.ToString();
                         strNoRecord = Enums.MarketoAPIEventNames.NoRecord.ToString();
                         strFetchUserInfo = Enums.MarketoAPIEventNames.FetchUserInfo.ToString();
@@ -241,6 +241,11 @@ namespace Integration.Marketo
                                 tacticTitle = tblTactics.Where(tac => tac.PlanTacticId == entId).Select(tac => tac.Title).FirstOrDefault();
                                 exMessage = "System error occurred while create/update tactic \"" + tacticTitle + "\": " + logdetail.Description;
                                 _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                            }
+                            else
+                            {
+                                exMessage = logdetail.Mode.ToString();
+                                _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Success, DateTime.Now));
                             }
 
                         } 

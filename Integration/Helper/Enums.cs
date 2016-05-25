@@ -266,7 +266,7 @@ namespace Integration.Helper
             DataMapping,
             SystemError,
             NoRecord,
-            GetProgramDataFromPlan,
+            GetProgramData,
             Token,
             InvalidConnection,
             ErrorInSettingDestinationConnectin,
