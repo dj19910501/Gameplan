@@ -1313,7 +1313,7 @@ namespace RevenuePlanner.Controllers
                     ViewBag.isIntegratedWithMarketo = isIntegratedWithMarketo;
                     if (objModel.IntegrationInstanceMarketoID != null)
                     {
-                        ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Progrmatype.ToString(), objModel.IntegrationInstanceMarketoID);
+                        ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Programtype.ToString(), objModel.IntegrationInstanceMarketoID);
                         MarketoDataObject CampaignFolderList = ObjApiintegration.GetProgramChannellistData();
 
                         ViewBag.DDLProgramType = CampaignFolderList.program.Select(list => new
@@ -1436,7 +1436,7 @@ namespace RevenuePlanner.Controllers
                 //Added By Komal Rawal for #2134 to get list of dropdown using api
                 if (objModel.IntegrationInstanceMarketoID != null)
                 {
-                    ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Progrmatype.ToString(), objModel.IntegrationInstanceMarketoID);
+                    ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Programtype.ToString(), objModel.IntegrationInstanceMarketoID);
                     MarketoDataObject CampaignFolderList = ObjApiintegration.GetProgramChannellistData();
 
                     ViewBag.DDLProgramType = CampaignFolderList.program.Select(list => new
@@ -2669,6 +2669,7 @@ namespace RevenuePlanner.Controllers
                             newModel.IntegrationInstanceIdMQL = null;
                             newModel.IntegrationInstanceIdProjMgmt = null; //Added Brad Gray 23 July 2015 PL#1448
                             newModel.IntegrationInstanceEloquaId = null;
+                            newModel.IntegrationInstanceMarketoID = null; //Added By komal Rawal for #2190
                             newModel.EffectiveDate = null;
                             newModel.Model11 = null;
                             newModel.Model3 = null;
@@ -2690,6 +2691,7 @@ namespace RevenuePlanner.Controllers
                         newModel.IntegrationInstanceIdMQL = oldModel.IntegrationInstanceIdMQL;
                         newModel.IntegrationInstanceIdProjMgmt = oldModel.IntegrationInstanceIdProjMgmt; //Added Brad Gray 23 July 2015 PL#1448
                         newModel.IntegrationInstanceEloquaId = oldModel.IntegrationInstanceEloquaId;
+                        newModel.IntegrationInstanceMarketoID = oldModel.IntegrationInstanceMarketoID; //Added By komal Rawal for #2190
                         newModel.ClientId = oldModel.ClientId;
                         newModel.AverageDealSize = oldModel.AverageDealSize;
                         ////End :Added by Mitesh Vaishnav for PL ticket #659 

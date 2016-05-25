@@ -72,7 +72,10 @@ namespace Integration
         {
             _TypeofData = Dropdowntype;
             _integrationInstanceId = integrationInstanceId;
+            if (integrationInstanceId > 0)
+            {
             SetIntegrationInstanceDetail();
+            }
 
         }
 
@@ -111,8 +114,16 @@ namespace Integration
             IntegrationInstance integrationInstance = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
             Dictionary<string, string> attributeKeyPair = db.IntegrationInstance_Attribute.Where(attribute => attribute.IntegrationInstanceId == _integrationInstanceId).Select(attribute => new { attribute.IntegrationTypeAttribute.Attribute, attribute.Value }).ToDictionary(attribute => attribute.Attribute, attribute => attribute.Value);
 
+            if (attributeKeyPair.Count > 0) //Modified By komal to handle error while it there is no data
+            {
             this._clientid = attributeKeyPair[ClientId];
             this._clientsecret = attributeKeyPair[ClientSecret];
+            }
+            else
+            {
+                this._clientid = null;
+                this._clientsecret = null;
+            }
             this._host = integrationInstance.IntegrationType.APIURL;
             if (HttpContext.Current.Session["MarketoToken"] != null)
             {
@@ -207,7 +218,7 @@ namespace Integration
         public MarketoDataObject GetProgramChannellistData()
         {
             MarketoDataObject ListOfData = new MarketoDataObject();
-            if (_TypeofData == Enums.ApiIntegrationData.Progrmatype.ToString())
+            if (_TypeofData == Enums.ApiIntegrationData.Programtype.ToString())
             {
                 if (HttpContext.Current.Session["MarketoToken"] != null)
                 {

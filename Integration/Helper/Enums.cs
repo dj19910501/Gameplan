@@ -256,7 +256,7 @@ namespace Integration.Helper
         public enum ApiIntegrationData
         {
             CampaignFolderList,
-            Progrmatype
+            Programtype
         }
         public enum MarketoAPIEventNames
         {

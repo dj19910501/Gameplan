@@ -1387,7 +1387,7 @@ namespace RevenuePlanner.Helpers
         public enum ApiIntegrationData
         {
             CampaignFolderList,
-            Progrmatype
+            Programtype
         }
     }
 
