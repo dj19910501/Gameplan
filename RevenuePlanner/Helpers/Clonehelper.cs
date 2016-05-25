@@ -611,6 +611,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.IntegrationInstanceTacticId = null;
                     objPlanCampaignProgramTactic.IntegrationInstanceEloquaId = null;
                     objPlanCampaignProgramTactic.IntegrationWorkFrontProjectID = null; //Added 16 Dec 2015, Brad Gray, PL#1460 
+                    objPlanCampaignProgramTactic.IntegrationInstanceMarketoID = null; //Added by Rahul Shah on 25/05/2016 for internal review point
                     ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                     objPlanCampaignProgramTactic.LastSyncDate = null;
                     ////End- Added by Mitesh Vaishnav for PL ticket #1129
@@ -964,6 +965,7 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.IntegrationInstanceTacticId = null;
                     objPlanTactic.IntegrationInstanceEloquaId = null;
                     objPlanTactic.IntegrationWorkFrontProjectID = null;
+                    objPlanTactic.IntegrationInstanceMarketoID = null;//Added by Rahul Shah on 25/05/2016 for internal review point
                     objPlanTactic.PlanProgramId = parentEntityId;
                     objPlanTactic.LastSyncDate = null;
                     objPlanTactic.LinkedPlanId = null;

@@ -1688,7 +1688,7 @@ namespace RevenuePlanner.Controllers
                         { 
                             //Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                             string strModelStatus = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).Select(mdl=>mdl.Status).FirstOrDefault();
-                            int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0;
+                            int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0, marketoInstanceId = 0;
                             if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().Equals(strModelStatus))
                             {
                                 if (objModel.IntegrationInstanceId.HasValue)
@@ -1697,6 +1697,9 @@ namespace RevenuePlanner.Controllers
                                     elqaInstanceId = objModel.IntegrationInstanceEloquaId.Value;
                                 if (objModel.IntegrationInstanceIdProjMgmt.HasValue)
                                     workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt.Value;
+                                if (objModel.IntegrationInstanceMarketoID.HasValue) //Added by Rahul Shah for PL #2189 
+                                    marketoInstanceId = objModel.IntegrationInstanceMarketoID.Value;
+
 
                                 List<int> lstTacticTypeIds = new List<int>();
                                 lstTacticTypeIds.Add(objTacticType.TacticTypeId);
@@ -1722,6 +1725,8 @@ namespace RevenuePlanner.Controllers
                                                         tac.IsSyncEloqua = true;             // Set Eloqua setting to True if Eloqua instance mapped under Tactic's Model.
                                                     if (workfrontInstanceId > 0)
                                                         tac.IsSyncWorkFront = true;          // Set WorkFront setting to True if WorkFront instance mapped under Tactic's Model.
+                                                    if (marketoInstanceId > 0)
+                                                        tac.IsSyncMarketo = true; 
                                                     tac.IsDeployedToIntegration = true;
                                                     objDbMrpEntities.Entry(tac).State = EntityState.Modified;
                                                 });
