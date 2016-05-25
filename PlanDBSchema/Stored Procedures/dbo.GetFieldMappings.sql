@@ -1,13 +1,16 @@
-
-/****** Object:  StoredProcedure [dbo].[GetFieldMappings]    Script Date: 05/24/2016 8:10:58 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetFieldMappings]    Script Date: 05/25/2016 3:36:30 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetFieldMappings]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[GetFieldMappings]
 GO
-
-/****** Object:  StoredProcedure [dbo].[GetFieldMappings]    Script Date: 05/24/2016 8:10:58 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetFieldMappings]    Script Date: 05/25/2016 3:36:30 PM ******/
 SET ANSI_NULLS ON
 GO
-
 SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetFieldMappings]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetFieldMappings] AS' 
+END
 GO
 
 -- =============================================
@@ -15,7 +18,7 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE PROCEDURE [dbo].[GetFieldMappings] 
+ALTER PROCEDURE [dbo].[GetFieldMappings] 
 	@entityType varchar(255)='Tactic',
 	@clientId uniqueidentifier,
 	@integrationTypeId int,
@@ -91,5 +94,5 @@ INSERT INTO @Table SELECT @actCampaignFolder as sourceFieldName,@trgtCampaignFol
 select * from @Table
 END
 
-GO
 
+GO
