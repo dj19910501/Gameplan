@@ -52,6 +52,8 @@ namespace Integration
     public class ApiIntegration
     {
         string _TypeofData;
+        string strToken = Enums.MarketoAPIEventNames.Token.ToString();
+        string strAuthentication = Enums.MarketoAPIEventNames.Authentication.ToString();
         private MRPEntities db = new MRPEntities();
         public string _host { get; set; }
         public string _clientid { get; set; }
@@ -121,7 +123,11 @@ namespace Integration
                 _marketoToken = "";
             }
         }
-
+        /// <summary>
+        /// Added by Rahul Shah
+        /// 21-05-2016
+        /// to check the authentication for Marketo
+        /// </summary>
         public void AuthenticateforMarketo()
         {
             if (HttpContext.Current.Session["MarketoToken"] != null)
@@ -151,7 +157,7 @@ namespace Integration
                     if (objData.status == true)
                     {
                         _isAuthenticated = true;
-                        HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("Token")).Select(th => th.Description).FirstOrDefault();
+                        HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("strToken")).Select(th => th.Description).FirstOrDefault();
 
                     }
                     else
@@ -162,11 +168,15 @@ namespace Integration
                 }
             }
         }
-
+        /// <summary>
+        /// Created By Rahul Shah
+        /// Created Date : 22-May-2016
+        /// Get list of marketo custom tag with api
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, string> GetTargetCustomTags()
-        {
+        {            
             Dictionary<string, string> ListOfData = new Dictionary<string, string>();
-
             Dictionary<string, string> marketoCredentialDictionary = new Dictionary<string, string>();
             marketoCredentialDictionary.Add("host", _host);
             marketoCredentialDictionary.Add("clientid", _clientid);
@@ -184,7 +194,7 @@ namespace Integration
             {
                 ReturnObject objData = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
                 ListOfData = objData.data;
-                HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("Token")).Select(th => th.Description).FirstOrDefault();
+                HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("strToken")).Select(th => th.Description).FirstOrDefault();
             }
             return ListOfData;
         }
@@ -277,9 +287,16 @@ namespace Integration
             return ListOfData;
         }
 
-        //Added by Rahul Shah for PL #2194 
+        /// <summary>
+        /// Created By Rahul Shah
+        /// Created Date : 24-May-2016
+        /// to push the data to the marketo and get the loglist from marketo
+        /// </summary>
+        /// <returns></returns>
         public List<LogDetails> MarketoData_Push(string spName, List<fieldMapping> lstFieldsMap, Guid _clientId, List<SpParameters> spParams)
         {
+            
+            bool isAuthenticate = false;
             Parameters objParams = new Parameters();
             List<LogDetails> logdetails = new List<LogDetails>();
             Dictionary<string, string> marketoCredentialDictionary = new Dictionary<string, string>();
@@ -304,9 +321,13 @@ namespace Integration
             if (response.IsSuccessStatusCode)
             {
                 ReturnObject obj2 = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
-
                 logdetails = obj2.lstLogDetails;
-                //string json = JsonConvert.DeserializeObject(response.);
+                isAuthenticate = obj2.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals(strAuthentication)).Select(th => th.Status).Any();
+                if (isAuthenticate)                {
+                    _isAuthenticated = true;
+                    HttpContext.Current.Session["MarketoToken"] = obj2.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals(strToken)).Select(th => th.Description).FirstOrDefault();
+                }
+                
 
             }
             return logdetails;

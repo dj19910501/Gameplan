@@ -8886,12 +8886,20 @@ footer {
     margin-left: -20px !important;
 }
 
-#divTimeOptions .sbOptions {
-    max-height: 220px !important;
+#divTimeOptions .sbOptions{
+    max-height: 220px !important;/* changed for #2184 */
 }
 
+#divTimeOptions.selectBox  .sbHolder .sbOptions{
+    max-height: 165px !important; /* changed for #2184 */
+}
+#divDayOptions .sbOptions {
+    max-height: 150px !important;/* changed for #2184 */
+}
+
+
 #ddlIsDeletedSelectBox .sbOptions {
-    min-width: 150px !important;
+    min-width: 130px !important;/* chsnged for #2184*/
 }
 
 .no-bottom-border {

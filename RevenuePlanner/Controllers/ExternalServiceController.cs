@@ -742,31 +742,60 @@ namespace RevenuePlanner.Controllers
                 return View(form);
             }
         }
-
+        
         /// <summary>
         /// Action to Get Next date for Day.  
         /// </summary>
         /// <param name="startDate"></param>
         /// <param name="desiredDay"></param>
         /// <returns></returns>
+        //public static DateTime GetNextDateForDay(DateTime startDate, DayOfWeek desiredDay, TimeSpan timeset)
+        //{
+        //    int start = (int)startDate.DayOfWeek;
+        //    TimeSpan todaytime = startDate.TimeOfDay;
+        //    int target = (int)desiredDay;
+        //    int daycount = 7;
+        //    if (target == start)
+        //    {
+        //        if (todaytime < timeset)
+        //        {
+        //            daycount = 0;
+        //        }
+        //    }
+        //    if (target >= start)
+        //    {
+        //        target += daycount;
+        //    }
+        //    return startDate.AddDays(target - start);
+        //}
+        //Added by Rahul Rahul Shah to set the logic for nect sync date
         public static DateTime GetNextDateForDay(DateTime startDate, DayOfWeek desiredDay, TimeSpan timeset)
         {
             int start = (int)startDate.DayOfWeek;
             TimeSpan todaytime = startDate.TimeOfDay;
             int target = (int)desiredDay;
-            int daycount = 7;
+            int Totaldaycount = 7;
+            int daycount = 0;
             if (target == start)
             {
                 if (todaytime < timeset)
                 {
                     daycount = 0;
                 }
+                else
+                {
+                    daycount = Totaldaycount;
+                }
             }
-            if (target >= start)
+            else if (target > start)
             {
-                target += daycount;
+                daycount = target - start;
             }
-            return startDate.AddDays(target - start);
+            else
+            {
+                daycount = Totaldaycount - (start - target);
+            }
+            return startDate.AddDays(daycount);
         }
 
         #endregion
