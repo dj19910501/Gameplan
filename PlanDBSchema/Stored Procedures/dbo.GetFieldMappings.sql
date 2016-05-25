@@ -1,8 +1,8 @@
-/****** Object:  StoredProcedure [dbo].[GetFieldMappings]    Script Date: 05/25/2016 3:36:30 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetFieldMappings]    Script Date: 05/25/2016 4:42:53 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetFieldMappings]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[GetFieldMappings]
 GO
-/****** Object:  StoredProcedure [dbo].[GetFieldMappings]    Script Date: 05/25/2016 3:36:30 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetFieldMappings]    Script Date: 05/25/2016 4:42:53 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -29,7 +29,7 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-	-- Exec GetFieldMappings 'Tactic','464EB808-AD1F-4481-9365-6AADA15023BD',3,0
+	-- Exec GetFieldMappings 'Tactic','464EB808-AD1F-4481-9365-6AADA15023BD',3,1190
 
 BEGIN
 	Declare @Table TABLE (sourceFieldName NVARCHAR(250),destinationFieldName NVARCHAR(250),marketoFieldType varchar(255))
@@ -52,6 +52,11 @@ BEGIN
 	Declare @costFieldType varchar(255)='costs'
 	Declare @tagsFieldType varchar(255)='tags'
 	Declare @folderFieldType varchar(255)='Folder'
+	Declare @actActivityType varchar(255)='ActivityType'
+	Declare @actCreatedBy varchar(255)='CreatedBy'
+	Declare @actPlanName varchar(255)='PlanName'
+	Declare @actStatus varchar(255)='Status'
+
 END
 
 ;With ResultTable as(
@@ -62,6 +67,10 @@ END
 				TargetDataType as destinationFieldName,
 				CASE 
 					WHEN gpDataType.ActualFieldName=@actCost THEN @costFieldType
+					WHEN gpDataType.ActualFieldName=@actActivityType THEN @tagsFieldType
+					WHEN gpDataType.ActualFieldName=@actCreatedBy THEN @tagsFieldType
+					WHEN gpDataType.ActualFieldName=@actPlanName THEN @tagsFieldType
+					WHEN gpDataType.ActualFieldName=@actStatus THEN @tagsFieldType
 				END as marketoFieldType
 		FROM GamePlanDataType as gpDataType
 		JOIN IntegrationInstanceDataTypeMapping as mapp ON gpDataType.GamePlanDataTypeId = mapp.GamePlanDataTypeId and mapp.IntegrationInstanceId=@id
