@@ -1,20 +1,29 @@
-﻿@using RevenuePlanner.Models
+﻿@model RevenuePlanner.Models.BudgetDHTMLXGridModel
+
+@using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
-@model List<BudgetModel>
+@*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
+@*@model List<BudgetModel>*@
 @{
-    BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-    objBudgetDHTMLXGrid = (BudgetDHTMLXGridModel)Session["objBudgetDHTMLXGrid"];
+    @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
+    //BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
+    //objBudgetDHTMLXGrid = (BudgetDHTMLXGridModel)Session["objBudgetDHTMLXGrid"];
     
     string AllocatedBy = ViewBag.AllocatedBy;
-    BudgetModel plan = Model.Where(p => p.ActivityType == ActivityType.ActivityPlan).SingleOrDefault();
+    @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
+    //BudgetModel plan = Model.Where(p => p.ActivityType == ActivityType.ActivityPlan).SingleOrDefault();
     string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
     string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower();
     string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
     string strViewBy = Convert.ToString(ViewBag.ViewBy).ToLower();
     BudgetMonth PercAllocated = ViewBag.PercAllocated;
     double planAllocation = 0;
-    double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
-    planAllocation = (sumMonth == 0 && plan.MainBudgeted == 0) ? 0 : (sumMonth > 0 && plan.MainBudgeted == 0) ? 101 : sumMonth / plan.MainBudgeted * 100;
+    
+    // Modified by Rushil Bhuptani on 26/05/2016 for #2191
+    double sumMonth = ViewBag.SumMonth;
+    planAllocation = ViewBag.PlanAllocation;
+    double mainBudgeted = ViewBag.MainBudgeted;
+    
     string strTab = Convert.ToString(ViewBag.Tab);
     bool isquarter = false;
     if (AllocatedBy.ToLower() == strQuarters)
@@ -30,16 +39,78 @@
 
 @*<script src="~/Scripts/jquery.cluetip.js"></script>*@
 <style>
-    #gridbox.financeReportGrid .objbox td .topCornner {
+     div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell
+    {
+        text-align: center;
+        padding-left: 0px !important;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr
+    {
+        width: 100% !important;
+    }
+
+        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr tr
+        {
+            color: black;
+        }
+
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px
+    {
+        width: 100% !important;
+    }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr
+        {
+            color: black;
+        }
+
+            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.treegrid_cell
+            {
+                text-align: left !important;
+            }
+
+            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div
+            {
+                text-align: center;
+            }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar.budgetError
+        {
+            background: #ff1e26 none repeat scroll 0 0;
+        }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar
+        {
+            background: #3fa9f5 none repeat scroll 0 0;
+            bottom: 0;
+            height: 2px !important;
+            left: 0;
+            margin: 0;
+            max-width: 100%;
+            padding: 0;
+            position: absolute;
+        }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.budgetError, span.budgetError
+        {
+            color: #ff1e26;
+        }
+
+    #gridbox.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td
+    {
         position: relative;
     }
 
-    #gridbox.financeReportGrid .objbox div.topCornner .orange-corner-budget,
-    #gridbox.financeReportGrid .objbox div.topCornner .red-corner-budget {
-        right: -4px;
-        top: -1px;
+    .dhxgrid_sort_asc, .dhxgrid_sort_desc
+    {
+        background-repeat: no-repeat;
+        height: 26px;
+        top: 44px !important;
+        width: 15px;
     }
 
+    /*Added by Rushil Bhuptani on 26/05/2016 for #2191*/
     .clickmeAnchor {
         color: #000 !important;
         cursor: pointer;
@@ -50,88 +121,91 @@
     <a class="close">×</a>
     <div id="cErrorInspectPopup"></div>
 </div>
-@*<div class="tab-content all-height cf">
-    <div class="tab-pane active all-height" id="panel-656352">
-        <div id="paln-populated-collaborators-panel-wrapper" class="pl20 cf">
-            <div class="cf all-height lenght-div">
-                <div class="budget-table source-sans-proregular">
-                    <table cellpadding="0" cellspacing="0" border="0" class="budget-table">
-                        <tbody class="column1 display-table-row @columnBorderClass">
-                            <tr>
-                                <td>
-                                    <div id="div2PlanDetails">&nbsp;</div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="event-row">
-                                    <div id="divPlanDetails"><a id="aPlanDetails">@plan.ActivityName</a></div>
-                                </td>
-                            </tr>
-                            
-                            @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
+<div class="tab-content all-height cf">
+        <div class="tab-pane active all-height" id="panel-656352">
+            <div id="paln-populated-collaborators-panel-wrapper" class="pl20 cf">
+                <div class="cf all-height lenght-div">
+                    <div class="budget-table source-sans-proregular">
+                       @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
+
+                        @*<table cellpadding="0" cellspacing="0" border="0" class="budget-table">
+                            <tbody class="column1 display-table-row @columnBorderClass">
+                                <tr>
+                                    <td>
+                                        <div id="div2PlanDetails">&nbsp;</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="event-row">
+                                        <div id="divPlanDetails"><a id="aPlanDetails">@plan.ActivityName</a></div>
+                                    </td>
+                                </tr>
+
+                                @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
+                                {
+                                    @Html.ActivityMainParent(ActivityType.ActivityCustomField, plan.ActivityId, Model, strTab, strViewBy)
+                                }
+                                else
+                                {
+                                    @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, strTab)
+                                }
+                            </tbody>
+                            @if (strTab == "1")
                             {
-                                @Html.ActivityMainParent(ActivityType.ActivityCustomField, plan.ActivityId, Model, strTab, strViewBy)
+                                <tbody class="column4">
+                                    <tr>
+                                        <td>
+                                            <div>Planned Cost</div>
+                                        </td>
+                                    </tr>
+                                    @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
+                                    {
+                                        @Html.ParentCostSummary(ActivityType.ActivityCustomField, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
+                                    }
+                                    else
+                                    {
+                                        @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
+                                    }
+                                </tbody>
                             }
-                            else
+                            <tbody class="column2" style="max-width:69%;">
+                                @Html.PlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, plan.BudgetMonth, AllocatedBy, strTab)
+
+                                @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
+                                {
+                                    @Html.ParentMonth(ActivityType.ActivityCustomField, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
+                                }
+                                else
+                                {
+                                    @Html.CampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
+                                }
+                            </tbody>
+                            @if (strTab == "2")
                             {
-                                @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, strTab)
+                                <tbody class="column3">
+                                    <tr>
+                                        <td>
+                                            <div>Total</div>
+                                        </td>
+                                    </tr>
+                                    @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
+                                    {
+                                        @Html.ParentCostSummary(ActivityType.ActivityCustomField, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
+                                    }
+                                    else
+                                    {
+                                        @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
+                                    }
+                                </tbody>
                             }
-                        </tbody>
-                        @if (strTab == "1")
-                        {
-                         <tbody class="column4">
-                            <tr>
-                                <td>
-                                    <div>Planned Cost</div>
-                                </td>
-                            </tr>
-                              @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
-                              {
-                            @Html.ParentCostSummary(ActivityType.ActivityCustomField, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
-                              }
-                              else
-                              {
-                            @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
-                              }
-                        </tbody>
-                        }
-                        <tbody class="column2" style="max-width:69%;">
-                            @Html.PlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, plan.BudgetMonth, AllocatedBy, strTab)
-                            
-                            @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
-                            {
-                                @Html.ParentMonth(ActivityType.ActivityCustomField, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
-                            }
-                            else
-                            {
-                            @Html.CampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
-                            }
-                        </tbody>
-                       @if (strTab == "2")
-                       {
-                        <tbody class="column3">
-                            <tr>
-                                <td>
-                                    <div>Total</div>
-                                </td>
-                            </tr>
-                              @if (!string.IsNullOrEmpty(strViewBy) && strViewBy != "0")
-                              {
-                            @Html.ParentCostSummary(ActivityType.ActivityCustomField, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
-                              }
-                              else
-                              {
-                            @Html.CampaignBudgetSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
-                              }
-                        </tbody>
-                       }
-                    </table>
-                    <div style="clear: both;"></div>
+                        </table>*@
+                        <div style="clear: both;"></div>
+                    </div>
+        <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
                 </div>
             </div>
         </div>
     </div>
-</div>*@
 <div id="loadme" class="loadme-true" style="display:none">
    	<h3 class="source-sans-proregular"></h3>
    	<div class="tooltip-field">
@@ -199,7 +273,8 @@
             $("#aoffCost").addClass('request-btn-active');
             $("#divCostBudget").attr('style', 'display:none;')
         }
-        SetHeader();
+    
+         SetHeader();
         //AddTipsy();
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
@@ -208,7 +283,10 @@
         if ('@isquarter' == 'True') {
             isquarter = true;
         }
-        $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter, positionBy: "mouse" });//
+        $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter, positionBy: "mouse" }); //
+      
+
+
         // Budget Table
         var mainTableWidth = $('.budget-table').width();
         var columnWidth1 = $('.column1').width();
@@ -216,7 +294,7 @@
         var columnWidth4 = $('.column4').width();
         $('.column2').width(mainTableWidth - columnWidth1 - columnWidth3 - columnWidth4 - 24);
 
-        $('.accordionClick').on('click', function () {
+        $('.accordionClick').on('click', function() {
             var accordionId = $(this).parent().attr('id');
             $('table').find(".sub[data-parent='" + accordionId + "']").fadeToggle(100);
             $(this).toggleClass('collapse');
@@ -227,7 +305,7 @@
 
             //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
             var data = $(".column1").get(0);
-            $(".budget-table .column1 > tr").each(function () {
+            $(".budget-table .column1 > tr").each(function() {
                 $(this).width(data.scrollWidth);
             });
         });
@@ -241,21 +319,21 @@
             //column1Width = column1Width.replace('px', '');
             //modified by Rahul Shah on 25/09/2015 for PL #900.. remove try..catch for handle elmah log
             //try {
-                $('.display-table-row').removeClass('display-table-row');
-                //if (parseInt(column1Width) < maxHeight) {
-                //    $('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
-                //    $('#div2PlanDetails').css('width', parseInt(maxHeight) + 15);
-                //    if ($('.column1 .programLevel').length > 0)
-                //        $('.column1 .programLevel').css('width', parseInt(maxHeight) - parseInt($(".programLevel").css("padding-left").replace("px", "")) - parseInt($(".programLevel").css("padding-right").replace("px", "")) + 15);
-                //    if ($('.column1 .campaignLevel').length > 0)
-                //        $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
-                //    if ($('.column1 .program-lvl').length > 0)
-                //        $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
+            $('.display-table-row').removeClass('display-table-row');
+            //if (parseInt(column1Width) < maxHeight) {
+            //    $('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
+            //    $('#div2PlanDetails').css('width', parseInt(maxHeight) + 15);
+            //    if ($('.column1 .programLevel').length > 0)
+            //        $('.column1 .programLevel').css('width', parseInt(maxHeight) - parseInt($(".programLevel").css("padding-left").replace("px", "")) - parseInt($(".programLevel").css("padding-right").replace("px", "")) + 15);
+            //    if ($('.column1 .campaignLevel').length > 0)
+            //        $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
+            //    if ($('.column1 .program-lvl').length > 0)
+            //        $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
 
-                //}
-                //else {
-                //    $('.display-table-row').removeClass('display-table-row');
-                //}
+            //}
+            //else {
+            //    $('.display-table-row').removeClass('display-table-row');
+            //}
             //} catch (e) {
 
             //}
@@ -265,16 +343,23 @@
 
     function BindBudgetGrid() {
 
-        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(objBudgetDHTMLXGrid.Grid))';
+        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
+        @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
+        @*var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(objBudgetDHTMLXGrid.Grid))';*@
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
         HomeGrid.setImageSize(1, 1);
-        HomeGrid.setHeader('@objBudgetDHTMLXGrid.SetHeader');
-    @*HomeGrid.attachHeader(@Html.Raw(Json.Encode(Model.AttachHeader)));*@
+        HomeGrid.setHeader('@Model.SetHeader');
+        HomeGrid.setColTypes('@Model.ColType');
+        HomeGrid.setInitWidths('@Model.Width');
+        HomeGrid.setColSorting('@Model.ColSorting');
+
+        @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
+        @*HomeGrid.setHeader('@objBudgetDHTMLXGrid.SetHeader');
     HomeGrid.setColTypes('@objBudgetDHTMLXGrid.ColType');
         HomeGrid.setInitWidths('@objBudgetDHTMLXGrid.Width');
-        HomeGrid.setColSorting('@objBudgetDHTMLXGrid.ColSorting');
+        HomeGrid.setColSorting('@objBudgetDHTMLXGrid.ColSorting');*@
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
         HomeGrid.setEditable(false);
@@ -292,15 +377,9 @@
 
         HomeGrid.parse(GridDataHomeGrid, "json");
         HomeGrid.setColumnHidden(0, true);
-
+       
     }
-
-    //function AddTipsy() {
-    //    $("div[allocated]").each(function () {
-    //        bootstrapetitle($(this), 'Allocated : $' + $(this).attr('allocated'), "tipsy-innerWhite");
-    //    });
-    //}
-
+    
     function SetHeader() {
         $('#divViewBy').show();
         if ('@AllocatedBy' != '@strDefault') {
@@ -310,13 +389,13 @@
                 $('#planCostTitle').html('Total Planned Cost');
 
             var sumMonth = number_format('@sumMonth', 0, '.', ',');
-            var allocated = number_format('@plan.MainBudgeted', 0, '.', ',');
+            var allocated = number_format('@mainBudgeted', 0, '.', ',');
             $('#planCostValue').prop('title', '$' + sumMonth + '/' + '$' + allocated);
             $('#planCostValue').popover('destroy');
             bootstrapetitle($('#planCostValue'), '$' + sumMonth + '/' + '$' + allocated, "tipsy-innerWhite");
 
             sumMonth = FormatNumber('@sumMonth', false);
-            allocated = FormatNumber('@plan.MainBudgeted', false);
+            allocated = FormatNumber('@mainBudgeted', false);
             $('#planCostValue').html(sumMonth + '/' + allocated);
             $('#divPlanProgress').css("width", "@planAllocation%");
             if ('@planAllocation' > 100) {
@@ -409,35 +488,35 @@
                 else if (i == 9) {
                     strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
                     if ('@PercAllocated.Sep' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;" class="error"></span></div>';
+                        strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;" class="error"></span></div>';
+                }
+                else if (i == 10) {
+                    strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
+                    if ('@PercAllocated.Oct' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;" class="error"></span></div>';
+                }
+                else if (i == 11) {
+                    strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
+                    if ('@PercAllocated.Nov' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Nov%"><span style="width:@PercAllocated.Nov%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Nov%"><span style="width:@PercAllocated.Nov%;" class="error"></span></div>';
+                }
+                else if (i == 12) {
+                    strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
+                    if ('@PercAllocated.Dec' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Dec%"><span style="width:@PercAllocated.Dec%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Dec%"><span style="width:@PercAllocated.Dec%;" class="error"></span></div>';
+                }
+                strMonthHTML += '</div>';
             }
-            else if (i == 10) {
-                strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
-                if ('@PercAllocated.Oct' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;" class="error"></span></div>';
-            }
-            else if (i == 11) {
-                strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
-                if ('@PercAllocated.Nov' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Nov%"><span style="width:@PercAllocated.Nov%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Nov%"><span style="width:@PercAllocated.Nov%;" class="error"></span></div>';
-            }
-            else if (i == 12) {
-                strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
-                if ('@PercAllocated.Dec' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Dec%"><span style="width:@PercAllocated.Dec%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Dec%"><span style="width:@PercAllocated.Dec%;" class="error"></span></div>';
-            }
-    strMonthHTML += '</div>';
-}
-}
-else if ('@AllocatedBy' == '@strQuarters') {
+        }
+        else if ('@AllocatedBy' == '@strQuarters') {
             for (var i = 1; i <= 4; i++) {
                 strMonthHTML += '<div class="budgetMonth">';
                 if (i == 1) {
@@ -468,72 +547,73 @@ else if ('@AllocatedBy' == '@strQuarters') {
                     else
                         strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;" class="error"></span></div>';
                 }
-    strMonthHTML += '</div>';
-}
-}
-else {
-    for (var i = 1; i <= 12; i++) {
-        strMonthHTML += '<div class="budgetMonth">';
-        if (i == 1) {
-            strMonthHTML += '<span class="title source-sans-proregular">JAN</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                strMonthHTML += '</div>';
+            }
         }
-        else if (i == 2) {
-            strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        else {
+            for (var i = 1; i <= 12; i++) {
+                strMonthHTML += '<div class="budgetMonth">';
+                if (i == 1) {
+                    strMonthHTML += '<span class="title source-sans-proregular">JAN</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 2) {
+                    strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 3) {
+                    strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 4) {
+                    strMonthHTML += '<span class="title source-sans-proregular">APR</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 5) {
+                    strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 6) {
+                    strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 7) {
+                    strMonthHTML += '<span class="title source-sans-proregular">JUL</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 8) {
+                    strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 9) {
+                    strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 10) {
+                    strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 11) {
+                    strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                else if (i == 12) {
+                    strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
+                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
+                }
+                strMonthHTML += '</div>';
+            }
         }
-        else if (i == 3) {
-            strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 4) {
-            strMonthHTML += '<span class="title source-sans-proregular">APR</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 5) {
-            strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 6) {
-            strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 7) {
-            strMonthHTML += '<span class="title source-sans-proregular">JUL</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 8) {
-            strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 9) {
-            strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 10) {
-            strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 11) {
-            strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        else if (i == 12) {
-            strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
-            strMonthHTML += '<div><span style="width:0%;"></span></div>';
-        }
-        strMonthHTML += '</div>';
+
+        $('#monthContainer').html(strMonthHTML);
+
     }
-}
-
-    $('#monthContainer').html(strMonthHTML);
-
-}
-var Assortment = 'Budgeting';
-$('#aPlanDetails').click(function (e) {
-    var id = CurrentPlanId;
-    ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-});
+  
+    var Assortment = 'Budgeting';
+    $('#aPlanDetails').click(function (e) {
+        var id = CurrentPlanId;
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+    });
 
     //Added By Rushil Bhuptani on 19/5/2016 for #2191 to open inspect popup for plan.
     function OpenPlanInspectPopup() {
@@ -543,7 +623,7 @@ $('#aPlanDetails').click(function (e) {
 
     //Added By Rushil Bhuptani on 19/5/2016 for #2191 to open inspect popup other than plan.
     function OpenOtherInspectPopup(id, section) {
-        alert(10);
+
         var section = section;
         var id;//$(this).attr('id');
 
@@ -552,31 +632,31 @@ $('#aPlanDetails').click(function (e) {
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     }
 
-function AssignDefaultValue() {
-    $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
-        $(this).attr("myValue", $(this).val());
+    function AssignDefaultValue() {
+        $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
+            $(this).attr("myValue", $(this).val());
+        });
+    }
+    $("[linktype=campaign]").click(function (e) {
+        var id = $(this).attr('id');
+        id = id.replace('c_', '');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
-}
-$("[linktype=campaign]").click(function (e) {
-    var id = $(this).attr('id');
-    id = id.replace('c_', '');
-    ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-});
 
-$("[linktype=program]").click(function (e) {
-    var id = $(this).attr('id');
-    id = id.replace('cp_', '');
-    ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-});
-$("[linktype=tactic]").click(function (e) {
-    var id = $(this).attr('id');
-    id = id.replace('cpt_', '');
-    ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-});
-$("[linktype=lineitem]").click(function (e) {
-    var id = $(this).attr('id');
-    id = id.replace('cptl_', '');
-    ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+    $("[linktype=program]").click(function (e) {
+        var id = $(this).attr('id');
+        id = id.replace('cp_', '');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+    });
+    $("[linktype=tactic]").click(function (e) {
+        var id = $(this).attr('id');
+        id = id.replace('cpt_', '');
+        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+    });
+    $("[linktype=lineitem]").click(function (e) {
+        var id = $(this).attr('id');
+        id = id.replace('cptl_', '');
+        ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });
 </script>
 
@@ -753,11 +833,11 @@ $("[linktype=lineitem]").click(function (e) {
         if ('@isquarter' == 'True') {
             isquarter = true;
         }
-        var selfClickMe = $('.clickmeAnchor');
-        if (onCostVsBudget) {
-            $('.red-corner-budget').css('display', 'block');
 
+        $('.clickmeAnchor').each(function () {
+            var selfClickMe = $(this);
             if (!selfClickMe.data('cluetip-initd')) {
+
                 selfClickMe.cluetip({
                     activation: 'click',
                     arrows: true,
@@ -769,7 +849,58 @@ $("[linktype=lineitem]").click(function (e) {
                     positionBy: "mouse"
                 }).data('cluetip-initd', true);
             }
+        });
 
+        $('.clickmeAnchorProgram').each(function () {
+            var selfClickMeAnchorProgram = $(this);
+            if (!selfClickMeAnchorProgram.data('cluetip-initd')) {
+                selfClickMeAnchorProgram.cluetip({
+                    activation: 'click',
+                    arrows: true,
+                    dropShadow: false,
+                    sticky: true,
+                    mouseOutClose: false,
+                    local: true,
+                    isQuarter: isquarter,
+                    positionBy: "mouse"
+                }).data('cluetip-initd', true);
+            }
+        });
+
+        $('.clickmeAnchorTactic').each(function() {
+            var selfClickMeAnchorTactic = $(this);
+            if (!selfClickMeAnchorTactic.data('cluetip-initd')) {
+                selfClickMeAnchorTactic.cluetip({
+                    activation: 'click',
+                    arrows: true,
+                    dropShadow: false,
+                    sticky: true,
+                    mouseOutClose: false,
+                    local: true,
+                    isQuarter: isquarter,
+                    positionBy: "mouse"
+                }).data('cluetip-initd', true);
+            }
+        });
+       
+
+        $('.clickmeAnchorLineItem').each(function () {
+        var selfClickMeAnchorLineItem = $(this);
+        if (!selfClickMeAnchorLineItem.data('cluetip-initd')) {
+            selfClickMeAnchorLineItem.cluetip({
+                activation: 'click',
+                arrows: true,
+                dropShadow: false,
+                sticky: true,
+                mouseOutClose: false,
+                local: true,
+                isQuarter: isquarter,
+                positionBy: "mouse"
+            }).data('cluetip-initd', true);
+        }
+        });
+        if (onCostVsBudget) {
+            $('.red-corner-budget').css('display', 'block');
             var selfProgram = $('.clickmeprogram');
 
             if (!selfProgram.data('cluetip-initd')) {
@@ -804,19 +935,8 @@ $("[linktype=lineitem]").click(function (e) {
             $('.red-corner-budget').css('display', 'none');
 
 
-            if (!selfClickMe.data('cluetip-initd')) {
-                selfClickMe.cluetip({
-                    activation: 'click',
-                    arrows: true,
-                    dropShadow: false,
-                    sticky: true,
-                    mouseOutClose: false,
-                    local: true,
-                    isQuarter: isquarter,
-                    positionBy: "mouse"
-                }).data('cluetip-initd', true);
-            }
+          
         }
     });
-
+    
 </script>

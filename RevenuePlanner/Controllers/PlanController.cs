@@ -43,6 +43,19 @@ namespace RevenuePlanner.Controllers
         private DateTime CalendarEndDate;
         private string PeriodChar = "Y";
         public const string TacticCustomTitle = "TacticCustom";
+        private const string Open = "1";
+        private const string PlanBackgroundColor = "#e6e6e6";
+        private const string Plan = "Plan";
+        private const string OtherBackgroundColor = "#f2f2f2";
+        private const string Campaign = "Campaign";
+        private const string Program = "Program";
+        private const string Tactic = "Tactic";
+        private const string LineItem = "LineItem";
+        private const string Ro = "ro";
+        private const string Tree = "tree";
+       // private const string ActivityType = "ActivityType";
+        private const string PlannedCost = "Planned Cost";
+        private const string Total = "Total";
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
         #endregion
@@ -7188,6 +7201,15 @@ namespace RevenuePlanner.Controllers
                 BudgetDataObjList = AllocatedPlanMonth(model, bm, ActivityType.ActivityPlan, bm.ActivityId, bm.Month, bm.ParentMonth, AllocatedBy, BudgetDataObjList);
 
                 BudgetDataObjList = CampaignSummary(model, bm, ActivityType.ActivityPlan, bm.ActivityId, bm.ParentActivityId, AllocatedBy, BudgetDataObjList, "0");
+                 
+                double planAllocation = 0;
+
+                  double sumMonth = bm.Month.Jan + bm.Month.Feb + bm.Month.Mar + bm.Month.Apr + bm.Month.May + bm.Month.Jun + bm.Month.Jul + bm.Month.Aug + bm.Month.Sep + bm.Month.Oct + bm.Month.Nov + bm.Month.Dec;
+                  planAllocation = (sumMonth == 0 && bm.Allocated == 0) ? 0 : (sumMonth > 0 && bm.Allocated == 0) ? 101 : sumMonth / bm.Allocated * 100;
+
+                ViewBag.SumMonth = sumMonth;
+                ViewBag.PlanAllocation = planAllocation;
+                ViewBag.Budgeted = bm.Budgeted;
 
                 gridjsonlistPlanObj.data = BudgetDataObjList;
                 List<BudgetDHTMLXGridDataModel> CampaignRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -7308,11 +7330,12 @@ namespace RevenuePlanner.Controllers
             }
             objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
             objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;
-
-            Session["TestGrid"] = objBudgetDHTMLXGrid;
+            //TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.
+            //Session["TestGrid"] = objBudgetDHTMLXGrid;
+            //return PartialView("_AllocatedBudget", model);
             #endregion
-
-            return PartialView("_AllocatedBudget", model);
+             return PartialView("_AllocatedBudget", objBudgetDHTMLXGrid);
+            
         }
 
         /// <summary>
@@ -7392,7 +7415,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (tab == "0")
                     {
-                        divValue = plan.isEditable ? NewClueTipAnchorTag(string.Empty, plan.Allocated.ToString(formatThousand)) : plan.Allocated.ToString(formatThousand);
+                        divValue = plan.isEditable ? NewClueTipAnchorTagForBudget(string.Empty, plan.Allocated.ToString(formatThousand), activityType) : plan.Allocated.ToString(formatThousand);
                         if (activityType == ActivityType.ActivityPlan)
                         {
                             division = division + " class='planLevel topCornner clueallocatedbudget'";
@@ -7416,7 +7439,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (activityType == ActivityType.ActivityCampaign)
                         {
-                            childTotalAllocated = model.Where(p => p.ActivityType == ActivityType.ActivityPlan && p.ParentActivityId == plan.ActivityId).Select(p => p.Allocated).Sum();
+                            childTotalAllocated = model.Where(p => p.ActivityType == ActivityType.ActivityProgram && p.ParentActivityId == plan.ActivityId).Select(p => p.Allocated).Sum();
                         }
                         else if (activityType == ActivityType.ActivityProgram)
                         {
@@ -7429,12 +7452,27 @@ namespace RevenuePlanner.Controllers
                         if (childTotalAllocated > plan.Allocated)
                         {
                             //Span = Span + " class = orange-corner-budget";
+                            
                             span.Attributes.Add("class", "orange-corner-budget");
                             if (plan.isEditable)
                             {
-                                //Span = Span + " clickme rel = #loadme txt=" + plan.Allocated.ToString();
-                                Span = "<span  class='orange-corner-budget clickme' style='cursor:pointer;' rel = #loadmetxt=" + plan.Allocated.ToString() + "></span>";
-                                //Span = "<span  class = orange-corner-budget onClick = cluetipClick(this) rel = #loadmetxt=" + plan.Allocated.ToString() + "></span>";
+                                if (activityType == "plan" || activityType == "campaign")
+                                {
+                                    Span = "<span mnth  txt=" + plan.Allocated.ToString() +
+                                           " class='orange-corner-budget clickme' rel = #loadme style = cursor:pointer ></span>";
+                                }
+                                else if (activityType == "program")
+                                {
+                                    Span = "<span mnth txt=" + plan.Allocated.ToString() +
+                                          " class='orange-corner-budget clickmeprogram' rel = #loadme style = cursor:pointer ></span>";
+                                }
+                                else if (activityType == "tactic")
+                                {
+                                    Span = "<span mnth txt=" + plan.Allocated.ToString() +
+                                          " class='orange-corner-budget clickmetactic' rel = #loadme style = cursor:pointer ></span>";
+                                }
+                               // Span = "<span  class='orange-corner-budget clickme' style='cursor:pointer;' rel = #loadmetxt=" + plan.Allocated.ToString() + "></span>";
+                             
                                 span.AddCssClass("clickme");
                                 span.Attributes.Add("rel", "#loadme");
                                 span.Attributes.Add("mnth", string.Empty);
@@ -7465,7 +7503,7 @@ namespace RevenuePlanner.Controllers
                                 division = division + " mainbudget =" + plan.MainBudgeted.ToString();
                                 if (plan.Allocated > plan.MainBudgeted)
                                 {
-                                    Span = Span + " class='red-corner-budget clickme' style='cursor:pointer;' rel = #loadme";
+                                    Span = Span + " class='red-corner-budget clickme' mnth style='cursor:pointer;' rel = #loadme";
                                     //Span = Span + " class = red-corner-budget onClick = cluetipClick(this) rel = #loadme";
                                     span.Attributes.Add("class", "red-corner-budget clickme");
                                     span.Attributes.Add("rel", "#loadme");
@@ -7562,7 +7600,7 @@ namespace RevenuePlanner.Controllers
                         div = "<div id = " + activityType + ActivityId + " class=clueallocated  allocated = " + ParentMonth[i].ToString(formatThousand) + ">";
                     }
 
-                    divValue = isEditable ? NewClueTipAnchorTag(Enums.YearMonths[i], planMonth[i].ToString(formatThousand)) : planMonth[i].ToString(formatThousand);
+                    divValue = isEditable ? NewClueTipAnchorTagForBudget(Enums.YearMonths[i], planMonth[i].ToString(formatThousand), activityType) : planMonth[i].ToString(formatThousand);
                     Span = string.Empty;
                     double totalChildBudget = 0;
                     BudgetDataObj = new Budgetdataobj();
@@ -7621,7 +7659,23 @@ namespace RevenuePlanner.Controllers
                     {
                         if (bm.isEditable)
                         {
-                            Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel = #loadme mnth='" + Enums.YearMonths[i] + "' txt = " + planMonth[i].ToString() + "></span>";
+                            if (activityType == "plan" || activityType == "campaign")
+                            {
+                                Span = "<span mnth=" + Enums.YearMonths[i] + " txt=" + planMonth[i].ToString() +
+                                       " class='orange-corner-budget clickme' rel = #loadme style = cursor:pointer ></span>";
+                            }
+                            else if (activityType == "program")
+                            {
+                                Span = "<span mnth=" + Enums.YearMonths[i] + " txt=" + planMonth[i].ToString() +
+                                      " class='orange-corner-budget clickmeprogram' rel = #loadme style = cursor:pointer ></span>";
+                            }
+                            else if (activityType == "tactic")
+                            {
+                                Span = "<span mnth=" + Enums.YearMonths[i] + " txt=" + planMonth[i].ToString() +
+                                      " class='orange-corner-budget clickmetactic' rel = #loadme style = cursor:pointer ></span>";
+                            }
+
+                          //  Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel = #loadme mnth='" + Enums.YearMonths[i] + "' txt = " + planMonth[i].ToString() + "></span>";
                             //Span = "<span class = orange-corner-budget onClick=cluetipClick(this) rel = #loadme mnth = " + Enums.YearMonths[i] + " txt = " + planMonth[i].ToString() + "></span>";
                         }
                         else
@@ -7646,55 +7700,78 @@ namespace RevenuePlanner.Controllers
                         {10,obj.Oct}
                         
                     };
+
+                Dictionary<int, double> campaignParentMonth = new Dictionary<int, double>()
+                    {
+                        {1,bm.ParentMonth.Jan},
+                        {4,bm.ParentMonth.Apr},
+                        {7,bm.ParentMonth.Jul},
+                        {10,bm.ParentMonth.Oct}
+                    };
+
                 int quarterCounter = 1;
                 for (int i = 1; i <= 11; i += 3)
                 {
                     BudgetDataObj = new Budgetdataobj();
-                    //Modified by Maitri Gandhi
-                    //if (activityType == ActivityType.ActivityPlan)
-                    //{
-                    //    div = "<div id =" + activityType + ActivityId.ToString() + " class='planLevel topCornner clueallocated'";
-                    //    QueryActivityType = ActivityType.ActivityCampaign.ToString();
-                    //}
-                    //else if (activityType == ActivityType.ActivityCampaign)
-                    //{
-                    //    div = "<div id =" + activityType + ActivityId.ToString() + " class='campaignLevel topCornner clueallocated'";
-                    //    QueryActivityType = ActivityType.ActivityProgram.ToString();
-                    //}
-                    //else if (activityType == ActivityType.ActivityProgram)
-                    //{
-                    //    div = "<div id =" + activityType + ActivityId.ToString() + " class='programLevel topCornner clueallocated'";
-                    //    QueryActivityType = ActivityType.ActivityTactic.ToString();
-                    //}
-                    //else if (activityType == ActivityType.ActivityTactic)
-                    //{
-                    //    div = "<div id =" + activityType + ActivityId.ToString() + " class='tacticLevel topCornner clueallocated'";
-                    //}
+                    if (activityType == ActivityType.ActivityPlan)
+                    {
+                        div = "<div  id =" + activityType + ActivityId.ToString() + " class='planLevel topCornner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
+                        QueryActivityType = ActivityType.ActivityCampaign.ToString();
+                    }
+                    else if (activityType == ActivityType.ActivityCampaign)
+                    {
+                        div = "<div id =" + activityType + ActivityId.ToString() + " class='campaignLevel topCornner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
+                        QueryActivityType = ActivityType.ActivityProgram.ToString();
+                    }
+                    else if (activityType == ActivityType.ActivityProgram)
+                    {
+                        div = "<div id =" + activityType + ActivityId.ToString() + " class='programLevel topCornner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
+                        QueryActivityType = ActivityType.ActivityTactic.ToString();
+                    }
+                    else if (activityType == ActivityType.ActivityTactic)
+                    {
+                        div = "<div id =" + activityType + ActivityId.ToString() + " class='tacticLevel topCornner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
+                    }
 
-                    div = "<div id =" + activityType + ActivityId.ToString() + " class='planLevel topCornner clueallocated'";
-                    divValue = isEditable ? NewClueTipAnchorTag(Enums.YearQuarters[i], campaignMonth[i].ToString(formatThousand)) : campaignMonth[i].ToString(formatThousand);
+                    //div = "<div id =" + activityType + ActivityId.ToString() + " class='planLevel topCornner clueallocated'";
+                    divValue = isEditable ? NewClueTipAnchorTagForBudget(Enums.YearQuarters[i], campaignMonth[i].ToString(formatThousand),activityType) : campaignMonth[i].ToString(formatThousand);
                     double totalChildBudget = 0;
                     if (i == 1)
                     {
-                        totalChildBudget = model.Where(p => p.ActivityType == QueryActivityType && p.ParentActivityId == ActivityId).Select(c => c.Month.Jan).ToList().Sum();
+                        totalChildBudget = model.Where(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == ActivityId).Select(c => c.Month.Jan).ToList().Sum();
                     }
                     else if (i == 4)
                     {
-                        totalChildBudget = model.Where(p => p.ActivityType == QueryActivityType && p.ParentActivityId == ActivityId).Select(c => c.Month.Apr).ToList().Sum();
+                        totalChildBudget = model.Where(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == ActivityId).Select(c => c.Month.Apr).ToList().Sum();
                     }
                     else if (i == 7)
                     {
-                        totalChildBudget = model.Where(p => p.ActivityType == QueryActivityType && p.ParentActivityId == ActivityId).Select(c => c.Month.Jul).ToList().Sum();
+                        totalChildBudget = model.Where(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == ActivityId).Select(c => c.Month.Jul).ToList().Sum();
                     }
                     else if (i == 11)
                     {
-                        totalChildBudget = model.Where(p => p.ActivityType == QueryActivityType && p.ParentActivityId == ActivityId).Select(c => c.Month.Oct).ToList().Sum();
+                        totalChildBudget = model.Where(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == ActivityId).Select(c => c.Month.Oct).ToList().Sum();
                     }
                     if (totalChildBudget > obj.Jan)
                     {
                         if (bm.isEditable)
                         {
-                            Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel=#loadme mnth='" + Enums.YearQuarters[i] + "' txt=" + campaignMonth[i].ToString() + "></span>";
+                            if (activityType == "plan" || activityType == "campaign")
+                            {
+                                Span = "<span mnth='" + Enums.YearQuarters[i] + "' txt=" + campaignMonth[i].ToString() +
+                                       " class='orange-corner-budget clickme' rel = #loadme style = cursor:pointer ></span>";
+                            }
+                            else if (activityType == "program")
+                            {
+                                Span = "<span mnth='" + Enums.YearQuarters[i] + "' txt=" + campaignMonth[i].ToString() +
+                                      " class='orange-corner-budget clickmeprogram' rel = #loadme style = cursor:pointer ></span>";
+                            }
+                            else if (activityType == "tactic")
+                            {
+                                Span = "<span mnth='" + Enums.YearQuarters[i] + "' txt=" + campaignMonth[i].ToString() +
+                                      " class='orange-corner-budget clickmetactic' rel = #loadme style = cursor:pointer ></span>";
+                            }
+                           // Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel=#loadme mnth='" + Enums.YearQuarters[i] + "' txt=" + campaignMonth[i].ToString() + "></span>";
                             //Span = "<span class = orange-corner-budget onClick = cluetipClick(this) rel=#loadme mnth=" + Enums.YearQuarters[i] + " txt=" + campaignMonth[i].ToString() + "></span>";
                         }
                         else
@@ -7706,6 +7783,7 @@ namespace RevenuePlanner.Controllers
                     div = div + ">" + divValue + Span + "</div>";
                     BudgetDataObj.value = HttpUtility.HtmlEncode(div);
                     BudgetDataObjList.Add(BudgetDataObj);
+                    Span = "";
                 }
                 #endregion
             }
@@ -8583,9 +8661,14 @@ namespace RevenuePlanner.Controllers
             model = SetLineItemCostByWeightage(model);
 
             #region "Calculate header monthly allocated Percentage values"
+            double MainTotalActual = 0;
+            double MainTotalAllocated = 0;
+           
             BudgetMonth a = new BudgetMonth();
             BudgetMonth child = new BudgetMonth();
             BudgetMonth PercAllocated = new BudgetMonth();
+           
+           
             child = model.Where(_mdl => _mdl.ActivityType == ActivityType.ActivityPlan).Select(_mdl => _mdl.Month).FirstOrDefault();
             a = model.Where(_mdl => _mdl.ActivityType == ActivityType.ActivityPlan).Select(_mdl => _mdl.ParentMonth).FirstOrDefault();
 
@@ -8623,19 +8706,27 @@ namespace RevenuePlanner.Controllers
                 {
                     gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
                     gridjsonlistPlanObj.id = ActivityType.ActivityPlan + HttpUtility.HtmlEncode(bm.ActivityId);
-                    gridjsonlistPlanObj.open = "1";
-                    gridjsonlistPlanObj.bgColor = "#e6e6e6";
+                    gridjsonlistPlanObj.open = Open;
+                    gridjsonlistPlanObj.bgColor = PlanBackgroundColor;
 
                     BudgetDataObjList = new List<Budgetdataobj>();
                     BudgetDataObj = new Budgetdataobj();
 
-                    BudgetDataObj.value = "Plan";
+                    BudgetDataObj.value = Plan;
                     BudgetDataObjList.Add(BudgetDataObj);
 
                     BudgetDataObj = new Budgetdataobj();
                     // BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails>" + bm.ActivityName + "</a>");
                     BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup()>" + bm.ActivityName + "</a>");
                     BudgetDataObjList.Add(BudgetDataObj);
+
+                    double planAllocation = 0;
+                    double sumMonth = bm.Month.Jan + bm.Month.Feb + bm.Month.Mar + bm.Month.Apr + bm.Month.May + bm.Month.Jun + bm.Month.Jul + bm.Month.Aug + bm.Month.Sep + bm.Month.Oct + bm.Month.Nov + bm.Month.Dec;
+                    planAllocation = (sumMonth == 0 && bm.MainBudgeted == 0) ? 0 : (sumMonth > 0 && bm.MainBudgeted == 0) ? 101 : sumMonth / bm.MainBudgeted * 100;
+
+                    ViewBag.SumMonth = sumMonth;
+                    ViewBag.PlanAllocation = planAllocation;
+                    ViewBag.MainBudgeted = bm.MainBudgeted;
 
                     if (budgetTab == Enums.BudgetTab.Planned)
                     {
@@ -8673,12 +8764,12 @@ namespace RevenuePlanner.Controllers
                         CustomFieldRowsObj = new BudgetDHTMLXGridDataModel();
                         CustomFieldRowsObj.id = ActivityType.ActivityCustomField + HttpUtility.HtmlEncode(bmcf.ActivityId);
                         CustomFieldRowsObj.open = null;
-                        CustomFieldRowsObj.bgColor = "#f2f2f2";
+                        CustomFieldRowsObj.bgColor = OtherBackgroundColor;
 
                         List<Budgetdataobj> CustomFieldDataObjList = new List<Budgetdataobj>();
                         Budgetdataobj CustomFieldDataObj = new Budgetdataobj();
 
-                        CustomFieldDataObj.value = "Campaign";
+                        CustomFieldDataObj.value = Campaign;
                         CustomFieldDataObjList.Add(CustomFieldDataObj);
 
                         CustomFieldDataObj = new Budgetdataobj();
@@ -8727,12 +8818,12 @@ namespace RevenuePlanner.Controllers
                             CampaignRowsObj = new BudgetDHTMLXGridDataModel();
                             CampaignRowsObj.id = ActivityType.ActivityCampaign + HttpUtility.HtmlEncode(bmc.ActivityId);
                             CampaignRowsObj.open = null;
-                            CampaignRowsObj.bgColor = "#f2f2f2";
+                            CampaignRowsObj.bgColor = OtherBackgroundColor;
 
                             List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
                             Budgetdataobj CampaignDataObj = new Budgetdataobj();
 
-                            CampaignDataObj.value = "Campaign";
+                            CampaignDataObj.value = Campaign;
                             CampaignDataObjList.Add(CampaignDataObj);
 
                             CampaignDataObj = new Budgetdataobj();
@@ -8783,7 +8874,7 @@ namespace RevenuePlanner.Controllers
                                 List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                                 Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
-                                ProgramDataObj.value = "Program";
+                                ProgramDataObj.value = Program;
                                 ProgramDataObjList.Add(ProgramDataObj);
 
                                 ProgramDataObj = new Budgetdataobj();
@@ -8834,7 +8925,7 @@ namespace RevenuePlanner.Controllers
                                     List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                                     Budgetdataobj TacticDataObj = new Budgetdataobj();
 
-                                    TacticDataObj.value = "Tactic";
+                                    TacticDataObj.value = Tactic;
                                     TacticDataObjList.Add(TacticDataObj);
 
                                     TacticDataObj = new Budgetdataobj();
@@ -8890,7 +8981,7 @@ namespace RevenuePlanner.Controllers
                                         List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
                                         Budgetdataobj LineDataObj = new Budgetdataobj();
 
-                                        LineDataObj.value = "LineItem";
+                                        LineDataObj.value = LineItem;
                                         LineDataObjList.Add(LineDataObj);
 
                                         LineDataObj = new Budgetdataobj();
@@ -8957,13 +9048,13 @@ namespace RevenuePlanner.Controllers
                 {
                     gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
                     gridjsonlistPlanObj.id = ActivityType.ActivityPlan + HttpUtility.HtmlEncode(bm.ActivityId);
-                    gridjsonlistPlanObj.open = "1";
-                    gridjsonlistPlanObj.bgColor = "#e6e6e6";
+                    gridjsonlistPlanObj.open = Open;
+                    gridjsonlistPlanObj.bgColor = PlanBackgroundColor;
 
                     BudgetDataObjList = new List<Budgetdataobj>();
                     BudgetDataObj = new Budgetdataobj();
 
-                    BudgetDataObj.value = "Plan";
+                    BudgetDataObj.value = Plan;
                     BudgetDataObjList.Add(BudgetDataObj);
 
                     BudgetDataObj = new Budgetdataobj();
@@ -8971,6 +9062,13 @@ namespace RevenuePlanner.Controllers
                     BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup()>" + bm.ActivityName + "</a>");
                     BudgetDataObjList.Add(BudgetDataObj);
 
+                    double planAllocation = 0;
+                    double sumMonth = bm.Month.Jan + bm.Month.Feb + bm.Month.Mar + bm.Month.Apr + bm.Month.May + bm.Month.Jun + bm.Month.Jul + bm.Month.Aug + bm.Month.Sep + bm.Month.Oct + bm.Month.Nov + bm.Month.Dec;
+                    planAllocation = (sumMonth == 0 && bm.MainBudgeted == 0) ? 0 : (sumMonth > 0 && bm.MainBudgeted == 0) ? 101 : sumMonth / bm.MainBudgeted * 100;
+
+                    ViewBag.SumMonth = sumMonth;
+                    ViewBag.PlanAllocation = planAllocation;
+                    ViewBag.MainBudgeted = bm.MainBudgeted;
 
                     if (budgetTab == Enums.BudgetTab.Planned)
                     {
@@ -9004,12 +9102,12 @@ namespace RevenuePlanner.Controllers
                         CampaignRowsObj = new BudgetDHTMLXGridDataModel();
                         CampaignRowsObj.id = ActivityType.ActivityCampaign + HttpUtility.HtmlEncode(bmc.ActivityId);
                         CampaignRowsObj.open = null;
-                        CampaignRowsObj.bgColor = "#f2f2f2";
+                        CampaignRowsObj.bgColor = OtherBackgroundColor;
 
                         List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
                         Budgetdataobj CampaignDataObj = new Budgetdataobj();
 
-                        CampaignDataObj.value = "Campaign";
+                        CampaignDataObj.value = Campaign;
                         CampaignDataObjList.Add(CampaignDataObj);
 
                         CampaignDataObj = new Budgetdataobj();
@@ -9054,7 +9152,7 @@ namespace RevenuePlanner.Controllers
                             List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                             Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
-                            ProgramDataObj.value = "Program";
+                            ProgramDataObj.value = Program;
                             ProgramDataObjList.Add(ProgramDataObj);
 
                             ProgramDataObj = new Budgetdataobj();
@@ -9099,7 +9197,7 @@ namespace RevenuePlanner.Controllers
                                 List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                                 Budgetdataobj TacticDataObj = new Budgetdataobj();
 
-                                TacticDataObj.value = "Tactic";
+                                TacticDataObj.value = Tactic;
                                 TacticDataObjList.Add(TacticDataObj);
 
                                 TacticDataObj = new Budgetdataobj();
@@ -9145,7 +9243,7 @@ namespace RevenuePlanner.Controllers
                                     List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
                                     Budgetdataobj LineDataObj = new Budgetdataobj();
 
-                                    LineDataObj.value = "LineItem";
+                                    LineDataObj.value = LineItem;
                                     LineDataObjList.Add(LineDataObj);
 
                                     LineDataObj = new Budgetdataobj();
@@ -9191,11 +9289,11 @@ namespace RevenuePlanner.Controllers
 
             objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
             objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;
+            //TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.
+            //Session["objBudgetDHTMLXGrid"] = objBudgetDHTMLXGrid;
+            //return PartialView("_Budget", model);
 
-
-            Session["objBudgetDHTMLXGrid"] = objBudgetDHTMLXGrid;
-
-            return PartialView("_Budget", model);
+            return PartialView("_Budget", objBudgetDHTMLXGrid);
         }
 
         /// <summary>
@@ -9279,11 +9377,8 @@ namespace RevenuePlanner.Controllers
         {
             string formatThousand = "#,#0.##";
             BudgetModel plan = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
-            //foreach (BudgetModel plan in model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault())
             if (plan != null)
             {
-                //TagBuilder div = new TagBuilder("div");
-                //div.Attributes.Add("id", activityType + plan.ActivityId);
                 TagBuilder span = new TagBuilder("span");
                 Budgetdataobj BudgetDataObj = new Budgetdataobj();
                 string division = "<div id=" + activityType + plan.ActivityId;
@@ -9342,8 +9437,10 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (allocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToLower())
                         {
+
                             //div.InnerHtml = plan.Allocated.ToString(formatThousand);
-                            divValue = plan.isEditable ? NewClueTipAnchorTag(string.Empty, plan.Allocated.ToString(formatThousand)) : plan.Allocated.ToString(formatThousand);
+                            bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && plan.LineItemTypeId == null;
+                            divValue = plan.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(string.Empty, plan.Allocated.ToString(formatThousand),activityType) : plan.Allocated.ToString(formatThousand);
                             if (tab == "1")
                             {
                                 //div.Attributes.Add("mainbudget", plan.MainBudgeted.ToString());
@@ -9391,6 +9488,10 @@ namespace RevenuePlanner.Controllers
                                 {
                                     division = division + " class='tacticLevel clueallocatedCost topCorner'";
                                 }
+                                else if (activityType == "lineitem")
+                                {
+                                    division = division + " class='lineitemLevel clueallocatedCost topCorner'";
+                                }
                             }
                         }
                         else
@@ -9407,6 +9508,7 @@ namespace RevenuePlanner.Controllers
 
                 BudgetDataObj.value = HttpUtility.HtmlEncode(division + ">" + divValue + Span + "</div>");
                 BudgetDataObjList.Add(BudgetDataObj);
+                Span = "";
             }
 
             return BudgetDataObjList;
@@ -9429,6 +9531,7 @@ namespace RevenuePlanner.Controllers
             //foreach (BudgetModel c in model.Where(p => p.ActivityType == activityType && p.ParentActivityId == parentActivityId).OrderBy(p => p.ActivityName).ToList())
             //{
             //TagBuilder tr = new TagBuilder("tr");
+            bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && c.LineItemTypeId == null;
             if (allocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToLower())
             {
                 double mainBudget = 0;
@@ -9449,84 +9552,84 @@ namespace RevenuePlanner.Controllers
                         mainBudget = c.BudgetMonth.Jan;
                         allocated = c.ParentMonth.Jan;
                         monthlyCampaignValue = c.Month.Jan;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.January.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.January.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 2)
                     {
                         mainBudget = c.BudgetMonth.Feb;
                         allocated = c.ParentMonth.Feb;
                         monthlyCampaignValue = c.Month.Feb;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.February.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.February.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 3)
                     {
                         mainBudget = c.BudgetMonth.Mar;
                         allocated = c.ParentMonth.Mar;
                         monthlyCampaignValue = c.Month.Mar;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.March.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.March.ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 4)
                     {
                         mainBudget = c.BudgetMonth.Apr;
                         allocated = c.ParentMonth.Apr;
                         monthlyCampaignValue = c.Month.Apr;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.April.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.April.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 5)
                     {
                         mainBudget = c.BudgetMonth.May;
                         allocated = c.ParentMonth.May;
                         monthlyCampaignValue = c.Month.May;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.May.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.May.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 6)
                     {
                         mainBudget = c.BudgetMonth.Jun;
                         allocated = c.ParentMonth.Jun;
                         monthlyCampaignValue = c.Month.Jun;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.June.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.June.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 7)
                     {
                         mainBudget = c.BudgetMonth.Jul;
                         allocated = c.ParentMonth.Jul;
                         monthlyCampaignValue = c.Month.Jul;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.July.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.July.ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 8)
                     {
                         mainBudget = c.BudgetMonth.Aug;
                         allocated = c.ParentMonth.Aug;
                         monthlyCampaignValue = c.Month.Aug;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.August.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.August.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 9)
                     {
                         mainBudget = c.BudgetMonth.Sep;
                         allocated = c.ParentMonth.Sep;
                         monthlyCampaignValue = c.Month.Sep;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.September.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.September.ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 10)
                     {
                         mainBudget = c.BudgetMonth.Oct;
                         allocated = c.ParentMonth.Oct;
                         monthlyCampaignValue = c.Month.Oct;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.October.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.October.ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 11)
                     {
                         mainBudget = c.BudgetMonth.Nov;
                         allocated = c.ParentMonth.Nov;
                         monthlyCampaignValue = c.Month.Nov;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.November.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.November.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 12)
                     {
                         mainBudget = c.BudgetMonth.Dec;
                         allocated = c.ParentMonth.Dec;
                         monthlyCampaignValue = c.Month.Dec;
-                        divInnerHtml = c.isEditable ? NewClueTipAnchorTag(Enums.Months.December.ToString(), monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.December.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
 
                     //div.Attributes.Add("mainbudget", mainBudget.ToString(formatThousand));
@@ -9601,7 +9704,7 @@ namespace RevenuePlanner.Controllers
                     BudgetDataObj.value = HttpUtility.HtmlEncode(division + ">" + divInnerHtml + Span + "</div>");
                     BudgetDataObjList.Add(BudgetDataObj);
 
-
+                    Span = "";
                     //td.InnerHtml = div.ToString();
 
                     //td.InnerHtml += ProgramMonth(helper, ActivityType.ActivityProgram, c.ActivityId, model, allocatedBy, i, strTab).ToString();
@@ -9630,24 +9733,28 @@ namespace RevenuePlanner.Controllers
                         mainBudget = c.BudgetMonth.Jan;
                         allocated = c.ParentMonth.Jan;
                         monthlyCampaignValue = c.Month.Jan;
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()].ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 4)
                     {
                         mainBudget = c.BudgetMonth.Apr;
                         allocated = c.ParentMonth.Apr;
                         monthlyCampaignValue = c.Month.Apr;
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()].ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 7)
                     {
                         mainBudget = c.BudgetMonth.Jul;
                         allocated = c.ParentMonth.Jul;
                         monthlyCampaignValue = c.Month.Jul;
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()].ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     else if (i == 10)
                     {
                         mainBudget = c.BudgetMonth.Oct;
                         allocated = c.ParentMonth.Oct;
                         monthlyCampaignValue = c.Month.Oct;
+                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()].ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                     }
                     //div.Attributes.Add("mainbudget", mainBudget.ToString(formatThousand));
                     //div.Attributes.Add("allocated", allocated.ToString(formatThousand));
@@ -9657,7 +9764,7 @@ namespace RevenuePlanner.Controllers
 
 
                     //  divInnerHtml = monthlyCampaignValue.ToString(formatThousand);
-                    divInnerHtml = c.isEditable ? NewClueTipAnchorTag(string.Empty, monthlyCampaignValue.ToString(formatThousand)) : monthlyCampaignValue.ToString(formatThousand);
+                   
                     //if (strTab == "1")
                     //{
                     //    // div.AddCssClass("clueplanned");
@@ -10013,6 +10120,7 @@ namespace RevenuePlanner.Controllers
                     //   BudgetDataObj.value = divValue.ToString();
                     BudgetDataObj.value = HttpUtility.HtmlEncode(division + ">" + divInnerHtml + Span + "</div>");
                     BudgetDataObjList.Add(BudgetDataObj);
+                    Span = "";
                 }
             }
             else if (allocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
@@ -10131,6 +10239,7 @@ namespace RevenuePlanner.Controllers
                     //BudgetDataObj.value = divValue.ToString();
                     BudgetDataObj.value = HttpUtility.HtmlEncode(division + ">" + divInnerHtml + Span + "</div>");
                     BudgetDataObjList.Add(BudgetDataObj);
+                    Span = "";
                     //  tdValue.InnerHtml += divValue.ToString();
                     // trValue.InnerHtml += tdValue.ToString();
                     quarterCounter += 1;
@@ -10249,8 +10358,9 @@ namespace RevenuePlanner.Controllers
 
                     BudgetDataObj = new Budgetdataobj();
                     //   BudgetDataObj.value = divValue.ToString();
-                    BudgetDataObj.value = division + ">" + Span + ">" + divInnerHtml + "</span></div>";
+                    BudgetDataObj.value = division + ">" + divInnerHtml + Span + "</div>";
                     BudgetDataObjList.Add(BudgetDataObj);
+                    Span = "";
                 }
             }
 
@@ -10636,50 +10746,7 @@ namespace RevenuePlanner.Controllers
                 //sb.AppendLine(tr.ToString());
             }
 
-            //foreach (BudgetModel c in model.Where(p => p.ActivityType == strViewBy && p.ParentActivityId == parentActivityId).ToList())
-            //{
-            //    if (model.Any(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == c.ActivityId))
-            //    {
-            //        //TagBuilder tr = new TagBuilder("tr");
-
-            //        ////Last
-            //        //TagBuilder tdLast = new TagBuilder("td");
-            //        //tdLast.AddCssClass("campaign-row audience");
-
-            //        TagBuilder divLast = new TagBuilder("div");
-            //        divLast.Attributes.Add("id", activityType + c.ActivityId);
-            //        divLast.AddCssClass("firstLevel");
-            //        if (tab == "0")
-            //        {
-            //            divLast.InnerHtml = c.Allocated.ToString(formatThousand);
-            //        }
-            //        else
-            //        {
-            //            if (allocatedBy != "default")
-            //            {
-            //                double sumMonth = c.Month.Jan + c.Month.Feb + c.Month.Mar + c.Month.Apr + c.Month.May + c.Month.Jun + c.Month.Jul + c.Month.Aug + c.Month.Sep + c.Month.Oct + c.Month.Nov + c.Month.Dec;
-            //                divLast.InnerHtml = sumMonth.ToString(formatThousand);
-            //            }
-            //            else
-            //            {
-            //                divLast.InnerHtml = "---";
-            //            }
-            //        }
-            //        if (tab == "1")
-            //        {
-            //            divLast.Attributes.Add("mainbudget", c.MainBudgeted.ToString());
-            //        }
-            //        BudgetDataObj = new Budgetdataobj();
-            //        BudgetDataObj.value = divLast.ToString();
-            //        BudgetDataObjList.Add(BudgetDataObj);
-            //        //tdLast.InnerHtml = divLast.ToString();
-            //        //tdLast.InnerHtml += ChildCostSummary(helper, ActivityType.ActivityCampaign, c.ActivityId, model, "last", allocatedBy, tab, view).ToString();
-
-            //        //tr.InnerHtml += tdLast.ToString();
-
-            //        //sb.AppendLine(tr.ToString());
-            //    }
-            //}
+           
             return BudgetDataObjList;
         }
 
@@ -10690,7 +10757,34 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public string NewClueTipAnchorTag(string month, string innerHtml)
         {
-            string link = "<a class = clickmeAnchor style='border-bottom: 1px solid black;cursor: pointer' rel=#loadme mnth=" + month + ">" + innerHtml + "</a>";
+            string link = "<a class = clickmeAnchor style='border-bottom: 1px solid black;cursor: pointer' rel=#loadme mnth='" + month + "'>" + innerHtml + "</a>";
+            return link;
+        }
+
+        /// <summary>
+        /// Added By: Rushil Bhuptani.
+        /// Date : 26/5/2016
+        /// Method that returns anchor html string for Budget tab.
+        /// </summary>
+        public string NewClueTipAnchorTagForBudget(string month, string innerHtml, string activityType)
+        {
+            string link = "";
+            if (activityType == "plan" || activityType == "campaign")
+            {
+                link = "<a class = clickmeAnchor style='border-bottom: 1px solid black;cursor: pointer' rel=#loadme mnth='" + month + "'>" + innerHtml + "</a>";
+            }
+            else if (activityType == "program")
+            {
+                link = "<a class = clickmeAnchorProgram style='border-bottom: 1px solid black;cursor: pointer' rel=#loadme mnth='" + month + "'>" + innerHtml + "</a>";
+            }
+            else if (activityType == "tactic")
+            {
+                link = "<a class = clickmeAnchorTactic style='border-bottom: 1px solid black;cursor: pointer' rel=#loadme mnth='" + month + "'>" + innerHtml + "</a>";
+            }
+            else if (activityType == "lineitem")
+            {
+                link = "<a class = clickmeAnchorLineItem style='border-bottom: 1px solid black;cursor: pointer' rel=#loadme mnth='" + month + "'>" + innerHtml + "</a>";
+            }
             return link;
         }
 

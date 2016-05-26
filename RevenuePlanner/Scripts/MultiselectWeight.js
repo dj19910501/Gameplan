@@ -1,21 +1,22 @@
 ﻿(function ($, undefined) {
     var multiselectID = 0;
     var $doc = $(document);
+
     var StageCodeOfWeight = 'weight';
     $.widget("ech.multiselectWeight", {
-       
+
         options: {
             errorDivId: 'noId',
             pageErrorDivId: 'noPageErrorId'
         },
         _create: function () {
-            
+
             this._namespaceID = this.eventNamespace || ('multiselectWeight' + multiselectID);
             this._bindEventsM();
             multiselectID++;
         },
         _bindEventsM: function () {
-            
+
             var o = this.options;
             var Button = this.element;
             var dropdownMenu = Button.parent().find('.dropdown-wrapper');
@@ -27,7 +28,7 @@
                 e.stopPropagation();
             });
             this.element.parent().find('.dropdown-wrapper').each(function () {
-               
+
                 var menu = $(this);
                 menu.on('click', function (e) {
                     e.stopPropagation();
@@ -77,7 +78,7 @@
                             }
                             if (!isAllColumnInputBlank) {
                                 if (label != '' && typeof label != 'undefined') {
-                                    
+
                                     $('#' + errorDivId).attr('proccedObject', label);
                                     $('#' + errorDivId).slideDown(400);
                                     $('#' + errorDivId + ' span').find('attributetext').text(label);
@@ -135,11 +136,11 @@
                     })
                 }
                 menu.find('.close_btn,.cncl_btn').on('click', function () {
-                    
+
                     menu.find('.innerpopup').css('display', 'none');
                 });
                 menu.find('.close_a').on('click', function () {
-                   
+
                     $('.dropdown-wrapper').css('display', 'none');
                 });
                 menu.find('input[type=text]').on('keydown', function (e) {
@@ -200,7 +201,25 @@
 
                 });
                 menu.find('.first_show').on('click', function (e) {
-                    filters.chekboxIds = [];
+
+                    var dependancyFilters = {
+                        parentCustomFieldsIds: [],
+                        customFieldIds: [],
+                        PlanIDs: [],
+                        SelectedPlans: [],
+                        PlanTitles: [],
+                        OwnerIds: [],
+                        TacticTypeids: [],
+                        tempTacticTypeIds: [],
+                        tempOwnerIds: [],
+                        StatusIds: [],
+                        SelectedYears: []
+
+                    };
+                    if (typeof filters != 'undefined' && filters != null) {
+                        dependancyFilters = filters;
+                    }
+                    dependancyFilters.chekboxIds = [];
                     var checkbx = $(this).find('input:checkbox');
                     var ParentValue = checkbx.attr('name');
                     var title = "";
@@ -210,19 +229,19 @@
                             if ($(this).attr('checked') == 'checked') {
                                 var chkid = $(this).val();
                                 if (chkid != undefined && chkid != 'undefined') {
-                                    filters.chekboxIds.push(chkid);
+                                    dependancyFilters.chekboxIds.push(chkid);
                                 }
                             }
                         });
                     }
                     else
-                        filters.chekboxIds.push(checkbx.val());
+                        dependancyFilters.chekboxIds.push(checkbx.val());
 
                     $('#CustomHtmlHelperfield').find('.span3').each(function () {
                         var InputType = $(this).find("input").attr('type');
                         var cnt = 0;
                         if (InputType == "text" && $(this).attr('parentid') != 'undefined' && $(this).attr('parentid') != '0' && $(this).attr('parentid') == ParentValue) {
-                          
+
                             var ParentOptionID = $(this).find("input").parent().attr('parentoptionid');
                             //Modified By Komal Rawal for #1864
                             var arrParentOptionId = ParentOptionID.split(",");
@@ -234,8 +253,8 @@
                             //}
 
                             //Modified by Dashrath Prajapati for PL#1965
-                            for (i = 0 ; i < filters.chekboxIds.length; i++) {
-                                if (arrParentOptionId.indexOf(filters.chekboxIds[i]) > -1) {
+                            for (i = 0 ; i < dependancyFilters.chekboxIds.length; i++) {
+                                if (arrParentOptionId.indexOf(dependancyFilters.chekboxIds[i]) > -1) {
                                     if ($(this).css("display") == "none") {
                                         $(this).css("display", "inline-block");
                                         cnt++;
@@ -251,7 +270,7 @@
                         else {
 
                             if ($(this).attr('parentid') == ParentValue) {
-                               
+
                                 var maindiv = $(this);
                                 var isSelected = false;
                                 var Selectedvalue = ""
@@ -260,17 +279,17 @@
                                 maindiv.find('tbody tr').each(function () {
                                     var checkbox = $(this).find('input[type=checkbox]');
 
-                                    if ((checkbox.attr('checked') == 'checked' && $.inArray($(this).attr('parentid'), filters.chekboxIds) > -1)) {
+                                    if ((checkbox.attr('checked') == 'checked' && $.inArray($(this).attr('parentid'), dependancyFilters.chekboxIds) > -1)) {
                                         Selectedvalue += $(this).find(' p:first').text() + ', ';
                                         isSelected = true;
                                     }
                                     var ParentOptionId = $(this).attr('parentid');
                                     var arrParentOptionId = ParentOptionId.split(",");
                                     var i;
-                                    for (i = 0 ; i < filters.chekboxIds.length; i++) {
-                                       //Modified By Komal Rawal for #1864
-                                        if (arrParentOptionId.indexOf(filters.chekboxIds[i]) > -1 || $(this).find('.lable_inline').text() == "Please Select") {
-                                            
+                                    for (i = 0 ; i < dependancyFilters.chekboxIds.length; i++) {
+                                        //Modified By Komal Rawal for #1864
+                                        if (arrParentOptionId.indexOf(dependancyFilters.chekboxIds[i]) > -1 || $(this).find('.lable_inline').text() == "Please Select") {
+
                                             if ($(this).css("display") == "none") {
                                                 $(this).css("display", "block");
                                                 cnt++;
@@ -290,7 +309,7 @@
                                     }
                                     $(this).find('.dropdown_new_btn p:first').text(Selectedvalue);
                                 }
-                                
+
                                 if (cnt == 1 || cnt == 0) {
                                     maindiv.css("display", "none");
                                     $(this).find('.dropdown_new_btn p:first').text('Please Select');

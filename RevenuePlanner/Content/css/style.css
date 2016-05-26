@@ -11733,8 +11733,8 @@ div.clue-bottom-default .cluetip-arrows {
 
 .cluetip-close {
     position: absolute;
-    right: 9px;
-    top: 13px;
+    right:3px; /*right: 9px;*/ /* changed for #2197, #2191 */
+    top:0; /*top: 13px;*/
     display: block !important;
 }
 
@@ -11754,8 +11754,8 @@ div.clue-bottom-default .cluetip-arrows {
 }
 
 .tooltip-field {
-    border-bottom: 1px solid #b3b3b3;
-    border-top: 1px solid #b3b3b3;
+    /*border-bottom: 1px solid #b3b3b3;
+    border-top: 1px solid #b3b3b3;*/ /* changed for #2197, #2191 */
     padding: 10px 0;
 }
 
@@ -12798,7 +12798,7 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
 .clue-tip-message-orange, .clue-tip-message-red {
     margin: 0 0 10px 10px;
     padding: 12px;
-    width: 86%;
+    width: 84%; /* changed for #2197, #2191 */
     font-size: 13px;
 }
 
@@ -14695,6 +14695,25 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     margin-bottom: 1px;
 }
 
+
+/* To set orange corner on Grid Table start #2197 */
+#gridbox.financeReportGrid .objbox td .topCornner {
+    position: relative;
+}
+
+.financeReportGrid.gridbox div.planLevel, 
+.financeReportGrid.gridbox div.campaignLevel,
+.financeReportGrid.gridbox div.programLevel ,
+.financeReportGrid.gridbox div.tacticLevel, 
+.financeReportGrid.gridbox div.lineitemLevel {
+   margin: -2px -8px -2px -4px;
+} 
+
+.financeReportGrid .orange-corner-budget,
+.financeReportGrid.gridbox .topCorner .red-corner-budget{
+    top:-1px; right:4px;
+}
+
 .gotoLink { /* For #2212 */
     border-bottom: 1px solid;
     clear: both;
@@ -14703,6 +14722,8 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     font-size: 16px;
     margin-bottom: 10px;
 }
+
+/* To set orange corner on Grid Table End  */
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {
 
