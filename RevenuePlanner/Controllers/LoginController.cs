@@ -307,7 +307,7 @@ namespace RevenuePlanner.Controllers
                               AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
                               AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView));
 
-                        item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.AdvancedBudget.ToString().ToUpper());
+                        item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.MarketingBudget.ToString().ToUpper());
                         if (item != null && !isAuthorized)
                         {
                             Sessions.AppMenus.Remove(item);

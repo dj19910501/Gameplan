@@ -137,6 +137,12 @@ namespace RevenuePlanner.Test.MockHelpers
             return objTactic;
         }
 
+        public static Plan_Campaign GetPlanCampaign(Guid clientId)
+        {
+            var objCampaign = db.Plan_Campaign.Where(a => a.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            return objCampaign;
+        }
+
         /// <summary>
         /// Get single published multiple plan id.
         /// </summary>

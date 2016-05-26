@@ -298,7 +298,7 @@ namespace RevenuePlanner.Helpers
             Finance=6,
             ExternalService,
             Organization,
-            AdvancedBudget,  // Added by Arpita Soni for Ticket #2202 on 05/23/2016 
+            MarketingBudget,  // Added by Arpita Soni for Ticket #2202 on 05/23/2016 
             None = 999
         }
 

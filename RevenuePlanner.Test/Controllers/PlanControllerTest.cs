@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
+
 namespace RevenuePlanner.Test.Controllers
 {
     [TestClass]
@@ -351,7 +352,88 @@ namespace RevenuePlanner.Test.Controllers
 
         }
 
+        /// <summary>
+        /// To check to allocate budget to campaign having quarterly allocated plan
+        /// <author>Arpita Soni</author>
+        /// <createddate>25May2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void GetBudgetAllocationCampaignData_With_Plan_Quarter_Allocated()
+        {
+            Console.WriteLine("To check to allocate budget to campaign having quarterly allocated plan\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController objPlanController = new PlanController();
 
+            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
+
+            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            Plan_Campaign campaign = db.Plan_Campaign.Where(a => a.Plan.Model.ClientId == Sessions.User.ClientId && a.IsDeleted == false && a.Plan.AllocatedBy.ToLower() != "quarter").OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            int CampaignId = 0;
+            if (campaign != null)
+            {
+                CampaignId = campaign.PlanCampaignId;
+            }
+            var result = objPlanController.GetBudgetAllocationCampaignData(CampaignId);
+
+            if (result != null)
+            {
+                var serializedData = new RouteValueDictionary(result.Data);
+                var budgetData = serializedData["budgetData"];
+                var planRemainingBudget = serializedData["planRemainingBudget"];
+                // data object should not be null in json result
+                Assert.IsNotNull(budgetData);
+                Assert.IsNotNull(planRemainingBudget);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + budgetData);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + planRemainingBudget);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+        }
+        /// <summary>
+        /// To check to allocate budget to campaign without having quarterly allocated plan
+        /// <author>Arpita Soni</author>
+        /// <createddate>25May2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void GetBudgetAllocationCampaignData_Without_Plan_Quarter_Allocated()
+        {
+            Console.WriteLine("To check to allocate budget to campaign without having quarterly allocated plan\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController objPlanController = new PlanController();
+
+            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
+
+            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            Plan_Campaign campaign = DataHelper.GetPlanCampaign(Sessions.User.ClientId);
+            int CampaignId = 0;
+            if (campaign != null)
+            {
+                CampaignId = campaign.PlanCampaignId;
+            }
+            var result = objPlanController.GetBudgetAllocationCampaignData(CampaignId);
+            
+            if (result != null)
+            {
+                var serializedData = new RouteValueDictionary(result.Data);
+                var budgetData = serializedData["budgetData"];
+                var planRemainingBudget = serializedData["planRemainingBudget"];
+                // data object should not be null in json result
+                Assert.IsNotNull(budgetData);
+                Assert.IsNotNull(planRemainingBudget);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + budgetData);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + planRemainingBudget);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+        }
         #endregion
 
         #region Grid View
@@ -543,6 +625,162 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
+        #endregion
+
+        #region ExportToCSV
+        /// <summary>
+        /// To check to export data in csv with passing all parameters
+        /// <author>Arpita Soni</author>
+        /// <createddate>25May2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Export_To_CSV_With_All_Params()
+        {
+            Console.WriteLine("To check to export data in csv with passing all parameters\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController objPlanController = new PlanController();
+
+            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
+
+            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tactic);
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
+
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+
+            List<int> honeyCombIds = new List<int>();
+            honeyCombIds.Add(DataHelper.GetPlanTactic(Sessions.User.ClientId).PlanTacticId);
+
+            string honeyCombId = string.Join(",", honeyCombIds);
+
+            var result = objPlanController.ExportToCsv(Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, honeyCombId, PlanId) as JsonResult;
+
+
+
+            if (result != null)
+            {
+                var serializedData = new RouteValueDictionary(result.Data);
+                var fileName = serializedData["data"];
+                Assert.IsNotNull(fileName);
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + fileName);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+
+        /// <summary>
+        /// To check to export data in csv with passing only honeycombids and planid
+        /// <author>Arpita Soni</author>
+        /// <createddate>25May2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Export_To_CSV_With_Only_HoneyCombId_And_PlanId()
+        {
+            Console.WriteLine("To check to export data in csv with passing only honeycombids and planid\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController objPlanController = new PlanController();
+
+            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
+
+            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+
+            List<int> honeyCombIds = new List<int>();
+            honeyCombIds.Add(DataHelper.GetPlanTactic(Sessions.User.ClientId).PlanTacticId);
+
+            string honeyCombId = string.Join(",", honeyCombIds);
+
+            var result = objPlanController.ExportToCsv(null, null, null, null, honeyCombId, PlanId) as JsonResult;
+
+            if (result != null)
+            {
+                var serializedData = new RouteValueDictionary(result.Data);
+                var fileName = serializedData["data"];
+                Assert.IsNotNull(fileName);
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + fileName);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+
+        /// <summary>
+        /// To check to export data in csv without honeycombids
+        /// <author>Arpita Soni</author>
+        /// <createddate>25May2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Export_To_CSV_Without_HoneyCombIds()
+        {
+            Console.WriteLine("To check to export data in csv with passing only honeycombids and planid\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController objPlanController = new PlanController();
+
+            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
+
+            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tactic);
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
+
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+
+            var result = objPlanController.ExportToCsv(Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, null, PlanId) as JsonResult;
+            if (result != null)
+            {
+                var serializedData = new RouteValueDictionary(result.Data);
+                var fileName = serializedData["data"];
+                Assert.IsNotNull(fileName);
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + fileName);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
         #endregion
 
     }
