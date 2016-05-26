@@ -20,6 +20,7 @@
     var tacticIntegrationInstance = ViewBag.TacticIntegrationInstance;
     var tacticEloquaInstance = ViewBag.TacticEloquaInstance;
     var tacticIntegrationProjMgmtInstance = ViewBag.TacticIntegrationProjMgmtInstance;
+    var tacticMarketoInstance = ViewBag.TacticMarketoInstance;
     List<RevenuePlanner.Models.CustomFieldReviewTab> topThreeCustomFields = ViewBag.TopThreeCustomFields;
     bool IsSyncSF = (bool)ViewBag.IsSyncSF;             // Get IsSyncSalesforce flag
     bool IsSyncEloqua = (bool)ViewBag.IsSyncEloqua;     // Get IsSyncEloqua flag
@@ -261,7 +262,7 @@
 
             @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration - Moved and updated Jan 2016 by Brad Gray PL#1872*@
             <div class="span6 blue-text bold" style="margin-bottom: 0px; width: 93%;margin-top:10px;">
-                @if (tacticIntegrationInstance != null || tacticIntegrationProjMgmtInstance != null || tacticEloquaInstance != null)
+                @if (tacticIntegrationInstance != null || tacticIntegrationProjMgmtInstance != null || tacticEloquaInstance != null || tacticMarketoInstance != null)
                 {
                     if (INQLastSync != null)
                     {

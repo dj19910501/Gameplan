@@ -3245,6 +3245,7 @@ namespace RevenuePlanner.Controllers
             ////Start : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
             ViewBag.TacticIntegrationInstance = pcpt.IntegrationInstanceTacticId;
             ViewBag.TacticEloquaInstance = pcpt.IntegrationInstanceEloquaId;
+            ViewBag.TacticMarketoInstance = pcpt.IntegrationInstanceMarketoID;
             if (pcpt.IntegrationWorkFrontProjectID != null) //modified 24 Jan 2016 by Brad Gray PL#1851
             {
                 ViewBag.TacticIntegrationProjMgmtInstance = pcpt.IntegrationWorkFrontProjectID;
@@ -11808,7 +11809,7 @@ namespace RevenuePlanner.Controllers
             {
                 using (MRPEntities mrp = new MRPEntities())
                 {
-                    using (var scope = new TransactionScope())
+                    //using (var scope = new TransactionScope())
                     {
                         if (ModelState.IsValid)
                         {
@@ -12226,7 +12227,7 @@ namespace RevenuePlanner.Controllers
 
                             var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                             objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
-                            scope.Complete();
+                            //scope.Complete();
                             return Json(new { id = planTacticId, TabValue = "Review", msg = strmessage });
                         }
                     }

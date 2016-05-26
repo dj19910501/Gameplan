@@ -1,3 +1,28 @@
+-- ===================================================================================================
+-- Added By : Viral Kadiya
+-- Added Date : 05/26/2016
+-- ===========================================================================================================
+
+-- Note: Please update ClientId,Sequence & length variable value as per requirement
+
+DECLARE @MarketoClientId NVARCHAR(100)='464EB808-AD1F-4481-9365-6AADA15043BD'
+DECLARE @sequence int=1
+DECLARE @length int=5
+IF NOT EXISTS(SELECT CampaignNameConventionId FROM CampaignNameConvention WHERE [TableName]='Plan_Campaign_Program_Tactic' AND [FieldName]='PlanTacticId' AND ClientId=@MarketoClientId AND IsDeleted=0)
+BEGIN
+DECLARE @CreatedBy NVARCHAR(100)
+
+SELECT @CreatedBy = CreatedBy FROM CampaignNameConvention WHERE ClientId=@MarketoClientId AND IsDeleted=0
+
+       UPDATE CampaignNameConvention SET [Sequence] = [Sequence]+1
+       WHERE ClientId=@MarketoClientId
+
+       Insert Into CampaignNameConvention Values('Plan_Campaign_Program_Tactic','PlanTacticId',null,@sequence,@MarketoClientId,GetDate(),@CreatedBy,0,@length)
+GO
+END
+
+-- ==========================================================================================================
+
 -- Created By Nishant Sheth
 -- Created Date : 26-Apr-2016
 -- Desc :: Get list of budget and line item budget list
@@ -897,11 +922,11 @@ GO
 -- Added By : Viral Kadiya
 -- Added Date : 05/24/2016
 -- ===========================================================================================================
-/****** Object:  UserDefinedFunction [dbo].[GetTacCustomNameMappingList]    Script Date: 05/24/2016 6:59:20 PM ******/
+/****** Object:  UserDefinedFunction [dbo].[GetTacCustomNameMappingList]    Script Date: 05/26/2016 9:45:10 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetTacCustomNameMappingList]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 DROP FUNCTION [dbo].[GetTacCustomNameMappingList]
 GO
-/****** Object:  UserDefinedFunction [dbo].[GetTacCustomNameMappingList]    Script Date: 05/24/2016 6:59:20 PM ******/
+/****** Object:  UserDefinedFunction [dbo].[GetTacCustomNameMappingList]    Script Date: 05/26/2016 9:45:10 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -926,6 +951,8 @@ BEGIN
 --	Declare @entityType varchar(255)=''Tactic''
 --Declare @clientId uniqueidentifier=''464EB808-AD1F-4481-9365-6AADA15023BD''
 --Declare @TacticIds varchar(max)=''''
+Declare @actTitleField varchar(50)=''Title''
+Declare @actPlanTacticIdField varchar(50)=''PlanTacticId''
 
 Declare @tbl_Tac_Custm_Type table(
 PlanTacticId int,
@@ -996,8 +1023,8 @@ SElect * from (
 (SELECT 
 	T.PlanTacticId,
 	CASE 
-		WHEN CNC.CustomNameCharNo is null THEN [dbo].[RemoveSpaceAndUppercaseFirst](T.Title) +''_'' 
-		ELSE SUBSTRING([dbo].[RemoveSpaceAndUppercaseFirst](T.Title),1,CNC.CustomNameCharNo) +''_'' 
+		WHEN CNC.CustomNameCharNo is null THEN [dbo].[RemoveSpaceAndUppercaseFirst](CASE WHEN FieldName=@actPlanTacticIdField THEN Cast(T.PlanTacticId as varchar(10)) ELSE T.Title END) +''_'' 
+		ELSE SUBSTRING([dbo].[RemoveSpaceAndUppercaseFirst](CASE WHEN FieldName=@actPlanTacticIdField THEN Cast(T.PlanTacticId as varchar(10)) ELSE T.Title END),1,CNC.CustomNameCharNo) +''_'' 
 	END as ''TacticTitle'',
 	Null as CustomFieldId,
 	Null as CustomFieldValue,
@@ -1099,6 +1126,7 @@ END
 END
 
 GO
+
 ---=========================================================================================
 -- Added By : Viral Kadiya
 -- Added Date : 05/24/2016
@@ -1869,6 +1897,8 @@ GO
   END
 
   Go
+
+
 
 -- ========================================================================================================
 
