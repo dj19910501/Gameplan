@@ -3229,7 +3229,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.Marketo.ToString())
                 {
-                    string append = "/" + pcpt.IntegrationInstanceMarketoID;
+                    string append = "/"; // Modified By Nishant Sheth // Remove Integration Intance id from url // #2134 observation 1
                     url = string.Concat(url, append);
                 }
                 if (!IntegrationLinkDictionary.ContainsKey(instance.IntegrationType.Code))
