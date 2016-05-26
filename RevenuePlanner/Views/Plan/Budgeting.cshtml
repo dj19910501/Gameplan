@@ -152,7 +152,7 @@
     </ul>
 </div>
 <div id="divTabData" style="margin-top: 20px; margin-bottom: 30px;"></div>
-
+<div id="dvCopyEntity"></div>
 <script>
     var CurrentPlanId = '@CurrentPlanId';
     var Bid;
@@ -161,6 +161,106 @@
     var currentTab = 'aAllocated';
     var isQuater = '@IsQuarter';
     var IsHeaderActuals = true;
+
+    var isLoadcopied = false;
+    var cloneObj = "";
+    function OpentCopyPopup(obj, isProceed) {
+        cloneObj = obj;
+        var redirectType = $(obj).attr('redirecttype');
+        if (redirectType == "" || redirectType == undefined) {
+            if ($('#IsGridView').val().toLowerCase() == "false") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+                scrollstate = gantt.getScrollState();
+            }
+            else {
+                linkItemId = $(obj).attr('entityid');
+                if (linkItemId.indexOf("_") >= 0) {
+                    linkItemId = linkItemId.split('_')[1];
+                }
+                else {
+                    linkItemId = $(obj).attr('entityid').replace("_", "");
+                }
+                var selectedcell = HomeGrid.findCell(linkItemId, 3, true);
+                var id = selectedcell[0];
+                var rowid = id[0];
+                ItemIndex = HomeGrid.getRowIndex(rowid);
+                state0 = ItemIndex;
+            }
+        }
+        var sectionType = $(obj).attr('sectionType');
+        var entityId = $(obj).attr('entityId');
+        var popuptype = $(obj).attr('popupType');
+        var returnpara = true;
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '' && redirectType != undefined) {
+            if (sectionType == '@Enums.Section.Tactic.ToString()') {
+
+                if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true") && isProceed == undefined) {
+                    var iserror = false;
+                    $('form').find('input[type=text], select, textarea').each(function () {
+                        if ($(this).attr('require') == 'true') {
+                            if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                                $(this).addClass("error");
+                                iserror = true;
+                            }
+                            else {
+                                $(this).removeClass("error");
+                            }
+                        }
+                    });
+                    $('.dropdown_new_btn').each(function () {
+                        if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                            $(this).addClass("error");
+                            iserror = true;
+                        }
+                        else {
+                            $(this).removeClass("error");
+                        }
+                    });
+                    if (iserror) {
+                        ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                        return false;
+                    }
+
+                    url = '@Url.Content("~/Inspect/LoadResubmission")';
+                    $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
+                    isLoadcopied = true;
+                }
+                else {
+                    returnpara = SaveAllData(activeTab);
+                    $('#spanMessageSuccess').empty();
+                    $("#successMessage").css("display", "none");
+                }
+            }
+            else {
+                returnpara = SaveAllData(activeTab);
+                $('#spanMessageSuccess').empty();
+                $("#successMessage").css("display", "none");
+            }
+        }
+        if (returnpara && !isLoadcopied) {
+            $("#dvCopyEntity").empty();
+            var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
+            $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype + "&RedirectType=" + redirectType); // section parameter added to open share tactic popup
+        }
+        else {
+            $("#SuccessMsg").css("display", "none");
+            $("#successMessage").css("display", "none");
+            $('.btn-dropdwn').hide();
+        }
+    }
+    function OpentCopyPopuponProceed(obj) {
+        var redirectType = $(obj).attr('redirecttype');
+        var sectionType = $(obj).attr('sectionType');
+        var entityId = $(obj).attr('entityId');
+        var popuptype = $(obj).attr('popupType');
+        var planTacticId = entityId.split('_')[1];
+        loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
+        $("#dvCopyEntity").empty();
+        var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
+        $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype + "&RedirectType=" + redirectType); // section parameter added to open share tactic popup
+        $("#SuccessMsg").css("display", "none");
+        $('.btn-dropdwn').hide();
+    }
     if ('@type' == 'plan') {
         currentTab = 'aPlanned';
     }

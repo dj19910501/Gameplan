@@ -121,6 +121,7 @@
     var strViewMode = 'View';
     $(document).ready(
     function () {
+        $('#EditForm').removeClass('SpanDisable');
         var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();
         if (IsEditable == strViewMode.toString()) {
             $('form').find(".sbSelector").each(function () {

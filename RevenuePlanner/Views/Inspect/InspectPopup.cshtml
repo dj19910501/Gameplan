@@ -239,6 +239,7 @@
     var tabtext = "";
     var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Handling add mode of inspect popup
     $(document).ready(
+       
       function () {
           var modelHeight = $(window).height();
           var headerHeight = $('.headerfix-wraper').height();
@@ -631,7 +632,6 @@
                 });
             }
         }
-        //debugger;
         if (tabValue == TabReview) {
             //$('#txtTacticTitle').css('display', 'none');
             //$('#lblTacticTitle').css('display', 'block');
@@ -1123,7 +1123,8 @@
         var ProgramId = @PlanProgramId;
         isCopyTactic = ProgramId;
         if(returnpara && !isInspectNewLineItem){
-            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');       
+            @*ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');       *@
+            loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ProgramId, '@RequestedModule');
         }
         return false;
     });
