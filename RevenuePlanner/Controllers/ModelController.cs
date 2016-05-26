@@ -1532,7 +1532,10 @@ namespace RevenuePlanner.Controllers
                 //Modified By Komal rawal for #2216 deleting tactic type marketo mapping 
                 string EntityType = Enums.FilterLabel.TacticType.ToString();
                 MarketoEntityValueMapping DeleteTacticTypeMapping = objDbMrpEntities.MarketoEntityValueMappings.Where(Entity => Entity.EntityID == id && Entity.EntityType == EntityType).FirstOrDefault();
-                objDbMrpEntities.Entry(DeleteTacticTypeMapping).State = EntityState.Deleted;
+               if(DeleteTacticTypeMapping != null)
+               {
+                   objDbMrpEntities.Entry(DeleteTacticTypeMapping).State = EntityState.Deleted;
+               }
                 //End
 
                 objDbMrpEntities.SaveChanges();
@@ -2653,10 +2656,11 @@ namespace RevenuePlanner.Controllers
                     #region Clone Model table entries
 
                     Model newModel = new Model();
-
+                    List<Model> tblModels = objMrpEntities.Models.Where(model => model.IsDeleted.Equals(false)).ToList();
+                    var oldModel = tblModels.Where(model => model.ModelId == OldModelID).FirstOrDefault();
                     if (!IsVersion)
                     {
-                        var oldModel = objMrpEntities.Models.Where(model => model.ModelId == OldModelID && model.IsDeleted.Equals(false)).FirstOrDefault();
+                      //  var oldModel = objMrpEntities.Models.Where(model => model.ModelId == OldModelID && model.IsDeleted.Equals(false)).FirstOrDefault();
                         if (oldModel != null)
                         {
                             newModel = oldModel;
@@ -2683,8 +2687,8 @@ namespace RevenuePlanner.Controllers
                         newModel.Year = DateTime.Now.Year;
                         newModel.IsBenchmarked = IsBenchmarked;
                         //// Added by Mitesh Vaishnav for PL ticket #659 
-                        List<Model> tblModels = objMrpEntities.Models.Where(model => model.IsDeleted.Equals(false)).ToList();
-                        var oldModel = tblModels.Where(model => model.ModelId == OldModelID).FirstOrDefault();
+                      
+                       
                         newModel.IntegrationInstanceId = oldModel.IntegrationInstanceId;
                         newModel.IntegrationInstanceIdCW = oldModel.IntegrationInstanceIdCW;
                         newModel.IntegrationInstanceIdINQ = oldModel.IntegrationInstanceIdINQ;
@@ -2738,11 +2742,14 @@ namespace RevenuePlanner.Controllers
                     #region Clone TacticTypes table entries
 
                     var oldTacticTypes = objMrpEntities.TacticTypes.Where(tacticType => tacticType.ModelId == OldModelID && (tacticType.IsDeleted == null ? false : tacticType.IsDeleted) == false).ToList();
+                   
                     if (oldTacticTypes != null)
                     {
                         if (oldTacticTypes.Count > 0)
                         {
                             TacticType newTacticTypes;
+                            MarketoEntityValueMapping NewTacticMapping;
+                            MarketoEntityValueMapping OldTacticMapping;
                             foreach (var tacticType in oldTacticTypes)
                             {
                                 newTacticTypes = new TacticType();
@@ -2763,12 +2770,38 @@ namespace RevenuePlanner.Controllers
                                 newTacticTypes.ModifiedBy = null;
                                 newTacticTypes.ModifiedDate = null;
                                 objMrpEntities.TacticTypes.Add(newTacticTypes);
+                            
+                                
                             }
                             objMrpEntities.SaveChanges();  //// Shifted by Sohel Pathan on 20/08/2014 for PL ticket #713 from foreach loop to outside.
+
+                            if (IsVersion)
+                            {
+                                //Modified By Komal rawal for #2190 to maintain program type and channel of previous Tactic type when  creates new version of model
+                                List<MarketoEntityValueMapping> PreviousMapping = objDbMrpEntities.MarketoEntityValueMappings.Where(inst => inst.IntegrationInstanceId == oldModel.IntegrationInstanceMarketoID).ToList();
+                                var OldMappedTacticTypeIds = PreviousMapping.Select(id => id.EntityID).ToList();
+                                var PreviousTacticTypes = oldTacticTypes.Where(ids => OldMappedTacticTypeIds.Contains(ids.PreviousTacticTypeId)).Select(list => list).ToList();
+
+                                foreach (var TacticType in PreviousTacticTypes)
+                                {
+
+                                    NewTacticMapping = new MarketoEntityValueMapping();
+                                    OldTacticMapping = new MarketoEntityValueMapping();
+                                    OldTacticMapping = PreviousMapping.Where(id => id.EntityID == TacticType.PreviousTacticTypeId).FirstOrDefault();
+                                    NewTacticMapping = OldTacticMapping;
+                                    NewTacticMapping.EntityID = TacticType.TacticTypeId; //New TacticType id
+                                    objDbMrpEntities.Entry(NewTacticMapping).State = EntityState.Added; ;
+
+                                }
+
+                                objMrpEntities.SaveChanges();
+                                //End
+                            }
                         }
                     }
                     #endregion
 
+                   
                     scope.Complete();
                 }
             }

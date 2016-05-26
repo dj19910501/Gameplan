@@ -3349,8 +3349,11 @@ namespace RevenuePlanner.Helpers
                         if (isMarketoinstance)
                         {
                             string EntityType = Enums.FilterLabel.TacticType.ToString();
-                            MarketoEntityValueMapping DeleteTacticTypeMapping = db.MarketoEntityValueMappings.Where(Entity => Entity.IntegrationInstanceId == integrationInstanceId && Entity.EntityType == EntityType ).FirstOrDefault();
-                            db.Entry(DeleteTacticTypeMapping).State = EntityState.Deleted;
+                            List<MarketoEntityValueMapping> DeleteTacticTypeMapping = db.MarketoEntityValueMappings.Where(Entity => Entity.IntegrationInstanceId == integrationInstanceId && Entity.EntityType == EntityType ).ToList();
+                            if (DeleteTacticTypeMapping != null)
+                            {
+                                DeleteTacticTypeMapping.ForEach(DeleteMapping => db.Entry(DeleteMapping).State = EntityState.Deleted);
+                            }
                         }
 
                         db.SaveChanges();
