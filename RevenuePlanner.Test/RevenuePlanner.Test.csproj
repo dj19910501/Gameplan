@@ -39,6 +39,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="HelperSharp, Version=1.0.5120.16113, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\HelperSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp">
       <Private>True</Private>
     </Reference>
@@ -80,6 +84,7 @@
     <Compile Include="Controllers\FinanceControllerTest.cs" />
     <Compile Include="Controllers\HomeControllerTest.cs" />
     <Compile Include="Controllers\InspectControllerTest.cs" />
+    <Compile Include="Controllers\ModelControllerTest.cs" />
     <Compile Include="Controllers\OrganizationControllerTest.cs" />
     <Compile Include="Controllers\PlanControllerTest.cs" />
     <Compile Include="Controllers\ReportControllerTest.cs" />
@@ -174,6 +179,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="DLL\EntityFramework.dll" />
+    <Content Include="DLL\HelperSharp.dll" />
     <Content Include="DLL\RestSharp.dll" />
   </ItemGroup>
   <ItemGroup>

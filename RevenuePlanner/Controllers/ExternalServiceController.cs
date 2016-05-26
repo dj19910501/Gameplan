@@ -17,6 +17,9 @@ using Integration.Salesforce;
 using Integration.Eloqua;
 using Integration.WorkFront;
 using System.Configuration;
+using System.IO;
+using System.Reflection;
+using System.Web.Caching;
 
 #endregion
 
@@ -34,6 +37,23 @@ namespace RevenuePlanner.Controllers
         private MRPEntities db = new MRPEntities();
         string DateFormat = "MM/dd/yy h:mm tt";
         #endregion
+
+        public ExternalServiceController()
+        {
+            if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
+            {
+                Common.xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");//Modify by Akashdeep Kadia on 09/05/2016 to resolve PL ticket #989.
+                Common.objCached.loadMsg(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
+                CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache.Insert("CommonMsg", Common.objCached, dependency);
+            }
+            else
+            {
+                Common.objCached = (Message)System.Web.HttpContext.Current.Cache["CommonMsg"];
+
+            }
+        }
 
         #region Integration Listing
 
@@ -1022,7 +1042,11 @@ namespace RevenuePlanner.Controllers
                     if (item.IntegrationTypeAttribute.Attribute == Enums.IntegrationTypeAttribute.Host.ToString())
                     {
                         string Host = item.Value.ToLower();
-                        Host = Host.Replace("rest", "");
+                        string[] HostSplit = Host.Split(new string[] { "/rest" }, StringSplitOptions.None);
+                        if (HostSplit.Count() > 0)
+                        {
+                            Host = HostSplit[0];
+                        }
                         Host = Host.TrimEnd('/');
                         item.Value = Host;
                     }
@@ -1532,8 +1556,12 @@ namespace RevenuePlanner.Controllers
                                 if (!string.IsNullOrEmpty(marketoHost))
                                 {
                                     string Host = marketoHost.ToLower();
-                                    Host = marketoHost.Replace("rest", "");
-                                    Host = marketoHost.TrimEnd('/');
+                                    string[] HostSplit = Host.Split(new string[] { "/rest" }, StringSplitOptions.None);
+                                    if (HostSplit.Count() > 0)
+                                    {
+                                        Host = HostSplit[0];
+                                    }
+                                    Host = Host.TrimEnd('/');
                                     marketoHost = Host;
                                 }
                             }
@@ -2724,7 +2752,11 @@ namespace RevenuePlanner.Controllers
                                     if (objIntegrationInstance_Attribute.IntegrationTypeAttribute.Attribute == Enums.IntegrationTypeAttribute.Host.ToString())
                                     {
                                         string Host = item.Value.ToLower();
-                                        Host = Host.Replace("rest", "");
+                                        string[] HostSplit = Host.Split(new string[] { "/rest" }, StringSplitOptions.None);
+                                        if (HostSplit.Count() > 0)
+                                        {
+                                            Host = HostSplit[0];
+                                        }
                                         Host = Host.TrimEnd('/');
                                         item.Value = Host;
                                     }
