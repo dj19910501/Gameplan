@@ -4919,6 +4919,8 @@ namespace RevenuePlanner.Controllers
             else
             {
                 planYear = DateTime.Now.Year.ToString();
+                // Added by Arpita Soni on 05/26/2016 to resolve issue in copy tactic in inspect popup
+                strparam = planYear;
             }
 
             //// Set start and end date for calender
@@ -5267,6 +5269,21 @@ namespace RevenuePlanner.Controllers
             else
             {
                 planYear = DateTime.Now.Year.ToString();
+            }
+            // Added by Arpita Soni on 05/26/2016 to resolve issue in copy tactic in inspect popup
+            if (string.IsNullOrEmpty(strparam))
+            {
+                List<Plan> lstPlans = new List<Plan>();
+                lstPlans = Common.GetPlan();
+                int planId;
+                Int32.TryParse(planid,out planId);
+                Plan objPlan = lstPlans.Where(x => x.PlanId == planId).FirstOrDefault();
+                if (objPlan != null)
+                {
+                    planYear = objPlan.Year;
+                    strparam = planYear;
+                }
+
             }
 
             //// Set start and end date for calender

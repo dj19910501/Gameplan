@@ -436,6 +436,13 @@
 
 
       });
+    // Added by Arpita Soni on 05/26/2016 to resolve issue in copy tactic in inspect popup
+    function RefershPlanHeaderCalc() {
+        var _planId = $('#PlanId').val();
+        GetHealderData(_planId);
+        GetNumberOfActivityPerMonByPlanId(_planId);
+    }
+
     //Added By Komal Rawal for #1213
     function SaveAllData(activeTab) {
         var ProgramOpt = $("#hdnTacticBudgetAllocationOpt").val();

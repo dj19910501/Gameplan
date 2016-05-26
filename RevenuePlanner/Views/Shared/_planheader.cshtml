@@ -128,7 +128,6 @@
         $("#nl-form2").hide();
     }
 
-
     function GetHealderData(selectedPlanIds,Cid, OId,Tacticids,StatusId,Tabid,IsHeaderActuals) {
         // Modified By Nishant Sheth add tab id as argument:  Desc header value wrong with plan tab
         var CustomId = "";
@@ -327,7 +326,8 @@
             //}
             var newUrl = '';
             var isMultiple = false;
-            newUrl = '@Url.Action("GetNumberOfActivityPerMonth", "Home")';
+            // Added by Arpita Soni on 05/26/2016 to resolve issue in copy tactic in inspect popup
+            newUrl = '@Url.Action("GetNumberOfActivityPerMonthPer", "Home")';
             if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Home.ToString().ToLower()") {
                 isMultiple = true;
             }
