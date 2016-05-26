@@ -1847,6 +1847,24 @@ GO
 	BEGIN
 		INSERT INTO [IntegrationTypeAttribute] (IntegrationTypeId,Attribute,AttributeType,IsDeleted)
 		VALUES (@IntegrationTypeId,'Host','textbox',0)
+
+		DECLARE @IntegrationTypeAttributeId INT
+
+		SELECT @IntegrationTypeAttributeId=
+		IntegrationTypeAttributeId FROM IntegrationTypeAttribute
+		WHERE Attribute='Host' AND AttributeType='textbox' AND IsDeleted=0
+		AND IntegrationTypeId=@IntegrationTypeId
+
+		INSERT INTO IntegrationInstance_Attribute
+		SELECT DISTINCT(IntegrationInstance_Attribute.IntegrationInstanceId)
+		,@IntegrationTypeAttributeId,'',GETDATE(),IntegrationInstance_Attribute.CreatedBy 
+		FROM IntegrationInstance_Attribute
+		INNER JOIN IntegrationInstance ON IntegrationInstance.IntegrationInstanceId=IntegrationInstance_Attribute.IntegrationInstanceId
+		WHERE  IntegrationInstance.IntegrationTypeId=@IntegrationTypeId
+		AND IntegrationInstance_Attribute.IntegrationInstanceId NOT IN (SELECT DISTINCT(IntegrationInstance_Attribute.IntegrationInstanceId)
+		FROM IntegrationInstance_Attribute
+		WHERE IntegrationInstance_Attribute.IntegrationTypeAttributeId  = @IntegrationTypeAttributeId) 
+
 	END
   END
 
