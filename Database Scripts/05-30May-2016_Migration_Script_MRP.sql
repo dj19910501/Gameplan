@@ -1833,7 +1833,24 @@ END
 
 
 GO
+-- =========================================
+-- Add By Nishant Sheth
+-- Description :  Add Host field for marketo instance
+-- Created Date : 26-May-2016
+-- =========================================
+ IF EXISTS(SELECT [IntegrationTypeId] FROM [IntegrationType] WHERE [Title]='Marketo' AND [IsDeleted]=0)
+  BEGIN 
+	DECLARE @IntegrationTypeId INT
+	SELECT @IntegrationTypeId =[IntegrationTypeId] FROM [IntegrationType] WHERE [Title]='Marketo' AND [IsDeleted]=0 
+	
+	IF NOT EXISTS(SELECT [IntegrationTypeAttributeId] FROM [IntegrationTypeAttribute] WHERE [Attribute]='Host' AND [IsDeleted]=0 AND AttributeType='textbox' AND [IntegrationTypeId]=@IntegrationTypeId)
+	BEGIN
+		INSERT INTO [IntegrationTypeAttribute] (IntegrationTypeId,Attribute,AttributeType,IsDeleted)
+		VALUES (@IntegrationTypeId,'Host','textbox',0)
+	END
+  END
 
+  Go
 
 -- ========================================================================================================
 
