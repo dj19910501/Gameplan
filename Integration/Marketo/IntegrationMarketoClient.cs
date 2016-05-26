@@ -134,11 +134,9 @@ namespace Integration.Marketo
 
                     List<Integration.LogDetails> logDetailsList = integrationMarketoClient.MarketoData_Push("spGetMarketoData", lstFiledMap, _clientId, lstparams);
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Marketo Log detail list get successfully.");
-                    //List<IntegrationInstancePlanEntityLog> instanceEntityList = new List<IntegrationInstancePlanEntityLog>();
+                    
                     IntegrationInstancePlanEntityLog instanceEntity = new IntegrationInstancePlanEntityLog();
 
-
-                    //List<IntegrationInstanceLogDetail> instanceLogDetailList = new List<IntegrationInstanceLogDetail>();
                     IntegrationInstanceLogDetail instanceLogDetail = new IntegrationInstanceLogDetail();
 
                     Dictionary<int, string> TacticMarketoProgMappingIds = new Dictionary<int, string>();
@@ -194,23 +192,24 @@ namespace Integration.Marketo
                         isExist = logDetailsList.Where(log => (log.EventName.Equals(strErrorConnection) || log.EventName.Equals(strGetProgramData) || log.EventName.Equals(strInvalidConnection) || log.EventName.Equals(strNoRecord) || log.EventName.Equals(strFetchUserInfo) || log.EventName.Equals(strParameter) || log.EventName.Equals(strSystemError) || log.EventName.Equals(strFieldMapping)) && log.Status.ToUpper().Equals("FAILURE")).Any();
                         if (isExist) {
                             _isResultError = true;
-                            _ErrorMessage = "Invalid Connection";
+                            _ErrorMessage = "Error in getting data from source, to push to marketo";
                         }
                         #endregion
 
 
                         #region "Original Log for Push Marketo"
-                        foreach (var logdetail in logDetailsList.Where(log => log.EventName.Equals(strErrorConnection) || log.EventName.Equals(strGetProgramData) || log.EventName.Equals(strInvalidConnection) || log.EventName.Equals(strNoRecord) || log.EventName.Equals(strFetchUserInfo) || log.EventName.Equals(strParameter) || log.EventName.Equals(strSystemError) || log.EventName.Equals(strFieldMapping)))
+                        //Insert Failure error log to IntegrationInstanceLogDetails table 
+                        foreach (var logdetail in logDetailsList.Where(log => (log.EventName.Equals(strErrorConnection) || log.EventName.Equals(strGetProgramData) || log.EventName.Equals(strInvalidConnection) || log.EventName.Equals(strNoRecord) || log.EventName.Equals(strFetchUserInfo) || log.EventName.Equals(strParameter) || log.EventName.Equals(strSystemError) || log.EventName.Equals(strFieldMapping)) && log.Status.ToUpper().Equals("FAILURE")))
                         {
-                            if (logdetail.Status.ToUpper().Equals("FAILURE"))
-                            {
+                            //if (logdetail.Status.ToUpper().Equals("FAILURE"))
+                            //{
                                 entId = Convert.ToInt32(logdetail.SourceId);
                                 instanceLogDetail.EntityId = entId;
                                 instanceLogDetail.IntegrationInstanceLogId = _integrationInstanceLogId;
                                 instanceLogDetail.LogTime = logdetail.EndTimeStamp;
                                 instanceLogDetail.LogDescription = logdetail.Description;
                                 db.Entry(instanceLogDetail).State = EntityState.Added;     
-                            }
+                            //}
                         }
                         #endregion
 
@@ -220,6 +219,7 @@ namespace Integration.Marketo
 
                         foreach (var logdetail in logDetailsList1)
                         {
+                            //Insert  log into IntegrationInstancePlanEntityLog table 
                             entId = Convert.ToInt32(logdetail.SourceId);
                             instanceEntity = new IntegrationInstancePlanEntityLog();
                             instanceEntity.IntegrationInstanceId = _integrationInstanceId;
@@ -227,16 +227,23 @@ namespace Integration.Marketo
                             instanceEntity.EntityType = Enums.EntityType.Tactic.ToString();
                             instanceEntity.SyncTimeStamp = logdetail.EndTimeStamp;
                             instanceEntity.Operation = logdetail.Mode.ToString();
-                            instanceEntity.Status = logdetail.Status.ToString();
+                            if (logdetail.Status.ToUpper().Equals("FAILURE"))
+                            {
+                                instanceEntity.Status = Enums.SyncStatus.Error.ToString();
+                            }
+                            else {
+                                instanceEntity.Status = logdetail.Status.ToString();
+                            }                            
                             instanceEntity.ErrorDescription = logdetail.Description;
                             instanceEntity.CreatedBy = _userId;
                             instanceEntity.CreatedDate = DateTime.Now;
                             instanceEntity.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                            //instanceEntityList.Add(instanceEntity);
+                            
                             db.Entry(instanceEntity).State = EntityState.Added;
 
                             if (logdetail.Status.ToUpper().Equals("FAILURE"))
                             {
+                                //Add Failure Log for Summary Email.
                                 _isResultError = true;
                                 tacticTitle = tblTactics.Where(tac => tac.PlanTacticId == entId).Select(tac => tac.Title).FirstOrDefault();
                                 exMessage = "System error occurred while create/update tactic \"" + tacticTitle + "\": " + logdetail.Description;
@@ -244,6 +251,7 @@ namespace Integration.Marketo
                             }
                             else
                             {
+                                //Add Success Log for Summary Email.
                                 exMessage = logdetail.Mode.ToString();
                                 _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Success, DateTime.Now));
                             }
@@ -285,9 +293,7 @@ namespace Integration.Marketo
 
                 }
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "SyncData method end.");
-                //IntegrationInstanceslist.LastSyncStatus = "Error";
-                //db.Entry(IntegrationInstanceslist).State = EntityState.Modified;
-                //db.SaveChanges();
+               
             }
             catch (Exception e)
             {
