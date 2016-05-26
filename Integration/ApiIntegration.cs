@@ -110,21 +110,23 @@ namespace Integration
         {
             string ClientId = "ClientId";
             string ClientSecret = "ClientSecret";
-
-            IntegrationInstance integrationInstance = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
+            
+            //IntegrationInstance integrationInstance = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();// Commented By Nishant Sheth // Host URL will be diffrent for every client
             Dictionary<string, string> attributeKeyPair = db.IntegrationInstance_Attribute.Where(attribute => attribute.IntegrationInstanceId == _integrationInstanceId).Select(attribute => new { attribute.IntegrationTypeAttribute.Attribute, attribute.Value }).ToDictionary(attribute => attribute.Attribute, attribute => attribute.Value);
 
             if (attributeKeyPair.Count > 0) //Modified By komal to handle error while it there is no data
             {
             this._clientid = attributeKeyPair[ClientId];
             this._clientsecret = attributeKeyPair[ClientSecret];
+            // Add By Nishant Sheth // Host URL will be diffrent for every client
+            this._host = attributeKeyPair[Enums.IntegrationTypeAttribute.Host.ToString()];
             }
             else
             {
                 this._clientid = null;
                 this._clientsecret = null;
             }
-            this._host = integrationInstance.IntegrationType.APIURL;
+            //this._host = integrationInstance.IntegrationType.APIURL;// Commented By Nishant Sheth // Host URL will be diffrent for every client
             if (HttpContext.Current.Session["MarketoToken"] != null)
             {
                 this._marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
@@ -161,7 +163,7 @@ namespace Integration
                 Uri baseAddress = new Uri(marketoIntegrstionApi);
                 client.BaseAddress = baseAddress;
                 ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_Authentication", marketoCredentialDictionary).Result;
+                HttpResponseMessage response = client.PostAsJsonAsync("api/Marketo/Marketo_Authentication", marketoCredentialDictionary).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     ReturnObject objData = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
@@ -286,7 +288,7 @@ namespace Integration
                 // Uri baseAddress = new Uri("http://121.244.200.162:8085/IntegrationApi/");
                 client.BaseAddress = baseAddress;
                 ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                HttpResponseMessage response = client.PostAsJsonAsync("api/Integration/Marketo_GetFolders_MarketingActivity", marketoCredentialDictionary).Result;
+                HttpResponseMessage response = client.PostAsJsonAsync("api/Marketo/Marketo_GetFolders_MarketingActivity", marketoCredentialDictionary).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var responseobj = response.Content.ReadAsStringAsync().Result;

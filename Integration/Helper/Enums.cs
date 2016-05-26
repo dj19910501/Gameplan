@@ -25,7 +25,11 @@ namespace Integration.Helper
             Project,
             Request
         }
-
+        // Add By Nishant Sheth
+        public enum IntegrationTypeAttribute
+        {
+            Host
+        }
 
         public enum PullCWActualField
         {

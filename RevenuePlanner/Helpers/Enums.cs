@@ -1295,6 +1295,12 @@ namespace RevenuePlanner.Helpers
             Active_Tactic_Attributes
         }
 
+        //Add By Nishant Sheth
+        public enum IntegrationTypeAttribute
+        {
+            Host
+        }
+
         //Added by Rahul Shah for PL #1847
         /// <summary>
         /// Added by: Rahul Shah

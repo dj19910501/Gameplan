@@ -22,6 +22,7 @@
     FolderList = ViewBag.CampaignFolderList;
     if (FolderList == null)
     {
+        FolderList = new List<SelectListItem>();
         FolderList.Add(new SelectListItem { Selected = true, Text = "Please Select", Value = "0" });
     }
 }

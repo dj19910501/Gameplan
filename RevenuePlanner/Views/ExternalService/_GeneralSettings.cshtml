@@ -52,6 +52,19 @@
                 {
                     @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"), new { tabindex = "4", @class = "hide" })
                 }
+                @*Add By Nishant Sheth*@ 
+                @if (Model.IntegrationType.Code == Enums.IntegrationType.Marketo.ToString())// Add By Nishant Sheth // To add host
+                {
+                    if (Model.IntegrationTypeAttributes[i].Attribute == Enums.IntegrationTypeAttribute.Host.ToString())
+                    {
+                        <p style="margin-top:-10px;">
+                            <span>
+                                Ex : https://AAA-BBB-CCC.mktorest.com
+                            </span>
+                        </p> 
+                    }
+                }
+                @*End By Nishant Sheth*@
                 </div>
                                                                 }
             
