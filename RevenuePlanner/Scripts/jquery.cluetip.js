@@ -481,7 +481,7 @@
                     * load an element from the same page
                     ***************************************/
                 else if (opts.local) {
-                    
+                  
                     var displaymq = "m";
                     var periodText = "monthly";
                     if (opts.isQuarter) {
@@ -492,7 +492,8 @@
                     var $localContent = $(tipAttribute + (/^#\S+$/.test(tipAttribute) ? '' : ':eq(' + index + ')')).clone(true).show();
                     //Set title,month and unallocated budget 
                     var entityId = $link.parent().attr('id');
-                    var entityTitle = $('.column1').find('#' + entityId).text();
+                    // Modified by Rushil Bhuptani on 26/05/2016 for #2197
+                    var entityTitle = $link.parents('tr').find('td:nth-child(2)').find('a').text();
                     var entityMonth = $link.attr('mnth').toString();
                     var unb = $('.column3').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                     var isOrangeCorner = $link.parent().find('span').hasClass('orange-corner-budget');
@@ -582,20 +583,16 @@
                     }
                     // Check it call from allocated -- clueallocated
                     if ($link.parent().hasClass('clueallocated')) {
+
                     //campaign cell click 
                     if ($link.parent().hasClass('campaignLevel')) {
                         var cbm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                         var rpbm = $link.parent().attr('allocated').toString();
-                        var cby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
-                        var childPbm = 0;
-                        $link.parents('td').find('.programLevel').each(function () {
-                            var $program = $(this);
-                            if ($link.parent().attr('id') == $program.parent().attr('data-parent')) {
-                                if ($program.text() != '' && typeof $program != 'undefined') {
-                                    childPbm += parseFloat($program.text().replace(/,/g, ""));
-                                }
-                            }
-                        });
+                        // Modified by Rushil Bhuptani on 26/05/2016 for #2197
+                        var cby = $('.budgetingmaincolumn').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
+                        // Added by Rushil Bhuptani on 26/05/2016 for #2197
+                        var childPbm = $link.parent().attr('childAllocated');
+                       
                         var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Campaign ' + periodText + ' budget is less than the ' + periodText + ' budget for it\'s programs.</div>' : '';
                             var $loadmeHtml = messageDiv+'<label class="label-toooltip">Campaign Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="BudgetMonth" value="' + FormatCommasBudget(cbm.toString(), false, false) + '" ov="' + cbm + '" />' +
@@ -611,18 +608,13 @@
                     }
                         //Program cell click
                     else if ($link.parent().hasClass('programLevel')) {
-                        var pcm = 0;
-                        $link.parents('td').find('.tacticLevel').each(function () {
-                            var $tactic = $(this);
-                            if ($link.parent().attr('id') == $tactic.parent().attr('data-parent')) {
-                                if ($tactic.text() != '' && typeof $tactic != 'undefined') {
-                                    pcm += parseFloat($tactic.text().replace(/,/g, ""));
-                                }
-                            }
-                        });
+                        // Added by Rushil Bhuptani on 26/05/2016 for #2197
+                        var pcm = $link.parent().attr('childAllocated');
+                       
                         var rpbm = $link.parent().attr('allocated').toString();
                         var pbm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
-                        var pby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
+                        // Modified by Rushil Bhuptani on 26/05/2016 for #2197
+                        var pby = $('.budgetingmaincolumn').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                         var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Program ' + periodText + ' budget is less than the ' + periodText + ' budget for it\'s tactics.</div>' : '';
                             var $loadmeHtml =messageDiv+ '<label class="label-toooltip" >Program Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="BudgetMonth" value="' + FormatCommasBudget(pbm.toString(), false, false) + '" ov="' + pbm + '" />' +
@@ -640,7 +632,8 @@
                     else if ($link.parent().hasClass('tacticLevel')) {
                         var tbm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                         var rpbm = $link.parent().attr('allocated').toString();
-                        var tby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
+                        // Modified by Rushil Bhuptani on 26/05/2016 for #2197
+                        var tby = $('.budgetingmaincolumn').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                             var $loadmeHtml = '<label class="label-toooltip" >Tactic Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="BudgetMonth" value="' + FormatCommasBudget(tbm.toString(), false, false) + '" ov="' + tbm + '" />' +
                                 '<label class="label-toooltip">Remaining Program Budget (' + displaymq + '):  </label>' +
@@ -654,14 +647,12 @@
                         //Plan cell click
                     else if ($link.parent().hasClass('planLevel')) {
                         var plbm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
-                        var childCbm = 0;
-                        var plby = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
-                        $('.column2').find('.campaignLevel .clickme[mnth="' + entityMonth + '"]').each(function () {
-                            var $campaign = $(this);
-                            if ($campaign.text() != '' && typeof $campaign != 'undefined') {
-                                childCbm += parseFloat($campaign.text().replace(/,/g, ""));
-                            }
-                        });
+                      
+                        // Added by Rushil Bhuptani on 26/05/2016 for #2197
+                        var childCbm = $link.parent().attr('childAllocated');
+                        // Modified by Rushil Bhuptani on 26/05/2016 for #2197
+                        var plby = $('.budgetingmaincolumn').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
+                      
                         var messageDiv = isOrangeCorner ? '<div class="clue-tip-message-orange">Plan ' + periodText + ' budget is less than the ' + periodText + ' budget for it\'s campaigns.</div>' : '';
                             var $loadmeHtml =messageDiv+ '<label class="label-toooltip">Plan Budget (' + displaymq + '):  </label>' +
                                 '<input type="text" id="BudgetMonth" value="' + FormatCommasBudget(plbm.toString(), false, false) + '" ov="' + plbm + '" />' +
@@ -681,8 +672,9 @@
                         if ($link.parent().hasClass('tacticLevel')) {
                             var tcm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
                             var tbm = $link.parent().attr('mainbudget').toString().replace(/,/g, "");//mainbudget
-                            var tcy = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
-                            var tby = $('.column4').find('#' + $link.parent().attr('id').toString()).attr('mainbudget').replace(/,/g, "");
+                            // Modified by Rushil Bhuptani on 26/05/2016 for #2197
+                            var tcy = $('.budgetingmaincolumn').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
+                            var tby = $('.budgetingmaincolumn').find('#' + $link.parent().attr('id').toString()).attr('mainbudget').replace(/,/g, "");
                             var errorSpan=$link.parent().find('span');
                             var isredCorner = errorSpan.hasClass('red-corner-budget') && errorSpan.css('display') != 'none' ? true : false;
                             var messageDiv = isredCorner ? '<div class="clue-tip-message-red">Tactic\'s ' + periodText + ' cost is over it\'s ' + periodText + ' budget.</div>' : '';
@@ -702,7 +694,8 @@
                         //lineitemLevel
                         else if ($link.parent().hasClass('lineitemLevel')) {
                             var tcm = $link.text() != '' ? $link.text().replace(/,/g, "") : $link.attr('txt').toString();
-                            var tcy = $('.column4').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
+                            // Modified by Rushil Bhuptani on 26/05/2016 for #2197
+                            var tcy = $('.budgetingmaincolumn').find('#' + $link.parent().attr('id').toString()).text().replace(/,/g, "");
                             var $loadmeHtml = '<label class="label-toooltip" >Line Item Cost (' + displaymq + '):  </label>' +
                                 '<input type="text" id="CostMonth" value="' + FormatCommasBudget(tcm.toString(), false, false) + '" ov="' + tcm + '" />' +
                                '<label class="label-toooltip" >Line Item Cost (y):  </label>' +

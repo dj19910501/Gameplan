@@ -7,7 +7,7 @@
 @{
     string allocatedBy = ViewBag.AllocatedBy;
       @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2197. Need to remove this code after testing.*@
-   // BudgetModel plan = Model.SingleOrDefault(p => p.ActivityType == ActivityType.ActivityPlan);
+    //BudgetModel plan = Model.SingleOrDefault(p => p.ActivityType == ActivityType.ActivityPlan);
     string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToLower();
     string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToLower();
     string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower();
@@ -294,7 +294,7 @@
     });
 
     @*function cluetipClick(test) {
-        debugger
+       
         var isquarter = false;
         if ('@isquarter' == 'True') {
             isquarter = true;
@@ -711,7 +711,7 @@
 
     // Added by Rushil Bhuptani on 26/05/2016 for #2197
     HomeGrid.attachEvent("onOpenEnd", function (id, state) {
-        debugger;
+        
         var isquarter = false;
         if ('@isquarter' == 'True') {
             isquarter = true;

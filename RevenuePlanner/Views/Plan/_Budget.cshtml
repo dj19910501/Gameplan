@@ -6,8 +6,8 @@
 @*@model List<BudgetModel>*@
 @{
     @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
-    //BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-    //objBudgetDHTMLXGrid = (BudgetDHTMLXGridModel)Session["objBudgetDHTMLXGrid"];
+    //BudgetDHTMLXGridModel objBudgetDHTMLXGrid =(BudgetDHTMLXGridModel)Session["objBudgetDHTMLXGrid"];
+  
     
     string AllocatedBy = ViewBag.AllocatedBy;
     @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
@@ -37,7 +37,7 @@
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
 
-@*<script src="~/Scripts/jquery.cluetip.js"></script>*@
+<script src="~/Scripts/jquery.cluetip.js"></script>
 <style>
      div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell
     {
@@ -357,7 +357,7 @@
 
         @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
         @*HomeGrid.setHeader('@objBudgetDHTMLXGrid.SetHeader');
-    HomeGrid.setColTypes('@objBudgetDHTMLXGrid.ColType');
+        HomeGrid.setColTypes('@objBudgetDHTMLXGrid.ColType');
         HomeGrid.setInitWidths('@objBudgetDHTMLXGrid.Width');
         HomeGrid.setColSorting('@objBudgetDHTMLXGrid.ColSorting');*@
         HomeGrid.enableAutoHeight(true);
@@ -738,7 +738,7 @@
             dataType: "json",
             data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter,
             success: function (data) {
-                //debugger;
+             
                 if (data.isSuccess == true) {
                     section = section.toLowerCase();
                     $("#hdnBudgetingIsSave").val("true");
