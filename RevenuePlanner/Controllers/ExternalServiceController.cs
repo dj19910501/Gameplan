@@ -2729,6 +2729,12 @@ namespace RevenuePlanner.Controllers
                             //// Add Integration Type Attributes to IntegrationInstance_Attribute table.
                             if (form.IntegrationTypeAttributes != null)
                             {
+                                // Add By Nishant Sheth
+                                // Desc :: #2184 Observation for host 
+                                string marketoHost= Enums.IntegrationTypeAttribute.Host.ToString();
+                                var IntegrationAttrTypeIds = form.IntegrationTypeAttributes.Select(item => item.IntegrationTypeAttributeId).ToList();
+                                var MarketoHostAttrTypeId = db.IntegrationTypeAttributes.Where(attr => IntegrationAttrTypeIds.Contains(attr.IntegrationTypeAttributeId)
+                                    && attr.Attribute == marketoHost).Select(attr => attr.IntegrationTypeAttributeId).FirstOrDefault();
                                 IntegrationInstance_Attribute objIntegrationInstance_Attribute;
                                 foreach (var item in form.IntegrationTypeAttributes)
                                 {
@@ -2749,7 +2755,7 @@ namespace RevenuePlanner.Controllers
 
                                     // Add By Nishant Sheth 
                                     // Desc :: Add Host details for marketo instance
-                                    if (objIntegrationInstance_Attribute.IntegrationTypeAttribute.Attribute == Enums.IntegrationTypeAttribute.Host.ToString())
+                                    if (MarketoHostAttrTypeId == item.IntegrationTypeAttributeId)
                                     {
                                         string Host = item.Value.ToLower();
                                         string[] HostSplit = Host.Split(new string[] { "/rest" }, StringSplitOptions.None);
