@@ -10,14 +10,14 @@ DECLARE @sequence int=1
 DECLARE @length int=5
 IF NOT EXISTS(SELECT CampaignNameConventionId FROM CampaignNameConvention WHERE [TableName]='Plan_Campaign_Program_Tactic' AND [FieldName]='PlanTacticId' AND ClientId=@MarketoClientId AND IsDeleted=0)
 BEGIN
-DECLARE @CreatedBy NVARCHAR(100)
+
 
 SELECT @CreatedBy = CreatedBy FROM CampaignNameConvention WHERE ClientId=@MarketoClientId AND IsDeleted=0
 
        UPDATE CampaignNameConvention SET [Sequence] = [Sequence]+1
        WHERE ClientId=@MarketoClientId
 
-       Insert Into CampaignNameConvention Values('Plan_Campaign_Program_Tactic','PlanTacticId',null,@sequence,@MarketoClientId,GetDate(),@CreatedBy,0,@length)
+       Insert Into CampaignNameConvention Values('Plan_Campaign_Program_Tactic','PlanTacticId',null,@sequence,@MarketoClientId,GetDate(),@MarketoClientId,0,@length)
 END
 GO
 
