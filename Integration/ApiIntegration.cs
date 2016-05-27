@@ -32,6 +32,7 @@ namespace Integration
         public string Status { get; set; }
         public string Description { get; set; }
         public string Mode { get; set; }
+        public string Url { get; set; }
     }
     public class Parameters
     {

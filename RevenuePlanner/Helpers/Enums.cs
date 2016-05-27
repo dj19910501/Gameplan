@@ -918,6 +918,12 @@ namespace RevenuePlanner.Helpers
             Lineitem
         }
 
+        // Add By Nishant Sheth
+        // enums for integration attributes
+        public enum EntityIntegrationAttribute
+        {
+            MarketoUrl
+        }
         #region "Inspect Popup"
 
 

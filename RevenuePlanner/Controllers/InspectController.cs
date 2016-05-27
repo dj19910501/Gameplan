@@ -3229,8 +3229,21 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.Marketo.ToString())
                 {
+                    // Add By Nishant Sheth
+                    // Desc :: For Pushed Tactic in marketo user click on marketo logo it will be redirect on marketo program/entity.
+                    string AttributeType = Enums.EntityIntegrationAttribute.MarketoUrl.ToString().ToLower();
+                    string EntityType = Enums.EntityType.Tactic.ToString().ToLower();
+                    var MarketoUrl = db.EntityIntegration_Attribute.Where(entity => entity.EntityId == pcpt.PlanTacticId && entity.EntityType.ToLower() == EntityType
+                        && entity.AttrType.ToLower() == AttributeType && entity.IntegrationinstanceId == instance.IntegrationInstanceId).Select(entity => entity.AttrValue).FirstOrDefault();
+                    if (MarketoUrl != null)
+                    {
+                        url = MarketoUrl;
+                    }
+                    else
+                    {
                     string append = "/"; // Modified By Nishant Sheth // Remove Integration Intance id from url // #2134 observation 1
                     url = string.Concat(url, append);
+                    }
                 }
                 if (!IntegrationLinkDictionary.ContainsKey(instance.IntegrationType.Code))
                 {

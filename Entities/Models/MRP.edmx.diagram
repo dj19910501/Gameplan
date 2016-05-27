@@ -181,6 +181,8 @@
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceMarketo" />
         <EntityTypeShape EntityType="MRPModel.MarketoEntityValueMapping" Width="1.5" PointX="7.25" PointY="48.875" />
         <AssociationConnector Association="MRPModel.FK_MarketoEntityValueMapping_IntegrationInstance" />
+        <EntityTypeShape EntityType="MRPModel.EntityIntegration_Attribute" Width="1.5" PointX="7.25" PointY="53.125" />
+        <AssociationConnector Association="MRPModel.FK_EntityIntegration_Attribute_IntegrationInstance" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

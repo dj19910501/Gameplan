@@ -103,6 +103,9 @@
     <Compile Include="Models\ELMAH_Error.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\EntityIntegration_Attribute.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\EntityTypeColor.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

@@ -53,7 +53,7 @@ namespace Integration.Marketo
 
         public bool SyncData(out List<SyncError> lstSyncError)
         {
-            
+
             lstSyncError = new List<SyncError>();
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncData method start.");
@@ -68,7 +68,7 @@ namespace Integration.Marketo
             //int logRecordSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LogRecordSize"]);
             //int pushRecordBatchSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["IntegrationPushRecordBatchSize"]);
             try
-            {                
+            {
                 int TitleLengthLimit = 255; // Keep fix.
                 string tactic = Enums.EntityType.Tactic.ToString();
                 DataTable dtFieldMappings = new DataTable();
@@ -135,12 +135,14 @@ namespace Integration.Marketo
 
                     List<Integration.LogDetails> logDetailsList = integrationMarketoClient.MarketoData_Push("spGetMarketoData", lstFiledMap, _clientId, lstparams);
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Marketo Log detail list get successfully.");
-                    
+
                     IntegrationInstancePlanEntityLog instanceEntity = new IntegrationInstancePlanEntityLog();
 
                     IntegrationInstanceLogDetail instanceLogDetail = new IntegrationInstanceLogDetail();
 
                     Dictionary<int, string> TacticMarketoProgMappingIds = new Dictionary<int, string>();
+                    Dictionary<int, DateTime> TacticMarketoLastSyncDates = new Dictionary<int, DateTime>();
+
                     List<Plan_Campaign_Program_Tactic> tblTactics = new List<Plan_Campaign_Program_Tactic>();
                     List<int> lstSourceIds = new List<int>();
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Marketo Log detail insert into database start.");
@@ -150,13 +152,13 @@ namespace Integration.Marketo
                         tblTactics = db.Plan_Campaign_Program_Tactic.Where(tac => lstSourceIds.Contains(tac.PlanTacticId)).ToList();
 
                         bool isExist = false;
-                        string strEventAPICall,strEventAuthentication,strErrorConnection,strGetProgramData,strInvalidConnection,strNoRecord,strFetchUserInfo,strParameter,strSystemError;
+                        string strEventAPICall, strEventAuthentication, strErrorConnection, strGetProgramData, strInvalidConnection, strNoRecord, strFetchUserInfo, strParameter, strSystemError;
                         string strInsertProgram, strUpdateProgram, strRequiredTagNotExist, strDataMapping, strFieldMapping;
                         //strEventAPICall = strEventAuthentication = strErrorConnection = strGetProgramData = strInvalidConnection = strNoRecord = strFetchUserInfo = strParameter = strSystemError = string.Empty;
 
-                        
+
                         strEventAuthentication = Enums.MarketoAPIEventNames.Authentication.ToString();
-                        
+
                         //Common message (Single time)
                         strErrorConnection = Enums.MarketoAPIEventNames.ErrorInSettingDestinationConnectin.ToString();
                         strGetProgramData = Enums.MarketoAPIEventNames.GetProgramData.ToString();
@@ -173,7 +175,7 @@ namespace Integration.Marketo
                         strUpdateProgram = Enums.MarketoAPIEventNames.UpdateProgram.ToString();
                         strRequiredTagNotExist = Enums.MarketoAPIEventNames.RequiredTagNotExist.ToString();
                         strDataMapping = Enums.MarketoAPIEventNames.DataMapping.ToString();
-                        
+
                         int entId = 0;
                         string tacticTitle, exMessage;
 
@@ -191,7 +193,8 @@ namespace Integration.Marketo
 
                         #region "Check log for integration instance section"
                         isExist = logDetailsList.Where(log => (log.EventName.Equals(strErrorConnection) || log.EventName.Equals(strGetProgramData) || log.EventName.Equals(strInvalidConnection) || log.EventName.Equals(strNoRecord) || log.EventName.Equals(strFetchUserInfo) || log.EventName.Equals(strParameter) || log.EventName.Equals(strSystemError) || log.EventName.Equals(strFieldMapping)) && log.Status.ToUpper().Equals("FAILURE")).Any();
-                        if (isExist) {
+                        if (isExist)
+                        {
                             _isResultError = true;
                             _ErrorMessage = "Error in getting data from source, to push to marketo";
                         }
@@ -204,14 +207,14 @@ namespace Integration.Marketo
                         {
                             //if (logdetail.Status.ToUpper().Equals("FAILURE"))
                             //{
-                            
+
                             instanceLogDetail = new IntegrationInstanceLogDetail();
                             entId = Convert.ToInt32(logdetail.SourceId);
                             instanceLogDetail.EntityId = entId;
                             instanceLogDetail.IntegrationInstanceLogId = _integrationInstanceLogId;
                             instanceLogDetail.LogTime = logdetail.EndTimeStamp;
                             instanceLogDetail.LogDescription = logdetail.Description;
-                            db.Entry(instanceLogDetail).State = EntityState.Added;     
+                            db.Entry(instanceLogDetail).State = EntityState.Added;
                             //}
                         }
                         #endregion
@@ -219,7 +222,7 @@ namespace Integration.Marketo
                         #region "Entity Logs for each tactic"
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Insert Log detail into IntegrationInstancePlanEntityLog start.");
                         List<Integration.LogDetails> logDetailsList1 = logDetailsList.Where(log => (log.EventName.Equals(strInsertProgram) || log.EventName.Equals(strUpdateProgram)) || (log.EventName.Equals(strEventAPICall) && log.Status.ToUpper().Equals("FAILURE")) || (log.EventName.Equals(strDataMapping) && log.Status.ToUpper().Equals("FAILURE")) || (log.EventName.Equals(strRequiredTagNotExist) && log.Status.ToUpper().Equals("FAILURE"))).ToList();
-                        
+
                         foreach (var logdetail in logDetailsList1)
                         {
                             bool isDataexistinMail = false;
@@ -235,14 +238,15 @@ namespace Integration.Marketo
                             {
                                 instanceEntity.Status = Enums.SyncStatus.Error.ToString();
                             }
-                            else {
+                            else
+                            {
                                 instanceEntity.Status = logdetail.Status.ToString();
-                            }                            
+                            }
                             instanceEntity.ErrorDescription = logdetail.Description;
                             instanceEntity.CreatedBy = _userId;
                             instanceEntity.CreatedDate = DateTime.Now;
                             instanceEntity.IntegrationInstanceSectionId = _integrationInstanceSectionId;
-                            
+
                             db.Entry(instanceEntity).State = EntityState.Added;
                             isDataexistinMail = _lstSyncError.Where(lserr => lserr.EntityId.Equals(entId)).Any();
                             if (!isDataexistinMail)
@@ -263,7 +267,7 @@ namespace Integration.Marketo
                                 }
                             }
 
-                        } 
+                        }
                         #endregion
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Insert Log detail into IntegrationInstancePlanEntityLog end.");
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Update Tactic's Marketo ProgramId Mappig list start.");
@@ -271,26 +275,67 @@ namespace Integration.Marketo
                         string strCreateMode = Operation.Create.ToString();
                         List<int> lstCreatedTacIds = new List<int>();
 
-                        TacticMarketoProgMappingIds = logDetailsList.Where(log => (log.EventName.Equals(strInsertProgram) || log.EventName.Equals(strUpdateProgram)) && log.Mode.Equals(strCreateMode) && log.SourceId.HasValue && log.EntityId.HasValue).ToDictionary(log => log.SourceId.Value, log => log.EntityId.Value.ToString());
+                        TacticMarketoProgMappingIds = logDetailsList.Where(log => (log.EventName.Equals(strInsertProgram) || log.EventName.Equals(strUpdateProgram)) && log.SourceId.HasValue && log.EntityId.HasValue).ToDictionary(log => log.SourceId.Value, log => log.EntityId.Value.ToString());
+                        var marketoURL = logDetailsList.Where(log => (log.EventName.Equals(strInsertProgram) || log.EventName.Equals(strUpdateProgram)) && log.SourceId.HasValue && log.EntityId.HasValue).ToDictionary(log => log.SourceId.Value, log => log.Url);
+                        TacticMarketoLastSyncDates = logDetailsList.Where(log => (log.EventName.Equals(strInsertProgram) || log.EventName.Equals(strUpdateProgram)) && log.SourceId.HasValue && log.EntityId.HasValue).ToDictionary(log => log.SourceId.Value, log => log.EndTimeStamp);
                         if (TacticMarketoProgMappingIds != null && TacticMarketoProgMappingIds.Count > 0)
                         {
-                            string strMarketoProgId;
+                            string  AttrMarketoUrl= Enums.EntityIntegrationAttribute.MarketoUrl.ToString();
+                            string  EntityType= Enums.EntityType.Tactic.ToString();
+                            List<EntityIntegration_Attribute> ListEntityIntegrationAttr = new List<EntityIntegration_Attribute>();
+                            EntityIntegration_Attribute objEntityIntegrationAttr = new EntityIntegration_Attribute();
+                            if (marketoURL.Count > 0)
+                            {
+                                ListEntityIntegrationAttr = db.EntityIntegration_Attribute.Where(attr => attr.IntegrationinstanceId == _integrationInstanceId
+                                    && attr.AttrType==AttrMarketoUrl && attr.EntityType==EntityType).ToList();
+                            }
+                            string strMarketoProgId, strMarketoURL;
+                            DateTime strMarketoLastSync;
                             lstCreatedTacIds = TacticMarketoProgMappingIds.Select(tac => tac.Key).ToList();
                             List<Plan_Campaign_Program_Tactic> lstCreatedTacs = tblTactics.Where(tac => lstCreatedTacIds.Contains(tac.PlanTacticId)).ToList();
                             foreach (Plan_Campaign_Program_Tactic tac in lstCreatedTacs)
                             {
-                                strMarketoProgId = string.Empty;
+                                strMarketoProgId = strMarketoURL = string.Empty;
                                 strMarketoProgId = TacticMarketoProgMappingIds.Where(prg => prg.Key == tac.PlanTacticId).Select(prg => prg.Value).FirstOrDefault();
+                                strMarketoLastSync = TacticMarketoLastSyncDates.Where(prg => prg.Key == tac.PlanTacticId).Select(prg => prg.Value).FirstOrDefault();
                                 if (strMarketoProgId != null)
                                 {
                                     tac.IntegrationInstanceMarketoID = strMarketoProgId;
+                                    tac.LastSyncDate = strMarketoLastSync; // Modified By Rahul shah // To add last sync date
                                     db.Entry(tac).State = EntityState.Modified;
                                 }
-                                else {
+                                else
+                                {
                                     _isResultError = true;
-                                    _ErrorMessage = "Error updating Marketo Program id for Tactic - " +  tac.Title;
- 
-                                } 
+                                    _ErrorMessage = "Error updating Marketo Program id for Tactic - " + tac.Title;
+                                }
+                                // Add By Nishant Sheth
+                                // Description :: #2134 Add Marketo Pushed Program url.
+                                strMarketoURL = marketoURL.Where(prg => prg.Key == tac.PlanTacticId).Select(prg => prg.Value).FirstOrDefault();
+                                if (!string.IsNullOrEmpty(strMarketoURL))
+                                {
+                                    
+                                    objEntityIntegrationAttr = ListEntityIntegrationAttr.Where(attr => attr.EntityId == tac.PlanTacticId).FirstOrDefault();
+                                    if (objEntityIntegrationAttr == null)
+                                    {
+                                        objEntityIntegrationAttr = new EntityIntegration_Attribute();
+                                        objEntityIntegrationAttr.EntityId = tac.PlanTacticId;
+                                        objEntityIntegrationAttr.EntityType = Enums.EntityType.Tactic.ToString();
+                                        objEntityIntegrationAttr.AttrType = Enums.EntityIntegrationAttribute.MarketoUrl.ToString();
+                                        objEntityIntegrationAttr.AttrValue = strMarketoURL;
+                                        objEntityIntegrationAttr.IntegrationinstanceId = _integrationInstanceId;
+                                        objEntityIntegrationAttr.CreatedDate = DateTime.Now;
+                                        db.Entry(objEntityIntegrationAttr).State = EntityState.Added;
+                                    }
+                                    else
+                                    {
+                                        objEntityIntegrationAttr.AttrValue = strMarketoURL;
+                                        db.Entry(objEntityIntegrationAttr).State = EntityState.Modified;
+                                    }
+                                    
+
+                                }
+                                // End By Nishant Sheth
                             }
                         }
                         #endregion
@@ -301,14 +346,14 @@ namespace Integration.Marketo
                         Dictionary<int, int> lstTacLinkIdMappings = new Dictionary<int, int>();
                         lstTacLinkIdMappings = tblTactics.Where(tac => lstSourceIds.Contains(tac.PlanTacticId) && tac.LinkedTacticId.HasValue).ToDictionary(tac => tac.PlanTacticId, tac => tac.LinkedTacticId.Value);
                         #endregion
-                        
+
                         UpdateLinkedTacticComment(lstSourceIds, tblTactics, lstCreatedTacIds, lstTacLinkIdMappings);
-                        
+
                     }
 
                 }
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncData method end.");
-               
+
             }
             catch (Exception e)
             {
@@ -332,13 +377,13 @@ namespace Integration.Marketo
             return _isResultError;
         }
 
-        public void UpdateLinkedTacticComment(List<int> lstProcessTacIds, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstCreatedTacIds, Dictionary<int,int> lstTac_LinkTacMapping)
+        public void UpdateLinkedTacticComment(List<int> lstProcessTacIds, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstCreatedTacIds, Dictionary<int, int> lstTac_LinkTacMapping)
         {
             string query = string.Empty;
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             try
             {
-                
+
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "UpdateLinkedTacticComment method start.");
                 #region "Update linkedTactic Comment & IntegrationInstanceTacticId"
                 // if any tactic processed(push).
@@ -440,7 +485,7 @@ namespace Integration.Marketo
             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "UpdateLinkedTacticComment method end.");
         }
 
-       
+
 
     }
 }

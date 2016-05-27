@@ -1899,8 +1899,37 @@ GO
 
   Go
 
+-- =============================================
+-- Author: Nishant Sheth
+-- Create date: 27-May-2016
+-- Description:	Create table for Integration Attributr
+-- =============================================
+IF (NOT EXISTS (SELECT *  FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND  TABLE_NAME = 'EntityIntegration_Attribute'))
+BEGIN
+CREATE TABLE [dbo].[EntityIntegration_Attribute](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[EntityId] [int] NOT NULL,
+	[EntityType] [nvarchar](255) NOT NULL,
+	[IntegrationinstanceId] [int] NOT NULL,
+	[AttrType] [nvarchar](255) NOT NULL,
+	[AttrValue] [nvarchar](max) NOT NULL,
+	[CreatedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_EntityIntegration_Attribute] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 
+
+ALTER TABLE [dbo].[EntityIntegration_Attribute]  WITH CHECK ADD  CONSTRAINT [FK_EntityIntegration_Attribute_IntegrationInstance] FOREIGN KEY([IntegrationinstanceId])
+REFERENCES [dbo].[IntegrationInstance] ([IntegrationInstanceId])
+
+ALTER TABLE [dbo].[EntityIntegration_Attribute] CHECK CONSTRAINT [FK_EntityIntegration_Attribute_IntegrationInstance]
+
+END
+
+GO
 -- ========================================================================================================
 
 -- Added By : Maitri Gandhi

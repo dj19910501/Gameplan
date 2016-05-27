@@ -31,6 +31,13 @@ namespace Integration.Helper
             Host
         }
 
+        // Add By Nishant Sheth
+        // enums for integration attributes
+        public enum EntityIntegrationAttribute
+        {
+            MarketoUrl
+        }
+
         public enum PullCWActualField
         {
             Stage,

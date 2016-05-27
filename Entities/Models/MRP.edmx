@@ -261,6 +261,18 @@
           <Property Name="AllXml" Type="ntext" Nullable="false" />
           <Property Name="Client" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="EntityIntegration_Attribute">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EntityId" Type="int" Nullable="false" />
+          <Property Name="EntityType" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="IntegrationinstanceId" Type="int" Nullable="false" />
+          <Property Name="AttrType" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="AttrValue" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="EntityTypeColor">
           <Key>
             <PropertyRef Name="Id" />
@@ -1345,6 +1357,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_EntityIntegration_Attribute_IntegrationInstance">
+          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
+          <End Role="EntityIntegration_Attribute" Type="Self.EntityIntegration_Attribute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="EntityIntegration_Attribute">
+              <PropertyRef Name="IntegrationinstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_GameplanDataType_IntegrationType">
           <End Role="IntegrationType" Type="Self.IntegrationType" Multiplicity="1" />
           <End Role="GameplanDataType" Type="Self.GameplanDataType" Multiplicity="*" />
@@ -2263,6 +2287,7 @@
           <EntitySet Name="CustomFieldType" EntityType="Self.CustomFieldType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomRestriction" EntityType="Self.CustomRestriction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ELMAH_Error" EntityType="Self.ELMAH_Error" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EntityIntegration_Attribute" EntityType="Self.EntityIntegration_Attribute" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EntityTypeColor" EntityType="Self.EntityTypeColor" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GameplanDataType" EntityType="Self.GameplanDataType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GameplanDataTypePull" EntityType="Self.GameplanDataTypePull" Schema="dbo" store:Type="Tables" />
@@ -2405,6 +2430,10 @@
           <AssociationSet Name="FK_CustomRestriction_CustomFieldOption" Association="Self.FK_CustomRestriction_CustomFieldOption">
             <End Role="CustomFieldOption" EntitySet="CustomFieldOption" />
             <End Role="CustomRestriction" EntitySet="CustomRestriction" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EntityIntegration_Attribute_IntegrationInstance" Association="Self.FK_EntityIntegration_Attribute_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="EntityIntegration_Attribute" EntitySet="EntityIntegration_Attribute" />
           </AssociationSet>
           <AssociationSet Name="FK_GameplanDataType_IntegrationType" Association="Self.FK_GameplanDataType_IntegrationType">
             <End Role="IntegrationType" EntitySet="IntegrationType" />
@@ -3205,6 +3234,11 @@
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="MarketoEntityValueMapping" EntitySet="MarketoEntityValueMappings" />
           </AssociationSet>
+          <EntitySet Name="EntityIntegration_Attribute" EntityType="MRPModel.EntityIntegration_Attribute" />
+          <AssociationSet Name="FK_EntityIntegration_Attribute_IntegrationInstance" Association="MRPModel.FK_EntityIntegration_Attribute_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="EntityIntegration_Attribute" EntitySet="EntityIntegration_Attribute" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -3472,6 +3506,7 @@
           <Property Type="Guid" Name="ForceSyncUser" />
           <NavigationProperty Name="Models41" Relationship="MRPModel.FK_Model_IntegrationInstanceMarketo" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="MarketoEntityValueMappings" Relationship="MRPModel.FK_MarketoEntityValueMapping_IntegrationInstance" FromRole="IntegrationInstance" ToRole="MarketoEntityValueMapping" />
+          <NavigationProperty Name="EntityIntegration_Attribute" Relationship="MRPModel.FK_EntityIntegration_Attribute_IntegrationInstance" FromRole="IntegrationInstance" ToRole="EntityIntegration_Attribute" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -5685,6 +5720,31 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="EntityIntegration_Attribute">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EntityId" Type="Int32" Nullable="false" />
+          <Property Name="EntityType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IntegrationinstanceId" Type="Int32" Nullable="false" />
+          <Property Name="AttrType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="AttrValue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_EntityIntegration_Attribute_IntegrationInstance" FromRole="EntityIntegration_Attribute" ToRole="IntegrationInstance" />
+        </EntityType>
+        <Association Name="FK_EntityIntegration_Attribute_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.EntityIntegration_Attribute" Role="EntityIntegration_Attribute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="EntityIntegration_Attribute">
+              <PropertyRef Name="IntegrationinstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6863,6 +6923,19 @@
                 <ScalarProperty Name="MarketoCampaignFolderId" ColumnName="MarketoCampaignFolderId" />
                 <ScalarProperty Name="EntityType" ColumnName="EntityType" />
                 <ScalarProperty Name="EntityID" ColumnName="EntityID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EntityIntegration_Attribute">
+            <EntityTypeMapping TypeName="MRPModel.EntityIntegration_Attribute">
+              <MappingFragment StoreEntitySet="EntityIntegration_Attribute">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="AttrValue" ColumnName="AttrValue" />
+                <ScalarProperty Name="AttrType" ColumnName="AttrType" />
+                <ScalarProperty Name="IntegrationinstanceId" ColumnName="IntegrationinstanceId" />
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
