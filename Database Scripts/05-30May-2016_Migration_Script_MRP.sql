@@ -18,8 +18,9 @@ SELECT @CreatedBy = CreatedBy FROM CampaignNameConvention WHERE ClientId=@Market
        WHERE ClientId=@MarketoClientId
 
        Insert Into CampaignNameConvention Values('Plan_Campaign_Program_Tactic','PlanTacticId',null,@sequence,@MarketoClientId,GetDate(),@CreatedBy,0,@length)
-GO
 END
+GO
+
 
 -- ==========================================================================================================
 
