@@ -9139,7 +9139,8 @@ namespace RevenuePlanner.Controllers
 
                         CampaignDataObj = new Budgetdataobj();
                         //  CampaignDataObj.value = HttpUtility.HtmlEncode(bmc.ActivityName);
-                        CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " linktype = campaign style='cursor:pointer;' >" + bmc.ActivityName + "</a>");
+                      
+                        CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmc.ActivityId + "','" + bmc.ActivityType.ToString() + "')>" + bmc.ActivityName + "</a>");
                         CampaignDataObjList.Add(CampaignDataObj);
 
                         if (budgetTab == Enums.BudgetTab.Planned)

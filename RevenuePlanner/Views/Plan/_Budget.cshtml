@@ -610,10 +610,10 @@
     }
   
     var Assortment = 'Budgeting';
-    $('#aPlanDetails').click(function (e) {
+    @*$('#aPlanDetails').click(function (e) {
         var id = CurrentPlanId;
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-    });
+    });*@
 
     //Added By Rushil Bhuptani on 19/5/2016 for #2191 to open inspect popup for plan.
     function OpenPlanInspectPopup() {
@@ -637,7 +637,7 @@
             $(this).attr("myValue", $(this).val());
         });
     }
-    $("[linktype=campaign]").click(function (e) {
+    @*$("[linktype=campaign]").click(function (e) {
         var id = $(this).attr('id');
         id = id.replace('c_', '');
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
@@ -657,7 +657,7 @@
         var id = $(this).attr('id');
         id = id.replace('cptl_', '');
         ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-    });
+    });*@
 </script>
 
 <script type="text/javascript">
