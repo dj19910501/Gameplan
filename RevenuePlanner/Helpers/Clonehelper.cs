@@ -156,6 +156,7 @@ namespace RevenuePlanner.Helpers
                                     pcpt.IntegrationInstanceTacticId = null;
                                     pcpt.IntegrationInstanceEloquaId = null;
                                     pcpt.IntegrationWorkFrontProjectID = null; //added by Brad Gray 31 Jan 2016 PL#1944
+                                    pcpt.IntegrationInstanceMarketoID = null; //Added by Rahul Shah on 27/05/2016 for internal review point
                                     pcpt.LastSyncDate = null;
                                     pcpt.LinkedTacticId = null;
                                     pcpt.LinkedPlanId = null;
@@ -339,6 +340,7 @@ namespace RevenuePlanner.Helpers
                                 pcpt.IntegrationInstanceTacticId = null;
                                 pcpt.IntegrationInstanceEloquaId = null;
                                 pcpt.IntegrationWorkFrontProjectID = null; //added by Brad Gray 31 Jan 2016 PL#1944
+                                pcpt.IntegrationInstanceMarketoID = null;    //Added by Rahul Shah on 27/05/2016 for internal review point
                                 pcpt.LastSyncDate = null;
                                 pcpt.LinkedTacticId = null;
                                 pcpt.LinkedPlanId = null;
@@ -492,6 +494,7 @@ namespace RevenuePlanner.Helpers
                             t.IntegrationInstanceTacticId = null;
                             t.IntegrationInstanceEloquaId = null;
                             t.IntegrationWorkFrontProjectID = null; //added by Brad Gray 31 Jan 2016 PL#1944
+                            t.IntegrationInstanceMarketoID = null; //Added by Rahul Shah on 27/05/2016 for internal review point
                             t.LastSyncDate = null;
                             t.LinkedTacticId = null;
                             t.LinkedPlanId = null;
@@ -1124,6 +1127,7 @@ namespace RevenuePlanner.Helpers
                                 pcpt.IntegrationInstanceTacticId = null;
                                 pcpt.IntegrationInstanceEloquaId = null;
                                 pcpt.IntegrationWorkFrontProjectID = null;
+                                pcpt.IntegrationInstanceMarketoID = null; //Added by Rahul Shah on 25/05/2016 for internal review point
                                 pcpt.LastSyncDate = null;
                                 pcpt.LinkedPlanId = null;
                                 pcpt.LinkedTacticId = null;
@@ -1289,6 +1293,7 @@ namespace RevenuePlanner.Helpers
                             t.IntegrationInstanceTacticId = null;
                             t.IntegrationInstanceEloquaId = null;
                             t.IntegrationWorkFrontProjectID = null;
+                            t.IntegrationInstanceMarketoID = null; //Added by Rahul Shah on 25/05/2016 for internal review point
                             t.LastSyncDate = null;
                             t.LinkedPlanId = null;
                             t.LinkedTacticId = null;
