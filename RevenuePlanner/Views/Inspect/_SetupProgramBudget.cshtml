@@ -108,6 +108,7 @@
 
     $(document).ready(
     function () {
+        $('#EditProgram').removeClass('SpanDisable');
         var IsEditable = $("#hdnProgramOpt").val(); 
         if (IsEditable == 'View') {
             $('form').find(".sbSelector").each(function () {

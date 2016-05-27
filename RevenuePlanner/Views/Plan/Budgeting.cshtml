@@ -1025,4 +1025,64 @@ $(document).on("click", "#aApplyToCalender", function (e) {
     function SaveLastSetofViews(ViewName) {
         return true;
     }
+
+    function BindUpcomingActivites(SelectedPlanIds) {
+
+        // Start - #1942
+        var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+        var years = "";
+        $.each(listCheckbox, function () {
+            if ($(this).attr("checked")) {
+                years += $(this).attr('yearValue') + ",";
+            }
+        });
+        years = years.slice(0, -1);
+        // End - #1942
+        //Modified by Komal Rawal for maintaining time fram when we change time frame and add a tactic
+        var currentval = $("#ddlUpComingActivites").val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Home/BindUpcomingActivitesValues/")',
+            async: false,// Comment by bhavesh // Uncomment By Nishant Sheth Desc :: Due to selected min year records display
+            data: {
+                planids: SelectedPlanIds,
+                fltrYears: years
+            },
+            success: function (data) {
+                BindUpcomingActivies(data);
+                var upcomingvalues = [];
+                $.each($("#ddlUpComingActivites option"), function () {
+                    upcomingvalues.push(this.value.toString());
+                });
+                if (upcomingvalues.indexOf(currentval) > 0) {
+                    $.each($("#ddlUpComingActivites option"), function () {
+                        $(this).removeAttr('selected');
+                    });
+                    $("#ddlUpComingActivites option[value='" + currentval + "']").attr('selected', 'selected');
+                    $("#ddlUpComingActivites").selectbox('detach');
+                    $("#ddlUpComingActivites").selectbox("attach");
+                }
+                //End
+            }
+        });
+    }
+    function BindUpcomingActivies(items) {
+        var $dropdown = $("#ddlUpComingActivites");
+        $dropdown.html('');
+        var $html = '';
+        if (items.length > 0) {
+            $.each(items, function (index, pvalues) {
+                if (pvalues.Selected) {
+                    $html += '<option value="' + pvalues.Value + '" selected="selected">' + pvalues.Text + '</option>';
+                } else {
+                    $html += '<option value="' + pvalues.Value + '">' + pvalues.Text + '</option>';
+                }
+            });
+        }
+        $dropdown.append($html);
+        Currenttime = $("#ddlUpComingActivites").val();
+        $("#ddlUpComingActivites").selectbox('detach');
+        $("#ddlUpComingActivites").selectbox("attach");
+    }
+
 </script>
