@@ -662,7 +662,6 @@
                                 '<input type="text" id="BudgetYear" value="' + FormatCommasBudget(plby.toString(), false, false) + '" ov="' + plby + '" />' ;
                         $loadmeHtml += '<input type="hidden" id="entityDetails" value="' + entityId.replace('plan', '') + '" section="Plan" mnth="'+entityMonth+'" />';
                         $localContent.find('.tooltip-field').html($loadmeHtml);
-                        entityTitle = $('#divPlanDetails').text();
                         $localContent.find('h3').text(entityMonth + ' - ' + entityTitle);
                         }
                     }
