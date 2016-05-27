@@ -1315,11 +1315,11 @@ GO
 -- Added Date : 05/24/2016
 -- ===========================================================================================================
 
-/****** Object:  StoredProcedure [dbo].[spGetMarketoData]    Script Date: 05/27/2016 12:57:25 PM ******/
+/****** Object:  StoredProcedure [dbo].[spGetMarketoData]    Script Date: 05/27/2016 8:38:56 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGetMarketoData]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[spGetMarketoData]
 GO
-/****** Object:  StoredProcedure [dbo].[spGetMarketoData]    Script Date: 05/27/2016 12:57:25 PM ******/
+/****** Object:  StoredProcedure [dbo].[spGetMarketoData]    Script Date: 05/27/2016 8:38:56 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1429,7 +1429,7 @@ BEGIN
 							Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0
 							join Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0 
 							join Plan_Campaign_Program_Tactic as tact on prgrm.PlanProgramId = tact.PlanProgramId and tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncMarketo='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete')
-							where  mdl.IntegrationInstanceMarketoID=1190 and mdl.IsDeleted=0 and mdl.[Status]='Published' and mdl.IsActive='1'
+							where  mdl.IntegrationInstanceMarketoID=@id and mdl.IsDeleted=0 and mdl.[Status]='Published' and mdl.IsActive='1'
 						),
 						 tactList AS (
 							(
@@ -1645,7 +1645,9 @@ BEGIN
 	--SELECT @logStartInstanceLogId as 'InstanceLogStartId'
 END
 
+
 GO
+
 
 ----===============================================================================================================
 
