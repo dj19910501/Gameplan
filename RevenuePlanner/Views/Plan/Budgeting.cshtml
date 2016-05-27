@@ -164,6 +164,7 @@
 
     var isLoadcopied = false;
     var cloneObj = "";
+    var activeMenu = $('#ActiveMenu').val().toLowerCase();
     function OpentCopyPopup(obj, isProceed) {
         cloneObj = obj;
         var redirectType = $(obj).attr('redirecttype');
@@ -915,5 +916,113 @@ $(document).on("click", "#aApplyToCalender", function (e) {
             }
         }
         //modalBackdropDisplayNone();
+    }
+
+    var currentRequestforTactics = null;
+    function GetTacticTypelist(Planids, async, OnPlanChange) {
+
+        var asyncval = false;
+        if (async != undefined && async != 'undefined' && async != '' && async != null) {
+            asyncval = async;
+        }
+        else {
+            asyncval = false;
+        }
+        $('#ulTacticType').html('');
+
+        currentRequestforTactics = $.ajax({
+            beforeSend: function (x) {
+                if (!asyncval) {
+                    myApp.showPleaseWait();
+                }
+                if (currentRequestforTactics != null) {
+                    currentRequestforTactics.abort();
+                }
+            },
+            type: "GET",
+            cache: false,
+            async: asyncval,
+            url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
+            data: {
+                PlanId: Planids.toString()
+            },
+            dataType: "json",
+            success: function (data) {
+
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
+                else {
+                    if (data.isSuccess == true) {
+                        LoadTacticTypelist(data);
+                    }
+                    else {
+                        $("#TacticTypeAllModule").css("display", "none");
+                        $("#NoTTFound").show();
+                    }
+                    TactictypeCount = $("#ulTacticType li").length;
+                    checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
+                    $('#tTTcount').text('/' + TactictypeCount);
+                    $('#cTTcount').text(checkedTTcount);
+                    async = true;
+                }
+            }
+        });
+
+    }
+
+    var selectedFilters = {
+        yearIds: [],
+        planName: [],
+        ownerName: [],
+        tacticTypeTitle: [],
+        StatusIds: []
+    };
+    var FiltersNone = "None";
+    function LoadTacticTypelist(data) {
+        if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
+            TactictypeCount = data.TacticTypelist.length;
+            if (TactictypeCount > 0) {
+                $("#TacticTypeAllModule").css("display", "block");
+                $("#NoTTFound").hide();
+                $('#ulTacticType li').remove();
+                $.each(data.TacticTypelist, function (i, TactictypeItem) {
+                    var checkedclass = "";
+                    var checked = "";
+                    checked = "checked"
+                    checkedclass = "close-list"
+                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
+                });
+                selectedFilters.tacticTypeTitle = [];
+                $("#ulTacticType li input[type=checkbox]:checked").each(function () {
+                    if (selectedFilters.tacticTypeTitle.indexOf($(this).attr('tactictypetitle').toString()) == -1) {
+                        selectedFilters.tacticTypeTitle.push($(this).attr('tactictypetitle').toString());
+                    }
+                });
+
+                if (selectedFilters.tacticTypeTitle.length == 0) {
+                    $('#lstTType').text(FiltersNone);
+                }
+                else if ($("#ulTacticType li").length == selectedFilters.tacticTypeTitle.length) {
+
+                    $('#lstTType').text(FiltersAll);
+                }
+                else {
+                    $('#lstTType').text(selectedFilters.tacticTypeTitle.join(", "));
+                }
+                //End
+            }
+            else {
+                $("#TacticTypeAllModule").css("display", "none");
+                $("#NoTTFound").show();
+            }
+        }
+    }
+
+    function GetOwnerListForFilter(Planids, async, OnPlanChange) {
+        return true;
+    }
+    function SaveLastSetofViews(ViewName) {
+        return true;
     }
 </script>

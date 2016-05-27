@@ -1287,17 +1287,19 @@
                             //}
                             // Add by Komal RAwal
                             // Desc ::  to resolve the owner filter issue
-                            filters.OwnerIds = [];
-                            $("#ulSelectedOwner li input:checkbox:checked").map(function () {
-                                filters.OwnerIds.push($(this).attr("id"));
-                            });
+                                if (typeof filters != 'undefined') {
+                                    filters.OwnerIds = [];
+                                    $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+                                        filters.OwnerIds.push($(this).attr("id"));
+                                    });
 
-                            // Add by Komal RAwal
-                            // Desc :: To resolve the 2058 filter issues
-                            filters.TacticTypeids = [];
-                            $("#ulTacticType li input:checkbox:checked").map(function () {
-                                filters.TacticTypeids.push($(this).attr("id").replace("CbTT", ""));
-                            });
+                                    // Add by Komal RAwal
+                                    // Desc :: To resolve the 2058 filter issues
+                                    filters.TacticTypeids = [];
+                                    $("#ulTacticType li input:checkbox:checked").map(function () {
+                                        filters.TacticTypeids.push($(this).attr("id").replace("CbTT", ""));
+                                    });
+                                }
                             //End
                             //Modified by Maitri Gandhi : modified condition to refresh the headers on the creation of tactic
                             if (_planTacticId == '' || _planTacticId == null || _planTacticId == '0' || _planTacticId == 'undefined' || ($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
