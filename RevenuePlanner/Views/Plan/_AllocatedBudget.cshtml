@@ -329,8 +329,6 @@
         }, 200);
 
 
-        HomeGrid.enableDistributedParsing(true, 10, 0.1);
-
         var mainGridData = JsonModel;
         mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
@@ -584,10 +582,10 @@
         });
     });
     var Assortment = 'Budgeting';
-    $('#aPlanDetails').click(function (e) {
+    @*$('#aPlanDetails').click(function (e) {
         var id = CurrentPlanId;
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-    });
+    });*@
     //Added By Maitri Gandhi on 19/5/2016 for #2197
     function OpenPlanInspectPopup() {
         var id = CurrentPlanId;        

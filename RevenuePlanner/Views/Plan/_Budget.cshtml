@@ -6,7 +6,7 @@
 @*@model List<BudgetModel>*@
 @{
     @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
-    //BudgetDHTMLXGridModel objBudgetDHTMLXGrid =(BudgetDHTMLXGridModel)Session["objBudgetDHTMLXGrid"];
+    //BudgetDHTMLXGridModel objBudgetDHTMLXGrid = (BudgetDHTMLXGridModel)Session["objBudgetDHTMLXGrid"];
   
     
     string AllocatedBy = ViewBag.AllocatedBy;
@@ -367,9 +367,6 @@
         setTimeout(function () {
             HomeGrid.setSizes();
         }, 200);
-
-
-        HomeGrid.enableDistributedParsing(true, 10, 0.1);
 
         var mainGridData = JsonModel;
         mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.

@@ -7418,19 +7418,19 @@ namespace RevenuePlanner.Controllers
                         divValue = plan.isEditable ? NewClueTipAnchorTagForBudget(string.Empty, plan.Allocated.ToString(formatThousand), activityType) : plan.Allocated.ToString(formatThousand);
                         if (activityType == ActivityType.ActivityPlan)
                         {
-                            division = division + " class='planLevel topCornner clueallocatedbudget'";
+                            division = division + " class='planLevel topCorner clueallocatedbudget'";
                         }
                         else if (activityType == ActivityType.ActivityCampaign)
                         {
-                            division = division + " class='campaignLevel topCornner clueallocatedbudget'";
+                            division = division + " class='campaignLevel topCorner clueallocatedbudget'";
                         }
                         else if (activityType == ActivityType.ActivityProgram)
                         {
-                            division = division + " class='programLevel topCornner clueallocatedbudget'";
+                            division = division + " class='programLevel topCorner clueallocatedbudget'";
                         }
                         else if (activityType == ActivityType.ActivityTactic)
                         {
-                            division = division + " class='tacticLevel topCornner clueallocatedbudget'";
+                            division = division + " class='tacticLevel topCorner clueallocatedbudget'";
                         }
                         var childTotalAllocated = 0.0;
                         if (activityType == ActivityType.ActivityPlan)
@@ -7578,22 +7578,22 @@ namespace RevenuePlanner.Controllers
                 {
                     if (activityType == ActivityType.ActivityPlan)
                     {
-                        div = "<div id = " + activityType + ActivityId + " class='planLevel topCornner clueallocated' ";
+                        div = "<div id = " + activityType + ActivityId + " class='planLevel topCorner clueallocated' ";
                         QueryActivityType = ActivityType.ActivityCampaign.ToString();
                     }
                     else if (activityType == ActivityType.ActivityCampaign)
                     {
-                        div = "<div id = " + activityType + ActivityId + " class='campaignLevel topCornner clueallocated'  allocated = " + ParentMonth[i].ToString(formatThousand) + "";
+                        div = "<div id = " + activityType + ActivityId + " class='campaignLevel topCorner clueallocated'  allocated = " + ParentMonth[i].ToString(formatThousand) + "";
                         QueryActivityType = ActivityType.ActivityProgram.ToString();
                     }
                     else if (activityType == ActivityType.ActivityProgram)
                     {
-                        div = "<div id = " + activityType + ActivityId + " class='programLevel topCornner clueallocated'  allocated = " + ParentMonth[i].ToString(formatThousand) + "";
+                        div = "<div id = " + activityType + ActivityId + " class='programLevel topCorner clueallocated'  allocated = " + ParentMonth[i].ToString(formatThousand) + "";
                         QueryActivityType = ActivityType.ActivityTactic.ToString();
                     }
                     else if (activityType == ActivityType.ActivityTactic)
                     {
-                        div = "<div id = " + activityType + ActivityId + " class='tacticLevel topCornner clueallocated'  allocated = " + ParentMonth[i].ToString(formatThousand) + "";
+                        div = "<div id = " + activityType + ActivityId + " class='tacticLevel topCorner clueallocated'  allocated = " + ParentMonth[i].ToString(formatThousand) + "";
                     }
                     else if (activityType == ActivityType.ActivityLineItem)
                     {
@@ -7729,26 +7729,26 @@ namespace RevenuePlanner.Controllers
                     if (activityType == ActivityType.ActivityPlan)
                     {
                        
-                        div = "<div  id =" + activityType + ActivityId.ToString() + " class='planLevel topCornner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
+                        div = "<div  id =" + activityType + ActivityId.ToString() + " class='planLevel topCorner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
                         QueryActivityType = ActivityType.ActivityCampaign.ToString();
                     }
                     else if (activityType == ActivityType.ActivityCampaign)
                     {
                      
-                        div = "<div id =" + activityType + ActivityId.ToString() + " class='campaignLevel topCornner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
+                        div = "<div id =" + activityType + ActivityId.ToString() + " class='campaignLevel topCorner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
                         QueryActivityType = ActivityType.ActivityProgram.ToString();
                     }
                     else if (activityType == ActivityType.ActivityProgram)
                     {
-                        div = "<div id =" + activityType + ActivityId.ToString() + " class='programLevel topCornner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
+                        div = "<div id =" + activityType + ActivityId.ToString() + " class='programLevel topCorner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
                         QueryActivityType = ActivityType.ActivityTactic.ToString();
                     }
                     else if (activityType == ActivityType.ActivityTactic)
                     {
-                        div = "<div id =" + activityType + ActivityId.ToString() + " class='tacticLevel topCornner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
+                        div = "<div id =" + activityType + ActivityId.ToString() + " class='tacticLevel topCorner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
                     }
 
-                    //div = "<div id =" + activityType + ActivityId.ToString() + " class='planLevel topCornner clueallocated'";
+                    //div = "<div id =" + activityType + ActivityId.ToString() + " class='planLevel topCorner clueallocated'";
                     divValue = isEditable ? NewClueTipAnchorTagForBudget(Enums.YearQuarters[i], campaignMonth[i].ToString(formatThousand),activityType) : campaignMonth[i].ToString(formatThousand);
                     double totalChildBudget = 0;
                     if (i == 1)
@@ -9554,12 +9554,23 @@ namespace RevenuePlanner.Controllers
             string divInnerHtml = "0";
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             BudgetDataObj = new Budgetdataobj();
+            bool isPlannedTab = ((int)Enums.BudgetTab.Planned).ToString() == strTab ? true : false;
+            bool isTactic = activityType == Helpers.ActivityType.ActivityTactic ? true : false;
+            bool isLineItem = activityType == Helpers.ActivityType.ActivityLineItem ? true : false;
             BudgetModel c = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
             string Span = string.Empty;
             //foreach (BudgetModel c in model.Where(p => p.ActivityType == activityType && p.ParentActivityId == parentActivityId).OrderBy(p => p.ActivityName).ToList())
             //{
             //TagBuilder tr = new TagBuilder("tr");
             bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && c.LineItemTypeId == null;
+
+            if (!isPlannedTab && activityType == ActivityType.ActivityTactic)
+            {
+                if (model.Where(m => m.ActivityType == ActivityType.ActivityLineItem && m.ParentActivityId == activityId).ToList().Count == 0)
+                {
+                    isLineItem = true;
+                }
+            }
             if (allocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToLower())
             {
                 double mainBudget = 0;
@@ -9580,84 +9591,278 @@ namespace RevenuePlanner.Controllers
                         mainBudget = c.BudgetMonth.Jan;
                         allocated = c.ParentMonth.Jan;
                         monthlyCampaignValue = c.Month.Jan;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.January.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        //divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.January.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Jan <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.January.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable && ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && c.isAfterApproved)) ? NewClueTipAnchorTagForBudget(Enums.Months.January.ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 2)
                     {
                         mainBudget = c.BudgetMonth.Feb;
                         allocated = c.ParentMonth.Feb;
                         monthlyCampaignValue = c.Month.Feb;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.February.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                       // divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.February.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Feb <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.February.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.February.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 3)
                     {
                         mainBudget = c.BudgetMonth.Mar;
                         allocated = c.ParentMonth.Mar;
                         monthlyCampaignValue = c.Month.Mar;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.March.ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Mar <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.March.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.March.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 4)
                     {
                         mainBudget = c.BudgetMonth.Apr;
                         allocated = c.ParentMonth.Apr;
                         monthlyCampaignValue = c.Month.Apr;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.April.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Apr <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.April.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.April.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 5)
                     {
                         mainBudget = c.BudgetMonth.May;
                         allocated = c.ParentMonth.May;
                         monthlyCampaignValue = c.Month.May;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.May.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.May <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.May.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.May.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 6)
                     {
                         mainBudget = c.BudgetMonth.Jun;
                         allocated = c.ParentMonth.Jun;
                         monthlyCampaignValue = c.Month.Jun;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.June.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Jun <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.June.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.June.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 7)
                     {
                         mainBudget = c.BudgetMonth.Jul;
                         allocated = c.ParentMonth.Jul;
                         monthlyCampaignValue = c.Month.Jul;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.July.ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Jul <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.July.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.July.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 8)
                     {
                         mainBudget = c.BudgetMonth.Aug;
                         allocated = c.ParentMonth.Aug;
                         monthlyCampaignValue = c.Month.Aug;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.August.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Aug <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.August.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.August.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 9)
                     {
                         mainBudget = c.BudgetMonth.Sep;
                         allocated = c.ParentMonth.Sep;
                         monthlyCampaignValue = c.Month.Sep;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.September.ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Sep <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.September.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.September.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 10)
                     {
                         mainBudget = c.BudgetMonth.Oct;
                         allocated = c.ParentMonth.Oct;
                         monthlyCampaignValue = c.Month.Oct;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.October.ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Oct <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.October.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.October.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 11)
                     {
                         mainBudget = c.BudgetMonth.Nov;
                         allocated = c.ParentMonth.Nov;
                         monthlyCampaignValue = c.Month.Nov;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.November.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Nov <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.November.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.November.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+
+                        }
                     }
                     else if (i == 12)
                     {
                         mainBudget = c.BudgetMonth.Dec;
                         allocated = c.ParentMonth.Dec;
                         monthlyCampaignValue = c.Month.Dec;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.December.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Dec <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.December.ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(Enums.Months.December.ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
 
                     //div.Attributes.Add("mainbudget", mainBudget.ToString(formatThousand));
@@ -9765,28 +9970,116 @@ namespace RevenuePlanner.Controllers
                         mainBudget = c.BudgetMonth.Jan;
                         allocated = c.ParentMonth.Jan;
                         monthlyCampaignValue = c.Month.Jan;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()].ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Jan <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                                   ((isPlannedTab &&
+                                                     (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                                    (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(
+                                    Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()].ToString(), "---", activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(
+                                    Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()].ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 4)
                     {
                         mainBudget = c.BudgetMonth.Apr;
                         allocated = c.ParentMonth.Apr;
                         monthlyCampaignValue = c.Month.Apr;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()].ToString(), monthlyCampaignValue.ToString(formatThousand), activityType) : monthlyCampaignValue.ToString(formatThousand);
-                    }
+                      
+                      
+                        mainBudget = c.BudgetMonth.Jan;
+                        allocated = c.ParentMonth.Jan;
+                        monthlyCampaignValue = c.Month.Jan;
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Apr <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab &&
+                                             (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(
+                                    Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()].ToString(), "---",
+                                    activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(
+                                    Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()].ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
+                        }
                     else if (i == 7)
                     {
                         mainBudget = c.BudgetMonth.Jul;
                         allocated = c.ParentMonth.Jul;
                         monthlyCampaignValue = c.Month.Jul;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()].ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+
+                        mainBudget = c.BudgetMonth.Jan;
+                        allocated = c.ParentMonth.Jan;
+                        monthlyCampaignValue = c.Month.Jan;
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Jul <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab &&
+                                             (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(
+                                    Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()].ToString(), "---",
+                                    activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(
+                                    Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()].ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     else if (i == 10)
                     {
                         mainBudget = c.BudgetMonth.Oct;
                         allocated = c.ParentMonth.Oct;
                         monthlyCampaignValue = c.Month.Oct;
-                        divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()].ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        if (activityType == ActivityType.ActivityLineItem && c.Month.Oct <= 0)
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab &&
+                                             (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(
+                                    Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()].ToString(), "---",
+                                    activityType)
+                                : "---";
+                        }
+                        else
+                        {
+                            divInnerHtml = c.isEditable &&
+                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
+                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                                ? NewClueTipAnchorTagForBudget(
+                                    Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()].ToString(),
+                                    monthlyCampaignValue.ToString(formatThousand), activityType)
+                                : monthlyCampaignValue.ToString(formatThousand);
+                        }
                     }
                     //div.Attributes.Add("mainbudget", mainBudget.ToString(formatThousand));
                     //div.Attributes.Add("allocated", allocated.ToString(formatThousand));
@@ -9857,6 +10150,29 @@ namespace RevenuePlanner.Controllers
                             division = division + " class='lineitemLevel clueplanned topCorner'";
                         }
                         //division = division + "style=position:relative ";
+                    }
+                    else if (strTab == "2")
+                    {
+                        if (activityType == "plan")
+                        {
+                            division = division + " class='planLevel clueactual topCorner'";
+                        }
+                        else if (activityType == "campaign")
+                        {
+                            division = division + " class='campaignLevel clueactual topCorner'";
+                        }
+                        else if (activityType == "program")
+                        {
+                            division = division + " class='programLevel clueactual topCorner'";
+                        }
+                        else if (activityType == "tactic")
+                        {
+                            division = division + " class='tacticLevel clueactual topCorner'";
+                        }
+                        else if (activityType == "lineitem")
+                        {
+                            division = division + " class='lineitemLevel clueactual topCorner'";
+                        }
                     }
 
                     //  div.AddCssClass(className);
@@ -10120,23 +10436,23 @@ namespace RevenuePlanner.Controllers
 
                         if (activityType == "plan")
                         {
-                            division = division + " class='planLevel topCornner clueplanned'";
+                            division = division + " class='planLevel topCorner clueplanned'";
                         }
                         else if (activityType == "campaign")
                         {
-                            division = division + " class='campaignLevel topCornner clueplanned'";
+                            division = division + " class='campaignLevel topCorner clueplanned'";
                         }
                         else if (activityType == "program")
                         {
-                            division = division + " class='programLevel topCornner clueplanned'";
+                            division = division + " class='programLevel topCorner clueplanned'";
                         }
                         else if (activityType == "tactic")
                         {
-                            division = division + " class='tacticLevel topCornner clueplanned'";
+                            division = division + " class='tacticLevel topCorner clueplanned'";
                         }
                         else if (activityType == "lineitem")
                         {
-                            division = division + " class='lineitemLevel topCornner clueplanned'";
+                            division = division + " class='lineitemLevel topCorner clueplanned'";
                         }
                         //  division = division + "style=position:relative ";
 
@@ -10244,23 +10560,23 @@ namespace RevenuePlanner.Controllers
 
                         if (activityType == "plan")
                         {
-                            division = division + " class='planLevel topCornner clueplanned'";
+                            division = division + " class='planLevel topCorner clueplanned'";
                         }
                         else if (activityType == "campaign")
                         {
-                            division = division + " class='campaignLevel topCornner clueplanned'";
+                            division = division + " class='campaignLevel topCorner clueplanned'";
                         }
                         else if (activityType == "program")
                         {
-                            division = division + " class='programLevel topCornner clueplanned'";
+                            division = division + " class='programLevel topCorner clueplanned'";
                         }
                         else if (activityType == "tactic")
                         {
-                            division = division + " class='tacticLevel topCornner clueplanned'";
+                            division = division + " class='tacticLevel topCorner clueplanned'";
                         }
                         else if (activityType == "lineitem")
                         {
-                            division = division + " class='lineitemLevel topCornner clueplanned'";
+                            division = division + " class='lineitemLevel topCorner clueplanned'";
                         }
                         //division = division + "style=position:relative ";
                     }

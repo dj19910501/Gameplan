@@ -14697,23 +14697,27 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 
 
 /* To set orange corner on Grid Table start #2197 */
-#gridbox.financeReportGrid .objbox td .topCornner {
+.topCorner {
     position: relative;
 }
 
-.financeReportGrid.gridbox div.planLevel, 
+/*.financeReportGrid.gridbox div.planLevel{
+   margin: -2px -4px -2px -4px;
+} 
 .financeReportGrid.gridbox div.campaignLevel,
 .financeReportGrid.gridbox div.programLevel ,
 .financeReportGrid.gridbox div.tacticLevel, 
 .financeReportGrid.gridbox div.lineitemLevel {
    margin: -2px -8px -2px -4px;
-} 
+}*/ 
 
 .financeReportGrid .orange-corner-budget,
 .financeReportGrid.gridbox .topCorner .red-corner-budget{
-    top:-1px; right:4px;
+    top:-1px; right:-4px;
 }
-
+.financeReportGrid > table > tr:nth-child(4) td .red-corner-budget{
+    top:0px;right:0px;
+}
 .gotoLink { /* For #2212 */
     border-bottom: 1px solid;
     clear: both;
