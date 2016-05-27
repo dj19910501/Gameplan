@@ -1318,11 +1318,11 @@ GO
 -- Added Date : 05/24/2016
 -- ===========================================================================================================
 
-/****** Object:  StoredProcedure [dbo].[spGetMarketoData]    Script Date: 05/24/2016 6:59:20 PM ******/
+/****** Object:  StoredProcedure [dbo].[spGetMarketoData]    Script Date: 05/27/2016 12:57:25 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGetMarketoData]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[spGetMarketoData]
 GO
-/****** Object:  StoredProcedure [dbo].[spGetMarketoData]    Script Date: 05/24/2016 6:59:20 PM ******/
+/****** Object:  StoredProcedure [dbo].[spGetMarketoData]    Script Date: 05/27/2016 12:57:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1396,18 +1396,10 @@ BEGIN
 								PlanProgramId int,
 								TacticCustomName varchar(max),
 								LinkedTacticId int,
-								LinkedPlanId int
+								LinkedPlanId int,
+								PlanYear int,
+								RN int
 								)
-	
-	-- Start: Set IsAutoSync or not
-	--BEGIN
-	--	select @nullGUID=cast(cast(0 as binary) as uniqueidentifier)
-	--	If((@userId Is NULL) OR (@userId =@nullGUID))
-	--	BEGIN
-	--		SET @isAutoSync='1'
-	--	END
-	--END
-	-- End: Set IsAutoSync or not
 
 	-- Start: Identify Entity Type
 
@@ -1422,48 +1414,57 @@ BEGIN
 			IF EXISTS(SELECT IntegrationInstanceId from IntegrationInstance where IntegrationInstanceId=@id and IsDeleted='0' and IsActive='1')
 			BEGIN
 				-- Identified Instance already In-Progress or Not
-				--IF NOT EXISTS(SELECT IntegrationInstanceId from IntegrationInstance where IntegrationInstanceId=@id and IsDeleted='0' and IsActive='1' and  LastSyncStatus=@syncStatusInProgress)
 				BEGIN
 					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get Tactic Data by Instance Id')
 					SET @instanceId= @id
 
 					-- START: Get Tactic Data by Instance Id
 					BEGIN TRY
-					;WITH tblTact AS (
-						Select tact.PlanTacticId,
-							   tact.PlanProgramId,
-								tact.TacticCustomName,
-								tact.LinkedTacticId ,
-								tact.LinkedPlanId
-						from [Model] as mdl
-						join [Plan] as pln on mdl.ModelId = pln.ModelId and pln.IsDeleted=0
-						Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0
-						join Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0 
-						join Plan_Campaign_Program_Tactic as tact on prgrm.PlanProgramId = tact.PlanProgramId and tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncMarketo='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete')
-						where  mdl.IntegrationInstanceMarketoID=@id and mdl.IsDeleted=0 and mdl.[Status]='Published' and mdl.IsActive='1'
-					),
-					 tactList AS (
-						(
-							SELECT tact1.PlanTacticId,
-									tact1.PlanProgramId,
-									tact1.TacticCustomName,
+						;WITH tblTact AS (
+							Select tact.PlanTacticId,
+								   tact.PlanProgramId,
+									tact.TacticCustomName,
+									tact.LinkedTacticId ,
+									tact.LinkedPlanId,
+									pln.[Year] as PlanYear
+							from [Model] as mdl
+							join [Plan] as pln on mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+							Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0
+							join Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0 
+							join Plan_Campaign_Program_Tactic as tact on prgrm.PlanProgramId = tact.PlanProgramId and tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncMarketo='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete')
+							where  mdl.IntegrationInstanceMarketoID=1190 and mdl.IsDeleted=0 and mdl.[Status]='Published' and mdl.IsActive='1'
+						),
+						 tactList AS (
+							(
+								SELECT tact1.PlanTacticId,
+										tact1.PlanProgramId,
+										tact1.TacticCustomName,
+											tact1.LinkedTacticId ,
+											tact1.LinkedPlanId,
+											tact1.PlanYear,
+											RN= 1
+								FROM tblTact as tact1 
+								WHERE IsNull(Tact1.LinkedTacticId,0) <=0
+							 )
+							 UNION
+							 (
+								SELECT tact1.PlanTacticId,
+										tact1.PlanProgramId,
+										tact1.TacticCustomName,
 										tact1.LinkedTacticId ,
-										tact1.LinkedPlanId
-							FROM tblTact as tact1 
-							WHERE IsNull(Tact1.LinkedTacticId,0) <=0
-						 )
-						 UNION
-						 (
-							SELECT tact1.PlanTacticId,
-									tact1.PlanProgramId,
-									tact1.TacticCustomName,
-									tact1.LinkedTacticId ,
-									tact1.LinkedPlanId 
-							FROM tblTact as tact1 
-							WHERE (tact1.LinkedTacticId > 0) --and (MAX(Cast(tact1.PlanYear as int)))
-						 )
-					)
-					Insert into @tblTaclist select * from tactList;
+										tact1.LinkedPlanId,
+										tact1.PlanYear,
+										-- Get latest year tactic
+										RN = ROW_NUMBER() OVER (PARTITION BY CASE 
+																				WHEN  tact1.PlanTacticId < tact1.LinkedTacticId THEN CAST(tact1.PlanTacticId AS NVARCHAR) + ':' + CAST (tact1.LinkedTacticId AS NVARCHAR)  
+																				ELSE CAST (tact1.LinkedTacticId AS NVARCHAR) + ':' + CAST(tact1.PlanTacticId AS NVARCHAR) 
+																			 END 
+																ORDER BY PlanYear DESC) 
+								FROM tblTact as tact1 
+								WHERE (tact1.LinkedTacticId > 0)
+							 )
+						)
+					Insert into @tblTaclist select * from tactList WHERE RN = 1;
 
 					--select * from @tblTaclist
 					END TRY
@@ -1474,58 +1475,60 @@ BEGIN
 					-- END: Get Tactic Data by Instance Id
 					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Get Tactic Data by Instance Id')
 				END
-				--ELSE
-				--BEGIN
-				--	Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logInfo+@logSP+'Instance already in running process')
-				--END
+				
 			END
 			ELSE
 			BEGIN
 				Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logInfo+@logSP+'Instance Not Exist')
 			END
-			--ELSE
-			--BEGIN
-			--	IF(@id>0)
-			--	BEGIN
-			--		Insert Into IntegrationInstanceLog values(@id,GETDATE(),GETDATE(),@syncStatusError,@msgInactiveStatus,GETDATE(),@userId,@isAutoSync)
-
-			--		-- Update Instance value with values: LastSyncDate,LastSyncStatus,ForceSyncUser
-			--		Insert Into @tblSyncError values(0,@entityTypeTac,@entityTypeIntegrationInstance,@msgInactiveStatus,@syncStatusError,GETDATE())
-
-			--		-- Get Integration Instance Name
-			--		Declare @strInstanceName nvarchar(max)=''
-			--		Select @strInstanceName = IsNULL(Instance,'') from IntegrationInstance where IntegrationInstanceId=@id and IsDeleted='0' and IsActive='1'
-
-			--		-- Push Instance Name log to temp table
-			--		Declare @msgStartSyncInstance nvarchar(max)='<tr><td width=''50%''><b>Instance Name used for syncing:</b></td><td width=''40%''>'+@strInstanceName+'</td></tr>'
-			--		Insert Into @tblSyncError values(0,@entityTypeTac,'',@msgStartSyncInstance,@syncStatusHeader,GETDATE())
-
-			--	END
-
-			--END
+			
 		END	
 		ELSE IF(UPPER(@entityType) = UPPER(@entityTypeTac))
 		BEGIN
 			
 			Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get Tactic Data by Tactic Id')
-			
 			BEGIN TRY
-			INSERT INTO @tblTaclist 
-			SELECT tact.PlanTacticId,
-					tact.PlanProgramId,
-					tact.TacticCustomName,
-					tact.LinkedTacticId ,
-					tact.LinkedPlanId
-			FROM Plan_Campaign_Program_Tactic as tact 
-			WHERE tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncMarketo='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete') and tact.PlanTacticId=@id
+				IF EXISTS(SELECT LinkedTacticId from Plan_Campaign_Program_Tactic where PlanTacticId=@id)
+				BEGIN
+					
+					DECLARE @tac_lnkdIds varchar(20)=''
+					SELECT @tac_lnkdIds=cast(PlanTacticId as varchar)+','+Cast(ISNULL(LinkedTacticId,0) as varchar) 
+					FROM Plan_Campaign_Program_Tactic where PlanTacticId=@id
+					;WITH tbl as(
+								SELECT tact.PlanTacticId,tact.LinkedTacticId,tact.LinkedPlanId
+								FROM  Plan_Campaign_Program_Tactic as tact
+								WHERE PlanTacticId IN (select val from comma_split(@tac_lnkdIds,',')) and tact.IsDeleted=0
+								UNION ALL
+								SELECT tac.PlanTacticId,tac.LinkedTacticId,tac.LinkedPlanId
+								FROM  Plan_Campaign_Program_Tactic as tac 
+								INNER JOIN tbl as lnk on tac.LinkedTacticId=lnk.PlanTacticId
+								WHERE tac.PlanTacticId=@id
+								)
+					-- Set latest year tactic to @id variable
+					SELECT TOP 1 @id=LinkedTacticId 
+					FROM tbl
+					INNER JOIN [Plan] as pln on tbl.LinkedPlanId = pln.PlanId and pln.IsDeleted=0
+					ORDER BY [Year] DESC
+				END
 			
-			-- Get Integration Instance Id based on Tactic Id.
-			SELECT @instanceId=mdl.IntegrationInstanceMarketoID
-			FROM [Model] as mdl
-			INNER JOIN [Plan] as pln ON mdl.ModelId = pln.ModelId and pln.IsDeleted=0
-			INNER JOIN [Plan_Campaign] as cmpgn ON pln.PlanId = cmpgn.PlanId and cmpgn.IsDeleted=0
-			INNER JOIN [Plan_Campaign_Program] as prg ON cmpgn.PlanCampaignId = prg.PlanCampaignId and prg.IsDeleted=0
-			INNER JOIN @tblTaclist as tac ON prg.PlanProgramId = tac.PlanProgramId
+				INSERT INTO @tblTaclist 
+				SELECT tact.PlanTacticId,
+						tact.PlanProgramId,
+						tact.TacticCustomName,
+						tact.LinkedTacticId ,
+						tact.LinkedPlanId,
+						Null as PlanYear,
+						1 as RN
+				FROM Plan_Campaign_Program_Tactic as tact 
+				WHERE tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncMarketo='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete') and tact.PlanTacticId=@id
+				
+				-- Get Integration Instance Id based on Tactic Id.
+				SELECT @instanceId=mdl.IntegrationInstanceMarketoID
+				FROM [Model] as mdl
+				INNER JOIN [Plan] as pln ON mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+				INNER JOIN [Plan_Campaign] as cmpgn ON pln.PlanId = cmpgn.PlanId and cmpgn.IsDeleted=0
+				INNER JOIN [Plan_Campaign_Program] as prg ON cmpgn.PlanCampaignId = prg.PlanCampaignId and prg.IsDeleted=0
+				INNER JOIN @tblTaclist as tac ON prg.PlanProgramId = tac.PlanProgramId
 			END TRY
 			BEGIN CATCH
 				Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()))	
