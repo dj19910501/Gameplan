@@ -40,7 +40,7 @@ namespace Integration
         public string clientId { get; set; }
         public List<fieldMapping> fieldMapList;
         public string spName { get; set; }
-        public List<SpParameters> lstPramtereLilst;
+        public List<SpParameters> lstParameterList;
     }
 
     public class fieldMapping
@@ -322,7 +322,7 @@ namespace Integration
             objParams.clientId = _clientId.ToString();
             objParams.fieldMapList = lstFieldsMap;
             objParams.spName = spName;
-            objParams.lstPramtereLilst = spParams;
+            objParams.lstParameterList = spParams;
             HttpClient client = new HttpClient();
             string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
             Uri baseAddress = new Uri(marketoIntegrstionApi);
