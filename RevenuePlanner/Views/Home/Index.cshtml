@@ -91,8 +91,8 @@
     }
 </style>
 @*@if (activeMenu.ToLower() == "plan")*@
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap2-toggle.min.js")"></script>
-<link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">
+@*<script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap2-toggle.min.js")"></script>
+<link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">*@
 
 <link href="~/Content/css/jquery.mCustomScrollbar-new.css" rel="stylesheet" />
 <script src="~/Scripts/js/jquery.mCustomScrollbar.concat.min-new.js"></script>
@@ -2650,8 +2650,6 @@
             Planid = CurrentPlanId;
             GetSelectedPlanNo = 1;
         }
-        // Modified by Arpita Soni to maintain selected plans in Homepage while returning from Plan menu
-        if (activeMenu != '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             $.ajax({
                 type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
                 cache: false,
@@ -2703,7 +2701,6 @@
                 }
             });
         }
-    }
 
     //Modified By komal Rawal
     function UpdateCalenderView() {
@@ -3179,7 +3176,6 @@
                             //$("#divCollaborator").html($("#divCollaborator").html() + tempHTML); // commented by Bhumika #2112
                             $('#divCollaboratorCount').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
                             $('#divCollaboratorCount').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>'); // Changed ID for #2112
-                            //debugger;
                             
                             // Function Added for #2112 to show tooltip - Bhumika
                             $(function () {

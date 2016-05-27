@@ -631,7 +631,7 @@
         if (tabtext == "Setup") {
             url = '@Url.Content("~/Inspect/CreateCampaign/")';
             $("#divTab").empty();
-            $("#divTab").load(url + '?id=@planId');
+            $("#divTab").load(url + '?id=' +planId.toString());
         }
         // $("#btnEditCampaign").css("display", "none");
         //  $("#AddForm").css("display", "none");
@@ -739,8 +739,8 @@
         if (activeTab != null && activeTab != undefined && activeTab != '') {
             returnpara = SaveAllData(activeTab);
         }
-        var planId = @planId;
-        isCopyTactic = PlanId;
+        var planId = '@planId';
+        isCopyTactic = planId;
         if(returnpara){
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RedirectType');
         }

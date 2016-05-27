@@ -364,6 +364,13 @@
         modalBackdropDisplayNone();
     };
 
+    // Added by Arpita Soni on 05/26/2016 to resolve issue in copy tactic in inspect popup
+    function RefershPlanHeaderCalc() {
+        var _planId = $('#PlanId').val();
+        GetHealderData(_planId);
+        GetNumberOfActivityPerMonByPlanId(_planId);
+    }
+
     function loadInspectPopup(id, section, tabValue, mode, parentId, RequestedModule) {
         parentId = typeof parentId != 'undefined' ? parentId : '0';
         RequestedModule = typeof RequestedModule != 'undefined' ? RequestedModule : '';
@@ -839,4 +846,74 @@ $(document).on("click", "#aApplyToCalender", function (e) {
     });
 
     // End - Added by Sohel Pathan on 19/08/2014 for Internal Review Points
+
+    function ShowModels(mode, section, id, ParentId, RequestedModule) {
+        removeDefaultModalPopupBackgroungColor();
+        modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
+
+        $('.modal-backdrop').addClass('modalFull-backdrop');
+        $('.modal-backdrop').attr("style", "display:none !important;");
+        $("#successMessage").css("display", "none");
+        $("#errorMessage").css("display", "none");
+        $("#successMessageDuplicatePlan").css("display", "none");
+        $("#modal-container-186470").modal('show');
+        ParentId = typeof ParentId != 'undefined' ? ParentId : '0';
+        RequestedModule = typeof RequestedModule != 'undefined' ? RequestedModule : '';
+
+        $("#hdnRequestedModule").val(RequestedModule);
+        var currentTab = "Setup";
+        if ((RequestedModule == "Budgeting") && (mode == "ReadOnly")) {
+            currentTab = "Budget";
+        }
+
+        if (section == "campaign") {
+            if (mode == "Add") {
+                loadInspectPopup("0", "campaign", currentTab, "Add", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "campaign", currentTab, "Edit", ParentId, RequestedModule);
+            }
+        }
+        else if (section == "program") {
+            if (mode == "Add") {
+                loadInspectPopup("0", "program", currentTab, "Add", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "program", currentTab, "Edit", ParentId, RequestedModule);
+            }
+        }
+        else if (section == "tactic") {
+            if (mode == "Add") {
+                loadInspectPopup("0", "tactic", currentTab, "Add", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "tactic", currentTab, "Edit", ParentId, RequestedModule);
+            }
+        }
+        else if (section == "improvementtactic") {
+            if (mode == "Add") {
+                loadInspectPopup(0, "improvementtactic", currentTab, "Add", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "improvementtactic", currentTab, "Edit", ParentId, RequestedModule);
+            }
+        }
+        else if (section == "lineitem") {
+            if (mode == "Add") {
+                loadInspectPopup("0", "lineitem", currentTab, "Add", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "lineitem", currentTab, "Edit", ParentId, RequestedModule);
+            }
+        }
+        else if (section == "plan") {
+            if (mode == "Add") {
+                loadInspectPopup("0", "plan", currentTab, "Add", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "plan", currentTab, "Edit", ParentId, RequestedModule);
+            }
+        }
+        //modalBackdropDisplayNone();
+    }
 </script>

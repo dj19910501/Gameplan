@@ -101,9 +101,9 @@
  
 </style>
 
-<!-- Added by Arpita Soni to resolve issue in clicking of Review tab inside plan menu -->
+@*<!-- Added by Arpita Soni to resolve issue in clicking of Review tab inside plan menu -->
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap2-toggle.min.js")"></script>
-<link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">
+<link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">*@
 
  <div class="row border-bottom-div">
     <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
@@ -663,7 +663,6 @@
 
         if (isDeployIntegration) {
             $('.integration-SF-Eloqua-WF').each(function (key, val) {
-                //debugger;
                 var _divToggle = $(this).find("div.integrationToggle");
                 var _intgrtnType = $(this).attr('integrationType');
                 var toggleId = $(this).attr('toggle-id');
@@ -767,7 +766,6 @@
                 }
                 // Added by Viral for PL ticket #2108:Scenario1
                 $('.integration-SF-Eloqua-WF').each(function (key, val) {
-                    //debugger;
                     var _divToggle = $(this).find("div.integrationToggle");
                     var toggleId = $(this).attr('toggle-id');
                     var eleToggle = $("#"+toggleId);
@@ -1301,7 +1299,6 @@
         }
 
         var returnparameter = false;
-        //debugger;
         // Start - Get & Validate Tactic Title
         var title = htmlEncode($('#txtTacticTitle').val());
         var planTacticId = $("#hdnPlanTacticId").val();

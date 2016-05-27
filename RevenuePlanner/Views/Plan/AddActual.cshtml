@@ -2116,7 +2116,6 @@ function fillActualsTable() {
             //$('.addFormatterActualCurrency').each(function () {
             //    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
             //    SetBudget($(this)); // Modfified by Sohel Pathan on 10/09/2014 for Internal Review Points  
-            //    //debugger;
             //    //FormatCurrency($(this).innerHTML, true);
             //});
 
@@ -2168,7 +2167,6 @@ function fillActualsTable() {
         if(!$("#divTable"+id+"").length>0)
         {
             var atcualIndex=parseInt(actuals.map((el) => el.id).indexOf(id));
-            //debugger;
             var index=atcualIndex+1;
             //alert(i);
             addRowActualExpand(index,id,actuals[atcualIndex].title, actuals[atcualIndex].projectedStageValue, actuals[atcualIndex].projectedStageValueActual, actuals[atcualIndex].mqlProjected, actuals[atcualIndex].mqlActual, actuals[atcualIndex].cwProjected, actuals[atcualIndex].cwActual, actuals[atcualIndex].revenueProjected, actuals[atcualIndex].revenueActual, actuals[atcualIndex].costProjected, actuals[atcualIndex].costActual, actuals[atcualIndex].roiProjected, actuals[atcualIndex].roiActual, actuals[atcualIndex].actualData, actuals[atcualIndex].modifiedBy, actuals[atcualIndex].LastSync, actuals[atcualIndex].stageTitle, actuals[atcualIndex].tacticStageId, actuals[atcualIndex].tacticStageTitle, actuals[atcualIndex].IsTacticEditable, actuals[atcualIndex].LineItemsData, actuals[atcualIndex].costActualData, actuals[atcualIndex].YearDiffrence, actuals[atcualIndex].StartYear);
@@ -2178,7 +2176,6 @@ function fillActualsTable() {
     // Add By Nishant Sheth
     // Desc :: Render table of selected tacics #2111
     function addRowActualExpand(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData, _YearDiffrence, _StartYear) {
-        //debugger;
         var $tableActuals = $('#accordion'+_id);
         $tableActuals.html('');
         var num = parseInt(_index);

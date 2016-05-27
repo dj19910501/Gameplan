@@ -600,11 +600,11 @@
         });
     }
 
-    $("[linktype=campaign],[linktype=program],[linktype=tactic]").click(function (e) {
+@*    $("[linktype=campaign],[linktype=program],[linktype=tactic]").click(function (e) {
         var section = $(this).attr('linktype');
         var id = $(this).attr('id');
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-    });
+    });*@
     //Added By Maitri Gandhi on 19/5/2016 for #2197
     function OpenOtherInspectPopup(id, section) {
                 var section = section;
