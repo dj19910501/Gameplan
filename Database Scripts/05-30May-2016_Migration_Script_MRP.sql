@@ -11,9 +11,6 @@ DECLARE @length int=5
 IF NOT EXISTS(SELECT CampaignNameConventionId FROM CampaignNameConvention WHERE [TableName]='Plan_Campaign_Program_Tactic' AND [FieldName]='PlanTacticId' AND ClientId=@MarketoClientId AND IsDeleted=0)
 BEGIN
 
-
-SELECT @CreatedBy = CreatedBy FROM CampaignNameConvention WHERE ClientId=@MarketoClientId AND IsDeleted=0
-
        UPDATE CampaignNameConvention SET [Sequence] = [Sequence]+1
        WHERE ClientId=@MarketoClientId
 
