@@ -502,7 +502,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="IntegrationPlanList">IntegrationPlanList Model list.</param>
         /// <returns>Return json value.</returns>
         [HttpPost]
-        public JsonResult SaveMarketoCampaignFolderPlanList(List<IntegrationPlanList> IntegrationPlanList, int IntegrationInstanceId = 0)
+        public JsonResult SaveMarketoCampaignFolderPlanList(List<IntegrationPlanList> IntegrationPlanList, string Year, int IntegrationInstanceId = 0)
         {
             try
             {
@@ -520,11 +520,19 @@ namespace RevenuePlanner.Controllers
                             var lstCampaignFolderPlan = mrp.MarketoEntityValueMappings.Where(data => data.IntegrationInstanceId == IntegrationInstanceId && data.EntityType == EntityType).ToList();
 
                             // Get list of model list
-                            var SelectedPlanList = IntegrationPlanList.Where(data => data.CampaignfolderValue != null && int.Parse(data.CampaignfolderValue) > 0).ToList();
+                            var SelectedPlanList = IntegrationPlanList.Where(data => data.CampaignfolderValue != null && int.Parse(data.CampaignfolderValue) > 0
+                                && data.Year == Year).ToList();
 
                             // Get List of planid which have allready value in database but in model set as 0
-                            var lstDeleteEntityId = lstCampaignFolderPlan.Select(dbData => int.Parse(dbData.EntityID.ToString())).Except(SelectedPlanList.Select(data => data.PlanId)).ToList();
-
+                            List<int> lstDeleteEntityId = new List<int>();
+                            lstDeleteEntityId = lstCampaignFolderPlan.Select(dbData => int.Parse(dbData.EntityID.ToString())).Except(SelectedPlanList.Select(data => data.PlanId)).ToList();
+                            if (lstDeleteEntityId.Count > 0)
+                            {
+                                var GetDeletePlanYearlist = mrp.Plans.Where(dbData => lstDeleteEntityId.Contains(dbData.PlanId) && dbData.Year == Year)
+                                    .Select(plan => plan.PlanId).ToList();
+                                lstDeleteEntityId = new List<int>();
+                                GetDeletePlanYearlist.ForEach(data => { lstDeleteEntityId.Add(data); });
+                            }
                             // Set list for remove planids entry from database
                             List<MarketoEntityValueMapping> lstDeleteCampaignFolderPlan = lstCampaignFolderPlan.
                                 Where(data => lstDeleteEntityId.Contains(int.Parse(data.EntityID.ToString()))).ToList();
@@ -2731,7 +2739,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 // Add By Nishant Sheth
                                 // Desc :: #2184 Observation for host 
-                                string marketoHost= Enums.IntegrationTypeAttribute.Host.ToString();
+                                string marketoHost = Enums.IntegrationTypeAttribute.Host.ToString();
                                 var IntegrationAttrTypeIds = form.IntegrationTypeAttributes.Select(item => item.IntegrationTypeAttributeId).ToList();
                                 var MarketoHostAttrTypeId = db.IntegrationTypeAttributes.Where(attr => IntegrationAttrTypeIds.Contains(attr.IntegrationTypeAttributeId)
                                     && attr.Attribute == marketoHost).Select(attr => attr.IntegrationTypeAttributeId).FirstOrDefault();
