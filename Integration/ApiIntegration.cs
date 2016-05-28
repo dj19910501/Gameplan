@@ -144,11 +144,11 @@ namespace Integration
         /// </summary>
         public void AuthenticateforMarketo()
         {
-            if (HttpContext.Current.Session["MarketoToken"] != null)
+            if (HttpContext.Current != null && HttpContext.Current.Session["MarketoToken"] != null)
             {
-                if (HttpContext.Current != null) { 
+                
                 _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
-                }
+                
             }
             else
             {
@@ -173,7 +173,10 @@ namespace Integration
                     if (objData.status == true)
                     {
                         _isAuthenticated = true;
-                        HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("strToken")).Select(th => th.Description).FirstOrDefault();
+                        if (HttpContext.Current != null)
+                        {
+                            HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("strToken")).Select(th => th.Description).FirstOrDefault();
+                        }
 
                     }
                     else
@@ -228,12 +231,11 @@ namespace Integration
             MarketoDataObject ListOfData = new MarketoDataObject();
             if (_TypeofData == Enums.ApiIntegrationData.Programtype.ToString())
             {
-                if (HttpContext.Current.Session["MarketoToken"] != null)
+                if (HttpContext.Current != null && HttpContext.Current.Session["MarketoToken"] != null)
                 {
-                    if (HttpContext.Current != null)
-                    {
-                        _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
-                    }
+                   
+                     _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
+                   
                 }
                 else
                 {
@@ -278,12 +280,11 @@ namespace Integration
             ReturnObject ListOfData = new ReturnObject();
             if (_TypeofData == Enums.ApiIntegrationData.CampaignFolderList.ToString())
             {
-                if (HttpContext.Current.Session["MarketoToken"] != null)
+                if (HttpContext.Current != null && HttpContext.Current.Session["MarketoToken"] != null)
                 {
-                    if (HttpContext.Current != null)
-                    {
-                        _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
-                    }
+                   
+                    _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
+                   
                 }
                 else
                 {
