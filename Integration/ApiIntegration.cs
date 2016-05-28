@@ -325,6 +325,7 @@ namespace Integration
             objParams.spName = spName;
             objParams.lstParameterList = spParams;
             HttpClient client = new HttpClient();
+            client.Timeout = TimeSpan.FromHours(3);  //set timeout for Common Integration API call
             string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
             Uri baseAddress = new Uri(marketoIntegrstionApi);
             //Uri baseAddress = new Uri("http://localhost:54371/");

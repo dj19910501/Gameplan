@@ -94,7 +94,7 @@ namespace Integration.Marketo
                     dtFieldMappings = dsFieldMappings.Tables[0];
 
                     ApiIntegration integrationMarketoClient = new ApiIntegration(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "convert filled map datatable to list .");
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "convert filled map datatable to list .");
                     List<Integration.fieldMapping> lstFiledMap = dtFieldMappings.AsEnumerable().Select(m => new Integration.fieldMapping
                     {
                         sourceFieldName = m.Field<string>("sourceFieldName"),
@@ -341,7 +341,7 @@ namespace Integration.Marketo
                         #endregion
 
                         db.SaveChanges();
-                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Update linked Tactic's Marketo ProgramId Mappig list start.");
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Update linked Tactic's Marketo ProgramId Mappig list start.");
                         #region "Create Tactic-Linked Tactic Mapping"
                         Dictionary<int, int> lstTacLinkIdMappings = new Dictionary<int, int>();
                         lstTacLinkIdMappings = tblTactics.Where(tac => lstSourceIds.Contains(tac.PlanTacticId) && tac.LinkedTacticId.HasValue).ToDictionary(tac => tac.PlanTacticId, tac => tac.LinkedTacticId.Value);
