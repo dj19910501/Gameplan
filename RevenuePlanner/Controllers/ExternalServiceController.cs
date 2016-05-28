@@ -512,7 +512,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (IntegrationPlanList.Count > 0)
                         {
-                            if (!string.IsNullOrEmpty(Year))
+                            if (string.IsNullOrEmpty(Year))
                             {
                                 Year = DateTime.Now.Year.ToString();
                             }
