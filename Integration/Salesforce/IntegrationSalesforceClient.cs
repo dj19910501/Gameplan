@@ -75,6 +75,7 @@ namespace Integration.Salesforce
         //End - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
         private Dictionary<int, string> _mappingTactic_ActualCost { get; set; }
         private List<string> statusList { get; set; }
+        bool _IsSFDCWithMarketo = false; // Add By Nishant Sheth // Make Hireachy for Marketo sync on SFDC
         private List<SyncError> _lstSyncError = new List<SyncError>();
         private List<SalesForceObjectFieldDetails> lstSalesforceFieldDetail = new List<SalesForceObjectFieldDetails>();
         private string PeriodChar = "Y";
@@ -4104,6 +4105,12 @@ namespace Integration.Salesforce
                 instanceLogProgram.EntityType = EntityType.Program.ToString();
                 instanceLogProgram.Operation = Operation.Update.ToString();
                 instanceLogProgram.SyncTimeStamp = DateTime.Now;
+                // Add By Nishant Sheth
+                //Make Hireachy for Marketo sync on SFDC
+                if (_IsSFDCWithMarketo)
+                {
+                    _parentId = planProgram.Plan_Campaign.IntegrationInstanceCampaignId;
+                }
                 try
                 {
                     if (UpdateProgram(planProgram))
@@ -4191,6 +4198,28 @@ namespace Integration.Salesforce
             StringBuilder sb = new StringBuilder();
             //bool islinktacticdata = false;
             Enums.Mode currentMode = Common.GetMode(planTactic.IntegrationInstanceTacticId);
+            // Add By Nishant Sheth
+            //Make Hireachy for Marketo sync on SFDC
+            if (_IsSFDCWithMarketo)
+            {
+                if (currentMode == Enums.Mode.Create)
+                {
+                    var SFDCgetTacticId = _client.Query<object>("SELECT Id FROM Campaign  WHERE Name IN ('" + planTactic.TacticCustomName + "')");
+                    JObject jobj;
+                    string SFDCIntegrationInstanceTacticId = "";
+                    foreach (var resultin in SFDCgetTacticId)
+                    {
+                        jobj = JObject.Parse(resultin.ToString());
+                        SFDCIntegrationInstanceTacticId = Convert.ToString(jobj["Id"]);
+                    }
+                    if (!string.IsNullOrEmpty(SFDCIntegrationInstanceTacticId))
+                    {
+                        planTactic.IntegrationInstanceTacticId = SFDCIntegrationInstanceTacticId;
+                        currentMode = Enums.Mode.Update;
+                    }
+                }
+            }
+
             #region "Old Code: commented on 04/04/2016 for PL ticket #2024"
             // If Tactic is linked then sync latest year Program & Campaign to Salesforce.
             //if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
@@ -4480,7 +4509,12 @@ namespace Integration.Salesforce
                 instanceLogTactic.EntityType = EntityType.Tactic.ToString();
                 instanceLogTactic.Operation = Operation.Update.ToString();
                 instanceLogTactic.SyncTimeStamp = DateTime.Now;
-
+                // Add By Nishant Sheth
+                //Make Hireachy for Marketo sync on SFDC
+                if (_IsSFDCWithMarketo)
+                {
+                    _parentId = planTactic.Plan_Campaign_Program.IntegrationInstanceProgramId;
+                }
                 try
                 {
                     //System.Diagnostics.Trace.WriteLine("Step SyncTacticData 2 Start:" + DateTime.Now.ToString());
@@ -5642,6 +5676,8 @@ namespace Integration.Salesforce
                 List<Plan_Campaign_Program_Tactic> lstCreatedTactic = new List<Plan_Campaign_Program_Tactic>();
                 List<Plan_Campaign_Program_Tactic> lstUpdatedTactic = new List<Plan_Campaign_Program_Tactic>();
                 List<int> lstProcessTacIds = new List<int>();
+                List<int> IsSFDCWithMarketoList = new List<int>();
+
                 #endregion
 
                 #region "Get Parent-Child Entity list based on EntityType"
@@ -5678,7 +5714,25 @@ namespace Integration.Salesforce
                 else
                 {
                     string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
-                    lstPlan = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
+                    // Add By Nishant Sheth
+                    //Make Hireachy for Marketo sync on SFDC
+                    IsSFDCWithMarketoList = db.Models.Where(model => model.IsDeleted == false && model.IntegrationInstanceId == null &&
+                       (model.IntegrationInstanceIdINQ == _integrationInstanceId || model.IntegrationInstanceIdMQL == _integrationInstanceId
+                       || model.IntegrationInstanceIdCW == _integrationInstanceId)
+                       && model.IntegrationInstanceMarketoID != null && model.IntegrationInstanceMarketoID != _integrationInstanceId)
+                       .Select(model => model.ModelId).ToList();
+                    if (IsSFDCWithMarketoList.Count > 0)
+                    {
+                        _IsSFDCWithMarketo = true;
+                        lstPlan = db.Plans.Where(p => IsSFDCWithMarketoList.Contains(p.ModelId) && p.Model.Status.Equals(published)).ToList();
+                    }
+                    else
+                    {
+                        _IsSFDCWithMarketo = false;
+                        lstPlan = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
+                    }
+                    // End By Nishant Sheth
+
                     if (lstPlan != null && lstPlan.Count > 0)
                     {
                         planIds = lstPlan.Select(p => p.PlanId).ToList();
@@ -5686,7 +5740,19 @@ namespace Integration.Salesforce
                         campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
                         programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
                         programIdList = programList.Select(c => c.PlanProgramId).ToList();
-                        tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+                        // Add By Nishant Sheth
+                        //Make Hireachy for Marketo sync on SFDC
+                        if (IsSFDCWithMarketoList.Count > 0)
+                        {
+                            tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted
+                            && tactic.IsSyncMarketo.HasValue && tactic.IsSyncMarketo.Value == true).ToList();
+                        }
+                        else
+                        {
+                            tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted
+                            && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+                        }
+                        // End By Nishant Sheth
                         tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
 
 
@@ -5789,7 +5855,17 @@ namespace Integration.Salesforce
                 // Get CampaignId list to push to SFDC in case of Entity type "Campaign" or "Sync Now".
                 if ((!EntityType.Tactic.Equals(_entityType)) && (!EntityType.Program.Equals(_entityType)))
                 {
-                    campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration).ToList();
+                    // Add By Nishant Sheth
+                    //Make Hireachy for Marketo sync on SFDC
+                    if (IsSFDCWithMarketoList.Count > 0)
+                    {
+                        campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status)).ToList();
+                    }
+                    else
+                    {
+                        campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration).ToList();
+                    }
+                    // End By Nishant Sheth
                     campaignIdList = campaignList.Select(c => c.PlanCampaignId).Distinct().ToList();
                     if (campaignIdList.Count > 0)
                     {
@@ -5805,7 +5881,17 @@ namespace Integration.Salesforce
                 #region "Get ProgramIds"
                 if (!EntityType.Tactic.Equals(_entityType))
                 {
-                    programList = programList.Where(program => statusList.Contains(program.Status) && program.IsDeployedToIntegration).ToList();
+                    // Add By Nishant Sheth
+                    //Make Hireachy for Marketo sync on SFDC
+                    if (IsSFDCWithMarketoList.Count > 0)
+                    {
+                        programList = programList.Where(program => statusList.Contains(program.Status)).ToList();
+                    }
+                    else
+                    {
+                        programList = programList.Where(program => statusList.Contains(program.Status) && program.IsDeployedToIntegration).ToList();
+                    }
+                    // End By Nishant Sheth
                     programIdList = programList.Select(c => c.PlanProgramId).Distinct().ToList();
                     if (programIdList.Count > 0)
                     {
@@ -6645,6 +6731,12 @@ namespace Integration.Salesforce
                 {
                     program.Add(ColumnParentId, _parentId);
                 }
+                // Add By Nishant Sheth
+                //Make Hireachy for Marketo sync on SFDC
+                if (_IsSFDCWithMarketo && !mode.Equals(Enums.Mode.Create))
+                {
+                    program.Add(ColumnParentId, _parentId);
+                }
             }
             catch (Exception)
             {
@@ -6661,6 +6753,12 @@ namespace Integration.Salesforce
                 string PlanName = string.Empty;
                 tactic = GetTargetKeyValue<Plan_Campaign_Program_Tactic>(planTactic, _mappingTactic);
                 if (mode.Equals(Enums.Mode.Create))
+                {
+                    tactic.Add(ColumnParentId, _parentId);
+                }
+                // Add By Nishant Sheth
+                //Make Hireachy for Marketo sync on SFDC
+                if (_IsSFDCWithMarketo && !mode.Equals(Enums.Mode.Create))
                 {
                     tactic.Add(ColumnParentId, _parentId);
                 }

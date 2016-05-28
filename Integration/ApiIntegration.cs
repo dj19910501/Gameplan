@@ -128,7 +128,7 @@ namespace Integration
                 this._clientsecret = null;
             }
             //this._host = integrationInstance.IntegrationType.APIURL;// Commented By Nishant Sheth // Host URL will be diffrent for every client
-            if (HttpContext.Current.Session["MarketoToken"] != null)
+            if (HttpContext.Current != null && HttpContext.Current.Session["MarketoToken"] != null)
             {
                 this._marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
             }
@@ -146,7 +146,9 @@ namespace Integration
         {
             if (HttpContext.Current.Session["MarketoToken"] != null)
             {
+                if (HttpContext.Current != null) { 
                 _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
+                }
             }
             else
             {
@@ -208,7 +210,10 @@ namespace Integration
             {
                 ReturnObject objData = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
                 ListOfData = objData.data;
-                HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("strToken")).Select(th => th.Description).FirstOrDefault();
+                if (HttpContext.Current != null)
+                {
+                    HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("strToken")).Select(th => th.Description).FirstOrDefault();
+                }
             }
             return ListOfData;
         }
@@ -225,7 +230,10 @@ namespace Integration
             {
                 if (HttpContext.Current.Session["MarketoToken"] != null)
                 {
-                    _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
+                    if (HttpContext.Current != null)
+                    {
+                        _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
+                    }
                 }
                 else
                 {
@@ -249,7 +257,10 @@ namespace Integration
                 {
                     var responseobj = response.Content.ReadAsStringAsync().Result;
                     MarketoDataObject objData = JsonConvert.DeserializeObject<MarketoDataObject>(responseobj);
-                    HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("Token")).Select(th => th.Description).FirstOrDefault();
+                    if (HttpContext.Current != null)
+                    {
+                        HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("Token")).Select(th => th.Description).FirstOrDefault();
+                    }
                     ListOfData = objData;
                 }
             }
@@ -269,7 +280,10 @@ namespace Integration
             {
                 if (HttpContext.Current.Session["MarketoToken"] != null)
                 {
-                    _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
+                    if (HttpContext.Current != null)
+                    {
+                        _marketoToken = HttpContext.Current.Session["MarketoToken"].ToString();
+                    }
                 }
                 else
                 {
@@ -294,7 +308,10 @@ namespace Integration
                 {
                     var responseobj = response.Content.ReadAsStringAsync().Result;
                     ReturnObject objData = JsonConvert.DeserializeObject<ReturnObject>(responseobj);
-                    HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("Token")).Select(th => th.Description).FirstOrDefault();
+                    if (HttpContext.Current != null)
+                    {
+                        HttpContext.Current.Session["MarketoToken"] = objData.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals("Token")).Select(th => th.Description).FirstOrDefault();
+                    }
                     ListOfData = objData;
                 }
             }
@@ -311,6 +328,10 @@ namespace Integration
         {
             
             bool isAuthenticate = false;
+            string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
+            int CommonWebAPITimeout = 0;
+            if (!string.IsNullOrEmpty(strwebAPITimeout))
+                CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
             Parameters objParams = new Parameters();
             List<LogDetails> logdetails = new List<LogDetails>();
             Dictionary<string, string> marketoCredentialDictionary = new Dictionary<string, string>();
@@ -325,6 +346,7 @@ namespace Integration
             objParams.spName = spName;
             objParams.lstParameterList = spParams;
             HttpClient client = new HttpClient();
+            client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
             client.Timeout = TimeSpan.FromHours(3);  //set timeout for Common Integration API call
             string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
             Uri baseAddress = new Uri(marketoIntegrstionApi);
@@ -340,7 +362,10 @@ namespace Integration
                 isAuthenticate = obj2.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals(strAuthentication)).Select(th => th.Status).Any();
                 if (isAuthenticate)                {
                     _isAuthenticated = true;
-                    HttpContext.Current.Session["MarketoToken"] = obj2.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals(strToken)).Select(th => th.Description).FirstOrDefault();
+                    if (HttpContext.Current != null)
+                    {
+                        HttpContext.Current.Session["MarketoToken"] = obj2.lstLogDetails.Where(tkn => tkn.EventName.ToString().Equals(strToken)).Select(th => th.Description).FirstOrDefault();
+                    }
                 }
                 
 

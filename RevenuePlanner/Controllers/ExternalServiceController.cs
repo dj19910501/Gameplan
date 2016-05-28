@@ -502,7 +502,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="IntegrationPlanList">IntegrationPlanList Model list.</param>
         /// <returns>Return json value.</returns>
         [HttpPost]
-        public JsonResult SaveMarketoCampaignFolderPlanList(List<IntegrationPlanList> IntegrationPlanList, string Year, int IntegrationInstanceId = 0)
+        public JsonResult SaveMarketoCampaignFolderPlanList(List<IntegrationPlanList> IntegrationPlanList, int IntegrationInstanceId = 0, string Year = "")
         {
             try
             {
@@ -512,6 +512,10 @@ namespace RevenuePlanner.Controllers
                     {
                         if (IntegrationPlanList.Count > 0)
                         {
+                            if (!string.IsNullOrEmpty(Year))
+                            {
+                                Year = DateTime.Now.Year.ToString();
+                            }
                             // save the marketo campaign folder values for plan in database
                             MarketoEntityValueMapping objMarketoEntity = null;
 
