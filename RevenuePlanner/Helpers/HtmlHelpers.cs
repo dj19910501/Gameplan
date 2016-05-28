@@ -970,6 +970,10 @@ namespace RevenuePlanner.Helpers
                         {
                             isLineItem = true;
                         }
+                        else if (activityType != ActivityType.ActivityLineItem)
+                        {
+                            isLineItem = false;
+                        }
                     }
                     TagBuilder divProgram = new TagBuilder("div");
                     TagBuilder span = new TagBuilder("span");

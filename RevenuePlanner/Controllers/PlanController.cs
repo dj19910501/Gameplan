@@ -7246,7 +7246,7 @@ namespace RevenuePlanner.Controllers
                         ProgramRowsObj = new BudgetDHTMLXGridDataModel();
                         ProgramRowsObj.id = ActivityType.ActivityProgram + HttpUtility.HtmlEncode(bmp.ActivityId);
                         ProgramRowsObj.open = null;
-
+                        ProgramRowsObj.bgColor = "#f2f2f2";
                         List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                         Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
@@ -7271,7 +7271,7 @@ namespace RevenuePlanner.Controllers
                             TacticRowsObj = new BudgetDHTMLXGridDataModel();
                             TacticRowsObj.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(bmt.ActivityId);
                             TacticRowsObj.open = null;
-
+                            TacticRowsObj.bgColor = "#f2f2f2";
                             List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                             Budgetdataobj TacticDataObj = new Budgetdataobj();
 
@@ -7297,7 +7297,7 @@ namespace RevenuePlanner.Controllers
                                 LineRowsObj = new BudgetDHTMLXGridDataModel();
                                 LineRowsObj.id = ActivityType.ActivityLineItem + HttpUtility.HtmlEncode(bml.ActivityId);
                                 LineRowsObj.open = null;
-
+                                LineRowsObj.bgColor = "#f2f2f2";
                                 List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
                                 Budgetdataobj LineDataObj = new Budgetdataobj();
 
@@ -8897,7 +8897,7 @@ namespace RevenuePlanner.Controllers
                                 ProgramRowsObj = new BudgetDHTMLXGridDataModel();
                                 ProgramRowsObj.id = ActivityType.ActivityProgram + HttpUtility.HtmlEncode(bmp.ActivityId);
                                 ProgramRowsObj.open = null;
-
+                                ProgramRowsObj.bgColor = OtherBackgroundColor;
                                 List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                                 Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
@@ -8948,7 +8948,7 @@ namespace RevenuePlanner.Controllers
                                     TacticRowsObj = new BudgetDHTMLXGridDataModel();
                                     TacticRowsObj.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(bmt.ActivityId);
                                     TacticRowsObj.open = null;
-
+                                    TacticRowsObj.bgColor = OtherBackgroundColor;
                                     List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                                     Budgetdataobj TacticDataObj = new Budgetdataobj();
 
@@ -9004,7 +9004,7 @@ namespace RevenuePlanner.Controllers
                                         LineRowsObj.id = ActivityType.ActivityLineItem +
                                                          HttpUtility.HtmlEncode(bml.ActivityId);
                                         LineRowsObj.open = null;
-
+                                        LineRowsObj.bgColor = OtherBackgroundColor;
                                         List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
                                         Budgetdataobj LineDataObj = new Budgetdataobj();
 
@@ -9176,7 +9176,7 @@ namespace RevenuePlanner.Controllers
                             ProgramRowsObj = new BudgetDHTMLXGridDataModel();
                             ProgramRowsObj.id = ActivityType.ActivityProgram + HttpUtility.HtmlEncode(bmp.ActivityId);
                             ProgramRowsObj.open = null;
-
+                            ProgramRowsObj.bgColor = OtherBackgroundColor;
                             List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                             Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
@@ -9221,7 +9221,7 @@ namespace RevenuePlanner.Controllers
                                 TacticRowsObj = new BudgetDHTMLXGridDataModel();
                                 TacticRowsObj.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(bmt.ActivityId);
                                 TacticRowsObj.open = null;
-
+                                TacticRowsObj.bgColor = OtherBackgroundColor;
                                 List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                                 Budgetdataobj TacticDataObj = new Budgetdataobj();
 
@@ -9267,7 +9267,7 @@ namespace RevenuePlanner.Controllers
                                     LineRowsObj = new BudgetDHTMLXGridDataModel();
                                     LineRowsObj.id = ActivityType.ActivityLineItem + HttpUtility.HtmlEncode(bml.ActivityId);
                                     LineRowsObj.open = null;
-
+                                    LineRowsObj.bgColor = OtherBackgroundColor;
                                     List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
                                     Budgetdataobj LineDataObj = new Budgetdataobj();
 
@@ -9982,9 +9982,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            divInnerHtml = c.isEditable &&
-                                           ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
-                                            (!isPlannedTab && isLineItem && c.isAfterApproved))
+                            divInnerHtml = c.isEditable && ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && c.isAfterApproved)) 
                                 ? NewClueTipAnchorTagForBudget(
                                     Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()].ToString(),
                                     monthlyCampaignValue.ToString(formatThousand), activityType)
@@ -9993,14 +9991,12 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (i == 4)
                     {
+
+
+
                         mainBudget = c.BudgetMonth.Apr;
                         allocated = c.ParentMonth.Apr;
                         monthlyCampaignValue = c.Month.Apr;
-                      
-                      
-                        mainBudget = c.BudgetMonth.Jan;
-                        allocated = c.ParentMonth.Jan;
-                        monthlyCampaignValue = c.Month.Jan;
                         if (activityType == ActivityType.ActivityLineItem && c.Month.Apr <= 0)
                         {
                             divInnerHtml = c.isEditable &&
@@ -10025,13 +10021,11 @@ namespace RevenuePlanner.Controllers
                         }
                     else if (i == 7)
                     {
+
+
                         mainBudget = c.BudgetMonth.Jul;
                         allocated = c.ParentMonth.Jul;
                         monthlyCampaignValue = c.Month.Jul;
-
-                        mainBudget = c.BudgetMonth.Jan;
-                        allocated = c.ParentMonth.Jan;
-                        monthlyCampaignValue = c.Month.Jan;
                         if (activityType == ActivityType.ActivityLineItem && c.Month.Jul <= 0)
                         {
                             divInnerHtml = c.isEditable &&
