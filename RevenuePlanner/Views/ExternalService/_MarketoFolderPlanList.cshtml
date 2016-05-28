@@ -133,7 +133,7 @@ else
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             url: '@Url.Content("~/ExternalService/SaveMarketoCampaignFolderPlanList/")',
-            data: JSON.stringify({ IntegrationPlanList: _tactic, IntegrationInstanceId: '@IntegrationInstanceId' }),
+            data: JSON.stringify({ IntegrationPlanList: _tactic, IntegrationInstanceId: '@IntegrationInstanceId', Year: year }),
             success: function (data) {
                 if (data.IsSaved) {
                     $("#successMessage").slideDown(400);
