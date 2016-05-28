@@ -251,7 +251,7 @@
         }
         return $(this).width();
     }).get();
-
+    var onCostVsBudget;
     $(document).ready(function () {
 
         // Added by Rushil Bhuptani for #2191 to bind DHTMLX grid for Plan and Actual tab.
@@ -263,8 +263,10 @@
             $("#divCostBudget").removeAttr('style');
             if ($("#aonCost").hasClass('request-btn-active')) {
                 $('.red-corner-budget').css('display', 'block');
+                onCostVsBudget = true;
             }
             else {
+                onCostVsBudget = false;
                 $('.red-corner-budget').css('display', 'none');
             }
         }
@@ -768,7 +770,7 @@
     //});
 
     // Added by Rushil Bhuptani for #2191 to show red corner triangle based on Cost vs Budget value.
-    var onCostVsBudget = false;
+  
     $("#aonCost").click(function () {
         onCostVsBudget = true;
         $("#aoffCost").removeClass('request-btn-active');
