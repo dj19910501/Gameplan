@@ -646,6 +646,7 @@ namespace RevenuePlanner.Test.Controllers
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
             List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
@@ -706,7 +707,7 @@ namespace RevenuePlanner.Test.Controllers
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             List<int> honeyCombIds = new List<int>();
             honeyCombIds.Add(DataHelper.GetPlanTactic(Sessions.User.ClientId).PlanTacticId);
 
@@ -747,7 +748,7 @@ namespace RevenuePlanner.Test.Controllers
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
             List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
