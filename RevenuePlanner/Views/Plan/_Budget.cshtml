@@ -379,7 +379,11 @@
 
         HomeGrid.parse(GridDataHomeGrid, "json");
         HomeGrid.setColumnHidden(0, true);
-        
+        var parsedJSON = $.parseJSON(JsonModel);
+        if (parsedJSON.rows[0].rows.length <= 1) {
+            $('.treegrid_cell').find('img').css('display', 'none');
+
+        }
     }
     
     function SetHeader() {
@@ -902,38 +906,44 @@
             }).data('cluetip-initd', true);
         }
         });
-        if (onCostVsBudget) {
+        if (onCostVsBudget && (@strViewBy == "0")) {
             $('.red-corner-budget').css('display', 'block');
-            var selfProgram = $('.clickmeprogram');
 
-            if (!selfProgram.data('cluetip-initd')) {
-                selfProgram.cluetip({
-                    activation: 'click',
-                    arrows: true,
-                    dropShadow: false,
-                    sticky: true,
-                    mouseOutClose: false,
-                    local: true,
-                    isQuarter: isquarter,
-                    positionBy: "mouse"
-                }).data('cluetip-initd', true);
-            }
+            $('.clickmeprogram').each(function() {
 
-            var selfTactic = $('.clickmetactic');
+                var selfProgram = $(this);
 
-            if (!selfTactic.data('cluetip-initd')) {
-                selfTactic.cluetip({
-                    activation: 'click',
-                    arrows: true,
-                    dropShadow: false,
-                    sticky: true,
-                    mouseOutClose: false,
-                    local: true,
-                    isQuarter: isquarter,
-                    positionBy: "mouse"
-                }).data('cluetip-initd', true);
-            }
-            
+                if (!selfProgram.data('cluetip-initd')) {
+                    selfProgram.cluetip({
+                        activation: 'click',
+                        arrows: true,
+                        dropShadow: false,
+                        sticky: true,
+                        mouseOutClose: false,
+                        local: true,
+                        isQuarter: isquarter,
+                        positionBy: "mouse"
+                    }).data('cluetip-initd', true);
+                }
+            });
+
+            $('.clickmetactic').each(function() {
+
+                var selfTactic = $(this);
+
+                if (!selfTactic.data('cluetip-initd')) {
+                    selfTactic.cluetip({
+                        activation: 'click',
+                        arrows: true,
+                        dropShadow: false,
+                        sticky: true,
+                        mouseOutClose: false,
+                        local: true,
+                        isQuarter: isquarter,
+                        positionBy: "mouse"
+                    }).data('cluetip-initd', true);
+                }
+            });
         } else {
             $('.red-corner-budget').css('display', 'none');
 
