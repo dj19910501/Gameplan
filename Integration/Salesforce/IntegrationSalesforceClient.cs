@@ -1409,7 +1409,8 @@ namespace Integration.Salesforce
                                     }
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic end.");
                                     #endregion
-                                    lstSalesForceTactic = lstSalesForceTactic.OrderBy(tac => tac.PlanTacticId).ToList();
+
+                                    lstSalesForceTactic = lstSalesForceTactic.OrderBy(tac => tac.PlanTacticId).ToList(); // Add By Nishant Sheth // For pull inq, mql, cw #2188
                                     var CampaignMemberListGroup = CampaignMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.FirstRespondedDate.ToString("MM/yyyy") }).Select(cl =>
                                         new
                                         {
@@ -2241,6 +2242,7 @@ namespace Integration.Salesforce
 
                                     #endregion
 
+                                    lstSalesForceTactic = lstSalesForceTactic.OrderBy(tac => tac.PlanTacticId).ToList(); // Add By Nishant Sheth // For pull inq, mql, cw #2188
                                     var CampaignMemberListGroup = CampaignMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.FirstRespondedDate.ToString("MM/yyyy") }).Select(cl =>
                                         new
                                         {
@@ -3168,6 +3170,7 @@ namespace Integration.Salesforce
 
                                         if (OpportunityMemberList.Count > 0)
                                         {
+                                            lstSalesForceTactic = lstSalesForceTactic.OrderBy(tac => tac.PlanTacticId).ToList(); // Add By Nishant Sheth // For pull inq, mql, cw #2188
                                             var OpportunityMemberListGroup = OpportunityMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.CloseDate.ToString("MM/yyyy") }).Select(cl =>
                                                 new
                                                 {
