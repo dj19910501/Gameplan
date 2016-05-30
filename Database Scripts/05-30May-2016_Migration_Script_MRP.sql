@@ -1655,11 +1655,11 @@ GO
 -- Added Date : 05/24/2016
 -- ===========================================================================================================
 
-/****** Object:  StoredProcedure [dbo].[UpdateTacticInstanceTacticId_Comment]    Script Date: 05/24/2016 6:59:20 PM ******/
+/****** Object:  StoredProcedure [dbo].[UpdateTacticInstanceTacticId_Comment]    Script Date: 05/30/2016 7:56:15 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdateTacticInstanceTacticId_Comment]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[UpdateTacticInstanceTacticId_Comment]
 GO
-/****** Object:  StoredProcedure [dbo].[UpdateTacticInstanceTacticId_Comment]    Script Date: 05/24/2016 6:59:20 PM ******/
+/****** Object:  StoredProcedure [dbo].[UpdateTacticInstanceTacticId_Comment]    Script Date: 05/30/2016 7:56:15 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1685,6 +1685,8 @@ BEGIN
 	SET NOCOUNT ON;
 	Declare @instanceTypeMarketo varchar(50)='Marketo'
 	Declare @instanceTypeSalesforce varchar(50)='Salesforce'
+	Declare @AttrType varchar(50)='MarketoUrl'
+	Declare @entType varchar(20)='Tactic'
 
 	Declare @strAllPlanTacIds nvarchar(max)=''
 	IF(@strCreatedTacIds<>'')
@@ -1716,6 +1718,21 @@ BEGIN
 		Update  tac2 set tac2.IntegrationInstanceMarketoID=tac1.IntegrationInstanceMarketoID,tac2.TacticCustomName=tac1.TacticCustomName,tac2.LastSyncDate=tac1.LastSyncDate,tac2.ModifiedDate = tac1.ModifiedDate,tac2.ModifiedBy = tac1.ModifiedBy from Plan_Campaign_Program_Tactic tac1
 		join Plan_Campaign_Program_Tactic tac2 on tac1.LinkedTacticId=tac2.PlanTacticId 
 		where tac1.PlanTacticId IN (Select cast(val as int) from dbo.[comma_split](@strAllPlanTacIds, ','))
+
+		-- Update Marketo URL for Linked tactic
+		Update lnkEnt set lnkEnt.AttrValue=orgEnt.AttrValue from Plan_Campaign_Program_Tactic as tac1
+		INNER JOIN EntityIntegration_Attribute as orgEnt on tac1.PlanTacticId = orgEnt.EntityId and orgEnt.EntityType=@entType and orgEnt.AttrType=@AttrType
+		INNER JOIN EntityIntegration_Attribute as lnkEnt on tac1.LinkedTacticId=lnkEnt.EntityId and lnkEnt.EntityType=@entType and lnkEnt.AttrType=@AttrType
+		where tac1.PlanTacticId IN (Select cast(val as int) from dbo.[comma_split](@strAllPlanTacIds, ','))
+
+		-- Insert Marketo URL for Linked tactic
+		INSERT INTO EntityIntegration_Attribute(EntityId,EntityType,IntegrationinstanceId,AttrType,AttrValue,CreatedDate) 
+		SELECT tac1.LinkedTacticId,@entType,orgEnt.IntegrationinstanceId,orgEnt.AttrType,orgEnt.AttrValue,GETDATE()
+		from Plan_Campaign_Program_Tactic as tac1
+		INNER JOIN EntityIntegration_Attribute as orgEnt on tac1.PlanTacticId = orgEnt.EntityId and orgEnt.EntityType=@entType and orgEnt.AttrType=@AttrType
+		LEFT JOIN EntityIntegration_Attribute as lnkEnt on tac1.LinkedTacticId=lnkEnt.EntityId and lnkEnt.EntityType=@entType and lnkEnt.AttrType=@AttrType
+		where tac1.PlanTacticId IN (Select cast(val as int) from dbo.[comma_split](@strAllPlanTacIds, ',')) and lnkEnt.EntityId IS NULL
+
 	END
 
 	IF(@isAutoSync =0)
@@ -1753,6 +1770,7 @@ END
 
 
 GO
+
 -- ===================================================================================================
 -- Added By : Viral Kadiya
 -- Added Date : 05/24/2016
