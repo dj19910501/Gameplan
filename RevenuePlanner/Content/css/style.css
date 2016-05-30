@@ -8253,7 +8253,7 @@ a:hover {
 .programLevel,
 .tactic-lvl .tacticLevel,
 .tacticLevel {
-    border-bottom: 1px solid #ccc;
+    border-bottom: 0px solid #ccc;/* Changed for #2191, #2197 */
 }
 
 .budget-table {
@@ -11746,7 +11746,7 @@ div.clue-bottom-default .cluetip-arrows {
 .label-toooltip {
     display: inline-block;
     margin-right: 15px;
-    width: 190px;
+    width: 177px;/*190px;*/ /* Changed for  #2197, #2191 */
     font-family: source_sans_proregular;
     white-space: nowrap;
     vertical-align: super;
@@ -11770,7 +11770,7 @@ div.clue-bottom-default .cluetip-arrows {
 }
 
 .button-grp-tooltip {
-    margin-right: 21px;
+    margin-right: 24px; /* Changed for  #2197, #2191 */
     text-align: right;
     margin-bottom: 10px;
     margin-top: 10px;
@@ -14726,6 +14726,13 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     font-size: 16px;
     margin-bottom: 10px;
 }
+/* Added for #2191, #2197 */
+/*.financeReportGrid  .programLevel{background:#dff0f8 }
+.financeReportGrid  .campaignLevel {background:#c6ebf3 }
+.financeReportGrid  .tacticLevel{background:#e4f1e1}
+.financeReportGrid  .lineitemLevel{background:#fff }*/
+/* ============= */
+
 
 /* To set orange corner on Grid Table End  */
 /************************************************ Responsive css start here **********************************************************/
