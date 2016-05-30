@@ -1743,13 +1743,14 @@ namespace RevenuePlanner.Helpers
                     }
                 }
                 //End
+                string planYear = string.Empty;
+
                 if (year != "" && year != null)
                 {
                     int Year;
                     // Modified By Komal Rawal to get proper HUd values for #1788
                     string[] ListYear = year.Split('-');
-                    string planYear = string.Empty;
-
+                  
                     bool isNumeric = int.TryParse(year, out Year);
 
                     if (isNumeric)
@@ -1770,7 +1771,7 @@ namespace RevenuePlanner.Helpers
                         }
                         // End By Nishant Sheth
                     }
-
+                
                     DateTime StartDate;
                     DateTime EndDate;
                     StartDate = EndDate = DateTime.Now;
@@ -1778,8 +1779,26 @@ namespace RevenuePlanner.Helpers
 
                     planTacticIds = planTacticIds.Where(t => (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
 
+                }
+                else
+                {
+                    //Added by Arpita Soni for solving multiyear issue in budget tab
+                        List<Plan> lstPlans = new List<Plan>();
+                        lstPlans = Common.GetPlan();
+                        Plan objectPlan = lstPlans.Where(x => x.PlanId == planId).FirstOrDefault();
+                        if (objectPlan != null)
+                        {
+                            planYear = objectPlan.Year;
+                            year = planYear;
+                        }
 
+                        DateTime StartDate;
+                        DateTime EndDate;
+                        StartDate = EndDate = DateTime.Now;
+                        Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
 
+                        planTacticIds = planTacticIds.Where(t => (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
+                   //End 
                 }
                 //Modified By Komal Rawal for #1447
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();

@@ -739,6 +739,7 @@ function onClickPlanTitle() {
         $("#slidepanel-container").empty();
         $("#errorMessageDuplicatePlan").slideUp(300);
         HideMessages();
+        isQuater = "";
         if (CurrentPlanId > 0) {  //Modified by komal rawal for new homepage UI
             GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
             GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
