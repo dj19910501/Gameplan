@@ -8688,9 +8688,7 @@ namespace RevenuePlanner.Controllers
             model = SetLineItemCostByWeightage(model);
 
             #region "Calculate header monthly allocated Percentage values"
-            double MainTotalActual = 0;
-            double MainTotalAllocated = 0;
-           
+            
             BudgetMonth a = new BudgetMonth();
             BudgetMonth child = new BudgetMonth();
             BudgetMonth PercAllocated = new BudgetMonth();
@@ -9956,7 +9954,7 @@ namespace RevenuePlanner.Controllers
                 int quartercount = 1;
                 for (int i = 1; i <= 11; i += 3)
                 {
-                    string className = "campaignLevel";
+                    //string className = "campaignLevel";
                     //TagBuilder td = new TagBuilder("td");
                     //td.AddCssClass("campaign-row");
 
@@ -10319,7 +10317,7 @@ namespace RevenuePlanner.Controllers
                     // divValue.Attributes.Add("id", activityType + activityId);
                     division = "<div id=" + activityType + activityId;
 
-                    string className = "event-row";
+                   // string className = "event-row";
                     if (i == 1)
                     {
                         mainBudget = budgetMonth.Jan;
@@ -10478,7 +10476,7 @@ namespace RevenuePlanner.Controllers
                 int quarterCounter = 1;
                 for (int i = 1; i <= 11; i += 3)
                 {
-                    string className = "event-row";
+                    //string className = "event-row";
                     TagBuilder tdHeader = new TagBuilder("td");
                     //tdHeader.AddCssClass("event-row");
                     TagBuilder divHeader = new TagBuilder("div");
@@ -10728,8 +10726,8 @@ namespace RevenuePlanner.Controllers
 
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             BudgetDataObj = new Budgetdataobj();
-            string strViewBy = "";
-            strViewBy = ActivityType.ActivityCustomField;
+            //string strViewBy = "";
+            //strViewBy = ActivityType.ActivityCustomField;
             string division = "";
             string divInnerHtml = "0";
             //StringBuilder sb = new StringBuilder();
@@ -10745,7 +10743,7 @@ namespace RevenuePlanner.Controllers
             {
                 for (int i = 1; i <= 12; i++)
                 {
-                    string className = "firstLevel";
+                    //string className = "firstLevel";
                     //TagBuilder td = new TagBuilder("td");
                     //td.AddCssClass("campaign-row audience");
 
@@ -10871,7 +10869,7 @@ namespace RevenuePlanner.Controllers
             {
                 for (int i = 1; i <= 4; i++)
                 {
-                    string className = "firstLevel";
+                   // string className = "firstLevel";
                     TagBuilder td = new TagBuilder("td");
                     td.AddCssClass("campaign-row audience");
 
@@ -11041,12 +11039,12 @@ namespace RevenuePlanner.Controllers
         public List<Budgetdataobj> ParentCostSummary(List<BudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string tab, string view, string activityId)
         {
             string formatThousand = "#,#0.##";
-            string strViewBy = "";
+            //string strViewBy = "";
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             BudgetDataObj = new Budgetdataobj();
-            strViewBy = ActivityType.ActivityCustomField;
+            //strViewBy = ActivityType.ActivityCustomField;
             string division = "";
-            string divisionLast = "";
+            //string divisionLast = "";
             string divInnerHtml = "0";
             // StringBuilder sb = new StringBuilder();
             BudgetModel plan = model.SingleOrDefault(pl => pl.ActivityType == activityType && pl.ActivityId == activityId);

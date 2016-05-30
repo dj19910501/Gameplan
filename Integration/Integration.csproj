@@ -126,7 +126,6 @@
     <Content Include="DLL\SalesforceSharp.dll" />
     <Content Include="DLL\Tamir.SharpSSH.dll" />
     <None Include="Service References\BDSService\BDSService.disco" />
-    <Fakes Include="Fakes\Excel.fakes" />
     <None Include="Service References\BDSService\BDSService.wsdl" />
     <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>

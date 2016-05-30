@@ -515,9 +515,7 @@ namespace RevenuePlanner.Controllers
                             if (string.IsNullOrEmpty(Year))
                             {
                                 Year = DateTime.Now.Year.ToString();
-                            }
-                            // save the marketo campaign folder values for plan in database
-                            MarketoEntityValueMapping objMarketoEntity = null;
+                            }                            
 
                             // Get list of plan ids from database with IntegrationInstanceId and EntityType.
                             string EntityType = Enums.EntityType.Plan.ToString();
