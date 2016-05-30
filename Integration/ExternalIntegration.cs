@@ -573,121 +573,131 @@ namespace Integration
                 //if (resulValue > 0)
                 //{
                 int integrationinstanceLogId = instanceLogStart.IntegrationInstanceLogId;
-                    
-                if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
+
+                try
                 {
-                    IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
-                    if (integrationSalesforceClient.IsAuthenticated)
+                    if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
                     {
-                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with salesforce Success.");
-                        if (!_isTacticMoved)
+                        IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
+                        if (integrationSalesforceClient.IsAuthenticated)
                         {
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with salesforce Success.");
+                            if (!_isTacticMoved)
+                            {
                                 Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Data Start.");
                                 List<SyncError> lstSyncError = new List<SyncError>();
                                 _isResultError = integrationSalesforceClient.SyncData(out lstSyncError);
                                 _lstAllSyncError.AddRange(lstSyncError);
                                 Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Data End.");
-                        }
-                        else
-                        {
-                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Moved TacticData Start.");
-                            _isResultError = integrationSalesforceClient.SyncMovedTacticData();
-                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Moved TacticData End.");
-                        }
-                    }
-                    else
-                    {
-                            LogEndErrorDescription = "Authentication Failed :" + integrationSalesforceClient._ErrorMessage;
-                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
-
-                        _isResultError = true;
-                        IsAuthenticationError = true;
-                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationSalesforceClient._ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
-                    }
-                }
-                else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
-                {
-                    IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
-                    if (integrationEloquaClient.IsAuthenticated)
-                    {
-                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with Eloqua Success.");
-
-                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Data Start.");
-                        //// Start - Modified by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                        List<SyncError> lstSyncError = new List<SyncError>();
-                        _isResultError = integrationEloquaClient.SyncData(out lstSyncError);
-                        _lstAllSyncError.AddRange(lstSyncError);
-                        //// End - Modified by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Data End.");
-                    }
-                    else
-                    {
-                            LogEndErrorDescription = "Authentication Failed :" + integrationEloquaClient._ErrorMessage;
-                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
-                        _isResultError = true;
-                        IsAuthenticationError = true;
-                        //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationEloquaClient._ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
-                        //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                    }
-                }
-                ///Added by Brad Gray for WorkFront Sync PL ticket #1368
-                ///WorkFront is in play at a tactic and instance level
-                ///WorkFront templates are tied to instance integration ID
-                ///instance sync must find all tactics tied to the instance and update accordingly
-                else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.WorkFront.ToString()))
-                {
-                    IntegrationWorkFrontSession integrationWorkFrontClient = new IntegrationWorkFrontSession(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
-                    if (integrationWorkFrontClient.IsAuthenticated)
-                    {
-                        Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with WorkFront Success.");
-                        List<SyncError> lstSyncError = new List<SyncError>();
-                        _isResultError = integrationWorkFrontClient.SyncData(out lstSyncError);
-                        _lstAllSyncError.AddRange(lstSyncError);
-                        if(lstSyncError.Count>0 && _isResultError)
-                        {
-                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "WorkFront Sync Error");
-                            foreach(SyncError e in lstSyncError)
+                            }
+                            else
                             {
-                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, e.SectionName, Enums.MessageLabel.Error, e.Message);
+                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Moved TacticData Start.");
+                                _isResultError = integrationSalesforceClient.SyncMovedTacticData();
+                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Moved TacticData End.");
                             }
                         }
                         else
                         {
-                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Success: Sync with WorkFront");
+                            LogEndErrorDescription = "Authentication Failed :" + integrationSalesforceClient._ErrorMessage;
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
+
+                            _isResultError = true;
+                            IsAuthenticationError = true;
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationSalesforceClient._ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
                         }
                     }
-                    else
+                    else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
                     {
+                        IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
+                        if (integrationEloquaClient.IsAuthenticated)
+                        {
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with Eloqua Success.");
+
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Data Start.");
+                            //// Start - Modified by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                            List<SyncError> lstSyncError = new List<SyncError>();
+                            _isResultError = integrationEloquaClient.SyncData(out lstSyncError);
+                            _lstAllSyncError.AddRange(lstSyncError);
+                            //// End - Modified by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Data End.");
+                        }
+                        else
+                        {
+                            LogEndErrorDescription = "Authentication Failed :" + integrationEloquaClient._ErrorMessage;
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
+                            _isResultError = true;
+                            IsAuthenticationError = true;
+                            //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationEloquaClient._ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
+                            //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                        }
+                    }
+                    ///Added by Brad Gray for WorkFront Sync PL ticket #1368
+                    ///WorkFront is in play at a tactic and instance level
+                    ///WorkFront templates are tied to instance integration ID
+                    ///instance sync must find all tactics tied to the instance and update accordingly
+                    else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.WorkFront.ToString()))
+                    {
+                        IntegrationWorkFrontSession integrationWorkFrontClient = new IntegrationWorkFrontSession(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
+                        if (integrationWorkFrontClient.IsAuthenticated)
+                        {
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with WorkFront Success.");
+                            List<SyncError> lstSyncError = new List<SyncError>();
+                            _isResultError = integrationWorkFrontClient.SyncData(out lstSyncError);
+                            _lstAllSyncError.AddRange(lstSyncError);
+                            if (lstSyncError.Count > 0 && _isResultError)
+                            {
+                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "WorkFront Sync Error");
+                                foreach (SyncError e in lstSyncError)
+                                {
+                                    Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, e.SectionName, Enums.MessageLabel.Error, e.Message);
+                                }
+                            }
+                            else
+                            {
+                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Success: Sync with WorkFront");
+                            }
+                        }
+                        else
+                        {
                             LogEndErrorDescription = "Authentication Failed :" + integrationWorkFrontClient.errorMessage;
                             Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
-                        _isResultError = true;
-                        IsAuthenticationError = true;
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationWorkFrontClient.errorMessage, Enums.SyncStatus.Error, DateTime.Now));
+                            _isResultError = true;
+                            IsAuthenticationError = true;
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationWorkFrontClient.errorMessage, Enums.SyncStatus.Error, DateTime.Now));
+                        }
+                    }
+                    else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Marketo.ToString())) //Added by Rahul Shah for PL #2194
+                    {
+                        ApiIntegration MarketoAPI = new ApiIntegration(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
+                        MarketoAPI.AuthenticateforMarketo();
+                        //_isAuthenticationError = MarketoAPI.IsAuthenticated;
+                        if (MarketoAPI.IsAuthenticated)
+                        {
+                            IntegrationMarketoClient integrationMarketoClient = new IntegrationMarketoClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Data Start.");
+                            List<SyncError> lstSyncError = new List<SyncError>();
+                            _isResultError = integrationMarketoClient.SyncData(out lstSyncError);
+                            _lstAllSyncError.AddRange(lstSyncError);
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Data End.");
+                        }
+                        else
+                        {
+                            LogEndErrorDescription = "Authentication Failed.";
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
+                            _isResultError = true;
+                            IsAuthenticationError = true;
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed.", Enums.SyncStatus.Error, DateTime.Now));
+                        }
                     }
                 }
-                else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Marketo.ToString())) //Added by Rahul Shah for PL #2194
+                catch (Exception ex)
                 {
-                    ApiIntegration MarketoAPI = new ApiIntegration(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
-                    MarketoAPI.AuthenticateforMarketo();
-                    //_isAuthenticationError = MarketoAPI.IsAuthenticated;
-                    if (MarketoAPI.IsAuthenticated)
-                    {
-                    IntegrationMarketoClient integrationMarketoClient = new IntegrationMarketoClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
-                    Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Data Start.");
-                    List<SyncError> lstSyncError = new List<SyncError>();
-                    _isResultError = integrationMarketoClient.SyncData(out lstSyncError);
-                    _lstAllSyncError.AddRange(lstSyncError);
-                    Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Data End.");
-                    }
-                    else
-                    {
-                        LogEndErrorDescription = "Authentication Failed." ;
-                        Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
-                        _isResultError = true;
-                        IsAuthenticationError = true;
-                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed." , Enums.SyncStatus.Error, DateTime.Now));
-                    }
+                    string exMessage = Common.GetInnermostException(ex);
+                    _isResultError = true;
+                    Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occured while identifying integration type: " + exMessage);
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Error occured while identifying integration type.", Enums.SyncStatus.Error, DateTime.Now));
                 }
                 int integrationinstanceId = Convert.ToInt32(_integrationInstanceId);
                 using (MRPEntities dbouter = new MRPEntities())
