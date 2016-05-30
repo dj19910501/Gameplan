@@ -367,6 +367,9 @@
         HomeGrid.setEditable(false);
         HomeGrid.init();
         setTimeout(function () {
+            HomeGrid.loadOpenStates();
+        }, 500);
+        setTimeout(function () {
             HomeGrid.setSizes();
         }, 200);
 
@@ -376,7 +379,7 @@
 
         HomeGrid.parse(GridDataHomeGrid, "json");
         HomeGrid.setColumnHidden(0, true);
-       
+        
     }
     
     function SetHeader() {
@@ -826,13 +829,14 @@
     });
 
     // Added by Rushil Bhuptani for #2191 to display red triangle and initalize cluetip on expand collapse of row.
-    HomeGrid.attachEvent("onOpenEnd", function (id, state) {
-
+    HomeGrid.attachEvent("onOpenEnd", function (id, state) {       
         var isquarter = false;
         if ('@isquarter' == 'True') {
             isquarter = true;
         }
-
+        setTimeout(function () {
+            HomeGrid.saveOpenStates();
+        }, 500);
         $('.clickmeAnchor').each(function () {
             var selfClickMe = $(this);
             if (!selfClickMe.data('cluetip-initd')) {

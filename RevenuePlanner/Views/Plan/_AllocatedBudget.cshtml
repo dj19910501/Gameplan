@@ -325,6 +325,9 @@
         HomeGrid.setEditable(false);
         HomeGrid.init();
         setTimeout(function () {
+            HomeGrid.loadOpenStates();
+        }, 500);
+        setTimeout(function () {
             HomeGrid.setSizes();
         }, 200);
 
@@ -708,13 +711,14 @@
     });
 
     // Added by Rushil Bhuptani on 26/05/2016 for #2197
-    HomeGrid.attachEvent("onOpenEnd", function (id, state) {
-        
+    HomeGrid.attachEvent("onOpenEnd", function (id, state) {        
         var isquarter = false;
         if ('@isquarter' == 'True') {
             isquarter = true;
         }
-      
+        setTimeout(function () {
+            var test = HomeGrid.saveOpenStates();
+        }, 500);
 
         $('.clickmeAnchorProgram').each(function () {
             var selfClickMeAnchorProgram = $(this);
