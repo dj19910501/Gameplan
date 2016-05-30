@@ -1409,7 +1409,7 @@ namespace Integration.Salesforce
                                     }
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic end.");
                                     #endregion
-
+                                    lstSalesForceTactic = lstSalesForceTactic.OrderBy(tac => tac.PlanTacticId).ToList();
                                     var CampaignMemberListGroup = CampaignMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.FirstRespondedDate.ToString("MM/yyyy") }).Select(cl =>
                                         new
                                         {
