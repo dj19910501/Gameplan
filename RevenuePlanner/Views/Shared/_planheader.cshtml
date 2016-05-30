@@ -326,8 +326,7 @@
             //}
             var newUrl = '';
             var isMultiple = false;
-            // Added by Arpita Soni on 05/26/2016 to resolve issue in copy tactic in inspect popup
-            newUrl = '@Url.Action("GetNumberOfActivityPerMonthPer", "Home")';
+            newUrl = '@Url.Action("GetNumberOfActivityPerMonth", "Home")';
             if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Home.ToString().ToLower()") {
                 isMultiple = true;
             }
