@@ -235,6 +235,27 @@
         //Added by :- Sohel on 27 March 2014 for ticket #334
         $(".selectBox select").selectbox();
 
+        $('.sbHolder .sbOptions li').click(function () {
+            SetddlSelectedItem(this);
+        });
+
+        $('.sbHolder .sbOptions li').keyup(function () {
+            SetddlSelectedItem(this);
+        });
+
+        function SetddlSelectedItem(obj) {
+            var id = $(obj).parent().parent().parent().find('select').attr('id');
+            $('#' + id + ' option').each(function () {
+                $(this).removeAttr('selected');
+            });
+
+            var selectedOption = $(obj).find('a').attr('rel');
+
+            $("#" + id + " option").filter(function (index) {
+                return $(this).attr("value") === selectedOption;
+            }).attr("selected", "selected");
+        }
+
         $('#btnSubmit').click(function () {
             var isValid = true;
 

@@ -88,6 +88,15 @@ $(document).ready(function () {
         disableFadeOut: false,
         color: '#fff',
     });
+
+    $('.sbHolder .sbOptions li').click(function () {
+        SetddlSelectedItemScripts(this);
+    });
+
+    $('.sbHolder .sbOptions li').keyup(function () {
+        SetddlSelectedItemScripts(this);
+    });
+
 });
 /*Added by Devanshi for #1430 do not allow text when user edit grid column value */
 /*function used at textbox which contains only numeric value*/
@@ -153,6 +162,21 @@ function htmlDecode(value) {
 };
 /*End: Added by Mitesh Vaishnav for PL Ticket #584*/
 
-
+function SetddlSelectedItemScripts(obj) {
+    if (obj != null && obj != 'undefined' && obj != undefined && obj != '') {
+        var id = $(obj).parent().parent().parent().find('select').attr('id');
+        if (id != null && id != 'undefined' && id != undefined && id != '') {
+            $('#' + id + ' option').each(function () {
+                $(this).removeAttr('selected');
+            });
+            var selectedOption = $(obj).find('a').attr('rel');
+            if (selectedOption != null && selectedOption != 'undefined' && selectedOption != undefined && selectedOption != '') {
+                $("#" + id + " option").filter(function (index) {
+                    return $(this).attr("value") === selectedOption;
+                }).attr("selected", "selected");
+            }
+        }
+    }    
+}
 
 

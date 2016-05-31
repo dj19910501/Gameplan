@@ -838,7 +838,7 @@ namespace RevenuePlanner.Controllers
                 .ToArray();
             foreach (var error in errors)
             {
-                if (error.Key == "Password" || error.Key == "ConfirmPassword")
+                if (error.Key == "Password" || error.Key == "ConfirmPassword" || error.Key == "Email")
                 {
                     ModelState.Remove(error.Key);
                 }
