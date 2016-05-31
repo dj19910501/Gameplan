@@ -514,6 +514,15 @@
             $(this).attr('title', txtvalue);
         });
         $(curId1).find('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
+
+        var ua = window.navigator.userAgent;
+        var msie = ua.indexOf("MSIE ");
+        if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))  // If Internet Explorer, return version number
+        {
+            $('.table-actual-mask').each(function () {
+                $(this).css({ "overflow-x": "hidden", "width": "601px", "height": "0px" });
+            });
+        }
     }
 
         function GetTacticTypelist(Planids, ifexists) {
@@ -2154,7 +2163,7 @@ function fillActualsTable() {
                                   '</div>'+
                                   '</div>'+
                                   '</div>'+
-                                  '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" Tactitle="' + _title + '"><div>'+
+                                  '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" style="height: auto" Tactitle="' + _title + '"><div>'+
                                   '</div>';
         $tableActuals.append($html);
     }
@@ -2162,15 +2171,56 @@ function fillActualsTable() {
     // Desc :: Call function for Render table for selected tacics #2111
     function renderactualtable(id)
     {
-        
+        var ua = window.navigator.userAgent;
+        var msie = ua.indexOf("MSIE ");
+        $("[id^='collapse']").removeAttr('style');
         //var actualData = $.grep(actuals, function (e) { return e.id == id; });
-        if(!$("#divTable"+id+"").length>0)
-        {
-            var atcualIndex=parseInt(actuals.map((el) => el.id).indexOf(id));
-            var index=atcualIndex+1;
+        if (!$("#divTable" + id + "").length > 0) {
+            var atcualIndex = 0;
+            $.each(actuals, function (index, value) {
+                if (value.id == id) {
+                    atcualIndex = index;
+                    return false;
+                }
+            });
+
+            //atcualIndex=parseInt(actuals.map((el) => el.id).indexOf(id));
+
+            //debugger;
+            var index = atcualIndex + 1;
             //alert(i);
-            addRowActualExpand(index,id,actuals[atcualIndex].title, actuals[atcualIndex].projectedStageValue, actuals[atcualIndex].projectedStageValueActual, actuals[atcualIndex].mqlProjected, actuals[atcualIndex].mqlActual, actuals[atcualIndex].cwProjected, actuals[atcualIndex].cwActual, actuals[atcualIndex].revenueProjected, actuals[atcualIndex].revenueActual, actuals[atcualIndex].costProjected, actuals[atcualIndex].costActual, actuals[atcualIndex].roiProjected, actuals[atcualIndex].roiActual, actuals[atcualIndex].actualData, actuals[atcualIndex].modifiedBy, actuals[atcualIndex].LastSync, actuals[atcualIndex].stageTitle, actuals[atcualIndex].tacticStageId, actuals[atcualIndex].tacticStageTitle, actuals[atcualIndex].IsTacticEditable, actuals[atcualIndex].LineItemsData, actuals[atcualIndex].costActualData, actuals[atcualIndex].YearDiffrence, actuals[atcualIndex].StartYear);
-          
+            addRowActualExpand(index, id, actuals[atcualIndex].title, actuals[atcualIndex].projectedStageValue, actuals[atcualIndex].projectedStageValueActual, actuals[atcualIndex].mqlProjected, actuals[atcualIndex].mqlActual, actuals[atcualIndex].cwProjected, actuals[atcualIndex].cwActual, actuals[atcualIndex].revenueProjected, actuals[atcualIndex].revenueActual, actuals[atcualIndex].costProjected, actuals[atcualIndex].costActual, actuals[atcualIndex].roiProjected, actuals[atcualIndex].roiActual, actuals[atcualIndex].actualData, actuals[atcualIndex].modifiedBy, actuals[atcualIndex].LastSync, actuals[atcualIndex].stageTitle, actuals[atcualIndex].tacticStageId, actuals[atcualIndex].tacticStageTitle, actuals[atcualIndex].IsTacticEditable, actuals[atcualIndex].LineItemsData, actuals[atcualIndex].costActualData, actuals[atcualIndex].YearDiffrence, actuals[atcualIndex].StartYear);
+
+            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))  // If Internet Explorer, return version number
+            {
+                $("[id^='accordion']").find('.header-toogle-actual > a').each(function () {
+                    $(this).removeAttr('class');
+                    $(this).addClass('chevron-right');
+                    $(this).parent().find('.header-toogle-actual-right .table-actual-mask').css({ "overflow-x": "hidden", "width": "601px", "height": "0px" });
+                });
+
+                $("[id^='collapse']").each(function () {
+                    $(this).removeAttr('class');
+                    $(this).addClass('accordion-body colTitle92193 collapse');
+                });
+
+                if ($('#accordion' + id).find('.header-toogle-actual > a').hasClass('chevron-right')) {
+                    $('#accordion' + id).find('.header-toogle-actual > a').removeAttr('class');
+                    $('#accordion' + id).find('.header-toogle-actual > a').addClass('collapse chevron-down');
+
+                    $(this).parent().find('.header-toogle-actual-right .table-actual-mask').css({ "overflow-x": "scroll", "width": "601px", "height": "300px" });
+
+                    $('#collapse' + id).removeAttr('class');
+                    $('#collapse' + id).addClass('accordion-body colTitle92193 in collapse');
+                }
+                else {
+                    $('#accordion' + id).find('.header-toogle-actual > a').removeAttr('class');
+                    $('#accordion' + id).find('.header-toogle-actual > a').addClass('chevron-right');
+
+                    $('#collapse' + id).removeAttr('class');
+                    $('#collapse' + id).addClass('accordion-body colTitle92193 collapse');
+                }
+            }
         }
     }
     // Add By Nishant Sheth
@@ -2309,7 +2359,7 @@ function fillActualsTable() {
             '</div>' +
         '</div>' +
     '</div>' +
-    '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" Tactitle="' + _title + '">' +
+    '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" style="height: auto" Tactitle="' + _title + '">' +
       '<div class="accordion-inner">';
         //Modified by Bhumika for #1755 on 4/3/2016 for UI issues.
         for (var i = 0; i < arrStage.length; i++) {
@@ -2557,7 +2607,7 @@ function fillActualsTable() {
                 '</div>' +
             '</div>' +
         '</div>' +
-        '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" Tactitle="' + _title + '">' +
+    '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" style="height: auto" Tactitle="' + _title + '">' +
           '<div class="accordion-inner">';
             //Modified by Bhumika for #1755 on 4/3/2016 for UI issues.
             for (var i = 0; i < arrStage.length; i++) {
