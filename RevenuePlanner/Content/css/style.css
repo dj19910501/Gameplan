@@ -14726,13 +14726,14 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     font-size: 16px;
     margin-bottom: 10px;
 }
-/* Added for #2191, #2197 */
-/*.financeReportGrid  .programLevel{background:#dff0f8 }
-.financeReportGrid  .campaignLevel {background:#c6ebf3 }
-.financeReportGrid  .tacticLevel{background:#e4f1e1}
-.financeReportGrid  .lineitemLevel{background:#fff }*/
-/* ============= */
 
+
+/* ******************** Please add new styles here - Start ******************** */
+
+
+
+
+/* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
 /************************************************ Responsive css start here **********************************************************/
