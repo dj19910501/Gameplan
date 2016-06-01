@@ -112,7 +112,7 @@
                     </div>
                 }
             
-            <div class="span6">
+            <div class="span6" id="divShareRep">
                 <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" id="BtnShareReport">Share Report</button>
             </div>
         </div>
@@ -2042,19 +2042,25 @@
                 filters.TacticTypeids.push(chkid.replace("CbTT", ""));
             }
         });
-
         //// get selected value from multiselect
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         //Mofied By Komal Rawal
         var arrPlanIds = new Array();
-        arrPlanIds = PlanIds.split(',');
+        if (PlanIds != "") {
+            arrPlanIds = PlanIds.split(',');
+        }
+        
         var GetSelectedPlanNo = arrPlanIds.length;
         if (GetSelectedPlanNo > 1) {
             $("#divAddActual").hide();
-
+        }
+        else if (GetSelectedPlanNo == 0) {
+            $("#divAddActual").hide();
+            $("#divShareRep").hide();
         }
         else {
             $("#divAddActual").show();
+            $("#divShareRep").show();
 
         }
         //End
