@@ -399,8 +399,8 @@ END
 GO
 
 -- Updated by Akashdeep Kadia 
--- Created on :: 21-May-2016
--- Desc :: Special charachter En Dash replace with Hyphen in Export to CSV. 
+-- Updated on :: 01-June-2016
+-- Desc :: Special charachters replace with Hyphen in Export to CSV. 
 
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ExportToCSV]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[ExportToCSV]
@@ -413,7 +413,7 @@ AS
 BEGIN
 
 SET NOCOUNT ON;
-Update CustomField set Name =REPLACE(Name,'–','-') where ClientId=@ClientId-- This is to Special charachter En Dash replace with Hyphen in CustomField Name
+Update CustomField set Name =REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Name,')','-'),'(','-'),'*','-'),'&','-'),'^','-'),'%','-'),'$','-'),'#','-'),'@','-'),'~','-'),'–','-') where ClientId=@ClientId-- This is to Special charachter En Dash replace with Hyphen in CustomField Name
 IF OBJECT_ID('tempdb..#tblPivot') IS NOT NULL
    DROP TABLE #tblPivot
 
