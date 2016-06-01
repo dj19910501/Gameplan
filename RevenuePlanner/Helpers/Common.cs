@@ -3365,10 +3365,20 @@ namespace RevenuePlanner.Helpers
                             Plan_Improvement_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; });
                         }
 
-                        if (isMarketoinstance)
+                        if (isMarketoinstance && modelId > 0)
                         {
+                            #region "Declare local variables"
                             string EntityType = Enums.FilterLabel.TacticType.ToString();
-                            List<MarketoEntityValueMapping> DeleteTacticTypeMapping = db.MarketoEntityValueMappings.Where(Entity => Entity.IntegrationInstanceId == integrationInstanceId && Entity.EntityType == EntityType ).ToList();
+                            List<int> tacTypeIds = new List<int>();
+                            List<MarketoEntityValueMapping> DeleteTacticTypeMapping = new List<MarketoEntityValueMapping>();
+                            #endregion
+
+                            // Get Tactic Type Ids list based on Model Id.
+                            tacTypeIds = db.TacticTypes.Where(typ => typ.ModelId == modelId && typ.IsDeleted.Value == false).Select(typ => typ.TacticTypeId).ToList();
+                            if (tacTypeIds != null && tacTypeIds.Count > 0)
+                                DeleteTacticTypeMapping = db.MarketoEntityValueMappings.Where(Entity => Entity.IntegrationInstanceId == integrationInstanceId && Entity.EntityType == EntityType && Entity.EntityID.HasValue && tacTypeIds.Contains(Entity.EntityID.Value)).ToList();
+
+                            // Delete TacticType records from MarketoEntityValueMappings table related to current model.
                             if (DeleteTacticTypeMapping != null)
                             {
                                 DeleteTacticTypeMapping.ForEach(DeleteMapping => db.Entry(DeleteMapping).State = EntityState.Deleted);
