@@ -1153,8 +1153,8 @@ namespace RevenuePlanner.Controllers
             int Modelid = id;
             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == Modelid).Select(model => model).FirstOrDefault();
             //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683 and Brad Gray on 07/23/2015 for PL#1448
-          
-           if (objModel != null && (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null))
+
+            if (objModel != null && (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null || objModel.IntegrationInstanceMarketoID != null))
             {
                 ViewBag.IsModelIntegrated = true;
             }
