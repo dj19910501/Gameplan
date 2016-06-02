@@ -55,7 +55,14 @@
     <div class="row chrome-ie-height-720px">
         <div class="span2 content-colum-left content-img-user">
         </div>
-        <div class="span10 content-colum-info-user">
+        <div class="span10 content-colum-info-user content-colum-right">
+            <div id="UserPasswordRequirements" class="alert password-requirement-box ">
+                <strong>Password Requirements</strong> <br>
+                <span id="spanMessageSuccess">
+                    Password should contain  minimum 8 characters and  at least one lower case, one upper case, one digit and one special character
+                </span>
+            </div>
+
             @using (Html.BeginForm("Create", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 @Html.ValidationSummary(true)
@@ -82,8 +89,8 @@
                     @Html.ValidationMessageFor(model => model.Email)
                 </div>
 
-                
-                
+
+
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.Password)
 
@@ -91,7 +98,7 @@
                     <span id="result"></span>
                     @Html.ValidationMessageFor(model => model.Password)
                 </div>
-                
+
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.ConfirmPassword)
 
@@ -99,14 +106,14 @@
                     <span id="match"></span>
                     @Html.ValidationMessageFor(model => model.ConfirmPassword)
                 </div>
-               // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                 <div class="cf inputs-aligned-horizontal">
+                // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.Phone)
 
                     @Html.TextBoxFor(model => model.Phone)
-                  @Html.ValidationMessageFor(model => model.Phone)
+                    @Html.ValidationMessageFor(model => model.Phone)
                 </div>
-                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.JobTitle)
 
@@ -126,15 +133,15 @@
                         </div>
                     </div>
                 </div>
-                    
+
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.ClientId)
-                    
-                       @*Modified by Dharmraj for ticket #583 on 7th July 2014 *@
-                        @Html.Hidden("ClientId", clientId)
-                        @Html.Hidden("Client", client)
-                        @Html.TextBox("txtClient", client, new { style = "background:#F2F2F2;", @readonly = "true", title = client })
-                    
+
+                    @*Modified by Dharmraj for ticket #583 on 7th July 2014 *@
+                    @Html.Hidden("ClientId", clientId)
+                    @Html.Hidden("Client", client)
+                    @Html.TextBox("txtClient", client, new { style = "background:#F2F2F2;", @readonly = "true", title = client })
+
                 </div>
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.RoleId)
@@ -143,31 +150,32 @@
                         @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select", new { @class = "hide" })
                     </div>
                     @Html.ValidationMessageFor(model => model.RoleId)
-                    @Html.Label("", Common.objCached.RoleRequired, new { @class="field-validation-error selectbox-validation-message", id="lblRoleIdRequired" })
+                    @Html.Label("", Common.objCached.RoleRequired, new { @class = "field-validation-error selectbox-validation-message", id = "lblRoleIdRequired" })
                 </div>
-                
-                // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                
-                    <div class="cf inputs-aligned-horizontal" id="divManager">
-                        @Html.Label("Manager")
-                        <div class="selectBox UserProfile last-ddl" id="ddlManagerIdSelectBox">
-                            @if (ViewData["ManagerList"] != null)
-                            {
-                                @Html.DropDownListFor(c => c.ManagerId, new SelectList((System.Collections.IEnumerable)ViewData["ManagerList"], "ManagerId", "ManagerName"), "Please Select", new { @class = "hide" })
-                            }
-                            else
-                            {
-                                @Html.DropDownListFor(c => c.ManagerId, Enumerable.Empty<SelectListItem>(), "Please Select", new { @class = "hide" })
-                            }
-                        </div>
-                        @Html.Label("", Common.objCached.ManagerRequired, new { @class="field-validation-error selectbox-validation-message", id="lblManagerIdRequired" })
+
+                // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+
+                <div class="cf inputs-aligned-horizontal" id="divManager">
+                    @Html.Label("Manager")
+                    <div class="selectBox UserProfile last-ddl" id="ddlManagerIdSelectBox">
+                        @if (ViewData["ManagerList"] != null)
+                        {
+                            @Html.DropDownListFor(c => c.ManagerId, new SelectList((System.Collections.IEnumerable)ViewData["ManagerList"], "ManagerId", "ManagerName"), "Please Select", new { @class = "hide" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(c => c.ManagerId, Enumerable.Empty<SelectListItem>(), "Please Select", new { @class = "hide" })
+                        }
                     </div>
+                    @Html.Label("", Common.objCached.ManagerRequired, new { @class = "field-validation-error selectbox-validation-message", id = "lblManagerIdRequired" })
+                </div>
                 @*}*@
-                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
 
                 <div class="cf inputs-aligned-horizontal">
+                    <label></label>
                     <div class="container-button">
-                        <input id="btnSubmit" type="submit" value="Save" title="Save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 179px;" />
+                        <input id="btnSubmit" type="submit" value="Save" title="Save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 20px;" />
                     </div>
                 </div>
             }

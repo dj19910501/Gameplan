@@ -14729,8 +14729,18 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 
 
 /* ******************** Please add new styles here - Start ******************** */
-
-
+.password-requirement-box {
+    background-color: #89cede;
+    border: 0 none;
+    color: #fff;
+    margin: 0 auto 25px;
+    max-width: 75%;
+    text-align: center;
+    padding:10px 20px;
+}
+.alert{text-shadow:none !important}
+.forgot-password-wrapper #frmResetPassword,
+.forgot-password-wrapper #ResetPasswordRequirements{margin-top:65px !important;}
 
 
 /* ********************  new styles  - End ******************** */
