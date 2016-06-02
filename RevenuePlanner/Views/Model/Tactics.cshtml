@@ -483,6 +483,11 @@
                     {
                         $(this).parent().next().find("span").removeClass("circle-check-icon-integration-blue")
                     }
+                    //Added by Rahul Shah on 02/06/2016 for PL #2115..  display confirm box when user off the "Deploye to Model" toggle.
+                    var isTrue = confirm(htmlDecode("@Common.objCached.TacticTypeMaybeUsed"));
+                    if (!isTrue) {
+                        $(this).addClass('circle-check-icon-blue');
+                    }
                 }
                 else {
                     $(this).addClass('circle-check-icon-blue');

@@ -1887,7 +1887,7 @@ namespace RevenuePlanner.Controllers
                                     if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus) && lstAllRejTactics != null && lstAllRejTactics.Count >0)
                                     {
                                         // Get list of tactics related to TacticType.
-                                        List<Plan_Campaign_Program_Tactic> lstTactics = lstAllRejTactics.Where(tac => tac.TacticTypeId == objtactic.TacticTypeId).ToList();
+                                        List<Plan_Campaign_Program_Tactic> lstTactics = lstAllRejTactics.Where(tac => tac.TacticTypeId == rejTacticType.TacticTypeId).ToList();
                                         if (lstTactics != null && lstTactics.Count > 0)
                                         {
                                             lstTactics = lstTactics.Where(tac => tac.IsDeleted == false).ToList();
@@ -1900,7 +1900,7 @@ namespace RevenuePlanner.Controllers
                                                     lstTactics.ForEach(tac =>
                                                     {
                                                         tac.IsDeployedToIntegration = false;
-                                                        tac.IsSyncEloqua = tac.IsSyncSalesForce = tac.IsSyncWorkFront= false;
+                                                        tac.IsSyncEloqua = tac.IsSyncSalesForce = tac.IsSyncWorkFront= tac.IsSyncMarketo = false;
                                                         objDbMrpEntities.Entry(tac).State = EntityState.Modified;
                                                     });
                                                 }
