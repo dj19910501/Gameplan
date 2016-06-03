@@ -289,6 +289,8 @@
 
 }
 <script type="text/javascript">
+    var varBudgetDropDownClick = 0;
+    var varIsBudgetEnable = false;
     var TreeViewDdl;
     var ListOfItmeCheck = {
         Ids: [],
@@ -323,10 +325,13 @@
     //    }
     //    DropdownTop = DropdownToPos;
     //});
-    function LoadBudgetDropdown() {
         var GridData;
+    function LoadBudgetDropdown() {
         TreeViewDdl = new dhtmlXGridObject('treeviewddl');
         $.ajax({
+            beforeSend: function (x) { //Called before every request
+                //myApp.hidePleaseWait();
+            },
             dataType: 'json',
             url: '@Url.Content("~/Inspect/LoadBudgetDropdown/")',
             data: {
@@ -487,6 +492,191 @@
 
     }
 
+    // Add By Nishant Sheth
+    // Desc :: Render budget dropdown after get all data from load budget dropdown method
+    // reg #2128 performance issue
+    function RenderBudgetDropdown() {
+        TreeViewDdl = new dhtmlXGridObject('treeviewddl');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        TreeViewDdl.setImagePath(imgpath);
+        TreeViewDdl.attachHeader("#text_filter,"); //Added by Rahul Shah to Apply search on budget filter
+        TreeViewDdl.setFiltrationLevel(-2);  //Modified BY Komal for #2098 not able to filter the root nodes
+        TreeViewDdl.setHeader("Item Name,Weight%");
+        TreeViewDdl.enableAutoHeight(true, 400, true);
+        TreeViewDdl.enableAutoWidth(true);
+        TreeViewDdl.enableTreeCellEdit(false)
+        TreeViewDdl.setImageSize(1, 1);
+        TreeViewDdl.setColTypes("tree,ro");
+        TreeViewDdl.setInitWidths("200,100");
+        TreeViewDdl.init();
+        
+        TreeViewDdl.expandAll();
+        TreeViewDdl.attachEvent("onDataReady", function () {
+            setTimeout(function () {
+                varIsBudgetEnable = true; // Enable budget drop down click after grid complete loaded.
+            }, 1200);
+        });
+
+        TreeViewDdl.enableDistributedParsing(true, 10, 0.1);
+        TreeViewDdl.parse(GridData, "json");
+
+        TreeViewDdl.attachEvent("onOpenEnd", function (id, state) {
+
+            TreeViewDdl.adjustColumnSize(0);
+            var SubItems = {
+                values: []
+            };
+
+            var items = TreeViewDdl.getSubItems(id).split(',');
+            SubItems.values = items;
+            for (i = 0; i < SubItems.values.length - 1; i++) {
+
+                var cell = TreeViewDdl.cells(SubItems.values[i], 0);
+                var hascheckbox = cell.getInput();
+                if (hascheckbox != undefined) {
+                    TreeViewDdl.forEachCell(SubItems.values[i], function (cellobj, ind) {
+                        TreeViewDdl.setCellTextStyle(SubItems.values[i], ind, "border:none;");
+                    });
+                }
+            }
+
+            for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
+                $('#' + Weights.txtId[i]).val(Weights.values[i]);
+                var optionId = ListOfItmeCheck.Ids[i];
+                if (totalWeightage != 100) {
+                    $('#' + 'wt_' + ListOfItmeCheck.Ids[i]).addClass('error');
+                }
+                else {
+                    if ($('#' + 'wt_' + ListOfItmeCheck.Ids[i]).hasClass('error')) {
+                        $('#' + 'wt_' + ListOfItmeCheck.Ids[i]).removeClass('error')
+                    }
+                }
+            }
+        });
+
+        TreeViewDdl.attachEvent("onFilterEnd", FilterEnd);
+        TreeViewDdl.collapseAll();
+        OpenSelectedValues();
+      }
+    // Add By Nishant Sheth
+    // Desc :: call function on budget dropdown click
+    function BudgetDropDownClick() {
+        LoadAfterParsing();
+        $('#treeviewddl').find('span').on("click", function (e) {
+
+            var id = $(this).find('input').attr('id');
+            ValueChanged = true;
+            $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text("");
+
+            if ($('#' + id).hasClass('Spancheck')) {
+                $(this).find('input').removeAttr('checked');
+                $('#' + id).removeClass('Spancheck');
+            }
+            else {
+                $('#' + id).addClass('Spancheck');
+                $(this).find('input').attr('checked', 'checked');
+
+            }
+
+            if ($('#' + id).attr('checked') == 'checked') {
+                ListOfItmeCheck.Ids.push(id);
+                ListOfItmeCheck.values.push($('#' + id).attr('title'));
+                DivideEqualInputValueForMapping();
+                $('#' + 'wt_' + id).addClass('mappingtextboxblue');
+
+            }
+            else {
+
+                var index = ListOfItmeCheck.Ids.indexOf(id);
+                if (index >= 0) {
+                    ListOfItmeCheck.Ids.splice(index, 1);
+                    ListOfItmeCheck.values.splice(index, 1);
+                    $('#' + 'wt_' + id).val("");
+                    if ($('#' + 'wt_' + id).hasClass('error')) {
+                        $('#' + 'wt_' + id).removeClass('error')
+                    }
+                    if ($('#' + 'wt_' + id).hasClass('mappingtextboxblue')) {
+                        $('#' + 'wt_' + id).removeClass('mappingtextboxblue')
+                    }
+                    DivideEqualInputValueForMapping();
+                }
+            }
+            var Selectedvalue = "";
+            for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
+                Selectedvalue += ListOfItmeCheck.values[i] + ', ';
+            }
+
+            if (Selectedvalue.indexOf(',') > 0) {
+                Selectedvalue = Selectedvalue.slice(0, -2);
+                $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text(Selectedvalue);
+                $('.span3').find('#dropdown_new_btn_FieldMapping p:first').attr('title', Selectedvalue);
+            }
+            else {
+                $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text('Please Select');
+            }
+
+        });
+
+    }
+
+    $("#dropdown_new_btn_FieldMapping").on("click", function (e) {
+        if (varBudgetDropDownClick == 0 && varIsBudgetEnable) {
+            BudgetDropDownClick();
+            varBudgetDropDownClick = 1;
+        }
+
+    });
+    // Add By Nishant Sheth
+    // Desc :: load data after distribute parsing of dhtmlx grid
+    function LoadAfterParsing() {
+
+        if ('@Model.PlanLineItemId' != 0 && !ValueChanged) {
+            ListOfItmeCheck = {
+                Ids: [],
+                values: []
+            };
+            Weights = {
+                ChkId: [],
+                txtId: [],
+                values: []
+            };
+            totalWeightage = 0;
+            $('#treeviewddl').find('input:checkbox:checked').each(function () {
+                ListOfItmeCheck.Ids.push($(this).attr('id'));
+                ListOfItmeCheck.values.push($(this).attr('title'));
+                totalWeightage += parseInt($('#' + 'wt_' + $(this).attr('id')).val());
+                Weights.values.push($('#' + 'wt_' + $(this).attr('id')).val());
+                Weights.ChkId.push($(this).attr('id'));
+                Weights.txtId.push('wt_' + $(this).attr('id'));
+                $('#' + 'wt_' + $(this).attr('id')).addClass('mappingtextboxblue');
+                $('#' + $(this).attr('id')).addClass('Spancheck');
+            });
+            if (totalWeightage != 100) {
+                DivideEqualInputValueForMapping();
+            }
+
+        }
+        for (var i = 0; i < Weights.txtId.length; i++) {
+
+            $("#" + Weights.txtId[i]).val(Weights.values[i]);
+            $("#" + Weights.ChkId[i]).attr('checked', 'checked');
+        }
+    }
+    // Add By Nishant Sheth
+    // Desc :: Get Budget drodowns data only , reg #2128 performance issue
+    function LoadBudgetDropDownData() {
+        $.ajax({
+           dataType: 'json',
+            url: '@Url.Content("~/Inspect/LoadBudgetDropdown/")',
+            data: {
+                PlanLineItemID: '@Model.PlanLineItemId'
+            },
+            async: true,
+            success: function (data) {
+                GridData = data.data;
+            }
+        });
+    }
     //Modified BY Komal for #2098 not able to check checkboxes after filter
     function OpenSelectedValues() {
         for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
@@ -660,10 +850,13 @@
     //End
 
     $(document).ready(function () {
+        varBudgetDropDownClick = 0;
+        varIsBudgetEnable = false;
         // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
         $('#btnEditlineItem').removeClass('SpanDisable');
         $('#InspectTab').removeClass('SpanDisable');
-        LoadBudgetDropdown();
+        //LoadBudgetDropdown();
+        LoadBudgetDropDownData();
         $(document).click(function () {
             $("#treeviewddl").css("display", "none");
         });
@@ -711,16 +904,23 @@
         //Added BY Komal Rawal for #1617
         $('#dropdown_new_btn_FieldMapping').click(function () {
             $('#treeviewddl').addClass('dropdown-wrapper'); //changed by Bhumika to solve topoffset error 3-5-2016
+            if (varIsBudgetEnable) {
             //if ($(this).next().css("display") == "none") {
             if ($('.dropdown-wrapper').css("display") == "none") {     
                 //$('#treeviewddl').addClass('fieldmapping-dropdown');
-                $('.dropdown-wrapper').css("display", "block");
+                    // Modfied By Nishant Sheth
+                    // Desc :: #2240 Opening of Multiple Drop Down
+                    //$('.dropdown-wrapper').css("display", "block");
+                    $('#treeviewddl').css("display", "block");
                 //LoadBudgetDropdown();
             }
             else {               
-                $('.dropdown-wrapper').css("display", "none");
+                    // Modfied By Nishant Sheth
+                    // Desc :: #2240 Opening of Multiple Drop Down
+                    //$('.dropdown-wrapper').css("display", "none");
+                    $('#treeviewddl').css("display", "none");
+                }
             }
-            
         });
 
         var DropdownTop = 0;
@@ -738,6 +938,7 @@
             //DropdownTop = DropdownToPos;
             var scrollTop = $(this).scrollTop();
             $('.dropdown_new_btn').click(function () {
+
                 //$(this).each(function () {
                 // alert('hi3');
                 // get the top offset of the dropdown (distance from top of the page)
@@ -804,7 +1005,15 @@
 
     });
 
+    // Add By Nishant Sheth
+    // Desc :: Render budget dropdown after it's data load function complete
+    $(document).ajaxComplete(function (event, xhr, settings) {
 
+        var budgetDropDownFunction = "LoadBudgetDropdown";
+        if (settings.url.indexOf(budgetDropDownFunction) != -1) {
+            RenderBudgetDropdown();
+        }
+    });
     //<--- End Document.ready event  --->
 
     $("#btnCancel").click(function () {
