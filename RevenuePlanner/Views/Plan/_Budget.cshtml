@@ -201,7 +201,9 @@
                         </table>*@
                         <div style="clear: both;"></div>
                     </div>
-        <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
+                    <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
+                    @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
+                    <div id="gridExport" style="background-color: white; width: 100%;display:none" class="exportReportGrid"></div>
                 </div>
             </div>
         </div>
@@ -379,6 +381,8 @@
 
         HomeGrid.parse(GridDataHomeGrid, "json");
         HomeGrid.setColumnHidden(0, true);
+         @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
+        HomeGrid.setColumnHidden(HomeGrid.getColumnsNum() - 1, true);
         var parsedJSON = $.parseJSON(JsonModel);
         if (parsedJSON.rows[0].rows.length <= 1) {
             $('.treegrid_cell').find('img').css('display', 'none');
@@ -951,5 +955,40 @@
           
         }
     });
+
+    @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
+    function ExportToExcelPlannedActuals() {
+     
+        var JsonExportModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
+
+        var exportGrid = new dhtmlXGridObject('gridExport');
+    
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        exportGrid.setImagePath(imgpath);
+        exportGrid.setImageSize(1, 1);
+        exportGrid.setHeader('@Model.SetHeader');
+        exportGrid.setColTypes('@Model.ColType');
+        exportGrid.setInitWidths('@Model.Width');
+        exportGrid.setColSorting('@Model.ColSorting');
+
+        exportGrid.enableAutoHeight(true);
+        exportGrid.enableAutoWidth(false);
+        exportGrid.setEditable(false);
+
+        exportGrid.init();
+       
+        setTimeout(function () {
+            exportGrid.setSizes();
+        }, 200);
+
+        var mainGridData = JsonExportModel;
+        mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+        exportGrid.parse(GridDataHomeGrid, "json");
+        exportGrid.setColumnHidden(exportGrid.getColumnsNum() - 1, true);
+        exportGrid.expandAll();
+
+        exportGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
+    }
     
 </script>

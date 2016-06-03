@@ -421,21 +421,22 @@ namespace RevenuePlanner.Controllers
                 dataTable.Columns.Add("Permission", typeof(String)); // Add By Nishant
                 #region Set Tree Grid Properties and methods
 
-                setHeader.Append("Task Name,,,");// Default 1st 4 columns header
-                setColSorting.Append("str,na,na,");     //Added by Maitri Gandhi on 15-03-2016 for #2049
-                setInitWidths.Append("200,100,50,");
-                setColAlign.Append("left,center,center,");
-                setColTypes.Append("tree,ro,ro,");
-                setColValidators.Append("CustomNameValid,,,");
-                setColumnIds.Append("title,action,addrow,");                
-                HeaderStyle.Append("text-align:center;border-right:0px solid #d4d4d4;,border-left:0px solid #d4d4d4;,,");
+                // Modified by Rushil Bhuptani on 06/03/2016 for #2247
+                setHeader.Append("ActivityId,Task Name,,,");// Default 1st 4 columns header
+                setColSorting.Append("na,str,na,na,");     //Added by Maitri Gandhi on 15-03-2016 for #2049
+                setInitWidths.Append("100,200,100,50,");
+                setColAlign.Append("center,left,center,center,");
+                setColTypes.Append("ro,tree,ro,ro,");
+                setColValidators.Append(",CustomNameValid,,,");
+                setColumnIds.Append(",title,action,addrow,");                
+                HeaderStyle.Append(",text-align:center;border-right:0px solid #d4d4d4;,border-left:0px solid #d4d4d4;,,");
                 if (!_IsBudgetCreate_Edit && !_IsForecastCreate_Edit)
                 {
-                    setColumnsVisibility.Append("false,false,true,");
+                    setColumnsVisibility.Append("false,false,false,true,");
                 }
                 else
                 {
-                    setColumnsVisibility.Append("false,false,false,");
+                    setColumnsVisibility.Append("false,false,false,false,");
                 }
                 foreach (var columns in objColumns)
                 {
@@ -923,6 +924,8 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
+            // Added by Rushil Bhuptani on 06/03/2016 for #2247
+            ParentData.Add(id.ToString());
             ParentData.Add(name);
             ParentData.Add(strAction);
             ParentData.Add(addRow);

@@ -14743,6 +14743,11 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .forgot-password-wrapper #ResetPasswordRequirements{margin-top:65px !important; max-width: 60%  !important;}
 
 
+/* style added for #2214 start */
+.finance-export-btn{float: right;display: inline-block;line-height: 30px;}
+#DivloadPlan{clear:both}
+/* style added for #2214 End  */
+
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

@@ -7189,7 +7189,8 @@ namespace RevenuePlanner.Controllers
                 BudgetDataObjList = new List<Budgetdataobj>();
                 BudgetDataObj = new Budgetdataobj();
 
-                BudgetDataObj.value = "Plan";
+                // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                BudgetDataObj.value = bm.ActivityId;
                 BudgetDataObjList.Add(BudgetDataObj);
 
                 BudgetDataObj = new Budgetdataobj();
@@ -7224,7 +7225,8 @@ namespace RevenuePlanner.Controllers
                     List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
                     Budgetdataobj CampaignDataObj = new Budgetdataobj();
 
-                    CampaignDataObj.value = "Campaign";
+                    // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                    CampaignDataObj.value = bmc.ActivityId;
                     CampaignDataObjList.Add(CampaignDataObj);
 
                     CampaignDataObj = new Budgetdataobj();
@@ -7250,7 +7252,8 @@ namespace RevenuePlanner.Controllers
                         List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                         Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
-                        ProgramDataObj.value = "Program";
+                        // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                        ProgramDataObj.value = bmp.ActivityId;
                         ProgramDataObjList.Add(ProgramDataObj);
 
                         ProgramDataObj = new Budgetdataobj();
@@ -7275,7 +7278,8 @@ namespace RevenuePlanner.Controllers
                             List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                             Budgetdataobj TacticDataObj = new Budgetdataobj();
 
-                            TacticDataObj.value = "Tactic";
+                            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                            TacticDataObj.value = bmt.ActivityId;
                             TacticDataObjList.Add(TacticDataObj);
 
                             TacticDataObj = new Budgetdataobj();
@@ -7301,7 +7305,8 @@ namespace RevenuePlanner.Controllers
                                 List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
                                 Budgetdataobj LineDataObj = new Budgetdataobj();
 
-                                LineDataObj.value = "LineItem";
+                                // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                                LineDataObj.value = bml.ActivityId;
                                 LineDataObjList.Add(LineDataObj);
 
                                 LineDataObj = new Budgetdataobj();
@@ -7346,9 +7351,11 @@ namespace RevenuePlanner.Controllers
         public BudgetDHTMLXGridModel GenerateHeaderStringForBudget(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<BudgetModel> model)
         {
             string setHeader, colType, width, colSorting;
-            setHeader = "ActivityType,,Budget";
+
+            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+            setHeader = "ActivityId,Task Name,Budget";
             colType = "ro,tree,ro";
-            width = "10,250,100";
+            width = "100,250,100";
             colSorting = "na,na,na";
 
             BudgetModel plan = model.SingleOrDefault(p => p.ActivityType == ActivityType.ActivityPlan);
@@ -7383,10 +7390,11 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            setHeader = setHeader + ",Unallocated";
-            colType = colType + ",ro";
-            width = width + ",100";
-            colSorting = colSorting + ",str";
+            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+            setHeader = setHeader + ",Unallocated,";
+            colType = colType + ",ro,ro";
+            width = width + ",100,10";
+            colSorting = colSorting + ",str,str";
             objBudgetDHTMLXGrid.SetHeader = setHeader;
             objBudgetDHTMLXGrid.ColType = colType;
             objBudgetDHTMLXGrid.Width = width;
@@ -8737,7 +8745,8 @@ namespace RevenuePlanner.Controllers
                     BudgetDataObjList = new List<Budgetdataobj>();
                     BudgetDataObj = new Budgetdataobj();
 
-                    BudgetDataObj.value = Plan;
+                    // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                    BudgetDataObj.value = bm.Id;
                     BudgetDataObjList.Add(BudgetDataObj);
 
                     BudgetDataObj = new Budgetdataobj();
@@ -8794,7 +8803,8 @@ namespace RevenuePlanner.Controllers
                         List<Budgetdataobj> CustomFieldDataObjList = new List<Budgetdataobj>();
                         Budgetdataobj CustomFieldDataObj = new Budgetdataobj();
 
-                        CustomFieldDataObj.value = Campaign;
+                        // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                        CustomFieldDataObj.value = bmcf.Id;
                         CustomFieldDataObjList.Add(CustomFieldDataObj);
 
                         CustomFieldDataObj = new Budgetdataobj();
@@ -8848,7 +8858,8 @@ namespace RevenuePlanner.Controllers
                             List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
                             Budgetdataobj CampaignDataObj = new Budgetdataobj();
 
-                            CampaignDataObj.value = Campaign;
+                            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                            CampaignDataObj.value = bmc.Id;
                             CampaignDataObjList.Add(CampaignDataObj);
 
                             CampaignDataObj = new Budgetdataobj();
@@ -8899,7 +8910,8 @@ namespace RevenuePlanner.Controllers
                                 List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                                 Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
-                                ProgramDataObj.value = Program;
+                                // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                                ProgramDataObj.value = bmp.Id;
                                 ProgramDataObjList.Add(ProgramDataObj);
 
                                 ProgramDataObj = new Budgetdataobj();
@@ -8950,7 +8962,8 @@ namespace RevenuePlanner.Controllers
                                     List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                                     Budgetdataobj TacticDataObj = new Budgetdataobj();
 
-                                    TacticDataObj.value = Tactic;
+                                    // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                                    TacticDataObj.value = bmt.Id;
                                     TacticDataObjList.Add(TacticDataObj);
 
                                     TacticDataObj = new Budgetdataobj();
@@ -9006,7 +9019,8 @@ namespace RevenuePlanner.Controllers
                                         List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
                                         Budgetdataobj LineDataObj = new Budgetdataobj();
 
-                                        LineDataObj.value = LineItem;
+                                        // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                                        LineDataObj.value = bml.Id;
                                         LineDataObjList.Add(LineDataObj);
 
                                         LineDataObj = new Budgetdataobj();
@@ -9079,7 +9093,8 @@ namespace RevenuePlanner.Controllers
                     BudgetDataObjList = new List<Budgetdataobj>();
                     BudgetDataObj = new Budgetdataobj();
 
-                    BudgetDataObj.value = Plan;
+                    // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                    BudgetDataObj.value = bm.Id;
                     BudgetDataObjList.Add(BudgetDataObj);
 
                     BudgetDataObj = new Budgetdataobj();
@@ -9132,7 +9147,8 @@ namespace RevenuePlanner.Controllers
                         List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
                         Budgetdataobj CampaignDataObj = new Budgetdataobj();
 
-                        CampaignDataObj.value = Campaign;
+                        // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                        CampaignDataObj.value = bmc.Id;
                         CampaignDataObjList.Add(CampaignDataObj);
 
                         CampaignDataObj = new Budgetdataobj();
@@ -9178,7 +9194,8 @@ namespace RevenuePlanner.Controllers
                             List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                             Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
-                            ProgramDataObj.value = Program;
+                            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                            ProgramDataObj.value = bmp.Id;
                             ProgramDataObjList.Add(ProgramDataObj);
 
                             ProgramDataObj = new Budgetdataobj();
@@ -9223,7 +9240,8 @@ namespace RevenuePlanner.Controllers
                                 List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                                 Budgetdataobj TacticDataObj = new Budgetdataobj();
 
-                                TacticDataObj.value = Tactic;
+                                // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                                TacticDataObj.value = bmt.Id;
                                 TacticDataObjList.Add(TacticDataObj);
 
                                 TacticDataObj = new Budgetdataobj();
@@ -9269,7 +9287,8 @@ namespace RevenuePlanner.Controllers
                                     List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
                                     Budgetdataobj LineDataObj = new Budgetdataobj();
 
-                                    LineDataObj.value = LineItem;
+                                    // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                                    LineDataObj.value = bml.Id;
                                     LineDataObjList.Add(LineDataObj);
 
                                     LineDataObj = new Budgetdataobj();
@@ -9330,18 +9349,19 @@ namespace RevenuePlanner.Controllers
         public BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<BudgetModel> model, string tab)
         {
             string setHeader = "", colType = "", width = "", colSorting = "";
+            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
             if (tab == "1")
             {
-                setHeader = "ActivityType,,Planned Cost";
+                setHeader = "ActivityId,Task Name,Planned Cost";
                 colType = "ro,tree,ro";
-                width = "10,250,100";
+                width = "100,250,100";
                 colSorting = "na,na,na";
             }
             else
             {
-                setHeader = "ActivityType,";
+                setHeader = "ActivityId,Task Name";
                 colType = "ro,tree";
-                width = "10,250";
+                width = "100,250";
                 colSorting = "na,na";
             }
 
@@ -9386,11 +9406,11 @@ namespace RevenuePlanner.Controllers
                 colSorting = colSorting + ",str";
             }
 
-
-            objBudgetDHTMLXGrid.SetHeader = setHeader;
-            objBudgetDHTMLXGrid.ColType = colType;
-            objBudgetDHTMLXGrid.Width = width;
-            objBudgetDHTMLXGrid.ColSorting = colSorting;
+            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+            objBudgetDHTMLXGrid.SetHeader = setHeader + ",";
+            objBudgetDHTMLXGrid.ColType = colType + ",ro";
+            objBudgetDHTMLXGrid.Width = width + ",10";
+            objBudgetDHTMLXGrid.ColSorting = colSorting + ",na";
             return objBudgetDHTMLXGrid;
         }
 

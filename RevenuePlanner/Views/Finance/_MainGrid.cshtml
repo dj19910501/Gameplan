@@ -68,7 +68,9 @@
         var mainGridData = "@_mainGridData";
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         //var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
-        var GridData = (mainGridData.toString().replace(/&amp;lt;/g, '<').replace(/&amp;gt;/g, '>'));
+
+        // Modified by Rushil Bhuptani on 06/03/2016 for #2247
+        var GridData = (mainGridData.toString().replace(/&amp;/g, '&'));
         var GridProperties = JSON.parse(GridData);
         //myGrid = new dhtmlXGridObject('gridbox');
         //myGrid.setImagePath("../../codebase/imgs/");
@@ -224,7 +226,9 @@
 
         // GridData = JSON.parse(GridData);
             if (GridProperties.rows != null) {
-        myTreeGrid.parse(GridData, "json");
+                myTreeGrid.parse(GridData, "json");
+                // Modified by Rushil Bhuptani on 06/03/2016 for #2247
+                myTreeGrid.setColumnHidden(0, true);
             }
         myTreeGrid.forEachRow(function (rowid) {
             var titleIndex = myTreeGrid.getColIndexById('title');
@@ -712,5 +716,16 @@
             result = true;
         }
         return result;
+    }
+
+    // Modified by Rushil Bhuptani on 06/03/2016 for #2247
+    function ExportToExcel() {
+        myTreeGrid.setColumnHidden(0, false);
+        myTreeGrid.setColumnHidden(2, true);
+        myTreeGrid.setColumnHidden(3, true);
+        myTreeGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
+        myTreeGrid.setColumnHidden(0, true);
+        myTreeGrid.setColumnHidden(2, false);
+        myTreeGrid.setColumnHidden(3, false);
     }
 </script> 
