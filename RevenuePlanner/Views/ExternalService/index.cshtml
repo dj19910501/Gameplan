@@ -148,28 +148,30 @@
 
                     // New Mode
                     //window.location.href = '@Url.Action("create", "ExternalService")' + '?integrationTypeId=' + selectedIntegrationTypeId;
-                    queryStringArr.push(
-                       {
-                         key: 'TypeId',
-                         Value: selectedIntegrationTypeId
-                       });
-                    formSubmitEvent(URL, queryStringArr);
+                    //queryStringArr.push(
+                    //   {
+                    //     key: 'TypeId',
+                    //     Value: selectedIntegrationTypeId
+                    //   });
+                    //formSubmitEvent(URL, queryStringArr);
+                    window.location.href = URL + "?TypeId=" + selectedIntegrationTypeId;
                     //window.location.href = URL;
                 }
                 else {
                     if (selectedIntegrationTypeId == null) {
                         selectedIntegrationTypeId = 0;
                     }
-                    queryStringArr.push(
-                      {
-                         key: 'TypeId',
-                         Value: selectedIntegrationTypeId
-                      },
-                      {
-                          key: 'id',
-                          Value: index
-                      });
-                    formSubmitEvent(URL, queryStringArr);
+                    //queryStringArr.push(
+                    //  {
+                    //     key: 'TypeId',
+                    //     Value: selectedIntegrationTypeId
+                    //  },
+                    //  {
+                    //      key: 'id',
+                    //      Value: index
+                    //  });
+                    //formSubmitEvent(URL, queryStringArr);
+                    window.location.href = URL + "?id=" + index + "&TypeId=" + selectedIntegrationTypeId;
                     // Edit Mode
                     //window.location.href = "@Url.Content("~/ExternalService/editIntegration?id=")" + index + '&TypeId=' + selectedIntegrationTypeId;
                 }
@@ -285,7 +287,7 @@
         }
     }
 
-    function addRowIntegration(_index, _integrationInstanceId, _integrationTypeId, _instance, _provider, _lastSyncStatus, _lastSyncData,_AutoLastSyncDate,_ForceSyncUser) {
+    function addRowIntegration(_index, _integrationInstanceId, _integrationTypeId, _instance, _provider, _lastSyncStatus, _lastSyncData, _AutoLastSyncDate, _ForceSyncUser) {
         var $baselineTable = $('#table_baseline > tbody'); //tr:first
         var $html = "";
         $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model truncate">' + htmlEncode(_instance) + '</span><span class="search-icon"></span></td>' +
@@ -297,7 +299,7 @@
         else {
             $html += '<td id="lastSyncStatus' + _integrationInstanceId + '">' + _lastSyncStatus + '</td>'
         }
-        var syncNow_visible='', syncing_visible='';
+        var syncNow_visible = '', syncing_visible = '';
         if (_lastSyncStatus.toLowerCase() == 'in-progress') {
             syncNow_visible = 'style="display:none;"'
         }

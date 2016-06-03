@@ -153,7 +153,7 @@
             });
             $('#lnkIntegrationFolder').on("click", function () {
                 var url = '@Url.Content("~/ExternalService/GetIntegrationFolder")';
-                var queryStringArr = [];
+                @*var queryStringArr = [];
                 queryStringArr.push({
                     key: 'id',
                     Value: '@integrationInstanceId'
@@ -162,37 +162,40 @@
                      key: 'TypeId',
                      Value: '@integrationTypeId'
                  });
-                formSubmitEvent(url, queryStringArr);
-                });
-                $('#lnkMarketoFolder').on("click", function () {
-                    if ("@MarketoLinkClass" == 'enable-a') {
-                        var url = '@Url.Content("~/ExternalService/GetMarketoFolder")';
-                        var queryStringArr = [];
-                        queryStringArr.push({
-                            key: 'id',
-                            Value: '@integrationInstanceId'
-                        },
-                         {
-                             key: 'TypeId',
-                             Value: '@integrationTypeId'
-                         });
-                        formSubmitEvent(url, queryStringArr);
-                    }
+                formSubmitEvent(url, queryStringArr);*@
+                window.location.href = url + "?id=" + '@integrationInstanceId' + "&TypeId=" + '@integrationTypeId';
+            });
+            $('#lnkMarketoFolder').on("click", function () {
+                if ("@MarketoLinkClass" == 'enable-a') {
+                    var url = '@Url.Content("~/ExternalService/GetMarketoFolder")';
+                    @*var queryStringArr = [];
+                    queryStringArr.push({
+                        key: 'id',
+                        Value: '@integrationInstanceId'
+                    },
+                     {
+                         key: 'TypeId',
+                         Value: '@integrationTypeId'
+                     });
+                    formSubmitEvent(url, queryStringArr);*@
+                    window.location.href = url + "?TypeId=" + '@integrationTypeId' + "&id=" + '@integrationInstanceId';
+                }
             });
             $('#lnkIntegrationSetting').on("click", function () {
                 var url = '@Url.Content("~/ExternalService/editIntegration/")';
-                 var queryStringArr = [];
-                 queryStringArr.push({
-                     key: 'id',
-                     Value: '@integrationInstanceId'
+                @*var queryStringArr = [];
+                queryStringArr.push({
+                    key: 'id',
+                    Value: '@integrationInstanceId'
                 },
-                 {
-                     key: 'TypeId',
-                     Value: '@integrationTypeId'
-                 });
-                formSubmitEvent(url, queryStringArr);
-             });
+                {
+                    key: 'TypeId',
+                    Value: '@integrationTypeId'
+                });
+                formSubmitEvent(url, queryStringArr);*@
+                window.location.href = url + "?id=" + '@integrationInstanceId' + "&TypeId=" + '@integrationTypeId';
+            });
 
         }
             );
-    </script>
+</script>

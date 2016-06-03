@@ -18,7 +18,14 @@
     ViewBag.ModuleTitle = "Integration";
     ViewBag.IntegrationInstanceId = Model.IntegrationInstanceId;
     ViewBag.IntegrationTypeId = Model.IntegrationTypeId;
-    ViewBag.IntegrationTypeCode = Model.IntegrationType.Code.ToString();
+    if (Model != null && Model.IntegrationType != null && Model.IntegrationType.Code != null)
+    {
+        ViewBag.IntegrationTypeCode = Model.IntegrationType.Code.ToString();
+    }
+    else
+    {
+        ViewBag.IntegrationTypeCode = null;
+    }
     IsMQLShow = ViewBag.IsMQLShow != null ? ViewBag.IsMQLShow : false;
 }
 
@@ -41,13 +48,16 @@
     <a class="close">×</a>
     <div id="cErrorDataLose"></div>
 </div>
+<div id="errorMessagePermission" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <div id="cErrorPermission"></div>
+</div>
 @* End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716. *@
 <ul class="nav nav-tabs margin-bottom0">
     <li class="source-sans-proregular">
         <h2 class="title-header">@( Model.IntegrationInstanceId == 0 ? "Create" : "Edit") External Service Integrations</h2>
     </li>
 </ul>
-
 <a class="link-gray" href="@Url.Action("Index", "ExternalService")">« BACK TO LIST</a>
 
 <div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom: 0px !important">
@@ -97,15 +107,15 @@
                             <div class="accordion-toggle CreateMode">Push Tactic Data</div>
                         </div>
                     </div>
-                    if (Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
-                    { 
+                    if (Model != null && Model.IntegrationType != null && Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
+                    {
                     <div class="accordion-group">
                         <div class="accordion-heading">
                             <a class="accordion-toggle CreateMode" data-parent="#accordion" style="position: static;">Pull Responses</a>
                         </div>
                     </div>
                     }
-                    if (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString() || Model.IntegrationType.Code == Enums.IntegrationType.Salesforce.ToString()) //modified by Rahul Shah on 29/02/2016 for PL #2017. display "Pull MQL" section when add new integration for SFDC.
+                    if (Model != null && Model.IntegrationType != null && (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString() || Model.IntegrationType.Code == Enums.IntegrationType.Salesforce.ToString())) //modified by Rahul Shah on 29/02/2016 for PL #2017. display "Pull MQL" section when add new integration for SFDC.
                     {
                     <div class="accordion-group">
                         <div class="accordion-heading">
@@ -113,7 +123,7 @@
                         </div>
                     </div>
                     }
-                    if (Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
+                    if (Model != null && Model.IntegrationType != null && Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
                     { 
                     <div class="accordion-group">
                         <div class="accordion-heading">
@@ -129,8 +139,23 @@
 
 <script type="text/javascript">
 
-    $(document).ready(function () {       
-        var InstanceType = '@Model.IntegrationType.Code';
+    $(document).ready(function () {
+        var IsPermission = '@ViewBag.IntegrationPermission';
+        var InstanceType = null;
+        if (IsPermission != null && IsPermission != '') {
+            $('#content').css('display', 'none');
+            $('#cErrorPermission').html("<strong>Error! </strong> " + IsPermission);
+            $("#errorMessagePermission").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+        else {
+            if ('@Model' != null) {
+                @if (Model.IntegrationType != null) {
+                    @: InstanceType = '@Model.IntegrationType.Code';
+                }
+            }
+        }
+
         var InstanceMarketo = '@Enums.IntegrationType.Marketo.ToString()';
         /* Start - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
         $('.sbSelector').click(function () {
@@ -241,7 +266,7 @@
             $(this).addClass("icon-check-blue");
             $(this).removeClass("icon-check-gray");
         }
-        if (InstanceType != InstanceMarketo) {
+        if (InstanceType != null && InstanceType != InstanceMarketo) {
             if ($('#IsImportActuals').val().toString().toLowerCase() == "false") {
                 $(this).val("Inactive");
                 $('#IsImportActuals').val(false);
@@ -256,6 +281,7 @@
         }
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
     });
 
     // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.

@@ -39,7 +39,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">model id</param>
         /// <returns>returns strongly typed(BaselineModel object) Create view</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        [HttpPost]
+        //[HttpPost]
         public ActionResult CreateModel(int id = 0)
         {
             //// Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
@@ -67,10 +67,24 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            string Title = objBaselineModel.Versions.Where(version => version.IsLatest == true).Select(version => version.Title).FirstOrDefault();
+            string Title = string.Empty;
+            if (objBaselineModel != null && objBaselineModel.Versions != null && objBaselineModel.Versions.Count > 0)
+            {
+                Title = objBaselineModel.Versions.Where(version => version.IsLatest == true).Select(version => version.Title).FirstOrDefault();
+            }
+            
             if (Title != null && Title != string.Empty)
             {
                 ViewBag.Msg = string.Format(Common.objCached.ModelTacticTypeNotexist, Title);
+                ViewBag.ModelPermission = string.Empty;
+            }
+            else if (id == 0)
+            {
+                ViewBag.ModelPermission = string.Empty;
+            }
+            else
+            {
+                ViewBag.ModelPermission = "You do not have permission to view this model";
             }
 
             //// TFS point 252: editing a published model, Added by Nirav Shah on 18 feb 2014
@@ -106,7 +120,7 @@ namespace RevenuePlanner.Controllers
             List<ModelVersion> lstVersions = new List<ModelVersion>();
             if (ModelId != 0)
             {
-                var versions = (from model in objDbMrpEntities.Models where model.IsDeleted == false && model.ModelId == ModelId select model).FirstOrDefault();
+                var versions = (from model in objDbMrpEntities.Models where model.IsDeleted == false && model.ClientId == Sessions.User.ClientId && model.ModelId == ModelId select model).FirstOrDefault();
                 if (versions != null)
                 {
                     //// Current Model
@@ -186,9 +200,15 @@ namespace RevenuePlanner.Controllers
             BaselineModel objBaselineModel = new BaselineModel();
             //// Retrieve all version of selected model
             objBaselineModel.Versions = GetModelVersions(ModelId);
-            //// changes done by uday for #497
-            List<ModelStage> listModelStage = new List<ModelStage>();
-            string CW = Enums.Stage.CW.ToString();
+            if (ModelId != 0 && (objBaselineModel.Versions == null || objBaselineModel.Versions.Count == 0))
+            {
+                objBaselineModel = null;
+            }
+            else
+            {
+                //// changes done by uday for #497
+                List<ModelStage> listModelStage = new List<ModelStage>();
+                string CW = Convert.ToString(Enums.Stage.CW);
 
             var StageList = objDbMrpEntities.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId && stage.Level != null && stage.Code != CW).OrderBy(stage => stage.Level).ToList();
             if (StageList != null && StageList.Count > 0)
@@ -208,12 +228,12 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            objBaselineModel.lstmodelstage = listModelStage;
-            if (listModelStage.Count() == 0)
-            {
-                TempData["StageNotExist"] = Common.objCached.StageNotDefined;
+                objBaselineModel.lstmodelstage = listModelStage;
+                if (listModelStage.Count() == 0)
+                {
+                    TempData["StageNotExist"] = Common.objCached.StageNotDefined;
+                }
             }
-
             return objBaselineModel;
         }
 
@@ -2484,7 +2504,7 @@ namespace RevenuePlanner.Controllers
         public bool chekckParentPublishModel(int modelId)
         {
             bool isParentPublishedModel = true;
-            Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == modelId && model.ParentModelId == null).FirstOrDefault();
+            Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == modelId && model.ClientId == Sessions.User.ClientId && model.ParentModelId == null).FirstOrDefault();
             if (objModel != null)
             {
                 isParentPublishedModel = false;

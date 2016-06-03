@@ -267,7 +267,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="TypeId">Integration type id.</param>        
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]
-        [HttpPost]
+        //[HttpPost]
         public ActionResult GetIntegrationFolder(int TypeId, int id = 0)
         {
             try
@@ -394,7 +394,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="TypeId">Integration type id.</param>        
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]
-        [HttpPost]
+        //[HttpPost]
         public ActionResult GetMarketoFolder(int TypeId, int id = 0)
         {
             try
@@ -985,7 +985,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="TypeId"></param>
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        [HttpPost]
+        //[HttpPost]
         public ActionResult editIntegration(int id = 0, int TypeId = 0)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
@@ -996,131 +996,147 @@ namespace RevenuePlanner.Controllers
             Guid clientId = Sessions.User.ClientId;
             string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
             bool IsMQLShow = false;
+            bool IsPermission = false;
             if (id == 0)
             {
                 objView.IntegrationTypeAttributes = GetIntegrationTypeAttributesModelById(TypeId);
                 IntegrationTypeId = TypeId;
+                IsPermission = true;
+                ViewBag.IntegrationPermission = string.Empty;
             }
             else
             {
                 record = db.IntegrationInstances
                                     .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationInstanceId == id)
                                     .Select(ii => ii).FirstOrDefault();
-                objView.Instance = record.Instance;
-                objView.Username = record.Username;
-                objView.Password = Common.Decrypt(record.Password);
-                objView.IntegrationInstanceId = record.IntegrationInstanceId;
-                objView.IntegrationTypeId = record.IntegrationTypeId;
-                objView.IsActive = record.IsActive;
-                objView.IsImportActuals = record.IsImportActuals;
-
-                IntegrationTypeId = record.IntegrationTypeId;
-
-                var recordSync = db.SyncFrequencies
-                                        .Where(freq => freq.IntegrationInstanceId == id && freq.IntegrationInstance.ClientId == Sessions.User.ClientId)
-                                        .Select(freq => freq).FirstOrDefault();
-
-                SyncFrequencyModel objSync = new SyncFrequencyModel();
-                if (recordSync != null)
+                if (record != null)
                 {
-                    objSync.Day = !string.IsNullOrEmpty(recordSync.Day) ? recordSync.Day : string.Empty;
-                    objSync.DayofWeek = !string.IsNullOrEmpty(recordSync.DayofWeek) ? recordSync.DayofWeek : string.Empty;
-                    objSync.Frequency = recordSync.Frequency;
+                    IsPermission = true;
+                    objView.Instance = record.Instance;
+                    objView.Username = record.Username;
+                    objView.Password = Common.Decrypt(record.Password);
+                    objView.IntegrationInstanceId = record.IntegrationInstanceId;
+                    objView.IntegrationTypeId = record.IntegrationTypeId;
+                    objView.IsActive = record.IsActive;
+                    objView.IsImportActuals = record.IsImportActuals;
 
-                    // Set Time data to SyncFrequencyModel Object.
-                    if (recordSync.Time.HasValue)
+                    IntegrationTypeId = record.IntegrationTypeId;
+
+                    var recordSync = db.SyncFrequencies
+                                            .Where(freq => freq.IntegrationInstanceId == id && freq.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                                            .Select(freq => freq).FirstOrDefault();
+
+                    SyncFrequencyModel objSync = new SyncFrequencyModel();
+                    if (recordSync != null)
                     {
-                        if (recordSync.Time.Value.Hours > 12)
-                            objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "PM";
-                        else
-                            objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "AM";
-                    }
-                    objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;
-                }
-                objView.SyncFrequency = objSync;
+                        objSync.Day = !string.IsNullOrEmpty(recordSync.Day) ? recordSync.Day : string.Empty;
+                        objSync.DayofWeek = !string.IsNullOrEmpty(recordSync.DayofWeek) ? recordSync.DayofWeek : string.Empty;
+                        objSync.Frequency = recordSync.Frequency;
 
-                var recordAttribute = db.IntegrationInstance_Attribute
-                                    .Where(attr => attr.IntegrationTypeAttributeId == attr.IntegrationTypeAttribute.IntegrationTypeAttributeId && attr.IntegrationInstanceId == id && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
-                                    .Select(attr => attr).ToList();
-
-                //// Add IntegrationType Attributes data to List.
-                List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
-                foreach (var item in recordAttribute)
-                {
-                    // Add By Nishant Sheth  
-                    // Desc :: Add Host details for marketo instance
-                    if (item.IntegrationTypeAttribute.Attribute == Enums.IntegrationTypeAttribute.Host.ToString())
-                    {
-                        string Host = item.Value.ToLower();
-                        string[] HostSplit = Host.Split(new string[] { "/rest" }, StringSplitOptions.None);
-                        if (HostSplit.Count() > 0)
+                        // Set Time data to SyncFrequencyModel Object.
+                        if (recordSync.Time.HasValue)
                         {
-                            Host = HostSplit[0];
+                            if (recordSync.Time.Value.Hours > 12)
+                                objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "PM";
+                            else
+                                objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "AM";
                         }
-                        Host = Host.TrimEnd('/');
-                        item.Value = Host;
+                        objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;
                     }
-                    // End By Nishant Sheth
-                    IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
-                    objIntegrationTypeAttributeModel.Attribute = item.IntegrationTypeAttribute.Attribute;
-                    objIntegrationTypeAttributeModel.AttributeType = item.IntegrationTypeAttribute.AttributeType;
-                    objIntegrationTypeAttributeModel.IntegrationTypeAttributeId = item.IntegrationTypeAttribute.IntegrationTypeAttributeId;
-                    objIntegrationTypeAttributeModel.IntegrationTypeId = item.IntegrationTypeAttribute.IntegrationTypeId;
-                    objIntegrationTypeAttributeModel.Value = item.Value;
-                    lstObjIntegrationTypeAttributeModel.Add(objIntegrationTypeAttributeModel);
-                }
+                    objView.SyncFrequency = objSync;
 
-                objView.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
-            }
+                    var recordAttribute = db.IntegrationInstance_Attribute
+                                        .Where(attr => attr.IntegrationTypeAttributeId == attr.IntegrationTypeAttribute.IntegrationTypeAttributeId && attr.IntegrationInstanceId == id && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                                        .Select(attr => attr).ToList();
 
-            //// Check  whether MQL permission exist or not for this clientID. If record exist then Display MQL tab or not.
-            if (db.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(IntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
-                IsMQLShow = true;
-
-            //// Add IntegrationType data to List.
-            IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-            var integrationTypeObj = GetIntegrationTypeById(IntegrationTypeId);
-            objIntegrationTypeModel.Title = integrationTypeObj.Title;
-            objIntegrationTypeModel.Code = integrationTypeObj.Code;
-            objView.IntegrationType = objIntegrationTypeModel;
-
-            objView.IntegrationTypeId = IntegrationTypeId;
-            ViewBag.integrationTypeId = IntegrationTypeId;
-
-            //// Flag to check whether MQL field show or not at Edit or View mode based on clientID.
-            ViewBag.IsMQLShow = IsMQLShow;
-
-            populateSyncFreqData();
-            if (id > 0)
-            {
-                objView.GameplanDataTypeModelList = GetGameplanDataTypeList(id);   // Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681
-                objView.CustomReadOnlyDataModelList = GetPlanCustomGetFields(id);   //Added by Brad Gray 26 March 2016 for PL #2084
-                objView.ExternalServer = GetExternalServerModelByInstanceId(id);
-
-                // Dharmraj Start : #658: Integration - UI - Pulling Revenue - Salesforce.com
-                objView.GameplanDataTypePullModelList = GetGameplanDataTypePullListClosedDeal(id);
-                // Dharmraj End : #658: Integration - UI - Pulling Revenue - Salesforce.com
-                // Dharmraj Start : #680: Integration - UI - Pull responses from Salesforce
-                if (objIntegrationTypeModel.Code.Equals(Enums.IntegrationType.Salesforce.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    //Modified by Rahul Shah on 26/02/2016 for PL #2017
-                    objView.GameplanDataTypePullRevenueModelList = GetGameplanDataTypePullingList(id, Enums.IntegrationType.Salesforce.ToString(), IsMQLShow);
-                    if (objView.GameplanDataTypePullRevenueModelList != null && objView.GameplanDataTypePullRevenueModelList.Count > 0 && IsMQLShow)
+                    //// Add IntegrationType Attributes data to List.
+                    List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
+                    foreach (var item in recordAttribute)
                     {
-                        objView.GameplanDataTypePullMQLModelList = objView.GameplanDataTypePullRevenueModelList.Where(temp => temp.Type == Enums.GameplanDatatypePullType.MQL.ToString()).ToList();
-                        objView.GameplanDataTypePullRevenueModelList = objView.GameplanDataTypePullRevenueModelList.Where(temp => temp.Type == Enums.GameplanDatatypePullType.INQ.ToString()).ToList();
+                        // Add By Nishant Sheth  
+                        // Desc :: Add Host details for marketo instance
+                        if (item.IntegrationTypeAttribute.Attribute == Enums.IntegrationTypeAttribute.Host.ToString())
+                        {
+                            string Host = item.Value.ToLower();
+                            string[] HostSplit = Host.Split(new string[] { "/rest" }, StringSplitOptions.None);
+                            if (HostSplit.Count() > 0)
+                            {
+                                Host = HostSplit[0];
+                            }
+                            Host = Host.TrimEnd('/');
+                            item.Value = Host;
+                        }
+                        // End By Nishant Sheth
+                        IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
+                        objIntegrationTypeAttributeModel.Attribute = item.IntegrationTypeAttribute.Attribute;
+                        objIntegrationTypeAttributeModel.AttributeType = item.IntegrationTypeAttribute.AttributeType;
+                        objIntegrationTypeAttributeModel.IntegrationTypeAttributeId = item.IntegrationTypeAttribute.IntegrationTypeAttributeId;
+                        objIntegrationTypeAttributeModel.IntegrationTypeId = item.IntegrationTypeAttribute.IntegrationTypeId;
+                        objIntegrationTypeAttributeModel.Value = item.Value;
+                        lstObjIntegrationTypeAttributeModel.Add(objIntegrationTypeAttributeModel);
                     }
 
+                    objView.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
+                    ViewBag.IntegrationPermission = string.Empty;
                 }
-                // Dharmraj End : #680: Integration - UI - Pull responses from Salesforce
-                //// Start - Added by Sohel Pathan on 22/12/2014 for PL ticket #1061
-                else if (objIntegrationTypeModel.Code.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
+                else
                 {
-                    objView.GameplanDataTypePullMQLModelList = GetGameplanDataTypePullingList(id, Enums.IntegrationType.Eloqua.ToString());
+                    objView.IntegrationTypeAttributes = GetIntegrationTypeAttributesModelById(TypeId);
+                    IntegrationTypeId = TypeId;
+                    ViewBag.IntegrationPermission = "You do not have permission to view this integration instance";
                 }
-                //// End - Added by Sohel Pathan on 22/12/2014 for PL ticket #1061
             }
 
+            if (IsPermission)
+            {
+                if (db.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(IntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
+                    IsMQLShow = true;
+
+                //// Add IntegrationType data to List.
+                IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
+                var integrationTypeObj = GetIntegrationTypeById(IntegrationTypeId);
+                objIntegrationTypeModel.Title = integrationTypeObj.Title;
+                objIntegrationTypeModel.Code = integrationTypeObj.Code;
+                objView.IntegrationType = objIntegrationTypeModel;
+
+                objView.IntegrationTypeId = IntegrationTypeId;
+                ViewBag.integrationTypeId = IntegrationTypeId;
+
+                //// Flag to check whether MQL field show or not at Edit or View mode based on clientID.
+                ViewBag.IsMQLShow = IsMQLShow;
+
+                populateSyncFreqData();
+                if (id > 0)
+                {
+                    objView.GameplanDataTypeModelList = GetGameplanDataTypeList(id);   // Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681
+                    objView.CustomReadOnlyDataModelList = GetPlanCustomGetFields(id);   //Added by Brad Gray 26 March 2016 for PL #2084
+                    objView.ExternalServer = GetExternalServerModelByInstanceId(id);
+
+                    // Dharmraj Start : #658: Integration - UI - Pulling Revenue - Salesforce.com
+                    objView.GameplanDataTypePullModelList = GetGameplanDataTypePullListClosedDeal(id);
+                    // Dharmraj End : #658: Integration - UI - Pulling Revenue - Salesforce.com
+                    // Dharmraj Start : #680: Integration - UI - Pull responses from Salesforce
+                    if (objIntegrationTypeModel.Code.Equals(Enums.IntegrationType.Salesforce.ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        //Modified by Rahul Shah on 26/02/2016 for PL #2017
+                        objView.GameplanDataTypePullRevenueModelList = GetGameplanDataTypePullingList(id, Enums.IntegrationType.Salesforce.ToString(), IsMQLShow);
+                        if (objView.GameplanDataTypePullRevenueModelList != null && objView.GameplanDataTypePullRevenueModelList.Count > 0 && IsMQLShow)
+                        {
+                            objView.GameplanDataTypePullMQLModelList = objView.GameplanDataTypePullRevenueModelList.Where(temp => temp.Type == Enums.GameplanDatatypePullType.MQL.ToString()).ToList();
+                            objView.GameplanDataTypePullRevenueModelList = objView.GameplanDataTypePullRevenueModelList.Where(temp => temp.Type == Enums.GameplanDatatypePullType.INQ.ToString()).ToList();
+                        }
+
+                    }
+                    // Dharmraj End : #680: Integration - UI - Pull responses from Salesforce
+                    //// Start - Added by Sohel Pathan on 22/12/2014 for PL ticket #1061
+                    else if (objIntegrationTypeModel.Code.Equals(Enums.IntegrationType.Eloqua.ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        objView.GameplanDataTypePullMQLModelList = GetGameplanDataTypePullingList(id, Enums.IntegrationType.Eloqua.ToString());
+                    }
+                    //// End - Added by Sohel Pathan on 22/12/2014 for PL ticket #1061
+                }
+            }
+            //// Check  whether MQL permission exist or not for this clientID. If record exist then Display MQL tab or not.
             return View("edit", objView);
         }
 

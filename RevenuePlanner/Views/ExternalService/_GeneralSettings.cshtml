@@ -24,7 +24,7 @@
 
                 @Html.TextBoxFor(model => model.Instance, new { maxlength = "255", tabindex = "1" })
             </div>
-            if (Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString()) //added by rahul shah for pl #2184
+            if (Model != null && Model.IntegrationType != null && Model.IntegrationType.Code != null && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString()) //added by rahul shah for pl #2184
             {
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Username)
@@ -86,7 +86,8 @@
                 <p><a id="aTestIntegration" href="#" onclick="return testIntegration();" tabindex="-1">Click</a> to test integration credentials.</p>
             </div>
             
-            
+            if ((Model != null && Model.IntegrationInstanceId == 0 && ViewBag.IntegrationPermission == "") || (Model != null && Model.IntegrationInstanceId > 0 && Model.SyncFrequency != null))
+            {
             <div class="cf inputs-aligned-horizontal">
                 @Html.Label("Sync Preference", new { style = "padding-top: 9px;" })
 
@@ -109,7 +110,8 @@
                     @Html.TextBoxFor(model => model.SyncFrequency.Day, new { style = "width:130px !important", maxlength = "255", tabindex = "9", placeholder = "Enter date of month" })
                 </div>
             </div>
-            if (Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())//Added by Rahul Shah for PL #2184
+           }
+            if (Model.IntegrationType != null && Model.IntegrationType.Code != null && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())//Added by Rahul Shah for PL #2184
             {
             <div class="cf inputs-aligned-horizontal content">
                 @Html.LabelFor(model => model.IsImportActuals, new { id = "lblImportActuals" })
@@ -172,7 +174,12 @@
     function testIntegration() {
         var isValid = false;
         var testIntegrationValidation = true;
-        var Instance = '@Model.IntegrationType.Code';
+        var Instance;
+        if ('@Model' != null) {
+            @if (Model.IntegrationType != null) {
+                @: Instance = '@Model.IntegrationType.Code';
+                        }
+        }
         var InstanceMarketo = '@Enums.IntegrationType.Marketo.ToString()';
         $('#content #integrationForm :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
@@ -213,7 +220,7 @@
                 url: '@Url.Content("~/ExternalService/TestIntegration")',
                 data: $("form").serialize(),
                 success: function (data) {
-                    if (data != null) {                        
+                    if (data != null) {
                         if (data.status == 1) {
                             $("#cSuccessGeneralSettings").html('');
                             $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
@@ -405,7 +412,7 @@
                             if (data.status == 1) {
                                 localStorage.Message = data.SuccessMessage.toString();
                                 var url = '@Url.Content("~/ExternalService/editIntegration/")';
-                                var queryStringArr = [];
+                                @*var queryStringArr = [];
                                 queryStringArr.push({
                                     key: 'id',
                                     Value: data.Id
@@ -414,8 +421,9 @@
                                     key: 'TypeId',
                                     Value: '@Model.IntegrationTypeId'
                                 });
-                                formSubmitEvent(url, queryStringArr);
+                                formSubmitEvent(url, queryStringArr);*@
                                 AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                                window.location.href = url + "?id=" + data.Id + "&TypeId=" + '@Model.IntegrationTypeId';
                             }
                             else if (data.status == 3) {
                                 var URL = "@Url.Content("~/ExternalService/Index/")";

@@ -22,7 +22,14 @@
     @Html.Hidden("IsOwner", IsOwner);
                                     // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                                     ViewBag.ModelIdPartial = ViewBag.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
-                                    ViewBag.modelStageCount = Model.lstmodelstage.Count();//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+                                    if (Model != null)
+                                    {
+                                        ViewBag.modelStageCount = Model.lstmodelstage.Count();//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+                                    }
+                                    else
+                                    {
+                                        ViewBag.modelStageCount = 0;
+                                    }
                                     ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
 }
 <script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
@@ -44,13 +51,17 @@
         padding: 6px 8px 6px 8px !important;
     }
 </style>
-@section Sidebar
+@if (Model != null)
 {
-    @Html.Partial("~/Views/Model/_model.cshtml")
+    @section Sidebar
+    {
+        @Html.Partial("~/Views/Model/_model.cshtml")
 
+    }
 }
 @using (Html.BeginForm("Create", "Model", FormMethod.Post, new { id = "form1" }))
 {
+    
     @Html.Hidden("ValidateForEmptyField", @strValidateForEmptyField)
     @Html.Hidden("ErrorOccured", @strErrorOccured)
     @Html.Hidden("ModelId", ModelId)
@@ -63,6 +74,8 @@
         <div id="cError"></div>
     </div>
   
+    if (@Model != null)
+    {
     TempData["ErrorMessage"] = "";
     <div id="DivBackgroundModel" class="modal-backdrop fade in" style="z-index: 1501; display: none;"></div>
     @Html.Partial("~/Views/Model/_publishmodel.cshtml")
@@ -102,7 +115,7 @@
             }
         }
     </ul>
-    <div class="padding-content cf source-sans-proregular">
+    <div id="MainContent" class="padding-content cf source-sans-proregular">
 
         <div class="row">
             <div class="span2 content-colum-left">
@@ -254,7 +267,7 @@
     
         //Added By Kalpesh Sharma Functional and code review #560 07-16-2014   
     @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
-    
+}
 }
 <script type="text/javascript">
     var lastModelId;
@@ -414,329 +427,338 @@
     }
     });
 
-$(document).ready(function () {
+    $(document).ready(function () {
+
+        var IsPermission = '@ViewBag.ModelPermission';
+        if (IsPermission != '') {
+            $('#MainContent').css('display', 'none');
+            $('#cError').html("<strong>Error! </strong> " + IsPermission);
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+
     // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
     if ($('#IsOwner').val().toLowerCase() == 'false' && ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == 'false')) {
-        $('#form1 :input').each(function () {
-            if ($(this).attr('type') == 'text' || $(this).attr('type') == 'textarea' || $(this).attr('type') == 'select') {
-                $(this).attr('readonly', 'readonly');
+            $('#form1 :input').each(function () {
+                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'textarea' || $(this).attr('type') == 'select') {
+                    $(this).attr('readonly', 'readonly');
+                }
+            });
+        }
+        // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+
+        // Start - Added by Arpita Soni for Ticket #1071 on 01/30/2015
+        $('.input-table').blur(function () {
+            $(this).val(number_format($(this).val().toString(), 0, '.', ''));
+        });
+        // End - Added by Arpita Soni for Ticket #1071 on 01/30/2015
+
+        $('#DivBackgroundModel').css("display", "none");
+        $('#DivPublishModelPopup').css("display", "none");
+        $('#form1').bind("keyup keypress", function (e) {
+            var code = e.keyCode || e.which;
+            if (code == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        $(".info-icon-grey").each(function () {
+            bootstrapetitle($(this), $(this).attr("title"), "tipsy-innerWhite");
+        });
+
+        //// Added By Maninder Singh
+        //// Date 1/28/2014
+        //// Added Set tooltip
+        SetToolTip();
+
+        //// Added By Maninder Singh
+        //// Date 1/28/2014
+        //// Function to set tooltip for large numbers.
+        function SetToolTip() {
+            SetTitleToolTip(".ellipsis");
+        }
+
+        if ($('#IsBenchmarked').val() == 'True') { benchmark(); }
+        else { advanced(); }
+        $('#advanced-option').click(function () {
+            advanced();
+        });
+
+        $('#benchmarked-option').click(function () {
+            benchmark();
+        });
+        $('#dp_start .add-on').click(function () {
+            $('#dp_start').datepicker('show');
+        })
+        function benchmark() {
+
+            $('#inputs-group').hide();
+            $('#benchmarked').show();
+            $("#IsBenchmarked").val(true);
+            $('#benchmarked-option').removeClass('pull-right');
+            $('#benchmarked-option').addClass('active pull-right');
+            $('#advanced-option').removeClass('active pull-right');
+            $('#advanced-option').addClass('pull-right');
+        }
+        function advanced() {
+            $('#advanced-option').removeClass('pull-right');//#585
+            $('#advanced-option').addClass('active pull-right');
+            $('#benchmarked-option').removeClass('active pull-right');
+            $('#benchmarked-option').addClass('pull-right');
+            $('#inputs-group').show();
+            $('#benchmarked').hide();
+            $("#IsBenchmarked").val(false);
+        }
+
+        $('.doubleText').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+        LoadModelData($("#ModelId").val(), true);
+    });
+    $(".subheader").click(function () {
+        $(".subheader").removeClass('active');
+        $(this).addClass('active');
+    });
+    function LoadModelData(modelId, bool) {
+
+        if (modelId == $("#latestModelId").val()) {
+            $("#button-save").show();
+            $("#btnsave").show();
+            MakeEditable();
+            $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
+            $('#liDuplicate').show();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
+
+        }
+        else {
+            $("#button-save").hide();
+            $("#btnsave").hide();
+            MakeViewOnly();//Bug 17:Should not be able to edit a published model
+            $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
+            $('#liDuplicate').hide();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
+        }
+        if (modelId == 0) {
+            $("#btnsave").show();
+            MakeEditable();//Bug 17:Should not be able to edit a published model
+        }
+        $('#ver_' + modelId).removeClass('pull-right');
+        $('#ver_' + modelId).addClass('active pull-right');
+        if (lastModelId != null && lastModelId != modelId) {
+            $('#ver_' + lastModelId).removeClass('active pull-right');
+            $('#ver_' + lastModelId).addClass('pull-right');
+        }
+        lastModelId = modelId;
+
+        $.ajax(
+         {
+             type: "GET",
+             cache: false,
+             url: '@Url.Action("GetModelData", "Model")',
+             data: { id: modelId },
+             dataType: "json",
+             success: function (data) {
+
+                 if (!$.isEmptyObject(data)) {
+                     fillmodel(data, modelId);
+                     fillmodelfunnel(data);
+                     fillfunnelstage(data);
+                     $('.doubleText').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                 }
+                 else {
+                     $("#divModelOverview").html('');
+                     $("#divcontactInquiry").html('');
+                     $("#divModelOverview").load('LoadModelOverview' + '?title=' + encodeURIComponent("Baseline Model") + '&ModelId=0');
+                     $("#divcontactInquiry").load('LoadContactInquiry' + '?AC=0&MLeads=0&MSize=0&TLeads=0&TSize=0&SLeads=0&SSize=0');
+                 }
+             },
+             error: function () {
+                 GoToLogin();
+             }
+         });
+
+    }
+    function fillmodel(data, modelId) {
+        $.each(data.lstmodellist, function (index, obj) {
+            $("#lblTitle").html(obj.Title + '<span class="gray source-sans-prolight">' + obj.Status + '</span>');
+            modelStatus = obj.Status;/* changed by Nirav shah for TFS Point :252 editing a published model*/
+            if (modelId == $("#latestModelId").val()) {
+                if (obj.Status.toString().toLocaleLowerCase() == 'draft' && ('@ViewBag.IsAuthorized'.toLowerCase() == 'true')) {  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    $("#publishModelDisabled").hide();
+                    $("#publishModel").show();
+                    $("#publishModel").attr('ModelId', obj.ModelId);
+                }
+                else {
+                    $("#publishModelDisabled").show();
+                    $("#publishModel").hide();
+                    $("#publishModel").attr('ModelId', '0');
+                }
+            }
+            else {
+                $("#publishModelDisabled").show();
+                $("#publishModel").hide();
+                $("#publishModel").attr('ModelId', '0');
+            }
+            $("#divModelOverview").html('');
+            $("#divModelOverview").load('LoadModelOverview' + '?title=' + encodeURIComponent(obj.Title) + '&ModelId=' + obj.ModelId);
+        });
+    }
+    function fillmodelfunnel(data) {
+        var MAverageDealSize;
+        $.each(data.lstmodellist, function (index, obj) {
+            MAverageDealSize = obj.AverageDealSize;
+        });
+        if (MAverageDealSize == null || MAverageDealSize == 'undefined') {
+            MAverageDealSize = 0;
+        }
+        $("#divcontactInquiry").html('');
+        $("#divcontactInquiry").load('LoadContactInquiry' + '?MSize=' + MAverageDealSize);
+    }
+
+    function fillfunnelstage(data) {
+        $.each(data.lstmodelfunnelstagelist, function (index, obj) {
+            if (obj.StageType == "CR") {
+                $("#txtMCR_CR_" + obj.StageId).val(obj.Value);
+                var val = obj.AllowedTargetStage;
+                if (val != false) {
+                    $("#TargetStage_" + obj.StageId).text('True');
+                }
+                else {
+                    $("#TargetStage_" + obj.StageId).text('False');
+                }
+                $("#hdnAllowedtargetStage_" + obj.StageId).val(obj.AllowedTargetStage);
+            }
+            else if (obj.StageType == "SV") {
+                $("#txtMSV_SV_" + obj.StageId).val(obj.Value);
             }
         });
     }
-    // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 
-    // Start - Added by Arpita Soni for Ticket #1071 on 01/30/2015 
-    $('.input-table').blur(function () {
-        $(this).val(number_format($(this).val().toString(), 0, '.', ''));
-    });
-    // End - Added by Arpita Soni for Ticket #1071 on 01/30/2015 
-
-    $('#DivBackgroundModel').css("display", "none");
-    $('#DivPublishModelPopup').css("display", "none");
-    $('#form1').bind("keyup keypress", function (e) {
-        var code = e.keyCode || e.which;
-        if (code == 13) {
-            e.preventDefault();
-            return false;
-        }
-    });
-
-    $(".info-icon-grey").each(function () {
-        bootstrapetitle($(this), $(this).attr("title"), "tipsy-innerWhite");
-    });
-
-    //// Added By Maninder Singh 
-    //// Date 1/28/2014
-    //// Added Set tooltip
-    SetToolTip();
-
-    //// Added By Maninder Singh 
-    //// Date 1/28/2014
-    //// Function to set tooltip for large numbers.
-    function SetToolTip() {
-        SetTitleToolTip(".ellipsis");
-    }
-
-    if ($('#IsBenchmarked').val() == 'True') { benchmark(); }
-    else { advanced(); }
-    $('#advanced-option').click(function () {
-        advanced();
-    });
-
-    $('#benchmarked-option').click(function () {
-        benchmark();
+    $("#cancel-button").click(function () {
+        $('#DivBackgroundModel').css("display", "none");
+        $('#DivPublishModelPopup').css("display", "none");
+        return false;
     });
     $('#dp_start .add-on').click(function () {
         $('#dp_start').datepicker('show');
+        $('#dp_end').datepicker('hide');
+
+    });
+    $('#t_startdate').click(function () {
+        $('#dp_end').datepicker('hide');
     })
-    function benchmark() {
-
-        $('#inputs-group').hide();
-        $('#benchmarked').show();
-        $("#IsBenchmarked").val(true);
-        $('#benchmarked-option').removeClass('pull-right');
-        $('#benchmarked-option').addClass('active pull-right');
-        $('#advanced-option').removeClass('active pull-right');
-        $('#advanced-option').addClass('pull-right');
-    }
-    function advanced() {
-        $('#advanced-option').removeClass('pull-right');//#585
-        $('#advanced-option').addClass('active pull-right');
-        $('#benchmarked-option').removeClass('active pull-right');
-        $('#benchmarked-option').addClass('pull-right');
-        $('#inputs-group').show();
-        $('#benchmarked').hide();
-        $("#IsBenchmarked").val(false);
-    }
-
-    $('.doubleText').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-    $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-    LoadModelData($("#ModelId").val(), true);
-});
-$(".subheader").click(function () {
-    $(".subheader").removeClass('active');
-    $(this).addClass('active');
-});
-function LoadModelData(modelId, bool) {
-
-    if (modelId == $("#latestModelId").val()) {
-        $("#button-save").show();
-            $("#btnsave").show();
-        MakeEditable();
-        $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
-        $('#liDuplicate').show();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model. 
-
-    }
-    else {
-        $("#button-save").hide();
-            $("#btnsave").hide();
-        MakeViewOnly();//Bug 17:Should not be able to edit a published model
-        $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
-        $('#liDuplicate').hide();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model. 
-    }
-    if (modelId == 0) {
-        $("#btnsave").show();
-        MakeEditable();//Bug 17:Should not be able to edit a published model
-    }
-    $('#ver_' + modelId).removeClass('pull-right');
-    $('#ver_' + modelId).addClass('active pull-right');
-    if (lastModelId != null && lastModelId != modelId) {
-        $('#ver_' + lastModelId).removeClass('active pull-right');
-        $('#ver_' + lastModelId).addClass('pull-right');
-    }
-    lastModelId = modelId;
-
-    $.ajax(
-     {
-         type: "GET",
-         cache: false,
-         url: '@Url.Action("GetModelData", "Model")',
-         data: { id: modelId },
-         dataType: "json",
-         success: function (data) {
-
-             if (!$.isEmptyObject(data)) {
-                 fillmodel(data, modelId);
-                 fillmodelfunnel(data);
-                 fillfunnelstage(data);
-                 $('.doubleText').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-             }
-             else {
-                 $("#divModelOverview").html('');
-                 $("#divcontactInquiry").html('');
-                 $("#divModelOverview").load('LoadModelOverview' + '?title=' + encodeURIComponent("Baseline Model") + '&ModelId=0');
-                 $("#divcontactInquiry").load('LoadContactInquiry' + '?AC=0&MLeads=0&MSize=0&TLeads=0&TSize=0&SLeads=0&SSize=0');
-             }
-         },
-         error: function () {
-             GoToLogin();
-         }
-     });
-
- }
- function fillmodel(data, modelId) {
-     $.each(data.lstmodellist, function (index, obj) {
-         $("#lblTitle").html(obj.Title + '<span class="gray source-sans-prolight">' + obj.Status + '</span>');
-         modelStatus = obj.Status;/* changed by Nirav shah for TFS Point :252 editing a published model*/
-         if (modelId == $("#latestModelId").val()) {
-             if (obj.Status.toString().toLocaleLowerCase() == 'draft' && ('@ViewBag.IsAuthorized'.toLowerCase() == 'true')) {  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                 $("#publishModelDisabled").hide();
-                 $("#publishModel").show();
-                 $("#publishModel").attr('ModelId', obj.ModelId);
-             }
-             else {
-                 $("#publishModelDisabled").show();
-                 $("#publishModel").hide();
-                 $("#publishModel").attr('ModelId', '0');
-             }
-         }
-         else {
-             $("#publishModelDisabled").show();
-             $("#publishModel").hide();
-             $("#publishModel").attr('ModelId', '0');
-         }
-         $("#divModelOverview").html('');
-         $("#divModelOverview").load('LoadModelOverview' + '?title=' + encodeURIComponent(obj.Title) + '&ModelId=' + obj.ModelId);
-     });
- }
- function fillmodelfunnel(data) {     
-     var MAverageDealSize;
-     $.each(data.lstmodellist, function (index, obj) {
-             MAverageDealSize = obj.AverageDealSize;
-     });
-     if (MAverageDealSize == null || MAverageDealSize == 'undefined') {
-         MAverageDealSize = 0;
-     }
-     $("#divcontactInquiry").html('');
-     $("#divcontactInquiry").load('LoadContactInquiry' + '?MSize=' + MAverageDealSize) ;
- }
-
- function fillfunnelstage(data) {
-     $.each(data.lstmodelfunnelstagelist, function (index, obj) {
-         if (obj.StageType == "CR") {
-             $("#txtMCR_CR_" + obj.StageId).val(obj.Value);
-             var val = obj.AllowedTargetStage;
-             if (val != false) {
-                 $("#TargetStage_" + obj.StageId).text('True');
-             }
-             else {
-                 $("#TargetStage_" + obj.StageId).text('False');
-             }
-             $("#hdnAllowedtargetStage_" + obj.StageId).val(obj.AllowedTargetStage);
-         }
-         else if (obj.StageType == "SV") {
-             $("#txtMSV_SV_" + obj.StageId).val(obj.Value);
-         }
-     });
- }
-
- $("#cancel-button").click(function () {
-     $('#DivBackgroundModel').css("display", "none");
-     $('#DivPublishModelPopup').css("display", "none");
-     return false;
- });
- $('#dp_start .add-on').click(function () {
-     $('#dp_start').datepicker('show');
-     $('#dp_end').datepicker('hide');
-
- });
- $('#t_startdate').click(function () {
-     $('#dp_end').datepicker('hide');
- })
- $("#Save-publish").click(function () {
-     var date = $("#t_startdate").val();
-     $("#EffectiveDate").val(date);
-     return true;
- });
- $('.dp').datepicker({
-     format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
-     autoclose: true,
- }).on('changeDate', function (ev) {
-     $(this).datepicker('hide');
- });;
+    $("#Save-publish").click(function () {
+        var date = $("#t_startdate").val();
+        $("#EffectiveDate").val(date);
+        return true;
+    });
+    $('.dp').datepicker({
+        format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
+        autoclose: true,
+    }).on('changeDate', function (ev) {
+        $(this).datepicker('hide');
+    });;
     $(".savebtn").click(function (e) {
-         if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
-             var val = 0;
-             var cntFill = 0;
-             var cntNotFill = 0;
-             var targetStagecnt = 0
-             $('#inputs-group input[type=text]').each(function () {
-                 var val = $(this).val();
-                 if (val > 0) {
-                     cntFill = cntFill + 1;
-                 }
-                 else {
-                     cntNotFill = cntNotFill + 1;
-                 }
-             });
-             $('#inputs-group a').each(function () {
-                 if ($(this).hasClass('targetStageclick')) {
-                     var val = $(this).text();
-                     if (val.toLowerCase() == 'true') {
-                         targetStagecnt = targetStagecnt + 1;
-                     }
-                 }
-             });
-             if (cntFill < 1 && targetStagecnt < 1) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRateAndTargetStage')
-                 $("#errorMessage").slideDown(400);
-                 $("html, body").animate({ scrollTop: 0 }, 1000);
-                 $('#inputs-group input[type=text]').each(function () {
-                     $(this).addClass("input-error-red");
-                 });
-                 $('#inputs-group a').each(function () {
-                     $(this).addClass("error-red");
-                 });
-                 return false;
-             }
-             else if (cntFill < 1 && targetStagecnt > 0) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRate')
-                 $("#errorMessage").slideDown(400);
-                 $("html, body").animate({ scrollTop: 0 }, 1000);
-                 $('#inputs-group input[type=text]').each(function () {
-                     var targetstage = $(this).attr('name');
-                     if (targetstage != 'txtTargetStage') {
-                         $(this).addClass("input-error-red");
-                     }
+        if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
+            var val = 0;
+            var cntFill = 0;
+            var cntNotFill = 0;
+            var targetStagecnt = 0
+            $('#inputs-group input[type=text]').each(function () {
+                var val = $(this).val();
+                if (val > 0) {
+                    cntFill = cntFill + 1;
+                }
+                else {
+                    cntNotFill = cntNotFill + 1;
+                }
+            });
+            $('#inputs-group a').each(function () {
+                if ($(this).hasClass('targetStageclick')) {
+                    var val = $(this).text();
+                    if (val.toLowerCase() == 'true') {
+                        targetStagecnt = targetStagecnt + 1;
+                    }
+                }
+            });
+            if (cntFill < 1 && targetStagecnt < 1) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRateAndTargetStage')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    $(this).addClass("input-error-red");
+                });
+                $('#inputs-group a').each(function () {
+                    $(this).addClass("error-red");
+                });
+                return false;
+            }
+            else if (cntFill < 1 && targetStagecnt > 0) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRate')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    var targetstage = $(this).attr('name');
+                    if (targetstage != 'txtTargetStage') {
+                        $(this).addClass("input-error-red");
+                    }
 
-                 });
-                 return false;
-             }
-             else if (cntFill > 0 && targetStagecnt < 1) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateTargetStage')
-                    $("#errorMessage").slideDown(400);
-                    $("html, body").animate({ scrollTop: 0 }, 1000);
-                    $('#inputs-group a').each(function () {
-                        $(this).addClass("error-red");
-                    });
+                });
+                return false;
+            }
+            else if (cntFill > 0 && targetStagecnt < 1) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateTargetStage')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group a').each(function () {
+                    $(this).addClass("error-red");
+                });
+                return false;
+            }
+        }
+        $("#CurrentModelId").val($("#latestModelId").val());
+
+        if ($('#isPublishButton').val() == 'publish') {
+            if ($("#Planflag").val().toLocaleLowerCase() == 'true') {
+                if (confirm($("#PublishedMsg").val())) {
+                    $("#whichButton").val('publish');
+                    $('#DivBackgroundModel').css("display", "block");
+                    $('#DivPublishModelPopup').css("display", "block");
+                    var date = $("#EffectiveDate").val();
+                    $("#t_startdate").val(date);
                     return false;
                 }
-    }
-         $("#CurrentModelId").val($("#latestModelId").val());
-
-         if ($('#isPublishButton').val() == 'publish') {
-             if ($("#Planflag").val().toLocaleLowerCase() == 'true') {
-                 if (confirm($("#PublishedMsg").val())) {
-                     $("#whichButton").val('publish');
-                     $('#DivBackgroundModel').css("display", "block");
-                     $('#DivPublishModelPopup').css("display", "block");
-                     var date = $("#EffectiveDate").val();
-                     $("#t_startdate").val(date);
-                     return false;
-                 }
-                 else {
-                     $('#DivBackgroundModel').css("display", "none");
-                     $('#DivPublishModelPopup').css("display", "none");
-                     return false;
-                 }
-             }
-             else {
-                 $("#whichButton").val('publish');
-                 $('#DivBackgroundModel').css("display", "block");
-                 $('#DivPublishModelPopup').css("display", "block");
-                 var date = $("#EffectiveDate").val();
-                 $("#t_startdate").val(date);
-                 return false;
-             }
-         } else if ($(this).attr('id') == 'btnsave') {
-             $("#whichButton").val('save');
-         @*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*@
-             if (ModelId != 0 && $("#latestModelId").val() != undefined) {
-                 if (modelStatus.toLocaleLowerCase() != 'draft') {
-                     if ($("#publishModelDisabled").hasClass("btn-blue-disable")) {
-                         if (confirm($("#ModelPublishEdit").val())) {
-                             return true;
-                         }
-                         else {
-                             return false;
-                         }
-                     }
-                 }
-             }
-         }
-         else if ($(this).attr('id') == 'button-save') {
-             $("#whichButton").val('version');
-         @*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*@
+                else {
+                    $('#DivBackgroundModel').css("display", "none");
+                    $('#DivPublishModelPopup').css("display", "none");
+                    return false;
+                }
+            }
+            else {
+                $("#whichButton").val('publish');
+                $('#DivBackgroundModel').css("display", "block");
+                $('#DivPublishModelPopup').css("display", "block");
+                var date = $("#EffectiveDate").val();
+                $("#t_startdate").val(date);
+                return false;
+            }
+        } else if ($(this).attr('id') == 'btnsave') {
+            $("#whichButton").val('save');
+            @*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*@
+            if (ModelId != 0 && $("#latestModelId").val() != undefined) {
+                if (modelStatus.toLocaleLowerCase() != 'draft') {
+                    if ($("#publishModelDisabled").hasClass("btn-blue-disable")) {
+                        if (confirm($("#ModelPublishEdit").val())) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        else if ($(this).attr('id') == 'button-save') {
+            $("#whichButton").val('version');
+            @*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*@
             if (modelStatus.toLocaleLowerCase() != 'draft') {
                 if ($("#publishModelDisabled").hasClass("btn-blue-disable")) {
                     if (confirm($("#ModelPublishCreateNew").val())) {
@@ -751,253 +773,253 @@ function LoadModelData(modelId, bool) {
         else {
             $("#whichButton").val('');
         }
-         needAlert = false;
+        needAlert = false;
 
-         $('.nl-field').each(function () {
+        $('.nl-field').each(function () {
 
-             if ($(this).next().attr('datadefault') == "Title") {
-                 $(this).children('a').attr('id', 'lnkTitle');
-                 var tValue = $(this).children('a').text();
-                 if (tValue == '' || tValue == "Baseline Model") {
-                     $(this).children('a').addClass("error-form");
-                     needAlert = true;
-                 }
-                 else {
-                     $(this).children('a').removeClass("error-form");
-                 }
-                 if ($("#Title").val() == '' || $("#Title").val() == "Baseline Model") {
-                     $(this).children('a').addClass("error-form");
-                     needAlert = true;
-                 }
-                 else {
-                     $(this).children('a').removeClass("error-form");
-                 }
-             }
-             else if ($(this).next().attr('datadefault') == "ML") {
-                 var tValue = $(this).children('a').text();
-                 if (tValue == '' || tValue == '0') {
-                     $(this).children('a').addClass("error-form");
-                     needAlert = true;
-                 }
-                 else {
-                     $(this).children('a').removeClass("error-form");
-                 }
-                 //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-                 if ($("#MarketingLeads").val() == '' || $("#MarketingLeads").val() == "0" || $("#MarketingLeads").val() == "$0" || $("#MarketingLeads").val() == "$") {
-                     $(this).children('a').addClass("error-form");
-                     needAlert = true;                     
-                 }
-                 else {
-                     $(this).children('a').removeClass("error-form");                     
-                 }
-             }
-             else if ($(this).next().attr('datadefault') == "MS") {
-                 var tValue = $(this).children('a').text();
-                 if (tValue == '' || tValue == '0' || tValue == '$0' || tValue == '$') {
-                     $(this).children('a').addClass("error-form");
-                     needAlert = true;
-                 }
-                 else {
-                     $(this).children('a').removeClass("error-form");
-                 }
-                 //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-                 if ($("#MarketingDealSize").val() == '' || $("#MarketingDealSize").val() == "0" || $("#MarketingDealSize").val() == "$0" || $("#MarketingDealSize").val() == "$") {
-                     $(this).children('a').addClass("error-form");
-                     needAlert = true;
-                 }
-                 else {
-                     $(this).children('a').removeClass("error-form");
-                 }
-             }
-         });
-         if (needAlert == true) {
-             $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + $("#ValidateForEmptyField").val())
-             $("#errorMessage").slideDown(400);
-             $("html, body").animate({ scrollTop: 0 }, 1000); // added by juned to slide up the page on error.
-             return false;
-         }
-         else {
-             $("#errorMessage").slideUp(400);
-         }
-         var bln = 0;
-         $('.doubleTextPerc').each(function () {
-             if ($(this).val() != '' && $(this).val() > 100) {
-                 $(this).css('borderColor', '#C6605A');
-                 $(this).css('background-color', '#F1DBDE');
-                 bln = 1;
-             }
-             else {
-                 $(this).css('borderColor', '#CCCCCC');
-                 $(this).css('background-color', '#FFFFFF');
-             }
-         });
-         if (bln == 1) {
-             $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + $("#ValidateForEmptyField").val())
-             $("#errorMessage").slideDown(400);
-             return false;
-         }
-     });
-
-$(".doubleText").keyup(function (event) {
-    var $this = $(this);
-    $this.val($this.val().replace(/[^\d.]/g, ''));
-});
-$(".doubleTextPerc").keyup(function (event) {
-    var $this = $(this);
-    $this.val($this.val().replace(/[^\d.]/g, ''));
-    if ($this.val() > 100) {
-        $(this).css('borderColor', '#C6605A');
-        $(this).css('background-color', '#F1DBDE');
-    }
-    else {
-        $(this).css('borderColor', '#CCCCCC');
-        $(this).css('background-color', '#FFFFFF');
-    }
-});
-
-//// Added By Maninder Singh Wadhva to address TFS Bug#239
-var ismsg = $("#hdnMsg").val();
-$("#publishModel").click(function () {
-    if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
-        var val = 0;
-        var cntFill = 0;
-        var cntNotFill = 0;
-        var targetStagecnt = 0
-        $('#inputs-group input[type=text]').each(function () {
-            var val = $(this).val();
-            if (val > 0) {
-                cntFill = cntFill + 1;
+            if ($(this).next().attr('datadefault') == "Title") {
+                $(this).children('a').attr('id', 'lnkTitle');
+                var tValue = $(this).children('a').text();
+                if (tValue == '' || tValue == "Baseline Model") {
+                    $(this).children('a').addClass("error-form");
+                    needAlert = true;
+                }
+                else {
+                    $(this).children('a').removeClass("error-form");
+                }
+                if ($("#Title").val() == '' || $("#Title").val() == "Baseline Model") {
+                    $(this).children('a').addClass("error-form");
+                    needAlert = true;
+                }
+                else {
+                    $(this).children('a').removeClass("error-form");
+                }
+            }
+            else if ($(this).next().attr('datadefault') == "ML") {
+                var tValue = $(this).children('a').text();
+                if (tValue == '' || tValue == '0') {
+                    $(this).children('a').addClass("error-form");
+                    needAlert = true;
+                }
+                else {
+                    $(this).children('a').removeClass("error-form");
+                }
+                //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
+                if ($("#MarketingLeads").val() == '' || $("#MarketingLeads").val() == "0" || $("#MarketingLeads").val() == "$0" || $("#MarketingLeads").val() == "$") {
+                    $(this).children('a').addClass("error-form");
+                    needAlert = true;
+                }
+                else {
+                    $(this).children('a').removeClass("error-form");
+                }
+            }
+            else if ($(this).next().attr('datadefault') == "MS") {
+                var tValue = $(this).children('a').text();
+                if (tValue == '' || tValue == '0' || tValue == '$0' || tValue == '$') {
+                    $(this).children('a').addClass("error-form");
+                    needAlert = true;
+                }
+                else {
+                    $(this).children('a').removeClass("error-form");
+                }
+                //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
+                if ($("#MarketingDealSize").val() == '' || $("#MarketingDealSize").val() == "0" || $("#MarketingDealSize").val() == "$0" || $("#MarketingDealSize").val() == "$") {
+                    $(this).children('a').addClass("error-form");
+                    needAlert = true;
+                }
+                else {
+                    $(this).children('a').removeClass("error-form");
+                }
+            }
+        });
+        if (needAlert == true) {
+            $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + $("#ValidateForEmptyField").val())
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000); // added by juned to slide up the page on error.
+            return false;
+        }
+        else {
+            $("#errorMessage").slideUp(400);
+        }
+        var bln = 0;
+        $('.doubleTextPerc').each(function () {
+            if ($(this).val() != '' && $(this).val() > 100) {
+                $(this).css('borderColor', '#C6605A');
+                $(this).css('background-color', '#F1DBDE');
+                bln = 1;
             }
             else {
-                cntNotFill = cntNotFill + 1;
+                $(this).css('borderColor', '#CCCCCC');
+                $(this).css('background-color', '#FFFFFF');
             }
         });
-        $('#inputs-group a').each(function () {
-            if ($(this).hasClass('targetStageclick')) {
-                var val = $(this).text();
-                if (val.toLowerCase() == 'true') {
-                    targetStagecnt = targetStagecnt + 1;
-                }
-            }
-        });
-        if (cntFill < 1 && targetStagecnt < 1) {
-            $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRateAndTargetStage')
+        if (bln == 1) {
+            $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + $("#ValidateForEmptyField").val())
             $("#errorMessage").slideDown(400);
-            $("html, body").animate({ scrollTop: 0 }, 1000);
+            return false;
+        }
+    });
+
+    $(".doubleText").keyup(function (event) {
+        var $this = $(this);
+        $this.val($this.val().replace(/[^\d.]/g, ''));
+    });
+    $(".doubleTextPerc").keyup(function (event) {
+        var $this = $(this);
+        $this.val($this.val().replace(/[^\d.]/g, ''));
+        if ($this.val() > 100) {
+            $(this).css('borderColor', '#C6605A');
+            $(this).css('background-color', '#F1DBDE');
+        }
+        else {
+            $(this).css('borderColor', '#CCCCCC');
+            $(this).css('background-color', '#FFFFFF');
+        }
+    });
+
+    //// Added By Maninder Singh Wadhva to address TFS Bug#239
+    var ismsg = $("#hdnMsg").val();
+    $("#publishModel").click(function () {
+        if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
+            var val = 0;
+            var cntFill = 0;
+            var cntNotFill = 0;
+            var targetStagecnt = 0
             $('#inputs-group input[type=text]').each(function () {
-                $(this).addClass("input-error-red");
+                var val = $(this).val();
+                if (val > 0) {
+                    cntFill = cntFill + 1;
+                }
+                else {
+                    cntNotFill = cntNotFill + 1;
+                }
             });
             $('#inputs-group a').each(function () {
-                $(this).addClass("error-red");
+                if ($(this).hasClass('targetStageclick')) {
+                    var val = $(this).text();
+                    if (val.toLowerCase() == 'true') {
+                        targetStagecnt = targetStagecnt + 1;
+                    }
+                }
             });
-            return false;
-        }
-        else if (cntFill < 1 && targetStagecnt > 0) {
-            $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRate')
-            $("#errorMessage").slideDown(400);
-            $("html, body").animate({ scrollTop: 0 }, 1000);
-            $('#inputs-group input[type=text]').each(function () {
-                var targetstage = $(this).attr('name');
-                if (targetstage != 'txtTargetStage') {
+            if (cntFill < 1 && targetStagecnt < 1) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRateAndTargetStage')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
                     $(this).addClass("input-error-red");
-                }
-
-            });
-            return false;
-        }
-        else if (cntFill > 0 && targetStagecnt < 1) {
-            $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateTargetStage')
-                    $("#errorMessage").slideDown(400);
-                    $("html, body").animate({ scrollTop: 0 }, 1000);
-                    $('#inputs-group a').each(function () {
-                        $(this).addClass("error-red");
-                    });
-                    return false;
-                }
-    }
-    $('#isPublishButton').val('publish');
-        $('#btnsave').click();
-    $('#isPublishButton').val('');
-});
-
-// function added to handle the click event of NaturalLanguageForm dropdown to check for duplicate model
-function onClickActivity() {
-    $('#nl-form > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-        var Title = $(this).text();
-        $.ajax(
-        {
-            type: "GET",
-            cache: false,
-            url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-            data: { Title: encodeURIComponent($("#lnkTitle").html().trim()) },
-            dataType: "json",
-            success: function (data) {
-                if (data == 'exist') {
-                    $("#hdnmoelexist").val("true");
-                }
-                else {
-                    $("#hdnmoelexist").val("false");
-                }
+                });
+                $('#inputs-group a').each(function () {
+                    $(this).addClass("error-red");
+                });
+                return false;
             }
-        });
-    });
-}
+            else if (cntFill < 1 && targetStagecnt > 0) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRate')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    var targetstage = $(this).attr('name');
+                    if (targetstage != 'txtTargetStage') {
+                        $(this).addClass("input-error-red");
+                    }
 
-//// Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
-// Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
-$('#BtnGroup').click(function (e) {
-    if ($(this).html().toLowerCase() == "duplicate") {
+                });
+                return false;
+            }
+            else if (cntFill > 0 && targetStagecnt < 1) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateTargetStage')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group a').each(function () {
+                    $(this).addClass("error-red");
+                });
+                return false;
+            }
+        }
+        $('#isPublishButton').val('publish');
+        $('#btnsave').click();
+        $('#isPublishButton').val('');
+    });
+
+    // function added to handle the click event of NaturalLanguageForm dropdown to check for duplicate model
+    function onClickActivity() {
+        $('#nl-form > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            var Title = $(this).text();
+            $.ajax(
+            {
+                type: "GET",
+                cache: false,
+                url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
+                data: { Title: encodeURIComponent($("#lnkTitle").html().trim()) },
+                dataType: "json",
+                success: function (data) {
+                    if (data == 'exist') {
+                        $("#hdnmoelexist").val("true");
+                    }
+                    else {
+                        $("#hdnmoelexist").val("false");
+                    }
+                }
+            });
+        });
+    }
+
+    //// Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
+    // Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+    $('#BtnGroup').click(function (e) {
+        if ($(this).html().toLowerCase() == "duplicate") {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
+                //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
+                data: { modelId: $('#latestModelId').val() },
+                dataType: "json",
+                success: function (data) {
+                    if (data.status == 1) {
+
+                        //Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014
+                        $("#copymodeldesc").val(htmlDecode(data.msg));
+                        $("#original").text(htmlDecode(data.name));
+
+
+                        //07/14/2014 Functional and Code review comments
+                        $("#errorMessagecopy").css("display", "none");
+                        $("#copymodeldesc").removeClass("error");
+                        $('#DivPartialShareModelDuplicate').show();
+                    }
+                    else {
+                        $("#cError").html('<strong>Error! </strong>' + data.msg)
+                        $("#errorMessage").slideDown(400);
+                        $("html, body").animate({ scrollTop: 0 }, 1000);
+                    }
+                }
+            });
+        }
+        else {
+            var url = '@Url.Content("~/Model/CreateModel")';
+            formSubmitEvent(url);
+            // window.location.href = url;
+        }
+    });
+
+    // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+    // Close or hide the Duplicate popup on Cancel click .
+    $('#cancelbtncopy').click(function () {
+        $('#DivPartialShareModelDuplicate').hide();
+    });
+
+    // Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+    //Pass extra paramter model title from the model duplicate popup.
+    function DuplicateModel() {
+
+        //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
+        var titleName = htmlEncode($("#copymodeldesc").val().trim());
+
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
-            //Added By Kalpesh Sharma Functional and code review #560 07-16-2014   
-            data: { modelId: $('#latestModelId').val() },
-            dataType: "json",
-            success: function (data) {
-                if (data.status == 1) {
-
-                    //Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014
-                    $("#copymodeldesc").val(htmlDecode(data.msg));
-                    $("#original").text(htmlDecode(data.name));
-
-
-                    //07/14/2014 Functional and Code review comments
-                    $("#errorMessagecopy").css("display", "none");
-                    $("#copymodeldesc").removeClass("error");
-                    $('#DivPartialShareModelDuplicate').show();
-                }
-                else {
-                    $("#cError").html('<strong>Error! </strong>' + data.msg)
-                    $("#errorMessage").slideDown(400);
-                    $("html, body").animate({ scrollTop: 0 }, 1000);
-                }
-            }
-        });
-    }
-    else {
-        var url = '@Url.Content("~/Model/CreateModel")';
-        formSubmitEvent(url);
-       // window.location.href = url;
-    }
-});
-
-// Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
-// Close or hide the Duplicate popup on Cancel click . 
-$('#cancelbtncopy').click(function () {
-    $('#DivPartialShareModelDuplicate').hide();
-});
-
-// Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
-//Pass extra paramter model title from the model duplicate popup.
-function DuplicateModel() {
-
-    //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
-    var titleName = htmlEncode($("#copymodeldesc").val().trim());
-
-    $.ajax({
-        type: 'POST',
-        url: '@Url.Content("~/Model/DuplicateModel/")',
-            //Added By Kalpesh Sharma Functional and code review #560 07-16-2014 
+            url: '@Url.Content("~/Model/DuplicateModel/")',
+            //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
             data: { modelId: $('#latestModelId').val(), title: titleName },
             dataType: "json",
             success: function (data) {
