@@ -274,6 +274,7 @@
                 $('#result').prop('title', 'Minimum 8 characters required');
                 $('#Password').prop('title', 'Minimum 8 characters required');
                 $("#Password").addClass("error");
+                myApp.hidePleaseWait();
                 return false;
             }
 
@@ -283,24 +284,28 @@
                 $('#result').prop('title', 'Password should contain at least one lower case, one upper case, one digit and one special character');
                 $('#Password').prop('title', 'Password should contain at least one lower case, one upper case, one digit and one special character');
                 $("#Password").addClass("error");
+                myApp.hidePleaseWait();
                 return false;
             }
 
             if ($('#match').text() != '' && $('#match').text().toLowerCase() == 'don\'t match') {
                 $('#match').removeClass();
                 $('#match').addClass("check-icon-red");
+                myApp.hidePleaseWait();
                 return false;
             }
 
             if ($('#Password').val().length < 8 && $('#Password').val().length > 0) {
                 $('#result').removeClass();
-                $('#result').addClass('check-icon-red')
+                $('#result').addClass('check-icon-red');
+                myApp.hidePleaseWait();
                 return false;
             }
 
             if ($('#ConfirmPassword').val().length < 8 && $('#ConfirmPassword').val().length > 0) {
                 $('#match').removeClass();
                 $('#match').addClass("check-icon-red");
+                myApp.hidePleaseWait();
                 return false;
             }
         });
