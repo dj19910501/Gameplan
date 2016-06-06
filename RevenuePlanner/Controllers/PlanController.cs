@@ -7024,7 +7024,7 @@ namespace RevenuePlanner.Controllers
             var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.EntityType.Equals(EntityTypeTactic) && customfield.IsDeleted.Equals(false)).ToList();
             var CustomFieldexists = customfieldlist.Where(customfield => customfield.IsRequired && !isDisplayForFilter).Any();
             var customfieldids = customfieldlist.Where(customfield => customfield.CustomFieldType.Name == DropDownList && (isDisplayForFilter ? customfield.IsDisplayForFilter : true)).Select(customfield => customfield.CustomFieldId).ToList();
-            List<string> tacIds = model.Where(t => t.ActivityType == EntityTypeTactic).Select(t => t.ActivityId).ToList();
+            List<string> tacIds = model.Where(t => t.ActivityType.ToUpper() == EntityTypeTactic.ToUpper()).Select(t => t.ActivityId).ToList();
             tacIds = tacIds.Select(t => t.Replace("cpt_", "")).ToList();
             List<int> intList = tacIds.ConvertAll(s => Int32.Parse(s));
             var EntitiesList = db.CustomField_Entity.Where(entityid => intList.Contains(entityid.EntityId)).ToList();

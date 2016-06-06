@@ -379,11 +379,12 @@
 
         HomeGrid.parse(GridDataHomeGrid, "json");
         HomeGrid.setColumnHidden(0, true);
-        var parsedJSON = $.parseJSON(JsonModel);
-        if (parsedJSON.rows[0].rows.length <= 1) {
-            $('.treegrid_cell').find('img').css('display', 'none');
+        //Commented by Rahul Shah for PL #2231 on 06/06/2016
+        //var parsedJSON = $.parseJSON(JsonModel);
+        //if (parsedJSON.rows[0].rows.length <= 1) {
+        //    $('.treegrid_cell').find('img').css('display', 'none');
 
-        }
+        //}
     }
     
     function SetHeader() {
