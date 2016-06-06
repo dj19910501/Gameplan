@@ -9084,7 +9084,7 @@ namespace RevenuePlanner.Controllers
 
                     BudgetDataObj = new Budgetdataobj();
                     //  BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails>" + bm.ActivityName + "</a>");
-                    BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup()>" + bm.ActivityName + "</a>");
+                    BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup()>" + (HttpUtility.HtmlEncode(bm.ActivityName).Replace("'", "&#39;")) + "</a>");
                     BudgetDataObjList.Add(BudgetDataObj);
 
                     double planAllocation = 0;
@@ -9137,8 +9137,8 @@ namespace RevenuePlanner.Controllers
 
                         CampaignDataObj = new Budgetdataobj();
                         //  CampaignDataObj.value = HttpUtility.HtmlEncode(bmc.ActivityName);
-                      
-                        CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmc.ActivityId + "','" + bmc.ActivityType.ToString() + "')>" + bmc.ActivityName + "</a>");
+
+                        CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmc.ActivityId + "','" + bmc.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmc.ActivityName).Replace("'", "&#39;")) + "</a>");
                         CampaignDataObjList.Add(CampaignDataObj);
 
                         if (budgetTab == Enums.BudgetTab.Planned)
@@ -9183,7 +9183,7 @@ namespace RevenuePlanner.Controllers
 
                             ProgramDataObj = new Budgetdataobj();
                             // ProgramDataObj.value = HttpUtility.HtmlEncode(bmp.ActivityName);
-                            ProgramDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmp.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmp.ActivityId + "','" + bmp.ActivityType.ToString() + "')>" + bmp.ActivityName + "</a>");
+                            ProgramDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmp.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmp.ActivityId + "','" + bmp.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmp.ActivityName).Replace("'", "&#39;")) + "</a>");
                             ProgramDataObjList.Add(ProgramDataObj);
 
                             if (budgetTab == Enums.BudgetTab.Planned)
@@ -9228,7 +9228,7 @@ namespace RevenuePlanner.Controllers
 
                                 TacticDataObj = new Budgetdataobj();
                                 // TacticDataObj.value = HttpUtility.HtmlEncode(bmt.ActivityName);
-                                TacticDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmt.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmt.ActivityId + "','" + bmt.ActivityType.ToString() + "')>" + bmt.ActivityName + "</a>");
+                                TacticDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmt.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmt.ActivityId + "','" + bmt.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmt.ActivityName).Replace("'", "&#39;")) + "</a>");
                                 TacticDataObjList.Add(TacticDataObj);
 
                                 if (budgetTab == Enums.BudgetTab.Planned)
@@ -9274,7 +9274,7 @@ namespace RevenuePlanner.Controllers
 
                                     LineDataObj = new Budgetdataobj();
                                     //LineDataObj.value = HttpUtility.HtmlEncode(bml.ActivityName);
-                                    LineDataObj.value = HttpUtility.HtmlEncode("<a id=" + bml.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bml.ActivityId + "','" + bml.ActivityType.ToString() + "')>" + bml.ActivityName + "</a>");
+                                    LineDataObj.value = HttpUtility.HtmlEncode("<a id=" + bml.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bml.ActivityId + "','" + bml.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bml.ActivityName).Replace("'", "&#39;")) + "</a>");
                                     LineDataObjList.Add(LineDataObj);
 
                                     LineRowsObj.data = LineDataObjList;
