@@ -243,6 +243,10 @@
             SetddlSelectedItem(this);
         });
 
+        $('.sbHolder .sbSelector').bind("DOMSubtreeModified", function () {
+            SetddlSelectedItem($(this).parent().find('ul li.setFocusli'));
+        });
+
         function SetddlSelectedItem(obj) {
             var id = $(obj).parent().parent().parent().find('select').attr('id');
             $('#' + id + ' option').each(function () {
