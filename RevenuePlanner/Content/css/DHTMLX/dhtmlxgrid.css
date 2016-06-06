@@ -2103,8 +2103,8 @@ div.gridbox_dhx_skyblue.isIE table.hdr tr {
 
 div.gridbox_dhx_skyblue.gridbox table.obj tr td {
     border-width: 0;
-    padding-right: 4px;
-    padding-left: 4px;
+    /*padding-right: 4px;
+    padding-left: 4px;*/
 }
 
 div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
