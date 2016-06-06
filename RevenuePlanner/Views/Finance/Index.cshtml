@@ -1893,4 +1893,15 @@
             }
         }
     });
+
+    // Added by Rushil Bhuptani on 06/06/2016 for #2247
+    function ExportToExcel() {
+        if (pageName == "MainGrid") {
+            ExportToExcelMainGrid();
+           
+        }
+        else if (pageName == "EditBudget") {
+            ExportToExcelEditBudget();
+        }
+    }
 </script>

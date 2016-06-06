@@ -40,6 +40,7 @@
     var RowIDs = {
         IDs: []
     }
+   
     var myTreeGrid;
     //  var GlobalBudgetId = '';
     //var GlobalEditLevel = '';
@@ -60,7 +61,7 @@
     var AllocatedBy;
     var combo;
     $(document).ready(function () {
-
+      
         GlobalBudgetId = '@ViewBag.BudgetId';
         GlobalEditLevel = '@ViewBag.EditLevel';
         
@@ -237,6 +238,8 @@
         myTreeGrid.setSkin("dhx_skyblue");
         //GridData = 'GridData';
         myTreeGrid.parse(GridData, "json");
+        // Added by Rushil Bhuptani on 06/06/2016 for #2247
+        myTreeGrid.setColumnHidden(0, true);
         var titleIndx = myTreeGrid.getColIndexById('Title');
         myTreeGrid.forEachRow(function (rowid) {
             if (GlobalEditLevel != 'Budget') {
@@ -973,9 +976,11 @@
 
             var TotalColumn = myTreeGrid.getColumnCount();
             var AddRowString = [];
-            var AddRowColTypes = "tree,ro,ro";
+            // Modified by Rushil Bhuptani on 06/06/2016 for #2247
+            var AddRowColTypes = "ro,tree,ro,ro";
             var ColumnsVisibility = "";
 
+            AddRowString.push("");
             AddRowString.push("New item");
             AddRowString.push("");
             for (var k = 0; k <= TotalColumn; k++) {
@@ -1068,5 +1073,14 @@
         else {
             return RollupFinanceValue(parentid, 0, colIndex);
         }
+    }
+
+    // Added by Rushil Bhuptani on 06/06/2016 for #2247
+    function ExportToExcelEditBudget() {
+        myTreeGrid.setColumnHidden(0, false);
+        myTreeGrid.setColumnHidden(2, true);
+        myTreeGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
+        myTreeGrid.setColumnHidden(0, true);
+        myTreeGrid.setColumnHidden(2, false);
     }
 </script>

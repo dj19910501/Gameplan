@@ -1657,13 +1657,14 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
+                // Modified by Rushil Bhuptani on 06/06/2016 for #2247
                 if (!_isBudgetCreateEdit && !_isForecastCreateEdit)
                 {
-                    setColumnsVisibility.Append("false,true,true,");
+                    setColumnsVisibility.Append("false,false,true,true,");
                 }
                 else
                 {
-                    setColumnsVisibility.Append("false,false,true,");
+                    setColumnsVisibility.Append("false,false,false,true,");
                 }
                 budgetMain.ColumneditLevel = budgetMain.BudgetColName;
             }
@@ -1693,13 +1694,14 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
+                // Modified by Rushil Bhuptani on 06/06/2016 for #2247
                 if (!_isBudgetCreateEdit && !_isForecastCreateEdit)
                 {
-                    setColumnsVisibility.Append("false,true,false,");
+                    setColumnsVisibility.Append("false,false,true,false,");
                 }
                 else
                 {
-                    setColumnsVisibility.Append("false,false,false,");
+                    setColumnsVisibility.Append("false,false,false,false,");
                 }
                 budgetMain.ColumneditLevel = budgetMain.ForecastColName;
             }
@@ -1801,19 +1803,32 @@ namespace RevenuePlanner.Controllers
             dataTableMain.Columns.Add("lstLineItemIds", typeof(List<int>));
 
             #region Set Tree Grid Properties and methods
-            attachHeader.Append("Task Name,,Line Items,");
-            setColValidators.Append(Enums.ColumnValidation.CustomNameValid.ToString() + ",,,");
-            setColumnIds.Append("Title,,LineItems,");
+            // Modified by Rushil Bhuptani on 06/06/2016 for #2247
+            attachHeader.Append("ActivityId,Task Name,,Line Items,");
+            setColValidators.Append("," + Enums.ColumnValidation.CustomNameValid.ToString() + ",,,");
+            setColumnIds.Append(",Title,,LineItems,");
 
             List<Options> optList = new List<Options>();
             List<Head> ListHead = new List<Head>();
+
             Head headObj = new Head();
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
             {
                 optList = new List<Options>();
                 headObj = new Head();
+                // Added by Rushil Bhuptani on 06/06/2016 for #2247
                 if (i == 0)
+                {
+                    headObj.value = "";
+                    headObj.width = 100;
+                    headObj.align = "center";
+                    headObj.type = "ro";
+                    headObj.id = "";
+                    headObj.sort = "na";
+
+                }
+                if (i == 1)
                 {
                     headObj.value = "";
                     headObj.width = 200;
@@ -1823,7 +1838,7 @@ namespace RevenuePlanner.Controllers
                     headObj.sort = "str";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                     
                 }
-                if (i == 1)
+                if (i == 2)
                 {
                     headObj.value = "";
                     headObj.width = 65;
@@ -1832,7 +1847,7 @@ namespace RevenuePlanner.Controllers
                     headObj.id = "";
                     headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
                 }
-                if (i == 2)
+                if (i == 3)
                 {
                     headObj.value = "";
                     headObj.width = 65;
@@ -2770,6 +2785,8 @@ namespace RevenuePlanner.Controllers
             List<row_attrs> rows_attrData = new List<row_attrs>();
 
             List<string> ParentData = new List<string>();
+            // Added by Rushil Bhuptani on 06/06/2016 for #2247
+            ParentData.Add(id.ToString());
             ParentData.Add(HttpUtility.HtmlDecode(name));
             string IsTitleEdit = "1";
             string strAddRow, strLineItemLink;
