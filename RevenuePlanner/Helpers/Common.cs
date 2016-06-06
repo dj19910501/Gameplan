@@ -8639,11 +8639,14 @@ namespace RevenuePlanner.Helpers
         }
         public void RemoveAllCurrentUserCache()
         {
-            string[] names = Enum.GetNames(typeof(Enums.CacheObject));
-            for (int i = 0; i < names.Length; i++)
+            if (Sessions.User != null && Sessions.User.UserId != null && HttpContext.Current.Session.Contents.SessionID != null)
             {
-                HttpRuntime.Cache.Remove(names[i] + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
-            }
+                string[] names = Enum.GetNames(typeof(Enums.CacheObject));
+                for (int i = 0; i < names.Length; i++)
+                {
+                    HttpRuntime.Cache.Remove(names[i] + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
+                }
+            }            
         }
     }
     #endregion

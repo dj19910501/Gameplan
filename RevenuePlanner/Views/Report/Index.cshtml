@@ -1447,6 +1447,19 @@
         }
         checkedPlancount = $("#ulSelectedPlans li input:checkbox:checked").length;
         $('#cPlancount').text(checkedPlancount);
+
+        if (checkedPlancount > 1) {
+            $("#divAddActual").hide();
+        }
+        else if (checkedPlancount == 0) {
+            $("#divAddActual").hide();
+            $("#divShareRep").hide();
+        }
+        else {
+            $("#divAddActual").show();
+            $("#divShareRep").show();
+
+        }
     }
 
     function OnCheckboxChange(_parentliId, _checked, CustFieldId, count) {

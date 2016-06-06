@@ -11822,430 +11822,437 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
-                using (MRPEntities mrp = new MRPEntities())
+                if (Sessions.User != null)
                 {
-                    //using (var scope = new TransactionScope())
+                    using (MRPEntities mrp = new MRPEntities())
                     {
-                        if (ModelState.IsValid)
+                        //using (var scope = new TransactionScope())
                         {
-                            if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                            if (ModelState.IsValid)
                             {
-                                //// Save Comment for Improvement Tactic.
-                                Plan_Improvement_Campaign_Program_Tactic_Comment pcptc = new Plan_Improvement_Campaign_Program_Tactic_Comment();
-                                approvedComment = Convert.ToString(Enums.Section.ImprovementTactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                                pcptc.ImprovementPlanTacticId = planTacticId;
-                                pcptc.Comment = approvedComment;
-                                DateTime currentdate = DateTime.Now;
-                                pcptc.CreatedDate = currentdate;
-                                string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
-                                pcptc.CreatedBy = Sessions.User.UserId;
-                                db.Entry(pcptc).State = EntityState.Added;
-                                db.Plan_Improvement_Campaign_Program_Tactic_Comment.Add(pcptc);
-                                result = db.SaveChanges();
-                            }
-                            else
-                            {
-                                DateTime currentdate = DateTime.Now;
-                                //// Save Comment for Tactic,Program,Campaign.
-                                Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
-                                if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                                if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                                 {
-                                    pcptc.PlanTacticId = planTacticId;
-                                    approvedComment = Convert.ToString(Enums.Section.Tactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                                    if (LinkedTacticId != null)
+                                    //// Save Comment for Improvement Tactic.
+                                    Plan_Improvement_Campaign_Program_Tactic_Comment pcptc = new Plan_Improvement_Campaign_Program_Tactic_Comment();
+                                    approvedComment = Convert.ToString(Enums.Section.ImprovementTactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                                    pcptc.ImprovementPlanTacticId = planTacticId;
+                                    pcptc.Comment = approvedComment;
+                                    DateTime currentdate = DateTime.Now;
+                                    pcptc.CreatedDate = currentdate;
+                                    string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
+                                    pcptc.CreatedBy = Sessions.User.UserId;
+                                    db.Entry(pcptc).State = EntityState.Added;
+                                    db.Plan_Improvement_Campaign_Program_Tactic_Comment.Add(pcptc);
+                                    result = db.SaveChanges();
+                                }
+                                else
+                                {
+                                    DateTime currentdate = DateTime.Now;
+                                    //// Save Comment for Tactic,Program,Campaign.
+                                    Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
+                                    if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                                     {
-                                        Plan_Campaign_Program_Tactic_Comment ObjLinkedTactic = new Plan_Campaign_Program_Tactic_Comment();
-                                        ObjLinkedTactic.PlanTacticId = LinkedTacticId;
-                                        ObjLinkedTactic.Comment = approvedComment;
-                                        ObjLinkedTactic.CreatedDate = currentdate;
-                                        ObjLinkedTactic.CreatedBy = Sessions.User.UserId;
-                                        db.Entry(ObjLinkedTactic).State = EntityState.Added;
-                                        db.Plan_Campaign_Program_Tactic_Comment.Add(ObjLinkedTactic);
+                                        pcptc.PlanTacticId = planTacticId;
+                                        approvedComment = Convert.ToString(Enums.Section.Tactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                                        if (LinkedTacticId != null)
+                                        {
+                                            Plan_Campaign_Program_Tactic_Comment ObjLinkedTactic = new Plan_Campaign_Program_Tactic_Comment();
+                                            ObjLinkedTactic.PlanTacticId = LinkedTacticId;
+                                            ObjLinkedTactic.Comment = approvedComment;
+                                            ObjLinkedTactic.CreatedDate = currentdate;
+                                            ObjLinkedTactic.CreatedBy = Sessions.User.UserId;
+                                            db.Entry(ObjLinkedTactic).State = EntityState.Added;
+                                            db.Plan_Campaign_Program_Tactic_Comment.Add(ObjLinkedTactic);
+
+                                        }
 
                                     }
-
-                                }
-                                else if (section == Convert.ToString(Enums.Section.Program).ToLower())
-                                {
-
-                                    pcptc.PlanProgramId = planTacticId;
-                                    approvedComment = Convert.ToString(Enums.Section.Program) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                                }
-                                else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
-                                {
-
-                                    pcptc.PlanCampaignId = planTacticId;
-                                    approvedComment = Convert.ToString(Enums.Section.Campaign) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                                }
-                                pcptc.Comment = approvedComment;
-                                pcptc.CreatedDate = currentdate;
-                                string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
-                                pcptc.CreatedBy = Sessions.User.UserId;
-                                db.Entry(pcptc).State = EntityState.Added;
-                                db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
-                                result = db.SaveChanges();
-                            }
-                            if (result >= 1)
-                            {
-                                //// Save Status for all section.
-                                if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
-                                {
-                                    var Tacticlist = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == planTacticId || pt.PlanTacticId == LinkedTacticId).ToList();
-                                    Plan_Campaign_Program_Tactic Linkedtacticobj = Tacticlist.Where(pt => pt.PlanTacticId == LinkedTacticId).FirstOrDefault();
-                                    Plan_Campaign_Program_Tactic tactic = Tacticlist.Where(pt => pt.PlanTacticId == planTacticId).FirstOrDefault();
-                                    bool isApproved = false;
-                                    DateTime todaydate = DateTime.Now;
-
-                                    #region "Update Tactic Integration Settings"
-                                    bool IsSyncSF = false, IsSyncEloqua = false, IsDeployToIntegration = false, IsSyncWorkFront = false, IsSyncMarketo = false;              // Declare local variables.
-                                    IsDeployToIntegration = !string.IsNullOrEmpty(isDeployToIntegration) ? bool.Parse(isDeployToIntegration) : false; // Parse isDeployToIntegration value.
-                                    IsSyncSF = !string.IsNullOrEmpty(isSyncSF) ? bool.Parse(isSyncSF) : false;                                        // Parse isSyncSF value
-                                    IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;                            // Parse isSyncEloqua value
-                                    IsSyncWorkFront = !string.IsNullOrEmpty(isSyncWorkFront) ? bool.Parse(isSyncWorkFront) : false;                   // Parse isSyncWorkFront value
-                                    IsSyncMarketo = !string.IsNullOrEmpty(isSyncMarketo) ? bool.Parse(isSyncMarketo) : false;                         // Parse isSyncMarketo value
-
-                                    if (IsSyncWorkFront)
+                                    else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                                     {
-                                        SaveWorkFrontTacticReviewSettings(tactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+
+                                        pcptc.PlanProgramId = planTacticId;
+                                        approvedComment = Convert.ToString(Enums.Section.Program) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
                                     }
-                                 
-
-                                    tactic.IsDeployedToIntegration = IsDeployToIntegration;
-                                    tactic.IsSyncEloqua = IsSyncEloqua;
-                                    tactic.IsSyncSalesForce = IsSyncSF;
-                                    tactic.IsSyncWorkFront = IsSyncWorkFront;
-                                    tactic.IsSyncMarketo = IsSyncMarketo;
-                                    tactic.ModifiedBy = Sessions.User.UserId;
-                                    tactic.ModifiedDate = DateTime.Now;
-                                    db.Entry(tactic).State = EntityState.Modified;
-
-                                    #region "Update linked Tactic Integration Settings"
-                                    if (Linkedtacticobj != null)
+                                    else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                                     {
-                                        Linkedtacticobj.IsDeployedToIntegration = IsDeployToIntegration;
-                                        Linkedtacticobj.IsSyncEloqua = IsSyncEloqua;
-                                        Linkedtacticobj.IsSyncSalesForce = IsSyncSF;
-                                        Linkedtacticobj.IsSyncWorkFront = IsSyncWorkFront;
-                                        Linkedtacticobj.IsSyncMarketo = IsSyncMarketo;
-                                        Linkedtacticobj.ModifiedBy = Sessions.User.UserId;
-                                        Linkedtacticobj.ModifiedDate = DateTime.Now;
+
+                                        pcptc.PlanCampaignId = planTacticId;
+                                        approvedComment = Convert.ToString(Enums.Section.Campaign) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                                    }
+                                    pcptc.Comment = approvedComment;
+                                    pcptc.CreatedDate = currentdate;
+                                    string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
+                                    pcptc.CreatedBy = Sessions.User.UserId;
+                                    db.Entry(pcptc).State = EntityState.Added;
+                                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                                    result = db.SaveChanges();
+                                }
+                                if (result >= 1)
+                                {
+                                    //// Save Status for all section.
+                                    if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                                    {
+                                        var Tacticlist = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == planTacticId || pt.PlanTacticId == LinkedTacticId).ToList();
+                                        Plan_Campaign_Program_Tactic Linkedtacticobj = Tacticlist.Where(pt => pt.PlanTacticId == LinkedTacticId).FirstOrDefault();
+                                        Plan_Campaign_Program_Tactic tactic = Tacticlist.Where(pt => pt.PlanTacticId == planTacticId).FirstOrDefault();
+                                        bool isApproved = false;
+                                        DateTime todaydate = DateTime.Now;
+
+                                        #region "Update Tactic Integration Settings"
+                                        bool IsSyncSF = false, IsSyncEloqua = false, IsDeployToIntegration = false, IsSyncWorkFront = false, IsSyncMarketo = false;              // Declare local variables.
+                                        IsDeployToIntegration = !string.IsNullOrEmpty(isDeployToIntegration) ? bool.Parse(isDeployToIntegration) : false; // Parse isDeployToIntegration value.
+                                        IsSyncSF = !string.IsNullOrEmpty(isSyncSF) ? bool.Parse(isSyncSF) : false;                                        // Parse isSyncSF value
+                                        IsSyncEloqua = !string.IsNullOrEmpty(isSyncEloqua) ? bool.Parse(isSyncEloqua) : false;                            // Parse isSyncEloqua value
+                                        IsSyncWorkFront = !string.IsNullOrEmpty(isSyncWorkFront) ? bool.Parse(isSyncWorkFront) : false;                   // Parse isSyncWorkFront value
+                                        IsSyncMarketo = !string.IsNullOrEmpty(isSyncMarketo) ? bool.Parse(isSyncMarketo) : false;                         // Parse isSyncMarketo value
 
                                         if (IsSyncWorkFront)
                                         {
-                                            SaveWorkFrontTacticReviewSettings(Linkedtacticobj, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+                                            SaveWorkFrontTacticReviewSettings(tactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
                                         }
-                                       
 
-                                        db.Entry(Linkedtacticobj).State = EntityState.Modified;
-                                    }
-                                    #endregion
 
-                                    db.SaveChanges();
+                                        tactic.IsDeployedToIntegration = IsDeployToIntegration;
+                                        tactic.IsSyncEloqua = IsSyncEloqua;
+                                        tactic.IsSyncSalesForce = IsSyncSF;
+                                        tactic.IsSyncWorkFront = IsSyncWorkFront;
+                                        tactic.IsSyncMarketo = IsSyncMarketo;
+                                        tactic.ModifiedBy = Sessions.User.UserId;
+                                        tactic.ModifiedDate = DateTime.Now;
+                                        db.Entry(tactic).State = EntityState.Modified;
 
-                                    #endregion
-
-                                    if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
-                                    {
-                                        tactic.Status = status;
-                                        if (LinkedTacticId != null)
+                                        #region "Update linked Tactic Integration Settings"
+                                        if (Linkedtacticobj != null)
                                         {
-                                            Linkedtacticobj.Status = status;
+                                            Linkedtacticobj.IsDeployedToIntegration = IsDeployToIntegration;
+                                            Linkedtacticobj.IsSyncEloqua = IsSyncEloqua;
+                                            Linkedtacticobj.IsSyncSalesForce = IsSyncSF;
+                                            Linkedtacticobj.IsSyncWorkFront = IsSyncWorkFront;
+                                            Linkedtacticobj.IsSyncMarketo = IsSyncMarketo;
+                                            Linkedtacticobj.ModifiedBy = Sessions.User.UserId;
+                                            Linkedtacticobj.ModifiedDate = DateTime.Now;
+
+                                            if (IsSyncWorkFront)
+                                            {
+                                                SaveWorkFrontTacticReviewSettings(Linkedtacticobj, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+                                            }
+
+
+                                            db.Entry(Linkedtacticobj).State = EntityState.Modified;
                                         }
-                                        isApproved = true;
-                                        if (todaydate > tactic.StartDate && todaydate < tactic.EndDate)
+                                        #endregion
+
+                                        db.SaveChanges();
+
+                                        #endregion
+
+                                        if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                         {
-                                            tactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                            tactic.Status = status;
                                             if (LinkedTacticId != null)
                                             {
-                                                Linkedtacticobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                                Linkedtacticobj.Status = status;
+                                            }
+                                            isApproved = true;
+                                            if (todaydate > tactic.StartDate && todaydate < tactic.EndDate)
+                                            {
+                                                tactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                                if (LinkedTacticId != null)
+                                                {
+                                                    Linkedtacticobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                                }
+                                            }
+                                            else if (todaydate > tactic.EndDate)
+                                            {
+                                                tactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                                if (LinkedTacticId != null)
+                                                {
+                                                    Linkedtacticobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                                }
                                             }
                                         }
-                                        else if (todaydate > tactic.EndDate)
+                                        else
                                         {
-                                            tactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                            tactic.Status = status;
                                             if (LinkedTacticId != null)
                                             {
-                                                Linkedtacticobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                                Linkedtacticobj.Status = status;
                                             }
                                         }
-                                    }
-                                    else
-                                    {
-                                        tactic.Status = status;
+                                        tactic.ModifiedBy = Sessions.User.UserId;
+                                        tactic.ModifiedDate = DateTime.Now;
+                                        db.Entry(tactic).State = EntityState.Modified;
+
                                         if (LinkedTacticId != null)
                                         {
-                                            Linkedtacticobj.Status = status;
+                                            Linkedtacticobj.ModifiedBy = Sessions.User.UserId;
+                                            Linkedtacticobj.ModifiedDate = DateTime.Now;
+                                            db.Entry(Linkedtacticobj).State = EntityState.Modified;
                                         }
-                                    }
-                                    tactic.ModifiedBy = Sessions.User.UserId;
-                                    tactic.ModifiedDate = DateTime.Now;
-                                    db.Entry(tactic).State = EntityState.Modified;
 
-                                    if (LinkedTacticId != null)
-                                    {
-                                        Linkedtacticobj.ModifiedBy = Sessions.User.UserId;
-                                        Linkedtacticobj.ModifiedDate = DateTime.Now;
-                                        db.Entry(Linkedtacticobj).State = EntityState.Modified;
-                                    }
+                                        result = db.SaveChanges();
 
-                                    result = db.SaveChanges();
-
-                                    planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == (db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == (db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == planTacticId && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt.PlanProgramId).FirstOrDefault()) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp.PlanCampaignId).FirstOrDefault()) && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).FirstOrDefault();
-                                    if (result >= 1)
-                                    {
-                                        if (isApproved)
+                                        planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == (db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == (db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == planTacticId && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt.PlanProgramId).FirstOrDefault()) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp.PlanCampaignId).FirstOrDefault()) && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).FirstOrDefault();
+                                        if (result >= 1)
                                         {
-                                            result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
-                                            //added by uday for #532 
-                                            if (tactic.IsDeployedToIntegration == true)
+                                            if (isApproved)
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
-                                                externalIntegration.Sync();
+                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                                                //added by uday for #532 
+                                                if (tactic.IsDeployedToIntegration == true)
+                                                {
+                                                    ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
+                                                    externalIntegration.Sync();
+                                                }
+                                                //end
                                             }
-                                            //end
+                                            else if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                                            {
+                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null);
+                                            }
                                         }
-                                        else if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                                        if (result >= 1)
                                         {
-                                            result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null);
+                                            //// Send Notification Url for Tactic.
+                                            string strURL = GetNotificationURLbyStatus(planid, planTacticId, section);//Url.Action("Index", "Home", new { currentPlanId = Sessions.PlanId, planTacticId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
+                                            Common.mailSendForTactic(planTacticId, status, tactic.Title, false, "", Convert.ToString(Enums.Section.Tactic).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                         }
-                                    }
-                                    if (result >= 1)
-                                    {
-                                        //// Send Notification Url for Tactic.
-                                        string strURL = GetNotificationURLbyStatus(planid, planTacticId, section);//Url.Action("Index", "Home", new { currentPlanId = Sessions.PlanId, planTacticId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
-                                        Common.mailSendForTactic(planTacticId, status, tactic.Title, false, "", Convert.ToString(Enums.Section.Tactic).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
-                                    }
-                                    strmessage = Common.objCached.TacticStatusSuccessfully.Replace("{0}", status);
+                                        strmessage = Common.objCached.TacticStatusSuccessfully.Replace("{0}", status);
 
-                                    // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                    string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
-                                    if (!string.IsNullOrEmpty(strStatusMessage))
-                                    {
-                                        strmessage = strStatusMessage;
-                                        strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
-                                    }
-                                    // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                        // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                        string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
+                                        if (!string.IsNullOrEmpty(strStatusMessage))
+                                        {
+                                            strmessage = strStatusMessage;
+                                            strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                                        }
+                                        // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
 
-                                    if (!tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString()))
-                                    {
-                                        Addcomment = true;
-                                    }
-                                    //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                    //-- Update Program status according to the tactic status
-                                    Common.ChangeProgramStatus(tactic.PlanProgramId, Addcomment);
-
-                                    //-- Update Campaign status according to the tactic and program status
-                                    var PlanCampaignId = tactic.Plan_Campaign_Program.PlanCampaignId;
-                                    Common.ChangeCampaignStatus(PlanCampaignId, Addcomment);
-                                    //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-
-                                    if (LinkedTacticId != null)
-                                    {
-
-                                        if (!Linkedtacticobj.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString()))
+                                        if (!tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString()))
                                         {
                                             Addcomment = true;
                                         }
                                         //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                         //-- Update Program status according to the tactic status
-                                        Common.ChangeProgramStatus(Linkedtacticobj.PlanProgramId, Addcomment);
+                                        Common.ChangeProgramStatus(tactic.PlanProgramId, Addcomment);
 
                                         //-- Update Campaign status according to the tactic and program status
-                                        var LinkedPlanCampaignId = Linkedtacticobj.Plan_Campaign_Program.PlanCampaignId;
-                                        Common.ChangeCampaignStatus(LinkedPlanCampaignId, Addcomment);
-                                    }
+                                        var PlanCampaignId = tactic.Plan_Campaign_Program.PlanCampaignId;
+                                        Common.ChangeCampaignStatus(PlanCampaignId, Addcomment);
+                                        //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
-                                }
-                                else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
-                                {
-                                    Plan_Improvement_Campaign_Program_Tactic tactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(pt => pt.ImprovementPlanTacticId == planTacticId).FirstOrDefault();
-                                    tactic.Status = status;
-                                    tactic.ModifiedBy = Sessions.User.UserId;
-                                    tactic.ModifiedDate = DateTime.Now;
-                                    db.Entry(tactic).State = EntityState.Modified;
-                                    result = db.SaveChanges();
-
-                                    planid = (from t in db.Plan_Improvement_Campaign_Program_Tactic
-                                              join p in db.Plan_Improvement_Campaign_Program on t.ImprovementPlanProgramId equals p.ImprovementPlanProgramId
-                                              join c in db.Plan_Improvement_Campaign on p.ImprovementPlanCampaignId equals c.ImprovementPlanCampaignId
-                                              where t.ImprovementPlanTacticId == planTacticId && t.IsDeleted == false
-                                              select c.ImprovePlanId).FirstOrDefault();
-
-                                    if (result == 1)
-                                    {
-                                        if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                                        if (LinkedTacticId != null)
                                         {
-                                            result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
-                                            //added by uday for #532
-                                            if (tactic.IsDeployedToIntegration == true)
+
+                                            if (!Linkedtacticobj.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString()))
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.ImprovementTactic);
-                                                externalIntegration.Sync();
+                                                Addcomment = true;
                                             }
-                                            //end by uday for #532
-                                        }
-                                        else if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
-                                        {
-                                            result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null);
-                                        }
-                                    }
-                                    if (result >= 1)
-                                    {
-                                        string strURL = GetNotificationURLbyStatus(planid, planTacticId, section);
-                                        Common.mailSendForTactic(planTacticId, status, tactic.Title, false, "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
-                                    }
-                                    strmessage = Common.objCached.ImprovementTacticStatusSuccessfully.Replace("{0}", status);
-                                    // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                    string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
-                                    if (!string.IsNullOrEmpty(strStatusMessage))
-                                    {
-                                        strmessage = strStatusMessage;
-                                        strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);
-                                    }
-                                    // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                }
-                                else if (section == Convert.ToString(Enums.Section.Program).ToLower())
-                                {
-                                    // Plan_Campaign_Program program = db.Plan_Campaign_Program.Where(pt => pt.PlanProgramId == planTacticId).FirstOrDefault();
-                                    program.Status = status;
-                                    program.ModifiedBy = Sessions.User.UserId;
-                                    program.ModifiedDate = DateTime.Now;
-                                    db.Entry(program).State = EntityState.Modified;
-                                    result = db.SaveChanges();
-                                    if (result == 1)
-                                    {
-                                        if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
-                                        {
-                                            Addcomment = true;
-                                            string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString();
-                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
-                                            AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
-                                            result = Common.InsertChangeLog(planid, null, planTacticId, program.Title.ToString(), Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                                            //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                            //-- Update Program status according to the tactic status
+                                            Common.ChangeProgramStatus(Linkedtacticobj.PlanProgramId, Addcomment);
 
-                                            if (program.IsDeployedToIntegration == true)
+                                            //-- Update Campaign status according to the tactic and program status
+                                            var LinkedPlanCampaignId = Linkedtacticobj.Plan_Campaign_Program.PlanCampaignId;
+                                            Common.ChangeCampaignStatus(LinkedPlanCampaignId, Addcomment);
+                                        }
+
+                                    }
+                                    else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                                    {
+                                        Plan_Improvement_Campaign_Program_Tactic tactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(pt => pt.ImprovementPlanTacticId == planTacticId).FirstOrDefault();
+                                        tactic.Status = status;
+                                        tactic.ModifiedBy = Sessions.User.UserId;
+                                        tactic.ModifiedDate = DateTime.Now;
+                                        db.Entry(tactic).State = EntityState.Modified;
+                                        result = db.SaveChanges();
+
+                                        planid = (from t in db.Plan_Improvement_Campaign_Program_Tactic
+                                                  join p in db.Plan_Improvement_Campaign_Program on t.ImprovementPlanProgramId equals p.ImprovementPlanProgramId
+                                                  join c in db.Plan_Improvement_Campaign on p.ImprovementPlanCampaignId equals c.ImprovementPlanCampaignId
+                                                  where t.ImprovementPlanTacticId == planTacticId && t.IsDeleted == false
+                                                  select c.ImprovePlanId).FirstOrDefault();
+
+                                        if (result == 1)
+                                        {
+                                            if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Program);
-                                                externalIntegration.Sync();
+                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                                                //added by uday for #532
+                                                if (tactic.IsDeployedToIntegration == true)
+                                                {
+                                                    ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.ImprovementTactic);
+                                                    externalIntegration.Sync();
+                                                }
+                                                //end by uday for #532
+                                            }
+                                            else if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                                            {
+                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null);
                                             }
                                         }
-                                        else if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
+                                        if (result >= 1)
                                         {
-                                            Addcomment = true;
-                                            string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
-                                            AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
-
+                                            string strURL = GetNotificationURLbyStatus(planid, planTacticId, section);
+                                            Common.mailSendForTactic(planTacticId, status, tactic.Title, false, "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                         }
-                                        else if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                                        strmessage = Common.objCached.ImprovementTacticStatusSuccessfully.Replace("{0}", status);
+                                        // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                        string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
+                                        if (!string.IsNullOrEmpty(strStatusMessage))
                                         {
-                                            Addcomment = true;
-                                            string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString();
-                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
-                                            AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
-                                            Common.InsertChangeLog(program.Plan_Campaign.PlanId, 0, program.PlanProgramId, program.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
-
+                                            strmessage = strStatusMessage;
+                                            strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);
                                         }
-
-                                        //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                        Common.ChangeCampaignStatus(program.PlanCampaignId, Addcomment);
-                                        //-- Update Campaign status according to the tactic and program status
-
+                                        // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                     }
-                                    if (result >= 1)
+                                    else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                                     {
-                                        string strURL = GetNotificationURLbyStatus(planid, planTacticId, section);
-                                        Common.mailSendForTactic(planTacticId, status, program.Title, false, "", Convert.ToString(Enums.Section.Program).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
-                                    }
-                                    strmessage = Common.objCached.ProgramStatusSuccessfully.Replace("{0}", status);
-                                    // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                    string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
-                                    if (!string.IsNullOrEmpty(strStatusMessage))
-                                    {
-                                        strmessage = strStatusMessage;
-                                        strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);
-                                    }
-                                    // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                }
-                                else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
-                                {
-                                    Plan_Campaign campaign = db.Plan_Campaign.Where(pt => pt.PlanCampaignId == planTacticId).FirstOrDefault();
-                                    campaign.Status = status;
-                                    campaign.ModifiedBy = Sessions.User.UserId;
-                                    campaign.ModifiedDate = DateTime.Now;
-                                    db.Entry(campaign).State = EntityState.Modified;
-                                    result = db.SaveChanges();
-                                    if (result == 1)
-                                    {
-                                        if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                                        // Plan_Campaign_Program program = db.Plan_Campaign_Program.Where(pt => pt.PlanProgramId == planTacticId).FirstOrDefault();
+                                        program.Status = status;
+                                        program.ModifiedBy = Sessions.User.UserId;
+                                        program.ModifiedDate = DateTime.Now;
+                                        db.Entry(program).State = EntityState.Modified;
+                                        result = db.SaveChanges();
+                                        if (result == 1)
                                         {
-                                            string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString();
-                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
-                                            AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
-                                            result = Common.InsertChangeLog(campaign.PlanId, null, planTacticId, campaign.Title.ToString(), Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
-                                            if (campaign.IsDeployedToIntegration == true)
+                                            if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Campaign);
-                                                externalIntegration.Sync();
+                                                Addcomment = true;
+                                                string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString();
+                                                UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
+                                                AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
+                                                result = Common.InsertChangeLog(planid, null, planTacticId, program.Title.ToString(), Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+
+                                                if (program.IsDeployedToIntegration == true)
+                                                {
+                                                    ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Program);
+                                                    externalIntegration.Sync();
+                                                }
+                                            }
+                                            else if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
+                                            {
+                                                Addcomment = true;
+                                                string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                                                UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
+                                                AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
+
+                                            }
+                                            else if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                                            {
+                                                Addcomment = true;
+                                                string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString();
+                                                UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
+                                                AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
+                                                Common.InsertChangeLog(program.Plan_Campaign.PlanId, 0, program.PlanProgramId, program.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
+
+                                            }
+
+                                            //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                            Common.ChangeCampaignStatus(program.PlanCampaignId, Addcomment);
+                                            //-- Update Campaign status according to the tactic and program status
+
+                                        }
+                                        if (result >= 1)
+                                        {
+                                            string strURL = GetNotificationURLbyStatus(planid, planTacticId, section);
+                                            Common.mailSendForTactic(planTacticId, status, program.Title, false, "", Convert.ToString(Enums.Section.Program).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                        }
+                                        strmessage = Common.objCached.ProgramStatusSuccessfully.Replace("{0}", status);
+                                        // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                        string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
+                                        if (!string.IsNullOrEmpty(strStatusMessage))
+                                        {
+                                            strmessage = strStatusMessage;
+                                            strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);
+                                        }
+                                        // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                    }
+                                    else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                                    {
+                                        Plan_Campaign campaign = db.Plan_Campaign.Where(pt => pt.PlanCampaignId == planTacticId).FirstOrDefault();
+                                        campaign.Status = status;
+                                        campaign.ModifiedBy = Sessions.User.UserId;
+                                        campaign.ModifiedDate = DateTime.Now;
+                                        db.Entry(campaign).State = EntityState.Modified;
+                                        result = db.SaveChanges();
+                                        if (result == 1)
+                                        {
+                                            if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                                            {
+                                                string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString();
+                                                UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
+                                                AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
+                                                result = Common.InsertChangeLog(campaign.PlanId, null, planTacticId, campaign.Title.ToString(), Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                                                if (campaign.IsDeployedToIntegration == true)
+                                                {
+                                                    ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Campaign);
+                                                    externalIntegration.Sync();
+                                                }
+                                            }
+                                            else if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
+                                            {
+                                                string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                                                UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
+                                                AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
+
+                                            }
+                                            else if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                                            {
+                                                string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString();
+                                                UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
+                                                AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
+                                                Common.InsertChangeLog(campaign.PlanId, 0, campaign.PlanCampaignId, campaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
+
                                             }
                                         }
-                                        else if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
+                                        if (result >= 1)
                                         {
-                                            string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
-                                            AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
-
+                                            string strURL = GetNotificationURLbyStatus(campaign.PlanId, planTacticId, section);
+                                            Common.mailSendForTactic(planTacticId, status, campaign.Title, false, "", Convert.ToString(Enums.Section.Campaign).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                         }
-                                        else if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+
+
+                                        strmessage = Common.objCached.CampaignStatusSuccessfully.Replace("{0}", status);
+                                        // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                        string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
+                                        if (!string.IsNullOrEmpty(strStatusMessage))
                                         {
-                                            string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString();
-                                            UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
-                                            AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
-                                            Common.InsertChangeLog(campaign.PlanId, 0, campaign.PlanCampaignId, campaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
-
+                                            strmessage = strStatusMessage;
+                                            strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);
                                         }
+                                        // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                     }
-                                    if (result >= 1)
-                                    {
-                                        string strURL = GetNotificationURLbyStatus(campaign.PlanId, planTacticId, section);
-                                        Common.mailSendForTactic(planTacticId, status, campaign.Title, false, "", Convert.ToString(Enums.Section.Campaign).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
-                                    }
-
-
-                                    strmessage = Common.objCached.CampaignStatusSuccessfully.Replace("{0}", status);
-                                    // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                    string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
-                                    if (!string.IsNullOrEmpty(strStatusMessage))
-                                    {
-                                        strmessage = strStatusMessage;
-                                        strmessage = string.Format(strmessage, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);
-                                    }
-                                    // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                 }
+                                // Add By Nishant Sheth
+                                // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
+                                DataSet dsPlanCampProgTac = new DataSet();
+                                dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                                objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+
+                                List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+                                objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
+
+                                var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+                                objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
+
+                                var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+                                objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
+
+                                var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                                objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+
+                                var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                                objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
+                                //scope.Complete();
+                                return Json(new { id = planTacticId, TabValue = "Review", msg = strmessage });
                             }
-                            // Add By Nishant Sheth
-                            // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
-                            DataSet dsPlanCampProgTac = new DataSet();
-                            dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
-                            objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
-
-                            List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
-                            objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
-
-                            var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
-                            objCache.AddCache(Enums.CacheObject.Campaign.ToString(), lstCampaign);
-
-                            var lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
-                            objCache.AddCache(Enums.CacheObject.Program.ToString(), lstProgramPer);
-
-                            var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
-                            objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
-
-                            var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
-                            objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
-                            //scope.Complete();
-                            return Json(new { id = planTacticId, TabValue = "Review", msg = strmessage });
                         }
                     }
+                }
+                else
+                {
+                    return Json(new { id = 0 });
                 }
             }
             catch (Exception e)
