@@ -2437,7 +2437,8 @@ namespace RevenuePlanner.Controllers
                             isPublish = true;
                             // Add By Nishant Sheth
                             // Desc : #2225 performance issue with publishing model
-                            objDbMrpEntities.PublishModel(modelId);
+                            objDbMrpEntities.PublishModel(modelId, Sessions.User.UserId);
+                            Sessions.PlanUserSavedViews = null;
                             // End By Nishant Sheth
 
                             #region Old Code

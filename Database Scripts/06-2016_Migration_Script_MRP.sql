@@ -462,6 +462,7 @@ GO
 -- Desc :: Update Plan model id and tactic's tactic type id with new publish version of model 
 CREATE PROCEDURE [dbo].[PublishModel]
 @NewModelId int = 0 
+,@UserId uniqueidentifier=''
 AS
 SET NOCOUNT ON;
 
@@ -481,7 +482,21 @@ END
 )
 SELECT ModelId into #tblModelids
     FROM tblParent 
-	OPTION(MAXRECURSION 32767)
+	OPTION(MAXRECURSION 0)
+
+-- Update Tactic Type for Default saved views
+DECLARE  @TacticTypeIds NVARCHAR(MAX)=''
+SELECT @TacticTypeIds = FilterValues From Plan_UserSavedViews WHERE Userid=@UserId AND FilterName='TacticType'
+
+DECLARE   @FilterValues NVARCHAR(MAX)
+SELECT    @FilterValues = COALESCE(@FilterValues + ',', '') + CAST(TacticTypeId AS NVARCHAR) FROM TacticType 
+WHERE PreviousTacticTypeId IN(SELECT val FROM dbo.comma_split(@TacticTypeIds,','))
+AND ModelId=@NewModelId
+
+IF @FilterValues <>'' 
+BEGIN
+	UPDATE Plan_UserSavedViews SET FilterValues=@FilterValues WHERE Userid=@UserId AND FilterName='TacticType'
+END
 
 -- Update Plan's ModelId with new modelid
 UPDATE [Plan] SET ModelId=@NewModelId WHERE ModelId IN(SELECT ModelId FROM #tblModelids)
@@ -497,7 +512,6 @@ WHERE Tactic.IsDeleted=0
 AND Tactic.TacticTypeId IS NOT NULL
 
 END
-
 GO
 -- ========================================================================================================
 
