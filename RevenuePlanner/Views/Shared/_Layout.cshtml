@@ -16,8 +16,8 @@
     <!--font Awesome css-->
     <link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css" />
     <!--font Awesome css-->
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_June_04.css")" type="text/css" />
-    @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" type="text/css" />*@ 
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_June_05.css")" type="text/css" />
+    @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" type="text/css" />*@
      <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Oct1.css")" type="text/css" />
 
      @Scripts.Render("~/bundles/GetJS")
@@ -46,7 +46,8 @@
     </script>
 </head>
 <body>
-    <div class="container-fluid all-height">
+    <div class="container-fluid ">@* 'all-height' removed for #2219 - Bhumika *@
+
         @{
             string a = Convert.ToString(ViewBag.ActiveMenu);
             if (a == null)
@@ -65,7 +66,7 @@
         <div>
             @RenderSection("PlanHeader", false)
         </div>
-        <div class="row-fluid calc-height">
+        <div class="row-fluid midl-wrap clearfix ">@* 'calc-height' removed for #2219 - Bhumika *@
             <div id="sidebar" class="span2">
                 @RenderSection("Sidebar", false)
             </div>
@@ -86,7 +87,7 @@
             </div>
             <div class="clear"></div>
         </div>
-        <div style="clear: both; margin-bottom: 50px;"></div>
+        @*<div style="clear: both; margin-bottom: 50px;"></div>*@ 
     </div>
     <footer><span class="source-sans-proregular">Copyright &copy; @System.DateTime.Now.Year.ToString() Hive9, Inc. All rights reserved.<a href="http://www.hive9.com/ssa-sla" target="_blank">Terms of Use</a></span></footer>
     <div id="slidepanel" class="sidebar-form source-sans-proregular scrolled_div_form panel_right loading" style="display: none">

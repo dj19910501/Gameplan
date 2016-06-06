@@ -350,7 +350,7 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
-    <Content Include="Content\css\style_min_June_04.css" />
+    <Content Include="Content\css\style_min_June_05.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -359,6 +359,10 @@
     <Content Include="Content\fonts\NaturalLanguageForm\nlicons\license.txt" />
     <Content Include="Content\fonts\NaturalLanguageForm\nlicons\nlicons.dev.svg" />
     <Content Include="Content\fonts\NaturalLanguageForm\nlicons\nlicons.svg" />
+    <Content Include="Content\fonts\ProximaNova-Bold.eot" />
+    <Content Include="Content\fonts\ProximaNova-Bold.ttf" />
+    <Content Include="Content\fonts\ProximaNova-Bold.woff" />
+    <Content Include="Content\fonts\ProximaNova-Bold.woff2" />
     <Content Include="Content\fonts\ProximaNova-Light.svg" />
     <Content Include="Content\fonts\sourcesanspro-bold-webfont.svg" />
     <Content Include="Content\fonts\sourcesanspro-light-webfont.svg" />
@@ -485,6 +489,7 @@
     <Content Include="Content\images\grid-export.png" />
     <Content Include="Content\images\gridCheckbox-icon.png" />
     <Content Include="Content\images\help-icon.png" />
+    <Content Include="Content\images\hiv9_logo.png" />
     <Content Include="Content\images\hive9-logo_2502.png" />
     <Content Include="Content\images\honeycomb-icon-active.png" />
     <Content Include="Content\images\honeycomb-icon.png" />
@@ -662,6 +667,10 @@
     <Content Include="Scripts\js\mixpanel.inspect.js" />
     <Content Include="Scripts\js\mixpanel.layout.js" />
     <Content Include="Scripts\js\mixpanel.login.js" />
+    <Content Include="Content\fonts\ProximaNova-Regular.eot" />
+    <Content Include="Content\fonts\ProximaNova-Regular.ttf" />
+    <Content Include="Content\fonts\ProximaNova-Regular.woff" />
+    <Content Include="Content\fonts\ProximaNova-Regular.woff2" />
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\configuration91.svcinfo" />
     <None Include="Service References\BDSService\configuration.svcinfo" />

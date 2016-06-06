@@ -3309,7 +3309,7 @@ function () {
     $('#sidebar').css({
         'position': 'static',
         'left': 'auto',
-        'background': '#e9e9e9 none repeat scroll 0 0',
+        //'background': '#e9e9e9 none repeat scroll 0 0', /* Commented for #2219 - Bhumika */
         'width': '280px',
 
     });
@@ -3317,8 +3317,8 @@ function () {
     $(".sidebar-toogle-wrapper h4.text-shadow-black").css("display", "block");
     $(".sidebar-section").css("display", "block");
     $(".wraper-btns").css("display", "block");
-    $("#content_wraper").css('width', 'calc(100% - 280px)');
-    $('#sidebar.sidebar').css({ 'width': '280px', 'background': '#e9e9e9 none repeat scroll 0 0', });
+    $("#content_wraper").css('width', 'calc(100% - 280px)'); //  removed bgcolor for #2219 - Bhumika 
+    $('#sidebar.sidebar').css({ 'width': '280px'});
     $('.sidebar-toogle').css('border-bottom-width', '1px');
     ///Add By Nishant Sheth
     // Desc :: To handle the gridview resize with hide toggle button #1958

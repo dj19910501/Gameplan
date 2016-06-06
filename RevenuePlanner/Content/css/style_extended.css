@@ -645,8 +645,8 @@ textarea[readonly] {
     text-transform: uppercase;
 }
 
-.form-contact-support {
-    background-color: #3F3F3F;
+.form-contact-support {/* Edited for #2219 - Bhumika */
+    background-color: #3e3f37; 
     border-radius: 5px;
     box-shadow: -3px -16px 4px -13px #262626 inset;
     height: 375px;
@@ -659,18 +659,22 @@ textarea[readonly] {
     z-index: 2002;
 }
 
-.button-contact-support {
-    background: url("../images/btn-login.jpg") repeat-x scroll 0 0 #3B9DE4 !important;
+.button-contact-support {/* Edited for #2219 - Bhumika */
+    background: #f8710e;
     border: medium none !important;
     float: left;
     color: #FFFFFF;
     height: 17px !important;
-    text-shadow: 0 1px 1px #235D86 !important;
+    text-shadow: none;
     margin-left: 13px;
     margin-top: 25px !important;
     width: 120px !important;
 }
-
+.button-contact-support:focus,
+.button-contact-support:hover {/* Added for #2219 - Bhumika */
+    background:#e2502d;
+    color:#fff;
+}
 .contact-support-message-position-popup {
     margin: -85px 0 0 !important;
     position: fixed;

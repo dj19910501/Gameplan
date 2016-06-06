@@ -1,6 +1,8 @@
 /*---------------------------
             Fonts
 -----------------------------*/
+
+
 @font-face {
     font-family: 'source_sans_prolight';
     src: url('../fonts/sourcesanspro-light-webfont.eot');
@@ -70,3 +72,34 @@
     font-weight: normal;
     font-style: normal;
 }
+
+/* Added for #2219 - Bhumika */
+
+@font-face {
+    font-family: 'ProximaNova-Bold';
+    src: url('../fonts/ProximaNova-Bold.eot');
+    src: url('../fonts/ProximaNova-Bold.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ProximaNova-Bold.woff2') format('woff2'),
+        url('../fonts/ProximaNova-Bold.woff') format('woff'),
+        url('../fonts/ProximaNova-Bold.ttf') format('truetype');
+}
+ 
+  
+@font-face {
+    font-family: 'ProximaNova-Regular'; 
+    src: url('../fonts/ProximaNova-Regular.eot');
+    src: url('../fonts/ProximaNova-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ProximaNova-Regular.woff2') format('woff2'),
+        url('../fonts/ProximaNova-Regular.woff') format('woff'),
+        url('../fonts/ProximaNova-Regular.ttf') format('truetype');
+}
+/*@font-face {font-family: 'ProximaNova-Regular';
+            src: url('../fonts/ProximaNova-Regular.eot');
+            src: url('../fonts/ProximaNova-Regular.eot?#iefix') format('embedded-opentype'),
+                url('../fonts/ProximaNova-Regular.woff2') format('woff2'),
+                url('../fonts/ProximaNova-Regular.woff') format('woff'),
+                url('../fonts/ProximaNova-Regular.ttf') format('truetype');
+
+}*/
+ 
+/* ================ */
