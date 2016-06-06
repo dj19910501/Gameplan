@@ -134,8 +134,8 @@
             </span>
         </div>
 
-         @*Modified by Rushil Bhuptani on 06/03/2016 for #2247*@
-        <div class="finance-export-btn">
+        @*Modified by Rushil Bhuptani on 06/03/2016 for #2247*@
+        <div id="dvExportToExcel" class="finance-export-btn">
             <div id="goalwrapper" class="export-link" style="display: inline-block; float: right">
                 <a class="source-sans-proregular export-link" style="cursor: pointer" id="exportcsv" onclick=" return ExportToExcel(); ">
                     <i class="fa fa-external-link"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Export.xls</span>
@@ -1312,6 +1312,8 @@
             $("#dvBudgetHeader").css("display", "block");   // Show Budget Header
             $("#ddlColumnSetFrameBox").css("display","block"); 
             $("#ddlColumnsFrameBox").css("display","inline-block"); 
+            // Added by Rushil Bhuptani on 06/06/2015 for ticket #2247 to address issue of exporting previous data.
+            $("#dvExportToExcel").css("display","block"); 
         }
         if (Page == "EditBudget") {
             $("#drpParentMain").css("display", "none");
@@ -1327,6 +1329,8 @@
             $("#dvBudgetHeader").css("display", "block");   // Show Budget Header
             $("#ddlColumnSetFrameBox").css("display","block"); 
             $("#ddlColumnsFrameBox").css("display","inline-block"); 
+            // Added by Rushil Bhuptani on 06/06/2015 for ticket #2247 to address issue of exporting previous data.
+            $("#dvExportToExcel").css("display","block"); 
         }
         if (Page == "LineItemGrid") {
             $("#divBudget").css("display", "none");         // Hide Budget checkbox
@@ -1342,6 +1346,8 @@
             $("#divAddnew").css("display", "none");
             $("#ddlColumnSetFrameBox").css("display","none"); 
             $("#ddlColumnsFrameBox").css("display","none"); 
+            // Added by Rushil Bhuptani on 06/06/2015 for ticket #2247 to address issue of exporting previous data.
+            $("#dvExportToExcel").css("display","none"); 
         }
     }
 

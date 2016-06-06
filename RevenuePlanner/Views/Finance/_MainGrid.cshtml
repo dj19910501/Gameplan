@@ -253,11 +253,13 @@
         if (rowcount == null || rowcount == 'undefined' || rowcount == 0) {
             $("#divGridView").hide();
             $("#dvNoData").show();
+            $("#goalwrapper").hide();
         }
 
         } else {
             $("#divGridView").hide();
             $("#dvNoData").show();
+            $("#goalwrapper").show();
       
         }
         //myTreeGrid.attachEvent("onCheck", function (rId, cInd, state) {
@@ -424,6 +426,7 @@
 
     ////End
     function AddRow(cntrl) {
+      
         var controlid = $(cntrl).attr('id');
         if (AddNewrow == false && EditRowID == controlid) {
             return false;
@@ -437,6 +440,7 @@
     }
 
     function AddNewRowbyType(itemType, cntrl) {
+       
         if (_isNewRowAdd == false) {
              $("#hdnNewItemType").val(itemType);
             var row_id = $(cntrl).attr('row-id');
@@ -483,9 +487,12 @@
 
             var TotalColumn = myTreeGrid.getColumnCount();
             var AddRowString = [];
-            var AddRowColTypes = "tree,ro,ro";
+            // Modified by Rushil Bhuptani on 06/06/2016 for #2247 to resolve the issue of unable to add child item.
+            var AddRowColTypes = "ro,tree,ro,ro";
             var ColumnsVisibility = "";
 
+            // Modified by Rushil Bhuptani on 06/06/2016 for #2247 to resolve the issue of unable to add child item.
+            AddRowString.push("");
             AddRowString.push("New item");
             AddRowString.push("");
             AddRowString.push("");
