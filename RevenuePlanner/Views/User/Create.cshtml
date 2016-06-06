@@ -192,7 +192,32 @@
 
         //Added by :- Sohel on 27 March 2014 for ticket #334
         $(".selectBox select").selectbox();
-        
+
+        $('.sbHolder .sbOptions li').click(function () {
+            SetCreateddlSelectedItem(this);
+        });
+
+        $('.sbHolder .sbOptions li').keyup(function () {
+            SetCreateddlSelectedItem(this);
+        });
+
+        $('.sbHolder .sbSelector').bind("DOMSubtreeModified", function () {
+            SetCreateddlSelectedItem($(this).parent().find('ul li.setFocusli'));
+        });
+
+        function SetCreateddlSelectedItem(obj) {
+            var id = $(obj).parent().parent().parent().find('select').attr('id');
+            $('#' + id + ' option').each(function () {
+                $(this).removeAttr('selected');
+            });
+
+            var selectedOption = $(obj).find('a').attr('rel');
+
+            $("#" + id + " option").filter(function (index) {
+                return $(this).attr("value") === selectedOption;
+            }).attr("selected", "selected");
+        }
+
         $('#btnSubmit').click(function () {
             //added by nishant Sheth 
             if ($("form").valid()) {
