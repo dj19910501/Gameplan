@@ -383,11 +383,12 @@
         HomeGrid.setColumnHidden(0, true);
          @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
         HomeGrid.setColumnHidden(HomeGrid.getColumnsNum() - 1, true);
-        var parsedJSON = $.parseJSON(JsonModel);
-        if (parsedJSON.rows[0].rows.length <= 1) {
-            $('.treegrid_cell').find('img').css('display', 'none');
+        //Commented by Rahul Shah for PL #2231 on 06/06/2016
+        //var parsedJSON = $.parseJSON(JsonModel);
+        //if (parsedJSON.rows[0].rows.length <= 1) {
+        //    $('.treegrid_cell').find('img').css('display', 'none');
 
-        }
+        //}
     }
     
     function SetHeader() {

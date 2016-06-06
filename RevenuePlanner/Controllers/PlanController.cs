@@ -7024,7 +7024,7 @@ namespace RevenuePlanner.Controllers
             var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.EntityType.Equals(EntityTypeTactic) && customfield.IsDeleted.Equals(false)).ToList();
             var CustomFieldexists = customfieldlist.Where(customfield => customfield.IsRequired && !isDisplayForFilter).Any();
             var customfieldids = customfieldlist.Where(customfield => customfield.CustomFieldType.Name == DropDownList && (isDisplayForFilter ? customfield.IsDisplayForFilter : true)).Select(customfield => customfield.CustomFieldId).ToList();
-            List<string> tacIds = model.Where(t => t.ActivityType == EntityTypeTactic).Select(t => t.ActivityId).ToList();
+            List<string> tacIds = model.Where(t => t.ActivityType.ToUpper() == EntityTypeTactic.ToUpper()).Select(t => t.ActivityId).ToList();
             tacIds = tacIds.Select(t => t.Replace("cpt_", "")).ToList();
             List<int> intList = tacIds.ConvertAll(s => Int32.Parse(s));
             var EntitiesList = db.CustomField_Entity.Where(entityid => intList.Contains(entityid.EntityId)).ToList();
@@ -7194,7 +7194,7 @@ namespace RevenuePlanner.Controllers
                 BudgetDataObjList.Add(BudgetDataObj);
 
                 BudgetDataObj = new Budgetdataobj();
-                BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup()>" + bm.ActivityName + "</a>");
+                BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup()>" + (HttpUtility.HtmlEncode(bm.ActivityName).Replace("'", "&#39;")) + "</a>");
                 BudgetDataObjList.Add(BudgetDataObj);
 
                 BudgetDataObjList = CampaignBudgetSummaryForPlan(model, ActivityType.ActivityPlan, bm.ActivityId, bm.ParentActivityId, BudgetDataObjList, AllocatedBy, "0");
@@ -7231,7 +7231,7 @@ namespace RevenuePlanner.Controllers
 
                     CampaignDataObj = new Budgetdataobj();
                     //CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " linktype = campaign style='cursor:pointer;' onClick=OpenOtherInspectPopup()>" + bmc.ActivityName + "</a>");
-                    CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " linktype = campaign style='cursor:pointer;' onClick=OpenOtherInspectPopup(" + bmc.ActivityId + ",'" + bmc.ActivityType.ToString() + "')>" + bmc.ActivityName + "</a>");
+                    CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " linktype = campaign style='cursor:pointer;' onClick=OpenOtherInspectPopup(" + bmc.ActivityId + ",'" + bmc.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmc.ActivityName).Replace("'", "&#39;")) + "</a>");
                     CampaignDataObjList.Add(CampaignDataObj);
 
                     CampaignDataObjList = CampaignBudgetSummaryForPlan(model, ActivityType.ActivityCampaign, bmc.ActivityId, bmc.ParentActivityId, CampaignDataObjList, AllocatedBy, "0");
@@ -7257,7 +7257,7 @@ namespace RevenuePlanner.Controllers
                         ProgramDataObjList.Add(ProgramDataObj);
 
                         ProgramDataObj = new Budgetdataobj();
-                        ProgramDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmp.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup(" + bmp.ActivityId + ",'" + bmp.ActivityType.ToString() + "')>" + bmp.ActivityName + "</a>");
+                        ProgramDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmp.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup(" + bmp.ActivityId + ",'" + bmp.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmp.ActivityName).Replace("'", "&#39;")) + "</a>");
                         ProgramDataObjList.Add(ProgramDataObj);
 
                         ProgramDataObjList = CampaignBudgetSummaryForPlan(model, ActivityType.ActivityProgram, bmp.ActivityId, bmp.ParentActivityId, ProgramDataObjList, AllocatedBy, "0");
@@ -7284,7 +7284,7 @@ namespace RevenuePlanner.Controllers
 
                             TacticDataObj = new Budgetdataobj();
                             //TacticDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmt.ActivityId + " linktype = tactic style='cursor:pointer;' onClick=OpenOtherInspectPopup()>" + bmt.ActivityName + "</a>");
-                            TacticDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmt.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup(" + bmt.ActivityId + ",'" + bmt.ActivityType.ToString() + "')>" + bmt.ActivityName + "</a>");
+                            TacticDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmt.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup(" + bmt.ActivityId + ",'" + bmt.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmt.ActivityName).Replace("'", "&#39;")) + "</a>");
                             TacticDataObjList.Add(TacticDataObj);
 
                             TacticDataObjList = CampaignBudgetSummaryForPlan(model, ActivityType.ActivityTactic, bmt.ActivityId, bmt.ParentActivityId, TacticDataObjList, AllocatedBy, "0");
@@ -7311,7 +7311,7 @@ namespace RevenuePlanner.Controllers
 
                                 LineDataObj = new Budgetdataobj();
                                 //LineDataObj.value = HttpUtility.HtmlEncode(bml.ActivityName);
-                                LineDataObj.value = HttpUtility.HtmlEncode("<a id=" + bml.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup(" + bml.ActivityId + ",'" + bml.ActivityType.ToString() + "')>" + bml.ActivityName + "</a>");
+                                LineDataObj.value = HttpUtility.HtmlEncode("<a id=" + bml.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup(" + bml.ActivityId + ",'" + bml.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bml.ActivityName).Replace("'", "&#39;")) + "</a>");
                                 LineDataObjList.Add(LineDataObj);
 
                                 LineDataObjList = AllocatedPlanMonth(model, bml, ActivityType.ActivityLineItem, bml.ActivityId, bml.Month, bml.ParentMonth, AllocatedBy, LineDataObjList);
@@ -8751,7 +8751,7 @@ namespace RevenuePlanner.Controllers
 
                     BudgetDataObj = new Budgetdataobj();
                     // BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails>" + bm.ActivityName + "</a>");
-                    BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup()>" + bm.ActivityName + "</a>");
+                    BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup()>" + (HttpUtility.HtmlEncode(bm.ActivityName).Replace("'", "&#39;")) + "</a>");
                     BudgetDataObjList.Add(BudgetDataObj);
 
                     double planAllocation = 0;
@@ -8808,7 +8808,7 @@ namespace RevenuePlanner.Controllers
                         CustomFieldDataObjList.Add(CustomFieldDataObj);
 
                         CustomFieldDataObj = new Budgetdataobj();
-                        CustomFieldDataObj.value = HttpUtility.HtmlEncode(bmcf.ActivityName);
+                        CustomFieldDataObj.value = HttpUtility.HtmlEncode(bmcf.ActivityName).Replace("'", "&#39;");
 
                         CustomFieldDataObjList.Add(CustomFieldDataObj);
                         if (budgetTab == Enums.BudgetTab.Planned)
@@ -8865,7 +8865,7 @@ namespace RevenuePlanner.Controllers
                             CampaignDataObj = new Budgetdataobj();
                             // CampaignDataObj.value = HttpUtility.HtmlEncode(bmc.ActivityName);
                             // CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " linktype = campaign style='cursor:pointer;' >" + bmc.ActivityName + "</a>");
-                            CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmc.ActivityId + "','" + bmc.ActivityType.ToString() + "')>" + bmc.ActivityName + "</a>");
+                            CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmc.ActivityId + "','" + bmc.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmc.ActivityName).Replace("'", "&#39;")) + "</a>");
                             CampaignDataObjList.Add(CampaignDataObj);
 
                             if (budgetTab == Enums.BudgetTab.Planned)
@@ -8917,7 +8917,7 @@ namespace RevenuePlanner.Controllers
                                 ProgramDataObj = new Budgetdataobj();
                                 // ProgramDataObj.value = HttpUtility.HtmlEncode(bmp.ActivityName);
 
-                                ProgramDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmp.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmp.ActivityId + "','" + bmp.ActivityType.ToString() + "')>" + bmp.ActivityName + "</a>");
+                                ProgramDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmp.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmp.ActivityId + "','" + bmp.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmp.ActivityName).Replace("'", "&#39;")) + "</a>");
                                 ProgramDataObjList.Add(ProgramDataObj);
 
                                 if (budgetTab == Enums.BudgetTab.Planned)
@@ -8969,7 +8969,7 @@ namespace RevenuePlanner.Controllers
                                     TacticDataObj = new Budgetdataobj();
                                     //  TacticDataObj.value = HttpUtility.HtmlEncode(bmt.ActivityName);
 
-                                    TacticDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmt.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmt.ActivityId + "','" + bmt.ActivityType.ToString() + "')>" + bmt.ActivityName + "</a>");
+                                    TacticDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmt.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmt.ActivityId + "','" + bmt.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmt.ActivityName).Replace("'", "&#39;")) + "</a>");
                                     TacticDataObjList.Add(TacticDataObj);
 
                                     if (budgetTab == Enums.BudgetTab.Planned)
@@ -9025,7 +9025,7 @@ namespace RevenuePlanner.Controllers
 
                                         LineDataObj = new Budgetdataobj();
                                         // LineDataObj.value = HttpUtility.HtmlEncode(bml.ActivityName);
-                                        LineDataObj.value = HttpUtility.HtmlEncode("<a id=" + bml.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bml.ActivityId + "','" + bml.ActivityType.ToString() + "')>" + bml.ActivityName + "</a>");
+                                        LineDataObj.value = HttpUtility.HtmlEncode("<a id=" + bml.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bml.ActivityId + "','" + bml.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bml.ActivityName).Replace("'", "&#39;")) + "</a>");
                                         LineDataObjList.Add(LineDataObj);
 
                                         LineRowsObj.data = LineDataObjList;
@@ -9099,7 +9099,7 @@ namespace RevenuePlanner.Controllers
 
                     BudgetDataObj = new Budgetdataobj();
                     //  BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails>" + bm.ActivityName + "</a>");
-                    BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup()>" + bm.ActivityName + "</a>");
+                    BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup()>" + (HttpUtility.HtmlEncode(bm.ActivityName).Replace("'", "&#39;")) + "</a>");
                     BudgetDataObjList.Add(BudgetDataObj);
 
                     double planAllocation = 0;
@@ -9154,7 +9154,7 @@ namespace RevenuePlanner.Controllers
                         CampaignDataObj = new Budgetdataobj();
                         //  CampaignDataObj.value = HttpUtility.HtmlEncode(bmc.ActivityName);
                       
-                        CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmc.ActivityId + "','" + bmc.ActivityType.ToString() + "')>" + bmc.ActivityName + "</a>");
+                        CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmc.ActivityId + "','" + bmc.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmc.ActivityName).Replace("'", "&#39;")) + "</a>");
                         CampaignDataObjList.Add(CampaignDataObj);
 
                         if (budgetTab == Enums.BudgetTab.Planned)
@@ -9200,7 +9200,7 @@ namespace RevenuePlanner.Controllers
 
                             ProgramDataObj = new Budgetdataobj();
                             // ProgramDataObj.value = HttpUtility.HtmlEncode(bmp.ActivityName);
-                            ProgramDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmp.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmp.ActivityId + "','" + bmp.ActivityType.ToString() + "')>" + bmp.ActivityName + "</a>");
+                            ProgramDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmp.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmp.ActivityId + "','" + bmp.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmp.ActivityName).Replace("'", "&#39;")) + "</a>");
                             ProgramDataObjList.Add(ProgramDataObj);
 
                             if (budgetTab == Enums.BudgetTab.Planned)
@@ -9246,7 +9246,7 @@ namespace RevenuePlanner.Controllers
 
                                 TacticDataObj = new Budgetdataobj();
                                 // TacticDataObj.value = HttpUtility.HtmlEncode(bmt.ActivityName);
-                                TacticDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmt.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmt.ActivityId + "','" + bmt.ActivityType.ToString() + "')>" + bmt.ActivityName + "</a>");
+                                TacticDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmt.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmt.ActivityId + "','" + bmt.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmt.ActivityName).Replace("'", "&#39;")) + "</a>");
                                 TacticDataObjList.Add(TacticDataObj);
 
                                 if (budgetTab == Enums.BudgetTab.Planned)
@@ -9293,7 +9293,7 @@ namespace RevenuePlanner.Controllers
 
                                     LineDataObj = new Budgetdataobj();
                                     //LineDataObj.value = HttpUtility.HtmlEncode(bml.ActivityName);
-                                    LineDataObj.value = HttpUtility.HtmlEncode("<a id=" + bml.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bml.ActivityId + "','" + bml.ActivityType.ToString() + "')>" + bml.ActivityName + "</a>");
+                                    LineDataObj.value = HttpUtility.HtmlEncode("<a id=" + bml.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bml.ActivityId + "','" + bml.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bml.ActivityName).Replace("'", "&#39;")) + "</a>");
                                     LineDataObjList.Add(LineDataObj);
 
                                     LineRowsObj.data = LineDataObjList;

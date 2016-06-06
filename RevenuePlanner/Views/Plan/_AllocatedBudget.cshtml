@@ -306,7 +306,7 @@
 
     //Added By Maitri Gandhi on  13/5/2016 for
     function BindBudgetGrid() {
-     
+        
         var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
         
         
@@ -352,12 +352,12 @@
          
         @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
         HomeGrid.setColumnHidden(HomeGrid.getColumnsNum() - 1, true);
+        //Commented by Rahul Shah for PL #2231 on 06/06/2016
+        //var parsedJSON = $.parseJSON(JsonModel);
+        //if (parsedJSON.rows[0].rows.length <= 1) {
+        //    $('.treegrid_cell').find('img').css('display', 'none');
 
-        var parsedJSON = $.parseJSON(JsonModel);
-        if (parsedJSON.rows[0].rows.length <= 1) {
-            $('.treegrid_cell').find('img').css('display', 'none');
-
-        }
+        //}
     }
 
     function SetHeader() {
