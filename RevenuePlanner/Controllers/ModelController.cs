@@ -72,7 +72,7 @@ namespace RevenuePlanner.Controllers
             {
                 Title = objBaselineModel.Versions.Where(version => version.IsLatest == true).Select(version => version.Title).FirstOrDefault();
             }
-            
+
             if (Title != null && Title != string.Empty)
             {
                 ViewBag.Msg = string.Format(Common.objCached.ModelTacticTypeNotexist, Title);
@@ -210,23 +210,23 @@ namespace RevenuePlanner.Controllers
                 List<ModelStage> listModelStage = new List<ModelStage>();
                 string CW = Convert.ToString(Enums.Stage.CW);
 
-            var StageList = objDbMrpEntities.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId && stage.Level != null && stage.Code != CW).OrderBy(stage => stage.Level).ToList();
-            if (StageList != null && StageList.Count > 0)
-            {
-                foreach (var objStage in StageList)
+                var StageList = objDbMrpEntities.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId && stage.Level != null && stage.Code != CW).OrderBy(stage => stage.Level).ToList();
+                if (StageList != null && StageList.Count > 0)
                 {
-                    ModelStage objModelStage = new ModelStage();
-                    objModelStage.StageId = objStage.StageId;
-                    objModelStage.ConversionTitle = Common.GetReplacedString(objStage.ConversionTitle);
-                    objModelStage.VelocityTitle = Common.GetReplacedString(objStage.ConversionTitle);
-                    objModelStage.Description = objStage.Description;
-                    objModelStage.StageId = objStage.StageId;
-                    objModelStage.Level = Convert.ToInt32(objStage.Level);
-                    objModelStage.Funnel = objStage.Funnel;
-                    objModelStage.Code = objStage.Code;
-                    listModelStage.Add(objModelStage);
+                    foreach (var objStage in StageList)
+                    {
+                        ModelStage objModelStage = new ModelStage();
+                        objModelStage.StageId = objStage.StageId;
+                        objModelStage.ConversionTitle = Common.GetReplacedString(objStage.ConversionTitle);
+                        objModelStage.VelocityTitle = Common.GetReplacedString(objStage.ConversionTitle);
+                        objModelStage.Description = objStage.Description;
+                        objModelStage.StageId = objStage.StageId;
+                        objModelStage.Level = Convert.ToInt32(objStage.Level);
+                        objModelStage.Funnel = objStage.Funnel;
+                        objModelStage.Code = objStage.Code;
+                        listModelStage.Add(objModelStage);
+                    }
                 }
-            }
 
                 objBaselineModel.lstmodelstage = listModelStage;
                 if (listModelStage.Count() == 0)
@@ -257,7 +257,7 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Create(FormCollection collection, ICollection<string> txtStageId, ICollection<string> txtTargetStage, ICollection<string> txtMCR, ICollection<string> txtMSV)
         {
-            
+
             int intFunnelTeleprospecting = 0;
             int intFunnelSales = 0;
             string mode = Convert.ToString(Request.Form["whichButton"]);
@@ -274,7 +274,7 @@ namespace RevenuePlanner.Controllers
             if (collection["txtMarketing"] != null)
             {
                 double doubleValue = 0.0;
-                double.TryParse(Convert.ToString(collection["txtMarketing"].ToString().Replace(",","").Replace("$","")), out doubleValue);
+                double.TryParse(Convert.ToString(collection["txtMarketing"].ToString().Replace(",", "").Replace("$", "")), out doubleValue);
                 averageDealSize = doubleValue;
             }
             try
@@ -817,7 +817,7 @@ namespace RevenuePlanner.Controllers
             int result = 0;
 
             Model_Stage objModel_Funnel_Stage = new Model_Stage();
-            objModel_Funnel_Stage. ModelId = intModelid;
+            objModel_Funnel_Stage.ModelId = intModelid;
             objModel_Funnel_Stage.StageId = StageId;
             objModel_Funnel_Stage.StageType = StageType;
             objModel_Funnel_Stage.Value = Value;
@@ -873,7 +873,7 @@ namespace RevenuePlanner.Controllers
             int modelId = id;
             if (modelId != 0)
             {
-                var lstModel = objDbMrpEntities.Models.Where(model => model.ModelId == modelId).Select(model => new { model.ModelId, model.ClientId, model.Title, model.Version, model.Year, model.Status, model.IsActive, model.IsDeleted,model.AverageDealSize }).ToList();
+                var lstModel = objDbMrpEntities.Models.Where(model => model.ModelId == modelId).Select(model => new { model.ModelId, model.ClientId, model.Title, model.Version, model.Year, model.Status, model.IsActive, model.IsDeleted, model.AverageDealSize }).ToList();
                 var lstModelFunnelStage = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == modelId).OrderBy(modelFunnelStage => modelFunnelStage.ModelStageId).Select(modelFunnelStage => new { modelFunnelStage.ModelStageId, modelFunnelStage.StageId, modelFunnelStage.StageType, modelFunnelStage.Value, modelFunnelStage.AllowedTargetStage }).ToList();
 
                 JsonConvert.SerializeObject(lstModel, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
@@ -990,7 +990,7 @@ namespace RevenuePlanner.Controllers
                     //// Modified by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
                     isOwner = (isAuthorized == true) ? 0 : 1, //// added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model and -	Delete option will be available for owner or director or system admin or client Admin
                     effectiveDate = model.EffectiveDate.HasValue == true ? model.EffectiveDate.Value.Date.ToString("M/d/yy") : "",  //// Added by Sohel on 08/04/2014 for PL #424 to show Effective Date Column
-                }).OrderBy(model => model.title , new AlphaNumericComparer());
+                }).OrderBy(model => model.title, new AlphaNumericComparer());
 
                 return Json(lstModel, JsonRequestBehavior.AllowGet);
             }
@@ -1054,7 +1054,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns LoadContactInquiry view</returns>
         //// modified datatype of MSize,TSize and SSize from int to double
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult LoadContactInquiry( double MSize)
+        public ActionResult LoadContactInquiry(double MSize)
         {
             ViewBag.MarketingDealSize = MSize;
 
@@ -1284,7 +1284,7 @@ namespace RevenuePlanner.Controllers
                 IsTargetStageOfModel = (tacticType.StageId == null) ? true : stagesList.Contains(Convert.ToInt32(tacticType.StageId)),     //// Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                 IsDeployedToModel = tacticType.IsDeployedToModel, //// added by dharmraj for #592 : Tactic type data model
                 currentWorkFrontTemplate = tacticType.WorkFrontTemplateId //added by Brad Gray 7/28/2015 PL#1374, #1373 - updated by Brad Gray 1/7/2016 PL#1856
-            }).Select(tacticType => tacticType).Distinct().OrderBy(tacticType => tacticType.title , new AlphaNumericComparer());
+            }).Select(tacticType => tacticType).Distinct().OrderBy(tacticType => tacticType.title, new AlphaNumericComparer());
 
             return Json(allTacticTypes, JsonRequestBehavior.AllowGet);
         }
@@ -1312,22 +1312,22 @@ namespace RevenuePlanner.Controllers
                     ViewBag.IsModelIntegrated = true;
                     //Begin added by Brad Gray 7/28/2015 PL#1374, #1373
                     IntegrationInstance intInstanceProjMgmt = objModel.IntegrationInstance4;
-                     bool isIntegratedWithWorkFront = false;
-                     var Marketoinstance = objModel.IntegrationInstance41;
-                  
-                     List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>(); 
-                     if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString())) 
-                     {
-                         isIntegratedWithWorkFront = true;
-                     }
-                     if (Marketoinstance != null && (Marketoinstance.IntegrationType.Code == Enums.IntegrationInstanceType.Marketo.ToString()))
-                     {
-                         isIntegratedWithMarketo = true;
-                     }
-                     workFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
-                                                                   modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name).ToList();
+                    bool isIntegratedWithWorkFront = false;
+                    var Marketoinstance = objModel.IntegrationInstance41;
 
-                     ViewBag.WorkFrontTemplates = workFrontTemplates.Select(modelTemplate => new { modelTemplate.ID, modelTemplate.Template_Name }).Distinct().ToList();
+                    List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
+                    if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString()))
+                    {
+                        isIntegratedWithWorkFront = true;
+                    }
+                    if (Marketoinstance != null && (Marketoinstance.IntegrationType.Code == Enums.IntegrationInstanceType.Marketo.ToString()))
+                    {
+                        isIntegratedWithMarketo = true;
+                    }
+                    workFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
+                                                                  modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name).ToList();
+
+                    ViewBag.WorkFrontTemplates = workFrontTemplates.Select(modelTemplate => new { modelTemplate.ID, modelTemplate.Template_Name }).Distinct().ToList();
                     ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
                     //End addition by Brad Gray for PL#1734
                     ViewBag.isIntegratedWithMarketo = isIntegratedWithMarketo;
@@ -1340,7 +1340,7 @@ namespace RevenuePlanner.Controllers
                         {
                             Text = list.Key,
                             Value = list.Value,
-                        }).OrderBy(model => model.Text , new AlphaNumericComparer()).ToList();
+                        }).OrderBy(model => model.Text, new AlphaNumericComparer()).ToList();
 
 
                         ViewBag.DDLChannel = CampaignFolderList.channels.Select(list => new
@@ -1463,7 +1463,7 @@ namespace RevenuePlanner.Controllers
                     {
                         Text = list.Key,
                         Value = list.Value,
-                    }).OrderBy(model => model.Text , new AlphaNumericComparer()).ToList();
+                    }).OrderBy(model => model.Text, new AlphaNumericComparer()).ToList();
 
 
                     ViewBag.DDLChannel = CampaignFolderList.channels.Select(list => new
@@ -1552,10 +1552,10 @@ namespace RevenuePlanner.Controllers
                 //Modified By Komal rawal for #2216 deleting tactic type marketo mapping 
                 string EntityType = Enums.FilterLabel.TacticType.ToString();
                 MarketoEntityValueMapping DeleteTacticTypeMapping = objDbMrpEntities.MarketoEntityValueMappings.Where(Entity => Entity.EntityID == id && Entity.EntityType == EntityType).FirstOrDefault();
-               if(DeleteTacticTypeMapping != null)
-               {
-                   objDbMrpEntities.Entry(DeleteTacticTypeMapping).State = EntityState.Deleted;
-               }
+                if (DeleteTacticTypeMapping != null)
+                {
+                    objDbMrpEntities.Entry(DeleteTacticTypeMapping).State = EntityState.Deleted;
+                }
                 //End
 
                 objDbMrpEntities.SaveChanges();
@@ -1613,7 +1613,7 @@ namespace RevenuePlanner.Controllers
                 objtactic.ModelId = ModelId;
                 objtactic.IsDeployedToModel = isDeployedToModel;
                 //begin added by Brad Gray 01/7/2016 PL#1856
-                int parsedTemplateId; 
+                int parsedTemplateId;
                 bool templateResult = Int32.TryParse(WorkFrontTemplate, out parsedTemplateId);
                 if (templateResult == false)
                 {
@@ -1627,7 +1627,7 @@ namespace RevenuePlanner.Controllers
                 Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                 if (!isDeployedToModel)
                 {
-                    
+
                     if (objModel != null)
                     {
                         if (objModel.Status.ToLower() == Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower())
@@ -1642,7 +1642,7 @@ namespace RevenuePlanner.Controllers
                 }
                 ////End Manoj Limbachiya PL # 486
 
-           
+
 
                 //// Added by Dharmraj for ticket #433 Integration - Model Screen Tactic List
                 objtactic.IsDeployedToIntegration = isDeployedToIntegration;
@@ -1670,15 +1670,15 @@ namespace RevenuePlanner.Controllers
                         return Json(new { errormsg = strDuplicateMessage });
                     }
                     //Added By Komal Rawal for #2216  saving of channel and program type
-                   if(objModel.IntegrationInstanceMarketoID != null)
-                   {
-                       SaveMarketoSettings(objtactic.TacticTypeId,objModel.IntegrationInstanceMarketoID, Enums.FilterLabel.TacticType.ToString(), ProgramType, Channel);
-                   }
-                   
+                    if (objModel.IntegrationInstanceMarketoID != null)
+                    {
+                        SaveMarketoSettings(objtactic.TacticTypeId, objModel.IntegrationInstanceMarketoID, Enums.FilterLabel.TacticType.ToString(), ProgramType, Channel);
+                    }
+
                 }
                 else
                 {
-                                  
+
                     var existingTacticTypes = objDbMrpEntities.TacticTypes.Where(tacticType => (tacticType.ModelId == ModelId) && tacticType.Title.ToLower() == Title.ToLower() && tacticType.TacticTypeId != TacticTypeId && (tacticType.IsDeleted == null || tacticType.IsDeleted == false)).ToList();
 
                     //// TFS Bug - 179 : Improper behavior when editing Tactic in model 
@@ -1708,9 +1708,9 @@ namespace RevenuePlanner.Controllers
                         // Added by Viral on 04/08/2016
                         #region "Update DeployToIntegration settings for all tactics related to Model & TacticType"
                         if (isDeployedToModel)
-                        { 
+                        {
                             //Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
-                            string strModelStatus = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).Select(mdl=>mdl.Status).FirstOrDefault();
+                            string strModelStatus = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).Select(mdl => mdl.Status).FirstOrDefault();
                             int sfdcInstanceId = 0, elqaInstanceId = 0, workfrontInstanceId = 0, marketoInstanceId = 0;
                             if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().Equals(strModelStatus))
                             {
@@ -1749,7 +1749,7 @@ namespace RevenuePlanner.Controllers
                                                     if (workfrontInstanceId > 0)
                                                         tac.IsSyncWorkFront = true;          // Set WorkFront setting to True if WorkFront instance mapped under Tactic's Model.
                                                     if (marketoInstanceId > 0)
-                                                        tac.IsSyncMarketo = true; 
+                                                        tac.IsSyncMarketo = true;
                                                     tac.IsDeployedToIntegration = true;
                                                     objDbMrpEntities.Entry(tac).State = EntityState.Modified;
                                                 });
@@ -1768,7 +1768,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             objDbMrpEntities.Configuration.AutoDetectChangesEnabled = true;
                                         }
-                                        objDbMrpEntities.SaveChanges();  
+                                        objDbMrpEntities.SaveChanges();
                                         #endregion
                                     }
                                 }
@@ -1869,7 +1869,7 @@ namespace RevenuePlanner.Controllers
                     if (rejid.Length > 0)
                     {
                         #region "Declare local variables"
-                            int tacticId;
+                        int tacticId;
                         List<int> lstRejTacticTypeIds = new List<int>();
                         List<Plan_Campaign_Program_Tactic> lstAllRejTactics = new List<Plan_Campaign_Program_Tactic>();
                         #endregion
@@ -1903,8 +1903,8 @@ namespace RevenuePlanner.Controllers
                                     //#2063: Tactic 'Deployed To Integration' not defaulting to on
                                     // Added by Viral on 04/08/2016
                                     #region "Update DeployToIntegration settings for all tactics related to Model & TacticType"
-                                    
-                                    if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus) && lstAllRejTactics != null && lstAllRejTactics.Count >0)
+
+                                    if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus) && lstAllRejTactics != null && lstAllRejTactics.Count > 0)
                                     {
                                         // Get list of tactics related to TacticType.
                                         List<Plan_Campaign_Program_Tactic> lstTactics = lstAllRejTactics.Where(tac => tac.TacticTypeId == rejTacticType.TacticTypeId).ToList();
@@ -1920,7 +1920,7 @@ namespace RevenuePlanner.Controllers
                                                     lstTactics.ForEach(tac =>
                                                     {
                                                         tac.IsDeployedToIntegration = false;
-                                                        tac.IsSyncEloqua = tac.IsSyncSalesForce = tac.IsSyncWorkFront= tac.IsSyncMarketo = false;
+                                                        tac.IsSyncEloqua = tac.IsSyncSalesForce = tac.IsSyncWorkFront = tac.IsSyncMarketo = false;
                                                         objDbMrpEntities.Entry(tac).State = EntityState.Modified;
                                                     });
                                                 }
@@ -1958,7 +1958,7 @@ namespace RevenuePlanner.Controllers
                         TacticType tacticType;
                         string StageType = Enums.StageType.CR.ToString();
                         Model_Stage objStage;
-                        MRPEntities dbedit; 
+                        MRPEntities dbedit;
                         List<int> lstTacticTypeIds = new List<int>();
                         List<Plan_Campaign_Program_Tactic> lstAllTactics = new List<Plan_Campaign_Program_Tactic>();
                         #endregion
@@ -1969,8 +1969,8 @@ namespace RevenuePlanner.Controllers
                             int.TryParse(strArr[0], out tacticId);
                             if (tacticId != 0)
                                 lstTacticTypeIds.Add(tacticId);
-                        } 
-                        if(lstTacticTypeIds != null && lstTacticTypeIds.Count >0)
+                        }
+                        if (lstTacticTypeIds != null && lstTacticTypeIds.Count > 0)
                             lstAllTactics = GetPlanTacticsByTacticType(objModel.ModelId, lstTacticTypeIds);
                         #endregion
                         for (int i = 0; i < id.Length; i++)
@@ -2023,7 +2023,7 @@ namespace RevenuePlanner.Controllers
                                 //#2063: Tactic 'Deployed To Integration' not defaulting to on
                                 // Added by Viral on 04/08/2016
                                 #region "Update DeployToIntegration settings for all tactics related to Model & TacticType"
-                                if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus) && lstAllTactics != null && lstAllTactics.Count>0)
+                                if (!string.IsNullOrEmpty(strModelStatus) && Enums.ModelStatus.Published.ToString().ToLower().Equals(strModelStatus) && lstAllTactics != null && lstAllTactics.Count > 0)
                                 {
                                     // Get list of tactics related to TacticType.
                                     List<Plan_Campaign_Program_Tactic> lstTactics = lstAllTactics.Where(tac => tac.TacticTypeId == objtactic.TacticTypeId).ToList();
@@ -2435,26 +2435,48 @@ namespace RevenuePlanner.Controllers
                         if (result > 0)
                         {
                             isPublish = true;
+                            // Add By Nishant Sheth
+                            // Desc : #2225 performance issue with publishing model
+                            objDbMrpEntities.PublishModel(modelId);
+                            // End By Nishant Sheth
+
+                            #region Old Code
+                            // Commentd below code by nishant Sheth on 06-Jun-2016
+                            // Desc : #2225 performance issue with publishing model
+
                             //// TFS point 252: editing a published model, Added by Nirav Shah on 18 feb 2014
                             //// Update ModelId in plan and set latest published modelid.
-                            while (objModel.Model2 != null)
-                            {
-                                objModel = objModel.Model2;
-                                if (objModel.Status.ToLower() != Enums.ModelStatus.Draft.ToString().ToLower())
-                                {
-                                    var objPlan = objDbMrpEntities.Plans.Where(plan => plan.ModelId == objModel.ModelId).ToList();
-                                    if (objPlan.Count != 0)
-                                    {
-                                        foreach (var plan in objPlan)
-                                        {
-                                            UpdatePlanTactic(modelId, objModel.ModelId, plan.PlanId);
-                                            plan.ModelId = modelId;
-                                            objDbMrpEntities.Entry(plan).State = EntityState.Modified;
-                                            result = objDbMrpEntities.SaveChanges();
-                                        }
-                                    }
-                                }
-                            }
+                            //while (objModel.Model2 != null)
+                            //{
+                            //    objModel = objModel.Model2;
+                            //    if (objModel.Status.ToLower() != Enums.ModelStatus.Draft.ToString().ToLower())
+                            //    {
+                            //        var objPlan = objDbMrpEntities.Plans.Where(plan => plan.ModelId == objModel.ModelId).ToList();
+                            //        if (objPlan.Count != 0)
+                            //        {
+                            //            foreach (var plan in objPlan)
+                            //            {
+                            //                UpdatePlanTactic(modelId, objModel.ModelId, plan.PlanId);
+                            //                try
+                            //                {
+                            //                    plan.ModelId = modelId;
+                            //                    //objDbMrpEntities.Configuration.AutoDetectChangesEnabled = false;
+                            //                    objDbMrpEntities.Entry(plan).State = EntityState.Modified;
+                            //                }
+                            //                catch (Exception ex)
+                            //                {
+                            //                    throw ex;
+                            //                }
+                            //                finally
+                            //                {
+                            //                    //objDbMrpEntities.Configuration.AutoDetectChangesEnabled = true;
+                            //                }
+                            //            }
+                            //            objDbMrpEntities.SaveChanges();
+                            //        }
+                            //    }
+                            //}
+                            #endregion
                         }
                     }
                 }
@@ -2541,28 +2563,28 @@ namespace RevenuePlanner.Controllers
                             OtherModelEntries(modelId, false, title, false, ref NewModelID);
 
 
-                                        #region Clone Model_Funnel_Stage table entries
+                            #region Clone Model_Funnel_Stage table entries
 
                             var oldModel_Funnel_Stage = mrp.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == modelId).ToList();
-                                        if (oldModel_Funnel_Stage != null)
-                                        {
-                                            if (oldModel_Funnel_Stage.Count > 0)
-                                            {
-                                                foreach (var objModel_Funnel_Stage in oldModel_Funnel_Stage)
-                                                {
-                                                    Model_Stage newModel_Funnel_Stage = new Model_Stage();
+                            if (oldModel_Funnel_Stage != null)
+                            {
+                                if (oldModel_Funnel_Stage.Count > 0)
+                                {
+                                    foreach (var objModel_Funnel_Stage in oldModel_Funnel_Stage)
+                                    {
+                                        Model_Stage newModel_Funnel_Stage = new Model_Stage();
 
-                                                    newModel_Funnel_Stage = objModel_Funnel_Stage;
-                                                    newModel_Funnel_Stage.CreatedDate = DateTime.Now;
-                                                    newModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
-                                                    newModel_Funnel_Stage.ModifiedBy = null;
-                                                    newModel_Funnel_Stage.ModifiedDate = null;
-                                                    newModel_Funnel_Stage.ModelId = NewModelID;
-                                                    mrp.Model_Stage.Add(newModel_Funnel_Stage);
-                                                }
+                                        newModel_Funnel_Stage = objModel_Funnel_Stage;
+                                        newModel_Funnel_Stage.CreatedDate = DateTime.Now;
+                                        newModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
+                                        newModel_Funnel_Stage.ModifiedBy = null;
+                                        newModel_Funnel_Stage.ModifiedDate = null;
+                                        newModel_Funnel_Stage.ModelId = NewModelID;
+                                        mrp.Model_Stage.Add(newModel_Funnel_Stage);
+                                    }
 
-                                                //// Added By Kalpesh Sharma Functional and code review #560 07-16-2014   
-                                                mrp.SaveChanges();
+                                    //// Added By Kalpesh Sharma Functional and code review #560 07-16-2014   
+                                    mrp.SaveChanges();
 
                                 }
                             }
@@ -2680,7 +2702,7 @@ namespace RevenuePlanner.Controllers
                     var oldModel = tblModels.Where(model => model.ModelId == OldModelID).FirstOrDefault();
                     if (!IsVersion)
                     {
-                      //  var oldModel = objMrpEntities.Models.Where(model => model.ModelId == OldModelID && model.IsDeleted.Equals(false)).FirstOrDefault();
+                        //  var oldModel = objMrpEntities.Models.Where(model => model.ModelId == OldModelID && model.IsDeleted.Equals(false)).FirstOrDefault();
                         if (oldModel != null)
                         {
                             newModel = oldModel;
@@ -2707,8 +2729,8 @@ namespace RevenuePlanner.Controllers
                         newModel.Year = DateTime.Now.Year;
                         newModel.IsBenchmarked = IsBenchmarked;
                         //// Added by Mitesh Vaishnav for PL ticket #659 
-                      
-                       
+
+
                         newModel.IntegrationInstanceId = oldModel.IntegrationInstanceId;
                         newModel.IntegrationInstanceIdCW = oldModel.IntegrationInstanceIdCW;
                         newModel.IntegrationInstanceIdINQ = oldModel.IntegrationInstanceIdINQ;
@@ -2762,7 +2784,7 @@ namespace RevenuePlanner.Controllers
                     #region Clone TacticTypes table entries
 
                     var oldTacticTypes = objMrpEntities.TacticTypes.Where(tacticType => tacticType.ModelId == OldModelID && (tacticType.IsDeleted == null ? false : tacticType.IsDeleted) == false).ToList();
-                   
+
                     if (oldTacticTypes != null)
                     {
                         if (oldTacticTypes.Count > 0)
@@ -2790,8 +2812,8 @@ namespace RevenuePlanner.Controllers
                                 newTacticTypes.ModifiedBy = null;
                                 newTacticTypes.ModifiedDate = null;
                                 objMrpEntities.TacticTypes.Add(newTacticTypes);
-                            
-                                
+
+
                             }
                             objMrpEntities.SaveChanges();  //// Shifted by Sohel Pathan on 20/08/2014 for PL ticket #713 from foreach loop to outside.
 
@@ -2821,7 +2843,7 @@ namespace RevenuePlanner.Controllers
                     }
                     #endregion
 
-                   
+
                     scope.Complete();
                 }
             }
@@ -2844,7 +2866,7 @@ namespace RevenuePlanner.Controllers
         {
             //// set values of objDbMrpEntities.Model object as per posted values and update objDbMrpEntities.Model
             string message = string.Empty;
-           // using (TransactionScope scope = new TransactionScope())
+            // using (TransactionScope scope = new TransactionScope())
             {
                 try
                 {
@@ -2862,7 +2884,7 @@ namespace RevenuePlanner.Controllers
                     if (IsIntegrationMarketoChanged) //Added by Komal Rawal for PL#2190
                     {
                         int integrationId = Convert.ToInt32(objModel.IntegrationInstanceMarketoID);
-                        Common.DeleteIntegrationInstance(integrationId, false, id, false,true);
+                        Common.DeleteIntegrationInstance(integrationId, false, id, false, true);
                     }
                     if (objModel != null)
                     {
@@ -2894,7 +2916,7 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessageIntegration"] = message;
                 }
 
-               // scope.Complete();
+                // scope.Complete();
             }
 
             return Json(new { status = false, Id = id }, JsonRequestBehavior.AllowGet);
@@ -3054,7 +3076,7 @@ namespace RevenuePlanner.Controllers
                     }
                     lstIntegrationOverview.Add(objIntSelection);
                 }
-                  else if (key.ToString() == "IntegrationInstanceIdProjMgmt") //added by Brad Gray for PL#1448
+                else if (key.ToString() == "IntegrationInstanceIdProjMgmt") //added by Brad Gray for PL#1448
                 {
                     var objInstance = lstInstance.Where(instance => instance.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt).FirstOrDefault();
                     objIntSelection.Setup = Enums.IntegrationActivity[key].ToString();
@@ -3075,7 +3097,7 @@ namespace RevenuePlanner.Controllers
             }
 
             ViewBag.IsAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
-            
+
             return View(lstIntegrationOverview);
         }
 
@@ -3144,11 +3166,11 @@ namespace RevenuePlanner.Controllers
                 InstanceId = instance.IntegrationInstanceId,
                 Type = instance.IntegrationType.Title,
                 Code = instance.IntegrationType.Code
-                }).OrderBy(ins => ins.InstanceName).ToList();
+            }).OrderBy(ins => ins.InstanceName).ToList();
 
 
             ViewData["IntegrationInstances"] = lstInstance;
-            
+
             string insType = Enums.IntegrationInstanceType.Salesforce.ToString();
             string elqType = Enums.IntegrationInstanceType.Eloqua.ToString();
             string workfrontType = Enums.IntegrationInstanceType.WorkFront.ToString(); //Added by Brad Gray for PL#1448
@@ -3176,14 +3198,14 @@ namespace RevenuePlanner.Controllers
             var isEloqua = clientPermission.Where(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(eloquaIntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))).Any();
             var isSFDC = clientPermission.Where(intPermission => (intPermission.ClientId.Equals(clientId)) && (intPermission.IntegrationTypeId.Equals(salesforceIntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))).Any();
             if (isEloquaOrSfdc)
-            {                
+            {
                 if (isEloqua)
                 {
                     var lstInstanceEloqua = lstInstance.Where(instance => instance.Code == elqType).ToList();
-                        if (lstInstanceEloqua != null && lstInstanceEloqua.Count > 0)
+                    if (lstInstanceEloqua != null && lstInstanceEloqua.Count > 0)
                     {
                         lstInstancefilter.AddRange(lstInstanceEloqua);
-                    }                    
+                    }
                 }
                 if (isSFDC)
                 {
@@ -3198,9 +3220,10 @@ namespace RevenuePlanner.Controllers
                     lstInstancefilter = lstInstancefilter.OrderBy(ins => ins.InstanceName).ToList();
                     ViewData["MQLFilteredEloquaIntegrationInstances"] = lstInstancefilter;
                 }
-                else {
+                else
+                {
                     ViewData["MQLFilteredEloquaIntegrationInstances"] = Enumerable.Empty<entIntegrationInstance>();
-                }                
+                }
             }
             else
                 ViewData["MQLFilteredEloquaIntegrationInstances"] = Enumerable.Empty<entIntegrationInstance>();
@@ -3215,11 +3238,11 @@ namespace RevenuePlanner.Controllers
 
 
         //Added By Komal Rawal for #2134 to save marketo settings
-        public void SaveMarketoSettings(int EntityId,int? InstanceId, string EntityType, string ProgramType, string Channel)
+        public void SaveMarketoSettings(int EntityId, int? InstanceId, string EntityType, string ProgramType, string Channel)
         {
             try
             {
-                using(objDbMrpEntities = new MRPEntities())
+                using (objDbMrpEntities = new MRPEntities())
                 {
                     MarketoEntityValueMapping MarketoValueExists = objDbMrpEntities.MarketoEntityValueMappings.Where(set => set.EntityID == EntityId).FirstOrDefault();
 

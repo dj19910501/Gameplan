@@ -2267,6 +2267,9 @@
         <Function Name="GetCollaboratorId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PlanId" Type="int" Mode="In" />
         </Function>
+        <Function Name="PublishModel" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="NewModelId" Type="int" Mode="In" />
+        </Function>
         <EntityContainer Name="MRPModelStoreContainer">
           <EntitySet Name="BestInClass" EntityType="Self.BestInClass" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Budget" EntityType="Self.Budget" Schema="dbo" store:Type="Tables" />
@@ -3239,6 +3242,9 @@
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="EntityIntegration_Attribute" EntitySet="EntityIntegration_Attribute" />
           </AssociationSet>
+          <FunctionImport Name="PublishModel">
+            <Parameter Name="NewModelId" Mode="In" Type="Int32" />
+          </FunctionImport>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -6940,6 +6946,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="PublishModel" FunctionName="MRPModel.Store.PublishModel" />
          
         </EntityContainerMapping>
       </Mapping>

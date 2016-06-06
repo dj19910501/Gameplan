@@ -221,5 +221,14 @@ namespace RevenuePlanner.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DeleteLastViewedData", userIdParameter, previousIdsParameter);
         }
+    
+        public virtual int PublishModel(Nullable<int> newModelId)
+        {
+            var newModelIdParameter = newModelId.HasValue ?
+                new ObjectParameter("NewModelId", newModelId) :
+                new ObjectParameter("NewModelId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PublishModel", newModelIdParameter);
+        }
     }
 }
