@@ -1,5 +1,9 @@
 ﻿@using RevenuePlanner.Helpers;
 @model RevenuePlanner.Models.FinanceModel
+@{
+    
+    string GridRowID = ViewBag.GridRowID;
+}
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
@@ -38,7 +42,7 @@
        
       
         <div class="user-table">
-            <div id="SaveMsg" class="alert alert-success">
+            <div id="SaveMsg" class="alert alert-success" style="display:none">
                 <span class="x-icon pull-right" id="aclose">x</span>
                 <span>Changes Saved.</span>
             </div>
@@ -266,7 +270,7 @@
                         var data = Data._user;
                         var html = "";
                         if (Data.Flag == "Edit") {
-                          
+
                             var data = Data._user;
                             var html = "";
                             for (var i = 0; i < data.length; i++) {
@@ -323,7 +327,7 @@
             $("#userTable").hide();
             $("#btnsave").hide();
             $("#btncancel").hide();
-            
+
             $("#tableNoData").css('display', 'block');
         }
         $(".x-icon").click(function (e) {
@@ -333,7 +337,7 @@
         var row;
         $('#userTable').on('click', '#deletemember', function () {
             var Name = $(this).closest('tr').find('td').eq('2').text() + " " + $(this).closest('tr').find('td').eq(3).text() + ".";
-         
+
             $("#divDeletePopup h2").text('Deleting a user');
             $("#lipname").html(Name);
             $("#divDeletePopup").modal('show');
@@ -349,7 +353,7 @@
                 Userdelete(_id, _budgetId);
             }
             else {
-               
+
                 var y = $(row).remove();
             }
             GetIds();
@@ -378,7 +382,7 @@
         })
 
         var imageurl = '@Url.Content("~/Content/images/icon-plus_in_circle.png")';
-       
+
         var us = userIDs;
         var typingTimer;                //timer identifier
         var doneTypingInterval = 500;  //time in ms, 5 second for example
@@ -483,7 +487,7 @@
 
         function checklogedUser() {
             $("#userTable tbody tr").each(function () {
-               
+
                 var Id = $(this).find('td:first').text();
                 if (Id == '@Sessions.User.UserId') {
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
@@ -515,7 +519,9 @@
             else {
                 return false;
             }
-            emp = JSON.stringify({ 'UserData': emp, 'ID': DrpId, 'CreatedBy': _createdBy });
+            //Modified by Komal Rawal for #2242 change chil item permission on change of parent item
+            var ChildItems = myTreeGrid.getAllSubItems('@GridRowID');
+            emp = JSON.stringify({ 'UserData': emp, 'ParentID': '@GridRowID', 'CreatedBy': _createdBy, 'ChildItems': ChildItems });
             $.ajax({
                 url: '@Url.Action("SaveDetail", "Finance")',
                 contentType: 'application/json; charset=utf-8',
@@ -555,40 +561,40 @@
             var Id = $(this).find('td:first').text();
             var CreatedbyId = $(this).find('td').eq(1).text();
             if (Id == '@Sessions.User.UserId') {
-                    $(this).find('td,input,span,a').attr("disabled", "disabled");
-                    $(this).find('a').removeAttr("onclick");
-                    $(this).find('a').removeAttr('href', '')
-                    $(this).find('span').removeClass('x-icon');
-                }
-                if (CreatedbyId == Id) {
-                 
-                    $(this).find('td,input,span,a').attr("disabled", "disabled");
-                    $(this).find('a').removeAttr("onclick");
-                    $(this).find('span').removeClass('x-icon');
-                }
-                if (Id == Owneruser) {
-                    $(this).find('td,input,span,a').attr("disabled", "disabled");
-                    $(this).find('a').removeAttr("onclick");
-                    $(this).find('span').removeClass('x-icon');
-                }
+                $(this).find('td,input,span,a').attr("disabled", "disabled");
+                $(this).find('a').removeAttr("onclick");
+                $(this).find('a').removeAttr('href', '')
+                $(this).find('span').removeClass('x-icon');
+            }
+            if (CreatedbyId == Id) {
 
-            })
-        }
+                $(this).find('td,input,span,a').attr("disabled", "disabled");
+                $(this).find('a').removeAttr("onclick");
+                $(this).find('span').removeClass('x-icon');
+            }
+            if (Id == Owneruser) {
+                $(this).find('td,input,span,a').attr("disabled", "disabled");
+                $(this).find('a').removeAttr("onclick");
+                $(this).find('span').removeClass('x-icon');
+            }
 
-        function getselection() {
-            $("#nl-formUserChildFinance li").each(function () {
-                var y = $(this).val();
-                if (_UserBudgetId == y) {
-                    $(this).siblings().removeClass('nl-dd-checked')
-                    $(this).addClass('nl-dd-checked');
-                    $(this).parent().parent().find('a').text($(this).text());
-                }
-            });
-        }
+        })
+    }
 
-        function Userdelete(id, budgetID) {
-            $.ajax({
-                url: '@Url.Action("Delete", "Finance")',
+    function getselection() {
+        $("#nl-formUserChildFinance li").each(function () {
+            var y = $(this).val();
+            if (_UserBudgetId == y) {
+                $(this).siblings().removeClass('nl-dd-checked')
+                $(this).addClass('nl-dd-checked');
+                $(this).parent().parent().find('a').text($(this).text());
+            }
+        });
+    }
+
+    function Userdelete(id, budgetID) {
+        $.ajax({
+            url: '@Url.Action("Delete", "Finance")',
             type: 'POST',
             data: { id: id, budgetID: budgetID },
             success: function (data) {
@@ -612,7 +618,7 @@
 
     function DeleteUsers(id, budgetID, firsname, lastname) {
         _isDatabase = "Fromdatabase";
-        var name = firsname + " "+lastname + ".";
+        var name = firsname + " " + lastname + ".";
         $("#divDeletePopup h2").text('Deleting a user');
         $("#lipname").html(name);
         $("#divDeletePopup").modal('show');

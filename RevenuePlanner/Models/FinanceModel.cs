@@ -43,6 +43,7 @@ namespace RevenuePlanner.Models
     {
         public string UserId { get; set; }
         public int PermisssionCode { get; set; }
+        public int BudgetDetailId { get; set; }
     }
     //public class FinanceParentChildModel
     //{

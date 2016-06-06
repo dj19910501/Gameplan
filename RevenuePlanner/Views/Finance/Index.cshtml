@@ -1057,8 +1057,7 @@
 
     }
 
-    function Edit(BudgetId, childChange, level, e) {
-        
+    function Edit(BudgetId, childChange, level,RowID, e) {   //Modified by Komal Rawal for #2242 change chil item permission on change of parent item
         var budgetIDMain = $("#ddlParentFinanceMain").val();
         backBudgetid = budgetIDMain;
         //$("#hdn_BudgetDetailId").val(BudgetId);
@@ -1091,7 +1090,7 @@
         valueTimeFrame = $("#ddlRevenueTimeFrame").val();
         $("#ddlRevenueTimeFrame").val(valueTimeFrame);
         var url = '@Url.Content("~/Finance/EditPermission/")';
-        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel + '&FlagCondition=' + _flagCondition);
+        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel + '&FlagCondition=' + _flagCondition + '&rowid=' + RowID); 
     }
     function EditBudget(BudgetId, childChange, level,EditPermission) {
         myTreeGrid.editStop();

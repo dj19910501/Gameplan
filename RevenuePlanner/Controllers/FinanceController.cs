@@ -536,6 +536,7 @@ namespace RevenuePlanner.Controllers
                 var lstUserId = lstUser.Select(a => a.UserId).ToList();
                 var ListOfUserPermission = db.Budget_Permission.Where(a => lstUserId.Contains(a.UserId)).ToList();
                 string rowId = string.Empty;
+                string GridrowId = string.Empty;
                 List<int> PlanLineItemsId, lstLineItemIds;
                 BudgetAmount objBudgetAmount;
                 bool isQuarterly = false;
@@ -596,14 +597,22 @@ namespace RevenuePlanner.Controllers
                         {
                             isEdit = "View";
                         }
-
-                        if (_IsBudgetCreate_Edit)
+                        //Modified by Komal Rawal for #2242 change child item permission on change of parent item
+                        if (isEdit == "Edit")
                         {
-                            strUserAction = string.Format("<div onclick='Edit({0},false,{1},this)' class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + isEdit + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
+                            GridrowId = rowId + "_" + "True";
                         }
                         else
                         {
-                            strUserAction = string.Format("<div onclick='Edit({0},false,{1},this)' class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + isEdit + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
+                            GridrowId = rowId + "_" + "False";
+                        }
+                        if (_IsBudgetCreate_Edit)
+                        {
+                            strUserAction = string.Format("<div onclick=Edit({0},false,{1},'" + GridrowId + "',this) class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + isEdit + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
+                        }
+                        else
+                        {
+                            strUserAction = string.Format("<div onclick=Edit({0},false,{1},'" + GridrowId + "',this) class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + isEdit + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
                         }
 
                         DataRow Datarow = dataTable.NewRow();
@@ -1030,11 +1039,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="BudgetId">contains BudgetDetail's Id</param>
         /// <param name="FlagCondition">contains of edit or view</param>
         /// <returns>return model to partial view</returns>
-        public ActionResult EditPermission(int BudgetId = 0, string level = "", string FlagCondition = "")
+        public ActionResult EditPermission(int BudgetId = 0, string level = "", string FlagCondition = "", string rowid = "")
         {
             FinanceModel objFinanceModel = new FinanceModel();
             ViewBag.BudgetId = BudgetId;
             ViewBag.EditLevel = level;
+            ViewBag.GridRowID = rowid;
             List<ViewByModel> lstchildbudget = new List<ViewByModel>();
             lstchildbudget = Common.GetParentBudgetlist(BudgetId);
             List<UserPermission> _user = new List<UserPermission>();
@@ -1198,39 +1208,86 @@ namespace RevenuePlanner.Controllers
         /// <param name="ID">contains user's id</param>
         /// <returns>if sucess then return true else false</returns>
         [HttpPost]
-        public JsonResult SaveDetail(List<UserBudgetPermission> UserData, int ID, string[] CreatedBy)
+        public JsonResult SaveDetail(List<UserBudgetPermission> UserData, string ParentID, string[] CreatedBy, string ChildItems)
         {
+            //Modified by Komal Rawal for #2242 change chil item permission on change of parent item
             if (UserData != null)
             {
-                for (int i = 0; i < UserData.Count; i++)
+                List<string> ListItems = new List<string>();
+                if (ChildItems != "" && ChildItems != null)
                 {
-                    Budget_Permission objBudget_Permission = new Budget_Permission();
-                    Guid id = Guid.Parse(UserData[i].UserId);
+                    ListItems = ChildItems.Split(',').ToList();
 
-                    Budget_Permission BudgetDetailList = db.Budget_Permission.Where(t => t.BudgetDetailId.Equals(ID) && t.UserId.Equals(id)).FirstOrDefault();
-                    if (BudgetDetailList == null)
+                }
+                if (ParentID != "" && ParentID != null)
+                {
+                    ListItems.Add(ParentID);
+                }
+
+                string ItemID = string.Empty;
+                List<UserBudgetPermission> FinalUserData = new List<UserBudgetPermission>();
+                    Budget_Permission objBudget_Permission = new Budget_Permission();
+                List<Budget_Permission> BudgetDetailList = db.Budget_Permission.Select(list => list).ToList();
+                Budget_Permission CurrentobjBudget_Permission = new Budget_Permission();
+                List<UserBudgetPermission> TempUserData = new List<UserBudgetPermission>();
+
+                for (int i = 0; i < ListItems.Count; i++)
+                {
+                    TempUserData = new List<UserBudgetPermission>();
+                    if (ListItems[i].Contains("_"))
                     {
-                        objBudget_Permission.UserId = Guid.Parse(UserData[i].UserId);
-                        objBudget_Permission.BudgetDetailId = Convert.ToInt32(ID);
+                        ItemID = ListItems[i].Split('_')[1];
+                    }
+                    TempUserData = (from User in UserData
+                                    select new UserBudgetPermission
+                                    {
+                                        BudgetDetailId = Convert.ToInt32(ItemID),
+                                        PermisssionCode = User.PermisssionCode,
+                                        UserId = User.UserId
+                                    }).ToList();
+                    FinalUserData.AddRange(TempUserData);
+                }
+
+                try
+                {
+                    for (int i = 0; i < FinalUserData.Count; i++)
+                    {
+                        db.Configuration.AutoDetectChangesEnabled = false;
+                        objBudget_Permission = new Budget_Permission();
+                        Guid id = Guid.Parse(FinalUserData[i].UserId);
+                        CurrentobjBudget_Permission = BudgetDetailList.Where(t => t.BudgetDetailId.Equals(FinalUserData[i].BudgetDetailId) && t.UserId.Equals(id)).FirstOrDefault();
+                        if (CurrentobjBudget_Permission == null)
+                        {
+                            objBudget_Permission.UserId = Guid.Parse(FinalUserData[i].UserId);
+                            objBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
                         objBudget_Permission.CreatedBy = Sessions.User.UserId;
                         objBudget_Permission.CreatedDate = DateTime.Now;
-                        objBudget_Permission.PermisssionCode = UserData[i].PermisssionCode;
+                            objBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
                         db.Entry(objBudget_Permission).State = EntityState.Added;
-                        db.SaveChanges();
                     }
                     else
                     {
 
-                        BudgetDetailList.UserId = Guid.Parse(UserData[i].UserId);
-                        BudgetDetailList.BudgetDetailId = Convert.ToInt32(ID);
-                        BudgetDetailList.CreatedBy = Guid.Parse(CreatedBy[i]);
-                        BudgetDetailList.CreatedDate = DateTime.Now;
-                        BudgetDetailList.PermisssionCode = UserData[i].PermisssionCode;
-                        db.Entry(BudgetDetailList).State = EntityState.Modified;
-                        db.SaveChanges();
+                            CurrentobjBudget_Permission.UserId = Guid.Parse(FinalUserData[i].UserId);
+                            CurrentobjBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
+                            CurrentobjBudget_Permission.CreatedDate = DateTime.Now;
+                            CurrentobjBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
+                            db.Entry(CurrentobjBudget_Permission).State = EntityState.Modified;
+
+
+                        }
 
                     }
                 }
+                finally
+                {
+                    db.Configuration.AutoDetectChangesEnabled = true;
+                }
+
+     
+                        db.SaveChanges();
+
+                //End
                 return Json(true, JsonRequestBehavior.AllowGet);
             }
             return Json(false, JsonRequestBehavior.AllowGet);
