@@ -678,52 +678,53 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #region Save Tactic Budget Allocation
+        // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
         /// <summary>
         /// To Save the Tactic
         /// </summary>
         /// <auther>Komal Rawal</auther>
         /// <createddate>29June2015</createddate>
-        [TestMethod]
-        public void Save_Tactic_Budget_Allocation()
-        {
+        //[TestMethod]
+        //public void Save_Tactic_Budget_Allocation()
+        //{
 
-            Console.WriteLine("To Save the Tactic.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            //// Call index method
-            InspectController objInspectController = new InspectController();
-            string UserID = (Sessions.User.UserId).ToString();
-            int ModelId = DataHelper.GetModelId();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
-            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
-            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
-            int TacticTypeId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.TacticTypeId).FirstOrDefault();
-            int? StageId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.StageId).FirstOrDefault();
+        //    Console.WriteLine("To Save the Tactic.\n");
+        //    MRPEntities db = new MRPEntities();
+        //    //// Set session value
+        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    //// Call index method
+        //    InspectController objInspectController = new InspectController();
+        //    string UserID = (Sessions.User.UserId).ToString();
+        //    int ModelId = DataHelper.GetModelId();
+        //    int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+        //    int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+        //    int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
+        //    int TacticTypeId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.TacticTypeId).FirstOrDefault();
+        //    int? StageId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.StageId).FirstOrDefault();
 
 
-            string Title = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.Title).FirstOrDefault();
-            Plan_Campaign_Program_TacticModel Form = new Plan_Campaign_Program_TacticModel();
-            Form.PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault(); ;
-            Form.PlanProgramId = PlanProgramId;
-            Form.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
-            Form.TacticBudget = 10000;
+        //    string Title = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.Title).FirstOrDefault();
+        //    Plan_Campaign_Program_TacticModel Form = new Plan_Campaign_Program_TacticModel();
+        //    Form.PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault(); ;
+        //    Form.PlanProgramId = PlanProgramId;
+        //    Form.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
+        //    Form.TacticBudget = 10000;
 
-            string Budgetvalues = GetBudgetValues(Form.AllocatedBy);
+        //    string Budgetvalues = GetBudgetValues(Form.AllocatedBy);
 
-            var result = objInspectController.SaveTacticBudgetAllocation(Form, Budgetvalues, UserID, Title) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
+        //    var result = objInspectController.SaveTacticBudgetAllocation(Form, Budgetvalues, UserID, Title) as JsonResult;
+        //    if (result != null)
+        //    {
+        //        //// ViewResult shoud not be null and should match with viewName
+        //        Assert.IsNotNull(result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //    }
+        //    else
+        //    {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-        }
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+        //    }
+        //}
 
         #endregion
 
