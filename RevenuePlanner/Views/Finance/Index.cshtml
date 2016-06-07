@@ -1356,7 +1356,6 @@
     }
 
     function RefreshBudgetDropdown(IsAddNew) {
-
         var _budgetId = $("#hdn_BudgetId").val();
         var $dropdown = $("#ddlParentFinanceMain");
         $dropdown.empty();
@@ -1455,10 +1454,12 @@
             if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
                 RefreshMainGridData(budgetIDMain);
                 GetFinanceHeaderValue(budgetIDMain, true, _mainTimeFrame);
+                $("#dvExportToExcel").css("display","block");  // Added by Rushil Bhuptani on 06/07/2016 for #2247.
             }
             else {
                 $("#divGridView").hide();
                 $("#dvNoData").show();
+                $("#dvExportToExcel").css("display","none");  // Added by Rushil Bhuptani on 06/07/2016 for #2247.
             }
             //addded by Rahul Shah
             $('#nl-formParentFinanceMain .nl-field-toggle').text($(this).text());
