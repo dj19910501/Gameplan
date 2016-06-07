@@ -339,6 +339,7 @@
             }
         }
         else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()") {
+            currentTab = "Setup";
             if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
                 loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
             }

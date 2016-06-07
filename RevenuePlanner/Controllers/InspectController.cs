@@ -5860,628 +5860,632 @@ namespace RevenuePlanner.Controllers
         }
 
         #region Budget Tactic for Campaign Tab
-        /// <summary>
-        /// Fetch the Tactic Budget Allocation 
-        /// </summary>
-        /// <param name="id">Campaign Id</param>
-        /// <returns></returns>
-        public PartialViewResult LoadTacticBudgetAllocation(int id = 0)
-        {
-            Plan_Campaign_Program_Tactic pcp = db.Plan_Campaign_Program_Tactic.Where(pcpobj => pcpobj.PlanTacticId.Equals(id) && pcpobj.IsDeleted.Equals(false)).FirstOrDefault();
-            if (pcp == null)
-            {
-                return null;
-            }
-            Plan_Campaign_Program_TacticModel pcpm = new Plan_Campaign_Program_TacticModel();
-            pcpm.PlanProgramId = pcp.PlanProgramId;
-            pcpm.PlanTacticId = pcp.PlanTacticId;
+        // Start - Commented by Arpita Soni for Ticket #2236 on 06/07/2016
 
-            // Add by Nishant sheth
-            // Desc :: #1765 - to get the year diffrence between item start date and end date
-            ViewBag.YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcp.EndDate.Year) - Convert.ToInt32(pcp.StartDate.Year));
-            ViewBag.StartYear = Convert.ToInt32(pcp.StartDate.Year);
+        ///// <summary>
+        ///// Fetch the Tactic Budget Allocation 
+        ///// </summary>
+        ///// <param name="id">Campaign Id</param>
+        ///// <returns></returns>
+        //public PartialViewResult LoadTacticBudgetAllocation(int id = 0)
+        //{
+        //    Plan_Campaign_Program_Tactic pcp = db.Plan_Campaign_Program_Tactic.Where(pcpobj => pcpobj.PlanTacticId.Equals(id) && pcpobj.IsDeleted.Equals(false)).FirstOrDefault();
+        //    if (pcp == null)
+        //    {
+        //        return null;
+        //    }
+        //    Plan_Campaign_Program_TacticModel pcpm = new Plan_Campaign_Program_TacticModel();
+        //    pcpm.PlanProgramId = pcp.PlanProgramId;
+        //    pcpm.PlanTacticId = pcp.PlanTacticId;
 
-            string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
-            string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
-            //Modified BY komal Rawal
-            pcpm.TacticBudget = pcp.TacticBudget;
-            //End
-            pcpm.AllocatedBy = pcp.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
+        //    // Add by Nishant sheth
+        //    // Desc :: #1765 - to get the year diffrence between item start date and end date
+        //    ViewBag.YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcp.EndDate.Year) - Convert.ToInt32(pcp.StartDate.Year));
+        //    ViewBag.StartYear = Convert.ToInt32(pcp.StartDate.Year);
 
-            #region "Calculate Plan remaining budget"
-            //Added By : Kalpesh Sharma Functioan and code review #693
-            var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpm.PlanProgramId && c.IsDeleted == false).ToList().Sum(c => c.TacticBudget);
-            var objPlanCampaignProgram = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == pcpm.PlanProgramId);
-            ViewBag.planRemainingBudget = (objPlanCampaignProgram.ProgramBudget - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
-            #endregion
+        //    string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
+        //    string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+        //    //Modified BY komal Rawal
+        //    pcpm.TacticBudget = pcp.TacticBudget;
+        //    //End
+        //    pcpm.AllocatedBy = pcp.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
 
-            return PartialView("_SetupTacticBudgetAllocation", pcpm);
-        }
+        //    #region "Calculate Plan remaining budget"
+        //    //Added By : Kalpesh Sharma Functioan and code review #693
+        //    var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpm.PlanProgramId && c.IsDeleted == false).ToList().Sum(c => c.TacticBudget);
+        //    var objPlanCampaignProgram = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == pcpm.PlanProgramId);
+        //    ViewBag.planRemainingBudget = (objPlanCampaignProgram.ProgramBudget - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
+        //    #endregion
 
-        /// <summary>
-        /// Action to Save Campaign Allocation.
-        /// </summary>
-        /// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
-        /// <param name="BudgetInputValues">Budget Input Values.</param>
-        /// <param name="UserId">User Id.</param>
-        /// <param name="title"></param>
-        /// <returns>Returns Action Result.</returns>
-        [HttpPost]
-        public ActionResult SaveTacticBudgetAllocation(Plan_Campaign_Program_TacticModel form, string BudgetInputValues, string UserId = "", string title = "", string AllocatedBy = "", int YearDiffrence = 0)
-        {
-            //// check whether UserId is loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
-            {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
-                {
-                    return Json(new { IsSaved = false, msg = Common.objCached.LoginWithSameSession, JsonRequestBehavior.AllowGet });
-                }
-            }
+        //    return PartialView("_SetupTacticBudgetAllocation", pcpm);
+        //}
 
-            try
-            {
-                string[] arrBudgetInputValues = BudgetInputValues.Split(',');
-                //Added by Komal Rawal for #1217
-                string budgetvalue = BudgetInputValues.Replace(',', ' ').Trim();
-                bool isvalueempty = budgetvalue != string.Empty ? true : false;
-                //end
-                using (MRPEntities mrp = new MRPEntities())
-                {
-                    //Modified By Komal Rawal for #2166 Transaction deadlock elmah error
-                    var TransactionOption = new System.Transactions.TransactionOptions();
-                    TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+        ///// <summary>
+        ///// Action to Save Campaign Allocation.
+        ///// </summary>
+        ///// <param name="form">Form object of Plan_Campaign_ProgramModel.</param>
+        ///// <param name="BudgetInputValues">Budget Input Values.</param>
+        ///// <param name="UserId">User Id.</param>
+        ///// <param name="title"></param>
+        ///// <returns>Returns Action Result.</returns>
+        //[HttpPost]
+        //public ActionResult SaveTacticBudgetAllocation(Plan_Campaign_Program_TacticModel form, string BudgetInputValues, string UserId = "", string title = "", string AllocatedBy = "", int YearDiffrence = 0)
+        //{
+        //    //// check whether UserId is loggined user or not.
+        //    if (!string.IsNullOrEmpty(UserId))
+        //    {
+        //        if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+        //        {
+        //            return Json(new { IsSaved = false, msg = Common.objCached.LoginWithSameSession, JsonRequestBehavior.AllowGet });
+        //        }
+        //    }
 
-                    using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
-                    // using (var scope = new TransactionScope())
-                    {
+        //    try
+        //    {
+        //        string[] arrBudgetInputValues = BudgetInputValues.Split(',');
+        //        //Added by Komal Rawal for #1217
+        //        string budgetvalue = BudgetInputValues.Replace(',', ' ').Trim();
+        //        bool isvalueempty = budgetvalue != string.Empty ? true : false;
+        //        //end
+        //        using (MRPEntities mrp = new MRPEntities())
+        //        {
+        //            //Modified By Komal Rawal for #2166 Transaction deadlock elmah error
+        //            var TransactionOption = new System.Transactions.TransactionOptions();
+        //            TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
 
-                        //List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false).ToList();
-                        int linkedTacticId = 0;
-                        Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).FirstOrDefault();
+        //            using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
+        //            // using (var scope = new TransactionScope())
+        //            {
 
-                        #region "Retrieve linkedTactic"
-                        linkedTacticId = (pcpobj != null && pcpobj.LinkedTacticId.HasValue) ? pcpobj.LinkedTacticId.Value : 0;
-                        //if (linkedTacticId <= 0)
-                        //{
-                        //    var lnkPCPT = tblPlanTactic.Where(tac => tac.LinkedTacticId == form.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
-                        //    linkedTacticId = lnkPCPT != null ? lnkPCPT.PlanTacticId : 0;
-                        //}
-                        #endregion
+        //                //List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false).ToList();
+        //                int linkedTacticId = 0;
+        //                Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).FirstOrDefault();
 
-                        //// Get duplicate record to check duplication.
-                        var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
-                                      join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-                                      join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                      where pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(form.PlanTacticId) && pcpt.IsDeleted.Equals(false)
-                                      && pcp.PlanProgramId == form.PlanProgramId
-                                      select pcp).FirstOrDefault();
+        //                #region "Retrieve linkedTactic"
+        //                linkedTacticId = (pcpobj != null && pcpobj.LinkedTacticId.HasValue) ? pcpobj.LinkedTacticId.Value : 0;
+        //                //if (linkedTacticId <= 0)
+        //                //{
+        //                //    var lnkPCPT = tblPlanTactic.Where(tac => tac.LinkedTacticId == form.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+        //                //    linkedTacticId = lnkPCPT != null ? lnkPCPT.PlanTacticId : 0;
+        //                //}
+        //                #endregion
 
-                        //// Get Linked Tactic duplicate record.
-                        Plan_Campaign_Program_Tactic dupLinkedTactic = null;
-                        Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
-                        int yearDiff = 0, perdNum = 12, cntr = 0;
-                        bool isMultiYearlinkedTactic = false;
-                        List<string> lstLinkedPeriods = new List<string>();
+        //                //// Get duplicate record to check duplication.
+        //                var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
+        //                              join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+        //                              join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+        //                              where pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(form.PlanTacticId) && pcpt.IsDeleted.Equals(false)
+        //                              && pcp.PlanProgramId == form.PlanProgramId
+        //                              select pcp).FirstOrDefault();
 
-                        if (linkedTacticId > 0)
-                        {
-                            linkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
+        //                //// Get Linked Tactic duplicate record.
+        //                Plan_Campaign_Program_Tactic dupLinkedTactic = null;
+        //                Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
+        //                int yearDiff = 0, perdNum = 12, cntr = 0;
+        //                bool isMultiYearlinkedTactic = false;
+        //                List<string> lstLinkedPeriods = new List<string>();
 
-                            dupLinkedTactic = (from pcpt in db.Plan_Campaign_Program_Tactic
-                                               join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-                                               join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                               where pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(linkedTacticId) && pcpt.IsDeleted.Equals(false)
-                                               && pcp.PlanProgramId == linkedTactic.PlanProgramId
-                                               select pcpt).FirstOrDefault();
+        //                if (linkedTacticId > 0)
+        //                {
+        //                    linkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault();
 
-                            yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
-                            isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
-                            cntr = 12 * yearDiff;
-                            for (int i = 1; i <= cntr; i++)
-                            {
-                                lstLinkedPeriods.Add(PeriodChar + (perdNum + i).ToString());
-                            }
-                        }
+        //                    dupLinkedTactic = (from pcpt in db.Plan_Campaign_Program_Tactic
+        //                                       join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+        //                                       join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+        //                                       where pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(linkedTacticId) && pcpt.IsDeleted.Equals(false)
+        //                                       && pcp.PlanProgramId == linkedTactic.PlanProgramId
+        //                                       select pcpt).FirstOrDefault();
 
-                        //// if duplicate record exist then return duplication message.
-                        if (dupLinkedTactic != null)
-                        {
-                            string strDuplicateMessage = string.Format(Common.objCached.LinkedPlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
-                            return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
-                        }
-                        else if (pcpvar != null)
-                        {
-                            string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                            return Json(new { IsSaved = false, msg = strDuplicateMessage, JsonRequestBehavior.AllowGet });
-                        }
-                        else
-                        {
-                            string status = string.Empty;
-                            List<Plan_Campaign_Program_Tactic_Budget> tblTacticBudget = new List<Plan_Campaign_Program_Tactic_Budget>();
+        //                    yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+        //                    isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
+        //                    cntr = 12 * yearDiff;
+        //                    for (int i = 1; i <= cntr; i++)
+        //                    {
+        //                        lstLinkedPeriods.Add(PeriodChar + (perdNum + i).ToString());
+        //                    }
+        //                }
 
-                            pcpobj.Title = title;
-                            pcpobj.TacticBudget = form.TacticBudget; // modified for 1229
-                            pcpobj.ModifiedBy = Sessions.User.UserId;
-                            pcpobj.ModifiedDate = DateTime.Now;
+        //                //// if duplicate record exist then return duplication message.
+        //                if (dupLinkedTactic != null)
+        //                {
+        //                    string strDuplicateMessage = string.Format(Common.objCached.LinkedPlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+        //                    return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+        //                }
+        //                else if (pcpvar != null)
+        //                {
+        //                    string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+        //                    return Json(new { IsSaved = false, msg = strDuplicateMessage, JsonRequestBehavior.AllowGet });
+        //                }
+        //                else
+        //                {
+        //                    string status = string.Empty;
+        //                    List<Plan_Campaign_Program_Tactic_Budget> tblTacticBudget = new List<Plan_Campaign_Program_Tactic_Budget>();
 
-                            //if (linkedTacticId > 0)
-                            //{
-                            //    Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(linkedTacticId)).FirstOrDefault();
-                            //    objLinkedTactic.Title = title;
-                            //    objLinkedTactic.TacticBudget = form.TacticBudget; // modified for 1229
-                            //    objLinkedTactic.ModifiedBy = Sessions.User.UserId;
-                            //    objLinkedTactic.ModifiedDate = pcpobj.ModifiedDate;
-                            //}
+        //                    pcpobj.Title = title;
+        //                    pcpobj.TacticBudget = form.TacticBudget; // modified for 1229
+        //                    pcpobj.ModifiedBy = Sessions.User.UserId;
+        //                    pcpobj.ModifiedDate = DateTime.Now;
 
-                            int startmonth = pcpobj.StartDate.Month;
-                            if (linkedTacticId > 0)
-                                tblTacticBudget = db.Plan_Campaign_Program_Tactic_Budget.Where(_tacCost => (_tacCost.PlanTacticId == form.PlanTacticId) || (_tacCost.PlanTacticId == linkedTacticId)).ToList();
-                            else
-                                tblTacticBudget = db.Plan_Campaign_Program_Tactic_Budget.Where(_tacCost => (_tacCost.PlanTacticId == form.PlanTacticId)).ToList();
+        //                    //if (linkedTacticId > 0)
+        //                    //{
+        //                    //    Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(linkedTacticId)).FirstOrDefault();
+        //                    //    objLinkedTactic.Title = title;
+        //                    //    objLinkedTactic.TacticBudget = form.TacticBudget; // modified for 1229
+        //                    //    objLinkedTactic.ModifiedBy = Sessions.User.UserId;
+        //                    //    objLinkedTactic.ModifiedDate = pcpobj.ModifiedDate;
+        //                    //}
 
-                            //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-                            List<Plan_Campaign_Program_Tactic_Budget> PrevAllocationList = tblTacticBudget.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).Select(_tacCost => _tacCost).ToList();  // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
+        //                    int startmonth = pcpobj.StartDate.Month;
+        //                    if (linkedTacticId > 0)
+        //                        tblTacticBudget = db.Plan_Campaign_Program_Tactic_Budget.Where(_tacCost => (_tacCost.PlanTacticId == form.PlanTacticId) || (_tacCost.PlanTacticId == linkedTacticId)).ToList();
+        //                    else
+        //                        tblTacticBudget = db.Plan_Campaign_Program_Tactic_Budget.Where(_tacCost => (_tacCost.PlanTacticId == form.PlanTacticId)).ToList();
 
-                            //// Process for Monthly budget values.
-                            // Change by Nishant sheth
-                            // Desc :: #1765 - to replace the lenth of array to allocated by
-                            if (AllocatedBy == Enums.PlanAllocatedBy.months.ToString().ToLower())
-                            {
-                                bool isExists;
-                                Plan_Campaign_Program_Tactic_Budget updatePlanTacticBudget, obPlanCampaignProgramTacticBudget;
-                                double newValue = 0;
-                                for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                {
-                                    // Start - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                    isExists = false;
-                                    if (PrevAllocationList != null && PrevAllocationList.Count > 0)
-                                    {
-                                        //// Get previous campaign budget values by Period.
-                                        updatePlanTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
-                                        updatePlanTacticBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
-                                        if (updatePlanTacticBudget != null)
-                                        {
-                                            if (arrBudgetInputValues[i] != "")
-                                            {
-                                                newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                if (updatePlanTacticBudget.Value != newValue)
-                                                {
-                                                    //// Update Tactic budget value with newValue.
-                                                    updatePlanTacticBudget.Value = newValue;
-                                                    db.Entry(updatePlanTacticBudget).State = EntityState.Modified;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                db.Entry(updatePlanTacticBudget).State = EntityState.Deleted;
-                                            }
-                                            isExists = true;
-                                        }
-                                    }
+        //                    //Start by Kalpesh Sharma #605: Cost allocation for Tactic
+        //                    List<Plan_Campaign_Program_Tactic_Budget> PrevAllocationList = tblTacticBudget.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).Select(_tacCost => _tacCost).ToList();  // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
 
-                                    //// if Old budget value does not exist then insert new value to table.
-                                    if (!isExists && arrBudgetInputValues[i] != "")
-                                    {
-                                        // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                        obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
-                                        obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
-                                        obPlanCampaignProgramTacticBudget.Period = PeriodChar + (i + 1);
-                                        obPlanCampaignProgramTacticBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                        obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
-                                        obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
-                                        db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
-                                    }
-                                }
-                            }
-                            // Change by Nishant sheth
-                            // Desc :: #1765 - to replace the lenth of array to allocated by
-                            else if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString().ToLower())
-                            {
-                                int m = 0;
-                                int BudgetInputValuesCounter = 1, j = 1;
-                                for (int k = 1; k <= (YearDiffrence + 1); k++)
-                                {
-                                    //Added by Komal Rawal for #1217
-                                    if (startmonth >= 10 * k)
-                                    {
-                                        startmonth = 10 * k;
-                                    }
-                                    else if (startmonth >= 7 * k)
-                                    {
-                                        startmonth = 7 * k;
-                                    }
-                                    else if (startmonth >= 4 * k)
-                                    {
-                                        startmonth = 4 * k;
-                                    }
-                                    else
-                                    {
-                                        startmonth = 1 * k;
-                                    }
-                                    //End
+        //                    //// Process for Monthly budget values.
+        //                    // Change by Nishant sheth
+        //                    // Desc :: #1765 - to replace the lenth of array to allocated by
+        //                    if (AllocatedBy == Enums.PlanAllocatedBy.months.ToString().ToLower())
+        //                    {
+        //                        bool isExists;
+        //                        Plan_Campaign_Program_Tactic_Budget updatePlanTacticBudget, obPlanCampaignProgramTacticBudget;
+        //                        double newValue = 0;
+        //                        for (int i = 0; i < arrBudgetInputValues.Length; i++)
+        //                        {
+        //                            // Start - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
+        //                            isExists = false;
+        //                            if (PrevAllocationList != null && PrevAllocationList.Count > 0)
+        //                            {
+        //                                //// Get previous campaign budget values by Period.
+        //                                updatePlanTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+        //                                updatePlanTacticBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
+        //                                if (updatePlanTacticBudget != null)
+        //                                {
+        //                                    if (arrBudgetInputValues[i] != "")
+        //                                    {
+        //                                        newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+        //                                        if (updatePlanTacticBudget.Value != newValue)
+        //                                        {
+        //                                            //// Update Tactic budget value with newValue.
+        //                                            updatePlanTacticBudget.Value = newValue;
+        //                                            db.Entry(updatePlanTacticBudget).State = EntityState.Modified;
+        //                                        }
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        db.Entry(updatePlanTacticBudget).State = EntityState.Deleted;
+        //                                    }
+        //                                    isExists = true;
+        //                                }
+        //                            }
 
-                                    bool isExists;
-                                    List<Plan_Campaign_Program_Tactic_Budget> thisQuartersMonthList;
-                                    Plan_Campaign_Program_Tactic_Budget thisQuarterFirstMonthBudget, obPlanCampaignProgramTacticBudget;
-                                    double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
-                                    for (int i = m; i < (4 * k); i++)
-                                    {
-                                        if ((i + 1) % 4 == 0)
-                                        {
-                                            m = i + 1;
-                                        }
-                                        // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
-                                        isExists = false;
-                                        if (PrevAllocationList != null && PrevAllocationList.Count > 0)
-                                        {
-                                            //// Get Quarter budget list.
-                                            thisQuartersMonthList = new List<Plan_Campaign_Program_Tactic_Budget>();
-                                            thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (BudgetInputValuesCounter)) || pb.Period == (PeriodChar + (BudgetInputValuesCounter + 1)) || pb.Period == (PeriodChar + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
+        //                            //// if Old budget value does not exist then insert new value to table.
+        //                            if (!isExists && arrBudgetInputValues[i] != "")
+        //                            {
+        //                                // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
+        //                                obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+        //                                obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
+        //                                obPlanCampaignProgramTacticBudget.Period = PeriodChar + (i + 1);
+        //                                obPlanCampaignProgramTacticBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+        //                                obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
+        //                                obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
+        //                                db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
+        //                            }
+        //                        }
+        //                    }
+        //                    // Change by Nishant sheth
+        //                    // Desc :: #1765 - to replace the lenth of array to allocated by
+        //                    else if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString().ToLower())
+        //                    {
+        //                        int m = 0;
+        //                        int BudgetInputValuesCounter = 1, j = 1;
+        //                        for (int k = 1; k <= (YearDiffrence + 1); k++)
+        //                        {
+        //                            //Added by Komal Rawal for #1217
+        //                            if (startmonth >= 10 * k)
+        //                            {
+        //                                startmonth = 10 * k;
+        //                            }
+        //                            else if (startmonth >= 7 * k)
+        //                            {
+        //                                startmonth = 7 * k;
+        //                            }
+        //                            else if (startmonth >= 4 * k)
+        //                            {
+        //                                startmonth = 4 * k;
+        //                            }
+        //                            else
+        //                            {
+        //                                startmonth = 1 * k;
+        //                            }
+        //                            //End
 
-                                            //// Get First month values from Quarterly budget list.
-                                            thisQuarterFirstMonthBudget = new Plan_Campaign_Program_Tactic_Budget();
-                                            thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
+        //                            bool isExists;
+        //                            List<Plan_Campaign_Program_Tactic_Budget> thisQuartersMonthList;
+        //                            Plan_Campaign_Program_Tactic_Budget thisQuarterFirstMonthBudget, obPlanCampaignProgramTacticBudget;
+        //                            double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
+        //                            for (int i = m; i < (4 * k); i++)
+        //                            {
+        //                                if ((i + 1) % 4 == 0)
+        //                                {
+        //                                    m = i + 1;
+        //                                }
+        //                                // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
+        //                                isExists = false;
+        //                                if (PrevAllocationList != null && PrevAllocationList.Count > 0)
+        //                                {
+        //                                    //// Get Quarter budget list.
+        //                                    thisQuartersMonthList = new List<Plan_Campaign_Program_Tactic_Budget>();
+        //                                    thisQuartersMonthList = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (BudgetInputValuesCounter)) || pb.Period == (PeriodChar + (BudgetInputValuesCounter + 1)) || pb.Period == (PeriodChar + (BudgetInputValuesCounter + 2))).ToList().OrderBy(a => a.Period).ToList();
 
-                                            if (thisQuarterFirstMonthBudget != null)
-                                            {
-                                                if (arrBudgetInputValues[i] != "")
-                                                {
-                                                    thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
-                                                    thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
-                                                    newValue = Convert.ToDouble(arrBudgetInputValues[i]);
+        //                                    //// Get First month values from Quarterly budget list.
+        //                                    thisQuarterFirstMonthBudget = new Plan_Campaign_Program_Tactic_Budget();
+        //                                    thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
 
-                                                    if (thisQuarterTotalBudget != newValue)
-                                                    {
-                                                        BudgetDiff = newValue - thisQuarterTotalBudget;
-                                                        if (BudgetDiff > 0)
-                                                        {
-                                                            thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-                                                            db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                        }
-                                                        else
-                                                        {
-                                                            j = 1;
-                                                            while (BudgetDiff < 0)
-                                                            {
-                                                                if (thisQuarterFirstMonthBudget != null)
-                                                                {
-                                                                    BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+        //                                    if (thisQuarterFirstMonthBudget != null)
+        //                                    {
+        //                                        if (arrBudgetInputValues[i] != "")
+        //                                        {
+        //                                            thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
+        //                                            thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
+        //                                            newValue = Convert.ToDouble(arrBudgetInputValues[i]);
 
-                                                                    if (BudgetDiff <= 0)
-                                                                        thisQuarterFirstMonthBudget.Value = 0;
-                                                                    else
-                                                                        thisQuarterFirstMonthBudget.Value = BudgetDiff;
+        //                                            if (thisQuarterTotalBudget != newValue)
+        //                                            {
+        //                                                BudgetDiff = newValue - thisQuarterTotalBudget;
+        //                                                if (BudgetDiff > 0)
+        //                                                {
+        //                                                    thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
+        //                                                    db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
+        //                                                }
+        //                                                else
+        //                                                {
+        //                                                    j = 1;
+        //                                                    while (BudgetDiff < 0)
+        //                                                    {
+        //                                                        if (thisQuarterFirstMonthBudget != null)
+        //                                                        {
+        //                                                            BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
 
-                                                                    db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                                }
-                                                                if ((BudgetInputValuesCounter + j) <= (BudgetInputValuesCounter + 2))
-                                                                {
-                                                                    thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (BudgetInputValuesCounter + j))).FirstOrDefault();
-                                                                }
+        //                                                            if (BudgetDiff <= 0)
+        //                                                                thisQuarterFirstMonthBudget.Value = 0;
+        //                                                            else
+        //                                                                thisQuarterFirstMonthBudget.Value = BudgetDiff;
 
-                                                                j = j + 1;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                                }
-                                                isExists = true;
-                                            }
-                                        }
+        //                                                            db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
+        //                                                        }
+        //                                                        if ((BudgetInputValuesCounter + j) <= (BudgetInputValuesCounter + 2))
+        //                                                        {
+        //                                                            thisQuarterFirstMonthBudget = PrevAllocationList.Where(pb => pb.Period == (PeriodChar + (BudgetInputValuesCounter + j))).FirstOrDefault();
+        //                                                        }
 
-                                        //// if Old budget value does not exist then insert new value to table.
-                                        if (!isExists && arrBudgetInputValues[i] != "")
-                                        {
-                                            // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                                            obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
-                                            obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
-                                            obPlanCampaignProgramTacticBudget.Period = PeriodChar + BudgetInputValuesCounter;
-                                            obPlanCampaignProgramTacticBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
-                                            obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
-                                            db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
-                                        }
-                                        BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
-                                    }
-                                }
-                            }
+        //                                                        j = j + 1;
+        //                                                    }
+        //                                                }
+        //                                            }
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+        //                                        }
+        //                                        isExists = true;
+        //                                    }
+        //                                }
 
-                            //Added by Komal Rawal for #1217
-                            if (!isvalueempty && pcpobj.TacticBudget > 0)
-                            {
-                                Plan_Campaign_Program_Tactic_Budget obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
-                                var isBudExist = tblTacticBudget.Where(tact => tact.Period == PeriodChar + startmonth).Any();
-                                if (isBudExist)
-                                {
-                                    obPlanCampaignProgramTacticBudget = tblTacticBudget.Where(tact => tact.Period == PeriodChar + startmonth).FirstOrDefault();
-                                    obPlanCampaignProgramTacticBudget.Value = pcpobj.TacticBudget;
-                                    db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Modified;
-                                }
-                                else
-                                {
-                                    //Plan_Campaign_Program_Tactic_Budget obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
-                                    obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
-                                    obPlanCampaignProgramTacticBudget.Period = PeriodChar + startmonth;
-                                    obPlanCampaignProgramTacticBudget.Value = pcpobj.TacticBudget;
-                                    obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
-                                    obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
-                                    db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
-                                }
-                            }
-                            //End
+        //                                //// if Old budget value does not exist then insert new value to table.
+        //                                if (!isExists && arrBudgetInputValues[i] != "")
+        //                                {
+        //                                    // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
+        //                                    obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+        //                                    obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
+        //                                    obPlanCampaignProgramTacticBudget.Period = PeriodChar + BudgetInputValuesCounter;
+        //                                    obPlanCampaignProgramTacticBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+        //                                    obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
+        //                                    obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
+        //                                    db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
+        //                                }
+        //                                BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
+        //                            }
+        //                        }
+        //                    }
 
-                            db.Entry(pcpobj).State = EntityState.Modified;
-                            int result;
-                            result = db.SaveChanges();
+        //                    //Added by Komal Rawal for #1217
+        //                    if (!isvalueempty && pcpobj.TacticBudget > 0)
+        //                    {
+        //                        Plan_Campaign_Program_Tactic_Budget obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+        //                        var isBudExist = tblTacticBudget.Where(tact => tact.Period == PeriodChar + startmonth).Any();
+        //                        if (isBudExist)
+        //                        {
+        //                            obPlanCampaignProgramTacticBudget = tblTacticBudget.Where(tact => tact.Period == PeriodChar + startmonth).FirstOrDefault();
+        //                            obPlanCampaignProgramTacticBudget.Value = pcpobj.TacticBudget;
+        //                            db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Modified;
+        //                        }
+        //                        else
+        //                        {
+        //                            //Plan_Campaign_Program_Tactic_Budget obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
+        //                            obPlanCampaignProgramTacticBudget.PlanTacticId = form.PlanTacticId;
+        //                            obPlanCampaignProgramTacticBudget.Period = PeriodChar + startmonth;
+        //                            obPlanCampaignProgramTacticBudget.Value = pcpobj.TacticBudget;
+        //                            obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.UserId;
+        //                            obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
+        //                            db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
+        //                        }
+        //                    }
+        //                    //End
 
-                            List<Plan_Campaign_Program_Tactic_Budget> lstsrcBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => (tac.PlanTacticId == form.PlanTacticId)).ToList();
-                            //List<Plan_Campaign_Program_Tactic_Budget> lstSrcBudgetData = lstAllBudgetData.Where(tac => tac.PlanTacticId == form.PlanTacticId).ToList();
-                            double totalSrcBudget = 0;  // Reset value.
-                            if (lstsrcBudgetData != null && lstsrcBudgetData.Count > 0)
-                                totalSrcBudget = lstsrcBudgetData.Sum(bdgt => bdgt.Value);
-                            pcpobj.TacticBudget = totalSrcBudget;
+        //                    db.Entry(pcpobj).State = EntityState.Modified;
+        //                    int result;
+        //                    result = db.SaveChanges();
 
-                            if (linkedTacticId > 0)
-                            {
-                                #region "Update Linked Tactic Budget data"
+        //                    List<Plan_Campaign_Program_Tactic_Budget> lstsrcBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => (tac.PlanTacticId == form.PlanTacticId)).ToList();
+        //                    //List<Plan_Campaign_Program_Tactic_Budget> lstSrcBudgetData = lstAllBudgetData.Where(tac => tac.PlanTacticId == form.PlanTacticId).ToList();
+        //                    double totalSrcBudget = 0;  // Reset value.
+        //                    if (lstsrcBudgetData != null && lstsrcBudgetData.Count > 0)
+        //                        totalSrcBudget = lstsrcBudgetData.Sum(bdgt => bdgt.Value);
+        //                    pcpobj.TacticBudget = totalSrcBudget;
 
-                                // Remove old linked tactic budget data.
-                                List<Plan_Campaign_Program_Tactic_Budget> lstBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == form.PlanTacticId).ToList();
-                                if (lstBudgetData != null && lstBudgetData.Count > 0)
-                                {
-                                    //double totalLinkedBudget = 0;
-                                    //bool islinkedBudgetModified = false;
-                                    List<Plan_Campaign_Program_Tactic_Budget> linkedBudgetData = new List<Plan_Campaign_Program_Tactic_Budget>();
-                                    Plan_Campaign_Program_Tactic_Budget objlinkedBudget = null;
-                                    if (isMultiYearlinkedTactic)
-                                    {
-                                        // Delete old budget data.
-                                        linkedBudgetData = tblTacticBudget.Where(tac => tac.PlanTacticId == linkedTacticId && lstLinkedPeriods.Contains(tac.Period)).ToList();
-                                        if (linkedBudgetData != null && linkedBudgetData.Count > 0)
-                                            linkedBudgetData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
+        //                    if (linkedTacticId > 0)
+        //                    {
+        //                        #region "Update Linked Tactic Budget data"
 
-                                        foreach (Plan_Campaign_Program_Tactic_Budget budget in lstBudgetData)
-                                        {
-                                            string orgPeriod = budget.Period;
-                                            string numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
-                                            int NumPeriod = int.Parse(numPeriod);
+        //                        // Remove old linked tactic budget data.
+        //                        List<Plan_Campaign_Program_Tactic_Budget> lstBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == form.PlanTacticId).ToList();
+        //                        if (lstBudgetData != null && lstBudgetData.Count > 0)
+        //                        {
+        //                            //double totalLinkedBudget = 0;
+        //                            //bool islinkedBudgetModified = false;
+        //                            List<Plan_Campaign_Program_Tactic_Budget> linkedBudgetData = new List<Plan_Campaign_Program_Tactic_Budget>();
+        //                            Plan_Campaign_Program_Tactic_Budget objlinkedBudget = null;
+        //                            if (isMultiYearlinkedTactic)
+        //                            {
+        //                                // Delete old budget data.
+        //                                linkedBudgetData = tblTacticBudget.Where(tac => tac.PlanTacticId == linkedTacticId && lstLinkedPeriods.Contains(tac.Period)).ToList();
+        //                                if (linkedBudgetData != null && linkedBudgetData.Count > 0)
+        //                                    linkedBudgetData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
 
-                                            objlinkedBudget = new Plan_Campaign_Program_Tactic_Budget();
-                                            objlinkedBudget.PlanTacticId = linkedTacticId;
-                                            objlinkedBudget.Period = PeriodChar + ((12 * yearDiff) + NumPeriod).ToString();   // (12*1)+3 = 15 => For March(Y15) month.
-                                            objlinkedBudget.Value = budget.Value;
-                                            objlinkedBudget.CreatedDate = budget.CreatedDate;
-                                            objlinkedBudget.CreatedBy = budget.CreatedBy;
-                                            db.Entry(objlinkedBudget).State = EntityState.Added;
-                                            //islinkedBudgetModified = true;
-                                            //totalLinkedBudget += budget.Value;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        // Delete old budget data.
-                                        linkedBudgetData = tblTacticBudget.Where(tac => tac.PlanTacticId == linkedTacticId).ToList();
-                                        if (linkedBudgetData != null && linkedBudgetData.Count > 0)
-                                            linkedBudgetData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
-                                        foreach (Plan_Campaign_Program_Tactic_Budget budget in lstBudgetData)
-                                        {
-                                            string orgPeriod = budget.Period;
-                                            string numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
-                                            int NumPeriod = int.Parse(numPeriod);
-                                            if (NumPeriod > 12)
-                                            {
-                                                int rem = NumPeriod % 12;    // For March, Y3(i.e 15%12 = 3)  
-                                                int div = NumPeriod / 12;    // In case of 24, Y12.
-                                                if (rem > 0 || div > 1)
-                                                {
-                                                    objlinkedBudget = new Plan_Campaign_Program_Tactic_Budget();
-                                                    objlinkedBudget.PlanTacticId = linkedTacticId;
-                                                    objlinkedBudget.Period = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
-                                                    objlinkedBudget.Value = budget.Value;
-                                                    objlinkedBudget.CreatedDate = budget.CreatedDate;
-                                                    objlinkedBudget.CreatedBy = budget.CreatedBy;
-                                                    db.Entry(objlinkedBudget).State = EntityState.Added;
-                                                    //islinkedBudgetModified = true;
-                                                    //totalLinkedBudget += budget.Value;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    //lstBudgetData.ForEach(bdgt => { bdgt.PlanTacticId = linkedTacticId; db.Entry(bdgt).State = EntityState.Added; db.Plan_Campaign_Program_Tactic_Budget.Add(bdgt); });
-                                    db.SaveChanges();
-                                }
-                                else
-                                {
-                                    // if linked tactic Multiyear tactic then remove all common year values.
-                                    if (isMultiYearlinkedTactic)
-                                    {
-                                        List<Plan_Campaign_Program_Tactic_Budget> linkedBudgetData = new List<Plan_Campaign_Program_Tactic_Budget>();
-                                        // Delete old budget data.
-                                        linkedBudgetData = tblTacticBudget.Where(tac => tac.PlanTacticId == linkedTacticId && lstLinkedPeriods.Contains(tac.Period)).ToList();
-                                        if (linkedBudgetData != null && linkedBudgetData.Count > 0)
-                                        {
-                                            linkedBudgetData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
-                                            db.SaveChanges();
-                                        }
-                                    }
-                                    //if (linkedTacticId > 0)
-                                    //{
-                                    //    double totalLinkedBudget = 0;
-                                    //    List<Plan_Campaign_Program_Tactic_Budget> lstNewLinkedBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == linkedTacticId).ToList();
-                                    //    if (lstNewLinkedBudgetData != null && lstNewLinkedBudgetData.Count > 0)
-                                    //        totalLinkedBudget = lstNewLinkedBudgetData.Sum(bdgt => bdgt.Value);
-                                    //    //Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(linkedTacticId)).FirstOrDefault();
-                                    //    linkedTactic.Title = title;
-                                    //    linkedTactic.TacticBudget = totalLinkedBudget; // modified for 1229
-                                    //    linkedTactic.ModifiedBy = Sessions.User.UserId;
-                                    //    linkedTactic.ModifiedDate = pcpobj.ModifiedDate;
-                                    //}
-                                }
-                                if (linkedTacticId > 0)
-                                {
-                                    double totalLinkedBudget = 0;
-                                    List<Plan_Campaign_Program_Tactic_Budget> lstNewLinkedBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == linkedTacticId).ToList();
-                                    if (lstNewLinkedBudgetData != null && lstNewLinkedBudgetData.Count > 0)
-                                        totalLinkedBudget = lstNewLinkedBudgetData.Sum(bdgt => bdgt.Value);
-                                    //Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(linkedTacticId)).FirstOrDefault();
-                                    linkedTactic.Title = title;
-                                    linkedTactic.TacticBudget = totalLinkedBudget; // modified for 1229
-                                    linkedTactic.ModifiedBy = Sessions.User.UserId;
-                                    linkedTactic.ModifiedDate = pcpobj.ModifiedDate;
-                                }
-                                #endregion
-                            }
+        //                                foreach (Plan_Campaign_Program_Tactic_Budget budget in lstBudgetData)
+        //                                {
+        //                                    string orgPeriod = budget.Period;
+        //                                    string numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
+        //                                    int NumPeriod = int.Parse(numPeriod);
 
-                            // Start Added by dharmraj for ticket #644
-                            //// Calculate Total LineItem Cost.
-                            List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                            if (linkedTacticId > 0)
-                            {
-                                tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => (lineItem.PlanTacticId == pcpobj.PlanTacticId) || (lineItem.PlanTacticId == linkedTacticId)).ToList();
-                            }
-                            else
-                            {
-                                tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId).ToList();
-                            }
-                            Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.Where(line => line.PlanTacticId == pcpobj.PlanTacticId).FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
-                            var objtotalLoneitemCost = tblTacticLineItem.Where(line => line.PlanTacticId == pcpobj.PlanTacticId).Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false);
-                            double totalLoneitemCost = 0;
-                            if (objtotalLoneitemCost != null && objtotalLoneitemCost.Count() > 0)
-                            {
-                                totalLoneitemCost = objtotalLoneitemCost.Sum(l => l.Cost);
-                            }
+        //                                    objlinkedBudget = new Plan_Campaign_Program_Tactic_Budget();
+        //                                    objlinkedBudget.PlanTacticId = linkedTacticId;
+        //                                    objlinkedBudget.Period = PeriodChar + ((12 * yearDiff) + NumPeriod).ToString();   // (12*1)+3 = 15 => For March(Y15) month.
+        //                                    objlinkedBudget.Value = budget.Value;
+        //                                    objlinkedBudget.CreatedDate = budget.CreatedDate;
+        //                                    objlinkedBudget.CreatedBy = budget.CreatedBy;
+        //                                    db.Entry(objlinkedBudget).State = EntityState.Added;
+        //                                    //islinkedBudgetModified = true;
+        //                                    //totalLinkedBudget += budget.Value;
+        //                                }
+        //                            }
+        //                            else
+        //                            {
+        //                                // Delete old budget data.
+        //                                linkedBudgetData = tblTacticBudget.Where(tac => tac.PlanTacticId == linkedTacticId).ToList();
+        //                                if (linkedBudgetData != null && linkedBudgetData.Count > 0)
+        //                                    linkedBudgetData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
+        //                                foreach (Plan_Campaign_Program_Tactic_Budget budget in lstBudgetData)
+        //                                {
+        //                                    string orgPeriod = budget.Period;
+        //                                    string numPeriod = orgPeriod.Replace(PeriodChar, string.Empty);
+        //                                    int NumPeriod = int.Parse(numPeriod);
+        //                                    if (NumPeriod > 12)
+        //                                    {
+        //                                        int rem = NumPeriod % 12;    // For March, Y3(i.e 15%12 = 3)  
+        //                                        int div = NumPeriod / 12;    // In case of 24, Y12.
+        //                                        if (rem > 0 || div > 1)
+        //                                        {
+        //                                            objlinkedBudget = new Plan_Campaign_Program_Tactic_Budget();
+        //                                            objlinkedBudget.PlanTacticId = linkedTacticId;
+        //                                            objlinkedBudget.Period = PeriodChar + (div > 1 ? "12" : rem.ToString());                            // For March, Y3(i.e 15%12 = 3)     
+        //                                            objlinkedBudget.Value = budget.Value;
+        //                                            objlinkedBudget.CreatedDate = budget.CreatedDate;
+        //                                            objlinkedBudget.CreatedBy = budget.CreatedBy;
+        //                                            db.Entry(objlinkedBudget).State = EntityState.Added;
+        //                                            //islinkedBudgetModified = true;
+        //                                            //totalLinkedBudget += budget.Value;
+        //                                        }
+        //                                    }
+        //                                }
+        //                            }
+        //                            //lstBudgetData.ForEach(bdgt => { bdgt.PlanTacticId = linkedTacticId; db.Entry(bdgt).State = EntityState.Added; db.Plan_Campaign_Program_Tactic_Budget.Add(bdgt); });
+        //                            db.SaveChanges();
+        //                        }
+        //                        else
+        //                        {
+        //                            // if linked tactic Multiyear tactic then remove all common year values.
+        //                            if (isMultiYearlinkedTactic)
+        //                            {
+        //                                List<Plan_Campaign_Program_Tactic_Budget> linkedBudgetData = new List<Plan_Campaign_Program_Tactic_Budget>();
+        //                                // Delete old budget data.
+        //                                linkedBudgetData = tblTacticBudget.Where(tac => tac.PlanTacticId == linkedTacticId && lstLinkedPeriods.Contains(tac.Period)).ToList();
+        //                                if (linkedBudgetData != null && linkedBudgetData.Count > 0)
+        //                                {
+        //                                    linkedBudgetData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
+        //                                    db.SaveChanges();
+        //                                }
+        //                            }
+        //                            //if (linkedTacticId > 0)
+        //                            //{
+        //                            //    double totalLinkedBudget = 0;
+        //                            //    List<Plan_Campaign_Program_Tactic_Budget> lstNewLinkedBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == linkedTacticId).ToList();
+        //                            //    if (lstNewLinkedBudgetData != null && lstNewLinkedBudgetData.Count > 0)
+        //                            //        totalLinkedBudget = lstNewLinkedBudgetData.Sum(bdgt => bdgt.Value);
+        //                            //    //Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(linkedTacticId)).FirstOrDefault();
+        //                            //    linkedTactic.Title = title;
+        //                            //    linkedTactic.TacticBudget = totalLinkedBudget; // modified for 1229
+        //                            //    linkedTactic.ModifiedBy = Sessions.User.UserId;
+        //                            //    linkedTactic.ModifiedDate = pcpobj.ModifiedDate;
+        //                            //}
+        //                        }
+        //                        if (linkedTacticId > 0)
+        //                        {
+        //                            double totalLinkedBudget = 0;
+        //                            List<Plan_Campaign_Program_Tactic_Budget> lstNewLinkedBudgetData = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => tac.PlanTacticId == linkedTacticId).ToList();
+        //                            if (lstNewLinkedBudgetData != null && lstNewLinkedBudgetData.Count > 0)
+        //                                totalLinkedBudget = lstNewLinkedBudgetData.Sum(bdgt => bdgt.Value);
+        //                            //Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(linkedTacticId)).FirstOrDefault();
+        //                            linkedTactic.Title = title;
+        //                            linkedTactic.TacticBudget = totalLinkedBudget; // modified for 1229
+        //                            linkedTactic.ModifiedBy = Sessions.User.UserId;
+        //                            linkedTactic.ModifiedDate = pcpobj.ModifiedDate;
+        //                        }
+        //                        #endregion
+        //                    }
 
-                            double totalLinkedLineitemCost = 0;
-                            if (linkedTacticId > 0)
-                            {
-                                Plan_Campaign_Program_Tactic_LineItem objOtherLinkedLineItem = tblTacticLineItem.Where(line => line.PlanTacticId == linkedTacticId).FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
-                                var objtotalLinkedLineitemCost = tblTacticLineItem.Where(line => line.PlanTacticId == pcpobj.PlanTacticId).Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false);
-                                if (objtotalLinkedLineitemCost != null && objtotalLinkedLineitemCost.Count() > 0)
-                                {
-                                    totalLinkedLineitemCost = objtotalLinkedLineitemCost.Sum(l => l.Cost);
-                                }
-                            }
+        //                    // Start Added by dharmraj for ticket #644
+        //                    //// Calculate Total LineItem Cost.
+        //                    List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
+        //                    if (linkedTacticId > 0)
+        //                    {
+        //                        tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => (lineItem.PlanTacticId == pcpobj.PlanTacticId) || (lineItem.PlanTacticId == linkedTacticId)).ToList();
+        //                    }
+        //                    else
+        //                    {
+        //                        tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId).ToList();
+        //                    }
+        //                    Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.Where(line => line.PlanTacticId == pcpobj.PlanTacticId).FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
+        //                    var objtotalLoneitemCost = tblTacticLineItem.Where(line => line.PlanTacticId == pcpobj.PlanTacticId).Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false);
+        //                    double totalLoneitemCost = 0;
+        //                    if (objtotalLoneitemCost != null && objtotalLoneitemCost.Count() > 0)
+        //                    {
+        //                        totalLoneitemCost = objtotalLoneitemCost.Sum(l => l.Cost);
+        //                    }
 
-                            if (objOtherLineItem == null)
-                            {
-                                Plan_Campaign_Program_Tactic_LineItem objLinkedLineitem = null;
-                                if (linkedTacticId > 0)
-                                {
-                                    objLinkedLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                    objLinkedLineitem.PlanTacticId = linkedTacticId;
-                                    objLinkedLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
-                                    if (linkedTactic.Cost > totalLinkedLineitemCost)
-                                    {
-                                        objLinkedLineitem.Cost = linkedTactic.Cost - totalLinkedLineitemCost;
-                                    }
-                                    else
-                                    {
-                                        objLinkedLineitem.Cost = 0;
-                                    }
-                                    objLinkedLineitem.Description = string.Empty;
-                                    objLinkedLineitem.CreatedBy = Sessions.User.UserId;
-                                    objLinkedLineitem.CreatedDate = DateTime.Now;
-                                    db.Entry(objLinkedLineitem).State = EntityState.Added;
-                                    db.SaveChanges();
-                                }
+        //                    double totalLinkedLineitemCost = 0;
+        //                    if (linkedTacticId > 0)
+        //                    {
+        //                        Plan_Campaign_Program_Tactic_LineItem objOtherLinkedLineItem = tblTacticLineItem.Where(line => line.PlanTacticId == linkedTacticId).FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
+        //                        var objtotalLinkedLineitemCost = tblTacticLineItem.Where(line => line.PlanTacticId == pcpobj.PlanTacticId).Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false);
+        //                        if (objtotalLinkedLineitemCost != null && objtotalLinkedLineitemCost.Count() > 0)
+        //                        {
+        //                            totalLinkedLineitemCost = objtotalLinkedLineitemCost.Sum(l => l.Cost);
+        //                        }
+        //                    }
 
-                                Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                objNewLineitem.PlanTacticId = pcpobj.PlanTacticId;
-                                objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
-                                if (pcpobj.Cost > totalLoneitemCost)
-                                {
-                                    objNewLineitem.Cost = pcpobj.Cost - totalLoneitemCost;
-                                }
-                                else
-                                {
-                                    objNewLineitem.Cost = 0;
-                                }
-                                objNewLineitem.Description = string.Empty;
-                                objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                objNewLineitem.CreatedDate = DateTime.Now;
-                                if (objLinkedLineitem != null)
-                                    objNewLineitem.LinkedLineItemId = objLinkedLineitem.PlanLineItemId; // Insert linked Id.
-                                db.Entry(objNewLineitem).State = EntityState.Added;
+        //                    if (objOtherLineItem == null)
+        //                    {
+        //                        Plan_Campaign_Program_Tactic_LineItem objLinkedLineitem = null;
+        //                        if (linkedTacticId > 0)
+        //                        {
+        //                            objLinkedLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+        //                            objLinkedLineitem.PlanTacticId = linkedTacticId;
+        //                            objLinkedLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
+        //                            if (linkedTactic.Cost > totalLinkedLineitemCost)
+        //                            {
+        //                                objLinkedLineitem.Cost = linkedTactic.Cost - totalLinkedLineitemCost;
+        //                            }
+        //                            else
+        //                            {
+        //                                objLinkedLineitem.Cost = 0;
+        //                            }
+        //                            objLinkedLineitem.Description = string.Empty;
+        //                            objLinkedLineitem.CreatedBy = Sessions.User.UserId;
+        //                            objLinkedLineitem.CreatedDate = DateTime.Now;
+        //                            db.Entry(objLinkedLineitem).State = EntityState.Added;
+        //                            db.SaveChanges();
+        //                        }
 
-                                if (linkedTacticId > 0 && objLinkedLineitem != null)
-                                {
-                                    db.SaveChanges();
-                                    objLinkedLineitem.LinkedLineItemId = objNewLineitem.PlanLineItemId;
-                                    db.Entry(objLinkedLineitem).State = EntityState.Modified;
-                                }
-                            }
-                            else
-                            {
-                                objOtherLineItem.IsDeleted = false;
-                                if (pcpobj.Cost > totalLoneitemCost)
-                                {
-                                    objOtherLineItem.Cost = pcpobj.Cost - totalLoneitemCost;
-                                }
-                                else
-                                {
-                                    objOtherLineItem.Cost = 0;
-                                    objOtherLineItem.IsDeleted = true;
-                                }
-                                db.Entry(objOtherLineItem).State = EntityState.Modified;
+        //                        Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+        //                        objNewLineitem.PlanTacticId = pcpobj.PlanTacticId;
+        //                        objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
+        //                        if (pcpobj.Cost > totalLoneitemCost)
+        //                        {
+        //                            objNewLineitem.Cost = pcpobj.Cost - totalLoneitemCost;
+        //                        }
+        //                        else
+        //                        {
+        //                            objNewLineitem.Cost = 0;
+        //                        }
+        //                        objNewLineitem.Description = string.Empty;
+        //                        objNewLineitem.CreatedBy = Sessions.User.UserId;
+        //                        objNewLineitem.CreatedDate = DateTime.Now;
+        //                        if (objLinkedLineitem != null)
+        //                            objNewLineitem.LinkedLineItemId = objLinkedLineitem.PlanLineItemId; // Insert linked Id.
+        //                        db.Entry(objNewLineitem).State = EntityState.Added;
 
-                                if (linkedTacticId > 0)
-                                {
-                                    int linkedLineItemId = 0;
-                                    #region "Retrieve linkedTactic"
-                                    linkedLineItemId = (objOtherLineItem != null && objOtherLineItem.LinkedLineItemId.HasValue) ? objOtherLineItem.LinkedLineItemId.Value : 0;
-                                    if (linkedLineItemId > 0)
-                                    {
-                                        var lnkLineItem = tblTacticLineItem.Where(tac => tac.PlanLineItemId == linkedLineItemId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
-                                        if (lnkLineItem != null)
-                                        {
-                                            lnkLineItem.IsDeleted = false;
-                                            if (linkedTactic.Cost > totalLoneitemCost)
-                                            {
-                                                lnkLineItem.Cost = pcpobj.Cost - totalLinkedLineitemCost;
-                                            }
-                                            else
-                                            {
-                                                lnkLineItem.Cost = 0;
-                                            }
-                                            db.Entry(lnkLineItem).State = EntityState.Modified;
-                                        }
-                                    }
-                                    //if (linkedLineItemId <= 0)
-                                    //{
-                                    //    List<Plan_Campaign_Program_Tactic_LineItem> fltrLineItems = tblTacticLineItem.Where(line => line.PlanTacticId == linkedTacticId).ToList();
-                                    //    var lnkLineItem = fltrLineItems.Where(tac => tac.LinkedLineItemId == objOtherLineItem.PlanLineItemId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
-                                    //    linkedLineItemId = lnkLineItem != null ? lnkLineItem.PlanLineItemId : 0;
+        //                        if (linkedTacticId > 0 && objLinkedLineitem != null)
+        //                        {
+        //                            db.SaveChanges();
+        //                            objLinkedLineitem.LinkedLineItemId = objNewLineitem.PlanLineItemId;
+        //                            db.Entry(objLinkedLineitem).State = EntityState.Modified;
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        objOtherLineItem.IsDeleted = false;
+        //                        if (pcpobj.Cost > totalLoneitemCost)
+        //                        {
+        //                            objOtherLineItem.Cost = pcpobj.Cost - totalLoneitemCost;
+        //                        }
+        //                        else
+        //                        {
+        //                            objOtherLineItem.Cost = 0;
+        //                            objOtherLineItem.IsDeleted = true;
+        //                        }
+        //                        db.Entry(objOtherLineItem).State = EntityState.Modified;
 
-                                    //    if (lnkLineItem != null)
-                                    //    {
-                                    //        lnkLineItem.IsDeleted = false;
-                                    //        lnkLineItem.Cost = objOtherLineItem.Cost;
-                                    //        db.Entry(lnkLineItem).State = EntityState.Modified; 
-                                    //    }
-                                    //}
-                                    #endregion
-                                }
-                            }
+        //                        if (linkedTacticId > 0)
+        //                        {
+        //                            int linkedLineItemId = 0;
+        //                            #region "Retrieve linkedTactic"
+        //                            linkedLineItemId = (objOtherLineItem != null && objOtherLineItem.LinkedLineItemId.HasValue) ? objOtherLineItem.LinkedLineItemId.Value : 0;
+        //                            if (linkedLineItemId > 0)
+        //                            {
+        //                                var lnkLineItem = tblTacticLineItem.Where(tac => tac.PlanLineItemId == linkedLineItemId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+        //                                if (lnkLineItem != null)
+        //                                {
+        //                                    lnkLineItem.IsDeleted = false;
+        //                                    if (linkedTactic.Cost > totalLoneitemCost)
+        //                                    {
+        //                                        lnkLineItem.Cost = pcpobj.Cost - totalLinkedLineitemCost;
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        lnkLineItem.Cost = 0;
+        //                                    }
+        //                                    db.Entry(lnkLineItem).State = EntityState.Modified;
+        //                                }
+        //                            }
+        //                            //if (linkedLineItemId <= 0)
+        //                            //{
+        //                            //    List<Plan_Campaign_Program_Tactic_LineItem> fltrLineItems = tblTacticLineItem.Where(line => line.PlanTacticId == linkedTacticId).ToList();
+        //                            //    var lnkLineItem = fltrLineItems.Where(tac => tac.LinkedLineItemId == objOtherLineItem.PlanLineItemId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+        //                            //    linkedLineItemId = lnkLineItem != null ? lnkLineItem.PlanLineItemId : 0;
 
-                            db.SaveChanges();
-                            scope.Complete();
-                            string strMessage = Common.objCached.PlanEntityAllocationUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                            return Json(new { IsSaved = true, msg = strMessage, planTacticId = form.PlanTacticId, JsonRequestBehavior.AllowGet });
-                        }
-                    }
-                }
+        //                            //    if (lnkLineItem != null)
+        //                            //    {
+        //                            //        lnkLineItem.IsDeleted = false;
+        //                            //        lnkLineItem.Cost = objOtherLineItem.Cost;
+        //                            //        db.Entry(lnkLineItem).State = EntityState.Modified; 
+        //                            //    }
+        //                            //}
+        //                            #endregion
+        //                        }
+        //                    }
 
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
+        //                    db.SaveChanges();
+        //                    scope.Complete();
+        //                    string strMessage = Common.objCached.PlanEntityAllocationUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+        //                    return Json(new { IsSaved = true, msg = strMessage, planTacticId = form.PlanTacticId, JsonRequestBehavior.AllowGet });
+        //                }
+        //            }
+        //        }
 
-            return Json(new { IsSaved = false, msg = Common.objCached.ErrorOccured, JsonRequestBehavior.AllowGet });
-        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(e);
+        //    }
+
+        //    return Json(new { IsSaved = false, msg = Common.objCached.ErrorOccured, JsonRequestBehavior.AllowGet });
+        //}
+
+        // End - Commented by Arpita Soni for Ticket #2236 on 06/07/2016
 
         /// <summary>
         /// Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation

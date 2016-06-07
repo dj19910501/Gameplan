@@ -216,12 +216,13 @@
                         <a>Actuals</a>
                     </li>
                 }
-                @if(!Sessions.IsBudgetShow)
+                // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
+                @*@if(!Sessions.IsBudgetShow)
                 {
                     <li class="pull-left" id="liBudget">
                         <a>Budget</a>
                     </li>
-                }
+                }*@
             </ul>
             <div id="divTab">
             </div>
@@ -235,7 +236,8 @@
     var TabReview = "Review";
     var TabActual = "Actuals";
     var divTab = "#divTab";
-    var TabBudget = "Budget";
+    // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
+    //var TabBudget = "Budget";
     var tabtext = "";
     var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Handling add mode of inspect popup
     $(document).ready(
@@ -269,7 +271,9 @@
               $("#txtTacticTitle").removeClass("error");
           }
           // Click on Tab Partialview Refresh Based On Selected Tab
-          $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
+
+          // $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
+              $("#liSetup,#liReview,#liActuals").on("click", function () {
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
               {
@@ -384,17 +388,17 @@
 
                       }
                   }
+                  // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
+                  //else if (activeTab == TabBudget) {
+                  //    var ReturnParameter = TacticBudgetSave();
+                  //    if (ReturnParameter == false) {
+                  //        return false;
+                  //    }
+                  //    else {
+                  //        $('.close-x-big-icon').trigger('click');
 
-                  else if (activeTab == TabBudget) {
-                      var ReturnParameter = TacticBudgetSave();
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                      else {
-                          $('.close-x-big-icon').trigger('click');
-
-                      }
-                  }
+                  //    }
+                  //}
 
                   else if (activeTab == TabActual) {
 
@@ -451,13 +455,14 @@
                 }
             }
 
-            else if (activeTab == TabBudget) {
-                var ReturnParameter = TacticBudgetSave();
-                if (ReturnParameter == false) {
-                    $('#InspectTab').removeClass('SpanDisable');
-                    return false;
-                }
-            }
+            // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
+            //else if (activeTab == TabBudget) {
+            //    var ReturnParameter = TacticBudgetSave();
+            //    if (ReturnParameter == false) {
+            //        $('#InspectTab').removeClass('SpanDisable');
+            //        return false;
+            //    }
+            //}
 
             else if (activeTab == TabActual) {
                 var hdnTacticStatus = $("#hdnTacticStatus").val();
@@ -676,18 +681,22 @@
                 $('#InspectTab').removeClass('SpanDisable');
             });
         }
-
-        if (tabValue == TabBudget) {
+        // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
+       @* if (tabValue == TabBudget) {
             if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
-                $('#txtTacticTitle').css('display', 'block');
-                $('#lblTacticTitle').css('display', 'none');
-            }
+                 $('#txtTacticTitle').css('display', 'block');
+                 $('#lblTacticTitle').css('display', 'none');
+             }
 
-            url = '@Url.Content("~/Inspect/LoadTacticBudgetAllocation/")';
-            $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
+             url = '@Url.Content("~/Inspect/LoadTacticBudgetAllocation/")';
+             $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
+                 $('#InspectTab').removeClass('SpanDisable');
+             });
+         
                 $('#InspectTab').removeClass('SpanDisable');
             });
         }
+       }*@
     }
 
     //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
