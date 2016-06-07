@@ -3259,7 +3259,7 @@ namespace RevenuePlanner.Controllers
                 BudgetDataObjList.Add(BudgetDataObj);
 
                 BudgetDataObj = new Budgetdataobj();
-                BudgetDataObj.value = HttpUtility.HtmlEncode(bm.ActivityName);
+                BudgetDataObj.value = HttpUtility.HtmlEncode(HttpUtility.HtmlEncode(bm.ActivityName).Replace("'", "&#39;"));
                 BudgetDataObjList.Add(BudgetDataObj);
 
                 BudgetDataObjList = ParentMonthReport(bm, ActivityType.ActivityPlan, BudgetDataObjList, Tab);
@@ -3283,7 +3283,7 @@ namespace RevenuePlanner.Controllers
                     CampaignDataObjList.Add(CampaignDataObj);
 
                     CampaignDataObj = new Budgetdataobj();
-                    CampaignDataObj.value = HttpUtility.HtmlEncode(bmc.ActivityName);
+                    CampaignDataObj.value = HttpUtility.HtmlEncode(HttpUtility.HtmlEncode(bmc.ActivityName).Replace("'", "&#39;"));
                     CampaignDataObjList.Add(CampaignDataObj);
 
                     CampaignDataObjList = ParentMonthReport(bmc, ActivityType.ActivityCampaign, CampaignDataObjList, Tab);
@@ -3306,7 +3306,7 @@ namespace RevenuePlanner.Controllers
                         ProgramDataObjList.Add(ProgramDataObj);
 
                         ProgramDataObj = new Budgetdataobj();
-                        ProgramDataObj.value = HttpUtility.HtmlEncode(bmp.ActivityName);
+                        ProgramDataObj.value = HttpUtility.HtmlEncode(HttpUtility.HtmlEncode(bmp.ActivityName).Replace("'", "&#39;"));
                         ProgramDataObjList.Add(ProgramDataObj);
 
                         ProgramDataObjList = ParentMonthReport(bmp, ActivityType.ActivityProgram, ProgramDataObjList, Tab);
@@ -3329,7 +3329,7 @@ namespace RevenuePlanner.Controllers
                             TacticDataObjList.Add(TacticDataObj);
 
                             TacticDataObj = new Budgetdataobj();
-                            TacticDataObj.value = HttpUtility.HtmlEncode(bmt.ActivityName);
+                            TacticDataObj.value = HttpUtility.HtmlEncode(HttpUtility.HtmlEncode(bmt.ActivityName).Replace("'", "&#39;"));
                             TacticDataObjList.Add(TacticDataObj);
 
                             TacticDataObjList = ParentMonthReport(bmt, ActivityType.ActivityTactic, TacticDataObjList, Tab);
@@ -3352,7 +3352,7 @@ namespace RevenuePlanner.Controllers
                                 LineDataObjList.Add(LineDataObj);
 
                                 LineDataObj = new Budgetdataobj();
-                                LineDataObj.value = HttpUtility.HtmlEncode(bml.ActivityName);
+                                LineDataObj.value = HttpUtility.HtmlEncode(HttpUtility.HtmlEncode(bml.ActivityName).Replace("'", "&#39;"));
                                 LineDataObjList.Add(LineDataObj);
 
                                 LineDataObjList = ParentMonthReport(bml, ActivityType.ActivityLineItem, LineDataObjList, Tab);
