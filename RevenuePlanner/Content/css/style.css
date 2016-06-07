@@ -23,8 +23,9 @@ body {
     font-weight: normal;
     background: #f0f0f0;/* Added for #2219 - Bhumika */
     -ms-overflow-style: scrollbar;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: auto;
+    /*overflow-y: auto;
+    overflow-x: hidden;*/
 } /* Added for #2219 - Bhumika */
 .btn-Settings:after,
 .caret2,
@@ -102,17 +103,18 @@ a{cursor:pointer !important}
     min-width: 1280px; /* Edited for #2219 - Bhumika - bgcolor removed */
 }
 .midl-wrap{ /* Class Added for #2219 - Bhumika */
-    display: table;
+    /*display: table;*/display: block;
     height: 100%;
 }
 /* 27-10-2015 for ticket 1713 by bheru start*/
 #sidebar {
     width: 280px;
     max-width: 280px;
-    float: none;
-    display: table-cell;
     height: 100%; /* Edited for #2219 - Bhumika */
-     vertical-align: top;
+    vertical-align: top;
+    float: left;
+     /*float: none;
+    display: table-cell;*/
 }
 
 .WelcomeMessageBorder {
@@ -125,11 +127,12 @@ a{cursor:pointer !important}
     height: 100% !important;
     width: calc(100% - 281px);
     margin: 0 !important;
-    float: none;
-    border-left:1px solid #ccc;
-    display: table-cell;
     height: 100%; /* Added for #2219 - Bhumika */
-     vertical-align: top;
+    vertical-align: top;
+    border-left:1px solid #ccc;
+    border-bottom:1px solid #ccc;
+    float: left;
+    /*display: table-cell;*/
 }
 /* 27-10-2015 for ticket 1713 by bheru start*/
 #header .title {
