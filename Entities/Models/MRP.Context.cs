@@ -234,5 +234,22 @@ namespace RevenuePlanner.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PublishModel", newModelIdParameter, userIdParameter);
         }
+    
+        public virtual int SaveuserBudgetPermission(Nullable<int> budgetDetailId, Nullable<int> permissionCode, Nullable<System.Guid> createdBy)
+        {
+            var budgetDetailIdParameter = budgetDetailId.HasValue ?
+                new ObjectParameter("BudgetDetailId", budgetDetailId) :
+                new ObjectParameter("BudgetDetailId", typeof(int));
+    
+            var permissionCodeParameter = permissionCode.HasValue ?
+                new ObjectParameter("PermissionCode", permissionCode) :
+                new ObjectParameter("PermissionCode", typeof(int));
+    
+            var createdByParameter = createdBy.HasValue ?
+                new ObjectParameter("CreatedBy", createdBy) :
+                new ObjectParameter("CreatedBy", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SaveuserBudgetPermission", budgetDetailIdParameter, permissionCodeParameter, createdByParameter);
+        }
     }
 }

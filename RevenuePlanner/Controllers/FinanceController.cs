@@ -1368,18 +1368,45 @@ namespace RevenuePlanner.Controllers
         /// Save detail on aading new budgetitem in Budget_Permission table
         /// </summary>
         /// <param name="BudgetId">contains BudgetDetailid</param>
+        //public void SaveUserBudgetpermission(int budgetId)
+        //{
+        //    int Id = 0;
+        //    if(ParentId != null)
+        //    {
+        //        Id = Convert.ToInt32(ParentId);
+        //    }
+        //    Budget_Permission objBudget_Permission = new Budget_Permission();
+        //    List<Guid> Users = new List<Guid>();
+        //    if (Id > 0)
+        //    {
+        //        Users = db.Budget_Permission.Where(Uid => Uid.BudgetDetailId == Id).Select(Uid => Uid.UserId).Distinct().ToList();
+
+        //    }
+        //    Users.Add(Sessions.User.UserId);
+        //    foreach (var UserId in Users.Distinct())
+        //    {
+        //        objBudget_Permission = new Budget_Permission();
+        //        objBudget_Permission.UserId = UserId;
+        //        objBudget_Permission.BudgetDetailId = budgetId;
+        //        objBudget_Permission.CreatedDate = System.DateTime.Now.Date;
+        //        objBudget_Permission.CreatedBy = Sessions.User.UserId;
+        //        objBudget_Permission.PermisssionCode = 0;
+        //        db.Entry(objBudget_Permission).State = EntityState.Added;
+               
+        //    }
+        //    db.SaveChanges();
+          
+        //}
+        /// <summary>
+        /// Added by Komal Rawal for PL ticket #2242
+        /// Save detail on aading new budgetitem in Budget_Permission table
+        /// </summary>
+        /// <param name="BudgetId">contains BudgetDetailid</param>
         public void SaveUserBudgetpermission(int budgetId)
         {
-            Budget_Permission objBudget_Permission = new Budget_Permission();
-            objBudget_Permission.UserId = Sessions.User.UserId;
-            objBudget_Permission.BudgetDetailId = budgetId;
-            objBudget_Permission.CreatedDate = System.DateTime.Now.Date;
-            objBudget_Permission.CreatedBy = Sessions.User.UserId;
-            objBudget_Permission.PermisssionCode = 0;
-            db.Entry(objBudget_Permission).State = EntityState.Added;
-            db.SaveChanges();
-        }
+            db.SaveuserBudgetPermission(budgetId, 0, Sessions.User.UserId); //Sp to get users of all parent ids and assign to current budget item.
 
+        }
         #endregion
 
         #region Methods for Get Header Value
