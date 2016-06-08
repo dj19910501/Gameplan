@@ -83,6 +83,7 @@ namespace RevenuePlanner.Models
         public string HeaderStyle { get; set; }
         public List<Head> head { get; set; }
         public string setColSorting { get; set; } //Added by Maitri Gandhi on 15-03-2016 for #2049 [to include soring in the finance grid]
+        public List<string> setCellTextStyle { get; set; }  //Added by Komal Rawal on 08-06-2016 for #2244 when no permission show all data in grey and dash
     }
     public class DhtmlxGridRowDataModel
     {
@@ -93,6 +94,7 @@ namespace RevenuePlanner.Models
         public List<DhtmlxGridRowDataModel> rows { get; set; }
         public string Detailid { get; set; }
         public FinanceModelHeaders FinanemodelheaderObj { get; set; }
+        public string style { get; set; } //Added by Komal Rawal on 08-06-2016 for #2244 when no permission show all data in grey and dash
    
     }
     public class Head

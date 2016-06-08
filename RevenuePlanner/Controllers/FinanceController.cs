@@ -379,6 +379,7 @@ namespace RevenuePlanner.Controllers
                 StringBuilder setColumnsVisibility = new StringBuilder();
                 StringBuilder HeaderStyle = new StringBuilder();
                 StringBuilder setColSorting = new StringBuilder(); //Added by Maitri Gandhi on 15-03-2016 for #2049
+                List<string> setCellTextStyle = new List<string>(); //Added by Komal Rawal on 08-06-2016 for #2244 when no permission show all data in grey and dash
                 #region Set coulmn base on columnset
                 List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
                                                    join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
@@ -560,6 +561,7 @@ namespace RevenuePlanner.Controllers
                         objBudgetAmount = new BudgetAmount();
                         PlanLineItemsId = new List<int>();
                         lstLineItemIds = new List<int>();
+                      
                         PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == i.Id && LineItemids.Contains(a.PlanLineItemId)).Select(a => a.PlanLineItemId).Distinct().ToList();
                         if (i.ParentId != null)
                         {
@@ -580,22 +582,47 @@ namespace RevenuePlanner.Controllers
                             count = CountUser.Count;
                         }
                         var CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)i.Id && a.UserId == Sessions.User.UserId).ToList();
+                        //Modified by Komal Rawal on 08-06-2016 for #2244 when no permission show all data in grey and dash
+                        int? GetParentId = 0;
                         string isEdit = "";
                         string strUserAction = string.Empty;
+                        string LinkData = string.Empty;
+                        var CheckParentForecastPermission = 0;
                         if (CheckUserPermission.Count > 0)
                         {
+                            GetParentId = CheckUserPermission.First().Budget_Detail.ParentId;
+                            var CheckParentForecast = tblBudgetDetails.Where(a => a.Id == GetParentId && a.IsForecast == true).Select(per => per).FirstOrDefault();
+                            if (CheckParentForecast != null)
+                            {
+                                CheckParentForecastPermission = CheckParentForecast.Budget_Permission.Where(user => user.UserId == Sessions.User.UserId).Select(user => user.PermisssionCode).FirstOrDefault();
+                            }
+
+
                             if (CheckUserPermission.First().PermisssionCode == 0)
                             {
                                 isEdit = "Edit";
+                                LinkData = "Edit";
                             }
-                            else
+                            else if (CheckUserPermission.First().PermisssionCode == 1)
                             {
                                 isEdit = "View";
+                                LinkData = "View";
+                        }
+                        else
+                        {
+                                isEdit = "None";
+                                LinkData = "View";
+                            }
+                            if (CheckParentForecastPermission == 2 && CheckParentForecastPermission != CheckUserPermission.First().PermisssionCode)
+                            {
+                                isEdit = "None";
+                                LinkData = "View";
                             }
                         }
                         else
                         {
-                            isEdit = "View";
+                            isEdit = "None";
+                            LinkData = "View";
                         }
                         //Modified by Komal Rawal for #2242 change child item permission on change of parent item
                         if (isEdit == "Edit")
@@ -606,15 +633,25 @@ namespace RevenuePlanner.Controllers
                         {
                             GridrowId = rowId + "_" + "False";
                         }
-                        if (_IsBudgetCreate_Edit)
+
+                        if (isEdit == "None")
                         {
-                            strUserAction = string.Format("<div onclick=Edit({0},false,{1},'" + GridrowId + "',this) class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + isEdit + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
+                            setCellTextStyle.Add("" + GridrowId + ",color:#999;border-right:0px solid #d4d4d4");
                         }
                         else
                         {
-                            strUserAction = string.Format("<div onclick=Edit({0},false,{1},'" + GridrowId + "',this) class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + isEdit + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
-                        }
+                            setCellTextStyle.Add("" + GridrowId + ",border-right:0px solid #d4d4d4");
 
+                        }
+                        if (_IsBudgetCreate_Edit)
+                        {
+                            strUserAction = string.Format("<div onclick=Edit({0},false,{1},'" + GridrowId + "',this) class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + LinkData + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
+                        }
+                        else
+                        {
+                            strUserAction = string.Format("<div onclick=Edit({0},false,{1},'" + GridrowId + "',this) class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + LinkData + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
+                        }
+                        //END
                         DataRow Datarow = dataTable.NewRow();
                         Datarow[Enums.DefaultGridColumn.Id.ToString()] = i.Id;
                         Datarow[Enums.DefaultGridColumn.ParentId.ToString()] = i.ParentId == null ? 0 : i.ParentId;
@@ -670,7 +707,16 @@ namespace RevenuePlanner.Controllers
                                         }
                                         else
                                         {
+                                            if (isEdit == "None")
+                                            {
+                                                Datarow[colname] = "---";
+
+                                            }
+                                            else
+                                            {
                                             Datarow[colname] = "<div style='color: #000 ;'> --- </div>";
+                                        }
+
                                         }
                                     }
                                 }
@@ -689,10 +735,11 @@ namespace RevenuePlanner.Controllers
                             .Select(row => CreateMainGridItem(dataTable, row, tblBudgetDetails, LineItemidBudgetList, columnNames, objColumns, OtherBudgetid)).ToList();
 
                 #endregion
-
+                string trimSetcelltextstyle = String.Join(",", setCellTextStyle.ToList());  //Added by Komal Rawal on 08-06-2016 for #2244 when no permission show all data in grey and dash
                 mainGridData.setHeader = trimSetheader;
                 mainGridData.setColSorting = trimSetColSorting; //Added by Maitri Gandhi on 15-03-2016 for #2049
                 mainGridData.attachHeader = trimAttachheader;
+                mainGridData.setCellTextStyle = setCellTextStyle.ToList();
                 mainGridData.setInitWidths = trimSetInitWidths;
                 mainGridData.setColAlign = trimSetColAlign;
                 mainGridData.setColValidators = trimSetColValidators;
@@ -710,6 +757,7 @@ namespace RevenuePlanner.Controllers
         }
         private DhtmlxGridRowDataModel CreateMainGridItem(DataTable dataTable, DataRow row, List<Budget_Detail> lstBudgetDetails, List<LineItem_Budget> lstLineItemBudget, List<DataColumn> DataTablecolumnNames, List<Budget_Columns> objColumns, int OtherBudgetId = 0)
         {
+            string stylecolorgray = string.Empty;
             Dictionary<string, object> variables = new Dictionary<string, object>();
 
             var BudgetCol = objColumns.Where(a => a.IsTimeFrame == true && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()
@@ -759,7 +807,11 @@ namespace RevenuePlanner.Controllers
             name = HttpUtility.HtmlEncode(Convert.ToString(name));
             #region "Add Action column link"
             string strAction = string.Empty;
-
+            //Modified by Komal Rawal on 08-06-2016 for #2244 when no permission show all data in grey and dash
+            if (Permission == "None")
+            {
+                stylecolorgray = "color:#999";
+            }
             if ((lstChildren != null && lstChildren.Count() > 0 && Convert.ToBoolean(IsForcast) == false) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
                 double? forcastVal = 0, pannedVal = 0, actualVal = 0;
@@ -803,6 +855,10 @@ namespace RevenuePlanner.Controllers
                             {
                                 strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
                             }
+                            else if (Permission == "None")
+                            {
+                                strAction = "";
+                            }
                             else
                             {
                                 strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
@@ -820,6 +876,10 @@ namespace RevenuePlanner.Controllers
                             if (Permission == "Edit")
                             {
                                 strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                            }
+                            else if (Permission == "None")
+                            {
+                                strAction = "";
                             }
                             else
                             {
@@ -840,6 +900,10 @@ namespace RevenuePlanner.Controllers
                         {
                             strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
                         }
+                        else if (Permission == "None")
+                        {
+                            strAction = "";
+                        }
                         else
                         {
                             strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
@@ -850,6 +914,10 @@ namespace RevenuePlanner.Controllers
                         if (Permission == "Edit")
                         {
                             strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                        }
+                        else if (Permission == "None")
+                        {
+                            strAction = "";
                         }
                         else
                         {
@@ -872,6 +940,7 @@ namespace RevenuePlanner.Controllers
                     row.SetField<List<int>>("lstLineItemIds", lstLineItemIds);
                     lineItemCount = lstLineItemIds != null ? lstLineItemIds.Distinct().Count() : 0;
                     row.SetField<Int32>("LineItemCount", lineItemCount); // Update LineItemCount in DataTable.
+
                 }
             }
             else
@@ -886,6 +955,7 @@ namespace RevenuePlanner.Controllers
                 }
                 if (Convert.ToBoolean(IsForcast))
                 {
+
                     double? forcastVal = 0, pannedVal = 0, actualVal = 0;
                     forcastVal = GetSumofValueMainGrid(dataTable, id, "Forecast");
                     pannedVal = GetSumofValueMainGrid(dataTable, id, "Planned");
@@ -895,11 +965,13 @@ namespace RevenuePlanner.Controllers
                     planned = pannedVal.HasValue ? pannedVal.Value.ToString(formatThousand) : "0";
                     actual = actualVal.HasValue ? actualVal.Value.ToString(formatThousand) : "0";
 
+
                     var fltrChildIds = lstBudgetDetails.Where(budgt => budgt.ParentId == id).Select(budgt => budgt.Id).ToList();
                     List<int> lstlineItemIds = lstLineItemBudget.Where(line => fltrChildIds.Contains(line.BudgetDetailId)).Select(planLineItem => planLineItem.PlanLineItemId).Distinct().ToList();
                     row.SetField<List<int>>("lstLineItemIds", lstlineItemIds);
                     lineItemCount = lstlineItemIds.Count;
                     row.SetField<Int32>("LineItemCount", lstlineItemIds.Count);
+
                 }
                 if (_IsForecastCreate_Edit)
                 {
@@ -909,6 +981,10 @@ namespace RevenuePlanner.Controllers
                         {
                             addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
                             strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                        }
+                        else if (Permission == "None")
+                        {
+                            strAction = "";
                         }
                         else
                         {
@@ -927,6 +1003,10 @@ namespace RevenuePlanner.Controllers
                     {
                         strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
                     }
+                    else if (Permission == "None")
+                    {
+                        strAction = "";
+                    }
                     else
                     {
                         strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
@@ -943,39 +1023,73 @@ namespace RevenuePlanner.Controllers
             objHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
             objHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
             objHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
-
+            //Modified by Komal Rawal on 08-06-2016 for #2244 when no permission show all data in grey and dash
             if (BudgetCol != null)
             {
+                if (Permission == "None")
+                {
+                    ParentData.Add(Convert.ToString("---"));
+                }
+                else
+                {
                 ParentData.Add(Convert.ToString(budget));
+                }
                 objHeader.Budget = Convert.ToDouble(budget);
             }
             if (ForecastCol != null)
             {
+                if (Permission == "None")
+                {
+                    ParentData.Add(Convert.ToString("---"));
+                }
+                else
+                {
                 ParentData.Add(Convert.ToString(forecast));
+                }
                 objHeader.Forecast = Convert.ToDouble(forecast);
             }
             if (PlannedCol != null)
             {
+                if (Permission == "None")
+                {
+                    ParentData.Add(Convert.ToString("---"));
+                }
+                else
+                {
                 ParentData.Add(Convert.ToString(planned));
+                }
                 objHeader.Planned = Convert.ToDouble(planned);
             }
             if (ActualCol != null)
             {
+                if (Permission == "None")
+                {
+                    ParentData.Add(Convert.ToString("---"));
+                }
+                else
+                {
                 ParentData.Add(Convert.ToString(actual));
+                }
                 objHeader.Actual = Convert.ToDouble(actual);
             }
             var CustColList = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && a.IsTimeFrame == false && a.MapTableName == Enums.MapTableName.CustomField_Entity.ToString()).ToList();
             foreach (var custCol in CustColList)
             {
                 var custval = variables.Where(a => a.Key == custCol.CustomField.Name).Select(a => a.Value).FirstOrDefault();
+                if (Permission == "None")
+                {
+                    ParentData.Add(Convert.ToString("---"));
+                }
+                else
+                {
                 ParentData.Add(Convert.ToString(custval));
+            }
             }
             ParentData.Add(User);
             ParentData.Add(lineItemCount.ToString());
             ParentData.Add(Owner);
             #endregion
-
-            return new DhtmlxGridRowDataModel { id = rowId, data = ParentData, rows = children, Detailid = Convert.ToString(id), FinanemodelheaderObj = objHeader };
+            return new DhtmlxGridRowDataModel { id = rowId, data = ParentData, rows = children, style = stylecolorgray, Detailid = Convert.ToString(id), FinanemodelheaderObj = objHeader };
         }
         public ActionResult UpdateBudgetDetail(string BudgetId, string BudgetDetailName, string BudgetDetailId, string ParentId, string mainTimeFrame = "Yearly", string ListofCheckedColums = "")
         {

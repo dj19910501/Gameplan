@@ -230,11 +230,18 @@
                 // Modified by Rushil Bhuptani on 06/03/2016 for #2247
                 myTreeGrid.setColumnHidden(0, true);
             }
-        myTreeGrid.forEachRow(function (rowid) {
-            var titleIndex = myTreeGrid.getColIndexById('title');
-            //alert(titleIndex);
-            myTreeGrid.setCellTextStyle(rowid, titleIndex, "border-right:0px solid #d4d4d4;");
-        });
+           
+     
+        //   myTreeGrid.setCellTextStyle(rowid, titleIndex, "border-right:0px solid #d4d4d4");
+       
+            var TempRowID;
+            var style;
+            $.each(GridProperties.setCellTextStyle, function (key, val) {
+                        TempRowID = val.split(',')[0];
+                        style = val.split(',')[1];
+                        myTreeGrid.setCellTextStyle(TempRowID,1, style);
+                    });
+
 
             //myTreeGrid.enableAutoHeight(true);
         myTreeGrid.enableAutoHeight(true);
