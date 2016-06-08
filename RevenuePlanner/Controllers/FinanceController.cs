@@ -422,7 +422,7 @@ namespace RevenuePlanner.Controllers
                 #region Set Tree Grid Properties and methods
 
                 // Modified by Rushil Bhuptani on 06/03/2016 for #2247
-                setHeader.Append("ActivityId,Task Name,,,");// Default 1st 4 columns header
+                setHeader.Append("Id,Task Name,,,");// Default 1st 4 columns header
                 setColSorting.Append("na,str,na,na,");     //Added by Maitri Gandhi on 15-03-2016 for #2049
                 setInitWidths.Append("100,200,100,50,");
                 setColAlign.Append("center,left,center,center,");
@@ -1831,7 +1831,7 @@ namespace RevenuePlanner.Controllers
 
             #region Set Tree Grid Properties and methods
             // Modified by Rushil Bhuptani on 06/06/2016 for #2247
-            attachHeader.Append("ActivityId,Task Name,,Line Items,");
+            attachHeader.Append("Id,Task Name,,Line Items,");
             setColValidators.Append("," + Enums.ColumnValidation.CustomNameValid.ToString() + ",,,");
             setColumnIds.Append(",Title,,LineItems,");
 
