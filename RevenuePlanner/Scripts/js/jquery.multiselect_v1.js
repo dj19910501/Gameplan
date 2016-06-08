@@ -442,9 +442,10 @@ var selectbox_keys = '';
 
               //ui-state-hover -->setfocus
               $(this).removeClass('ui-state-hover');
-              var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-
+              var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;             
               if (key == 38 || key == 40) {
+                  //Insertation Start Kausha 08/06/2016 #2274 Getting Elmah Logs on Home Page (Added following if condition(if ($nextdata!=-1)))
+                 if ($nextdata!=-1)
                   $nextdata.removeClass('ui-state-hover');
                   return false;
                   //var tt = $_prevdata;
@@ -578,7 +579,6 @@ var selectbox_keys = '';
                       // }
                   })
               });
-
               if ($nextdata != -1) {
                   $nextdata.removeClass('ui-state-hover');
                   $nextdata.addClass('ui-state-hover').focus();
