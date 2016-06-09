@@ -651,10 +651,12 @@
     }
 
     function Userdelete(id, budgetID) {
+        //Modified by Komal Rawal for #2242 delete child item user permission on deletion of parent item user
+        var ChildItems = myTreeGrid.getAllSubItems('@GridRowID');
         $.ajax({
             url: '@Url.Action("Delete", "Finance")',
             type: 'POST',
-            data: { id: id, budgetID: budgetID },
+            data: { id: id, budgetID: budgetID, ChildItems : ChildItems },
             success: function (data) {
                 if (data.Flag) {
                     $("#userTable tbody tr").each(function () {

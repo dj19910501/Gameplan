@@ -1227,9 +1227,26 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">contains user's Id</param>
         /// <returns>If success than return true</returns>
         [HttpPost]
-        public JsonResult Delete(Guid id, int budgetId)
+        public JsonResult Delete(Guid id, int budgetId,string ChildItems)
         {
-            List<Budget_Permission> BudgetDetailList = db.Budget_Permission.Where(i => i.BudgetDetailId == budgetId && i.UserId == id).ToList();
+            //Modified by Komal Rawal for #2242 delete child item user permission on deletion of parent item user
+            List<string> ListItems = new List<string>();
+            List<int> BudgetDetailIds = new List<int>();
+            if (ChildItems != "" && ChildItems != null)
+            {
+                ListItems = ChildItems.Split(',').ToList();
+
+            }
+            for (int i = 0; i < ListItems.Count; i++)
+            {
+                if(ListItems[i].Contains("_"))
+                {
+                    BudgetDetailIds.Add(Convert.ToInt32(ListItems[i].Split('_')[1]));
+                }
+            }
+            BudgetDetailIds.Add(budgetId);
+            List<Budget_Permission> BudgetDetailList = db.Budget_Permission.Where(i =>BudgetDetailIds.Contains(i.BudgetDetailId) && i.UserId == id).ToList();
+            //END
             foreach (var BudgetDetail in BudgetDetailList)
             {
                 db.Entry(BudgetDetail).State = EntityState.Deleted;
@@ -1324,7 +1341,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveDetail(List<UserBudgetPermission> UserData, string ParentID, string[] CreatedBy, string ChildItems)
         {
-            //Modified by Komal Rawal for #2242 change chil item permission on change of parent item
+            //Modified by Komal Rawal for #2242 change child item permission on change of parent item
             if (UserData != null)
             {
                 List<string> ListItems = new List<string>();
