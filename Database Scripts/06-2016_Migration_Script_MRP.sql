@@ -13155,10 +13155,20 @@ GO
 -- Added by Komal Rawal
 -- Added on :: 08-June-2016
 -- Desc :: On creation of new item in Marketing budget give permission as per parent items.
-
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SaveuserBudgetPermission]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[SaveuserBudgetPermission]
 GO
-CREATE PROCEDURE [dbo].[SaveuserBudgetPermission]
+/****** Object:  StoredProcedure [dbo].[SaveuserBudgetPermission]    Script Date: 06/09/2016 15:30:48 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SaveuserBudgetPermission]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[SaveuserBudgetPermission] AS' 
+END
+GO
+ALTER PROCEDURE [dbo].[SaveuserBudgetPermission]
 @BudgetDetailId int  = 0,
 @PermissionCode int = 0,
 @CreatedBy uniqueidentifier 
@@ -13189,10 +13199,9 @@ select  @CreatedBy,@BudgetDetailId,GETDATE(),@CreatedBy,@PermissionCode from Bud
 
 Drop Table #tempbudgetdata
 END
-Go
-
 
 GO
+
 
 IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Report_Intergration_Conf'))
 BEGIN
