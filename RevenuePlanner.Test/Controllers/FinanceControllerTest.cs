@@ -1758,7 +1758,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
 
-            var result = objFinanceController.Delete(Guid.Empty, 0) as JsonResult;
+            var result = objFinanceController.Delete(Guid.Empty, 0,null) as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
