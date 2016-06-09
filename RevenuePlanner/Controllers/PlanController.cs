@@ -53,7 +53,7 @@ namespace RevenuePlanner.Controllers
         private const string LineItem = "LineItem";
         private const string Ro = "ro";
         private const string Tree = "tree";
-       // private const string ActivityType = "ActivityType";
+        // private const string ActivityType = "ActivityType";
         private const string PlannedCost = "Planned Cost";
         private const string Total = "Total";
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
@@ -7202,11 +7202,11 @@ namespace RevenuePlanner.Controllers
                 BudgetDataObjList = AllocatedPlanMonth(model, bm, ActivityType.ActivityPlan, bm.ActivityId, bm.Month, bm.ParentMonth, AllocatedBy, BudgetDataObjList);
 
                 BudgetDataObjList = CampaignSummary(model, bm, ActivityType.ActivityPlan, bm.ActivityId, bm.ParentActivityId, AllocatedBy, BudgetDataObjList, "0");
-                 
+
                 double planAllocation = 0;
 
-                  double sumMonth = bm.Month.Jan + bm.Month.Feb + bm.Month.Mar + bm.Month.Apr + bm.Month.May + bm.Month.Jun + bm.Month.Jul + bm.Month.Aug + bm.Month.Sep + bm.Month.Oct + bm.Month.Nov + bm.Month.Dec;
-                  planAllocation = (sumMonth == 0 && bm.Allocated == 0) ? 0 : (sumMonth > 0 && bm.Allocated == 0) ? 101 : sumMonth / bm.Allocated * 100;
+                double sumMonth = bm.Month.Jan + bm.Month.Feb + bm.Month.Mar + bm.Month.Apr + bm.Month.May + bm.Month.Jun + bm.Month.Jul + bm.Month.Aug + bm.Month.Sep + bm.Month.Oct + bm.Month.Nov + bm.Month.Dec;
+                planAllocation = (sumMonth == 0 && bm.Allocated == 0) ? 0 : (sumMonth > 0 && bm.Allocated == 0) ? 101 : sumMonth / bm.Allocated * 100;
 
                 ViewBag.SumMonth = sumMonth;
                 ViewBag.PlanAllocation = planAllocation;
@@ -7340,7 +7340,7 @@ namespace RevenuePlanner.Controllers
             //return PartialView("_AllocatedBudget", model);
             #endregion
             return PartialView("_AllocatedBudget", objBudgetDHTMLXGrid);
-            
+
         }
 
         /// <summary>
@@ -7460,7 +7460,7 @@ namespace RevenuePlanner.Controllers
                         if (childTotalAllocated > plan.Allocated)
                         {
                             //Span = Span + " class = orange-corner-budget";
-                            
+
                             span.Attributes.Add("class", "orange-corner-budget");
                             if (plan.isEditable)
                             {
@@ -7479,8 +7479,8 @@ namespace RevenuePlanner.Controllers
                                     Span = "<span mnth txt=" + plan.Allocated.ToString() +
                                           " class='orange-corner-budget clickmetactic' rel = #loadme style = cursor:pointer ></span>";
                                 }
-                               // Span = "<span  class='orange-corner-budget clickme' style='cursor:pointer;' rel = #loadmetxt=" + plan.Allocated.ToString() + "></span>";
-                             
+                                // Span = "<span  class='orange-corner-budget clickme' style='cursor:pointer;' rel = #loadmetxt=" + plan.Allocated.ToString() + "></span>";
+
                                 span.AddCssClass("clickme");
                                 span.Attributes.Add("rel", "#loadme");
                                 span.Attributes.Add("mnth", string.Empty);
@@ -7535,7 +7535,7 @@ namespace RevenuePlanner.Controllers
 
             return BudgetDataObjList;
         }
-       
+
         /// <summary>
         /// Added By: Maitri Gandhi.
         /// Date : 18/5/2016
@@ -7695,7 +7695,7 @@ namespace RevenuePlanner.Controllers
                                       " class='orange-corner-budget clickmetactic' rel = #loadme style = cursor:pointer ></span>";
                             }
 
-                          //  Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel = #loadme mnth='" + Enums.YearMonths[i] + "' txt = " + planMonth[i].ToString() + "></span>";
+                            //  Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel = #loadme mnth='" + Enums.YearMonths[i] + "' txt = " + planMonth[i].ToString() + "></span>";
                             //Span = "<span class = orange-corner-budget onClick=cluetipClick(this) rel = #loadme mnth = " + Enums.YearMonths[i] + " txt = " + planMonth[i].ToString() + "></span>";
                         }
                         else
@@ -7736,13 +7736,13 @@ namespace RevenuePlanner.Controllers
                     BudgetDataObj = new Budgetdataobj();
                     if (activityType == ActivityType.ActivityPlan)
                     {
-                       
+
                         div = "<div  id =" + activityType + ActivityId.ToString() + " class='planLevel topCorner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
                         QueryActivityType = ActivityType.ActivityCampaign.ToString();
                     }
                     else if (activityType == ActivityType.ActivityCampaign)
                     {
-                     
+
                         div = "<div id =" + activityType + ActivityId.ToString() + " class='campaignLevel topCorner clueallocated' allocated = " + campaignParentMonth[i].ToString(formatThousand) + "";
                         QueryActivityType = ActivityType.ActivityProgram.ToString();
                     }
@@ -7757,32 +7757,32 @@ namespace RevenuePlanner.Controllers
                     }
 
                     //div = "<div id =" + activityType + ActivityId.ToString() + " class='planLevel topCorner clueallocated'";
-                    divValue = isEditable ? NewClueTipAnchorTagForBudget(Enums.YearQuarters[i], campaignMonth[i].ToString(formatThousand),activityType) : campaignMonth[i].ToString(formatThousand);
+                    divValue = isEditable ? NewClueTipAnchorTagForBudget(Enums.YearQuarters[i], campaignMonth[i].ToString(formatThousand), activityType) : campaignMonth[i].ToString(formatThousand);
                     double totalChildBudget = 0;
                     if (i == 1)
                     {
-                       
+
                         monthlyValue = obj.Jan;
                         totalChildBudget = model.Where(p => p.ActivityType == QueryActivityType && p.ParentActivityId == ActivityId).Select(c => c.Month.Jan).ToList().Sum();
                         div = div + " childAllocated=" + totalChildBudget;
                     }
                     else if (i == 4)
                     {
-                        
+
                         monthlyValue = obj.Apr;
                         totalChildBudget = model.Where(p => p.ActivityType == QueryActivityType && p.ParentActivityId == ActivityId).Select(c => c.Month.Apr).ToList().Sum();
                         div = div + " childAllocated=" + totalChildBudget;
                     }
                     else if (i == 7)
                     {
-                       
+
                         monthlyValue = obj.Jul;
                         totalChildBudget = model.Where(p => p.ActivityType == QueryActivityType && p.ParentActivityId == ActivityId).Select(c => c.Month.Jul).ToList().Sum();
                         div = div + " childAllocated=" + totalChildBudget;
                     }
                     else if (i == 10)
                     {
-                       
+
                         monthlyValue = obj.Oct;
                         totalChildBudget = model.Where(p => p.ActivityType == QueryActivityType && p.ParentActivityId == ActivityId).Select(c => c.Month.Oct).ToList().Sum();
                         div = div + " childAllocated=" + totalChildBudget;
@@ -7806,7 +7806,7 @@ namespace RevenuePlanner.Controllers
                                 Span = "<span mnth='" + Enums.YearQuarters[i] + "' txt=" + campaignMonth[i].ToString() +
                                       " class='orange-corner-budget clickmetactic' rel = #loadme style = cursor:pointer ></span>";
                             }
-                           // Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel=#loadme mnth='" + Enums.YearQuarters[i] + "' txt=" + campaignMonth[i].ToString() + "></span>";
+                            // Span = "<span class='orange-corner-budget clickme' style='cursor:pointer;' rel=#loadme mnth='" + Enums.YearQuarters[i] + "' txt=" + campaignMonth[i].ToString() + "></span>";
                             //Span = "<span class = orange-corner-budget onClick = cluetipClick(this) rel=#loadme mnth=" + Enums.YearQuarters[i] + " txt=" + campaignMonth[i].ToString() + "></span>";
                         }
                         else
@@ -8696,12 +8696,12 @@ namespace RevenuePlanner.Controllers
             model = SetLineItemCostByWeightage(model);
 
             #region "Calculate header monthly allocated Percentage values"
-            
+
             BudgetMonth a = new BudgetMonth();
             BudgetMonth child = new BudgetMonth();
             BudgetMonth PercAllocated = new BudgetMonth();
-           
-           
+
+
             child = model.Where(_mdl => _mdl.ActivityType == ActivityType.ActivityPlan).Select(_mdl => _mdl.Month).FirstOrDefault();
             a = model.Where(_mdl => _mdl.ActivityType == ActivityType.ActivityPlan).Select(_mdl => _mdl.ParentMonth).FirstOrDefault();
 
@@ -9153,7 +9153,7 @@ namespace RevenuePlanner.Controllers
 
                         CampaignDataObj = new Budgetdataobj();
                         //  CampaignDataObj.value = HttpUtility.HtmlEncode(bmc.ActivityName);
-                      
+
                         CampaignDataObj.value = HttpUtility.HtmlEncode("<a id=" + bmc.ActivityId + " style='cursor:pointer;' onClick=OpenOtherInspectPopup('" + bmc.ActivityId + "','" + bmc.ActivityType.ToString() + "')>" + (HttpUtility.HtmlEncode(bmc.ActivityName).Replace("'", "&#39;")) + "</a>");
                         CampaignDataObjList.Add(CampaignDataObj);
 
@@ -9486,7 +9486,7 @@ namespace RevenuePlanner.Controllers
 
                             //div.InnerHtml = plan.Allocated.ToString(formatThousand);
                             bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && plan.LineItemTypeId == null;
-                            divValue = plan.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(string.Empty, plan.Allocated.ToString(formatThousand),activityType) : plan.Allocated.ToString(formatThousand);
+                            divValue = plan.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(string.Empty, plan.Allocated.ToString(formatThousand), activityType) : plan.Allocated.ToString(formatThousand);
                             if (tab == "1")
                             {
                                 //div.Attributes.Add("mainbudget", plan.MainBudgeted.ToString());
@@ -9628,7 +9628,7 @@ namespace RevenuePlanner.Controllers
                         mainBudget = c.BudgetMonth.Feb;
                         allocated = c.ParentMonth.Feb;
                         monthlyCampaignValue = c.Month.Feb;
-                       // divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.February.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
+                        // divInnerHtml = c.isEditable && !isOtherLineItem ? NewClueTipAnchorTagForBudget(Enums.Months.February.ToString(), monthlyCampaignValue.ToString(formatThousand),activityType) : monthlyCampaignValue.ToString(formatThousand);
                         if (activityType == ActivityType.ActivityLineItem && c.Month.Feb <= 0)
                         {
                             divInnerHtml = c.isEditable &&
@@ -10000,7 +10000,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            divInnerHtml = c.isEditable && ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && c.isAfterApproved)) 
+                            divInnerHtml = c.isEditable && ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && c.isAfterApproved))
                                 ? NewClueTipAnchorTagForBudget(
                                     Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()].ToString(),
                                     monthlyCampaignValue.ToString(formatThousand), activityType)
@@ -10036,7 +10036,7 @@ namespace RevenuePlanner.Controllers
                                     monthlyCampaignValue.ToString(formatThousand), activityType)
                                 : monthlyCampaignValue.ToString(formatThousand);
                         }
-                        }
+                    }
                     else if (i == 7)
                     {
 
@@ -10104,7 +10104,7 @@ namespace RevenuePlanner.Controllers
                         division = division + " allocated=" + allocated.ToString(formatThousand);
                     }
                     //  divInnerHtml = monthlyCampaignValue.ToString(formatThousand);
-                   
+
                     //if (strTab == "1")
                     //{
                     //    // div.AddCssClass("clueplanned");
@@ -10337,7 +10337,7 @@ namespace RevenuePlanner.Controllers
                     // divValue.Attributes.Add("id", activityType + activityId);
                     division = "<div id=" + activityType + activityId;
 
-                   // string className = "event-row";
+                    // string className = "event-row";
                     if (i == 1)
                     {
                         mainBudget = budgetMonth.Jan;
@@ -10889,7 +10889,7 @@ namespace RevenuePlanner.Controllers
             {
                 for (int i = 1; i <= 4; i++)
                 {
-                   // string className = "firstLevel";
+                    // string className = "firstLevel";
                     TagBuilder td = new TagBuilder("td");
                     td.AddCssClass("campaign-row audience");
 
@@ -11111,7 +11111,7 @@ namespace RevenuePlanner.Controllers
                 //sb.AppendLine(tr.ToString());
             }
 
-           
+
             return BudgetDataObjList;
         }
 
@@ -13632,18 +13632,24 @@ namespace RevenuePlanner.Controllers
         }
 
         #region method to generate grid header
-        protected List<PlanHead> GenerateJsonHeader(string MQLTitle, int modelid, List<TacticTypeModel> TacticTypeList, string PlanYear)
+        public List<PlanHead> GenerateJsonHeader(string MQLTitle, int modelid, List<TacticTypeModel> TacticTypeList, string PlanYear, bool IsLineItemListing = true)
         {
+            // Modified by Arpita Soni for Ticket #2237 on 06/09/2016
             List<PlanHead> headobjlist = new List<PlanHead>();
             PlanHead headobj = new PlanHead();
+            List<PlanOptions> lstOwner = new List<PlanOptions>();
+            List<PlanOptions> lstTacticType = new List<PlanOptions>();
             try
             {
-                List<PlanOptions> lstTacticType = TacticTypeList.Select(tacttype => new PlanOptions { id = tacttype.TacticTypeId.ToString(), value = HttpUtility.HtmlDecode(tacttype.Title) }).ToList();
+
+                if (TacticTypeList != null && TacticTypeList.Count > 0)
+                    lstTacticType = TacticTypeList.Select(tacttype => new PlanOptions { id = tacttype.TacticTypeId.ToString(), value = HttpUtility.HtmlDecode(tacttype.Title) }).ToList();
 
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
                 lstUsers = lstUsers.Where(i => i.IsDeleted == false).ToList();
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
-                List<PlanOptions> lstOwner = new List<PlanOptions>();
+
+
 
                 if (lstClientUsers.Count() > 0)
                 {
@@ -13656,7 +13662,6 @@ namespace RevenuePlanner.Controllers
                         lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.UserId.ToString(), value = HttpUtility.HtmlEncode(string.Format("{0} {1}", user.FirstName, user.LastName)) }).ToList();
                     }
                 }
-
                 // First Column Activity Type
                 headobj.type = "ro";
                 headobj.align = "center";
@@ -13696,26 +13701,28 @@ namespace RevenuePlanner.Controllers
                 headobj.value = "id";
                 headobjlist.Add(headobj);
 
-                // Fifth Column : Start Date
-                headobj = new PlanHead();
-                headobj.type = "dhxCalendar";
-                headobj.align = "center";
-                headobj.id = "startdate";
-                headobj.sort = "date";
-                headobj.width = 110;
-                headobj.value = "Start Date";
-                headobjlist.Add(headobj);
+                if (IsLineItemListing)
+                {
+                    // Fifth Column : Start Date
+                    headobj = new PlanHead();
+                    headobj.type = "dhxCalendar";
+                    headobj.align = "center";
+                    headobj.id = "startdate";
+                    headobj.sort = "date";
+                    headobj.width = 110;
+                    headobj.value = "Start Date";
+                    headobjlist.Add(headobj);
 
-                // Sixth Column : End Date
-                headobj = new PlanHead();
-                headobj.type = "dhxCalendar";
-                headobj.align = "center";
-                headobj.id = "enddate";
-                headobj.sort = "date";
-                headobj.width = 100;
-                headobj.value = "End Date";
-                headobjlist.Add(headobj);
-
+                    // Sixth Column : End Date
+                    headobj = new PlanHead();
+                    headobj.type = "dhxCalendar";
+                    headobj.align = "center";
+                    headobj.id = "enddate";
+                    headobj.sort = "date";
+                    headobj.width = 100;
+                    headobj.value = "End Date";
+                    headobjlist.Add(headobj);
+                }
                 // Seventh Column: Planned Cost
                 headobj = new PlanHead();
                 headobj.type = "ron";
@@ -13748,35 +13755,37 @@ namespace RevenuePlanner.Controllers
                 headobj.options = lstOwner;
                 headobjlist.Add(headobj);
 
-                // Tenth Column : Target Stage Goal
-                headobj = new PlanHead();
-                headobj.type = "ron";
-                headobj.align = "center";
-                headobj.id = "inq";
-                headobj.sort = "int";
-                headobj.width = 150;
-                headobj.value = "Target Stage Goal";
-                headobjlist.Add(headobj);
+                if (IsLineItemListing)
+                {
+                    // Tenth Column : Target Stage Goal
+                    headobj = new PlanHead();
+                    headobj.type = "ron";
+                    headobj.align = "center";
+                    headobj.id = "inq";
+                    headobj.sort = "int";
+                    headobj.width = 150;
+                    headobj.value = "Target Stage Goal";
+                    headobjlist.Add(headobj);
 
-                // Eleventh Column: MQl
-                headobj = new PlanHead();
-                headobj.type = "ron";
-                headobj.align = "center";
-                headobj.id = "mql";
-                headobj.sort = "int";
-                headobj.width = 150;
-                headobj.value = MQLTitle;
-                headobjlist.Add(headobj);
-                // Twelveth Column : Revenue
-                headobj = new PlanHead();
-                headobj.type = "ron";
-                headobj.align = "center";
-                headobj.id = "revenue";
-                headobj.sort = "int";
-                headobj.width = 150;
-                headobj.value = "Revenue";
-                headobjlist.Add(headobj);
-
+                    // Eleventh Column: MQl
+                    headobj = new PlanHead();
+                    headobj.type = "ron";
+                    headobj.align = "center";
+                    headobj.id = "mql";
+                    headobj.sort = "int";
+                    headobj.width = 150;
+                    headobj.value = MQLTitle;
+                    headobjlist.Add(headobj);
+                    // Twelveth Column : Revenue
+                    headobj = new PlanHead();
+                    headobj.type = "ron";
+                    headobj.align = "center";
+                    headobj.id = "revenue";
+                    headobj.sort = "int";
+                    headobj.width = 150;
+                    headobj.value = "Revenue";
+                    headobjlist.Add(headobj);
+                }
             }
             catch (Exception objException)
             {
@@ -13925,7 +13934,7 @@ namespace RevenuePlanner.Controllers
                     Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcptobjw => pcptobjw.PlanTacticId.Equals(id)).FirstOrDefault();
                     List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
                     double totalLineitemCost = 0;
-                    double otherLineItemCost = 0,tacticCost=0;
+                    double otherLineItemCost = 0, tacticCost = 0;
                     int linkedTacticId = 0;
                     Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
                     linkedTacticId = (pcpobj != null && pcpobj.LinkedTacticId.HasValue) ? pcpobj.LinkedTacticId.Value : 0;
@@ -14108,7 +14117,7 @@ namespace RevenuePlanner.Controllers
                             UpdateTacticPlannedCost(ref pcpobj, ref linkedTactic, ref totalLineitemCost, Cost.ToString(), tblTacticLineItem, linkedTacticId, yearDiff);
 
                         }
-                        
+
                         if (linkedTacticId > 0 && tactictypeid > 0)
                         {
                             int destModelId = linkedTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId;
@@ -14410,7 +14419,7 @@ namespace RevenuePlanner.Controllers
                                                                     ((pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpobj.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
                                                                      : pcpobj.Cost;
                     }
-                    return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost, OwnerName = OwnerName,TacticCost=tacticCost }, JsonRequestBehavior.AllowGet);
+                    return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost, OwnerName = OwnerName, TacticCost = tacticCost }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
                 #region update program detail
@@ -15131,154 +15140,154 @@ namespace RevenuePlanner.Controllers
 
         public void UpdateTacticPlannedCost(ref Plan_Campaign_Program_Tactic pcpobj, ref Plan_Campaign_Program_Tactic linkedTactic, ref double totalLineitemCost, string UpdateVal, List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem, int linkedTacticId = 0, int yearDiff = 0)
         {
-         
+
             try
             {
                 if (tblTacticLineItem == null)
                     tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                if(pcpobj == null)
+                if (pcpobj == null)
                     return;
                 int id = pcpobj.PlanTacticId;
                 if ((db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == id).ToList()).Count() == 0 ||
                                     pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
                                     || pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
-                        {
-                            pcpobj.Cost = Convert.ToDouble(UpdateVal);
-                        }
-                        if (linkedTacticId > 0)
-                        {
-                            linkedTactic.Cost = pcpobj.Cost;
-                        }
+                {
+                    pcpobj.Cost = Convert.ToDouble(UpdateVal);
+                }
+                if (linkedTacticId > 0)
+                {
+                    linkedTactic.Cost = pcpobj.Cost;
+                }
 
-                        
-                        List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
-                        var lineitemidlist = objtotalLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
-                        List<Plan_Campaign_Program_Tactic_LineItem_Cost> lineitemcostlist = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lic => lineitemidlist.Contains(lic.PlanLineItemId)).ToList();
 
-                        if (objtotalLineitemCost != null && objtotalLineitemCost.Count() > 0)
-                            totalLineitemCost = objtotalLineitemCost.Sum(l => l.Cost);
-                        if (totalLineitemCost > Convert.ToDouble(UpdateVal))
+                List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
+                var lineitemidlist = objtotalLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
+                List<Plan_Campaign_Program_Tactic_LineItem_Cost> lineitemcostlist = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lic => lineitemidlist.Contains(lic.PlanLineItemId)).ToList();
+
+                if (objtotalLineitemCost != null && objtotalLineitemCost.Count() > 0)
+                    totalLineitemCost = objtotalLineitemCost.Sum(l => l.Cost);
+                if (totalLineitemCost > Convert.ToDouble(UpdateVal))
+                {
+                    // Added by Viral Kadiya for Pl ticket #1970.
+                    string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                    //return Json(new { IsError = true, errormsg = strReduceTacticPlannedCostMessage });
+                    //UpdateVal = totalLineitemCost.ToString();
+                }
+                if (Convert.ToDouble(UpdateVal) > pcpobj.Cost)
+                {
+                    var diffcost = Convert.ToDouble(UpdateVal) - pcpobj.Cost;
+                    int startmonth = pcpobj.StartDate.Month;
+
+                    if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
+                    {
+                        pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
+                    }
+                    else
+                    {
+                        Plan_Campaign_Program_Tactic_Cost objTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                        objTacticCost.PlanTacticId = pcpobj.PlanTacticId;
+                        objTacticCost.Period = PeriodChar + startmonth;
+                        objTacticCost.Value = diffcost;
+                        objTacticCost.CreatedBy = Sessions.User.UserId;
+                        objTacticCost.CreatedDate = DateTime.Now;
+                        db.Entry(objTacticCost).State = EntityState.Added;
+                    }
+                    //Add linked Tactic TacticCost data
+                    if (linkedTacticId > 0)
+                    {
+                        if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
                         {
-                            // Added by Viral Kadiya for Pl ticket #1970.
-                            string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
-                            //return Json(new { IsError = true, errormsg = strReduceTacticPlannedCostMessage });
-                            //UpdateVal = totalLineitemCost.ToString();
+                            linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
                         }
-                        if (Convert.ToDouble(UpdateVal) > pcpobj.Cost)
+                        else
                         {
-                            var diffcost = Convert.ToDouble(UpdateVal) - pcpobj.Cost;
-                            int startmonth = pcpobj.StartDate.Month;
-
-                            if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
+                            Plan_Campaign_Program_Tactic_Cost lnkTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                            lnkTacticCost.PlanTacticId = linkedTacticId;
+                            lnkTacticCost.Period = PeriodChar + startmonth;
+                            lnkTacticCost.Value = diffcost;
+                            lnkTacticCost.CreatedBy = Sessions.User.UserId;
+                            lnkTacticCost.CreatedDate = DateTime.Now;
+                            db.Entry(lnkTacticCost).State = EntityState.Added;
+                        }
+                    }
+                }
+                else if (Convert.ToDouble(UpdateVal) < pcpobj.Cost)
+                {
+                    var diffcost = pcpobj.Cost - Convert.ToDouble(UpdateVal);
+                    double diffLinkCost = diffcost;
+                    int endmonth = 12 * (yearDiff + 1);
+                    while (diffcost > 0 && endmonth != 0)
+                    {
+                        if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
+                        {
+                            double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
+                            double objtacticcost = pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
+                            var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
+                            if (DiffMonthCost > 0)
                             {
-                                pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
-                            }
-                            else
-                            {
-                                Plan_Campaign_Program_Tactic_Cost objTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                objTacticCost.PlanTacticId = pcpobj.PlanTacticId;
-                                objTacticCost.Period = PeriodChar + startmonth;
-                                objTacticCost.Value = diffcost;
-                                objTacticCost.CreatedBy = Sessions.User.UserId;
-                                objTacticCost.CreatedDate = DateTime.Now;
-                                db.Entry(objTacticCost).State = EntityState.Added;
-                            }
-                            //Add linked Tactic TacticCost data
-                            if (linkedTacticId > 0)
-                            {
-                                if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
+                                if (DiffMonthCost > diffcost)
                                 {
-                                    linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
+                                    pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
+                                    diffcost = 0;
                                 }
                                 else
                                 {
-                                    Plan_Campaign_Program_Tactic_Cost lnkTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                    lnkTacticCost.PlanTacticId = linkedTacticId;
-                                    lnkTacticCost.Period = PeriodChar + startmonth;
-                                    lnkTacticCost.Value = diffcost;
-                                    lnkTacticCost.CreatedBy = Sessions.User.UserId;
-                                    lnkTacticCost.CreatedDate = DateTime.Now;
-                                    db.Entry(lnkTacticCost).State = EntityState.Added;
+                                    pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
+                                    diffcost = diffcost - DiffMonthCost;
                                 }
                             }
                         }
-                        else if (Convert.ToDouble(UpdateVal) < pcpobj.Cost)
-                        {
-                            var diffcost = pcpobj.Cost - Convert.ToDouble(UpdateVal);
-                            double diffLinkCost = diffcost;
-                            int endmonth = 12 * (yearDiff + 1);
-                            while (diffcost > 0 && endmonth != 0)
-                            {
-                                if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
-                                {
-                                    double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
-                                    double objtacticcost = pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
-                                    var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
-                                    if (DiffMonthCost > 0)
-                                    {
-                                        if (DiffMonthCost > diffcost)
-                                        {
-                                            pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
-                                            diffcost = 0;
-                                        }
-                                        else
-                                        {
-                                            pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
-                                            diffcost = diffcost - DiffMonthCost;
-                                        }
-                                    }
-                                }
-                                if (linkedTacticId > 0)
-                                {
-                                    if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
-                                    {
-                                        double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
-                                        double objtacticcost = linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
-                                        var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
-                                        if (DiffMonthCost > 0)
-                                        {
-                                            if (DiffMonthCost > diffLinkCost)
-                                            {
-                                                linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffLinkCost;
-                                                diffLinkCost = 0;
-                                            }
-                                            else
-                                            {
-                                                linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
-                                                diffLinkCost = diffLinkCost - DiffMonthCost;
-                                            }
-                                        }
-                                    }
-                                }
-                                if (endmonth > 0)
-                                {
-                                    endmonth -= 1;
-                                }
-
-                            }
-
-                        }
-
-                        pcpobj.Cost = Convert.ToDouble(UpdateVal);
-                        // update linked tactic cost value.
                         if (linkedTacticId > 0)
                         {
-                            yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
-                            //linkedTactic.Cost = pcpobj.Cost;
-                            List<Plan_Campaign_Program_Tactic_Cost> lstLinkeTac = new List<Plan_Campaign_Program_Tactic_Cost>();
-                            if (yearDiff > 0) // is MultiYear Tactic
+                            if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
                             {
-                                lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId).ToList();
-                                lstLinkeTac = lstLinkeTac.Where(per => per.PlanTacticId == linkedTacticId && Convert.ToInt32(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
-                                //lstLinkeTac = lstLinkeTac.Where(per => per.PlanTacticId == linkedTacticId && int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
-                            }
-                            else
-                                lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId).ToList();
-                            if (lstLinkeTac != null && lstLinkeTac.Count > 0)
-                            {
-                                linkedTactic.Cost = lstLinkeTac.Sum(tac => tac.Value);
+                                double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
+                                double objtacticcost = linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
+                                var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
+                                if (DiffMonthCost > 0)
+                                {
+                                    if (DiffMonthCost > diffLinkCost)
+                                    {
+                                        linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffLinkCost;
+                                        diffLinkCost = 0;
+                                    }
+                                    else
+                                    {
+                                        linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
+                                        diffLinkCost = diffLinkCost - DiffMonthCost;
+                                    }
+                                }
                             }
                         }
+                        if (endmonth > 0)
+                        {
+                            endmonth -= 1;
+                        }
+
+                    }
+
+                }
+
+                pcpobj.Cost = Convert.ToDouble(UpdateVal);
+                // update linked tactic cost value.
+                if (linkedTacticId > 0)
+                {
+                    yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
+                    //linkedTactic.Cost = pcpobj.Cost;
+                    List<Plan_Campaign_Program_Tactic_Cost> lstLinkeTac = new List<Plan_Campaign_Program_Tactic_Cost>();
+                    if (yearDiff > 0) // is MultiYear Tactic
+                    {
+                        lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId).ToList();
+                        lstLinkeTac = lstLinkeTac.Where(per => per.PlanTacticId == linkedTacticId && Convert.ToInt32(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
+                        //lstLinkeTac = lstLinkeTac.Where(per => per.PlanTacticId == linkedTacticId && int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
+                    }
+                    else
+                        lstLinkeTac = db.Plan_Campaign_Program_Tactic_Cost.Where(per => per.PlanTacticId == linkedTacticId).ToList();
+                    if (lstLinkeTac != null && lstLinkeTac.Count > 0)
+                    {
+                        linkedTactic.Cost = lstLinkeTac.Sum(tac => tac.Value);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -16818,7 +16827,7 @@ namespace RevenuePlanner.Controllers
             {
                 return Json(new { isSuccess = true, redirect = Url.Action("Index"), msg = Common.objCached.LinkEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), clonetype = CloneType, opt = Enums.InspectPopupRequestedModules.Index.ToString(), Id = srcEntityId, sourceEntityHtmlDecodedTitle = sourceEntityHtmlDecodedTitle, destPlanTitle = destPlanTitle }, JsonRequestBehavior.AllowGet);
             }
-            return Json(new { msg = Common.objCached.LinkEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), isSuccess = true, opt = "",clonetype = CloneType, sourceEntityHtmlDecodedTitle = sourceEntityHtmlDecodedTitle, destPlanTitle = destPlanTitle }, JsonRequestBehavior.AllowGet);
+            return Json(new { msg = Common.objCached.LinkEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), isSuccess = true, opt = "", clonetype = CloneType, sourceEntityHtmlDecodedTitle = sourceEntityHtmlDecodedTitle, destPlanTitle = destPlanTitle }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -17302,7 +17311,7 @@ namespace RevenuePlanner.Controllers
             //var useridslist = dtCSV.Rows.Cast<DataRow>().Select(x => Guid.Parse(x.Field<string>("CreatedBy"))).ToList();
             //string strContatedIndividualList = string.Join(",", useridslist.Select(tactic => tactic.ToString()));
 
-            var listOfClientId =  objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+            var listOfClientId = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
             stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
             string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
             ViewBag.MQLTitle = MQLTitle;
@@ -17360,7 +17369,7 @@ namespace RevenuePlanner.Controllers
                                                         }).ToList();
             if (HoneycombIds == null)
             {
-            CalculateTacticCostRevenue(modelId, TacticIds, progTactic, PlanId);
+                CalculateTacticCostRevenue(modelId, TacticIds, progTactic, PlanId);
             }
             else
             {
@@ -17402,7 +17411,7 @@ namespace RevenuePlanner.Controllers
 
                 }
             }
-            
+
             var FilterTacticIds = progTactic.Select(a => a.PlanTacticId).ToList();
             if (HoneycombIds != null)
             {
@@ -17464,7 +17473,7 @@ namespace RevenuePlanner.Controllers
 
                         if (CheckRecordExist.Count == 0)
                         {
-                           
+
                             var items = GetTopLevelRows(dtCSV, MinParentId, MinSection)
                                     .Select(row => CreateItem(dtCSV, row, columnNames, dtTable, listOfClientId, PlanTacticIds))
                                     .ToList();
@@ -17476,89 +17485,89 @@ namespace RevenuePlanner.Controllers
             else
             {
                 #region Default Hireachy
-            for (int plan = 0; plan < PlanList.Count; plan++)
-            {
-                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
-                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
-
-                DataRow[] dr = dtCSV.Select("EntityId = " + PlanList[plan] + "AND Section = '" + Enums.Section.Plan.ToString() + "'");
-
-                OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
-                var CampList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Campaign.ToString()
-                    && int.Parse(x.Field<string>("ParentId")) == PlanList[plan]).OrderBy(x => x.Field<string>("Campaign")).Select(x => x.Field<int>("EntityId")).ToList();
-
-                var PlanProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
-                      && CampList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => x.Field<int>("EntityId")).ToList();
-
-                var PlanTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                               && PlanProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
-
-                totalPlannedCostCSV = PlanTacticCostlist.Sum();
-
-                DataRowsInsert(dr, dtTable, columnNames);
-
-                for (int camp = 0; camp < CampList.Count; camp++)
+                for (int plan = 0; plan < PlanList.Count; plan++)
                 {
-                    totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.MQL) : 0;
-                    totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.Revenue) : 0;
+                    totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
+                    totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
 
-                    var ProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
-                       && int.Parse(x.Field<string>("ParentId")) == CampList[camp]).OrderBy(x => x.Field<string>("Program")).Select(x => x.Field<int>("EntityId")).ToList();
+                    DataRow[] dr = dtCSV.Select("EntityId = " + PlanList[plan] + "AND Section = '" + Enums.Section.Plan.ToString() + "'");
 
-                    var CampTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                                   && ProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
-
-                    totalPlannedCostCSV = CampTacticCostlist.Sum();
-
-                    dr = dtCSV.Select("EntityId = " + CampList[camp] + "AND Section ='" + Enums.Section.Campaign.ToString() + "'");
                     OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
+                    var CampList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Campaign.ToString()
+                        && int.Parse(x.Field<string>("ParentId")) == PlanList[plan]).OrderBy(x => x.Field<string>("Campaign")).Select(x => x.Field<int>("EntityId")).ToList();
+
+                    var PlanProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
+                          && CampList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => x.Field<int>("EntityId")).ToList();
+
+                    var PlanTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                                   && PlanProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
+
+                    totalPlannedCostCSV = PlanTacticCostlist.Sum();
+
                     DataRowsInsert(dr, dtTable, columnNames);
 
-                    for (int prog = 0; prog < ProgramList.Count; prog++)
+                    for (int camp = 0; camp < CampList.Count; camp++)
                     {
-                        totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.MQL) : 0;
-                        totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.Revenue) : 0;
+                        totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.MQL) : 0;
+                        totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.Revenue) : 0;
 
-                        var ProgTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                                   && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
-                        totalPlannedCostCSV = ProgTacticCostlist.Sum();
+                        var ProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
+                           && int.Parse(x.Field<string>("ParentId")) == CampList[camp]).OrderBy(x => x.Field<string>("Program")).Select(x => x.Field<int>("EntityId")).ToList();
 
-                        dr = dtCSV.Select("EntityId = " + ProgramList[prog] + "AND Section = '" + Enums.Section.Program.ToString() + "'");
+                        var CampTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                                       && ProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
+
+                        totalPlannedCostCSV = CampTacticCostlist.Sum();
+
+                        dr = dtCSV.Select("EntityId = " + CampList[camp] + "AND Section ='" + Enums.Section.Campaign.ToString() + "'");
                         OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
                         DataRowsInsert(dr, dtTable, columnNames);
 
-                        var TacticList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                            && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).OrderBy(x => x.Field<string>("Tactic")).Select(x => x.Field<int>("EntityId")).ToList();
-
-                        for (int Tac = 0; Tac < TacticList.Count; Tac++)
+                        for (int prog = 0; prog < ProgramList.Count; prog++)
                         {
-                            if (FilterTacticIds.Contains(TacticList[Tac]))
-                            {
-                                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.MQL) : 0;
-                                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.Revenue) : 0;
-                                dr = dtCSV.Select("EntityId = " + TacticList[Tac] + "AND Section = '" + Enums.Section.Tactic.ToString() + "'");
-                                totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
-                                OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
-                                DataRowsInsert(dr, dtTable, columnNames);
-                                
-                                var LineitemList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.LineItem.ToString()
-                                    && int.Parse(x.Field<string>("ParentId")) == TacticList[Tac]).OrderBy(x => x.Field<string>("LineItem")).Select(x => x.Field<int>("EntityId")).ToList();
+                            totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.MQL) : 0;
+                            totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.Revenue) : 0;
 
-                                for (int line = 0; line < LineitemList.Count; line++)
+                            var ProgTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                                       && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
+                            totalPlannedCostCSV = ProgTacticCostlist.Sum();
+
+                            dr = dtCSV.Select("EntityId = " + ProgramList[prog] + "AND Section = '" + Enums.Section.Program.ToString() + "'");
+                            OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
+                            DataRowsInsert(dr, dtTable, columnNames);
+
+                            var TacticList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                                && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).OrderBy(x => x.Field<string>("Tactic")).Select(x => x.Field<int>("EntityId")).ToList();
+
+                            for (int Tac = 0; Tac < TacticList.Count; Tac++)
+                            {
+                                if (FilterTacticIds.Contains(TacticList[Tac]))
                                 {
-                                    totalmqlCSV = 0;
-                                    totalrevenueCSV = 0;
-                                    dr = dtCSV.Select("EntityId = " + LineitemList[line] + "AND Section = '" + Enums.Section.LineItem.ToString() + "'");
+                                    totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.MQL) : 0;
+                                    totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.Revenue) : 0;
+                                    dr = dtCSV.Select("EntityId = " + TacticList[Tac] + "AND Section = '" + Enums.Section.Tactic.ToString() + "'");
                                     totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
                                     OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
                                     DataRowsInsert(dr, dtTable, columnNames);
+
+                                    var LineitemList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.LineItem.ToString()
+                                        && int.Parse(x.Field<string>("ParentId")) == TacticList[Tac]).OrderBy(x => x.Field<string>("LineItem")).Select(x => x.Field<int>("EntityId")).ToList();
+
+                                    for (int line = 0; line < LineitemList.Count; line++)
+                                    {
+                                        totalmqlCSV = 0;
+                                        totalrevenueCSV = 0;
+                                        dr = dtCSV.Select("EntityId = " + LineitemList[line] + "AND Section = '" + Enums.Section.LineItem.ToString() + "'");
+                                        totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
+                                        OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
+                                        DataRowsInsert(dr, dtTable, columnNames);
+                                    }
                                 }
                             }
                         }
-                    }
 
+                    }
                 }
-            }
                 #endregion
             }
             dtTable.Columns.Remove(Enums.DownloadCSV.EntityId.ToString());
@@ -17582,57 +17591,57 @@ namespace RevenuePlanner.Controllers
                 {
                     if (dr[i].Table.Columns.Contains(columns[j].ToString()))
                     {
-                    string MqlColName = Convert.ToString(ViewBag.MQLTitle);
-                    ViewBag.MQLTitle = MqlColName;
-
-                    if (columns[j].ToString() == MqlColName)
-                    {
-                        if (!string.IsNullOrEmpty(Convert.ToString(row[columns["Lineitem"].ToString()])))
-                        {
-                            row[columns[j].ToString()] = "--";
-                        }
-                        else
-                        {
-                            row[columns[j].ToString()] = totalmqlCSV;
-                        }
-                    }
-                    else if (columns[j].ToString() == Enums.DownloadCSV.Revenue.ToString())
-                    {
-                        if (!string.IsNullOrEmpty(Convert.ToString(row[columns["Lineitem"].ToString()])))
-                        {
-                            row[columns[j].ToString()] = "--";
-                        }
-                        else
-                        {
-                            row[columns[j].ToString()] = "$" + totalrevenueCSV;
-                        }
-                    }
-                    else if (columns[j].ToString() == Enums.DownloadCSV.Owner.ToString())
-                    {
-                        row[columns[j].ToString()] = OwnerNameCsv;
-                    }
-                    else if (columns[j].ToString() == Enums.DownloadCSV.PlannedCost.ToString())
-                    {
-                        row[columns[j].ToString()] = "$" + totalPlannedCostCSV;
-                    }
-                    else if (columns[j].ToString() == Enums.DownloadCSV.EndDate.ToString())
-                    {
-                        string EndDate = Convert.ToString(dr[i][columns[j].ToString()]).Split(';').LastOrDefault();
-                        row[columns[j].ToString()] = EndDate;
-                    }
-                    else
-                    {
+                        string MqlColName = Convert.ToString(ViewBag.MQLTitle);
+                        ViewBag.MQLTitle = MqlColName;
 
                         if (columns[j].ToString() == MqlColName)
                         {
-                            row[MqlColName] = Convert.ToString(dr[i][Enums.DownloadCSV.MQL.ToString()]);
+                            if (!string.IsNullOrEmpty(Convert.ToString(row[columns["Lineitem"].ToString()])))
+                            {
+                                row[columns[j].ToString()] = "--";
+                            }
+                            else
+                            {
+                                row[columns[j].ToString()] = totalmqlCSV;
+                            }
+                        }
+                        else if (columns[j].ToString() == Enums.DownloadCSV.Revenue.ToString())
+                        {
+                            if (!string.IsNullOrEmpty(Convert.ToString(row[columns["Lineitem"].ToString()])))
+                            {
+                                row[columns[j].ToString()] = "--";
+                            }
+                            else
+                            {
+                                row[columns[j].ToString()] = "$" + totalrevenueCSV;
+                            }
+                        }
+                        else if (columns[j].ToString() == Enums.DownloadCSV.Owner.ToString())
+                        {
+                            row[columns[j].ToString()] = OwnerNameCsv;
+                        }
+                        else if (columns[j].ToString() == Enums.DownloadCSV.PlannedCost.ToString())
+                        {
+                            row[columns[j].ToString()] = "$" + totalPlannedCostCSV;
+                        }
+                        else if (columns[j].ToString() == Enums.DownloadCSV.EndDate.ToString())
+                        {
+                            string EndDate = Convert.ToString(dr[i][columns[j].ToString()]).Split(';').LastOrDefault();
+                            row[columns[j].ToString()] = EndDate;
                         }
                         else
                         {
-                            row[columns[j].ToString()] = Convert.ToString(dr[i][columns[j].ToString()]);
+
+                            if (columns[j].ToString() == MqlColName)
+                            {
+                                row[MqlColName] = Convert.ToString(dr[i][Enums.DownloadCSV.MQL.ToString()]);
+                            }
+                            else
+                            {
+                                row[columns[j].ToString()] = Convert.ToString(dr[i][columns[j].ToString()]);
+                            }
                         }
                     }
-                }
                     else
                     {
                         row[columns[j].ToString()] = Convert.ToString(DBNull.Value);
@@ -17642,7 +17651,7 @@ namespace RevenuePlanner.Controllers
                 dt.AcceptChanges();
             }
         }
-        
+
         private string HtmlDecodeString(string source)
         {
             source = source.Replace("&amp;", "&");

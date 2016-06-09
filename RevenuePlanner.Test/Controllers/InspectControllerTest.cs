@@ -1081,6 +1081,35 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
+        #region Load Line Item Grid in Tactic Inspect Popup
+        /// To Load Line Item Grid in Tactic Inspect Popup
+        /// <author>Arpita Soni</author>
+        /// <createdDate>09Jun2016</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void LoadLineItemTabFromTacticPopup()
+        {
+            Console.WriteLine("To Load Line Item Grid in Tactic Inspect Popup.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController controller = new InspectController();
+            Guid UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).UserId;
+            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
+                            Select(tac => tac.PlanTacticId).FirstOrDefault();
+
+            var result = controller.LoadLineItemTabFromTacticPopup(tacticId) as PartialViewResult;
+            if (result != null)
+            {
+                Assert.AreEqual("_TacticLineItemListing", result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+        }
+        #endregion
+
         #endregion
 
         #region Improvement Tactic Related Methods

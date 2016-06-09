@@ -223,6 +223,11 @@
                         <a>Budget</a>
                     </li>
                 }*@
+                <!-- Added by Arpita Soni for Ticket #2237 on 06/09/2016 -->
+                <li class="pull-left" id="liLine_Items">
+                    <a>Line_Items</a>
+                </li>
+
             </ul>
             <div id="divTab">
             </div>
@@ -238,6 +243,8 @@
     var divTab = "#divTab";
     // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
     //var TabBudget = "Budget";
+    // Added by Arpita Soni for Ticket #2237 on 06/09/2016
+    var TabLineItem = "Line_Items";
     var tabtext = "";
     var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Handling add mode of inspect popup
     $(document).ready(
@@ -255,7 +262,6 @@
           var planTacticId = $("#hdnPlanTacticId").val();
           // Call Remove Tabclass
           RemoveTabClass();
-
           $("#li" + InspectValue).removeClass("pull-left");
           $("#li" + InspectValue).addClass("active pull-left");
           tabtext = ($("#li" + InspectValue).children('a').text());
@@ -273,7 +279,7 @@
           // Click on Tab Partialview Refresh Based On Selected Tab
 
           // $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
-              $("#liSetup,#liReview,#liActuals").on("click", function () {
+               $("#liSetup,#liReview,#liActuals,#liLine_Items").on("click", function () {
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
               {
@@ -433,6 +439,10 @@
 
                       }
                   }
+                  // Added by Arpita Soni for Ticket #2237 on 06/09/2016
+                  else if (activeTab == TabLineItem) {
+                          $('.close-x-big-icon').trigger('click');
+                  }
               }
 
               }
@@ -481,7 +491,10 @@
                     return false;
                 }
             }
-
+            // Added by Arpita Soni for Ticket #2237 on 06/09/2016
+            else if (activeTab = TabLineItem) {
+                    $('#InspectTab').removeClass('SpanDisable');
+            }
             else if (activeTab = TabReview) {
                 var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
 
@@ -490,6 +503,7 @@
                     return false;
                 }
             }
+            
 
         }
 
@@ -692,11 +706,19 @@
              $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
                  $('#InspectTab').removeClass('SpanDisable');
              });
-         
+         }*@
+                
+        // Added by Arpita Soni for Ticket #2237 on 06/09/2016
+        if (tabValue == TabLineItem) {
+            if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+                $('#txtTacticTitle').css('display', 'block');
+                $('#lblTacticTitle').css('display', 'none');
+            }
+            url = '@Url.Content("~/Inspect/LoadLineItemTabFromTacticPopup/")';
+            $("#divTab").load(url + '?tacticId=' + id, function (response, status, xhr) {
                 $('#InspectTab').removeClass('SpanDisable');
             });
         }
-       }*@
     }
 
     //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
@@ -1161,7 +1183,6 @@
 
     $('.proceed_btn').click(function (e) {
         var label = $('#MultiSelectProcced').attr('proccedObject').toString();
-        //alert(label);
         $('.dropdown_new_btn').each(function () {
             if ($(this).attr('label').toString() == label) {
                 var menu = $(this).parent().find('.dropdown-wrapper');

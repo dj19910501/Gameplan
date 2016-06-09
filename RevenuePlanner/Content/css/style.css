@@ -11389,7 +11389,8 @@ font-size: 20px;
 #liActuals.active > a,
 #liBudget.active > a,
 #liReview.active > a,
-#liSetup.active > a {
+#liSetup.active > a,
+#liLine_Items.active > a {
     color: #fff !important;
 }
 

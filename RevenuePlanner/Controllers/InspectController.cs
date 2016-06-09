@@ -7547,6 +7547,187 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "LineItem related Functions"
+        /// <summary>
+        /// Load line item grid in tactic inspect popup in all screens
+        /// Added by Arpita Soni for Ticket #2237 on 06/09/2016
+        /// </summary>
+        /// <param name="tacticId"></param>
+        /// <param name="ownerIds"></param>
+        /// <param name="TacticTypeid"></param>
+        /// <param name="StatusIds"></param>
+        /// <param name="customFieldIds"></param>
+        /// <param name="budgetTab"></param>
+        /// <returns>Returns partial view</returns>
+        public PartialViewResult LoadLineItemTabFromTacticPopup(int tacticId, string ownerIds = "", string TacticTypeid = "", string StatusIds = "", string customFieldIds = "", Enums.BudgetTab budgetTab = Enums.BudgetTab.Planned)
+        {
+            PlanController objPlanController = new PlanController();
+            bool IsPlanCreateAll = false;
+            bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
+            Plangrid objplangrid = new Plangrid();
+
+            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+
+            try
+            {
+                if (IsPlanCreateAllAuthorized)
+                {
+                    IsPlanCreateAll = true;
+                }
+                List<Guid> lstSubordinatesIds = new List<Guid>();
+                bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                if (IsTacticAllowForSubordinates)
+                {
+                    lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+                }
+                bool IsTacticEditable = false;
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+
+                // Generate Json Header
+                objPlanMainDHTMLXGrid.head = objPlanController.GenerateJsonHeader("", 0, null, "", false);
+
+                Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId.Equals(tacticId) && _tactic.IsDeleted.Equals(false)).FirstOrDefault();
+
+                bool IsPlan = true;
+                string type = string.Empty;
+                List<Plan_Campaign_Program_Tactic_LineItem> finalLineitem = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                string cellTextColor = string.Empty;
+                string IsEditable = string.Empty;
+
+                // Declare Variable for XML to JSON
+                List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+                PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
+
+                string lockedstateone = "1";
+                string bgcolorLineItem = "#ffffff";
+
+                string stylecolorblack = "color:#000";
+                string stylecolorgray = "color:#999"; // Add By Nishant Sheth #1987
+
+                finalLineitem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.PlanTacticId == tacticId && lineitem.IsDeleted == false).OrderBy(l => l.Title).ToList(); // Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for line item title
+
+                if (IsPlan)
+                {
+                    if (objTactic != null)
+                    {
+
+                        if (objTactic.CreatedBy.Equals(Sessions.User.UserId))
+                        {
+                            IsTacticEditable = true;
+                        }
+                        else if (IsPlanEditAllAuthorized)
+                        {
+                            IsTacticEditable = true;
+                        }
+                        else if (IsPlanEditSubordinatesAuthorized)
+                        {
+                            if (lstSubordinatesIds.Contains(objTactic.CreatedBy))
+                            {
+                                IsTacticEditable = true;
+                            }
+                        }
+
+                        if (IsPlanCreateAll == false)
+                        {
+                            if (objTactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objTactic.CreatedBy))
+                                IsPlanCreateAll = true;
+                            else
+                                IsPlanCreateAll = false;
+                        }
+
+                        if (IsPlan)
+                        {
+                            cellTextColor = IsEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
+
+                            if (finalLineitem != null && finalLineitem.Count > 0)
+                            {
+                                var lstLineItemTaskData = finalLineitem.Select((taskdata, index) => new
+                                {
+                                    index = index,
+                                    Cost = taskdata.Cost,
+                                    lineitemtype = taskdata.LineItemTypeId,
+                                    PlanLineItemId = taskdata.PlanLineItemId,
+                                    title = taskdata.Title,
+                                    Typeid = taskdata.LineItemTypeId,
+                                    Type = taskdata.LineItemTypeId != null ? taskdata.LineItemType.Title : "",
+                                    CreatedBy = taskdata.CreatedBy,
+                                    IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                                    IstactEditable = IsTacticEditable.ToString()
+                                });
+
+                                #region LineItems
+                                foreach (var lineitem in lstLineItemTaskData)
+                                {
+                                    cellTextColor = lineitem.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
+
+                                    lineitemrowsobj = new PlanDHTMLXGridDataModel();
+                                    lineitemrowsobj.id = "line." + lineitem.index;
+                                    lineitemrowsobj.bgColor = bgcolorLineItem;
+                                    List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
+                                    Plandataobj lineitemdataobj = new Plandataobj();
+
+                                    lineitemdataobj.value = "LineItem";
+                                    lineitemdataobjlist.Add(lineitemdataobj);
+
+                                    lineitemdataobj = new Plandataobj();
+                                    lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.title);
+                                    lineitemdataobj.locked = lineitem.IstactEditable;
+                                    lineitemdataobj.style = cellTextColor;
+                                    lineitemdataobjlist.Add(lineitemdataobj);
+
+                                    lineitemdataobj = new Plandataobj();
+                                    lineitemdataobj.value = "<div class=grid_Search id=LP></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Line1 onclick=javascript:OpenLineItemGridPopup(this,event) alt=" + tacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
+                                    lineitemdataobjlist.Add(lineitemdataobj);
+
+                                    lineitemdataobj = new Plandataobj();
+                                    lineitemdataobj.value = lineitem.PlanLineItemId.ToString();
+                                    lineitemdataobjlist.Add(lineitemdataobj);
+
+                                    lineitemdataobj = new Plandataobj();
+                                    lineitemdataobj.value = lineitem.Cost.ToString();
+                                    lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
+                                    lineitemdataobj.type = "edn";
+                                    lineitemdataobj.style = cellTextColor;
+                                    lineitemdataobjlist.Add(lineitemdataobj);
+
+                                    lineitemdataobj = new Plandataobj();
+                                    lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.Type);
+                                    lineitemdataobj.style = cellTextColor;
+                                    lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
+                                    lineitemdataobjlist.Add(lineitemdataobj);
+
+                                    lineitemdataobj = new Plandataobj();
+                                    lineitemdataobj.value = objPlanController.GetUserName(lineitem.CreatedBy);
+                                    lineitemdataobj.locked = lineitem.IstactEditable;
+                                    lineitemdataobj.style = cellTextColor;
+                                    lineitemdataobjlist.Add(lineitemdataobj);
+
+                                    lineitemrowsobj.data = lineitemdataobjlist;
+
+                                    Planuserdatagrid lineitemuserdata = new Planuserdatagrid();
+                                    lineitemuserdata.IsOther = ((lineitem.Type == null || lineitem.Type == "") ? true : false).ToString();
+                                    lineitemrowsobj.userdata = lineitemuserdata;
+
+                                    lineitemrowsobjlist.Add(lineitemrowsobj);
+                                }
+                                #endregion
+                            }
+                        }
+                    }
+                    objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
+                    objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
+
+                    var lstLineItemType = db.LineItemTypes.Where(litemtype => litemtype.ModelId == objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
+                    TempData["lineItemTypes"] = lstLineItemType;
+                }
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+            }
+            return PartialView("_TacticLineItemListing", objplangrid);
+        }
 
         /// <summary>
         /// Save Line item Actual 
@@ -11441,10 +11622,11 @@ namespace RevenuePlanner.Controllers
                                   OwnerId = pcpt.CreatedBy,
                                   //Modified By : Kalpesh Sharma #864 Add Actuals: Unable to update actuals % 864_Actuals.jpg %
                                   // If tactic has a line item at that time we have consider Project cost as sum of all the active line items
+                                  // Modified by Arpita Soni for Ticket #2237 on 06/09/2016
                                   Cost = (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Count() > 0
                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
                                    ?
-                                   (budgetAllocation > 0 ? budgetAllocation : (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
+                                   (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost)
                                     : pcpt.Cost,
                                   StartDate = pcpt.StartDate,
                                   EndDate = pcpt.EndDate,

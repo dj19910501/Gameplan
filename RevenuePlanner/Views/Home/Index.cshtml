@@ -2167,7 +2167,6 @@
             GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, ID); //Modified by Nishant Sheth for perfomance to make it call only for grid view
 
         }
-   
         // Add by Nishant Sheth
         // Desc:: To resolve the header data issue
         // Modified By Nishant Sheth Desc header value wrong with plan tab
@@ -2175,8 +2174,6 @@
         // Desc :: For performance issue
         //GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, $(this).attr('id'));
         GetNumberOfActivityPerMonByPlanIdPer(filters.SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, ID); //Added BY Komal rawal for #1929 proper Hud chart and count
-
-       
     };
 
     //End
@@ -3656,7 +3653,6 @@
                         htmltestdiv += '</p>';
                     }
                 }
-                //alert(id.substring(sl + 1, sl.length));
             });
 
 
@@ -3829,7 +3825,6 @@
             var headerhtml = $("#testdiv").html();
             //var Script = "<script>" + "$(document).ready(function () {  $('div').find('[task_id='L10874']').css('background-color','rgb(202, 60, 206)'); });" + "<//script>";
             var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
-            //alert(Script);
             var datestart;
             var dateend;
             if ($.isNumeric(isQuater)) {
@@ -4638,7 +4633,6 @@
 
         GetTacticTypelist(planids);
         GetOwnerListForFilter(planids);
-        //  alert($('#FilterName').val());
         GetLastSetofViews($('#FilterName').val());
 
         if ($('#IsGridView').val() == "True") {
@@ -5269,7 +5263,6 @@
                 },
                 dataType: "json",
                 success: function (data) {
-                    //alert('');
                     // Add By Nishant Sheth
                     // Desc :: To get header values with cache object
                     //GetHealderDataPer(Planid.toString(), CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(),CalendarId);
