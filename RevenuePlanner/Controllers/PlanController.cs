@@ -6739,7 +6739,7 @@ namespace RevenuePlanner.Controllers
             {
                 PlanId = Sessions.PlanId;
             }
-            ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
+            ViewBag.ActiveMenu = Enums.ActiveMenu.Finance;
             HomePlanModel planmodel = new Models.HomePlanModel();
             try
             {
