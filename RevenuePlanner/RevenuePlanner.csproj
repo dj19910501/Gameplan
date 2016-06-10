@@ -671,14 +671,26 @@
     <Content Include="Content\fonts\ProximaNova-Regular.ttf" />
     <Content Include="Content\fonts\ProximaNova-Regular.woff" />
     <Content Include="Content\fonts\ProximaNova-Regular.woff2" />
-    <None Include="Service References\BDSService\BDSService.disco" />
-    <None Include="Service References\BDSService\configuration91.svcinfo" />
-    <None Include="Service References\BDSService\configuration.svcinfo" />
-    <None Include="Service References\BDSService\Reference.svcmap">
+    <Content Include="Scripts\moment.min.js" />
+    <Content Include="Integration.BDSService.ApplicationActivity.datasource" />
+    <Content Include="Integration.BDSService.Client.datasource" />
+    <Content Include="Integration.BDSService.ClientDatabase.datasource" />
+    <Content Include="Integration.BDSService.CustomRestriction.datasource" />
+    <Content Include="Integration.BDSService.Menu.datasource" />
+    <Content Include="Integration.BDSService.PasswordResetRequest.datasource" />
+    <Content Include="Integration.BDSService.Permission.datasource" />
+    <Content Include="Integration.BDSService.Role.datasource" />
+    <Content Include="Integration.BDSService.SecurityQuestion.datasource" />
+    <Content Include="Integration.BDSService.User.datasource" />
+    <Content Include="Integration.BDSService.UserApplicationPermission.datasource" />
+    <Content Include="Integration.BDSService.UserHierarchy.datasource" />
+    <Content Include="Service References\BDSService\BDSService.disco" />
+    <Content Include="Service References\BDSService\configuration91.svcinfo" />
+    <Content Include="Service References\BDSService\configuration.svcinfo" />
+    <Content Include="Service References\BDSService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <Content Include="Scripts\moment.min.js" />
+    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -880,7 +892,10 @@
     <Content Include="Views\Shared\_DefaultViewFilters.cshtml" />
     <Content Include="Views\ExternalService\_PullSalesforceMQL.cshtml" />
     <Content Include="Views\ExternalService\_DataMapping-PullData.cshtml" />
-    <None Include="Service References\BDSService\BDSService.wsdl" />
+    <Content Include="Views\ExternalService\MarketoFolder.cshtml" />
+    <Content Include="Views\ExternalService\_MarketoFolderPlanList.cshtml" />
+    <Content Include="Views\Inspect\_TacticLineItemListing.cshtml" />
+    <Content Include="Service References\BDSService\BDSService.wsdl" />
     <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -932,9 +947,6 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
-    <Content Include="Views\ExternalService\MarketoFolder.cshtml" />
-    <Content Include="Views\ExternalService\_MarketoFolderPlanList.cshtml" />
-    <Content Include="Views\Inspect\_TacticLineItemListing.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>
@@ -952,9 +964,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadataStorage Include="Service References\BDSService\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{c7aa3463-8e84-4280-a893-c6e7d38ea8d2}</Project>
       <Name>Entities</Name>
@@ -963,6 +972,9 @@
       <Project>{b312ef9a-c33a-4e44-8bd6-b141080302e0}</Project>
       <Name>Integration</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\BDSService\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
