@@ -13294,4 +13294,2191 @@ END
 
 GO
 
+--- START: PL ticket #2251 related SPs & Functions --------------------
+-- Created By: Viral 
+-- Created On: 06/10/2016
+-- Description: PL ticket #2251: Prepared Data before push to SFDC through Integration Web API.
+
+/****** Object:  StoredProcedure [dbo].[spGetSalesforceMarketo3WayData]    Script Date: 06/10/2016 11:02:02 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGetSalesforceMarketo3WayData]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[spGetSalesforceMarketo3WayData]
 GO
+/****** Object:  StoredProcedure [dbo].[spGetSalesforceData]    Script Date: 06/10/2016 11:02:02 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGetSalesforceData]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[spGetSalesforceData]
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetTacticActualCostMappingData]    Script Date: 06/10/2016 11:02:02 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetTacticActualCostMappingData]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+DROP FUNCTION [dbo].[GetTacticActualCostMappingData]
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetSFDCTacticResultColumns]    Script Date: 06/10/2016 11:02:02 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSFDCTacticResultColumns]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+DROP FUNCTION [dbo].[GetSFDCTacticResultColumns]
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetSFDCSourceTargetMappingData_Marketo3Way]    Script Date: 06/10/2016 11:02:02 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSFDCSourceTargetMappingData_Marketo3Way]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+DROP FUNCTION [dbo].[GetSFDCSourceTargetMappingData_Marketo3Way]
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetSFDCSourceTargetMappingData]    Script Date: 06/10/2016 11:02:02 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSFDCSourceTargetMappingData]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+DROP FUNCTION [dbo].[GetSFDCSourceTargetMappingData]
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetSFDCSourceTargetMappingData]    Script Date: 06/10/2016 11:02:02 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSFDCSourceTargetMappingData]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+BEGIN
+execute dbo.sp_executesql @statement = N'CREATE FUNCTION [dbo].[GetSFDCSourceTargetMappingData]
+(
+	@entityType varchar(255)='''',
+	@clientId uniqueidentifier,
+	@EntityIds varchar(max)='''',
+	@integrationTypeId int,
+	@id int=0,
+	@SFDClength int=255,	-- default value 255
+	@isCustomNameAllow bit =''0'',
+	@isClientAllowCustomName bit =''0''
+)
+
+--SELECT * from  [GetSFDCSourceTargetMappingData](''Tactic'',''464EB808-AD1F-4481-9365-6AADA15023BD'',N''101371'',2,1203,255,0,0)
+--SELECT * from  [GetSFDCSourceTargetMappingData](''ImprovementCampaign'',''464EB808-AD1F-4481-9365-6AADA15023BD'',N''16404'',2,1203,255,0,0)
+--SELECT * from  [GetSFDCSourceTargetMappingData](''ImprovementProgram'',''464EB808-AD1F-4481-9365-6AADA15023BD'',N''16402'',2,1203,255,0,0)
+--SELECT * from  [GetSFDCSourceTargetMappingData](''ImprovementTactic'',''464EB808-AD1F-4481-9365-6AADA15023BD'',N''7864'',2,1203,255,0,0)
+RETURNS @src_trgt_mappdata Table(
+ActualFieldName varchar(max),
+CustomFieldId int,
+TacValue varchar(max),
+SourceId int
+)
+AS
+
+BEGIN
+
+------- START:- Declare local variables 
+	BEGIN
+		Declare @Table TABLE (IntegrationInstanceID INT,GameplanDataTypeId INT,TableName NVARCHAR(250),ActualFieldName NVARCHAR(250),CustomFieldId INT,IsImprovement bit)
+		Declare @tacActCostTable Table(PlanTacticId int,ActualCost varchar(50))
+		Declare @ColumnName nvarchar(max)
+		-- START: Declare Fixed columns SFDC variables
+		Declare @actSFDCID varchar(50)=''SalesforceId''
+		--Declare @trgtSFDCID varchar(50)=''SalesforceId''
+		Declare @actSourceParentId varchar(50)=''SourceParentId''
+		--Declare @trgtSourceParentId varchar(50)=''''
+		Declare @actTitle varchar(255)=''Title''
+		Declare @actMode varchar(255)=''Mode''
+		--Declare @trgtMode varchar(255)=''''
+		Declare @actObjType varchar(255)=''ObjectType''
+		--Declare @trgtObjType varchar(255)=''''
+		Declare @actStartDate varchar(255)=''StartDate''
+		Declare @actEndDate varchar(255)=''EndDate''
+		 -- END: Declare Fixed columns SFDC variables
+		Declare @modeCREATE varchar(20)=''Create''
+		Declare @modeUPDATE varchar(20)=''Update''
+		Declare @actCreatedBy varchar(255)=''CreatedBy''
+		Declare @tblTactic varchar(255)=''Plan_Campaign_Program_Tactic''
+		Declare @tblGlobal varchar(100)=''Global''
+		 -- START:- Declare entityType variables
+		Declare @entTactic varchar(20 )=''Tactic''
+		Declare @entProgram varchar(20 )=''Program''
+		Declare @entCampaign varchar(20 )=''Campaign''
+		Declare @entImprvTactic varchar(255)=''ImprovementTactic''
+		Declare @entImprvProgram varchar(255)=''ImprovementProgram''
+		Declare @entImprvCampaign varchar(255)=''ImprovementCampaign''
+		-- END:- Declare entityType variables
+
+		-- START: Plan Entity Status Variables
+		Declare @declined varchar(50)=''Declined''
+		Declare @InProgress varchar(50)=''In-Progress''
+		Declare @completed varchar(50)=''Complete''
+		Declare @sfdcAborted varchar(50)=''Aborted''
+		Declare @sfdcInProgress varchar(50)=''In Progress''
+		Declare @sfdcCompleted varchar(50)=''Completed''
+		Declare @sfdcPlanned varchar(50)=''Planned''
+		-- END: Plan Entity Status Variables
+
+		 -- START:- Improvement Variable declaration
+		 --Cost Field
+		Declare @imprvCost varchar(20)=''ImprvCost''
+		Declare @actImprvCost varchar(20)=''Cost''
+
+		 -- Static Status
+		 Declare @imprvPlannedStatus varchar(50)=''Planned''
+		 Declare @tblImprvTactic varchar(200)=''Plan_Improvement_Campaign_Program_Tactic''
+		 Declare @tblImprvProgram varchar(200)=''Plan_Improvement_Campaign_Program''
+		 Declare @tblImprvCampaign varchar(200)=''Plan_Improvement_Campaign''
+
+		 -- Imprv. Tactic table Actual Fields
+		 Declare @actEffectiveDate varchar(50)=''EffectiveDate''
+		 -- END: Improvement Variable declaration
+	END
+
+ 
+------- END:- Declare local variables 
+
+-------- START: Get Standard & CustomField Mappings data --------
+BEGIN
+	;With ResultTable as(
+	(
+			-- Select GLOBAL standard fields from IntegrationInstanceDataTypeMapping table.
+
+				Select  IntegrationInstanceID,
+						IsNull(gpDataType.GameplanDataTypeId,0) as GameplanDataTypeId,
+						TableName,
+						gpDataType.ActualFieldName,
+						IsNull(mapp.CustomFieldId,0) as CustomFieldId,
+						IsNull(gpDataType.IsImprovement,''0'') as IsImprovement
+				FROM GamePlanDataType as gpDataType
+				JOIN IntegrationInstanceDataTypeMapping as mapp ON gpDataType.GamePlanDataTypeId = mapp.GamePlanDataTypeId and mapp.IntegrationInstanceId=@id
+				Where gpDataType.IsDeleted=0 and gpDataType.IntegrationTypeId = @integrationTypeId and gpDataType.TableName=@tblGlobal and IsNull(gpDataType.IsGet,''0'') = ''0'' and gpDataType.GamePlanDataTypeId >0
+			--END
+			
+		)
+		UNION
+		(
+			SELECT  mapp.IntegrationInstanceId,
+					0 as GameplanDataTypeId,
+					Null as TableName,
+					custm.Name as ActualFieldName,
+					IsNull(mapp.CustomFieldId,0) as CustomFieldId,
+					''0'' as IsImprovement
+			FROM IntegrationInstanceDataTypeMapping as mapp
+			JOIN Customfield as custm ON mapp.CustomFieldId = custm.CustomFieldId and custm.ClientId=@clientId and custm.IsDeleted=0 and custm.EntityType=@entityType
+			WHERE  mapp.IntegrationInstanceId=@id and mapp.CustomFieldId >0
+		)
+	)
+	insert into @Table 
+	select * from ResultTable
+
+	-- IF EntityType is ''Tactic'' then add Tacic related mapping fields from IntegrationInstanceDataTypeMapping table.
+	IF(@entityType=@entTactic)
+	BEGIN
+		insert into @Table 
+		Select  IntegrationInstanceID,
+				IsNull(gpDataType.GameplanDataTypeId,0) as GameplanDataTypeId,
+				TableName,
+				gpDataType.ActualFieldName,
+				IsNull(mapp.CustomFieldId,0) as CustomFieldId,
+				''0'' as IsImprovement
+		FROM GamePlanDataType as gpDataType
+		JOIN IntegrationInstanceDataTypeMapping as mapp ON gpDataType.GamePlanDataTypeId = mapp.GamePlanDataTypeId and mapp.IntegrationInstanceId=@id
+		Where gpDataType.IsDeleted=0 and gpDataType.IntegrationTypeId = @integrationTypeId and gpDataType.TableName=''Plan_Campaign_Program_Tactic'' and IsNull(gpDataType.IsGet,''0'') = ''0'' and gpDataType.GamePlanDataTypeId >0
+	END
+
+	-- IF EntityType is ''Improvement Campaign, Program or Tactic'' then add respective entity related mapping fields from IntegrationInstanceDataTypeMapping table.
+	IF((@entityType=@entImprvTactic) OR (@entityType=@entImprvProgram) OR (@entityType=@entImprvCampaign))
+	BEGIN
+		insert into @Table 
+		Select  IntegrationInstanceID,
+				IsNull(gpDataType.GameplanDataTypeId,0) as GameplanDataTypeId,
+				TableName,
+				CASE 
+					WHEN ((gpDataType.TableName=@tblImprvTactic) AND (gpDataType.ActualFieldName=@actImprvCost)) THEN @imprvCost
+					ELSE gpDataType.ActualFieldName
+				END AS ActualFieldName,
+				IsNull(mapp.CustomFieldId,0) as CustomFieldId,
+				''1'' as IsImprovement
+		FROM GamePlanDataType as gpDataType
+		JOIN IntegrationInstanceDataTypeMapping as mapp ON gpDataType.GamePlanDataTypeId = mapp.GamePlanDataTypeId and mapp.IntegrationInstanceId=@id
+		Where gpDataType.IsDeleted=0 and gpDataType.IntegrationTypeId = @integrationTypeId and (gpDataType.TableName=@entityType) and IsNull(gpDataType.IsGet,''0'') = ''0'' and gpDataType.GamePlanDataTypeId >0
+	END
+
+END
+-------- END: Get Standard & CustomField Mappings data --------
+
+-------- START: Insert fixed SFDC fields to Mapping list. -------- 
+IF((@entityType=@entImprvTactic) OR (@entityType=@entImprvProgram) OR (@entityType=@entImprvCampaign))
+BEGIN
+	-- Insert table name ''Global'' and IsImprovement flag ''1'' in case of Improvement entities
+	INSERT INTO @Table SELECT @id,0,@tblGlobal as TableName,@actSFDCID as ActualFieldName,0 as CustomFieldId,''1'' as IsImprovement
+	INSERT INTO @Table SELECT @id,0,@tblGlobal as TableName,@actMode as ActualFieldName,0 as CustomFieldId,''1'' as IsImprovement
+	INSERT INTO @Table SELECT @id,0,@tblGlobal as TableName,@actSourceParentId as ActualFieldName,0 as CustomFieldId,''1'' as IsImprovement
+	INSERT INTO @Table SELECT @id,0,@tblGlobal as TableName,@actObjType as ActualFieldName,0 as CustomFieldId,''1'' as IsImprovement
+END
+ELSE
+BEGIN
+	INSERT INTO @Table SELECT @id,0,@tblTactic as TableName,@actSFDCID as ActualFieldName,0 as CustomFieldId,''0'' as IsImprovement
+	INSERT INTO @Table SELECT @id,0,@tblTactic as TableName,@actMode as ActualFieldName,0 as CustomFieldId,''0'' as IsImprovement
+	INSERT INTO @Table SELECT @id,0,@tblTactic as TableName,@actSourceParentId as ActualFieldName,0 as CustomFieldId,''0'' as IsImprovement
+	INSERT INTO @Table SELECT @id,0,@tblTactic as TableName,@actObjType as ActualFieldName,0 as CustomFieldId,''0'' as IsImprovement
+END
+-------- END: Insert fixed SFDC fields to Mapping list. -------- 
+
+-------- START: Get Tacticwise ActualCost. -------- 
+
+Declare @actCost varchar(20)=''CostActual''
+Declare @actCostGPTypeId int=0
+Select @actCostGPTypeId = GameplanDataTypeId from GameplanDataType where IntegrationTypeId=@integrationTypeId and IsDeleted=''0'' and TableName=@tblTactic and ActualFieldName=@actCost
+
+-- Calculate Tactiwise ActualCost in case of If user has made ActualCost mapping and EntityType is Tactic 
+IF EXISTS(Select * from IntegrationInstanceDataTypeMapping where IntegrationInstanceId=@id and GameplanDataTypeId=@actCostGPTypeId)AND(@entityType=@entTactic)
+BEGIN
+	INSERT INTO @tacActCostTable
+	SELECT * FROM [dbo].[GetTacticActualCostMappingData](@EntityIds)
+END
+-------- END: Get Tacticwise ActualCost. -------- 
+
+;WITH entTbl as(
+	(
+		-- Get Tactics
+		SELECT 
+			T.PlanTacticId as SourceId,
+			''Static_Mapp'' as Link
+		FROM Plan_Campaign_Program_Tactic T 
+		WHERE @entityType=@entTactic and PlanTacticId IN (select val from comma_split(@EntityIds,'',''))
+	)
+	UNION 
+	(
+		-- Get Programs
+		SELECT 
+			P.PlanProgramId as SourceId,
+			''Static_Mapp'' as Link
+		FROM Plan_Campaign_Program P 
+		WHERE @entityType=@entProgram and PlanProgramId IN (select val from comma_split(@EntityIds,'',''))
+	)
+	UNION 
+	(
+		-- Get Campaigns
+		SELECT 
+			C.PlanCampaignId as SourceId,
+			''Static_Mapp'' as Link
+		FROM Plan_Campaign C 
+		WHERE @entityType=@entCampaign and PlanCampaignId IN (select val from comma_split(@EntityIds,'',''))
+	)
+	UNION 
+	(
+		-- Get Improvement Campaigns
+		SELECT 
+			IC.ImprovementPlanCampaignId as SourceId,
+			''Static_Mapp'' as Link
+		FROM Plan_Improvement_Campaign IC 
+		WHERE @entityType=@entImprvCampaign and ImprovementPlanCampaignId IN (select val from comma_split(@EntityIds,'',''))
+	)
+	UNION 
+	(
+		-- Get Improvement Programs
+		SELECT 
+			IP.ImprovementPlanProgramId as SourceId,
+			''Static_Mapp'' as Link
+		FROM Plan_Improvement_Campaign_Program IP 
+		WHERE @entityType=@entImprvProgram and ImprovementPlanProgramId IN (select val from comma_split(@EntityIds,'',''))
+	)
+	UNION 
+	(
+		-- Get Improvement Tactics
+		SELECT 
+			IT.ImprovementPlanTacticId as SourceId,
+			''Static_Mapp'' as Link
+		FROM Plan_Improvement_Campaign_Program_Tactic IT 
+		WHERE @entityType=@entImprvTactic and ImprovementPlanTacticId IN (select val from comma_split(@EntityIds,'',''))
+	)
+),
+IntegMapp as(
+	SELECT 
+		Mapp.*,
+		''Static_Mapp'' as Link
+	FROM @Table as Mapp 
+),
+ CustomFieldValues AS (
+select distinct SUBSTRING(@entityType,1,1) +''-'' + cast(EntityId as nvarchar) + ''-'' + cast(Extent1.CustomFieldID as nvarchar) as keyv, 
+		cast([Extent1].[CustomFieldId] as nvarchar) as CustomFieldId,
+		cast(EntityId as nvarchar) as EntityId,
+		case      
+			when A.keyi is not null then Extent2.AbbreviationForMulti
+			when Extent3.[Name]=''TextBox'' then Extent1.Value     
+			when Extent3.[Name]=''DropDownList'' then Extent4.Value 
+		End as Value, 
+		case      
+			when A.keyi is not null then Extent2.AbbreviationForMulti
+			when Extent3.[Name]=''TextBox'' then Extent1.Value
+			when Extent3.[Name]=''DropDownList'' then 
+												CASE
+													 WHEN Extent4.Abbreviation IS nOT NULL THEN Extent4.Abbreviation 
+													 ELSE Extent4.Value 
+													 END   
+												END as CustomName 
+from CustomField_Entity Extent1 
+INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] AND [Extent2].[IsDeleted] = 0 
+INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId 
+Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and cast(Extent1.Value as nvarchar)=cast(Extent4.CustomFieldOptionID as nvarchar)
+Left Outer join ( 
+					select SUBSTRING(@entityType,1,1) +''-''  + cast(EntityId as nvarchar) + ''-'' + cast(Extent1.CustomFieldID as nvarchar) as keyi  from CustomField_Entity Extent1
+					INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] 
+					INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId 
+					Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and Extent1.Value=Extent4.CustomFieldOptionID 
+					WHERE ([Extent1].[EntityId] IN (select val from comma_split(@EntityIds,'',''))) 
+					Group by SUBSTRING(@entityType,1,1) +''-'' + cast(EntityId as nvarchar) + ''-'' + cast(Extent1.CustomFieldID as nvarchar) 
+					having count(*) > 1 
+				) A on A.keyi=SUBSTRING(@entityType,1,1) +''-'' + cast(EntityId as nvarchar) + ''-'' + cast(Extent1.CustomFieldID as nvarchar) 
+WHERE ([Extent1].[EntityId] IN (select val from comma_split(@EntityIds,'',''))
+)
+)
+
+INSERT INTO @src_trgt_mappdata
+SELECT * FROM 
+(
+	(
+		-- GET Tactic Data based on Mapping defined in IntegrationInstanceDataTypeMapping table
+		SELECT Mapp.ActualFieldName,
+				Mapp.CustomFieldId,
+				CASE 
+					WHEN @entityType=@entTactic
+					THEN
+						CASE 
+							WHEN Mapp.ActualFieldName=@actTitle THEN (CASE
+																		WHEN (@isCustomNameAllow=''1'' AND @isClientAllowCustomName=''1'') THEN ISNull(SUBSTRING(Tac.TacticCustomName,1,@SFDClength),'''')
+																		ELSE (ISNull(SUBSTRING(Tac.Title,1,@SFDClength),''''))
+																   END)
+							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(Tac.[Description],'''')
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),Tac.StartDate),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),Tac.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(Tac.[Status],'''')
+							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(Tac.CreatedBy as varchar(100)),'''')
+							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
+							WHEN Mapp.ActualFieldName=''PlanName'' THEN ISNull(pln.Title,'''')
+							WHEN Mapp.ActualFieldName=@actSFDCID THEN ISNull(Tac.IntegrationInstanceTacticId,'''')
+							WHEN Mapp.ActualFieldName=@actSourceParentId THEN ISNull(Cast(Tac.PlanProgramId as varchar(50)),'''')
+							WHEN Mapp.ActualFieldName=@actObjType THEN @entityType
+							WHEN Mapp.ActualFieldName=@actMode THEN (CASE 
+																		WHEN ISNULL(Tac.IntegrationInstanceTacticId,'''')='''' THEN @modeCREATE 
+																		ELSE @modeUPDATE 
+																	 END)
+							WHEN Mapp.ActualFieldName=''Cost'' THEN ISNull(Cast(Tac.Cost as varchar(255)),'''')
+							WHEN Mapp.ActualFieldName=''CostActual'' THEN ISNull(Cast(0 as varchar(255)),'''')
+							WHEN Mapp.ActualFieldName=''TacticType'' THEN ISNull(TT.Title,'''')
+							WHEN Mapp.CustomFieldId >0 THEN ISNULL(custm.Value,'''')
+						END
+					ELSE
+						Null 
+				END AS TacValue,
+				T.SourceId as SourceId
+		from IntegMapp as Mapp
+		INNER JOIN entTbl as T ON Mapp.Link = T.Link and @entityType=@entTactic
+		LEFT JOIN Plan_Campaign_Program_Tactic as Tac ON T.SourceId = Tac.PlanTacticId
+		LEFT JOIN @tacActCostTable as acost ON T.SourceId = acost.PlanTacticId
+		LEFT JOIN Plan_Campaign_Program as prg ON Tac.PlanProgramId = prg.PlanProgramId and prg.IsDeleted=0
+		LEFT JOIN Plan_Campaign as cmpgn ON cmpgn.PlanCampaignId = prg.PlanCampaignId and cmpgn.IsDeleted=0
+		LEFT JOIN [Plan] as pln ON pln.PlanId = cmpgn.PlanId and pln.IsDeleted=0
+		LEFT JOIN TacticType as TT ON Tac.TacticTypeId = TT.TacticTypeId and TT.IsDeleted=0
+		LEFT JOIN CustomFieldValues as custm ON Mapp.CustomFieldId=custm.CustomFieldId and T.SourceId = custm.EntityId
+	)
+	UNION
+	(
+		-- GET Program Data based on Mapping defined in IntegrationInstanceDataTypeMapping table
+		SELECT Mapp.ActualFieldName,
+				Mapp.CustomFieldId,
+				CASE 
+					WHEN @entityType=@entProgram
+					THEN
+						CASE 
+							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(prg.Title,1,@SFDClength),''''))
+							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(prg.[Description],'''')
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),prg.StartDate),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),prg.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(prg.[Status],'''')
+							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(prg.CreatedBy as varchar(100)),'''')
+							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
+							WHEN Mapp.ActualFieldName=''PlanName'' THEN ISNull(pln.Title,'''')
+							WHEN Mapp.ActualFieldName=@actSFDCID THEN ISNull(prg.IntegrationInstanceProgramId,'''')
+							WHEN Mapp.ActualFieldName=@actSourceParentId THEN ISNull(Cast(prg.PlanCampaignId as varchar(50)),'''')
+							WHEN Mapp.ActualFieldName=@actObjType THEN @entityType
+							WHEN Mapp.ActualFieldName=@actMode THEN (CASE 
+																		WHEN ISNULL(prg.IntegrationInstanceProgramId,'''')='''' THEN @modeCREATE 
+																		ELSE @modeUPDATE 
+																	 END)
+							WHEN Mapp.CustomFieldId >0 THEN ISNULL(custm.Value,'''')
+						END
+					ELSE
+						Null 
+				END AS TacValue,
+				T.SourceId as SourceId
+		from IntegMapp as Mapp
+		INNER JOIN entTbl as T ON Mapp.Link = T.Link and @entityType=@entProgram
+		LEFT JOIN Plan_Campaign_Program as prg ON T.SourceId = prg.PlanProgramId and prg.IsDeleted=0
+		LEFT JOIN Plan_Campaign as cmpgn ON cmpgn.PlanCampaignId = prg.PlanCampaignId and cmpgn.IsDeleted=0
+		LEFT JOIN [Plan] as pln ON pln.PlanId = cmpgn.PlanId and pln.IsDeleted=0
+		LEFT JOIN CustomFieldValues as custm ON Mapp.CustomFieldId=custm.CustomFieldId and T.SourceId = custm.EntityId
+	)
+	UNION
+	(
+		-- GET Campaign Data based on Mapping defined in IntegrationInstanceDataTypeMapping table
+		SELECT Mapp.ActualFieldName,
+				Mapp.CustomFieldId,
+				CASE 
+					WHEN @entityType=@entCampaign
+					THEN
+						CASE 
+							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(cmpgn.Title,1,@SFDClength),''''))
+							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(cmpgn.[Description],'''')
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),cmpgn.StartDate),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),cmpgn.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(cmpgn.[Status],'''')
+							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(cmpgn.CreatedBy as varchar(100)),'''')
+							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
+							WHEN Mapp.ActualFieldName=''PlanName'' THEN ISNull(pln.Title,'''')
+							WHEN Mapp.ActualFieldName=@actSFDCID THEN ISNull(cmpgn.IntegrationInstanceCampaignId,'''')
+							WHEN Mapp.ActualFieldName=@actSourceParentId THEN ''''
+							WHEN Mapp.ActualFieldName=@actObjType THEN @entityType
+							WHEN Mapp.ActualFieldName=@actMode THEN (CASE 
+																		WHEN ISNULL(cmpgn.IntegrationInstanceCampaignId,'''')='''' THEN @modeCREATE 
+																		ELSE @modeUPDATE 
+																	 END)
+							WHEN Mapp.CustomFieldId >0 THEN ISNULL(custm.Value,'''')
+						END
+					ELSE
+						Null 
+				END AS TacValue,
+				T.SourceId as SourceId
+		from IntegMapp as Mapp
+		INNER JOIN entTbl as T ON Mapp.Link = T.Link and @entityType=@entCampaign
+		LEFT JOIN Plan_Campaign as cmpgn ON cmpgn.PlanCampaignId = T.SourceId and cmpgn.IsDeleted=0
+		LEFT JOIN [Plan] as pln ON pln.PlanId = cmpgn.PlanId and pln.IsDeleted=0
+		LEFT JOIN CustomFieldValues as custm ON Mapp.CustomFieldId=custm.CustomFieldId and T.SourceId = custm.EntityId
+	)
+	UNION
+	(
+		-- GET Improvement Campaign Data based on Mapping defined in IntegrationInstanceDataTypeMapping table
+		SELECT Mapp.ActualFieldName,
+				Mapp.CustomFieldId,
+				CASE 
+					WHEN @entityType=@entImprvCampaign
+					THEN
+						CASE 
+							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(Imprvcmpgn.Title,1,@SFDClength),''''))
+							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(Imprvcmpgn.[Description],'''')
+							WHEN Mapp.ActualFieldName=''Status'' THEN @imprvPlannedStatus
+							WHEN Mapp.ActualFieldName=''PlanName'' THEN ISNull(pln.Title,'''')
+							WHEN Mapp.ActualFieldName=@actSFDCID THEN ISNull(Imprvcmpgn.IntegrationInstanceCampaignId,'''')
+							WHEN Mapp.ActualFieldName=@actSourceParentId THEN ''''
+							WHEN Mapp.ActualFieldName=@actObjType THEN @entityType
+							WHEN Mapp.ActualFieldName=@actMode THEN (CASE 
+																		WHEN ISNULL(Imprvcmpgn.IntegrationInstanceCampaignId,'''')='''' THEN @modeCREATE 
+																		ELSE @modeUPDATE 
+																	 END)
+						END
+					ELSE
+						Null 
+				END AS TacValue,
+				T.SourceId as SourceId
+		from IntegMapp as Mapp
+		INNER JOIN entTbl as T ON Mapp.Link = T.Link and @entityType=@entImprvCampaign
+		LEFT JOIN Plan_Improvement_Campaign as Imprvcmpgn ON Imprvcmpgn.ImprovementPlanCampaignId = T.SourceId
+		LEFT JOIN [Plan] as pln ON pln.PlanId = Imprvcmpgn.ImprovePlanId and pln.IsDeleted=0
+		Where (Mapp.IsImprovement=''1'' and Mapp.TableName=@tblGlobal) OR (Mapp.TableName= @tblImprvCampaign)
+	)
+	UNION
+	(
+		-- GET Improvement Program Data based on Mapping defined in IntegrationInstanceDataTypeMapping table
+		SELECT Mapp.ActualFieldName,
+				Mapp.CustomFieldId,
+				CASE 
+					WHEN @entityType=@entImprvProgram
+					THEN
+						CASE 
+							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(ImprvPrg.Title,1,@SFDClength),''''))
+							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(ImprvPrg.[Description],'''')
+							WHEN Mapp.ActualFieldName=''Status'' THEN @imprvPlannedStatus
+							WHEN Mapp.ActualFieldName=''PlanName'' THEN ISNull(pln.Title,'''')
+							WHEN Mapp.ActualFieldName=@actSFDCID THEN ISNull(ImprvPrg.IntegrationInstanceProgramId,'''')
+							WHEN Mapp.ActualFieldName=@actSourceParentId THEN ISNull(Cast(ImprvPrg.ImprovementPlanCampaignId as varchar(50)),'''')
+							WHEN Mapp.ActualFieldName=@actObjType THEN @entityType
+							WHEN Mapp.ActualFieldName=@actMode THEN (CASE 
+																		WHEN ISNULL(ImprvPrg.IntegrationInstanceProgramId,'''')='''' THEN @modeCREATE 
+																		ELSE @modeUPDATE 
+																	 END)
+						END
+					ELSE
+						Null 
+				END AS TacValue,
+				T.SourceId as SourceId
+		from IntegMapp as Mapp
+		INNER JOIN entTbl as T ON Mapp.Link = T.Link and @entityType=@entImprvProgram
+		LEFT JOIN Plan_Improvement_Campaign_Program as ImprvPrg ON ImprvPrg.ImprovementPlanProgramId = T.SourceId
+		LEFT JOIN Plan_Improvement_Campaign as Imprvcmpgn ON Imprvcmpgn.ImprovementPlanCampaignId = ImprvPrg.ImprovementPlanCampaignId
+		LEFT JOIN [Plan] as pln ON pln.PlanId = Imprvcmpgn.ImprovePlanId and pln.IsDeleted=0
+		Where (Mapp.IsImprovement=''1'' and Mapp.TableName=@tblGlobal) OR (Mapp.TableName= @tblImprvProgram)
+	)
+	UNION
+	(
+		-- GET Improvement Program Data based on Mapping defined in IntegrationInstanceDataTypeMapping table
+		SELECT Mapp.ActualFieldName,
+				Mapp.CustomFieldId,
+				CASE 
+					WHEN @entityType=@entImprvTactic
+					THEN
+						CASE 
+							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(ImprvTac.Title,1,@SFDClength),''''))
+							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(ImprvTac.[Description],'''')
+							WHEN Mapp.ActualFieldName=''Status'' THEN @imprvPlannedStatus
+							WHEN Mapp.ActualFieldName=''PlanName'' THEN ISNull(pln.Title,'''')
+							WHEN Mapp.ActualFieldName=@actImprvCost THEN ISNull(Cast(ImprvTac.Cost as varchar(255)),'''')
+							WHEN Mapp.ActualFieldName=@actEffectiveDate THEN ISNull(CONVERT(VARCHAR(19),ImprvTac.EffectiveDate),'''')
+							WHEN Mapp.ActualFieldName=@actSFDCID THEN ISNull(ImprvTac.IntegrationInstanceTacticId,'''')
+							WHEN Mapp.ActualFieldName=@actSourceParentId THEN ISNull(Cast(ImprvTac.ImprovementPlanProgramId as nvarchar(255)),'''')
+							WHEN Mapp.ActualFieldName=@actObjType THEN @entityType
+							WHEN Mapp.ActualFieldName=@actMode THEN (CASE 
+																		WHEN ISNULL(ImprvTac.IntegrationInstanceTacticId,'''')='''' THEN @modeCREATE 
+																		ELSE @modeUPDATE 
+																	 END)
+						END
+					ELSE
+						Null 
+				END AS TacValue,
+				T.SourceId as SourceId
+		from IntegMapp as Mapp
+		INNER JOIN entTbl as T ON Mapp.Link = T.Link and @entityType=@entImprvTactic
+		LEFT JOIN Plan_Improvement_Campaign_Program_Tactic as ImprvTac ON ImprvTac.ImprovementPlanTacticId = T.SourceId
+		LEFT JOIN Plan_Improvement_Campaign_Program as ImprvPrg ON ImprvPrg.ImprovementPlanProgramId = ImprvTac.ImprovementPlanProgramId
+		LEFT JOIN Plan_Improvement_Campaign as Imprvcmpgn ON Imprvcmpgn.ImprovementPlanCampaignId = ImprvPrg.ImprovementPlanCampaignId
+		LEFT JOIN [Plan] as pln ON pln.PlanId = Imprvcmpgn.ImprovePlanId and pln.IsDeleted=0
+		Where (Mapp.IsImprovement=''1'' and Mapp.TableName=@tblGlobal) OR (Mapp.TableName= @tblImprvTactic)
+	)
+) as result;
+
+
+
+Update @src_trgt_mappdata Set TacValue=
+								CASE 
+									WHEN TacValue=@declined THEN @sfdcAborted
+									WHEN TacValue=@InProgress THEN @sfdcInProgress
+									WHEN TacValue=@completed THEN @sfdcCompleted
+									ELSE @sfdcPlanned
+								END 
+WHERE ActualFieldName=''Status''
+
+
+RETURN
+END
+' 
+END
+
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetSFDCSourceTargetMappingData_Marketo3Way]    Script Date: 06/10/2016 11:02:02 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSFDCSourceTargetMappingData_Marketo3Way]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+BEGIN
+execute dbo.sp_executesql @statement = N'CREATE FUNCTION [dbo].[GetSFDCSourceTargetMappingData_Marketo3Way]
+(
+	@entityType varchar(255)='''',
+	@clientId uniqueidentifier,
+	@EntityIds varchar(max)='''',
+	@integrationTypeId int,
+	@id int=0,
+	@SFDClength int=255,	-- default value 255
+	@isCustomNameAllow bit =''0'',
+	@isClientAllowCustomName bit =''0''
+)
+
+--SELECT * from  [GetSFDCSourceTargetMappingData_Marketo3Way](''Program'',''464EB808-AD1F-4481-9365-6AADA15023BD'',N''32029'',2,1203,255,0,0)
+RETURNS @src_trgt_mappdata Table(
+ActualFieldName varchar(max),
+CustomFieldId int,
+TacValue varchar(max),
+SourceId int
+)
+AS
+
+BEGIN
+
+------- START:- Declare local variables 
+	BEGIN
+		Declare @Table TABLE (IntegrationInstanceID INT,GameplanDataTypeId INT,TableName NVARCHAR(250),ActualFieldName NVARCHAR(250),CustomFieldId INT,IsImprovement bit)
+		Declare @tacActCostTable Table(PlanTacticId int,ActualCost varchar(50))
+		Declare @ColumnName nvarchar(max)
+		-- START: Declare Fixed columns SFDC variables
+		Declare @actSFDCID varchar(50)=''SalesforceId''
+		Declare @actSourceParentId varchar(50)=''SourceParentId''
+		Declare @actTitle varchar(255)=''Title''
+		Declare @actMode varchar(255)=''Mode''
+		Declare @actObjType varchar(255)=''ObjectType''
+		Declare @actStartDate varchar(255)=''StartDate''
+		Declare @actEndDate varchar(255)=''EndDate''
+		Declare @actsfdcParentId varchar(50)=''ParentId''
+		 -- END: Declare Fixed columns SFDC variables
+		Declare @modeCREATE varchar(20)=''Create''
+		Declare @modeUPDATE varchar(20)=''Update''
+		Declare @actCreatedBy varchar(255)=''CreatedBy''
+		Declare @tblTactic varchar(255)=''Plan_Campaign_Program_Tactic''
+		Declare @tblGlobal varchar(100)=''Global''
+		 -- START:- Declare entityType variables
+		Declare @entTactic varchar(20 )=''Tactic''
+		Declare @entProgram varchar(20 )=''Program''
+		Declare @entCampaign varchar(20 )=''Campaign''
+		-- END:- Declare entityType variables
+
+		-- START: Plan Entity Status Variables
+		Declare @declined varchar(50)=''Declined''
+		Declare @InProgress varchar(50)=''In-Progress''
+		Declare @completed varchar(50)=''Complete''
+		Declare @sfdcAborted varchar(50)=''Aborted''
+		Declare @sfdcInProgress varchar(50)=''In Progress''
+		Declare @sfdcCompleted varchar(50)=''Completed''
+		Declare @sfdcPlanned varchar(50)=''Planned''
+		-- END: Plan Entity Status Variables
+		
+	END
+
+ 
+------- END:- Declare local variables 
+
+-------- START: Get Standard & CustomField Mappings data --------
+BEGIN
+	;With ResultTable as(
+	(
+			-- Select GLOBAL standard fields from IntegrationInstanceDataTypeMapping table.
+
+				Select  IntegrationInstanceID,
+						IsNull(gpDataType.GameplanDataTypeId,0) as GameplanDataTypeId,
+						TableName,
+						gpDataType.ActualFieldName,
+						IsNull(mapp.CustomFieldId,0) as CustomFieldId,
+						IsNull(gpDataType.IsImprovement,''0'') as IsImprovement
+				FROM GamePlanDataType as gpDataType
+				JOIN IntegrationInstanceDataTypeMapping as mapp ON gpDataType.GamePlanDataTypeId = mapp.GamePlanDataTypeId and mapp.IntegrationInstanceId=@id
+				Where gpDataType.IsDeleted=0 and gpDataType.IntegrationTypeId = @integrationTypeId and gpDataType.TableName=@tblGlobal and IsNull(gpDataType.IsGet,''0'') = ''0'' and gpDataType.GamePlanDataTypeId >0
+			--END
+			
+		)
+		UNION
+		(
+			SELECT  mapp.IntegrationInstanceId,
+					0 as GameplanDataTypeId,
+					Null as TableName,
+					custm.Name as ActualFieldName,
+					IsNull(mapp.CustomFieldId,0) as CustomFieldId,
+					''0'' as IsImprovement
+			FROM IntegrationInstanceDataTypeMapping as mapp
+			JOIN Customfield as custm ON mapp.CustomFieldId = custm.CustomFieldId and custm.ClientId=@clientId and custm.IsDeleted=0 and custm.EntityType=@entityType
+			WHERE  mapp.IntegrationInstanceId=@id and mapp.CustomFieldId >0
+		)
+	)
+	insert into @Table 
+	select * from ResultTable
+
+	-- IF EntityType is ''Tactic'' then add Tacic related mapping fields from IntegrationInstanceDataTypeMapping table.
+	IF(@entityType=@entTactic)
+	BEGIN
+		insert into @Table 
+		Select  IntegrationInstanceID,
+				IsNull(gpDataType.GameplanDataTypeId,0) as GameplanDataTypeId,
+				TableName,
+				gpDataType.ActualFieldName,
+				IsNull(mapp.CustomFieldId,0) as CustomFieldId,
+				''0'' as IsImprovement
+		FROM GamePlanDataType as gpDataType
+		JOIN IntegrationInstanceDataTypeMapping as mapp ON gpDataType.GamePlanDataTypeId = mapp.GamePlanDataTypeId and mapp.IntegrationInstanceId=@id
+		Where gpDataType.IsDeleted=0 and gpDataType.IntegrationTypeId = @integrationTypeId and gpDataType.TableName=''Plan_Campaign_Program_Tactic'' and IsNull(gpDataType.IsGet,''0'') = ''0'' and gpDataType.GamePlanDataTypeId >0
+	END
+
+END
+-------- END: Get Standard & CustomField Mappings data --------
+
+-------- START: Insert fixed SFDC fields to Mapping list. -------- 
+BEGIN
+	INSERT INTO @Table SELECT @id,0,@tblTactic as TableName,@actSFDCID as ActualFieldName,0 as CustomFieldId,''0'' as IsImprovement
+	INSERT INTO @Table SELECT @id,0,@tblTactic as TableName,@actMode as ActualFieldName,0 as CustomFieldId,''0'' as IsImprovement
+	INSERT INTO @Table SELECT @id,0,@tblTactic as TableName,@actSourceParentId as ActualFieldName,0 as CustomFieldId,''0'' as IsImprovement
+	INSERT INTO @Table SELECT @id,0,@tblTactic as TableName,@actObjType as ActualFieldName,0 as CustomFieldId,''0'' as IsImprovement
+	INSERT INTO @Table SELECT @id,0,@tblTactic as TableName,@actsfdcParentId as ActualFieldName,0 as CustomFieldId,''0'' as IsImprovement
+END
+-------- END: Insert fixed SFDC fields to Mapping list. -------- 
+
+-------- START: Get Tacticwise ActualCost. -------- 
+
+Declare @actCost varchar(20)=''CostActual''
+Declare @actCostGPTypeId int=0
+Select @actCostGPTypeId = GameplanDataTypeId from GameplanDataType where IntegrationTypeId=@integrationTypeId and IsDeleted=''0'' and TableName=@tblTactic and ActualFieldName=@actCost
+
+-- Calculate Tactiwise ActualCost in case of If user has made ActualCost mapping and EntityType is Tactic 
+IF EXISTS(Select * from IntegrationInstanceDataTypeMapping where IntegrationInstanceId=@id and GameplanDataTypeId=@actCostGPTypeId)AND(@entityType=@entTactic)
+BEGIN
+	INSERT INTO @tacActCostTable
+	SELECT * FROM [dbo].[GetTacticActualCostMappingData](@EntityIds)
+END
+-------- END: Get Tacticwise ActualCost. -------- 
+
+;WITH entTbl as(
+	(
+		-- Get Tactics
+		SELECT 
+			T.PlanTacticId as SourceId,
+			''Static_Mapp'' as Link
+		FROM Plan_Campaign_Program_Tactic T 
+		WHERE @entityType=@entTactic and PlanTacticId IN (select val from comma_split(@EntityIds,'',''))
+	)
+	UNION 
+	(
+		-- Get Programs
+		SELECT 
+			P.PlanProgramId as SourceId,
+			''Static_Mapp'' as Link
+		FROM Plan_Campaign_Program P 
+		WHERE @entityType=@entProgram and PlanProgramId IN (select val from comma_split(@EntityIds,'',''))
+	)
+	UNION 
+	(
+		-- Get Campaigns
+		SELECT 
+			C.PlanCampaignId as SourceId,
+			''Static_Mapp'' as Link
+		FROM Plan_Campaign C 
+		WHERE @entityType=@entCampaign and PlanCampaignId IN (select val from comma_split(@EntityIds,'',''))
+	)
+),
+IntegMapp as(
+	SELECT 
+		Mapp.*,
+		''Static_Mapp'' as Link
+	FROM @Table as Mapp 
+),
+ CustomFieldValues AS (
+select distinct SUBSTRING(@entityType,1,1) +''-'' + cast(EntityId as nvarchar) + ''-'' + cast(Extent1.CustomFieldID as nvarchar) as keyv, 
+		cast([Extent1].[CustomFieldId] as nvarchar) as CustomFieldId,
+		cast(EntityId as nvarchar) as EntityId,
+		case      
+			when A.keyi is not null then Extent2.AbbreviationForMulti
+			when Extent3.[Name]=''TextBox'' then Extent1.Value     
+			when Extent3.[Name]=''DropDownList'' then Extent4.Value 
+		End as Value, 
+		case      
+			when A.keyi is not null then Extent2.AbbreviationForMulti
+			when Extent3.[Name]=''TextBox'' then Extent1.Value
+			when Extent3.[Name]=''DropDownList'' then 
+												CASE
+													 WHEN Extent4.Abbreviation IS nOT NULL THEN Extent4.Abbreviation 
+													 ELSE Extent4.Value 
+													 END   
+												END as CustomName 
+from CustomField_Entity Extent1 
+INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] AND [Extent2].[IsDeleted] = 0 
+INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId 
+Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and cast(Extent1.Value as nvarchar)=cast(Extent4.CustomFieldOptionID as nvarchar)
+Left Outer join ( 
+					select SUBSTRING(@entityType,1,1) +''-''  + cast(EntityId as nvarchar) + ''-'' + cast(Extent1.CustomFieldID as nvarchar) as keyi  from CustomField_Entity Extent1
+					INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] 
+					INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId 
+					Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and Extent1.Value=Extent4.CustomFieldOptionID 
+					WHERE ([Extent1].[EntityId] IN (select val from comma_split(@EntityIds,'',''))) 
+					Group by SUBSTRING(@entityType,1,1) +''-'' + cast(EntityId as nvarchar) + ''-'' + cast(Extent1.CustomFieldID as nvarchar) 
+					having count(*) > 1 
+				) A on A.keyi=SUBSTRING(@entityType,1,1) +''-'' + cast(EntityId as nvarchar) + ''-'' + cast(Extent1.CustomFieldID as nvarchar) 
+WHERE ([Extent1].[EntityId] IN (select val from comma_split(@EntityIds,'',''))
+)
+)
+
+INSERT INTO @src_trgt_mappdata
+SELECT * FROM 
+(
+	(
+		-- GET Tactic Data based on Mapping defined in IntegrationInstanceDataTypeMapping table
+		SELECT Mapp.ActualFieldName,
+				Mapp.CustomFieldId,
+				CASE 
+					WHEN @entityType=@entTactic
+					THEN
+						CASE 
+							WHEN Mapp.ActualFieldName=@actTitle THEN (CASE
+																		WHEN (@isCustomNameAllow=''1'' AND @isClientAllowCustomName=''1'') THEN ISNull(SUBSTRING(Tac.TacticCustomName,1,@SFDClength),'''')
+																		ELSE (ISNull(SUBSTRING(Tac.Title,1,@SFDClength),''''))
+																   END)
+							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(Tac.[Description],'''')
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),Tac.StartDate),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),Tac.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(Tac.[Status],'''')
+							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(Tac.CreatedBy as varchar(100)),'''')
+							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
+							WHEN Mapp.ActualFieldName=''PlanName'' THEN ISNull(pln.Title,'''')
+							WHEN Mapp.ActualFieldName=@actSFDCID THEN ISNull(Tac.IntegrationInstanceTacticId,'''')
+							WHEN Mapp.ActualFieldName=@actSourceParentId THEN ISNull(Cast(Tac.PlanProgramId as varchar(50)),'''')
+							WHEN Mapp.ActualFieldName=@actObjType THEN @entityType
+							WHEN Mapp.ActualFieldName=@actMode THEN (CASE 
+																		WHEN ISNULL(Tac.IntegrationInstanceTacticId,'''')='''' THEN @modeCREATE 
+																		ELSE @modeUPDATE 
+																	 END)
+							WHEN Mapp.ActualFieldName=''Cost'' THEN ISNull(Cast(Tac.Cost as varchar(255)),'''')
+							WHEN Mapp.ActualFieldName=''CostActual'' THEN ISNull(Cast(0 as varchar(255)),'''')
+							WHEN Mapp.ActualFieldName=''TacticType'' THEN ISNull(TT.Title,'''')
+							WHEN Mapp.CustomFieldId >0 THEN ISNULL(custm.Value,'''')
+							WHEN (Mapp.ActualFieldName=@actsfdcParentId) AND (ISNULL(Tac.IntegrationInstanceTacticId,'''')<>'''') THEN prg.IntegrationInstanceProgramId		-- In case of Marketo-SFDC 3-Way integration, Add Program SFDCID to create hierearchy in SFDC
+						END
+					ELSE
+						Null 
+				END AS TacValue,
+				T.SourceId as SourceId
+		from IntegMapp as Mapp
+		INNER JOIN entTbl as T ON Mapp.Link = T.Link and @entityType=@entTactic
+		LEFT JOIN Plan_Campaign_Program_Tactic as Tac ON T.SourceId = Tac.PlanTacticId
+		LEFT JOIN @tacActCostTable as acost ON T.SourceId = acost.PlanTacticId
+		LEFT JOIN Plan_Campaign_Program as prg ON Tac.PlanProgramId = prg.PlanProgramId and prg.IsDeleted=0
+		LEFT JOIN Plan_Campaign as cmpgn ON cmpgn.PlanCampaignId = prg.PlanCampaignId and cmpgn.IsDeleted=0
+		LEFT JOIN [Plan] as pln ON pln.PlanId = cmpgn.PlanId and pln.IsDeleted=0
+		LEFT JOIN TacticType as TT ON Tac.TacticTypeId = TT.TacticTypeId and TT.IsDeleted=0
+		LEFT JOIN CustomFieldValues as custm ON Mapp.CustomFieldId=custm.CustomFieldId and T.SourceId = custm.EntityId
+	)
+	UNION
+	(
+		-- GET Program Data based on Mapping defined in IntegrationInstanceDataTypeMapping table
+		SELECT Mapp.ActualFieldName,
+				Mapp.CustomFieldId,
+				CASE 
+					WHEN @entityType=@entProgram
+					THEN
+						CASE 
+							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(prg.Title,1,@SFDClength),''''))
+							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(prg.[Description],'''')
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),prg.StartDate),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),prg.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(prg.[Status],'''')
+							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(prg.CreatedBy as varchar(100)),'''')
+							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
+							WHEN Mapp.ActualFieldName=''PlanName'' THEN ISNull(pln.Title,'''')
+							WHEN Mapp.ActualFieldName=@actSFDCID THEN ISNull(prg.IntegrationInstanceProgramId,'''')
+							WHEN Mapp.ActualFieldName=@actSourceParentId THEN ISNull(Cast(prg.PlanCampaignId as varchar(50)),'''')
+							WHEN Mapp.ActualFieldName=@actObjType THEN @entityType
+							WHEN Mapp.ActualFieldName=@actMode THEN (CASE 
+																		WHEN ISNULL(prg.IntegrationInstanceProgramId,'''')='''' THEN @modeCREATE 
+																		ELSE @modeUPDATE 
+																	 END)
+							WHEN Mapp.CustomFieldId >0 THEN ISNULL(custm.Value,'''')
+							WHEN (Mapp.ActualFieldName=@actsfdcParentId) AND (ISNULL(prg.IntegrationInstanceProgramId,'''')<>'''') THEN cmpgn.IntegrationInstanceCampaignId		-- In case of Marketo-SFDC 3-Way integration, Add Program SFDCID to create hierearchy in SFDC
+						END
+					ELSE
+						Null 
+				END AS TacValue,
+				T.SourceId as SourceId
+		from IntegMapp as Mapp
+		INNER JOIN entTbl as T ON Mapp.Link = T.Link and @entityType=@entProgram
+		LEFT JOIN Plan_Campaign_Program as prg ON T.SourceId = prg.PlanProgramId and prg.IsDeleted=0
+		LEFT JOIN Plan_Campaign as cmpgn ON cmpgn.PlanCampaignId = prg.PlanCampaignId and cmpgn.IsDeleted=0
+		LEFT JOIN [Plan] as pln ON pln.PlanId = cmpgn.PlanId and pln.IsDeleted=0
+		LEFT JOIN CustomFieldValues as custm ON Mapp.CustomFieldId=custm.CustomFieldId and T.SourceId = custm.EntityId
+	)
+	UNION
+	(
+		-- GET Campaign Data based on Mapping defined in IntegrationInstanceDataTypeMapping table
+		SELECT Mapp.ActualFieldName,
+				Mapp.CustomFieldId,
+				CASE 
+					WHEN @entityType=@entCampaign
+					THEN
+						CASE 
+							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(cmpgn.Title,1,@SFDClength),''''))
+							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(cmpgn.[Description],'''')
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),cmpgn.StartDate),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),cmpgn.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(cmpgn.[Status],'''')
+							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(cmpgn.CreatedBy as varchar(100)),'''')
+							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
+							WHEN Mapp.ActualFieldName=''PlanName'' THEN ISNull(pln.Title,'''')
+							WHEN Mapp.ActualFieldName=@actSFDCID THEN ISNull(cmpgn.IntegrationInstanceCampaignId,'''')
+							WHEN Mapp.ActualFieldName=@actSourceParentId THEN ''''
+							WHEN Mapp.ActualFieldName=@actObjType THEN @entityType
+							WHEN Mapp.ActualFieldName=@actMode THEN (CASE 
+																		WHEN ISNULL(cmpgn.IntegrationInstanceCampaignId,'''')='''' THEN @modeCREATE 
+																		ELSE @modeUPDATE 
+																	 END)
+							WHEN Mapp.CustomFieldId >0 THEN ISNULL(custm.Value,'''')
+						END
+					ELSE
+						Null 
+				END AS TacValue,
+				T.SourceId as SourceId
+		from IntegMapp as Mapp
+		INNER JOIN entTbl as T ON Mapp.Link = T.Link and @entityType=@entCampaign
+		LEFT JOIN Plan_Campaign as cmpgn ON cmpgn.PlanCampaignId = T.SourceId and cmpgn.IsDeleted=0
+		LEFT JOIN [Plan] as pln ON pln.PlanId = cmpgn.PlanId and pln.IsDeleted=0
+		LEFT JOIN CustomFieldValues as custm ON Mapp.CustomFieldId=custm.CustomFieldId and T.SourceId = custm.EntityId
+	)
+) as result;
+
+Update @src_trgt_mappdata Set TacValue=
+								CASE 
+									WHEN TacValue=@declined THEN @sfdcAborted
+									WHEN TacValue=@InProgress THEN @sfdcInProgress
+									WHEN TacValue=@completed THEN @sfdcCompleted
+									ELSE @sfdcPlanned
+								END 
+WHERE ActualFieldName=''Status''
+
+RETURN
+END
+' 
+END
+
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetSFDCTacticResultColumns]    Script Date: 06/10/2016 11:02:02 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSFDCTacticResultColumns]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+BEGIN
+execute dbo.sp_executesql @statement = N'-- SElect [GetSFDCTacticResultColumns] (1203,''464EB808-AD1F-4481-9365-6AADA15023BD'',2)
+CREATE FUNCTION [dbo].[GetSFDCTacticResultColumns]
+(
+	@id int,
+	@clientId uniqueidentifier,
+	@integrationTypeId int
+)
+RETURNS nvarchar(max)
+AS
+BEGIN
+Declare @imprvCost varchar(20)=''ImprvCost''
+Declare @actImprvCost varchar(20)=''Cost''
+declare @Table TABLE (IntegrationInstanceID INT,GameplanDataTypeId INT,TableName NVARCHAR(250),ActualFieldName NVARCHAR(250),TargetDataType NVARCHAR(250),CustomFieldId INT)
+declare @ColumnName nvarchar(max)
+
+	;With ResultTable as(
+
+(
+		Select  IntegrationInstanceID,
+				IsNull(gpDataType.GameplanDataTypeId,0) as GameplanDataTypeId,
+				TableName,
+				-- Rename actualfield ''Cost'' to ''ImprvCost''  in case of Table Name ''Plan_Improvement_Campaign_Program_Tactic'' to ignore conflict of same name ''Cost'' actual field of both Tactic & Improvement Tactic table
+				CASE 
+					WHEN  ((gpDataType.TableName=''Plan_Improvement_Campaign_Program_Tactic'') AND (gpDataType.ActualFieldName=@actImprvCost)) THEN @imprvCost 
+					ELSE gpDataType.ActualFieldName
+				END AS ActualFieldName,
+				TargetDataType,
+				IsNull(mapp.CustomFieldId,0) as CustomFieldId
+		FROM GamePlanDataType as gpDataType
+		JOIN IntegrationInstanceDataTypeMapping as mapp ON gpDataType.GamePlanDataTypeId = mapp.GamePlanDataTypeId and mapp.IntegrationInstanceId=@id
+		Where gpDataType.IsDeleted=0 and gpDataType.IntegrationTypeId = @integrationTypeId and (gpDataType.TableName=''Plan_Campaign_Program_Tactic'' OR gpDataType.TableName=''Plan_Campaign_Program'' OR gpDataType.TableName=''Plan_Campaign'' OR gpDataType.TableName=''Plan_Improvement_Campaign'' OR gpDataType.TableName=''Plan_Improvement_Campaign_Program'' OR gpDataType.TableName=''Plan_Improvement_Campaign_Program_Tactic'' OR gpDataType.TableName=''Global'') and IsNull(gpDataType.IsGet,''0'') = ''0'' and gpDataType.GamePlanDataTypeId >0
+	)
+	UNION
+	(
+		SELECT  mapp.IntegrationInstanceId,
+				0 as GameplanDataTypeId,
+				Null as TableName,
+				custm.Name as ActualFieldName,
+				TargetDataType,
+				IsNull(mapp.CustomFieldId,0) as CustomFieldId
+				
+		FROM IntegrationInstanceDataTypeMapping as mapp
+		JOIN Customfield as custm ON mapp.CustomFieldId = custm.CustomFieldId and custm.ClientId=@clientId and custm.IsDeleted=0 and (custm.EntityType=''Tactic'' or custm.EntityType=''Campaign'' or custm.EntityType=''Program'')
+		WHERE  mapp.IntegrationInstanceId=@id and mapp.CustomFieldId >0
+	)
+
+)
+
+insert into @Table 
+select * from ResultTable
+  
+  SELECT @ColumnName= ISNULL(@ColumnName + '','','''') 
+       + QUOTENAME(ActualFieldName)
+FROM (Select Distinct ActualFieldName FROM @Table) AS ActualFields
+RETURN @ColumnName
+END
+
+' 
+END
+
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetTacticActualCostMappingData]    Script Date: 06/10/2016 11:02:02 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetTacticActualCostMappingData]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+BEGIN
+execute dbo.sp_executesql @statement = N'-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE FUNCTION [dbo].[GetTacticActualCostMappingData]
+(
+	@entIds varchar(max)=''''
+)
+RETURNS @tac_actualcost_mappingtbl Table(
+PlanTacticId int,
+ActualCost varchar(50)
+)
+
+AS
+BEGIN
+	Declare @costStage varchar(20)=''Cost''
+
+	-- Get Tactic & Tactic Actual Cost Mapping data 
+	-- If Tactic has lineitems then Sum up of LineItem Actual''s value else Tactic Actual''s value.
+
+	INSERT INTO @tac_actualcost_mappingtbl
+	SELECT tac.PlanTacticId,
+	   	   CASE 
+			WHEN COUNT(distinct line.PlanLineItemId) >0 THEN  Cast(IsNULL(SUM(lActl.Value),0) as varchar(50)) ELSE  Cast(IsNULL(SUM(tActl.Actualvalue),0) as varchar(50))
+		   END as ActualCost
+	FROM Plan_Campaign_Program_Tactic as tac
+	LEFT JOIN Plan_Campaign_Program_Tactic_LineItem as line on tac.PlanTacticId = line.PlanTacticId and line.IsDeleted=''0''
+	LEFT JOIN Plan_Campaign_Program_Tactic_LineItem_Actual as lActl on line.PlanLineItemId = lActl.PlanLineItemId
+	LEFT JOIN Plan_Campaign_Program_Tactic_Actual as tActl on tac.PlanTacticId = tActl.PlanTacticId and  tActl.StageTitle=@costStage
+	WHERE tac.PlanTacticId IN (select val from comma_split(@entIds,'',''))
+	GROUP BY tac.PlanTacticId
+	RETURN 
+END
+' 
+END
+
+GO
+/****** Object:  StoredProcedure [dbo].[spGetSalesforceData]    Script Date: 06/10/2016 11:02:02 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGetSalesforceData]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[spGetSalesforceData] AS' 
+END
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[spGetSalesforceData]
+	@entityType varchar(255)='',
+	@id int=0,
+	@clientId nvarchar(max),
+	@SFDCTitleLengthLimit int,
+	@integrationInstanceLogId int=0,
+	@isClientAllowCustomName bit=0
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- START: Declare local variables
+	BEGIN
+		-- Start: Entity Type variables
+		Declare @entityTypeTac varchar(255)='Tactic'
+		Declare @entityTypeProg varchar(255)='Program'
+		Declare @entityTypeCampgn varchar(255)='Campaign'
+		Declare @entityTypeImprvTac varchar(255)='ImprovementTactic'
+		Declare @entityTypeImprvProg varchar(255)='ImprovementProgram'
+		Declare @entityTypeImprvCamp varchar(255)='ImprovementCampaign'
+		Declare @entityTypeIntegrationInstance varchar(255)='IntegrationInstance'
+		-- END: Entity Type variables
+
+		-- Start: Sync Status variables
+		Declare @syncStatusInProgress varchar(255)='In-Progress'
+		-- End: Sync Status variables
+		
+		--Declare @isAutoSync bit='0'
+		--Declare @nullGUID uniqueidentifier
+		Declare @integrationTypeId int=0
+		Declare @isCustomNameAllow bit ='0'
+		Declare @instanceId int=0
+		Declare @entIds varchar(max)=''
+		Declare @dynResultQuery nvarchar(max)=''
+
+		--Start: Instance Section Name Variables
+		Declare @sectionPushTacticData varchar(1000)='PushTacticData'
+		--END: Instance Section Name Variables
+
+		-- Start: PUSH Col Names
+		Declare @colName varchar(50)='Name'
+		Declare @colDescription varchar(50)='Description'
+		
+		-- End: PUSH Col Names
+
+		-- Start: Log variables
+		Declare @logStart varchar(20)='Start :'
+		Declare @logEnd varchar(20)='End :'
+		Declare @logSP varchar(100)='Stored Procedure Execution- '
+		Declare @logError varchar(20)='Error :'
+		Declare @logInfo varchar(20)='Info :'
+		-- Start: End variables
+
+		-- Start: Object Type variables
+		Declare @tact varchar(20)='Tactic'
+		Declare @prg varchar(20)='Program'
+		Declare @cmpgn varchar(20)='Campaign'
+		-- END: Object Type variables
+
+		-- Start: Entity Ids
+		Declare @entTacIds nvarchar(max)=''
+		Declare @entPrgIds nvarchar(max)=''
+		Declare @entCmpgnIds nvarchar(max)=''
+		Declare @entImrvmntTacIds nvarchar(max)=''
+		Declare @entImrvmntPrgIds nvarchar(max)=''
+		Declare @entImrvmntCmpgnIds nvarchar(max)=''
+		-- End: Entity Ids
+
+	END
+	-- END: Declare local variables
+
+	-- Store Campaign, Program & Tactic related data
+	Declare @tblTaclist table (
+								PlanTacticId int,
+								PlanProgramId int,
+								PlanCampaignId int,
+								LinkedTacticId int,
+								LinkedPlanId int,
+								PlanYear int,
+								ObjectType varchar(20),
+								RN int
+								)
+
+	-- Store Improvement Entities related data
+	Declare @tblImprvEntity table (
+									ImprovementPlanTacticId int,
+									ImprovementPlanProgramId int,
+									ImprovementPlanCampaignId int,
+									ObjectType varchar(50)
+								  )
+
+	-- Start: Identify Entity Type
+
+	BEGIN
+
+		Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Identify EnityType Campaign,Program,Tactic,Improvement Tactic or Integration Instance')
+		
+		IF(UPPER(@entityType) = UPPER(@entityTypeIntegrationInstance))
+		BEGIN
+
+			-- Identified Instance Exist or Not
+			IF EXISTS(SELECT IntegrationInstanceId from IntegrationInstance where IntegrationInstanceId=@id and IsDeleted='0' and IsActive='1')
+			BEGIN
+				-- Identified Instance already In-Progress or Not
+				BEGIN
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get Tactic Data by Instance Id')
+					SET @instanceId= @id
+
+					-- START: Get Tactic Data by Instance Id
+					BEGIN TRY
+							;WITH tblTact AS (
+								Select tact.PlanTacticId,
+									   tact.PlanProgramId,
+									   campgn.PlanCampaignId,
+										tact.LinkedTacticId ,
+										tact.LinkedPlanId,
+										pln.[Year] as PlanYear
+								from [Model] as mdl
+								join [Plan] as pln on mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+								Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0
+								join Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0 
+								join Plan_Campaign_Program_Tactic as tact on prgrm.PlanProgramId = tact.PlanProgramId and tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncSalesForce='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete')
+								where  mdl.IntegrationInstanceId=@id and mdl.IsDeleted=0 and mdl.[Status]='Published' and mdl.IsActive='1'
+							),
+							 tactList AS (
+								(
+									SELECT tact1.PlanTacticId,
+											tact1.PlanProgramId,
+											tact1.PlanCampaignId,
+												tact1.LinkedTacticId ,
+												tact1.LinkedPlanId,
+												tact1.PlanYear,
+												@tact as ObjectType,
+												RN= 1
+									FROM tblTact as tact1 
+									WHERE IsNull(Tact1.LinkedTacticId,0) <=0
+								 )
+								 UNION
+								 (
+									SELECT tact1.PlanTacticId,
+											tact1.PlanProgramId,
+											tact1.PlanCampaignId,
+											tact1.LinkedTacticId ,
+											tact1.LinkedPlanId,
+											tact1.PlanYear,
+											@tact as ObjectType,
+											-- Get latest year tactic
+											RN = ROW_NUMBER() OVER (PARTITION BY CASE 
+																					WHEN  tact1.PlanTacticId < tact1.LinkedTacticId THEN CAST(tact1.PlanTacticId AS NVARCHAR) + ':' + CAST (tact1.LinkedTacticId AS NVARCHAR)  
+																					ELSE CAST (tact1.LinkedTacticId AS NVARCHAR) + ':' + CAST(tact1.PlanTacticId AS NVARCHAR) 
+																				 END 
+																	ORDER BY PlanYear DESC) 
+									FROM tblTact as tact1 
+									WHERE (tact1.LinkedTacticId > 0)
+								 )
+								 UNION
+								 (
+									-- Get Program data
+									Select Null as PlanTacticId,
+									   prgrm.PlanProgramId,
+									   prgrm.PlanCampaignId,
+										Null as LinkedTacticId ,
+										Null as LinkedPlanId,
+										pln.[Year] as PlanYear,
+										@prg as ObjectType,
+										RN= 1
+									from [Model] as mdl
+									join [Plan] as pln on mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+									Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0
+									join Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0 and prgrm.IsDeployedToIntegration='1' and (prgrm.[Status]='Approved' or prgrm.[Status]='In-Progress' or prgrm.[Status]='Complete')
+									where  mdl.IntegrationInstanceId=@id and mdl.IsDeleted=0 and mdl.[Status]='Published' and mdl.IsActive='1'
+								 )
+								 UNION
+								 (
+									-- Get Campaign list.
+									Select Null as PlanTacticId,
+										Null as PlanProgramId,
+										campgn.PlanCampaignId,
+										Null as LinkedTacticId ,
+										Null as LinkedPlanId,
+										pln.[Year] as PlanYear,
+										@cmpgn as ObjectType,
+										RN= 1
+									from [Model] as mdl
+									join [Plan] as pln on mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+									Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0 and campgn.IsDeployedToIntegration='1' and (campgn.[Status]='Approved' or campgn.[Status]='In-Progress' or campgn.[Status]='Complete')
+									where  mdl.IntegrationInstanceId=@id and mdl.IsDeleted=0 and mdl.[Status]='Published' and mdl.IsActive='1'
+								 )
+							)
+							Insert into @tblTaclist select * from tactList WHERE RN = 1;
+
+							-- Get Improvement TacticIds
+							BEGIN
+								Insert into @tblImprvEntity
+								Select Imprvtact.ImprovementPlanTacticId,
+									   Imprvtact.ImprovementPlanProgramId,
+									   Imprvcampgn.ImprovementPlanCampaignId,
+									   @entityTypeImprvTac as ObjectType
+								from [Model] as mdl
+								join [Plan] as pln on mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+								Join Plan_Improvement_Campaign as Imprvcampgn ON Imprvcampgn.ImprovePlanId = pln.PlanId 
+								join Plan_Improvement_Campaign_Program as Imprvprgrm on Imprvcampgn.ImprovementPlanCampaignId = Imprvprgrm.ImprovementPlanCampaignId 
+								join Plan_Improvement_Campaign_Program_Tactic as Imprvtact on Imprvprgrm.ImprovementPlanProgramId = Imprvtact.ImprovementPlanProgramId and Imprvtact.IsDeleted=0 and Imprvtact.IsDeployedToIntegration='1'and (Imprvtact.[Status]='Approved' or Imprvtact.[Status]='In-Progress' or Imprvtact.[Status]='Complete')
+								where mdl.IntegrationInstanceId=@id and mdl.IsDeleted=0 and mdl.[Status]='Published' and mdl.IsActive='1'
+							END
+
+					--select * from @tblTaclist
+					END TRY
+					BEGIN CATCH
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()))	
+					END CATCH
+
+					-- END: Get Tactic Data by Instance Id
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Get Tactic Data by Instance Id')
+				END
+				
+			END
+			ELSE
+			BEGIN
+				Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logInfo+@logSP+'Instance Not Exist')
+			END
+			
+		END	
+		ELSE IF(UPPER(@entityType) = UPPER(@entityTypeTac))
+		BEGIN
+			
+			Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get Tactic Data by Tactic Id')
+			BEGIN TRY
+
+				-- Pick latest year tactic in case of linked Tactic and push to SFDC.
+				IF EXISTS(SELECT LinkedTacticId from Plan_Campaign_Program_Tactic where PlanTacticId=@id)
+				BEGIN
+					
+					DECLARE @tac_lnkdIds varchar(20)=''
+					SELECT @tac_lnkdIds=cast(PlanTacticId as varchar)+','+Cast(ISNULL(LinkedTacticId,0) as varchar) 
+					FROM Plan_Campaign_Program_Tactic where PlanTacticId=@id
+					;WITH tbl as(
+								SELECT tact.PlanTacticId,tact.LinkedTacticId,tact.LinkedPlanId
+								FROM  Plan_Campaign_Program_Tactic as tact
+								WHERE PlanTacticId IN (select val from comma_split(@tac_lnkdIds,',')) and tact.IsDeleted=0
+								UNION ALL
+								SELECT tac.PlanTacticId,tac.LinkedTacticId,tac.LinkedPlanId
+								FROM  Plan_Campaign_Program_Tactic as tac 
+								INNER JOIN tbl as lnk on tac.LinkedTacticId=lnk.PlanTacticId
+								WHERE tac.PlanTacticId=@id
+								)
+					-- Set latest year tactic to @id variable
+					SELECT TOP 1 @id=LinkedTacticId 
+					FROM tbl
+					INNER JOIN [Plan] as pln on tbl.LinkedPlanId = pln.PlanId and pln.IsDeleted=0
+					ORDER BY [Year] DESC
+				END
+			
+				INSERT INTO @tblTaclist 
+				SELECT tact.PlanTacticId,
+						tact.PlanProgramId,
+						prg.PlanCampaignId,
+						tact.LinkedTacticId ,
+						tact.LinkedPlanId,
+						Null as PlanYear,
+						@tact as ObjectType,
+						1 as RN
+				FROM Plan_Campaign_Program_Tactic as tact 
+				INNER JOIN Plan_Campaign_Program as prg on tact.PlanProgramId = prg.PlanProgramId and prg.IsDeleted='0'
+				WHERE tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncSalesForce='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete') and tact.PlanTacticId=@id
+				
+				-- Get Integration Instance Id based on Tactic Id.
+				SELECT @instanceId=mdl.IntegrationInstanceId
+				FROM [Model] as mdl
+				INNER JOIN [Plan] as pln ON mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+				INNER JOIN [Plan_Campaign] as cmpgn ON pln.PlanId = cmpgn.PlanId and cmpgn.IsDeleted=0
+				INNER JOIN [Plan_Campaign_Program] as prg ON cmpgn.PlanCampaignId = prg.PlanCampaignId and prg.IsDeleted=0
+				INNER JOIN @tblTaclist as tac ON prg.PlanProgramId = tac.PlanProgramId
+			END TRY
+			BEGIN CATCH
+				Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()))	
+			END CATCH
+
+			Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Get Tactic Data by Tactic Id')
+		END
+		ELSE IF(UPPER(@entityType) = UPPER(@entityTypeProg))
+		BEGIN
+			Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get Tactic Data by Program Id')
+
+					-- START: Get Tactic Data by Instance Id
+					BEGIN TRY
+							;WITH tblTact AS (
+								Select tact.PlanTacticId,
+									   tact.PlanProgramId,
+									   campgn.PlanCampaignId,
+										tact.LinkedTacticId ,
+										tact.LinkedPlanId,
+										pln.[Year] as PlanYear
+								from [Plan] as pln
+								Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0
+								join Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0 and prgrm.PlanProgramId = @id
+								join Plan_Campaign_Program_Tactic as tact on prgrm.PlanProgramId = tact.PlanProgramId and tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncSalesForce='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete')
+								where pln.IsDeleted=0
+							),
+							 tactList AS (
+								(
+									SELECT tact1.PlanTacticId,
+											tact1.PlanProgramId,
+											tact1.PlanCampaignId,
+												tact1.LinkedTacticId ,
+												tact1.LinkedPlanId,
+												tact1.PlanYear,
+												@tact as ObjectType,
+												RN= 1
+									FROM tblTact as tact1 
+									WHERE IsNull(Tact1.LinkedTacticId,0) <=0
+								 )
+								 UNION
+								 (
+									SELECT tact1.PlanTacticId,
+											tact1.PlanProgramId,
+											tact1.PlanCampaignId,
+											tact1.LinkedTacticId ,
+											tact1.LinkedPlanId,
+											tact1.PlanYear,
+											@tact as ObjectType,
+											-- Get latest year tactic
+											RN = ROW_NUMBER() OVER (PARTITION BY CASE 
+																					WHEN  tact1.PlanTacticId < tact1.LinkedTacticId THEN CAST(tact1.PlanTacticId AS NVARCHAR) + ':' + CAST (tact1.LinkedTacticId AS NVARCHAR)  
+																					ELSE CAST (tact1.LinkedTacticId AS NVARCHAR) + ':' + CAST(tact1.PlanTacticId AS NVARCHAR) 
+																				 END 
+																	ORDER BY PlanYear DESC) 
+									FROM tblTact as tact1 
+									WHERE (tact1.LinkedTacticId > 0)
+								 )
+								 UNION
+								 (
+									-- Get Program data
+									Select Null as PlanTacticId,
+									   prgrm.PlanProgramId,
+									   prgrm.PlanCampaignId,
+										Null as LinkedTacticId ,
+										Null as LinkedPlanId,
+										pln.[Year] as PlanYear,
+										@prg as ObjectType,
+										RN= 1
+									from [Plan] as pln
+									INNER JOIN Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0
+									INNER JOIN Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0 and prgrm.PlanProgramId = @id
+									where pln.IsDeleted=0
+								 )
+							)
+							Insert into @tblTaclist select * from tactList WHERE RN = 1;
+
+							-- START: Get list of Campaigns not pushed into SFDC.
+							BEGIN
+								Insert into @tblTaclist 
+								select Null as PlanTacticId,
+									   Null as PlanProgramId,
+									   cmpgn.PlanCampaignId,
+									   Null as LinkedTacticId ,
+									   Null as LinkedPlanId,
+									   tac.PlanYear,
+									   @cmpgn as ObjectType,
+									   RN= 1
+								from @tblTaclist as tac
+								INNER join Plan_Campaign as cmpgn on tac.PlanCampaignId = cmpgn.PlanCampaignId and cmpgn.IsDeleted=0 and IsNull(cmpgn.IntegrationInstanceCampaignId,'') =''
+								INNER JOIN Plan_Campaign_Program as P on tac.PlanProgramId=P.PlanProgramId and (IsNull(P.IntegrationInstanceProgramId,'')='')
+								where tac.ObjectType=@prg
+							END
+							-- END: Get list of Campaigns not pushed into SFDC.
+							
+
+					--select * from @tblTaclist
+					END TRY
+					BEGIN CATCH
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()))	
+					END CATCH
+
+					-- Get Integration Instance Id based on Program Id.
+					SELECT @instanceId=mdl.IntegrationInstanceId
+					FROM [Model] as mdl
+					INNER JOIN [Plan] as pln ON mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+					INNER JOIN [Plan_Campaign] as cmpgn ON pln.PlanId = cmpgn.PlanId and cmpgn.IsDeleted=0
+					INNER JOIN [Plan_Campaign_Program] as prg ON cmpgn.PlanCampaignId = prg.PlanCampaignId and prg.IsDeleted=0 and prg.PlanProgramId=@id
+					
+					-- END: Get Tactic Data by Instance Id
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Get Tactic Data by Program Id')
+		END
+		ELSE IF(UPPER(@entityType) = UPPER(@entityTypeCampgn))
+		BEGIN
+			Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get Tactic Data by Campaign Id')
+					
+					-- START: Get Tactic Data by Instance Id
+					BEGIN TRY
+							;WITH tblTact AS (
+								Select tact.PlanTacticId,
+									   tact.PlanProgramId,
+									   campgn.PlanCampaignId,
+										tact.LinkedTacticId ,
+										tact.LinkedPlanId,
+										pln.[Year] as PlanYear
+								from [Plan] as pln 
+								INNER JOIN Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0 and campgn.PlanCampaignId=@id
+								INNER JOIN Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0 
+								INNER JOIN Plan_Campaign_Program_Tactic as tact on prgrm.PlanProgramId = tact.PlanProgramId and tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncSalesForce='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete')
+								where  pln.IsDeleted=0
+							),
+							 tactList AS (
+								(
+									SELECT tact1.PlanTacticId,
+											tact1.PlanProgramId,
+											tact1.PlanCampaignId,
+												tact1.LinkedTacticId ,
+												tact1.LinkedPlanId,
+												tact1.PlanYear,
+												@tact as ObjectType,
+												RN= 1
+									FROM tblTact as tact1 
+									WHERE IsNull(Tact1.LinkedTacticId,0) <=0
+								 )
+								 UNION
+								 (
+									SELECT tact1.PlanTacticId,
+											tact1.PlanProgramId,
+											tact1.PlanCampaignId,
+											tact1.LinkedTacticId ,
+											tact1.LinkedPlanId,
+											tact1.PlanYear,
+											@tact as ObjectType,
+											-- Get latest year tactic
+											RN = ROW_NUMBER() OVER (PARTITION BY CASE 
+																					WHEN  tact1.PlanTacticId < tact1.LinkedTacticId THEN CAST(tact1.PlanTacticId AS NVARCHAR) + ':' + CAST (tact1.LinkedTacticId AS NVARCHAR)  
+																					ELSE CAST (tact1.LinkedTacticId AS NVARCHAR) + ':' + CAST(tact1.PlanTacticId AS NVARCHAR) 
+																				 END 
+																	ORDER BY PlanYear DESC) 
+									FROM tblTact as tact1 
+									WHERE (tact1.LinkedTacticId > 0)
+								 )
+								 UNION
+								 (
+									-- Get Program data
+									Select Null as PlanTacticId,
+									   prgrm.PlanProgramId,
+									   prgrm.PlanCampaignId,
+										Null as LinkedTacticId ,
+										Null as LinkedPlanId,
+										pln.[Year] as PlanYear,
+										@prg as ObjectType,
+										RN= 1
+									from [Plan] as pln 
+									INNER JOIN Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0 and campgn.PlanCampaignId=@id
+									INNER JOIN Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0 and prgrm.IsDeployedToIntegration='1' and (prgrm.[Status]='Approved' or prgrm.[Status]='In-Progress' or prgrm.[Status]='Complete')
+									where pln.IsDeleted=0
+								 )
+								 UNION
+								 (
+									-- Get Campaign list.
+									Select Null as PlanTacticId,
+										Null as PlanProgramId,
+										campgn.PlanCampaignId,
+										Null as LinkedTacticId ,
+										Null as LinkedPlanId,
+										pln.[Year] as PlanYear,
+										@cmpgn as ObjectType,
+										RN= 1
+									from [Plan] as pln 
+									INNER JOIN Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0 and campgn.PlanCampaignId=@id and campgn.IsDeployedToIntegration='1' and (campgn.[Status]='Approved' or campgn.[Status]='In-Progress' or campgn.[Status]='Complete')
+									where pln.IsDeleted=0
+								 )
+							)
+							Insert into @tblTaclist select * from tactList WHERE RN = 1;
+
+					--select * from @tblTaclist
+					END TRY
+					BEGIN CATCH
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()))	
+					END CATCH
+
+					-- Get Integration Instance Id based on Program Id.
+					SELECT @instanceId=mdl.IntegrationInstanceId
+					FROM [Model] as mdl
+					INNER JOIN [Plan] as pln ON mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+					INNER JOIN [Plan_Campaign] as cmpgn ON pln.PlanId = cmpgn.PlanId and cmpgn.IsDeleted=0 and cmpgn.PlanCampaignId=@id
+
+					-- END: Get Tactic Data by Instance Id
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Get Tactic Data by Campaign Id')
+		END
+		ELSE IF(UPPER(@entityType) = UPPER(@entityTypeImprvTac))
+		BEGIN
+			-- Get Improvement TacticIds
+			BEGIN
+				Insert into @tblImprvEntity
+				Select Imprvtact.ImprovementPlanTacticId,
+					   Imprvtact.ImprovementPlanProgramId,
+					   Imprvcampgn.ImprovementPlanCampaignId,
+					   @entityTypeImprvTac as ObjectType
+				from Plan_Improvement_Campaign as Imprvcampgn
+				INNER JOIN Plan_Improvement_Campaign_Program as Imprvprgrm on Imprvcampgn.ImprovementPlanCampaignId = Imprvprgrm.ImprovementPlanCampaignId 
+				INNER JOIN Plan_Improvement_Campaign_Program_Tactic as Imprvtact on Imprvprgrm.ImprovementPlanProgramId = Imprvtact.ImprovementPlanProgramId and Imprvtact.ImprovementPlanTacticId=@id and Imprvtact.IsDeleted=0 and Imprvtact.IsDeployedToIntegration='1'and (Imprvtact.[Status]='Approved' or Imprvtact.[Status]='In-Progress' or Imprvtact.[Status]='Complete')
+				
+				-- Get Integration Instance Id based on Tactic Id.
+				SELECT @instanceId=mdl.IntegrationInstanceId
+				FROM [Model] as mdl
+				INNER JOIN [Plan] as pln ON mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+				INNER JOIN [Plan_Improvement_Campaign] as Imprvcmpgn ON pln.PlanId = Imprvcmpgn.ImprovePlanId
+				INNER JOIN [Plan_Improvement_Campaign_Program] as ImprvPrg ON Imprvcmpgn.ImprovementPlanCampaignId = ImprvPrg.ImprovementPlanCampaignId 
+				INNER JOIN @tblImprvEntity as ImprvTac ON ImprvPrg.ImprovementPlanProgramId = ImprvTac.ImprovementPlanProgramId
+			END
+		END
+		Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Identify EnityType Tactic or Integration Instance')
+
+		-- START: Get IntegrationTypeId
+		IF(@instanceId>0)
+		BEGIN
+			SELECT @integrationTypeId=IntegrationTypeId,@isCustomNameAllow=CustomNamingPermission from IntegrationInstance where IntegrationInstanceId=@instanceId
+		END
+		-- END: Get IntegrationTypeId
+
+		-- START: Get list of Programs not pushed into SFDC.
+		BEGIN
+			Insert into @tblTaclist 
+			select Null as PlanTacticId,
+						   prg.PlanProgramId,
+						   prg.PlanCampaignId,
+							Null as LinkedTacticId ,
+							Null as LinkedPlanId,
+							tac.PlanYear,
+							@prg as ObjectType,
+							RN= 1
+			from @tblTaclist as tac
+			INNER Join Plan_Campaign_Program as prg on tac.PlanProgramId = prg.PlanProgramId and prg.IsDeleted=0 and IsNull(prg.IntegrationInstanceProgramId,'') =''
+			INNER JOIN Plan_Campaign_Program_Tactic as t on tac.PlanTacticId=t.PlanTacticId and (IsNull(t.IntegrationInstanceTacticId,'')='')
+			where tac.ObjectType=@tact 
+		END
+		-- END: Get list of Programs not pushed into SFDC.
+
+
+		-- START: Get list of Campaigns not pushed into SFDC.
+		BEGIN
+			Insert into @tblTaclist 
+			select Null as PlanTacticId,
+				   Null as PlanProgramId,
+				   cmpgn.PlanCampaignId,
+				   Null as LinkedTacticId ,
+				   Null as LinkedPlanId,
+				   tac.PlanYear,
+				   @cmpgn as ObjectType,
+				   RN= 1
+			from @tblTaclist as tac
+			INNER join Plan_Campaign as cmpgn on tac.PlanCampaignId = cmpgn.PlanCampaignId and cmpgn.IsDeleted=0 and IsNull(cmpgn.IntegrationInstanceCampaignId,'') =''
+			INNER JOIN Plan_Campaign_Program_Tactic as t on tac.PlanTacticId=t.PlanTacticId and (IsNull(t.IntegrationInstanceTacticId,'')='')
+			where tac.ObjectType=@tact
+		END
+		-- END: Get list of Campaigns not pushed into SFDC.
+
+
+		-- START: Add list of Improvement Programs not pushed into SFDC.
+		BEGIN
+			Insert into @tblImprvEntity 
+			select Null as ImprovementPlanTacticId,
+						   Imprvprg.ImprovementPlanProgramId,
+						   Imprvprg.ImprovementPlanCampaignId,
+							@entityTypeImprvProg as ObjectType
+			from @tblImprvEntity as Imprvtac
+			INNER Join Plan_Improvement_Campaign_Program as Imprvprg on Imprvtac.ImprovementPlanProgramId = Imprvprg.ImprovementPlanProgramId and IsNull(Imprvprg.IntegrationInstanceProgramId,'') =''
+			INNER JOIN Plan_Improvement_Campaign_Program_Tactic as IT on Imprvtac.ImprovementPlanTacticId=IT.ImprovementPlanTacticId and (IsNull(IT.IntegrationInstanceTacticId,'')='')
+			where Imprvtac.ObjectType=@entityTypeImprvTac 
+		END
+		-- END: Get list of Programs not pushed into SFDC.
+
+
+		-- START: Get list of Improvement Campaigns not pushed into SFDC.
+		BEGIN
+			Insert into @tblImprvEntity 
+			select Null as ImprovementPlanTacticId,
+						   Null as ImprovementPlanProgramId,
+						   ImprvCmpgn.ImprovementPlanCampaignId,
+							@entityTypeImprvCamp as ObjectType
+			from @tblImprvEntity as Imprvtac
+			INNER Join Plan_Improvement_Campaign as ImprvCmpgn on Imprvtac.ImprovementPlanCampaignId = ImprvCmpgn.ImprovementPlanCampaignId and IsNull(ImprvCmpgn.IntegrationInstanceCampaignId,'') =''
+			INNER JOIN Plan_Improvement_Campaign_Program_Tactic as IT on Imprvtac.ImprovementPlanTacticId=IT.ImprovementPlanTacticId and (IsNull(IT.IntegrationInstanceTacticId,'')='')
+			where Imprvtac.ObjectType=@entityTypeImprvTac 
+		END
+		-- END: Get list of Campaigns not pushed into SFDC.
+
+
+		-- START: GET result data based on Mapping fields
+		BEGIN
+			IF (EXISTS(Select 1 from @tblTaclist)) OR (EXISTS(Select 1 from @tblImprvEntity))
+			-- Identify that Data Exist or Not
+			BEGIN
+				IF EXISTS(Select IntegrationInstanceDataTypeMappingId from IntegrationInstanceDataTypeMapping where IntegrationInstanceId=@instanceId)
+				BEGIN
+					DECLARE @DynamicPivotQuery AS NVARCHAR(MAX) =''
+					DECLARE @ColumnName AS NVARCHAR(MAX) =''
+					Declare @updIds varchar(max)=''
+
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get comma separated column names')
+					
+					BEGIN TRY
+						-- Get comma separated  mapping fields name as columns of Campaign,Program,Tactic & Improvement Campaign,Program & Tactic 
+						select  @ColumnName = dbo.GetSFDCTacticResultColumns(@instanceId,@clientId,@integrationTypeId)
+					END TRY
+					BEGIN CATCH
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()))	
+					END CATCH
+										
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Get comma separated column names')	
+					
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get Tactic Ids')
+					
+					-- START: Get TacticIds
+					SELECT @entTacIds= ISNULL(@entTacIds + ',','') + (PlanTacticId1)
+					FROM (Select DISTINCT Cast (PlanTacticId as varchar(max)) PlanTacticId1 FROM @tblTaclist where ObjectType=@tact) AS PlanTacticIds
+					-- END: Get TacticIds
+
+					-- START: Get Campaign Ids
+					SELECT @entCmpgnIds= ISNULL(@entCmpgnIds + ',','') + (PlanCampgnId1)
+					FROM (Select DISTINCT Cast (PlanCampaignId as varchar(max)) PlanCampgnId1 FROM @tblTaclist where ObjectType=@cmpgn) AS PlanCampaignIds
+					-- END: Get Campaign Ids
+
+					-- START: Get Program Ids
+					SELECT @entPrgIds= ISNULL(@entPrgIds + ',','') + (PlanPrgrmId1)
+					FROM (Select DISTINCT Cast (PlanProgramId as varchar(max)) PlanPrgrmId1 FROM @tblTaclist where ObjectType=@prg) AS PlanProgramIds
+					-- END: Get Program Ids
+
+					-- Get Improvement Ids
+					BEGIN
+						-- START: Get ImprvmntTacticIds
+						SELECT @entImrvmntTacIds = ISNULL(@entImrvmntTacIds  + ',','') + (ImprvTac)
+						FROM (Select DISTINCT Cast (ImprovementPlanTacticId as varchar(max)) ImprvTac FROM @tblImprvEntity where ObjectType=@entityTypeImprvTac) AS PlanTacticIds
+						-- END: Get ImprvmntTacticIds
+
+						-- START: Get ImprvmntCampaign Ids
+						SELECT @entImrvmntCmpgnIds = ISNULL(@entImrvmntCmpgnIds  + ',','') + (ImprvCampgn)
+						FROM (Select DISTINCT Cast (ImprovementPlanCampaignId as varchar(max)) ImprvCampgn FROM @tblImprvEntity where ObjectType=@entityTypeImprvCamp) AS PlanCampaignIds
+						-- END: Get ImprvmntCampaign Ids
+
+						-- START: Get ImprvmntProgram Ids
+						SELECT @entImrvmntPrgIds= ISNULL(@entImrvmntPrgIds + ',','') + (ImprvPrgrm)
+						FROM (Select DISTINCT Cast (ImprovementPlanProgramId as varchar(max)) ImprvPrgrm FROM @tblImprvEntity where ObjectType=@entityTypeImprvProg) AS PlanProgramIds
+						-- END: Get ImprvmntProgram Ids
+					END
+					
+					-- START: IF Client & Instance has CustomName permission then generate customname for all required tactics
+					IF(IsNull(@isCustomNameAllow,'0')='1' AND IsNull(@isClientAllowCustomName,'0')='1')
+					BEGIN
+						----- START: Get Updte CustomName TacIds -----
+						SELECT @updIds= ISNULL(@updIds + ',','') + (PlanTacticId1)
+						FROM (Select DISTINCT Cast (PlanTacticId as varchar(max)) PlanTacticId1 FROM @tblTaclist where ObjectType=@tact) AS PlanTacticIds
+						----- END: Get Updte CustomName TacIds -----
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Get Tactic Ids')
+
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Update Tactic CustomName')
+
+						BEGIN TRY
+							-- START: Update Tactic Name --
+							UPDATE Plan_Campaign_Program_Tactic 
+							SET TacticCustomName = T1.CustomName 
+							FROM GetTacCustomNameMappingList('Tactic',@clientId,@updIds) as T1 
+							INNER JOIN Plan_Campaign_Program_Tactic as T2 ON T1.PlanTacticId = T2.PlanTacticId and IsNull(T2.TacticCustomName,'')=''
+							-- END: Update Tactic Name --
+						END TRY
+						BEGIN CATCH
+							Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()))	
+						END CATCH
+
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Update Tactic CustomName')
+					END
+
+					--SELECT * from  [GetSFDCSourceTargetMappingData]('Tactic','464EB808-AD1F-4481-9365-6AADA15023BD',N'101371',2,1203,255,0,0)
+
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Create final result Pivot Query')
+
+					BEGIN TRY
+						SET @dynResultQuery ='SELECT distinct SourceId,SourceParentId,SalesforceId,ObjectType,Mode,'+@ColumnName+' 
+																FROM (
+																		(
+																			SELECT ActualFieldName,TacValue,SourceId 
+																			FROM [GetSFDCSourceTargetMappingData]('''+ @tact +''','''+ CAST(@clientId AS NVARCHAR(36)) +''','''+ @entTacIds +''','''+ CAST(@integrationTypeId AS NVARCHAR) +''','''+ CAST(@instanceId AS NVARCHAR) +''','''+ CAST(@SFDCTitleLengthLimit AS NVARCHAR) +''','''+ CAST(@isCustomNameAllow AS NVARCHAR) +''','''+ CAST(@isClientAllowCustomName AS NVARCHAR) +''')
+																		)
+																		UNION
+																		(
+																			SELECT ActualFieldName,TacValue,SourceId 
+																			FROM [GetSFDCSourceTargetMappingData]('''+ @prg +''','''+ CAST(@clientId AS NVARCHAR(36)) +''','''+ @entPrgIds +''','''+ CAST(@integrationTypeId AS NVARCHAR) +''','''+ CAST(@instanceId AS NVARCHAR) +''','''+ CAST(@SFDCTitleLengthLimit AS NVARCHAR) +''','''+ CAST(@isCustomNameAllow AS NVARCHAR) +''','''+ CAST(@isClientAllowCustomName AS NVARCHAR) +''')
+																		)
+																		UNION
+																		(
+																			SELECT ActualFieldName,TacValue,SourceId 
+																			FROM [GetSFDCSourceTargetMappingData]('''+ @cmpgn +''','''+ CAST(@clientId AS NVARCHAR(36)) +''','''+ @entCmpgnIds +''','''+ CAST(@integrationTypeId AS NVARCHAR) +''','''+ CAST(@instanceId AS NVARCHAR) +''','''+ CAST(@SFDCTitleLengthLimit AS NVARCHAR) +''','''+ CAST(@isCustomNameAllow AS NVARCHAR) +''','''+ CAST(@isClientAllowCustomName AS NVARCHAR) +''')
+																		)
+																		UNION
+																		(
+																			SELECT ActualFieldName,TacValue,SourceId 
+																			FROM [GetSFDCSourceTargetMappingData]('''+ @entityTypeImprvCamp +''','''+ CAST(@clientId AS NVARCHAR(36)) +''','''+ @entImrvmntCmpgnIds +''','''+ CAST(@integrationTypeId AS NVARCHAR) +''','''+ CAST(@instanceId AS NVARCHAR) +''','''+ CAST(@SFDCTitleLengthLimit AS NVARCHAR) +''','''+ CAST(@isCustomNameAllow AS NVARCHAR) +''','''+ CAST(@isClientAllowCustomName AS NVARCHAR) +''')
+																		)
+																		UNION
+																		(
+																			SELECT ActualFieldName,TacValue,SourceId 
+																			FROM [GetSFDCSourceTargetMappingData]('''+ @entityTypeImprvProg +''','''+ CAST(@clientId AS NVARCHAR(36)) +''','''+ @entImrvmntPrgIds +''','''+ CAST(@integrationTypeId AS NVARCHAR) +''','''+ CAST(@instanceId AS NVARCHAR) +''','''+ CAST(@SFDCTitleLengthLimit AS NVARCHAR) +''','''+ CAST(@isCustomNameAllow AS NVARCHAR) +''','''+ CAST(@isClientAllowCustomName AS NVARCHAR) +''')
+																		)
+																		UNION
+																		(
+																			SELECT ActualFieldName,TacValue,SourceId 
+																			FROM [GetSFDCSourceTargetMappingData]('''+ @entityTypeImprvTac +''','''+ CAST(@clientId AS NVARCHAR(36)) +''','''+ @entImrvmntTacIds +''','''+ CAST(@integrationTypeId AS NVARCHAR) +''','''+ CAST(@instanceId AS NVARCHAR) +''','''+ CAST(@SFDCTitleLengthLimit AS NVARCHAR) +''','''+ CAST(@isCustomNameAllow AS NVARCHAR) +''','''+ CAST(@isClientAllowCustomName AS NVARCHAR) +''')
+																		)
+																	) as R
+						    PIVOT(
+								  MIN(TacValue)
+						          FOR ActualFieldName IN (SourceParentId,SalesforceId,ObjectType,Mode,'+@ColumnName+')
+								 ) AS PVTTable
+								 '
+					END TRY
+					BEGIN CATCH
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()+',SQL Query-'+ (Select @dynResultQuery)))	
+					END CATCH
+
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Create final result Pivot Query')
+					--PRINT @dynResultQuery  
+					--Execute the Dynamic Pivot Query
+					--EXEC sp_executesql @dynResultQuery
+					
+				END
+				ELSE
+				BEGIN
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logInfo+@logSP+'No single field mapped for Salesforce instance')
+				END
+			END
+			ELSE
+			BEGIN
+				Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logInfo+@logSP+'Data does not exist')
+			END
+		END
+		-- END: GET result data based on Mapping fields
+
+	END
+	-- END
+	Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logInfo+@logSP+'Get final result data to push Salesforce')
+	EXEC(@dynResultQuery)
+	--select * from @tblSyncError
+	--SELECT @logStartInstanceLogId as 'InstanceLogStartId'
+END
+
+
+
+GO
+/****** Object:  StoredProcedure [dbo].[spGetSalesforceMarketo3WayData]    Script Date: 06/10/2016 11:02:02 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGetSalesforceMarketo3WayData]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[spGetSalesforceMarketo3WayData] AS' 
+END
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[spGetSalesforceMarketo3WayData]
+	@entityType varchar(255)='',
+	@id int=0,
+	@clientId nvarchar(max),
+	@SFDCTitleLengthLimit int,
+	@integrationInstanceLogId int=0,
+	@isClientAllowCustomName bit=0
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- START: Declare local variables
+	BEGIN
+		-- Start: Entity Type variables
+		Declare @entityTypeTac varchar(255)='Tactic'
+		Declare @entityTypeProg varchar(255)='Program'
+		Declare @entityTypeCampgn varchar(255)='Campaign'
+		Declare @entityTypeImprvTac varchar(255)='ImprovementTactic'
+		Declare @entityTypeImprvProg varchar(255)='ImprovementProgram'
+		Declare @entityTypeImprvCamp varchar(255)='ImprovementCampaign'
+		Declare @entityTypeIntegrationInstance varchar(255)='IntegrationInstance'
+		-- END: Entity Type variables
+
+		-- Start: Sync Status variables
+		Declare @syncStatusInProgress varchar(255)='In-Progress'
+		-- End: Sync Status variables
+		
+		--Declare @isAutoSync bit='0'
+		--Declare @nullGUID uniqueidentifier
+		Declare @integrationTypeId int=0
+		Declare @isCustomNameAllow bit ='0'
+		Declare @instanceId int=0
+		Declare @entIds varchar(max)=''
+		Declare @dynResultQuery nvarchar(max)=''
+
+		--Start: Instance Section Name Variables
+		Declare @sectionPushTacticData varchar(1000)='PushTacticData'
+		--END: Instance Section Name Variables
+
+		-- Start: PUSH Col Names
+		Declare @colName varchar(50)='Name'
+		Declare @colDescription varchar(50)='Description'
+		
+		-- End: PUSH Col Names
+
+		-- Start: Log variables
+		Declare @logStart varchar(20)='Start :'
+		Declare @logEnd varchar(20)='End :'
+		Declare @logSP varchar(100)='Stored Procedure Execution- '
+		Declare @logError varchar(20)='Error :'
+		Declare @logInfo varchar(20)='Info :'
+		-- Start: End variables
+
+		-- Start: Object Type variables
+		Declare @tact varchar(20)='Tactic'
+		Declare @prg varchar(20)='Program'
+		Declare @cmpgn varchar(20)='Campaign'
+		-- END: Object Type variables
+
+		-- Start: Entity Ids
+		Declare @entTacIds nvarchar(max)=''
+		Declare @entPrgIds nvarchar(max)=''
+		Declare @entCmpgnIds nvarchar(max)=''
+		Declare @entImrvmntTacIds nvarchar(max)=''
+		Declare @entImrvmntPrgIds nvarchar(max)=''
+		Declare @entImrvmntCmpgnIds nvarchar(max)=''
+		-- End: Entity Ids
+
+	END
+	-- END: Declare local variables
+
+	-- Store Campaign, Program & Tactic related data
+	Declare @tblTaclist table (
+								PlanTacticId int,
+								PlanProgramId int,
+								PlanCampaignId int,
+								LinkedTacticId int,
+								LinkedPlanId int,
+								PlanYear int,
+								ObjectType varchar(20),
+								RN int
+								)
+
+	-- Start: Identify Entity Type
+
+	BEGIN
+
+		Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Identify EnityType Integration Instance')
+		
+		IF(UPPER(@entityType) = UPPER(@entityTypeIntegrationInstance))
+		BEGIN
+
+			-- Identified Instance Exist or Not
+			IF EXISTS(SELECT IntegrationInstanceId from IntegrationInstance where IntegrationInstanceId=@id and IsDeleted='0' and IsActive='1')
+			BEGIN
+				-- Identified Instance already In-Progress or Not
+				BEGIN
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get Tactic Data by Instance Id')
+					SET @instanceId= @id
+
+					-- START: Identify 3 Way integration between Marketo & SFDC - Create hierarchy in SFDC 
+					BEGIN
+						Declare @isSyncSFDCWithMarketo bit='1'
+						Declare @ModelIds varchar(max)=''
+						SELECT @ModelIds = ISNULL(@ModelIds  + ',','') + (mdlId)
+						FROM (Select DISTINCT Cast (ModelId as varchar(max)) mdlId from Model where ((IsNull(IsDeleted,'0')='0') AND (IsNull(IntegrationInstanceId,0)=0) AND (IntegrationInstanceMarketoID>0) AND IntegrationInstanceMarketoID<>@id AND (IntegrationInstanceIdINQ=@id OR IntegrationInstanceIdMQL=@id OR IntegrationInstanceIdCW=@id))) AS planIds
+					END
+
+					-- START: Get Tactic Data by Instance Id
+					BEGIN TRY
+							;WITH tblTact AS (
+								Select tact.PlanTacticId,
+									   tact.PlanProgramId,
+									   campgn.PlanCampaignId,
+										tact.LinkedTacticId ,
+										tact.LinkedPlanId,
+										pln.[Year] as PlanYear
+								from [Model] as mdl
+								join [Plan] as pln on mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+								Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0
+								join Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0
+								join Plan_Campaign_Program_Tactic as tact on prgrm.PlanProgramId = tact.PlanProgramId and tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncMarketo='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete')
+								where  mdl.ModelId IN (
+														Select DISTINCT ModelId from Model where ((IsNull(IsDeleted,'0')='0') AND (IsNull(IntegrationInstanceId,0)=0) AND (IntegrationInstanceMarketoID>0) AND IntegrationInstanceMarketoID<>@id AND (IntegrationInstanceIdINQ=@id OR IntegrationInstanceIdMQL=@id OR IntegrationInstanceIdCW=@id))
+													   ) and mdl.[Status]='Published' and mdl.IsActive='1'
+							),
+							 tactList AS (
+								(
+									SELECT tact1.PlanTacticId,
+											tact1.PlanProgramId,
+											tact1.PlanCampaignId,
+												tact1.LinkedTacticId ,
+												tact1.LinkedPlanId,
+												tact1.PlanYear,
+												@tact as ObjectType,
+												RN= 1
+									FROM tblTact as tact1 
+									WHERE IsNull(Tact1.LinkedTacticId,0) <=0
+								 )
+								 UNION
+								 (
+									SELECT tact1.PlanTacticId,
+											tact1.PlanProgramId,
+											tact1.PlanCampaignId,
+											tact1.LinkedTacticId ,
+											tact1.LinkedPlanId,
+											tact1.PlanYear,
+											@tact as ObjectType,
+											-- Get latest year tactic
+											RN = ROW_NUMBER() OVER (PARTITION BY CASE 
+																					WHEN  tact1.PlanTacticId < tact1.LinkedTacticId THEN CAST(tact1.PlanTacticId AS NVARCHAR) + ':' + CAST (tact1.LinkedTacticId AS NVARCHAR)  
+																					ELSE CAST (tact1.LinkedTacticId AS NVARCHAR) + ':' + CAST(tact1.PlanTacticId AS NVARCHAR) 
+																				 END 
+																	ORDER BY PlanYear DESC) 
+									FROM tblTact as tact1 
+									WHERE (tact1.LinkedTacticId > 0)
+								 )
+								 UNION
+								 (
+									-- Get Program data
+									Select Null as PlanTacticId,
+									   prgrm.PlanProgramId,
+									   prgrm.PlanCampaignId,
+										Null as LinkedTacticId ,
+										Null as LinkedPlanId,
+										pln.[Year] as PlanYear,
+										@prg as ObjectType,
+										RN= 1
+									from [Model] as mdl
+									join [Plan] as pln on mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+									Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0
+									join Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0 and (prgrm.[Status]='Approved' or prgrm.[Status]='In-Progress' or prgrm.[Status]='Complete')
+									where  mdl.IntegrationInstanceId=@id and mdl.IsDeleted=0 and mdl.[Status]='Published' and mdl.IsActive='1'
+								 )
+								 UNION
+								 (
+									-- Get Campaign list.
+									Select Null as PlanTacticId,
+										Null as PlanProgramId,
+										campgn.PlanCampaignId,
+										Null as LinkedTacticId ,
+										Null as LinkedPlanId,
+										pln.[Year] as PlanYear,
+										@cmpgn as ObjectType,
+										RN= 1
+									from [Model] as mdl
+									join [Plan] as pln on mdl.ModelId = pln.ModelId and pln.IsDeleted=0
+									Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0 and (campgn.[Status]='Approved' or campgn.[Status]='In-Progress' or campgn.[Status]='Complete')
+									where  mdl.IntegrationInstanceId=@id and mdl.IsDeleted=0 and mdl.[Status]='Published' and mdl.IsActive='1'
+								 )
+							)
+							Insert into @tblTaclist select * from tactList WHERE RN = 1;
+
+					--select * from @tblTaclist
+					END TRY
+					BEGIN CATCH
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()))	
+					END CATCH
+
+					-- END: Get Tactic Data by Instance Id
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Get Tactic Data by Instance Id')
+				END
+				
+			END
+			ELSE
+			BEGIN
+				Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logInfo+@logSP+'Instance Not Exist')
+			END
+			
+		END	
+		
+		Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Identify EnityType Integration Instance')
+
+		-- START: Get IntegrationTypeId
+		IF(@instanceId>0)
+		BEGIN
+			SELECT @integrationTypeId=IntegrationTypeId,@isCustomNameAllow=CustomNamingPermission from IntegrationInstance where IntegrationInstanceId=@instanceId
+		END
+		-- END: Get IntegrationTypeId
+
+		-- START: Get list of Programs not pushed into SFDC.
+		BEGIN
+			Insert into @tblTaclist 
+			select Null as PlanTacticId,
+						   prg.PlanProgramId,
+						   prg.PlanCampaignId,
+							Null as LinkedTacticId ,
+							Null as LinkedPlanId,
+							tac.PlanYear,
+							@prg as ObjectType,
+							RN= 1
+			from @tblTaclist as tac
+			INNER Join Plan_Campaign_Program as prg on tac.PlanProgramId = prg.PlanProgramId and prg.IsDeleted=0 and IsNull(prg.IntegrationInstanceProgramId,'') =''
+			INNER JOIN Plan_Campaign_Program_Tactic as t on tac.PlanTacticId=t.PlanTacticId and (IsNull(t.IntegrationInstanceTacticId,'')='')
+			where tac.ObjectType=@tact 
+		END
+		-- END: Get list of Programs not pushed into SFDC.
+
+
+		-- START: Get list of Campaigns not pushed into SFDC.
+		BEGIN
+			Insert into @tblTaclist 
+			select Null as PlanTacticId,
+				   Null as PlanProgramId,
+				   cmpgn.PlanCampaignId,
+				   Null as LinkedTacticId ,
+				   Null as LinkedPlanId,
+				   tac.PlanYear,
+				   @cmpgn as ObjectType,
+				   RN= 1
+			from @tblTaclist as tac
+			INNER join Plan_Campaign as cmpgn on tac.PlanCampaignId = cmpgn.PlanCampaignId and cmpgn.IsDeleted=0 and IsNull(cmpgn.IntegrationInstanceCampaignId,'') =''
+			INNER JOIN Plan_Campaign_Program_Tactic as t on tac.PlanTacticId=t.PlanTacticId and (IsNull(t.IntegrationInstanceTacticId,'')='')
+			where tac.ObjectType=@tact
+		END
+		-- END: Get list of Campaigns not pushed into SFDC.
+
+
+		-- START: GET result data based on Mapping fields
+		BEGIN
+			IF (EXISTS(Select 1 from @tblTaclist))
+			-- Identify that Data Exist or Not
+			BEGIN
+				IF EXISTS(Select IntegrationInstanceDataTypeMappingId from IntegrationInstanceDataTypeMapping where IntegrationInstanceId=@instanceId)
+				BEGIN
+					DECLARE @DynamicPivotQuery AS NVARCHAR(MAX) =''
+					DECLARE @ColumnName AS NVARCHAR(MAX) =''
+					Declare @updIds varchar(max)=''
+
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get comma separated column names')
+					
+					BEGIN TRY
+						-- Get comma separated  mapping fields name as columns of Campaign,Program,Tactic & Improvement Campaign,Program & Tactic 
+						select  @ColumnName = dbo.GetSFDCTacticResultColumns(@instanceId,@clientId,@integrationTypeId)
+					END TRY
+					BEGIN CATCH
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()))	
+					END CATCH
+										
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Get comma separated column names')	
+					
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Get Tactic Ids')
+					
+					-- START: Get TacticIds
+					SELECT @entTacIds= ISNULL(@entTacIds + ',','') + (PlanTacticId1)
+					FROM (Select DISTINCT Cast (PlanTacticId as varchar(max)) PlanTacticId1 FROM @tblTaclist where ObjectType=@tact) AS PlanTacticIds
+					-- END: Get TacticIds
+
+					-- START: Get Campaign Ids
+					SELECT @entCmpgnIds= ISNULL(@entCmpgnIds + ',','') + (PlanCampgnId1)
+					FROM (Select DISTINCT Cast (PlanCampaignId as varchar(max)) PlanCampgnId1 FROM @tblTaclist where ObjectType=@cmpgn) AS PlanCampaignIds
+					-- END: Get Campaign Ids
+
+					-- START: Get Program Ids
+					SELECT @entPrgIds= ISNULL(@entPrgIds + ',','') + (PlanPrgrmId1)
+					FROM (Select DISTINCT Cast (PlanProgramId as varchar(max)) PlanPrgrmId1 FROM @tblTaclist where ObjectType=@prg) AS PlanProgramIds
+					-- END: Get Program Ids
+					
+					-- START: IF Client & Instance has CustomName permission then generate customname for all required tactics
+					IF(IsNull(@isCustomNameAllow,'0')='1' AND IsNull(@isClientAllowCustomName,'0')='1')
+					BEGIN
+						----- START: Get Updte CustomName TacIds -----
+						SELECT @updIds= ISNULL(@updIds + ',','') + (PlanTacticId1)
+						FROM (Select DISTINCT Cast (PlanTacticId as varchar(max)) PlanTacticId1 FROM @tblTaclist where ObjectType=@tact) AS PlanTacticIds
+						----- END: Get Updte CustomName TacIds -----
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Get Tactic Ids')
+
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Update Tactic CustomName')
+
+						BEGIN TRY
+							-- START: Update Tactic Name --
+							UPDATE Plan_Campaign_Program_Tactic 
+							SET TacticCustomName = T1.CustomName 
+							FROM GetTacCustomNameMappingList('Tactic',@clientId,@updIds) as T1 
+							INNER JOIN Plan_Campaign_Program_Tactic as T2 ON T1.PlanTacticId = T2.PlanTacticId and IsNull(T2.TacticCustomName,'')=''
+							-- END: Update Tactic Name --
+						END TRY
+						BEGIN CATCH
+							Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()))	
+						END CATCH
+
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Update Tactic CustomName')
+					END
+
+					--SELECT * from  [GetSFDCSourceTargetMappingData]('Tactic','464EB808-AD1F-4481-9365-6AADA15023BD',N'101371',2,1203,255,0,0)
+
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logStart+@logSP+'Create final result Pivot Query')
+
+					BEGIN TRY
+						SET @dynResultQuery ='SELECT distinct SourceId,SourceParentId,SalesforceId,ObjectType,Mode,'+@ColumnName+' 
+																FROM (
+																		(
+																			SELECT ActualFieldName,TacValue,SourceId 
+																			FROM [GetSFDCSourceTargetMappingData_Marketo3Way]('''+ @tact +''','''+ CAST(@clientId AS NVARCHAR(36)) +''','''+ @entTacIds +''','''+ CAST(@integrationTypeId AS NVARCHAR) +''','''+ CAST(@instanceId AS NVARCHAR) +''','''+ CAST(@SFDCTitleLengthLimit AS NVARCHAR) +''','''+ CAST(@isCustomNameAllow AS NVARCHAR) +''','''+ CAST(@isClientAllowCustomName AS NVARCHAR) +''')
+																		)
+																		UNION
+																		(
+																			SELECT ActualFieldName,TacValue,SourceId 
+																			FROM [GetSFDCSourceTargetMappingData_Marketo3Way]('''+ @prg +''','''+ CAST(@clientId AS NVARCHAR(36)) +''','''+ @entPrgIds +''','''+ CAST(@integrationTypeId AS NVARCHAR) +''','''+ CAST(@instanceId AS NVARCHAR) +''','''+ CAST(@SFDCTitleLengthLimit AS NVARCHAR) +''','''+ CAST(@isCustomNameAllow AS NVARCHAR) +''','''+ CAST(@isClientAllowCustomName AS NVARCHAR) +''')
+																		)
+																		UNION
+																		(
+																			SELECT ActualFieldName,TacValue,SourceId 
+																			FROM [GetSFDCSourceTargetMappingData_Marketo3Way]('''+ @cmpgn +''','''+ CAST(@clientId AS NVARCHAR(36)) +''','''+ @entCmpgnIds +''','''+ CAST(@integrationTypeId AS NVARCHAR) +''','''+ CAST(@instanceId AS NVARCHAR) +''','''+ CAST(@SFDCTitleLengthLimit AS NVARCHAR) +''','''+ CAST(@isCustomNameAllow AS NVARCHAR) +''','''+ CAST(@isClientAllowCustomName AS NVARCHAR) +''')
+																		)
+																		
+																	) as R
+						    PIVOT(
+								  MIN(TacValue)
+						          FOR ActualFieldName IN (SourceParentId,SalesforceId,ObjectType,Mode,'+@ColumnName+')
+								 ) AS PVTTable
+								 '
+					END TRY
+					BEGIN CATCH
+						Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logError+@logSP+'Exception throw while executing query:'+ (SELECT 'Error Code.- '+ Cast(ERROR_NUMBER() as varchar(255))+',Error Line No-'+Cast(ERROR_LINE()as varchar(255))+',Error Msg-'+ERROR_MESSAGE()+',SQL Query-'+ (Select @dynResultQuery)))	
+					END CATCH
+
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logEnd+@logSP+'Create final result Pivot Query')
+										
+				END
+				ELSE
+				BEGIN
+					Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logInfo+@logSP+'No single field mapped for Salesforce instance')
+				END
+			END
+			ELSE
+			BEGIN
+				Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logInfo+@logSP+'Data does not exist')
+			END
+		END
+		-- END: GET result data based on Mapping fields
+
+	END
+	-- END
+	Insert Into IntegrationInstanceLogDetails Values(@id,@integrationInstanceLogId,GETDATE(),@logInfo+@logSP+'Get final result data to push Salesforce')
+	EXEC(@dynResultQuery)
+	
+END
+
+
+
+GO
+--- END: PL ticket #2251 related SPs & Functions --------------------
