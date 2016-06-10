@@ -91,8 +91,8 @@ a{cursor:pointer !important}
 .btn.btn-large{font-size:18px}
 /*  ============ End General style ============ */
 #header {
-    background: #2384b8 ; /* Edited for #2219 - Bhumika */
-    height: 78px;
+    background: #3e3f37  ; /* #2384b8 Edited for #2219 - Bhumika */
+    /*height: 78px;*/
     position: relative;
     z-index: 1500;
 }
@@ -155,7 +155,7 @@ a{cursor:pointer !important}
 .login-sect #header .title {
     margin-left:15px;
 }
-.info-user {
+/*.info-user {
     height: 64px;
     float: right;
     margin-right: 10px;
@@ -186,7 +186,7 @@ a{cursor:pointer !important}
     .info-user .avatar-user {
         border: 1px solid grey;
         float: left;
-    }
+}*/ /* Commented for #2219 - Bhumika */
 
 div[id*=modal-container] {
     z-index: 2500;
@@ -240,7 +240,8 @@ ul.drop-down-menu {
     padding: 20px;
 }
 
-.light-blue-chart {
+
+/*.light-blue-chart { // Commented for #2219 - Bhumika //
     background: #73c4ee;
     padding: 20px;
 }
@@ -283,6 +284,48 @@ ul.drop-down-menu {
         width: 146px;
         max-height: 70px;
         margin: 0 auto;
+}*/ /* Commented for #2219 - Bhumika */
+/* Edited for #2219 - Bhumika */
+#planHeader.light-blue-chart { 
+    padding: 0;
+}
+
+.plancart-box {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    display:block;
+}
+.light-blue-chart .white-chart {
+    width: 150px;
+    height: 92px;
+    float: left;
+    text-align: center;
+    padding: 5px 10px 10px;
+    border-right:1px solid #ccc;
+}
+.white-chart {
+    
+}
+.white-chart p {
+    color: inherit;
+    font-size: 14px;
+    margin-bottom: 0 !important;
+}
+.white-chart .value {
+    min-width: 100px;
+    max-width: 150px;
+    display: inline-block;
+    margin: 15px auto 0;
+    font-size: 24px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    height: 35px;
+    line-height: 35px;
+}
+.white-chart .graph {
+    width: 146px;
+    max-height: 70px;
+    margin: 0 auto;
     }
 
 h3.source-sans-prolight,
@@ -397,7 +440,7 @@ span.info-icon {
         margin-bottom: 0;
     }
 
-        .main-nav ul li {
+/*.main-nav ul li {
             float: left;
             border-right: 1px solid #23567b;
         }
@@ -424,7 +467,8 @@ span.info-icon {
                 display: block;
                 text-align: center;
                 font-size: 12px;
-            }
+}*//* Commented for #2219 - Bhumika */
+
 
 .nav-gray-plan > li > a,
 .nav-gray > li > a {
@@ -433,7 +477,7 @@ span.info-icon {
     line-height: 40px;
 }
 
-.main-nav ul li a .icon {
+/*.main-nav ul li a .icon {
     background: url(../images/sprite-items-menu3.png) no-repeat;
     width: 34px;
     height: 30px;
@@ -462,7 +506,8 @@ span.info-icon {
 
 .main-nav ul li.finance a .icon {
    background-position: -206px 6px;
-}
+}*//* Commented for #2219 - Bhumika */
+
 
 .nav-gray li a span,
 .nav-gray-plan li a span {
@@ -472,7 +517,7 @@ span.info-icon {
     display: block;
 }
 
-.main-nav ul li.pref a .icon {
+/*.main-nav ul li.pref a .icon {
     background-position: -170px 0;
 }
 
@@ -532,7 +577,7 @@ span.info-icon {
     margin: 0 auto;
 }
 
-.main-nav ul li.finance:hover a .icon,  /*Edited for #2202 by Bhumika*/
+.main-nav ul li.finance:hover a .icon,  /*Edited for #2202 by Bhumika//
 .main-nav ul li.finance.open a .icon{
     background-position: -204px -25px;
     margin: 0 auto;
@@ -542,9 +587,10 @@ span.info-icon {
 .main-nav ul li.pref:focus a .icon,
 .main-nav ul li.pref:hover a .icon {
     background-position: -170px -30px;
-}
+}*/ /* Commented for #2219 - Bhumika */
+
 /* ======== For dropdown menu  #2202 Start============ */
-.main-nav .dropdown-menu {
+/*.main-nav .dropdown-menu {
     background-color: #1a405c;
     border: 0;
     border-radius: 0;
@@ -570,7 +616,7 @@ span.info-icon {
 }
 .main-nav > ul li.open a{
     background: #1a405c none repeat scroll 0 0; color:#fff;
-}
+}*//* Commented for #2219 - Bhumika */
 
 /* ======== #2202 End ======== */
 .nav-gray > li > a {
@@ -13636,7 +13682,7 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 319px;
-    height: 25px;
+    /*height: 25px;*/ /* Commented for #2219 - Bhumika for homepage */
 }
 
 .btn-Green,
@@ -14021,11 +14067,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 .dhx_combo_select:hover, .dhx_combo_select:focus,
 .dhx_combo_select option:hover, .dhx_combo_select option:focus{ outline:0 none !important;}
 
-.user_title {
-    /*max-width: 65%;*/
+/*.user_title {
+    
     padding-top: 14px;
-    /*min-width: 200px*/ /* 27-10-2015 for ticket 1713 by bheru */
-    /*width: auto;*/ /* 27-10-2015 for ticket 1713 by bheru */
+    
 }
 
 .user_title,
@@ -14038,7 +14083,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
         float: right;
         margin-top: 5px;
         vertical-align: top;
-    }
+}*/ /* Commented for #2219 - Bhumika */
 
 .inspect-date {
     position: relative;
@@ -14050,7 +14095,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
         left: auto !important;
     }
 
-.user_title p:first-child {
+/*.user_title p:first-child {
     background: 0 0;
     margin-bottom: 0;
     min-width: 78px;
@@ -14063,7 +14108,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
     margin-top: 10px;
     font-size: 14px;
     padding-top: 0;
-    max-width: 200px; /* 27-10-2015 for ticket 1713 by bheru*/
+    max-width: 200px; /* 27-10-2015 for ticket 1713 by bheru
     float: left;
     padding-right: 0;
     text-align: right;
@@ -14075,7 +14120,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
+}*/ /* Commented for #2219 - Bhumika */
 
 .row-fluid .integration_review_block {
     width: 21%;
@@ -14193,8 +14238,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 
 
 .brandlogo { float:left;}
-.planheader-title {margin-top: 27px; width:auto;}/*by bheru 05-11-2015*/
-.plancart-box { display:inline;}
+.planheader-title { width:auto; padding: 0 0 3px 15px;} /* Edited for #2219 - Bhumika - Homepage */
+.planheader-title h5 {margin:6px 0 7px;}
+/*.plancart-box { display:inline;}*//* Commented for #2219 - Bhumika - Homepage */
 
 /* Changes Added By Bhumika #618*/
 .partial_wrapper .messagewidth {
@@ -14705,16 +14751,6 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     position: relative;
 }
 
-/*.financeReportGrid.gridbox div.planLevel{
-   margin: -2px -4px -2px -4px;
-} 
-.financeReportGrid.gridbox div.campaignLevel,
-.financeReportGrid.gridbox div.programLevel ,
-.financeReportGrid.gridbox div.tacticLevel, 
-.financeReportGrid.gridbox div.lineitemLevel {
-   margin: -2px -8px -2px -4px;
-}*/ 
-
 .financeReportGrid .orange-corner-budget,
 .financeReportGrid.gridbox .topCorner .red-corner-budget{
     top:-1px; right:-4px;
@@ -14731,6 +14767,284 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     margin-bottom: 10px;
 }
 
+/* **************************************** New header Style added for #2219 **************************************** */
+.header-top {
+    width: 100%;
+}
+.header-left {
+    color: #ffffff;
+    display: inline-block;
+    height: 100%;
+    float:left;
+    margin-left: 15px;
+}
+/*.hive9modules {
+    display: inline-block;
+    float: left;
+    height: 100%;
+    width: auto;
+}*/
+.hive9modules  {
+    background-color: transparent;
+    display: inline-block;
+    font-size: 0.8em;
+    padding: 4px 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    width: 75px;
+    line-height: normal;
+    vertical-align: middle;
+    display: inline-block;
+    color:#ccc;
+}
+
+.hive9modules  svg{
+	fill:#e6e6e6;
+	max-height:36px;
+}
+
+.hive9modules:hover, .hive9modules:hover svg, .hive9modules.active svg, .hive9modules.active {
+    background-color: #e6e6e6;
+    fill: #3e3f37;
+    color: #333;
+} 
+.hive9modules span{display: block; line-height: 8px;} 
+/* Grow Effect */
+.hvr-grow {
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: transform;
+  transition-property: transform;
+}
+.hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
+  -webkit-transform: scale(1.05);
+  transform: scale(1.05);
+}
+.home-header {
+    /*display: table;*/
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    width: 60%;
+}
+.home-header .hive9Logo-wrap {
+    display: inline;
+    float: none;
+    max-width: 112px;
+    padding-right: 15px;
+}
+#header .hive9-name .title {
+    border-left: 1px solid #999999;
+    color: #ffffff;
+    display: inline-block;
+    font-size: 24px;
+    height: auto;
+    line-height: normal;
+    max-width: 450px;
+    overflow: hidden;
+    padding-left: 22px;
+    text-align: left;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.header-right {
+    float: right;
+    margin-right: 0;
+    max-width: 208px;
+    padding: 0 15px;
+    text-align: right;
+}
+.home-header, .header-right span{ line-height: 58px;}
+.header-right span {
+    display: inline-block;
+    float: none;
+    vertical-align: middle;
+    text-transform: uppercase;
+}
+.header-right > span:first-child {
+    padding-right: 17px;
+    padding-left: 0;
+}
+
+.header-right span a {
+    color: #cccccc;
+    font-size: 14px;
+}
+
+.header-right span:nth-child(2) a {
+    border-left: 1px solid #999999;
+    padding-left: 17px;
+}
+.navigation {
+    background: #e6e6e6 none repeat scroll 0 0;
+    display: block;
+    padding: 0;
+    position: relative;
+    width: 100%;
+}
+/* ================= New navigation Style start for #2219 ================= */
+.main-nav {
+    width: 60%;
+    padding:0;
+    float: left;
+    height: 45px;
+    padding-left: 15px;
+}
+.menu-content{margin:0}
+.menu-content > li {
+    display: inline-block;
+    font-size: 14px;
+    margin: 0;
+    width: auto;
+    position: relative;
+}
+.menu-content li a {
+    color: #777;
+    display: inline-block;
+    /*float: none;*/
+    padding: 0 15px;
+    vertical-align: baseline;
+     white-space: normal;   
+}
+.menu-content > li > a { /* spacing without dropdown arrow */
+    margin: 0 1px;
+    padding: 0 9px 0 7px;
+    float:left;
+}
+.menu-content > li:first-child > a{margin-left:0}
+.menu-content > li.dropdown > a { /* spacing with dropdown arrow */
+    margin: 0 1px;
+    padding: 0 22px 0 7px;
+}
+.menu-content li a:hover{
+    background: transparent none repeat scroll 0 0;
+    color: #333;
+}
+.menu-content li a:focus{background: transparent none repeat scroll 0 0;}
+.menu-content li i {
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 3px;
+}
+.menu-content > li > a span {
+    display: inline-block;
+    float: left;
+    font-size: 14px;
+    line-height: 45px;
+    margin-left: 3px;
+    text-transform: capitalize;
+}
+
+.nav-text {
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+}
+.menu-content li .fa.fa-caret-down {
+    text-align: right;
+}
+.menu-content li.setting-list span{margin-right: 3px;}
+/*.menu-content li.selected  a{
+    background-color: #F2F2F2;
+}*/
+
+.menu-content li.open > a ,
+.menu-content li.open > a:hover,
+.menu-content li.open > a:focus,
+.menu-content li.active > a {
+    background: #f2f2f2;
+    color: #333;
+}
+.menu-content li.dropdown .dropdown-menu, .menu-content .dropdown .dropdown-menu {
+    border-radius: 0 0 4px 4px !important;
+    margin: 0;
+    background-clip: padding-box;
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
+    float: left;
+    font-size: 14px;
+    left: 0;
+    list-style: outside none none;
+    padding:2px 0;
+    position: absolute;
+    top: 100%;
+    z-index: 1000;
+    min-width: 210px;
+    white-space:normal;
+}
+
+.menu-content .dropdown-menu > li {
+    margin:  0;
+}
+.menu-content .dropdown-menu > li a {
+    padding: 6px 15px;
+    width:85.5%;
+}
+
+.menu-content .dropdown-menu > li a:hover,
+.menu-content .dropdown-menu > li a:focus, 
+.menu-content .dropdown-menu > li.active  > a {
+    background: #e6e6e6 none repeat scroll 0 0;
+}
+
+.menu-content .dd-arrow {
+    cursor: pointer;
+    line-height: 45px;
+    position: absolute;
+    right: -2px;
+    width: 20px;
+    z-index: 999;   
+    color: #777;
+}
+.menu-content li.active .dd-arrow, .menu-content .dd-arrow:hover{color:#333}
+
+/* ================= New navigation Style End ================= */
+
+.info-user {
+    float: right;
+    font-size: 14px;
+    height: auto;
+    padding-bottom: 5px;
+    padding-right: 0;
+    padding-top: 4px;
+    width: 27%;
+    margin-right: 15px;
+}
+.info-user  .username {
+    float: right;
+    max-width: 85%; /* Changed for #795 */
+    overflow: hidden;
+    margin: 8px 0 0;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width:auto;
+}
+.info-user .proflie_pic {
+     float: right;
+    margin-right: 8px;
+    width: 40px;
+}
+.info-user  .avatar-user {
+    height: 36px;
+    margin-top: 0;
+    width: 36px;
+}
+#planHeader #nl-form2{margin: 10px 0 0 0;}
+#planHeader #nl-form2 a.nl-field-toggle{font-size:16px}
 
 /* ******************** Please add new styles here - Start ******************** */
 .password-requirement-box {
@@ -15139,9 +15453,10 @@ width: 100%;
 #header {
  min-width: 100% !important;
 }
-#sidebar {
+/*#sidebar {
  width: 30%;
-}
+}*/ /* Commented for #2219 - Bhumika */
+
 #sidebar.sidebar {
  margin: 0;
  width: 100%;
@@ -15963,7 +16278,7 @@ font-size:16px;
 /*End by Device 768 Mukesh 24-9-2015*/
 
 #header .title { padding-left:15px;}
-#sidebar { width:99% !important;}
+/*#sidebar { width:99% !important;}*/ /* Commented for #2219 - Bhumika */
 #content_wraper { width:96% !important; margin:0 2% !important;}
 #DivButtonsHome.sidebar-toogle-wrapper { padding:10px 0 !important; overflow:hidden; }
 .sidebar-toogle-wrapper h4 { width:auto; display:inline-block; margin:0px; vertical-align:top; padding:8px 0 0 20px;}
@@ -16348,5 +16663,3 @@ tbody.column2 {
 }
 /*End by Device 320 Mukesh 25-9-2015*/
 /************************************************ Responsive css End here **********************************************************/
-
-

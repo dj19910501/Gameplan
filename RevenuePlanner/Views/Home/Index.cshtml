@@ -106,13 +106,14 @@
 
 @Html.Hidden("ActiveMenu", activeMenu)
 @Html.HiddenFor(m => m.PlanId)
+
+@*
 @section PlanHeader{
 
     <div class="light-blue-chart cf full-width-header" id="planHeader">
         @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
     </div>
-
-}
+}*@ @*/* Commented for #2219 - Bhumika */*@
 
 @section Sidebar{
     <script type="text/javascript">
@@ -1752,6 +1753,15 @@
         </li>
     </ul>
 </div>*@
+
+@* Planheader is added for design change #2219 - Bhumika *@
+
+
+    <div class="light-blue-chart cf full-width-header" id="planHeader">
+        @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
+    </div>
+
+@*  #2219 - Bhumika End *@
 
 <div id="DivloadPlan" class="no-bottom-border margin-top">
 </div>

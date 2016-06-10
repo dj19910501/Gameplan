@@ -3,7 +3,7 @@
 
 <!-- Added by Arpita Soni for Ticket #2202 on 05/23/2016 -->
 <nav class="main-nav">
-    <ul class="cf menu-content">
+    <ul class="cf">
         @if (Sessions.AppMenus != null && Sessions.AppMenus.Count() > 0)
         {
             foreach (Menu o in Sessions.AppMenus.Where(x => x.ParentApplicationId == null))
@@ -16,8 +16,8 @@
                 }
             <li class="@menuname.ToLower()">
                 <a href="@hrefLink">
-                        <span class=" fa fa-home fa-3x"></span>
-                        <span class="nav-text">@menuname.ToUpper()</span>
+                    <div class="icon"></div>
+                    <span class="source-sans-probold">@menuname.ToUpper()</span>
                 </a>
                 <ul class="dropdown-menu">
                     @foreach (Menu submenu in Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId))
