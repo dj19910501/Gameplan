@@ -376,7 +376,8 @@
 
          $("#li" + InspectValue).removeClass("pull-left");
          $("#li" + InspectValue).addClass("active pull-left");
-         tabtext = ($("#li" + InspectValue).children('a').text());
+         // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
+         tabtext = ($("#li" + InspectValue).children('a').text().replace(" ","_"));
          $('#div' + tabtext).css({ display: "block" });
          $("#liSetup,#liReview,#liBudget,#liActuals").on("click", function () {
              // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.

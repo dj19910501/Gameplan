@@ -35,8 +35,13 @@
     margin-left: 10px;
 }
 </style>
-
-<div id="lineItemGrid" style="background-color: white; width: 100%;" class="gridViewGrid"></div>
+<!-- Added by Arpita Soni for Ticket #2237 on 06/13/2016 -->
+@if(countrows > 0) {
+    <div id="lineItemGrid" style="background-color: white; width: 100%;" class="gridViewGrid"></div>
+}
+else{
+    <div>No records available.</div>
+}
 
 <div class="market-activity-main">
     <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 11;" id="popupLineitemIP">
@@ -49,11 +54,19 @@
     var tacticId = 0;
     var lineItemId = 0;
     $(document).ready(function () {
-        $('#liLineItemListing').removeClass("pull-left");
-        $('#liLineItemListing').addClass("active pull-left");
+        $('#liLine_Items').removeClass("pull-left");
+        $('#liLine_Items').addClass("active pull-left");
         
         $('.nav').addClass('no-bottom-border');
-        BindLineItemGrid();
+        // Added by Arpita Soni for Ticket #2237 on 06/13/2016
+        if (@countrows > 0) {
+            BindLineItemGrid();
+
+            //Added by Rahul shah on 23/10/2015 for PL #1693 : set grid size after performing any operation
+            $(document).ajaxComplete(function () {
+                HomeGrid.setSizes();
+            });
+        }
         $("input[name='useless']").click(doIt);
         function doIt() {
             return true;
@@ -64,8 +77,6 @@
         pageIsScroll = false;
         $('.task-tbl div.gridbox').css('height', $(window).height() - 450); //PL #1758 H9_QA - Grid View Scrolling - Added by Dashrath Prajapati
        
-        // added by Ashish for #1780
-        //BindEntityState();
         if ($('.honeycombbox-icon-gantt-Active').length == 0) {
             $(".honeycombbox").hide();
         }
@@ -85,33 +96,6 @@
         
     });
 
-
-    ////added by Ashish for #1780
-    //function BindEntityState() {
-    //    if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "") {
-    //        if (ExportSelectedIds.TaskID.length > 0) {
-    //            for (var i = 0; i < ExportSelectedIds.TaskID.length; i++) {
-    //                if (ExportSelectedIds.PlanFlag[i] == 'Grid') {
-    //                    $("div[altid='" + ExportSelectedIds.TaskID[i] + "']").addClass("honeycombbox-icon-gantt-Active");
-    //                    //$("div").find("[altid='" + ExportSelectedIds.TaskID[i] + "']").addClass("honeycombbox-icon-gantt-Active");
-    //                }
-    //            }
-    //        }
-    //    }
-    //    //Added By Komal Rawal to close the popover if we click anywhere on the grid
-    //    //$('#lineItemGrid').find('tbody tr').on('click', function (e) {
-    //    $('#lineItemGrid').find('table').find('tbody').on('click', function (e) {
-    //        var targetname = e.target.nodeName;
-    //        if (targetname != "circle") {
-    //            $(".popover").removeClass('in').addClass('out');
-
-    //        }
-
-    //    });
-    //    //End
-    //}
-    ////#1780
-
     var $doc = $(document);
     $doc.click(function () {
         $('#popupLineitemIP').css('display', 'none');
@@ -125,10 +109,7 @@
     $(".grid_ver_scroll").scroll(function () {
         $('#popupLineitemIP').css('display', 'none');
     });
-    //Added by Rahul shah on 23/10/2015 for PL #1693 : set grid size after performing any operation
-    $(document).ajaxComplete(function () {
-        HomeGrid.setSizes();
-    });
+    
   
     // End By Nishant Sheth
     //Added by Ashish mistry for PL #1782 :- export to csv for Honeycomb
@@ -368,7 +349,8 @@
     $(document).off("click").on("click", '#NewLineItemGrid', function (event) {
         event.stopPropagation();
         var returnpara = true;
-        var activeTab = $("#InspectTab li.active a").text();
+        // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
+        var activeTab = $("#InspectTab li.active a").text().replace(" ", "_");
         if (activeTab != null && activeTab != undefined && activeTab != '') {
             returnpara = SaveAllData(activeTab);
         }
@@ -436,7 +418,7 @@
         var UpdateVal;
         var Colind = this.cell.cellIndex;
 
-        if(stage == 0  )
+        if(stage == 0)
         {
             var  newvalue = HomeGrid.cells(rowId, cellInd).getValue();
             if(newvalue.indexOf("</div>") > -1)
@@ -472,7 +454,7 @@
                 }
             }
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
-            if ((locked != null && locked != "") && locked == "1")
+            if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
                 return false;
         }
         if (stage == 1) {

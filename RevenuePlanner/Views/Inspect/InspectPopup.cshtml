@@ -225,7 +225,7 @@
                 }*@
                 <!-- Added by Arpita Soni for Ticket #2237 on 06/09/2016 -->
                 <li class="pull-left" id="liLine_Items">
-                    <a>Line_Items</a>
+                    <a>Line Items</a>
                 </li>
 
             </ul>
@@ -264,7 +264,8 @@
           RemoveTabClass();
           $("#li" + InspectValue).removeClass("pull-left");
           $("#li" + InspectValue).addClass("active pull-left");
-          tabtext = ($("#li" + InspectValue).children('a').text());
+          // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
+          tabtext = ($("#li" + InspectValue).children('a').text().replace(" ","_"));
           $('#div' + tabtext).css({ display: "block" });
 
           loadReview(planTacticId, tabtext);
@@ -285,8 +286,9 @@
               {
                   $('#EditForm').removeClass('SpanDisable');
                   $('#InspectTab').addClass('SpanDisable');
-                  var activeTab = $("#InspectTab li.active a").text();
-                  tabtext = ($(this).children('a').text());
+                  // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
+                  var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
+                  tabtext = ($(this).children('a').text().replace(" ","_"));
                   isclickfrompopup = true;
                   //if (activeTab == 'Actuals') {
                   //    displayConfirm('topTabsClick("' + tabtext + '","' + activeTab + '");');
@@ -341,7 +343,7 @@
               {
               isDataModified = true;
               //Modified for #1318 by Komal Rawal to handle the Save function
-              var activeTab = $("#InspectTab li.active a").text()
+              var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
               var planTacticId = $("#hdnPlanTacticId").val();
 
               if ($('#EditForm').hasClass('edit-icon-white')) {
@@ -583,7 +585,7 @@
             $("#successMessage").css("display", "none");
             $('#MultiSelectProcced').css("display", "none");
             /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-            var tabtext = ($("#li" + tabText).children('a').text());
+            var tabtext = ($("#li" + tabText).children('a').text().replace(" ","_"));
             var planTacticId = $("#hdnPlanTacticId").val();
             loadReview(planTacticId, tabtext);
         }
@@ -710,12 +712,15 @@
                 
         // Added by Arpita Soni for Ticket #2237 on 06/09/2016
         if (tabValue == TabLineItem) {
+            var isLocked = true;
+            var IsPlanCreateAll = '@IsPlanCreateAll';
             if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
                 $('#txtTacticTitle').css('display', 'block');
                 $('#lblTacticTitle').css('display', 'none');
+                isLocked = false;
             }
             url = '@Url.Content("~/Inspect/LoadLineItemTabFromTacticPopup/")';
-            $("#divTab").load(url + '?tacticId=' + id, function (response, status, xhr) {
+            $("#divTab").load(url + '?tacticId=' + id + '&isLocked='+isLocked +'&IsPlanCreateAll='+IsPlanCreateAll, function (response, status, xhr) {
                 $('#InspectTab').removeClass('SpanDisable');
             });
         }
@@ -845,7 +850,8 @@
             // returnparameter = true;
         }
         else {
-            var activeTab = $("#InspectTab li.active a").text();
+            // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
+            var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
             if (activeTab != null && activeTab != undefined && activeTab != '') {
                 returnpara = SaveAllData(activeTab);                               
             }
@@ -1097,7 +1103,8 @@
             isInspectNewLineItem = true;
         }
         else {
-            var activeTab = $("#InspectTab li.active a").text();
+            // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
+            var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
             if (activeTab != null && activeTab != undefined && activeTab != '') {
                 returnpara = SaveAllData(activeTab);
                
@@ -1112,7 +1119,8 @@
     $("#NewTacticfromPopup").on("click", function () {  
         isInspectNewLineItem = false;
         var returnpara = true;
-        var activeTab = $("#InspectTab li.active a").text();
+        // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
+        var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
         if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
             var iserror = false;
             $('form').find('input[type=text], select, textarea').each(function () {
