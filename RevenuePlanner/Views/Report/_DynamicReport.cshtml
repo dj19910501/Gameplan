@@ -1,0 +1,10 @@
+﻿@using RevenuePlanner.Models
+@model RevenuePlanner.Models.Custom_Dashboard
+
+@Scripts.Render("~/bundles/GetJSReport")
+
+<div class="col-sm-9  col-md-9 col-lg-10 main " style="min-height: 700px;">
+    <div id="mainContent" class="col-md-12 content">
+        @Html.Partial("_Component", Model)
+    </div>
+</div>

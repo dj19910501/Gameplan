@@ -8875,6 +8875,33 @@ namespace RevenuePlanner.Helpers
             }
             return dataset;
         }
+
+        public DataSet GetDashboardContent(int HomepageId = 0, int DashboardId = 0, int DashboardPageId = 0)
+        {
+            DataSet ds = new DataSet();
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+
+            command = new SqlCommand("GetDashboardContent", Connection);
+
+            using (command)
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@HomepageId", 0);
+                command.Parameters.AddWithValue("@DashboardId", DashboardId);
+                command.Parameters.AddWithValue("@DashboardPageId", 0);
+                command.Parameters.AddWithValue("@UserId", Sessions.User.UserId);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(ds);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+            return ds;
+        }
     }
     #endregion
 

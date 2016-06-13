@@ -16,6 +16,14 @@ using RevenuePlanner.BDSService;
 using EvoPdf;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Configuration;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Data.EntityClient;
+using RevenuePlanner.BAL;
 
 namespace RevenuePlanner.Controllers
 {
@@ -4379,6 +4387,66 @@ namespace RevenuePlanner.Controllers
             return model;
         }
         #endregion
+
+        /// <summary>
+        /// Get Measure-Plan Report Data
+        /// </summary>
+        /// <param name="DashboardId">DashboardId</param>
+        /// <returns>Return Custom_Dashboard Model.</returns>
+        public ActionResult GetCustomReport(string DashboardId = "")
+        {
+            Custom_Dashboard model = new Custom_Dashboard();
+            CustomDashboard cd = new CustomDashboard();
+            
+            if (!string.IsNullOrEmpty(DashboardId))
+            {
+                int DashId = int.Parse(DashboardId.ToString());
+                model = cd.GetMainDashBoardInfo(DashId);
+
+                var efConnectionString = ConfigurationManager.ConnectionStrings["MRPEntities"].ToString();
+                var builder = new EntityConnectionStringBuilder(efConnectionString);
+                string regularConnectionString = builder.ProviderConnectionString;
+
+                string ReportDBConnString = string.Empty;
+                if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
+                {
+                    ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                }
+
+                string AuthorizedReportAPIUserName = string.Empty;
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
+                    {
+                        AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
+                    }
+                }
+
+                string AuthorizedReportAPIPassword = string.Empty;
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
+                    {
+                        AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
+                    }
+                }
+
+                string ApiUrl = string.Empty;
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
+                    {
+                        ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                    }
+                }
+
+                ViewBag.ReportDBConnString = ReportDBConnString;
+                ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
+                ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
+                ViewBag.ApiUrl = ApiUrl;
+            }            
+            return PartialView("_DynamicReport", model);
+        }        
 
         #region "Common Methods"
         /// <summary>

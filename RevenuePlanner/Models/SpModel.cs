@@ -183,4 +183,30 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> CreatedBy { get; set; }
         public Nullable<byte> Weightage { get; set; }
     }
+    public class Custom_Dashboard
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public int DisplayOrder { get; set; }
+        public string CustomCSS { get; set; }
+        public Nullable<int> Rows { get; set; }
+        public Nullable<int> Columns { get; set; }
+        public Nullable<int> ParentDashboardId { get; set; }
+        public bool IsDeleted { get; set; }
+        public Nullable<bool> IsComparisonDisplay { get; set; }
+        public Nullable<int> HelpTextId { get; set; }
+        public List<DashboardContentModel> DashboardContent = new List<DashboardContentModel>();
+    }
+
+    public class DashboardContentModel
+    {
+        public int ReportID { get; set; }
+        public int DashboardContentId { get; set; }
+        public int DashboardId { get; set; }
+        public DashboardContentModel()
+        { }
+        public int Height { get; set; }
+        public decimal Width { get; set; }
+    }
 }
