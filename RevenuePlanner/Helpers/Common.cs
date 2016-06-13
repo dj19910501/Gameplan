@@ -8583,6 +8583,36 @@ namespace RevenuePlanner.Helpers
 
             return LineItemBudgetList;
         }
+        /// <summary>
+        /// Get list of dashboard with client specefic
+        /// </summary>
+        /// <param name="ClientId"></param>
+        /// <param name="DashboardID"></param>
+        /// <returns></returns>
+        public static List<Custom_Dashboard> GetSpDashboarData(string ClientId, int DashboardID = 0)
+        {
+            var DashboardList = new List<Custom_Dashboard>();
+            StoredProcedure objSp = new StoredProcedure();
+            DataTable dt = objSp.GetDashboarContentData(ClientId, DashboardID).Tables[0];
+            if (dt != null && dt.Rows.Count > 0 && dt.Columns.Count > 1)
+            {
+                DashboardList = dt.AsEnumerable().Select(row => new Custom_Dashboard
+                {
+                    Id = Convert.ToInt32(row["id"]),
+                    Name = Convert.ToString(row["Name"]),
+                    DisplayName = Convert.ToString(row["DisplayName"]),
+                    DisplayOrder = Convert.ToInt32(row["DisplayOrder"]),
+                    CustomCSS = Convert.ToString(row["CustomCSS"]),
+                    Rows = string.IsNullOrEmpty(Convert.ToString(row["Rows"])) ? (int?)null : Convert.ToInt32(row["Rows"]),
+                    Columns = string.IsNullOrEmpty(Convert.ToString(row["Columns"])) ? (int?)null : Convert.ToInt32(row["Columns"]),
+                    ParentDashboardId = string.IsNullOrEmpty(Convert.ToString(row["ParentDashboardId"])) ? (int?)null : Convert.ToInt32(row["ParentDashboardId"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    IsComparisonDisplay = string.IsNullOrEmpty(Convert.ToString(row["IsComparisonDisplay"])) ? (bool?)null : Convert.ToBoolean(row["IsComparisonDisplay"]),
+                    HelpTextId = string.IsNullOrEmpty(Convert.ToString(row["HelpTextId"])) ? (int?)null : Convert.ToInt32(row["HelpTextId"])
+                }).ToList();
+            }
+            return DashboardList;
+        }
         #endregion
     }
 
@@ -8901,6 +8931,41 @@ namespace RevenuePlanner.Helpers
                 if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
             }
             return ds;
+        }
+
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Desc :: Get list of dashbaod menu for measure reports
+        /// </summary>
+        /// <param name="ClientId"></param>
+        /// <param name="DashboardID"></param>
+        /// <returns></returns>
+        public DataSet GetDashboarContentData(string ClientId, int DashboardID = 0)
+        {
+            DataTable datatable = new DataTable();
+            DataSet dataset = new DataSet();
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+
+            command = new SqlCommand("GetDashboarContentData", Connection);
+
+            using (command)
+            {
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@ClientId", ClientId);
+                command.Parameters.AddWithValue("@DashboardID", DashboardID);
+                command.CommandTimeout = 0;
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                adp.Fill(dataset);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+
+            return dataset;
         }
     }
     #endregion

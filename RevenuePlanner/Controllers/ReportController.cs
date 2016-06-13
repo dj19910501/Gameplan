@@ -334,6 +334,8 @@ namespace RevenuePlanner.Controllers
             //ViewBag.ViewPlan = lstPlanList.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
             //End Added by Mitesh Vaishnav for PL ticket #846
+            
+            ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ClientId.ToString());// Add By Nishant Sheth // #2262 : display menu for report's dashboard
             return View("Index");
         }
 
