@@ -209,46 +209,46 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #region Save Campaign Budget Allocation
-        /// <summary>
-        /// To Save the Plan
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>29June2015</createddate>
-        [TestMethod]
-        public void Save_Campaign_Budget_Allocation()
-        {
-            Console.WriteLine("To Save the Plan.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            //// Call index method
-            InspectController objInspectController = new InspectController();
-            string UserID = (Sessions.User.UserId).ToString();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
-            Sessions.PlanId = PlanID;
-            string Title = db.Plan_Campaign.Where(id => id.PlanId == PlanID).Select(campaign => campaign.Title).FirstOrDefault();
+        ///// <summary>
+        ///// To Save the Plan
+        ///// </summary>
+        ///// <auther>Komal Rawal</auther>
+        ///// <createddate>29June2015</createddate>
+        //[TestMethod]
+        //public void Save_Campaign_Budget_Allocation()
+        //{
+        //    Console.WriteLine("To Save the Plan.\n");
+        //    MRPEntities db = new MRPEntities();
+        //    //// Set session value
+        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    //// Call index method
+        //    InspectController objInspectController = new InspectController();
+        //    string UserID = (Sessions.User.UserId).ToString();
+        //    int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+        //    Sessions.PlanId = PlanID;
+        //    string Title = db.Plan_Campaign.Where(id => id.PlanId == PlanID).Select(campaign => campaign.Title).FirstOrDefault();
 
-            Plan_CampaignModel Form = new Plan_CampaignModel();
-            Form.PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
-            Form.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
-            Form.CampaignBudget = 10000;
-            Form.PlanId = PlanID;
+        //    Plan_CampaignModel Form = new Plan_CampaignModel();
+        //    Form.PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+        //    Form.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
+        //    Form.CampaignBudget = 10000;
+        //    Form.PlanId = PlanID;
 
-            string Budgetvalues = GetBudgetValues(Form.AllocatedBy);
+        //    string Budgetvalues = GetBudgetValues(Form.AllocatedBy);
 
-            var result = objInspectController.SaveCampaignBudgetAllocation(Form, Budgetvalues, UserID, Title) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
+        //    var result = objInspectController.SaveCampaignBudgetAllocation(Form, Budgetvalues, UserID, Title) as JsonResult;
+        //    if (result != null)
+        //    {
+        //        //// ViewResult shoud not be null and should match with viewName
+        //        Assert.IsNotNull(result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //    }
+        //    else
+        //    {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-        }
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+        //    }
+        //}
 
         #endregion
 
@@ -432,45 +432,45 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #region Save Program Budget Allocation
-        /// <summary>
-        /// To Save the Program
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>29June2015</createddate>
-        [TestMethod]
-        public void Save_Program_Budget_Allocation()
-        {
-            Console.WriteLine("To Save the Program.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            //// Call index method
-            InspectController objInspectController = new InspectController();
-            string UserID = (Sessions.User.UserId).ToString();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
-            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+        ///// <summary>
+        ///// To Save the Program
+        ///// </summary>
+        ///// <auther>Komal Rawal</auther>
+        ///// <createddate>29June2015</createddate>
+        //[TestMethod]
+        //public void Save_Program_Budget_Allocation()
+        //{
+        //    Console.WriteLine("To Save the Program.\n");
+        //    MRPEntities db = new MRPEntities();
+        //    //// Set session value
+        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    //// Call index method
+        //    InspectController objInspectController = new InspectController();
+        //    string UserID = (Sessions.User.UserId).ToString();
+        //    int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+        //    int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
 
-            string Title = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.Title).FirstOrDefault();
-            Plan_Campaign_ProgramModel Form = new Plan_Campaign_ProgramModel();
-            Form.PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
-            Form.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
-            Form.ProgramBudget = 10000;
+        //    string Title = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.Title).FirstOrDefault();
+        //    Plan_Campaign_ProgramModel Form = new Plan_Campaign_ProgramModel();
+        //    Form.PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
+        //    Form.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
+        //    Form.ProgramBudget = 10000;
 
-            string Budgetvalues = GetBudgetValues(Form.AllocatedBy);
+        //    string Budgetvalues = GetBudgetValues(Form.AllocatedBy);
 
-            var result = objInspectController.SaveProgramBudgetAllocation(Form, Budgetvalues, UserID, Title) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
+        //    var result = objInspectController.SaveProgramBudgetAllocation(Form, Budgetvalues, UserID, Title) as JsonResult;
+        //    if (result != null)
+        //    {
+        //        //// ViewResult shoud not be null and should match with viewName
+        //        Assert.IsNotNull(result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //    }
+        //    else
+        //    {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-        }
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+        //    }
+        //}
 
         #endregion
 

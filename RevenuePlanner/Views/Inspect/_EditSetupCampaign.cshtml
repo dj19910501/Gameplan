@@ -893,7 +893,8 @@
                     if (data.isSaved) {
                         isDataModified = true;
                         var activeTab = $("#InspectTab li.active a").text();
-                        var TabBudget = "Budget";
+			// Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+                        //var TabBudget = "Budget";
                         var planCampaignId = $("#PlanCampaignId").val();
                         var requestedModule = $("#hdnRedirectType").val();
                         if (planCampaignId == '0') {
@@ -931,8 +932,9 @@
                         $("#spanMessageSuccess").empty();
                         $("#spanMessageSuccess").text(data.msg);
                         $("#errorMessageEditCampaign").css("display", "none");
-
-                        $("#liReview,#liBudget,#liSetup").bind('click');
+			// Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+                        //$("#liReview,#liBudget,#liSetup").bind('click');
+                        $("#liReview,#liSetup").bind('click');
 
                         //   loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", TabBudget, "@Enums.InspectPopupMode.Edit.ToString()", 0, requestedModule);
 

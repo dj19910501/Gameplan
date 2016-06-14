@@ -846,14 +846,11 @@
     <Content Include="Views\Inspect\_ReviewImprovementTactic.cshtml" />
     <Content Include="Views\Inspect\_ReviewProgram.cshtml" />
     <Content Include="Views\Inspect\_SetupCampaign.cshtml" />
-    <Content Include="Views\Inspect\_SetupCampaignBudgetAllocation.cshtml" />
     <Content Include="Views\Inspect\_SetupImprovementTactic.cshtml" />
     <Content Include="Views\Inspect\_SetupLineitem.cshtml" />
     <Content Include="Views\Inspect\_SetupLineitemBudgetAllocation.cshtml" />
     <Content Include="Views\Inspect\_SetupPlan.cshtml" />
     <Content Include="Views\Inspect\_SetupProgram.cshtml" />
-    <Content Include="Views\Inspect\_SetupProgramBudget.cshtml" />
-    <Content Include="Views\Inspect\_SetupTacticBudgetAllocation.cshtml" />
     <Content Include="Views\Inspect\_ShareCampaign.cshtml" />
     <Content Include="Views\Inspect\_ShareProgram.cshtml" />
     <Content Include="Views\Inspect\_ResubmissionPopup.cshtml" />

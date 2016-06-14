@@ -182,12 +182,13 @@
         <li class="pull-left" id="liReview">
             <a>Review</a>
         </li>
-        @if (!Sessions.IsBudgetShow)
+	<!-- Commented by Arpita Soni for Ticket #2236 on 06/14/2016 -->
+        @*@if (!Sessions.IsBudgetShow)
         {
             <li class="pull-left" id="liBudget">
                 <a>Budget</a>
             </li>
-        }
+        }*@
     </ul>
 
     <div id="divTab">
@@ -201,7 +202,8 @@
     var divPartial = "#divPartial";
     var TabSetup = "Setup";
     var TabReview = "Review";
-    var TabBudget = "Budget";
+    // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+    //var TabBudget = "Budget";
 
     var divTab = "#divTab";
     var tabtext = "";
@@ -224,7 +226,9 @@
           $('#div' + tabtext).css({ display: "block" });
 
           // Click on Tab Partialview Refresh Based On Selected Tab
-          $("#liSetup,#liReview,#liBudget").on("click", function () {
+	  // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+          //$("#liSetup,#liReview,#liBudget").on("click", function () {
+              $("#liSetup,#liReview").on("click", function () {
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
                       {
@@ -311,11 +315,12 @@
                           $("#divTab").empty();
                           $("#divTab").load(url + '?id=' + planProgramId);
                       }
-                      else if (tabtext == "Budget") {
+		      // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+                     @* else if (tabtext == "Budget") {
                           url = '@Url.Content("~/Inspect/LoadSetupProgramBudget/")';
                           $("#divTab").empty();
                           $("#divTab").load(url + '?id=' + planProgramId);
-                      }
+                      }*@
                       else if (tabtext == "Review") {
                           url = '@Url.Content("~/Inspect/LoadSetupProgramEdit/")';
                           $("#divTab").empty();
@@ -348,18 +353,19 @@
 
                           }
                       }
+		      // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
 
-                      else if (activeTab == TabBudget) {
-                          var ReturnParameter = SaveProgramBudget();
-                          if (ReturnParameter == false) {
-                              return false;
-                          }
-                          else {
-                              $('.close-x-big-icon').trigger('click');
+                      //else if (activeTab == TabBudget) {
+                      //    var ReturnParameter = SaveProgramBudget();
+                      //    if (ReturnParameter == false) {
+                      //        return false;
+                      //    }
+                      //    else {
+                      //        $('.close-x-big-icon').trigger('click');
                           
 
-                          }
-                      }
+                      //    }
+                      //}
 
                       else if (activeTab == TabReview) {
                           var ReturnParameter = SaveTitle();
@@ -436,10 +442,11 @@
                           else if (data.IsSuccess) {
 
                               var currentTab = "Setup";
+			      // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
 
-                              if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                             @* if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
                                   currentTab = "Budget";
-                              }
+                              }*@
 
                               var planProgramId = data.Id;
                               var expandplanProgramId = data.expand;
@@ -485,14 +492,15 @@
                     return false;
                 }
             }
+	    // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
 
-            else if (activeTab == TabBudget) {
-                var ReturnParameter = SaveProgramBudget();
-                if (ReturnParameter == false) {
-                    $('#InspectTab').removeClass('SpanDisable');
-                    return false;
-                }
-            }
+            //else if (activeTab == TabBudget) {
+            //    var ReturnParameter = SaveProgramBudget();
+            //    if (ReturnParameter == false) {
+            //        $('#InspectTab').removeClass('SpanDisable');
+            //        return false;
+            //    }
+            //}
 
             else if (activeTab = TabReview) {
                 var ReturnParameter = SaveTitle();
@@ -596,14 +604,15 @@
               }
               url = '@Url.Content("~/Inspect/LoadReviewProgram/")';
         }
+	// Commented by Arpita Soni for Ticket #2236 on 06/14/2016
 
-        if (tabValue == TabBudget) {
+        @*if (tabValue == TabBudget) {
               if (ProgramOpt == "Edit") {
                   $('#txtProgramTitle').css('display', 'block');
                   $('#lblProgramTitle').css('display', 'none');
               }
             url = '@Url.Content("~/Inspect/LoadSetupProgramBudget/")';
-          }
+          }*@
 
           RemoveTabClass();
           $("#li" + tabValue).removeClass("pull-left");
