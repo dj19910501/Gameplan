@@ -429,7 +429,7 @@ namespace RevenuePlanner.Controllers
                 setColAlign.Append("center,left,center,center,");
                 setColTypes.Append("ro,tree,ro,ro,");
                 setColValidators.Append(",CustomNameValid,,,");
-                setColumnIds.Append(",title,action,addrow,");                
+                setColumnIds.Append(",title,action,addrow,");
                 HeaderStyle.Append(",text-align:center;border-right:0px solid #d4d4d4;,border-left:0px solid #d4d4d4;,,");
                 if (!_IsBudgetCreate_Edit && !_IsForecastCreate_Edit)
                 {
@@ -462,7 +462,7 @@ namespace RevenuePlanner.Controllers
                 setColSorting.Append("na,na,na");   //Added by Maitri Gandhi on 15-03-2016 for #2049
                 setInitWidths.Append("100,100,100");
                 setColAlign.Append("center,center,center");
-                setColTypes.Append("ro,ro,ro");
+                setColTypes.Append("ro,ro,coro");
                 setColumnIds.Append("action,lineitems,owner");
                 setColumnsVisibility.Append("false,false,false");
                 HeaderStyle.Append("text-align:center;,text-align:center;,text-align:center;");
@@ -498,7 +498,7 @@ namespace RevenuePlanner.Controllers
                 if (LineItemidBudgetList.Count() > 0)
                 {
                     LineItem_Budget LinkedTactic;
-                    for (int i = 0; i < LineItemidBudgetList.Count();i++ )
+                    for (int i = 0; i < LineItemidBudgetList.Count(); i++)
                     {
                         LinkedTactic = new LineItem_Budget();
                         LinkedTactic = LineItemidBudgetList.Where(l => l.Plan_Campaign_Program_Tactic_LineItem.PlanLineItemId == LineItemidBudgetList[i].Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId).FirstOrDefault();
@@ -523,7 +523,7 @@ namespace RevenuePlanner.Controllers
 
                                                                                      where LineItemids.Contains(Cost.PlanLineItemId)
                                                                                      select Cost).ToList();
-                
+
                 // #1590 Changes Observation:9 - Nishant Sheth
                 List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in db.Plan_Campaign_Program_Tactic_LineItem_Actual
                                                                                          join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
@@ -553,7 +553,25 @@ namespace RevenuePlanner.Controllers
                     && a.MapTableName == Enums.MapTableName.CustomField_Entity.ToString()).Select(a => a.CustomFieldId).ToList();
 
                 var CustomColumnsValue = db.CustomField_Entity.Where(a => CustomCoulmnsId.Contains(a.CustomFieldId)).Select(a => new { a.Value, a.CustomFieldId, a.CustomFieldEntityId, a.EntityId }).ToList();
+                //Added By komal for #2243 to make owner dropdown editable.
+                List<User> lstUsers = lstUser.Where(a => a.IsDeleted == false).ToList();
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+                List<PlanOptions> lstOwner = new List<PlanOptions>();
 
+                if (lstClientUsers.Count() > 0)
+                {
+                    string strUserList = string.Join(",", lstClientUsers);
+                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId);
+
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.UserId.ToString(), value = HttpUtility.HtmlEncode(string.Format("{0} {1}", user.FirstName, user.LastName)) }).ToList();
+                    }
+                }
+
+                ViewBag.OwnerList = lstOwner;
+                //End
                 lstBudgetDetails.ForEach(
                     i =>
                     {
@@ -561,7 +579,7 @@ namespace RevenuePlanner.Controllers
                         objBudgetAmount = new BudgetAmount();
                         PlanLineItemsId = new List<int>();
                         lstLineItemIds = new List<int>();
-                      
+
                         PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == i.Id && LineItemids.Contains(a.PlanLineItemId)).Select(a => a.PlanLineItemId).Distinct().ToList();
                         if (i.ParentId != null)
                         {
@@ -571,7 +589,7 @@ namespace RevenuePlanner.Controllers
                         else
                             cntlineitem = LineItemids.Count;
                         objBudgetAmount = GetMainGridAmountValue(isQuarterly, mainTimeFrame, BudgetDetailAmount.Where(a => a.BudgetDetailId == i.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == i.Id).ToList());
-                
+
                         // Get Owner name
                         var OwnerName = lstUser.Where(a => a.UserId == i.CreatedBy).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
 
@@ -607,9 +625,9 @@ namespace RevenuePlanner.Controllers
                             {
                                 isEdit = "View";
                                 LinkData = "View";
-                        }
-                        else
-                        {
+                            }
+                            else
+                            {
                                 isEdit = "None";
                                 LinkData = "View";
                             }
@@ -645,11 +663,11 @@ namespace RevenuePlanner.Controllers
                         }
                         if (_IsBudgetCreate_Edit)
                         {
-                            strUserAction = string.Format("<div onclick=Edit({0},false,{1},'" + GridrowId + "',this) class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + LinkData + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
+                            strUserAction = string.Format("<div onclick=Edit({0},false,{1},'" + GridrowId + "',this) class='finance_link' Rowid='" + GridrowId + "'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + LinkData + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
                         }
                         else
                         {
-                            strUserAction = string.Format("<div onclick=Edit({0},false,{1},'" + GridrowId + "',this) class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + LinkData + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
+                            strUserAction = string.Format("<div onclick=Edit({0},false,{1},'" + GridrowId + "',this) class='finance_link' Rowid='" + GridrowId + "'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + LinkData + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
                         }
                         //END
                         DataRow Datarow = dataTable.NewRow();
@@ -703,7 +721,7 @@ namespace RevenuePlanner.Controllers
                                         //Added By Bhumika for #1771 on 1/4/2016
                                         if (Convert.ToString(DropDownVal) != null)
                                         {
-                                        Datarow[colname] = Convert.ToString(DropDownVal);
+                                            Datarow[colname] = Convert.ToString(DropDownVal);
                                         }
                                         else
                                         {
@@ -714,8 +732,8 @@ namespace RevenuePlanner.Controllers
                                             }
                                             else
                                             {
-                                            Datarow[colname] = "<div style='color: #000 ;'> --- </div>";
-                                        }
+                                                Datarow[colname] = "<div style='color: #000 ;'> --- </div>";
+                                            }
 
                                         }
                                     }
@@ -1032,7 +1050,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                ParentData.Add(Convert.ToString(budget));
+                    ParentData.Add(Convert.ToString(budget));
                 }
                 objHeader.Budget = Convert.ToDouble(budget);
             }
@@ -1044,7 +1062,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                ParentData.Add(Convert.ToString(forecast));
+                    ParentData.Add(Convert.ToString(forecast));
                 }
                 objHeader.Forecast = Convert.ToDouble(forecast);
             }
@@ -1056,7 +1074,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                ParentData.Add(Convert.ToString(planned));
+                    ParentData.Add(Convert.ToString(planned));
                 }
                 objHeader.Planned = Convert.ToDouble(planned);
             }
@@ -1068,7 +1086,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                ParentData.Add(Convert.ToString(actual));
+                    ParentData.Add(Convert.ToString(actual));
                 }
                 objHeader.Actual = Convert.ToDouble(actual);
             }
@@ -1082,8 +1100,8 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                ParentData.Add(Convert.ToString(custval));
-            }
+                    ParentData.Add(Convert.ToString(custval));
+                }
             }
             ParentData.Add(User);
             ParentData.Add(lineItemCount.ToString());
@@ -1091,57 +1109,164 @@ namespace RevenuePlanner.Controllers
             #endregion
             return new DhtmlxGridRowDataModel { id = rowId, data = ParentData, rows = children, style = stylecolorgray, Detailid = Convert.ToString(id), FinanemodelheaderObj = objHeader };
         }
-        public ActionResult UpdateBudgetDetail(string BudgetId, string BudgetDetailName, string BudgetDetailId, string ParentId, string mainTimeFrame = "Yearly", string ListofCheckedColums = "")
+        public ActionResult UpdateBudgetDetail(string BudgetId, string BudgetDetailId, string ParentId, string mainTimeFrame = "Yearly", string ListofCheckedColums = "", string ownerId = "", string BudgetDetailName = "", string ChildItemIds = "")
         {
             int budgetId = 0, budgetDetailId = 0, parentId = 0;
             try
             {
-                budgetId = !string.IsNullOrEmpty(BudgetId) ? Int32.Parse(BudgetId) : 0;
-                budgetDetailId = !string.IsNullOrEmpty(BudgetDetailId) ? Int32.Parse(BudgetDetailId) : 0;
-                parentId = !string.IsNullOrEmpty(ParentId) ? Int32.Parse(ParentId) : 0;
-                if (budgetDetailId > 0 && parentId > 0)
+                try
                 {
-                    #region "Update BudgetDetail Name"
-                    Budget_Detail objBudgetDetail = new Budget_Detail();
-                    objBudgetDetail = db.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
-                    if (objBudgetDetail != null)
-                    {
-                        objBudgetDetail.Name = BudgetDetailName.Trim();
-                        db.Entry(objBudgetDetail).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-                    #endregion
-                }
-                else if (budgetDetailId > 0 && parentId <= 0)
-                {
-                    #region "Update Budget Name"
-                    Budget objBudget = new Budget();
-                    Guid clientId = Sessions.User.ClientId;
-                    objBudget = db.Budgets.Where(budgt => budgt.Id == budgetId && budgt.IsDeleted == false && budgt.ClientId == clientId).FirstOrDefault();
-                    if (objBudget != null)
-                    {
-                        objBudget.Name = BudgetDetailName.Trim();
-                        db.Entry(objBudget).State = EntityState.Modified;
-                    }
-                    #endregion
 
-                    #region "Update Budget Detail Name"
-                    Budget_Detail objMainBudgetDetail = new Budget_Detail();
-                    objMainBudgetDetail = db.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
-                    if (objMainBudgetDetail != null)
+
+                    db.Configuration.AutoDetectChangesEnabled = false;
+                    //Modified By Komal Rawal on 13-06-16 for #2243 to make owner editable
+                    List<Budget_Detail> listobjBudgetDetail = new List<Budget_Detail>();
+                    budgetId = !string.IsNullOrEmpty(BudgetId) ? Int32.Parse(BudgetId) : 0;
+                    budgetDetailId = !string.IsNullOrEmpty(BudgetDetailId) ? Int32.Parse(BudgetDetailId) : 0;
+                    parentId = !string.IsNullOrEmpty(ParentId) ? Int32.Parse(ParentId) : 0;
+
+                    List<string> ListItems = new List<string>();
+                    if (!string.IsNullOrEmpty(ChildItemIds))
                     {
-                        objMainBudgetDetail.Name = BudgetDetailName.Trim();
-                        db.Entry(objMainBudgetDetail).State = EntityState.Modified;
+                        ListItems = ChildItemIds.Split(',').ToList();
+
                     }
-                    db.SaveChanges();
-                    #endregion
+                    if (!string.IsNullOrEmpty(BudgetDetailId))
+                    {
+                        ListItems.Add(BudgetDetailId);
+                    }
+                    if (budgetDetailId > 0)
+                    {
+
+
+
+                        listobjBudgetDetail = db.Budget_Detail.ToList().Where(budgtDtl => ListItems.Contains(Convert.ToString(budgtDtl.Id)) && budgtDtl.IsDeleted == false).ToList();
+                        if (!string.IsNullOrEmpty(ChildItemIds) && !string.IsNullOrEmpty(ownerId) && ownerId != "undefined")
+                        {
+                            listobjBudgetDetail.Where(item => item.Id != budgetDetailId).Select(item =>
+                            {
+                                if (item.CreatedBy != Guid.Parse(ownerId))
+                                    item.CreatedBy = Guid.Parse(ownerId);
+
+                                return item;
+
+                            }).ToList();
+
+
+                            List<Budget_Permission> BudgetPermissionData = db.Budget_Permission.ToList().Where(item => ListItems.Contains(item.BudgetDetailId.ToString())).ToList();
+
+                            List<Budget_Permission> BudgetPermissionDataExists = BudgetPermissionData.Where(item => item.UserId == Guid.Parse(ownerId) && item.IsOwner == false).ToList();
+                            if (BudgetPermissionDataExists.Count > 0)
+                            {
+                                BudgetPermissionDataExists.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                            }
+
+                            List<Budget_Permission> OwnerBudgetPermissionData = BudgetPermissionData.Where(item => item.IsOwner == true).ToList();
+                            OwnerBudgetPermissionData.Select(id => { id.UserId = Guid.Parse(ownerId); return id; }).ToList();
+
+
+
+                        }
+                        else if (!string.IsNullOrEmpty(ownerId) && ownerId != "undefined")
+                        {
+
+                            List<Budget_Permission> BudgetPermissionData = db.Budget_Permission.ToList().Where(item => item.BudgetDetailId == budgetDetailId && item.IsOwner == true).ToList();
+
+                            List<Budget_Permission> BudgetPermissionDataExists = BudgetPermissionData.Where(item => item.UserId == Guid.Parse(ownerId) && item.IsOwner == false).ToList();
+                            if (BudgetPermissionDataExists.Count > 0)
+                            {
+                                BudgetPermissionDataExists.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                            }
+
+                            List<Budget_Permission> OwnerBudgetPermissionData = BudgetPermissionData.Where(item => item.IsOwner == true).ToList();
+                            OwnerBudgetPermissionData.Select(id => { id.UserId = Guid.Parse(ownerId); return id; }).ToList();
+
+
+
+                        }
+                    }
+
+
+
+
+                    if (budgetDetailId > 0 && parentId > 0)
+                    {
+                        #region "Update BudgetDetail"
+                        Budget_Detail objBudgetDetail = new Budget_Detail();
+
+                        objBudgetDetail = listobjBudgetDetail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
+
+
+                        if (objBudgetDetail != null)
+                        {
+                            if (!string.IsNullOrEmpty(BudgetDetailName) && BudgetDetailName != "undefined")
+                            {
+                                objBudgetDetail.Name = BudgetDetailName.Trim();
+                            }
+                            if (ownerId != "" && ownerId != "undefined" && ownerId != null)
+                            {
+                                objBudgetDetail.CreatedBy = Guid.Parse(ownerId);
+                            }
+                            db.Entry(objBudgetDetail).State = EntityState.Modified;
+
+                        }
+
+                        #endregion
+                    }
+                    else if (budgetDetailId > 0 && parentId <= 0)
+                    {
+                        #region "Update Budget Name and owner"
+                        Budget objBudget = new Budget();
+                        Guid clientId = Sessions.User.ClientId;
+                        objBudget = db.Budgets.Where(budgt => budgt.Id == budgetId && budgt.IsDeleted == false && budgt.ClientId == clientId).FirstOrDefault();
+                        if (objBudget != null)
+                        {
+                            if (!string.IsNullOrEmpty(BudgetDetailName) && BudgetDetailName != "undefined")
+                            {
+                                objBudget.Name = BudgetDetailName.Trim();
+                            }
+                            if (!string.IsNullOrEmpty(ownerId) && ownerId != "undefined")
+                            {
+                                objBudget.CreatedBy = Guid.Parse(ownerId);
+                            }
+                            db.Entry(objBudget).State = EntityState.Modified;
+                        }
+                        #endregion
+
+                        #region "Update Budget Detail Name and owner"
+                        Budget_Detail objMainBudgetDetail = new Budget_Detail();
+                        objMainBudgetDetail = listobjBudgetDetail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
+                        if (objMainBudgetDetail != null)
+                        {
+                            if (!string.IsNullOrEmpty(BudgetDetailName) && BudgetDetailName != "undefined")
+                            {
+                                objMainBudgetDetail.Name = BudgetDetailName.Trim();
+                            }
+                            if (!string.IsNullOrEmpty(ownerId) && ownerId != "undefined")
+                            {
+                                objMainBudgetDetail.CreatedBy = Guid.Parse(ownerId);
+                            }
+                            db.Entry(objMainBudgetDetail).State = EntityState.Modified;
+                        }
+
+                        #endregion
+                    }
                 }
+                finally
+                {
+                    db.Configuration.AutoDetectChangesEnabled = true;
+
+                }
+
+                db.SaveChanges();
                 return RefreshMainGridData(budgetId, mainTimeFrame, ListofCheckedColums);
             }
             catch (Exception)
             {
                 throw;
             }
+
+
         }
         #endregion
         #region "User Permission:Ability to add multiple users to Budget items"
@@ -1200,6 +1325,7 @@ namespace RevenuePlanner.Controllers
                 user.Role = BDSuserList[i].RoleTitle;
                 user.Permission = UserList[i].PermisssionCode;
                 user.createdby = UserList[i].CreatedBy.ToString();
+                user.IsOwner = UserList[i].IsOwner;
                 _user.Add(user);
             }
             if (UserList.Count == 0)
@@ -1227,7 +1353,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">contains user's Id</param>
         /// <returns>If success than return true</returns>
         [HttpPost]
-        public JsonResult Delete(Guid id, int budgetId,string ChildItems)
+        public JsonResult Delete(Guid id, int budgetId, string ChildItems)
         {
             //Modified by Komal Rawal for #2242 delete child item user permission on deletion of parent item user
             List<string> ListItems = new List<string>();
@@ -1239,13 +1365,13 @@ namespace RevenuePlanner.Controllers
             }
             for (int i = 0; i < ListItems.Count; i++)
             {
-                if(ListItems[i].Contains("_"))
+                if (ListItems[i].Contains("_"))
                 {
                     BudgetDetailIds.Add(Convert.ToInt32(ListItems[i].Split('_')[1]));
                 }
             }
             BudgetDetailIds.Add(budgetId);
-            List<Budget_Permission> BudgetDetailList = db.Budget_Permission.Where(i =>BudgetDetailIds.Contains(i.BudgetDetailId) && i.UserId == id).ToList();
+            List<Budget_Permission> BudgetDetailList = db.Budget_Permission.Where(i => BudgetDetailIds.Contains(i.BudgetDetailId) && i.UserId == id).ToList();
             //END
             foreach (var BudgetDetail in BudgetDetailList)
             {
@@ -1357,7 +1483,7 @@ namespace RevenuePlanner.Controllers
 
                 string ItemID = string.Empty;
                 List<UserBudgetPermission> FinalUserData = new List<UserBudgetPermission>();
-                    Budget_Permission objBudget_Permission = new Budget_Permission();
+                Budget_Permission objBudget_Permission = new Budget_Permission();
                 List<Budget_Permission> BudgetDetailList = db.Budget_Permission.Select(list => list).ToList();
                 Budget_Permission CurrentobjBudget_Permission = new Budget_Permission();
                 List<UserBudgetPermission> TempUserData = new List<UserBudgetPermission>();
@@ -1391,13 +1517,13 @@ namespace RevenuePlanner.Controllers
                         {
                             objBudget_Permission.UserId = Guid.Parse(FinalUserData[i].UserId);
                             objBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
-                        objBudget_Permission.CreatedBy = Sessions.User.UserId;
-                        objBudget_Permission.CreatedDate = DateTime.Now;
+                            objBudget_Permission.CreatedBy = Sessions.User.UserId;
+                            objBudget_Permission.CreatedDate = DateTime.Now;
                             objBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
-                        db.Entry(objBudget_Permission).State = EntityState.Added;
-                    }
-                    else
-                    {
+                            db.Entry(objBudget_Permission).State = EntityState.Added;
+                        }
+                        else
+                        {
 
                             CurrentobjBudget_Permission.UserId = Guid.Parse(FinalUserData[i].UserId);
                             CurrentobjBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
@@ -1415,8 +1541,8 @@ namespace RevenuePlanner.Controllers
                     db.Configuration.AutoDetectChangesEnabled = true;
                 }
 
-     
-                        db.SaveChanges();
+
+                db.SaveChanges();
 
                 //End
                 return Json(true, JsonRequestBehavior.AllowGet);
@@ -1489,6 +1615,7 @@ namespace RevenuePlanner.Controllers
                 user.Role = objUser.RoleTitle;
                 user.Permission = UserList[i].PermisssionCode;
                 user.createdby = Convert.ToString(UserList[i].CreatedBy);
+                user.IsOwner = UserList[i].IsOwner;
                 _user.Add(user);
             }
             return Json(new { _user = _user, Flag = ViewBag.FlagCondition }, JsonRequestBehavior.AllowGet);
@@ -1523,10 +1650,10 @@ namespace RevenuePlanner.Controllers
         //        objBudget_Permission.CreatedBy = Sessions.User.UserId;
         //        objBudget_Permission.PermisssionCode = 0;
         //        db.Entry(objBudget_Permission).State = EntityState.Added;
-               
+
         //    }
         //    db.SaveChanges();
-          
+
         //}
         /// <summary>
         /// Added by Komal Rawal for PL ticket #2242
@@ -1737,7 +1864,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult EditBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string EditLevel = "", string BudgetCreateEdit = "", string ForecastCreateEdit = "", string ListofCheckedColums = "", string EditPermission = "")
         {
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
-            StringBuilder attachHeader = new StringBuilder();   
+            StringBuilder attachHeader = new StringBuilder();
             StringBuilder setColValidators = new StringBuilder();
             StringBuilder setColumnIds = new StringBuilder();
             StringBuilder setColumnsVisibility = new StringBuilder();
@@ -1994,7 +2121,7 @@ namespace RevenuePlanner.Controllers
                     headObj.type = "tree";
                     headObj.id = "Title";
                     headObj.sort = "str";   //Added by Maitri Gandhi on 15-03-2016 for #2049
-                    
+
                 }
                 if (i == 2)
                 {
@@ -2074,7 +2201,7 @@ namespace RevenuePlanner.Controllers
                             headObj.sort = "na";   //Added by Maitri Gandhi on 15-03-2016 for #2049
 
                             attachHeader.Append(Convert.ToString(objTimeFrameColumns[i].CustomField.Name + ",")); // set attach header or column title
-                           // setColAlign.Append("center,"); //set column allignment
+                            // setColAlign.Append("center,"); //set column allignment
                             setColValidators.Append((!string.IsNullOrEmpty(objTimeFrameColumns[i].ValidationType) ? (objTimeFrameColumns[i].ValidationType != Enums.ColumnValidation.None.ToString() ? objTimeFrameColumns[i].ValidationType : "") : "") + ","); // set column validation
                             if (listQuarter.Contains(IsQuaterly))
                             {
@@ -2266,7 +2393,7 @@ namespace RevenuePlanner.Controllers
                 {
                     //setHeader.Append("Total,"); // Set Total as header
                     attachHeader.Append(Convert.ToString(objTimeFrameColumns[i].CustomField.Name + ","));// set attach header or column title
-                   // setColAlign.Append("center,"); //set column allignment
+                    // setColAlign.Append("center,"); //set column allignment
                     setColValidators.Append((!string.IsNullOrEmpty(objTimeFrameColumns[i].ValidationType) ? (objTimeFrameColumns[i].ValidationType != Enums.ColumnValidation.None.ToString() ? objTimeFrameColumns[i].ValidationType : "") : "") + ","); // set column validation
                     setColumnIds.Append(objTimeFrameColumns[i].CustomField.Name + "Total,");
 
@@ -2313,7 +2440,7 @@ namespace RevenuePlanner.Controllers
                 foreach (var custcol in objCustomColumns)
                 {
                     attachHeader.Append(Convert.ToString(custcol.CustomField.Name) + ",");
-                   // setColAlign.Append("center,"); //set column allignment
+                    // setColAlign.Append("center,"); //set column allignment
                     setColValidators.Append((!string.IsNullOrEmpty(custcol.ValidationType) ? (custcol.ValidationType != Enums.ColumnValidation.None.ToString() ? custcol.ValidationType : "") : "") + ","); // set column validation
                     setColumnIds.Append(custcol.CustomField.Name + ",");
 
@@ -3029,7 +3156,7 @@ namespace RevenuePlanner.Controllers
             }
             ParentData.Add(addRow);
             ParentData.Add(strLineItemLink);
-           
+
             int i = 0;
             int TimeFrameLoopLength = budget != null && budget.Count > 0 ? budget[0].Count : (forcast != null && forcast.Count > 0 ? forcast[0].Count : (
                 plan != null && plan.Count > 0 ? plan[0].Count : (actual != null && actual.Count > 0 ? actual[0].Count : 0)
@@ -3445,7 +3572,7 @@ namespace RevenuePlanner.Controllers
                     {
                         _Budget = Budget_DetailAmountList.Where(a => _curentBudget.Contains(a.Period)).Sum(a => a.Budget);
                         _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
-                        
+
                     }
                     _budgetlist.Add(_Budget);
                     _forecastlist.Add(_ForeCast);

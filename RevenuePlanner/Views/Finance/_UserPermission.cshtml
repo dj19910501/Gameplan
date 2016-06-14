@@ -70,6 +70,7 @@
                         {
                         <tr class="userrow">
                             <td title="@item.id" class="selectrec" style="display: none">@Html.DisplayFor(model => item.id)</td>
+                            <td id="IsOwner" title="Owner" class="selectrec" style="display: none">@item.IsOwner</td>
                             <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
                             <td title="@item.LastName">@Html.DisplayFor(mode => item.LastName)</td>
                             <td>@Html.DisplayFor(model => item.Role)</td>
@@ -139,6 +140,7 @@
                           
                             <td title="UserID" class="selectrec" style="display: none">@Html.DisplayFor(model => item.id)</td>
                             <td title="CreatedBy" class="selectrec" style="display: none">@Html.DisplayFor(model => item.createdby)</td>
+                            <td id="IsOwner" title="Owner" class="selectrec" style="display: none">@item.IsOwner</td>
                             <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
                             <td title="@item.LastName">@Html.DisplayFor(mode => item.LastName)</td>
                             <td>@Html.DisplayFor(model => item.Role)</td>
@@ -334,7 +336,7 @@
                                 {
                                     html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p><p> <input type="radio"  class="redinput"  checked="checked" id="None_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=2 /><label for="None_' + data[i].id + '">None</label></p>';
                                 }
-                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
+                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
                                  '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="Finance/DeleteUser/' + data[i].id + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
                             }
                             $("#tableNoData").hide();
@@ -361,7 +363,7 @@
                                     html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput"  id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p><p> <input type="radio"  class="redinput" checked="checked" id="None_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=2 /><label for="None_' + data[i].id + '">None</label></p>';
 
                                 }
-                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
+                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
                                  '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="Finance/DeleteUser/' + data[i].id + '")"></a></td></tr>');
                             }
                             $("#DivFilterPer").show();
@@ -618,13 +620,14 @@
         $("#userTable tbody tr").each(function () {
             var Id = $(this).find('td:first').text();
             var CreatedbyId = $(this).find('td').eq(1).text();
+            var IsOwner = $(this).find('td#IsOwner').text();
             if (Id == '@Sessions.User.UserId') {
                 $(this).find('td,input,span,a').attr("disabled", "disabled");
                 $(this).find('a').removeAttr("onclick");
                 $(this).find('a').removeAttr('href', '')
                 $(this).find('span').removeClass('x-icon');
             }
-            if (CreatedbyId == Id) {
+            if (IsOwner.toString().toLowerCase() == "true") {
 
                 $(this).find('td,input,span,a').attr("disabled", "disabled");
                 $(this).find('a').removeAttr("onclick");

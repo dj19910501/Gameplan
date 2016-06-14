@@ -39,11 +39,18 @@ option (maxrecursion 0)
 
 select * from #tempbudgetdata where ParentId is not null
 
-insert into Budget_Permission select Distinct UserId,@BudgetDetailId,GETDATE(),@CreatedBy,@PermissionCode from Budget_Permission where BudgetDetailId in (select ParentId from #tempbudgetdata)
+insert into Budget_Permission select Distinct UserId,@BudgetDetailId,GETDATE(),@CreatedBy,@PermissionCode,
+Case WHEN UserId = @CreatedBy
+THEN 
+ 1
+ ELSE
+ 0 END
+from Budget_Permission where BudgetDetailId in (select ParentId from #tempbudgetdata)
 UNION
-select  @CreatedBy,@BudgetDetailId,GETDATE(),@CreatedBy,@PermissionCode from Budget_Permission 
+select  @CreatedBy,@BudgetDetailId,GETDATE(),@CreatedBy,@PermissionCode,1 from Budget_Permission 
 
+IF OBJECT_ID('tempdb..##tempbudgetdata') IS NOT NULL
 Drop Table #tempbudgetdata
-END
 
+END
 GO

@@ -5103,6 +5103,7 @@ margin-right:12px;
 .user-table .myteam tr td:nth-child(3),
 .user-table .myteam tr td:nth-child(4),
 .user-table .myteam tr td:nth-child(5),
+.user-table .myteam tr td:nth-child(6),
 .user-table .myteam th:nth-child(2) {
     border-right: 1px solid #a6a6a6;
 }

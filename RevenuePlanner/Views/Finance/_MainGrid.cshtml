@@ -90,24 +90,23 @@
             if (ValidParentId != 0) {
                 var childitems = myTreeGrid.getSubItems(ValidParentId).split(',');
 
-            if (data.trim() == '' || data.trim() == null) {
-                isrepeat = false;
-                IsValid = false;
-            } else {
-                $.each(childitems, function () {
+                if (data.trim() == '' || data.trim() == null) {
+                    isrepeat = false;
+                    IsValid = false;
+                } else {
+                    $.each(childitems, function () {
 
-                    if (this.toString() != ValidRowId.toString()) {
-                        var ColCurrentValue = myTreeGrid.cells(this, ValidColumnId).getValue();
-                        if (data.toLowerCase().trim() == ColCurrentValue.toLowerCase().trim()) {
-                            isrepeat = false;
-                            IsValid = false;
+                        if (this.toString() != ValidRowId.toString()) {
+                            var ColCurrentValue = myTreeGrid.cells(this, ValidColumnId).getValue();
+                            if (data.toLowerCase().trim() == ColCurrentValue.toLowerCase().trim()) {
+                                isrepeat = false;
+                                IsValid = false;
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
-            }
-            else
-            {
+            else{
                 if (data != ValidOldValue.trim()) {
                     var BudgetIndex = BudgetDetails.Name.indexOf(data.toLowerCase().trim());
                     if (BudgetIndex >= 0) {
@@ -124,7 +123,7 @@
         myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
         myTreeGrid.setImageSize(1, 1);
         //myTreeGrid.enableTreeCellEdit(false);
-        
+
         //myTreeGrid.setHeader("Task Name,,,Budget,Forecast,Planned,Actual,Line Items,Owner", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center"]);
         if (GridProperties.rows != null) {
             if (GridProperties.setHeader != null) {
@@ -143,134 +142,140 @@
             if (GridProperties.setColTypes != null) {
                 myTreeGrid.setColTypes(GridProperties.setColTypes);
             }
-        //myTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
-        myTreeGrid.enableValidation(true);
+            //myTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
+            myTreeGrid.enableValidation(true);
             if (GridProperties.setColValidators != null) {
                 myTreeGrid.setColValidators(GridProperties.setColValidators);
             }
             if (GridProperties.setColumnIds != null) {
                 myTreeGrid.setColumnIds(GridProperties.setColumnIds);
             }
-            
-        //myTreeGrid.setColSorting("str,na,str,str,na,str");
-        //myTreeGrid.setStyle("", "", "", "", "", "", "", "border-left:0px;", "");
-        //myTreeGrid.setStyle("", "border:0px solid gray;", "", "");
+
+            //myTreeGrid.setColSorting("str,na,str,str,na,str");
+            //myTreeGrid.setStyle("", "", "", "", "", "", "", "border-left:0px;", "");
+            //myTreeGrid.setStyle("", "border:0px solid gray;", "", "");
             if (GridProperties.setColumnsVisibility != null) {
                 myTreeGrid.setColumnsVisibility(GridProperties.setColumnsVisibility);
             }
-        if (IsBudgetCreateEdit == "False" && IsForecastCreateEdit == "False") {
+            if (IsBudgetCreateEdit == "False" && IsForecastCreateEdit == "False") {
                 //myTreeGrid.setColumnsVisibility("false,false,true,false,false,false,false,false,false");
-            $('#btnAddNewBudget').css("display", "none");
-           // $('#AddSettings').css("display", "none");
+                $('#btnAddNewBudget').css("display", "none");
+                // $('#AddSettings').css("display", "none");
 
 
-        }
-        else {
-                //myTreeGrid.setColumnsVisibility("false,false,false,false,false,false,false,false,false");
-        }
-
-        if (IsBudgetCreateEdit == "False") {
-            $('#btnAddNewBudget').css("display", "none");
-
-        }
-        myTreeGrid.attachEvent("onEditCell", OnEditCell);
-        //myTreeGrid.attachEvent("onXLE", function () {
-        //    if (!myTreeGrid.getRowsNum())
-        //        myTreeGrid.addRow(myTreeGrid.uid(), "no data");
-        //})
-        //myTreeGrid.attachEvent("onOpenEnd", function () {
-        //    var tableheight = $(".objbox").find("table").height();
-        //    $("#gridbox").css("height", tableheight + 100);
-        //    myTreeGrid.setSizes();
-        //    $("#gridbox").find("table").css("width", gridWidth);
-        //    return true;
-        //});
-
-        myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
-            ValidOldValue = "";
-            IsValid = false;
-            return true;
-        });
-        myTreeGrid.attachEvent("onValidationCorrect", function (id, index, value, rule) {
-            ValidOldValue = "";
-            IsValid = true;
-        });
-        myTreeGrid.init();
-        
-        //Modified by Maitri Gandhi for #2066 on 17/3/2016        
-        myTreeGrid.attachEvent("onDistributedEnd", function () {
-            if (Maintained != 0) {
-                var ID = myTreeGrid.getRowId(Maintained);
-                if (ID != undefined || ID == '') {
-                    var divname = "#dv" + ID;                    
-                    $('html, body').animate({
-                        scrollTop: $(divname).offset().top
-                    }, 0);
-                }
             }
-           
-        });
-        myTreeGrid.enableDistributedParsing(true, 10, 300);
-        
+            else {
+                //myTreeGrid.setColumnsVisibility("false,false,false,false,false,false,false,false,false");
+            }
 
-        //myTreeGrid.setStyle("", ["border-right:0px solid #d4d4d4;", , , , , , , , ], "", "");
+            if (IsBudgetCreateEdit == "False") {
+                $('#btnAddNewBudget').css("display", "none");
 
-        var _budgetIdVal = $("#hdnBudgetId").val();
-        $("#hdn_BudgetId").val(_budgetIdVal);
-        //myTreeGrid.setSkin("dhx_skyblue");
-        //myTreeGrid.setStyle("", "background-color:#e3e3e3;color:black; font-weight:bold;", "", "");
+            }
+            myTreeGrid.attachEvent("onEditCell", OnEditCell);
+            //myTreeGrid.attachEvent("onXLE", function () {
+            //    if (!myTreeGrid.getRowsNum())
+            //        myTreeGrid.addRow(myTreeGrid.uid(), "no data");
+            //})
+            //myTreeGrid.attachEvent("onOpenEnd", function () {
+            //    var tableheight = $(".objbox").find("table").height();
+            //    $("#gridbox").css("height", tableheight + 100);
+            //    myTreeGrid.setSizes();
+            //    $("#gridbox").find("table").css("width", gridWidth);
+            //    return true;
+            //});
 
-        //mainGridData = "@HttpUtility.HtmlDecode(_mainGridData)"
-        //mainGridData = $('<div/>').html(mainGridData).text(); // Decode Html content.
+            myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
+                ValidOldValue = "";
+                IsValid = false;
+                return true;
+            });
+            myTreeGrid.attachEvent("onValidationCorrect", function (id, index, value, rule) {
+                ValidOldValue = "";
+                IsValid = true;
+            });
+            myTreeGrid.init();
+
+            //Modified by Maitri Gandhi for #2066 on 17/3/2016
+            myTreeGrid.attachEvent("onDistributedEnd", function () {
+                if (Maintained != 0) {
+                    var ID = myTreeGrid.getRowId(Maintained);
+                    if (ID != undefined || ID == '') {
+                        //Modified By komal rawal to solve error of offset .
+                        var divname = ID;
+                        if ($("div[rowid=\"" + divname + "\"]") != null && $("div[rowid=\"" + divname + "\"]") != "" && !$.trim($("div[rowid=\"" + divname + "\"]").html()) == false)
+                        {
+                            $('html, body').animate({
+                                scrollTop: $("div[rowid=\"" + divname + "\"]").offset().top
+                            }, 0);
+                        }
+                       
+                        //End
+                    }
+                }
+
+            });
+            myTreeGrid.enableDistributedParsing(true, 10, 300);
 
 
-        // GridData = JSON.parse(GridData);
+            //myTreeGrid.setStyle("", ["border-right:0px solid #d4d4d4;", , , , , , , , ], "", "");
+
+            var _budgetIdVal = $("#hdnBudgetId").val();
+            $("#hdn_BudgetId").val(_budgetIdVal);
+            //myTreeGrid.setSkin("dhx_skyblue");
+            //myTreeGrid.setStyle("", "background-color:#e3e3e3;color:black; font-weight:bold;", "", "");
+
+            //mainGridData = "@HttpUtility.HtmlDecode(_mainGridData)"
+            //mainGridData = $('<div/>').html(mainGridData).text(); // Decode Html content.
+
+
+            // GridData = JSON.parse(GridData);
             if (GridProperties.rows != null) {
                 myTreeGrid.parse(GridData, "json");
                 // Modified by Rushil Bhuptani on 06/03/2016 for #2247
                 myTreeGrid.setColumnHidden(0, true);
             }
-           
-     
-        //   myTreeGrid.setCellTextStyle(rowid, titleIndex, "border-right:0px solid #d4d4d4");
-       
+
+
+            //   myTreeGrid.setCellTextStyle(rowid, titleIndex, "border-right:0px solid #d4d4d4");
+
             var TempRowID;
             var style;
             $.each(GridProperties.setCellTextStyle, function (key, val) {
-                        TempRowID = val.split(',')[0];
-                        style = val.split(',')[1];
-                        myTreeGrid.setCellTextStyle(TempRowID,1, style);
-                    });
+                TempRowID = val.split(',')[0];
+                style = val.split(',')[1];
+                myTreeGrid.setCellTextStyle(TempRowID,1, style);
+            });
 
 
             //myTreeGrid.enableAutoHeight(true);
-        myTreeGrid.enableAutoHeight(true);
-        myTreeGrid.enableAutoWidth(false);
+            myTreeGrid.enableAutoHeight(true);
+            myTreeGrid.enableAutoWidth(false);
 
-        myTreeGrid.expandAll();
-        //myTreeGrid.parse(data2, "json");
-        //myTreeGrid.selectRow(0, false, false, true);
-        //var tableheight = $(".objbox").find("table").height();
-        //$("#gridbox").css("height", tableheight + 100);
-        //myTreeGrid.setSizes();
+            myTreeGrid.expandAll();
+            //myTreeGrid.parse(data2, "json");
+            //myTreeGrid.selectRow(0, false, false, true);
+            //var tableheight = $(".objbox").find("table").height();
+            //$("#gridbox").css("height", tableheight + 100);
+            //myTreeGrid.setSizes();
 
-        //$("#gridbox").find('table').css('width', gridWidth);
+            //$("#gridbox").find('table').css('width', gridWidth);
 
-        var rowcount = myTreeGrid.getRowsNum();
-        if (rowcount == null || rowcount == 'undefined' || rowcount == 0) {
-            $("#divGridView").hide();
-            $("#dvNoData").show();
-            $("#goalwrapper").hide();
-        }
+            var rowcount = myTreeGrid.getRowsNum();
+            if (rowcount == null || rowcount == 'undefined' || rowcount == 0) {
+                $("#divGridView").hide();
+                $("#dvNoData").show();
+                $("#goalwrapper").hide();
+            }
 
         } else {
             $("#divGridView").hide();
             $("#dvNoData").show();
             $("#goalwrapper").show();
-      
+
         }
         //myTreeGrid.attachEvent("onCheck", function (rId, cInd, state) {
-        
+
 
         //    var val = rId.split('_')[1];
 
@@ -326,30 +331,30 @@
             return false;
         }
         else {
-        RowIDs = {
-            IDs: []
-        }
-        var val = $(checkbox).attr('row-id').split('_')[1];
-        var Name = $(checkbox).attr('name');
-        $("#lipname").html(Name);
-        $("#divDeletePopup").modal('show');
-        RowIDs.IDs.push(val);
-        $('#cancel-button_DeleteItem').on("click", function () {
-            var index = RowIDs.IDs.indexOf(val);
-            RowIDs.IDs.splice(index, 1);
-            $('#divDeletePopup').modal("hide");
+            RowIDs = {
+                IDs: []
+            }
+            var val = $(checkbox).attr('row-id').split('_')[1];
+            var Name = $(checkbox).attr('name');
+            $("#lipname").html(Name);
+            $("#divDeletePopup").modal('show');
+            RowIDs.IDs.push(val);
+            $('#cancel-button_DeleteItem').on("click", function () {
+                var index = RowIDs.IDs.indexOf(val);
+                RowIDs.IDs.splice(index, 1);
+                $('#divDeletePopup').modal("hide");
 
-        });
+            });
         }
         ItemIdForFocus = myTreeGrid.getRowIndex($(checkbox).attr('row-id').toString());    //Added by Maitri Gandhi for #2049 on 10/3/2016
-        Maintained = ItemIdForFocus - 1; //decremented to focus previous row.       
-      
+        Maintained = ItemIdForFocus - 1; //decremented to focus previous row.
+
     }
-   
+
     ////Added BY Komal Rawal for #1639
     //RowIDs = {
     //    IDs: []
-        //   }
+    //   }
     //var CheckedSubitems = [];
     ////        var ids1 = [];
     //var ids = [];
@@ -433,7 +438,7 @@
 
     ////End
     function AddRow(cntrl) {
-      
+
         var controlid = $(cntrl).attr('id');
         if (AddNewrow == false && EditRowID == controlid) {
             return false;
@@ -442,14 +447,14 @@
             var attrRowId = $(cntrl).attr('row-id');
             var rowIndex = myTreeGrid.getRowIndex(attrRowId);
             DisplayPopUpMenu(cntrl, rowIndex);
-        return false;
-    }
+            return false;
+        }
     }
 
     function AddNewRowbyType(itemType, cntrl) {
-       
+
         if (_isNewRowAdd == false) {
-             $("#hdnNewItemType").val(itemType);
+            $("#hdnNewItemType").val(itemType);
             var row_id = $(cntrl).attr('row-id');
             ItemIdForFocus = myTreeGrid.getRowIndex(row_id.toString());    //Added by Maitri Gandhi for #2049 on 8/3/2016
             Maintained = ItemIdForFocus;
@@ -473,13 +478,13 @@
                     }
                 }
                 else if (itemType.toLowerCase() == 'childitem') {
-                var arr = row_id.split('_');
-                if (arr !== null && arr !== 'undefined' && arr.length > 0) {
-                    if (arr[1] != null && arr[1] != 'undefined') {
-                        _newParentId = budgetDetailId = arr[1];
+                    var arr = row_id.split('_');
+                    if (arr !== null && arr !== 'undefined' && arr.length > 0) {
+                        if (arr[1] != null && arr[1] != 'undefined') {
+                            _newParentId = budgetDetailId = arr[1];
+                        }
                     }
                 }
-            }
                 else {
                     _newParentId = budgetDetailId = 0;
                 }
@@ -529,13 +534,13 @@
                 var curntRowParentId = myTreeGrid.getParentId(row_id);
                 myTreeGrid.addRow(_newrowid, AddRowString, -1, curntRowParentId);
             }
-            
+
             var titleIndex = myTreeGrid.getColIndexById('title');
             myTreeGrid.setCellTextStyle(_newrowid, titleIndex, "border-right:0px solid #d4d4d4;");
             myTreeGrid.openItem(row_id);
             //$("#gridbox").find("table").css("width", gridWidth);
             //myTreeGrid.enableValidation(true);
-            
+
             //myTreeGrid.cells(_newrowid, titleIndex).setAttribute("validate", "NotEmpty");
 
             //myTreeGrid.setItemText(_newrowid, 'new text')
@@ -553,27 +558,39 @@
             //event.cancelBubble = true;
             window.setTimeout(function () {
 
-            myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);
+                myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);
                 myTreeGrid.editCell();
             }, 1);
         }
     }
 
     function OnEditCell(stage, id, index, newVal, oldVal) {
+        var selectOwnerIndex = myTreeGrid.getColIndexById('owner');
         if (stage == 0) {
             ValidOldValue = myTreeGrid.cells(id, index).getValue();
+            //Modified by Komal Rawal for #2243 to make owner dropdown editable.
+            if (selectOwnerIndex == index)
+            {
+                var combo = myTreeGrid.getCombo(selectOwnerIndex);
+                var Ownerlist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.OwnerList))');
+                combo.clear();
+                $.each(Ownerlist, function (i, item) {
+                    combo.put(item.id, item.value);
+                });
+            }
+          //end
         }
         ValidParentId = myTreeGrid.getParentId(id);
         ValidColumnId = index;
         ValidRowId = id;
-        ItemIdForFocus = myTreeGrid.getRowIndex(ValidRowId);    //Added by Maitri Gandhi for #2049 on 8/3/2016        
-        Maintained = ItemIdForFocus;        
+        ItemIdForFocus = myTreeGrid.getRowIndex(ValidRowId);    //Added by Maitri Gandhi for #2049 on 8/3/2016
+        Maintained = ItemIdForFocus;
         var selectIndex = myTreeGrid.getColIndexById('SelectBox');
         if (stage == 1) {
             AddNewrow = false;
             EditRowID = $("#dv" + id + "").attr('id');
             DeletIconID = $("#cb" + id + "").attr('id');
-             
+
         }
         //$("#dv" + id + "").unbind();
         //$("#cb" + id + "").unbind();
@@ -610,57 +627,68 @@
         if (stage.toString() == '0' || stage.toString() == '1') {
             return true;
         }
-   
-        if (IsValid) {
-          
-        if (stage.toString() == '2') {
-            //var _budgetIdVal = $('#ddlParentFinanceMain').val();
-            var _budgetIdVal = $("#hdnBudgetId").val();
-            if (newVal == null || newVal == '' || newVal.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oldVal) {
-                AddNewrow = true;
-                return false;
-            }
-            else {
-                if (rowId == id) {
-                    var newitemType = $("#hdnNewItemType").val();
-                    var isRootMostParentId = IsRootMostParentId(parentRowID);
-                    var isNewBudget = false;
-                    if (isRootMostParentId && newitemType.toLowerCase() == 'parallelitem') {
-                        parentId = '0';
-                        parentRowID = '';
-                        isNewBudget = true;
-                    }
 
-                    SaveNewBudgetDetail(_budgetIdVal, newVal, parentId, parentRowID, isNewBudget);
-                    RefreshBudgetDropdown(false);
-                    //myTreeGrid.openItem(parentId);
-                    $("#hdnNewItemType").val('');
-                    _newrowid = "";
-                    _isNewRowAdd = false;
-                    _newParentId = 0;
-                    _parentRowId = "";
-                    return true;
+        if (IsValid) {
+
+            if (stage.toString() == '2') {
+                //var _budgetIdVal = $('#ddlParentFinanceMain').val();
+                var _budgetIdVal = $("#hdnBudgetId").val();
+                if (newVal == null || newVal == '' || newVal.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oldVal) {
+                    AddNewrow = true;
+                    return false;
                 }
                 else {
-                    if (id != null && id != 'undefined' && id != '') {
-                        arr = id.split('_');
-                        if (arr.length > 0) {
-                            var budgetDetailId = arr[1];
-                            parentId = arr[2];
-                            var isEdit = arr[3];
-                            if (isEdit.toString().toLowerCase() == 'true') {    // if user has create/Edit permission then update.
-                                UpdateBudgetDetail(_budgetIdVal, newVal, budgetDetailId, parentId, parentRowID);
-                                RefreshBudgetDropdown(false);
-                            }
-                            else {
-                                return false;
+                    if (rowId == id) {
+                        var newitemType = $("#hdnNewItemType").val();
+                        var isRootMostParentId = IsRootMostParentId(parentRowID);
+                        var isNewBudget = false;
+                        if (isRootMostParentId && newitemType.toLowerCase() == 'parallelitem') {
+                            parentId = '0';
+                            parentRowID = '';
+                            isNewBudget = true;
+                        }
+
+                        SaveNewBudgetDetail(_budgetIdVal, newVal, parentId, parentRowID, isNewBudget);
+                        RefreshBudgetDropdown(false);
+                        //myTreeGrid.openItem(parentId);
+                        $("#hdnNewItemType").val('');
+                        _newrowid = "";
+                        _isNewRowAdd = false;
+                        _newParentId = 0;
+                        _parentRowId = "";
+                        return true;
+                    }
+                    else {
+                        if (id != null && id != 'undefined' && id != '') {
+                            arr = id.split('_');
+                            if (arr.length > 0) {
+                                var budgetDetailId = arr[1];
+                                parentId = arr[2];
+                                var isEdit = arr[3];
+                                if (isEdit.toString().toLowerCase() == 'true') {    // if user has create/Edit permission then update.
+                                    var ownerId;
+                                    var BudgetDetailName;
+                                    var BudgetDetailNameIndex = myTreeGrid.getColIndexById('title');
+                                    if (selectOwnerIndex == index) {
+                                        ownerId = newVal;
+                                    }
+                                    else if (BudgetDetailNameIndex == index)
+                                    {
+                                        BudgetDetailName = newVal;
+                                    }
+                                    var Childitems = myTreeGrid.getAllSubItems(id);
+                                    UpdateBudgetDetail(_budgetIdVal, BudgetDetailName, budgetDetailId, parentId, parentRowID, ownerId, Childitems);
+                                    RefreshBudgetDropdown(false);
+                                }
+                                else {
+                                    return false;
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-            
+
             return true;
         }
         //}
@@ -695,13 +723,13 @@
         var url = "@Url.Content("~/Finance/SaveNewBudgetDetail")";
         $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame + '&isNewBudget=' + isNewBudget + '&ListofCheckedColums=' + CheckedColumns, function () {
             if (!isNewBudget) {
-            myTreeGrid.openItem(parentRowID);
+                myTreeGrid.openItem(parentRowID);
             }
-        AddNewrow = true;
+            AddNewrow = true;
         });
-        
+
     }
-    function UpdateBudgetDetail(budgetId, budgetDetailName, budgetDetailId, parentId, parentRowID) {
+    function UpdateBudgetDetail(budgetId, budgetDetailName, budgetDetailId, parentId, parentRowID, ownerId, Childitems) {
         //budgetId = 8;
         // Add BY Nishant Sheth
         // Desc : display selected columns
@@ -716,9 +744,26 @@
             CheckedColumns.slice(0, -1);
         });
         // End by nishant sheth
+
+        //Added By Komal Rawal for #2243 to make owner editable
+        var ChildItemIds = ""
+        var ChildItemValues = Childitems.split(',');
+        $.each(ChildItemValues, function (key,val) {
+            if (val.indexOf('_') >= 0)
+            {
+                var ChildValue = val.split('_')[1]
+                ChildItemIds += ChildValue + ",";
+            }
+            
+        });
+        if (ChildItemIds != "")
+        {
+            ChildItemIds = ChildItemIds.slice(0, -1);
+        }
+        //End
         var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
         var url = "@Url.Content("~/Finance/UpdateBudgetDetail")";
-        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&BudgetDetailId=' + budgetDetailId + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame + '&ListofCheckedColums=' + CheckedColumns, function () {
+        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&BudgetDetailId=' + budgetDetailId + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame + '&ListofCheckedColums=' + CheckedColumns + '&ownerId=' + ownerId + '&ChildItemIds=' + ChildItemIds, function () {
             myTreeGrid.openItem(parentRowID);
             AddNewrow = true;
         });

@@ -588,11 +588,19 @@ option (maxrecursion 0)
 
 select * from #tempbudgetdata where ParentId is not null
 
-insert into Budget_Permission select Distinct UserId,@BudgetDetailId,GETDATE(),@CreatedBy,@PermissionCode from Budget_Permission where BudgetDetailId in (select ParentId from #tempbudgetdata)
+insert into Budget_Permission select Distinct UserId,@BudgetDetailId,GETDATE(),@CreatedBy,@PermissionCode,
+Case WHEN UserId = @CreatedBy
+THEN 
+ 1
+ ELSE
+ 0 END
+from Budget_Permission where BudgetDetailId in (select ParentId from #tempbudgetdata)
 UNION
-select  @CreatedBy,@BudgetDetailId,GETDATE(),@CreatedBy,@PermissionCode from Budget_Permission 
+select  @CreatedBy,@BudgetDetailId,GETDATE(),@CreatedBy,@PermissionCode,1 from Budget_Permission 
 
+IF OBJECT_ID('tempdb..##tempbudgetdata') IS NOT NULL
 Drop Table #tempbudgetdata
+
 END
 
 GO
@@ -2877,3 +2885,25 @@ END
 
 GO
 --- END: PL ticket #2251 related SPs & Functions --------------------
+
+-- Added by Komal Rawal
+-- Added on :: 13-June-2016
+-- Desc :: Add is owner column to the table.
+IF NOT EXISTS(SELECT * FROM sys.columns
+WHERE Name = N'IsOwner' AND OBJECT_ID = OBJECT_ID(N'[Budget_Permission]'))
+BEGIN
+ALTER TABLE [dbo].[Budget_Permission]
+ADD [IsOwner] [bit] NOT NULL CONSTRAINT [DF_Budget_Permission_IsOwner]  DEFAULT 0
+END 
+GO
+
+-- Added by Komal Rawal
+-- Added on :: 13-June-2016
+-- Desc :: Update isowner flag for existing data.
+IF (EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '[Budget_Permission]'))
+BEGIN
+UPDATE [dbo].[Budget_Permission]
+SET IsOwner = 1 WHERE UserId = CreatedBy
+END 
+GO
+
