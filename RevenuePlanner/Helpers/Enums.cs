@@ -1401,6 +1401,12 @@ namespace RevenuePlanner.Helpers
             CampaignFolderList,
             Programtype
         }
+
+        public enum GlobalSearch
+        {            
+            NameOnly,
+            MachineName,
+        }
     }
 
     #region Authorization

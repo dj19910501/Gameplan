@@ -15072,7 +15072,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     margin-left: 12px;
     display: inline-block;
     margin-top: -6px;
-    width: 370px;
+    width: 240px;
 }
 
 .search-wrap .input-group-btn {
@@ -15100,7 +15100,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     position: relative;
     margin-top: 0;
     width: 0%;
-    min-width: 50px;
+    min-width: 40px;
     height: 35px;
     float: left;
     overflow: hidden;
@@ -15108,9 +15108,10 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     -moz-transition: width 0.3s;
     transition: width 0.3s;
     -webkit-backface-visibility: hidden;
-        background: #fff;
+    background: #fff;
     border-radius: 5px;
     border: 1px solid #ccc;
+    padding-left:5px;
 }
 .ExpInput {
     background: transparent ;
@@ -15147,11 +15148,11 @@ input[type="search"].ExpInput {
 }
 .ExpIcon,
 .Expbtn , .ExpIconClose {
-    width: 50px;
+    width: 35px;
     height: 35px;
     display: block;
     position: absolute;
-    left: 0;
+    left: 5px;
     top: 0;
     padding: 0;
     margin: 0;
@@ -15205,7 +15206,7 @@ input[type="search"].ExpInput {
 #searchCriteria{margin-bottom:0; box-shadow:none; border-radius: 5px 0 0 5px;} 
 .open  #searchCriteria{background:#f8710e}
 #searchCriteria span{color:#fff}
-#txtSearch{
+#txtGlobalSearch{
     border: 0 none;
     border-radius: 0;
     height: 27px;
@@ -15214,8 +15215,9 @@ input[type="search"].ExpInput {
     outline: 0 !important;
     display: inline;
     box-shadow:none;
+    width: 170px;
 }
-#txtSearch:focus{box-shadow:none}
+#txtGlobalSearch:focus{box-shadow:none}
 .Exp-serach .fa{font-size:16px; color:#3e3f37}
 /* new feature Searchbox style #2259 End */
 

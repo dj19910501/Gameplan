@@ -3248,6 +3248,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = plan.id,
                     text = plan.text,
+                    machineName = "",
                     start_date = plan.start_date,
                     duration = plan.duration,
                     progress = plan.progress,
@@ -3294,6 +3295,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = improvementTactic.id,
                     text = improvementTactic.text,
+                    machineName = "",
                     start_date = improvementTactic.start_date,
                     duration = improvementTactic.duration,
                     progress = improvementTactic.progress,
@@ -3382,6 +3384,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId, tactic.TacticTypeId),
                     text = tactic.Title,
+                    machineName = tactic.TacticCustomName,
                     start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.StartDate),
                     duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, tactic.StartDate, tactic.EndDate),
                     progress = GetTacticProgress((tactic.StartDate != null ? tactic.StartDate : new DateTime()), EffectiveDateListByPlanIds, tactic.PlanId),
@@ -3409,6 +3412,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = tactic.id,
                     text = tactic.text,
+                    machineName = tactic.machineName,
                     start_date = tactic.start_date,
                     duration = tactic.duration,
                     progress = tactic.progress,
@@ -3458,6 +3462,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = program.id,
                     text = program.text,
+                    machineName = "",
                     start_date = program.start_date,
                     duration = program.duration,
                     progress = program.progress,
@@ -3496,6 +3501,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = campaign.id,
                     text = campaign.text,
+                    machineName = "",
                     start_date = campaign.start_date,
                     duration = campaign.duration,
                     progress = campaign.progress,
@@ -3535,6 +3541,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", _tac.PlanId, _tac.PlanCampaignId, _tac.PlanProgramId, _tac.PlanTacticId, _tac.TacticTypeId),
                     text = _tac.Title,
+                    machineName = _tac.TacticCustomName,
                     start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, _tac.StartDate),
                     duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
                                                               CalendarEndDate,
@@ -3572,6 +3579,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = task.id,
                     text = task.text,
+                    machineName = task.machineName,
                     start_date = task.start_date,
                     duration = task.duration,
                     progress = task.progress,
@@ -3630,6 +3638,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = task.id,
                     text = task.text,
+                    machineName = "",
                     start_date = task.start_date,
                     duration = task.duration,
                     progress = task.progress,
@@ -3677,6 +3686,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = _campgn.id,
                     text = _campgn.text,
+                    machineName = "",
                     start_date = _campgn.start_date,
                     duration = _campgn.duration,
                     progress = _campgn.progress,
@@ -3806,6 +3816,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = plan.id,
                     text = plan.text,
+                    machineName = "",
                     start_date = plan.start_date,
                     duration = plan.duration,
                     progress = plan.progress,
