@@ -15067,6 +15067,158 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 #DivloadPlan{clear:both}
 /* style added for #2214 End  */
 
+/* new feature Searchbox style #2269 start */
+.search-wrap {
+    margin-left: 12px;
+    display: inline-block;
+    margin-top: -6px;
+    width: 370px;
+}
+
+.search-wrap .input-group-btn {
+    position: relative;
+    float: left;
+}
+
+.ExpInput .dropdown-menu ul{margin:0; list-style:outside none;}
+.ExpInput .dropdown-menu{
+    background-color: #fff;
+    border: 1px solid #dbded7;
+    border-radius: 5px;
+    float: left;
+    min-width: 140px;
+    padding: 5px 0;
+}
+.search-wrap .dropdown-menu a {
+    width: 86%;
+    display: block;
+    padding: 0 10px;
+}
+.search-wrap .dropdown-menu a:hover{background:#f5f5f5}
+        
+.Exp-serach {
+    position: relative;
+    margin-top: 0;
+    width: 0%;
+    min-width: 50px;
+    height: 35px;
+    float: left;
+    overflow: hidden;
+    -webkit-transition: width 0.3s;
+    -moz-transition: width 0.3s;
+    transition: width 0.3s;
+    -webkit-backface-visibility: hidden;
+        background: #fff;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.ExpInput {
+    background: transparent ;
+    border: medium none;
+    color: #a0b58d;
+    font-family: inherit;
+    font-size: 14px;
+    height: 35px;
+    left: 0;
+    margin: 0;
+    outline: medium none;
+    padding: 0 10% 0 0;
+    position: absolute;
+    top: 0;
+    width: 90%;
+    z-index: 10;
+    display:none;
+} 
+input[type="search"].ExpInput {
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
+}
+.ExpInput::-webkit-input-placeholder {
+    color: #efb480;
+}
+.ExpInput:-moz-placeholder {
+    color: #A0B58D;
+} 
+.ExpInput::-moz-placeholder {
+    color: #A0B58D;
+} 
+.ExpInput:-ms-input-placeholder {
+    color: #A0B58D;
+}
+.ExpIcon,
+.Expbtn , .ExpIconClose {
+    width: 50px;
+    height: 35px;
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 0;
+    margin: 0;
+    line-height: 31px;
+    text-align: center;
+    cursor: pointer;
+}
+.Expbtn {
+    background: #fff; /* IE needs this */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)"; /* IE 8 */
+    filter: alpha(opacity=0); /* IE 5-7 */
+    opacity: 0;
+    color: transparent;
+    color:red;
+    border: none;
+    outline: none;
+    z-index: -1;
+}
+.ExpIcon, .ExpIconClose {
+    color: #3e3f37;
+    background: transparent;
+    z-index: 90;
+    font-size: 22px;
+    font-family: 'icomoon';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+} 
+.ExpIcon:before, .ExpIconClose:before {
+    content: "";
+}
+.Exp-serach.Exp-serach-open,
+.no-js .Exp-serach {
+    width: 100%;
+    overflow:visible;
+}
+.Exp-serach.Exp-serach-open .ExpIcon, .Exp-serach.Exp-serach-open .ExpIconClose,
+.no-js .Exp-serach .ExpIcon {          
+    z-index: 11; 
+    right:0;
+    left: auto;
+}
+.Exp-serach.Exp-serach-open .Expbtn,.Exp-serach.Exp-serach-open .ExpIconClose,
+.no-js .Exp-serach .Expbtn {
+    right:0;left: auto;
+}
+.Exp-serach.Exp-serach-open .ExpInput{display:block}
+#searchCriteria{margin-bottom:0; box-shadow:none; border-radius: 5px 0 0 5px;} 
+.open  #searchCriteria{background:#f8710e}
+#searchCriteria span{color:#fff}
+#txtSearch{
+    border: 0 none;
+    border-radius: 0;
+    height: 27px;
+    margin: 0;
+    background: transparent;
+    outline: 0 !important;
+    display: inline;
+    box-shadow:none;
+}
+#txtSearch:focus{box-shadow:none}
+.Exp-serach .fa{font-size:16px; color:#3e3f37}
+/* new feature Searchbox style #2259 End */
+
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

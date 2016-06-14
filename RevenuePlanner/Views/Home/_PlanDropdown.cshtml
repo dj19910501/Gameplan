@@ -24,15 +24,72 @@
     </li>
    
     @*Modified by Komal Rawal for 2013 Home/Plan Layout changes*@
-    <li style="padding-top:5px;" id="liplanrequest">
-        <div class="request-icons hide" id="BtnTabIcons">
+    <li id="liplanrequest" style="padding-top:5px;width:55%">
+        <div class="request-icons hide" id="BtnTabIcons" style="display:inline-block">
 
             <div class="request-icon-block" id="divPlanButton" title="Calendar View"><a href="#" class="new-btn-plan request-btn-active"><i class="fa fa-calendar"></i></a></div>
             <div class="request-icon-block" id="divPlanEditButtonHome" title="Grid View"><a href="#" class="request-icon-link" id="btngrid"><i class="fa fa-table"></i></a></div>
             <div class="request-icon-block" id="BudgetIcon" title="View Budget and Cost" style="display:none" onclick="CallBudget()"><a href=" #" class="request-icon-link"><i class="fa fa-money"></i></a></div>
 
             <div class="request-icon-block" id="RequestTab"><a href="#" class="request" title="Requests"><i class="fa fa-thumbs-o-up"></i><span class="counter badge"></a></span></div>
+
+
+            @*<div class="request-icon-block" id="RequestTab"><span>Search</span><input type="text"  name="filter" id="tSearch"/></div>
+                <div class="request-icon-block" id="divSearch" title="Serch Button" onclick="onSearchCal()"><a href=" #"><i class="fa fa-calendar"></i></a></div>*@
 	    </div>
+        @*  ==== Searchbox new feature start - #2269 ====  *@
+        <div class="search-wrap">
+            <div id=" exp-serach" class="Exp-serach">
+
+                <span class="ExpIcon" id="ExpSearch"><i class="fa fa-search"></i></span>
+            <span class="ExpIconClose" id="ExpClose" style="display:none"><i class="fa fa-times-circle-o" aria-hidden="true"></i></span>
+            <input class="Expbtn" type="submit" value="" id="btnSearch" onclick="onSearchCal()">
+
+            @*<input class="ExpInput " onkeyup="buttonUp();" placeholder="Enter your search term..." onblur="monkey();" type="search" value="" name="search" id="search">*@
+                <div class="input-group ExpInput">
+                    <div class="input-group-btn">
+                        <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="All">
+                            All
+                            <span class="fa fa-caret-down"></span>
+                        </button>
+                        <div class="dropdown-menu ">
+                            <ul role="menu" aria-labelledby="dropdownMenu">
+                                <li><a tabindex="-1" href="#">All</a></li>
+                                <li><a tabindex="-1" href="#">Name Only</a></li>
+                                <li><a tabindex="-1" href="#">Machine Name</a></li>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                    <input id="txtSearch" type="text" class="form-control" aria-label="Text input with dropdown button">
+                </div>
+
+
+            </div>
+
+                @*<div class="input-group">
+                        <div class="input-group-btn">
+                            @*<button class="btn">Please Select From List</button> @
+                            <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="All">All
+                                <span class="caret"></span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <ul role="menu" aria-labelledby="dropdownMenu">
+                                    <li><a tabindex="-1" href="#">All</a></li>
+                                    <li><a tabindex="-1" href="#">Name Only</a></li>
+                                    <li><a tabindex="-1" href="#">Machine Name</a></li>
+                                    <li class="divider"></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <input id="txtSearch" type="text" class="form-control" aria-label="Text input with dropdown button">
+
+                    </div>
+                <button id="btnSearch" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="onSearchCal()" style="min-width:5%">
+                    search
+                </button>*@
+        </div>
+
     </li>
     
     <div style="float: right;margin-bottom: 10px; margin-right: -15px" id="divupcomingact">
@@ -164,6 +221,65 @@
         // Desc :: For performace avoid multiple db trip for same results
         //GetHealderData(SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, Tabid);// Modified By Nishant Sheth Desc header value wrong with plan tab
         //GetNumberOfActivityPerMonByPlanIdPer(SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
+
+        //Searchbox JS Start - Bhumika
+            function buttonUp() {
+                var valux = $('.ExpInput').val();
+                valux = $.trim(valux).length;
+                if (valux !== 0) {
+                    $('.Expbtn').css('z-index', '99');
+                } else {
+                    $('.ExpInput').val('');
+                    $('.Expbtn').css('z-index', '-999');
+                }
+            }
+
+            var submitIcon = $('.ExpIcon');
+            var submitIconClose = $('.ExpIconClose');
+            var submitInput = $('.ExpInput');
+            var searchBox = $('.Exp-serach');
+            var isOpen = false;
+				
+            $(document).mouseup(function(){
+                if(isOpen == true){
+                    submitInput.val('');
+                    $('.Expbtn').css('z-index','-999');
+                    submitIcon.click();
+                }
+    });
+				
+            submitIcon.mouseup(function(){
+                return false;
+            });
+				
+            searchBox.mouseup(function(){
+                return false;
+            });
+						
+            submitIcon.click(function(){
+                if(isOpen == false){
+                    $('#ExpClose').css('display', 'none');
+                   // $('.ExpInput').css('display', 'block');
+                    
+                    searchBox.addClass('Exp-serach-open');
+                    isOpen = true;
+						
+                } else {
+                    //searchBox.removeClass('Exp-serach-open'); 
+                    //isOpen = false; 
+                     //alert("Search");
+                    $('#ExpSearch').css('display', 'none');
+                    $('#ExpClose').css('display', 'block'); 
+                }
+                submitIconClose.click(function () {
+                    searchBox.removeClass('Exp-serach-open');
+                    $('#ExpClose').css('display', 'none');
+                    $('.ExpIcon').css('display', 'block');
+                    isOpen = false; 
+                });
+            });
+
+      //Searchbox JS End
     });
     var IsViewBy = false;
     $("#ddlTabViewBy").change(function () {
@@ -300,6 +416,10 @@
         {
             ChangeTabView(GridId);
         }
+    });
+    $(".dropdown-menu li a").click(function () {
+        $("#searchCriteria").text($(this).text());
+        $("#searchCriteria").val($(this).text());
     });
     //End
 </script>
