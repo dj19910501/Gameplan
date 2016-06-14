@@ -336,12 +336,21 @@ namespace RevenuePlanner.Test.MockHelpers
         public static Guid GetClientId(int PlanId)
         {
             var ClientId = (from i in db.Models
-                                         join t in db.Plans on i.ModelId equals t.ModelId
-                                         where i.IsDeleted == false && t.IsDeleted == false && t.PlanId == PlanId
-                                         select i.ClientId).FirstOrDefault();
+                            join t in db.Plans on i.ModelId equals t.ModelId
+                            where i.IsDeleted == false && t.IsDeleted == false && t.PlanId == PlanId
+                            select i.ClientId).FirstOrDefault();
             return ClientId;
         }
 
+        #region Get Dashboard Id
+        public static string GetDashboardId()
+        {
+            int planId = DataHelper.GetPlanId();
+            var ClientId = DataHelper.GetClientId(planId).ToString();
+            var DashboardId = Common.GetSpDashboarData(ClientId.ToString()).Select(a => a.Id).FirstOrDefault();
+            return Convert.ToString(DashboardId);
+        }
+        #endregion
 
     }
 }

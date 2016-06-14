@@ -24,12 +24,15 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Data.EntityClient;
 using RevenuePlanner.BAL;
+using System.Web.Caching;
+using System.Reflection;
 
 namespace RevenuePlanner.Controllers
 {
     [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class ReportController : CommonController
     {
+
         #region Variables
 
         private MRPEntities db = new MRPEntities();
@@ -55,6 +58,25 @@ namespace RevenuePlanner.Controllers
         private string[] selectedYearList;
         // End By Nishant Sheth
         #endregion
+
+        // Add By Nishant Sheth
+        // Desc :: For Report Controller Test Cases
+        public ReportController()
+        {
+            if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
+            {
+                Common.xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");//Modify by Akashdeep Kadia on 09/05/2016 to resolve PL ticket #989.
+                Common.objCached.loadMsg(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
+                CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache.Insert("CommonMsg", Common.objCached, dependency);
+            }
+            else
+            {
+                Common.objCached = (Message)System.Web.HttpContext.Current.Cache["CommonMsg"];
+
+            }
+        }
 
         #region Report Index
 
