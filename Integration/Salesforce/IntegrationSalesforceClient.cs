@@ -4205,6 +4205,12 @@ namespace Integration.Salesforce
             //Make Hireachy for Marketo sync on SFDC
             if (_IsSFDCWithMarketo)
             {
+                // Add by Nishant Shethh
+                // Desc :: #2280 : if tatic is not sync by marketo to salesforce then tactic is not created in salesforce
+                if (planTactic.IntegrationInstanceMarketoID != null && planTactic.IsSyncMarketo.HasValue && planTactic.IsSyncMarketo.Value)
+                {
+                    return planTactic;
+                }
                 if (currentMode == Enums.Mode.Create)
                 {
                     var SFDCgetTacticId = _client.Query<object>("SELECT Id FROM Campaign  WHERE Name IN ('" + planTactic.TacticCustomName + "')");
@@ -5679,7 +5685,7 @@ namespace Integration.Salesforce
                 List<Plan_Campaign_Program_Tactic> lstCreatedTactic = new List<Plan_Campaign_Program_Tactic>();
                 List<Plan_Campaign_Program_Tactic> lstUpdatedTactic = new List<Plan_Campaign_Program_Tactic>();
                 List<int> lstProcessTacIds = new List<int>();
-                List<int> IsSFDCWithMarketoList = new List<int>();
+                List<SFDCWithMarketoList> IsSFDCWithMarketoList = new List<SFDCWithMarketoList>();
 
                 #endregion
 
@@ -5719,15 +5725,36 @@ namespace Integration.Salesforce
                     string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
                     // Add By Nishant Sheth
                     //Make Hireachy for Marketo sync on SFDC
-                    IsSFDCWithMarketoList = db.Models.Where(model => model.IsDeleted == false && model.IntegrationInstanceId == null &&
+                    // Modified By Nishant Sheth
+                    // Modified Date: 15-Jun-2016
+                    // Desc ::  Get model list which are configure like salesforce integration instance as pull for marketo and same instance for another model to push salesforce.
+                    IsSFDCWithMarketoList = db.Models.Where(model => model.IsDeleted == false &&
                        (model.IntegrationInstanceIdINQ == _integrationInstanceId || model.IntegrationInstanceIdMQL == _integrationInstanceId
-                       || model.IntegrationInstanceIdCW == _integrationInstanceId)
-                       && model.IntegrationInstanceMarketoID != null && model.IntegrationInstanceMarketoID != _integrationInstanceId)
-                       .Select(model => model.ModelId).ToList();
+                       || model.IntegrationInstanceIdCW == _integrationInstanceId || model.IntegrationInstanceId == _integrationInstanceId)
+                       && (model.IntegrationInstanceMarketoID != _integrationInstanceId || model.IntegrationInstanceMarketoID == null))
+                       .Select(model => new SFDCWithMarketoList
+                       {
+                           ModelId = model.ModelId,
+                           IntegrationInstanceMarketoID = model.IntegrationInstanceMarketoID,
+                           IntegrationInstanceId = model.IntegrationInstanceId
+                       }).ToList();
+
                     if (IsSFDCWithMarketoList.Count > 0)
                     {
-                        _IsSFDCWithMarketo = true;
-                        lstPlan = db.Plans.Where(p => IsSFDCWithMarketoList.Contains(p.ModelId) && p.Model.Status.Equals(published)).ToList();
+                        //var IsCheckMarketoModel = IsSFDCWithMarketoList.Where(model => model.IntegrationInstanceMarketoID != null).Any();
+
+                        if (IsSFDCWithMarketoList.Where(model => model.IntegrationInstanceMarketoID != null).Any())
+                        {
+                            _IsSFDCWithMarketo = true;
+                            List<int> SFDCWithMarketoModelIds = new List<int>();
+                            SFDCWithMarketoModelIds = IsSFDCWithMarketoList.Select(model => model.ModelId).ToList();
+                            lstPlan = db.Plans.Where(p => SFDCWithMarketoModelIds.Contains(p.ModelId) && p.Model.Status.Equals(published)).ToList();
+                        }
+                        else
+                        {
+                            _IsSFDCWithMarketo = false;
+                            lstPlan = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
+                        }
                     }
                     else
                     {
@@ -5748,7 +5775,7 @@ namespace Integration.Salesforce
                         if (IsSFDCWithMarketoList.Count > 0)
                         {
                             tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted
-                            && tactic.IsSyncMarketo.HasValue && tactic.IsSyncMarketo.Value == true).ToList();
+                            && (tactic.IsSyncMarketo.HasValue && tactic.IsSyncMarketo.Value == true) || (tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true)).ToList();
                         }
                         else
                         {
@@ -7242,4 +7269,10 @@ public class TacticLinkedTacMapping
     public Plan_Campaign_Program_Tactic PlanTactic { get; set; }
     public Plan_Campaign_Program_Tactic LinkedTactic { get; set; }
     public string PlanName { get; set; }
+}
+public class SFDCWithMarketoList
+{
+    public int ModelId { get; set; }
+    public int? IntegrationInstanceMarketoID { get; set; }
+    public int? IntegrationInstanceId { get; set; }
 }
