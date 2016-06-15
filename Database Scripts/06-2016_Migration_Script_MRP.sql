@@ -12223,6 +12223,54 @@ BEGIN
 END;
 
 GO
+IF EXISTS ( SELECT  * FROM sys.objects WHERE   object_id = OBJECT_ID(N'GetFilterXmlString') AND type IN (  N'FN', N'IF', N'TF', N'FS', N'FT') ) 
+BEGIN
+	DROP function [GetFilterXmlString]
+END
+GO
+CREATE FUNCTION [dbo].[GetFilterXmlString] (	
+	-- Add the parameters for the function here
+	@FilterVAlues NVARCHAR(MAX),
+	@DimensionName NVARCHAR(MAX)
+)
+RETURNS NVARCHAR(MAX)
+AS
+BEGIN
+	DECLARE @FilterXML NVARCHAR(MAX)
+	DECLARE @TempDimensionTable AS TABLE (Id INT, DimensionIds INT)
+	INSERT INTO @TempDimensionTable
+	select ROW_NUMBER() OVER (ORDER BY dimension) AS RowNo,dimension from [dbo].[fnSplitString](@DimensionName, 'D')
+
+	DECLARE @TempDimensionValueTable AS TABLE (Id INT, DimensionValues NVARCHAR(MAX))
+	INSERT INTO @TempDimensionValueTable
+	select ROW_NUMBER() OVER (ORDER BY dimension) AS RowNo,dimension from [dbo].[fnSplitString](@FilterVAlues, ',')
+
+	DECLARE @intFlag INT
+	DECLARE @TotalRow INT
+
+	SET @intFlag = 1
+	SET @TotalRow = (select COUNT(dimension) from [dbo].[fnSplitString](@FilterVAlues, ','))
+
+	WHILE (@intFlag <= @TotalRow)
+	BEGIN
+		DECLARE @DimId INT
+		DECLARE @DimVal INT
+		DECLARE @FilterIndex INT
+
+		SET @DimId = (SELECT LEFT(DimensionValues, CHARINDEX(':',DimensionValues)-1) FROM @TempDimensionValueTable WHERE Id = @intFlag)
+		SET @DimVal = (SELECT RIGHT(DimensionValues,LEN(DimensionValues)-CHARINDEX(':',DimensionValues)) FROM @TempDimensionValueTable WHERE Id = @intFlag)
+		SET @FilterIndex = (SELECT Id FROM @TempDimensionTable WHERE DimensionIds = @DimId)
+
+		IF EXISTS (SELECT * FROM @TempDimensionTable WHERE DimensionIds = @DimId)
+		BEGIN
+			SET @FilterXML = CONCAT(@FilterXML, '<filter ID="' + CAST(@FilterIndex AS NVARCHAR(MAX)) + '">' + CAST(@DimVal AS NVARCHAR(MAX)) + '</filter>')
+		END
+
+		SET @intFlag = @intFlag + 1
+	END
+	RETURN @FilterXML
+END
+Go
 --46
 IF EXISTS (SELECT * FROM sysobjects WHERE id = object_id(N'WebApiGetReportRawData') AND xtype IN (N'P'))
     DROP PROCEDURE WebApiGetReportRawData
@@ -12231,7 +12279,7 @@ GO
 
 CREATE PROCEDURE [dbo].[WebApiGetReportRawData] 
 (
-	@Id INT, @TopOnly BIT = 1, @ViewBy NVARCHAR(2) = 'Q',@StartDate DATETIME= '1/1/1900', @EndDate DATETIME = '1/1/2100'
+	@Id INT, @TopOnly BIT = 1, @ViewBy NVARCHAR(2) = 'Q',@StartDate DATETIME= '1/1/1900', @EndDate DATETIME = '1/1/2100', @FilterValues NVARCHAR(MAX) = NULL
 )
 AS 
 BEGIN
@@ -12347,6 +12395,9 @@ BEGIN
 
 	
 	DECLARE @DateDimensionId INT;
+	DECLARE @DimensionName VARCHAR(8000);
+	DECLARE @FilterXML NVARCHAR(MAX) = NULL
+	DECLARE @FilterXMLString NVARCHAR(MAX) = NULL
 		IF(@CustomQuery != '') --In case of custom query is configured for the report
 		BEGIN
 			
@@ -12357,14 +12408,25 @@ BEGIN
 				INNER JOIN Dimension D			ON D.id = A.Dimensionid AND D.IsDateDimension = 1 AND D.IsDeleted = 0
 			WHERE G.Id = @Id
 
+			SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM dbo.[IdentifyDimensions](@Id,1,@DateDimensionId)
+
+			IF (@FilterValues IS NOT NULL AND @FilterValues != '' AND @DimensionName IS NOT NULL AND @DimensionName != '')
+			BEGIN
+				SET @FilterXMLString = (SELECT [dbo].[GetFilterXmlString] (@FilterValues, @DimensionName))
+			END
+
+			IF (@FilterXMLString IS NOT NULL AND @FilterXMLString != '')
+			BEGIN
+				SELECT @FilterXML = CONCAT('''<filters>', @FilterXMLString, '</filters>''')
+			END
+			
 			IF((CHARINDEX('#DIMENSIONGROUP#',@CustomQuery) > 0 OR CHARINDEX('#DIMENSIONWHERE#',@CustomQuery) > 0) AND ISNULL(@DateDimensionId,0) != 0 )  -- We must have one dimension (date) configured for the report
 			BEGIN
-				
 				EXEC [CustomGraphQuery]  
 					@ReportGraphID			= @Id, 
 					@STARTDATE				= @StartDate, 
 					@ENDDATE				= @EndDate,
-					@FilterValues			= NULL,
+					@FilterValues			= @FilterXML,
 					@ViewByValue			= @ViewBy,
 					@DimensionTableName		= '',
 					@DateDimensionId		= @DateDimensionId,--this value must be pass , other wise CustomGraphQuery will throw an error
@@ -12382,7 +12444,7 @@ BEGIN
 					@ReportGraphID			= @Id, 
 					@STARTDATE				= @StartDate, 
 					@ENDDATE				= @EndDate,
-					@FilterValues			= NULL,
+					@FilterValues			= @FilterXML,
 					@ViewByValue			= @ViewBy,
 					@DimensionTableName		= '',
 					@DateDimensionId		= '', --this value is not passed here
@@ -12408,16 +12470,25 @@ BEGIN
 
 				IF(ISNULL(@DateDimensionId,0) != 0 )  -- We must have one dimension (date) configured for the report
 				BEGIN
-						DECLARE @DimensionName VARCHAR(8000) 
 						SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM dbo.[IdentifyDimensions](@Id,1,@DateDimensionId)
 
+						IF (@FilterValues IS NOT NULL AND @FilterValues != '' AND @DimensionName IS NOT NULL AND @DimensionName != '')
+						BEGIN
+							SET @FilterXMLString = (SELECT [dbo].[GetFilterXmlString] (@FilterValues, @DimensionName))
+						END
+
+						IF (@FilterXMLString IS NOT NULL AND @FilterXMLString != '')
+						BEGIN
+							SELECT @FilterXML = CONCAT('''<filters>', @FilterXMLString, '</filters>''')
+						END
+						
 						EXEC [ReportGraphResultsNew]
 							@ReportGraphID						= @Id, 
 							@DIMENSIONTABLENAME					= @DimensionName, 
 							@STARTDATE							= @StartDate, 
 							@ENDDATE							= @EndDate, 
 							@DATEFIELD							= @DateDimensionId, 
-							@FilterValues						= NULL,
+							@FilterValues						= @FilterXML,
 							@ViewByValue						= @ViewBy,
 							@SubDashboardOtherDimensionTable	= 0,
 							@SubDashboardMainDimensionTable		= 0,
@@ -12431,7 +12502,6 @@ BEGIN
 				END
 		END
 END
-
 
 GO
 --47
