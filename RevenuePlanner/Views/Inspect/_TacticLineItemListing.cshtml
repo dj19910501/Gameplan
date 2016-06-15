@@ -34,12 +34,15 @@
    #lineItemGrid .grid_Search {
     margin-left: 10px;
 }
+    #lineItemGrid .objbox {
+        overflow-x:hidden !important; 
+    }
 </style>
 <!-- Added by Arpita Soni for Ticket #2237 on 06/13/2016 -->
 @if(countrows > 0) {
     <div id="lineItemGrid" style="background-color: white; width: 100%;" class="gridViewGrid"></div>
 }
-else{
+else {
     <div>No records available.</div>
 }
 

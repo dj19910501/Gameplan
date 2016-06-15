@@ -226,6 +226,7 @@
      
         SetHeader();
         BindBudgetGrid();
+        
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
@@ -332,7 +333,6 @@
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
         HomeGrid.setEditable(false);
-    
         HomeGrid.init();
         setTimeout(function () {
             HomeGrid.loadOpenStates();
@@ -593,6 +593,7 @@
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
+
         $("#monthContainer").mCustomScrollbar({
             scrollButtons: {
                 enable: true
@@ -606,10 +607,23 @@
         var id = CurrentPlanId;
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });*@
+
+    // Modified by Arpita Soni for Ticket #2237 on 06/15/2016
+    var timer = 0, prevent = false;
+    function PreventDoubleClick() {
+        clearTimeout(timer);
+        prevent = true;
+    }
     //Added By Maitri Gandhi on 19/5/2016 for #2197
     function OpenPlanInspectPopup() {
-        var id = CurrentPlanId;        
-        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+        var id = CurrentPlanId;
+        // Modified by Arpita Soni for Ticket #2237 on 06/15/2016
+        timer = setTimeout(function () {
+            if (!prevent) {
+                ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+            }
+            prevent = false;
+        }, 200);
     }
 
     function AssignDefaultValue() {
@@ -618,16 +632,24 @@
         });
     }
 
-@*    $("[linktype=campaign],[linktype=program],[linktype=tactic]").click(function (e) {
+    @*    $("[linktype=campaign],[linktype=program],[linktype=tactic]").click(function (e) {
         var section = $(this).attr('linktype');
         var id = $(this).attr('id');
         ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });*@
+
     //Added By Maitri Gandhi on 19/5/2016 for #2197
     function OpenOtherInspectPopup(id, section) {
-                var section = section;
-        var id = id;//$(this).attr('id');
-        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+            // Modified by Arpita Soni for Ticket #2237 on 06/15/2016
+            var section = section;
+            var id = id;//$(this).attr('id');
+            timer = setTimeout(function () {
+                if (!prevent) {
+                    ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+                }
+                prevent = false;
+            }, 200);
+        
     }
 
     $('#btnClueTip').click(function () {
