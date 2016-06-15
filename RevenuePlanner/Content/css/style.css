@@ -15072,7 +15072,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     margin-left: 12px;
     display: inline-block;
     margin-top: -6px;
-    width: 240px;
+    width: 194px;
 }
 
 .search-wrap .input-group-btn {
@@ -15094,14 +15094,12 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     display: block;
     padding: 0 10px;
 }
-.search-wrap .dropdown-menu a:hover{background:#f5f5f5}
-        
+.search-wrap .dropdown-menu a:hover{background:#f5f5f5}  
 .Exp-serach {
     position: relative;
     margin-top: 0;
     width: 0%;
-    min-width: 40px;
-    height: 35px;
+    min-width: 40px;   
     float: left;
     overflow: hidden;
     -webkit-transition: width 0.3s;
@@ -15134,29 +15132,15 @@ input[type="search"].ExpInput {
     -webkit-appearance: none;
     -webkit-border-radius: 0px;
 }
-.ExpInput::-webkit-input-placeholder {
-    color: #efb480;
-}
-.ExpInput:-moz-placeholder {
-    color: #A0B58D;
-} 
-.ExpInput::-moz-placeholder {
-    color: #A0B58D;
-} 
-.ExpInput:-ms-input-placeholder {
-    color: #A0B58D;
-}
 .ExpIcon,
 .Expbtn , .ExpIconClose {
     width: 35px;
-    height: 35px;
     display: block;
     position: absolute;
     left: 5px;
-    top: 0;
+    top: 6px;
     padding: 0;
     margin: 0;
-    line-height: 31px;
     text-align: center;
     cursor: pointer;
 }
@@ -15175,13 +15159,6 @@ input[type="search"].ExpInput {
     color: #3e3f37;
     background: transparent;
     z-index: 90;
-    font-size: 22px;
-    font-family: 'icomoon';
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
     -webkit-font-smoothing: antialiased;
 } 
 .ExpIcon:before, .ExpIconClose:before {
@@ -15192,6 +15169,7 @@ input[type="search"].ExpInput {
     width: 100%;
     overflow:visible;
 }
+.Exp-serach .fa{font-size:14px; color:#3e3f37}
 .Exp-serach.Exp-serach-open .ExpIcon, .Exp-serach.Exp-serach-open .ExpIconClose,
 .no-js .Exp-serach .ExpIcon {          
     z-index: 11; 
@@ -15203,9 +15181,15 @@ input[type="search"].ExpInput {
     right:0;left: auto;
 }
 .Exp-serach.Exp-serach-open .ExpInput{display:block}
-#searchCriteria{margin-bottom:0; box-shadow:none; border-radius: 5px 0 0 5px;} 
+#searchCriteria{margin-bottom:0; box-shadow:none; border-radius: 5px 0 0 5px;  padding: 0; width:34px} 
 .open  #searchCriteria{background:#f8710e}
 #searchCriteria span{color:#fff}
+#searchCriteria::after {
+    content: "\f0d7";
+    font-family: fontawesome;
+    padding-left: 3px;
+    width: 35px;
+}
 #txtGlobalSearch{
     border: 0 none;
     border-radius: 0;
@@ -15215,10 +15199,13 @@ input[type="search"].ExpInput {
     outline: 0 !important;
     display: inline;
     box-shadow:none;
-    width: 170px;
+    width: 120px;
+    font-size: 12px;
 }
+.Exp-serach, .ExpIcon,
+.Expbtn , .ExpIconClose, #searchCriteria  {height: 34px;} 
 #txtGlobalSearch:focus{box-shadow:none}
-.Exp-serach .fa{font-size:16px; color:#3e3f37}
+
 /* new feature Searchbox style #2259 End */
 
 /* ********************  new styles  - End ******************** */
