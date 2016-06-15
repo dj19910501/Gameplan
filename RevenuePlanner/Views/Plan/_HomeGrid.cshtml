@@ -209,7 +209,7 @@
     });
     function ExportToCsvSp(){    
         //If condition added by rahul shah for export to csv after performing global search
-        if($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != ""){
+        if($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != ""){
             var ExportdataId = new Array();
             $(HomeGrid.rowsBuffer).find('td div.honeycombbox-icon-gantt').each(function() {
                 
@@ -2494,15 +2494,19 @@
         HomeGrid.filterTreeBy(colindex,function(data){
             // true - show the related row, false - hide the related row
             return  htmlDecode(data).toLowerCase().toString().indexOf(text.toLowerCase())!=-1;
-        });
-        if(HomeGrid.rowsBuffer.length <= 0){            
+        });        
+        if(HomeGrid.rowsBuffer.length <= 0){ 
+            $('#txtGlobalSearch').val("");
+            BindHomeGrid();
+            $('#txtGlobalSearch').val(node.trim());
             $("#errorMsg").css("display", "block");
             $("#spanMsgError").empty();
             $("#spanMsgError").text("No data found specified filter/search text");
-            BindHomeGrid();
         }
         else{
-            HomeGrid.expandAll();
+            if($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null){
+                HomeGrid.expandAll();
+            }
             $("#errorMsg").css("display", "none");
             $("#spanMsgError").empty();
         }

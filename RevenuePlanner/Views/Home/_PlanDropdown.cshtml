@@ -384,7 +384,7 @@
             isOpen = true;
         }
         else {
-            if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+            if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null) {
                 GlobalSearch();
                 $('#ExpSearch').css('display', 'none');
                 $('#ExpClose').css('display', 'block');

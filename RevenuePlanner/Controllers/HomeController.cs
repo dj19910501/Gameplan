@@ -2622,6 +2622,7 @@ namespace RevenuePlanner.Controllers
             {
                 id = taskdata.id,
                 text = taskdata.text,
+                machineName = "",
                 start_date = taskdata.start_date,
                 duration = taskdata.duration,
                 progress = taskdata.progress,//taskDataPlan.Where(plan => plan.id == taskdata.id).Select(plan => plan.progress).Min(),
@@ -2660,6 +2661,7 @@ namespace RevenuePlanner.Controllers
             {
                 id = taskdata.id,
                 text = taskdata.text,
+                machineName = "",
                 start_date = taskdata.start_date,
                 duration = taskdata.duration,
                 progress = taskdata.progress,
@@ -2697,6 +2699,7 @@ namespace RevenuePlanner.Controllers
             {
                 id = taskdata.id,
                 text = taskdata.text,
+                machineName = "",
                 start_date = taskdata.start_date,
                 duration = taskdata.duration,
                 progress = taskdata.progress,
@@ -2743,6 +2746,7 @@ namespace RevenuePlanner.Controllers
             {
                 id = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", taskdata.MainParentId, taskdata.PlanId, taskdata.Program.PlanCampaignId, taskdata.Program.PlanProgramId, taskdata.Tactic.PlanTacticId),
                 text = taskdata.Tactic.Title,
+                machineName = taskdata.Tactic.TacticCustomName,
                 start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, taskdata.Tactic.StartDate),
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, taskdata.Tactic.StartDate, taskdata.Tactic.EndDate),
                 progress = GetTacticProgress((taskdata.Tactic.StartDate != null ? taskdata.Tactic.StartDate : new DateTime()), _EffectiveDateListByPlanIds, taskdata.PlanId),
@@ -2764,6 +2768,7 @@ namespace RevenuePlanner.Controllers
             {
                 id = taskdata.id,
                 text = taskdata.text,
+                machineName = taskdata.machineName,
                 start_date = taskdata.start_date,
                 duration = taskdata.duration,
                 progress = taskdata.progress,
@@ -2812,6 +2817,7 @@ namespace RevenuePlanner.Controllers
             {
                 id = string.Format("Z{0}_L{1}_M{2}_I{3}_Y{4}", taskdataImprovement.MainParentId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId, taskdataImprovement.ImprovementTactic.ImprovementPlanTacticId, taskdataImprovement.ImprovementTactic.ImprovementTacticTypeId),
                 text = taskdataImprovement.ImprovementTactic.Title,
+                machineName = "",
                 start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, taskdataImprovement.ImprovementTactic.EffectiveDate),
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, taskdataImprovement.ImprovementTactic.EffectiveDate, CalendarEndDate) - 1,
                 progress = 0,
@@ -3347,6 +3353,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = string.Format("L{0}_M{1}_I{2}_Y{3}", improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId, improvementTacticActivty.ImprovementTactic.ImprovementPlanTacticId, improvementTacticActivty.ImprovementTactic.ImprovementTacticTypeId),
                     text = improvementTacticActivty.ImprovementTactic.Title,
+                    machineName = "",
                     start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, improvementTacticActivty.ImprovementTactic.EffectiveDate),
                     duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, improvementTacticActivty.ImprovementTactic.EffectiveDate, CalendarEndDate) - 1,
                     progress = 0,
@@ -3722,6 +3729,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = string.Format("L{0}_M{1}", improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId),
                     text = improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title,
+                    machineName = "",
                     start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, improvementTactic.minStartDate),
                     duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, improvementTactic.minStartDate, CalendarEndDate) - 1,
                     progress = 0,
@@ -3743,6 +3751,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = string.Format("L{0}_M{1}_I{2}_Y{3}", improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId, improvementTacticActivty.ImprovementTactic.ImprovementPlanTacticId, improvementTacticActivty.ImprovementTactic.ImprovementTacticTypeId),
                     text = improvementTacticActivty.ImprovementTactic.Title,
+                    machineName = "",
                     start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, improvementTacticActivty.ImprovementTactic.EffectiveDate),
                     duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, improvementTacticActivty.ImprovementTactic.EffectiveDate, CalendarEndDate) - 1,
                     progress = 0,

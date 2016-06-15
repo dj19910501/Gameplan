@@ -3561,7 +3561,7 @@
         }
         if (isAvailablerecord) {
             // If condition added by Rahul Shah for Export only filtered data after performing global search.
-            if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != null && $('#txtGlobalSearch').val() != "") {
+            if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != null && $('#txtGlobalSearch').val().trim() != "") {
                 $(gantt.$grid_data).find('.gantt_row').each(function () {                   
                     ExportSelectedIdsafterSearch.TaskID.push($(this).attr('task_id'));
                 });               
@@ -8903,14 +8903,14 @@ function () {
                     return false;
                 }              
             gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
-                if (hasValue(id, $('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
+                if (hasValue(id, $('#txtGlobalSearch').val().trim(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
                     return true;
                 } else {
                     return false;
                 }               
             });            
             if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {                
-                SearchTextforcal = $('#txtGlobalSearch').val();
+                SearchTextforcal = $('#txtGlobalSearch').val().trim();
                 $('#txtGlobalSearch').val("");
                 GlobalSearch();
                 $('#txtGlobalSearch').val(SearchTextforcal);
