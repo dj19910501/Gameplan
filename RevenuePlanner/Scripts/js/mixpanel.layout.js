@@ -49,8 +49,7 @@ $(window).load(function () {
         $('#SuccessMsg').hide();
         setTimeout(trackSuccess1, 7000);
     });
-    var trackSuccess1 = function () {
-        alert($('#spanMsgSuccess').text());
+    var trackSuccess1 = function () {       
         var successText1 = $('#spanMsgSuccess').text().trim();
         mixpanel.track(successText1 + " | Calendar");
     };
