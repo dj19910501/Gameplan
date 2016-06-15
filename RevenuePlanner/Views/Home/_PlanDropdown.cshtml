@@ -46,7 +46,7 @@
                 <div class="input-group ExpInput">
                     <div class="input-group-btn">
                         
-                        <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="'@Enums.GlobalSearch.NameOnly.ToString()'">
+                        <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="@Enums.GlobalSearch.NameOnly.ToString()">
                             N
                         </button>                        
                         <div class="dropdown-menu ">
@@ -101,7 +101,7 @@
 </ul>
 @*<script src="~/Scripts/js/scripts.js"></script>*@
 <script type="text/javascript">
-    $(document).ready(function () {
+    $(document).ready(function () {       
         $(".selectBox select").selectbox();
         $("#ddlTabViewBy").multiselect({
             multiple: false,
@@ -222,7 +222,7 @@
      
     });
     var IsViewBy = false;
-    var isOpen = false;
+    var isOpen = false;   
     $("#ddlTabViewBy").change(function () {
         ExportSelectedIds = {
             TaskID: [],
@@ -237,11 +237,18 @@
         requestPlanActiveTab(false);
         RefreshCurrentTab();
     });
-    $('.new-btn-plan').click(function () {
-
+    $('.new-btn-plan').click(function () {     
         //Modified by Komal Rawal for 2013 Home/Plan Layout changes
         $("#RequestTab").show();
-        if ($('#IsGridView').val() == "True") {
+        if ($('#IsGridView').val() == "True") {            
+            $('#txtGlobalSearch').val("");
+            $('#searchCriteria').val("Name Only");
+            $('#searchCriteria').text("N");
+            $('.Exp-serach').removeClass('Exp-serach-open');
+            $('#ExpClose').css('display', 'none');
+            $('.ExpIcon').css('display', 'block');
+            isOpen = false;
+            
             ChangeTabView(CalendarId);
             requestPlanActiveTab(false);
         }
@@ -338,13 +345,17 @@
                 $('#btngrid').removeClass('request-btn-active');
             }
             $('.request').removeClass('request-btn-active');
-            $('#txtGlobalSearch').val("");
-            $('#searchCriteria').val("Name Only");
-            $('#searchCriteria').text("N");           
-            $('.Exp-serach').removeClass('Exp-serach-open');
-            $('#ExpClose').css('display', 'none');
-            $('.ExpIcon').css('display', 'block');
-            isOpen = false;
+          
+            //if ($('#IsGridView').val() == "True") {
+            //    alert(10);
+            //    $('#txtGlobalSearch').val("");
+            //    $('#searchCriteria').val("Name Only");
+            //    $('#searchCriteria').text("N");
+            //    $('.Exp-serach').removeClass('Exp-serach-open');
+            //    $('#ExpClose').css('display', 'none');
+            //    $('.ExpIcon').css('display', 'block');
+            //    isOpen = false;
+            //}
         }
     }
     //Added by Komal Rawal for 2013 Home/Plan Layout changes

@@ -2117,7 +2117,7 @@
     TotalStatus = $("#ulStatus li").length;
     $('#tStatuscount').text('/' + TotalStatus);
     $('#cStatuscount').text(checkedStatuscount);
-   // $("#liGrid,#liCalender").click(function (){
+    // $("#liGrid,#liCalender").click(function (){
     //Modified by Komal Rawal for 2013 Home/Plan Layout changes
     function ChangeTabView(TabName) {
         ExportSelectedIds = {
@@ -2130,7 +2130,7 @@
             CsvId:[]
         };
         //#1780
-        
+
 
         $("#totalEntity").text(0);
         $(".honeycombbox-icon-gantt-Active").removeClass();
@@ -2148,7 +2148,7 @@
             $("#divupcomingact").show();
             $("#liplanrequest").show();
             $('.nav').removeClass('no-bottom-border');
-     //       $("#btnPlanReport").css("display", "block");
+            //       $("#btnPlanReport").css("display", "block");
             //modified by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
             scrollstate = 0;
             GetCollaborators(CurrentPlanId);
@@ -2158,7 +2158,7 @@
             Currenttime = $('#ddlUpComingActivites').val(); //Modified by Komal Rawal for proper HuD when we change tab
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
             $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
-            
+
         }
         else {
             ID = GridId;
@@ -2170,12 +2170,12 @@
             $("#CalenderView").hide();
             $("#divgridview").show();
             $("#ImprovementGrid").show();
-       //     $("#btnPlanReport").css("display", "none");
+            //     $("#btnPlanReport").css("display", "none");
             //Call the function for grid view
             isCopyTactic = 0;
             isEditTactic = 0;
             LoadPlanGrid();
-            $("#divupcomingact").hide(); 
+            $("#divupcomingact").hide();
             $("#RequestTab").hide();
             GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, ID); //Modified by Nishant Sheth for perfomance to make it call only for grid view
 
@@ -2192,7 +2192,7 @@
     //End
     //Added by Komal Rawal for new homepage UI to publish plan
     $('#BtnPublishPlan').click(function () {
-        publishPlan();      
+        publishPlan();
     });
 
     function publishPlan() {
@@ -2295,7 +2295,7 @@
                         }
                     }
                 });        ////End
-                
+
                 var CustomFieldId = filters.customFieldIds;
                 var OwnerIds = filters.OwnerIds;
                 var TacticTypeids = filters.TacticTypeids;
@@ -2329,7 +2329,7 @@
     var SavePresetValue = false;
     function UpdatePlan() {
         //Added by Maitri Gandhi for #2040 on 31/3/2016
-        
+
         var cookie = document.cookie;
         if (cookie.indexOf("gridOpengridbox") > -1) {
             var cookies = cookie.split(';');
@@ -2369,7 +2369,7 @@
             $('#divCustomFieldsFilter').find("input[type=checkbox]:checked").each(function () {
                 $(this).removeAttr('checked');
                 $(this).parent().removeClass("close-list");
-            });           
+            });
             $('#accordion-Status').find("input[type=checkbox]:checked").each(function () {
                 $(this).removeAttr('checked');
                 $(this).parent().removeClass("close-list");
@@ -2395,12 +2395,12 @@
         UpdateResult();
     }
     ////Added to set filters count and selected filters name : 1952 By Maitri Gandhi
-    function UpdateSelectedFilters() {        
+    function UpdateSelectedFilters() {
         //Set Custom Field Filters
         $("#ulSelectedFilter").find("li #CustomFields .sidebarliwidthSelected-right").text("");
         var CheckedCounter = 0, AllCounter = 0, CurrentText = "", id = null;
-        $("#divCustomFieldsFilter").find("div.accordion").each(function () {            
-            CheckedCounter = 0; AllCounter = 0; CurrentText = ""; id = null; 
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            CheckedCounter = 0; AllCounter = 0; CurrentText = ""; id = null;
             if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
                 AllCounter = $(this).find("input[type=checkbox]").length;
                 CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
@@ -2509,7 +2509,7 @@
 
             selectedFilters.tacticTypeTitle.push($(this).attr('tactictypetitle').toString());
         });
-        
+
         if (selectedFilters.tacticTypeTitle.length == 0) {
             $('#lstTType').text(FiltersNone);
         }
@@ -2574,8 +2574,8 @@
                 }
             }
         });
-       
-        //Commented By Komal Rawal on 17-02-2016 to resolve issue of dropdown change from Edit plan 
+
+        //Commented By Komal Rawal on 17-02-2016 to resolve issue of dropdown change from Edit plan
         //if (filters.SelectedPlans.length == 1) {
         //    CurrentPlanId = filters.SelectedPlans[0].toString();
         //    $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
@@ -2660,57 +2660,57 @@
             Planid = CurrentPlanId;
             GetSelectedPlanNo = 1;
         }
-            $.ajax({
-                type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
-                cache: false,
-                async: false,
-                url: '@Url.Action("SaveLastSetofViews", "Home")',
-                data: {
-                    PlanId: Planid.toString(),
-                    customFieldIds: CustomFieldId.toString(),
-                    ownerIds: OwnerIds.toString(),
-                    TacticTypeid: TacticTypeids.toString(),
-                    StatusIds: filters.StatusIds.toString(),
-                    ViewName: ViewName,
-                    SelectedYears: filters.SelectedYears.toString(),
-                    ParentCustomFieldsIds: filters.parentCustomFieldsIds.toString()
+        $.ajax({
+            type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
+            cache: false,
+            async: false,
+            url: '@Url.Action("SaveLastSetofViews", "Home")',
+            data: {
+                PlanId: Planid.toString(),
+                customFieldIds: CustomFieldId.toString(),
+                ownerIds: OwnerIds.toString(),
+                TacticTypeid: TacticTypeids.toString(),
+                StatusIds: filters.StatusIds.toString(),
+                ViewName: ViewName,
+                SelectedYears: filters.SelectedYears.toString(),
+                ParentCustomFieldsIds: filters.parentCustomFieldsIds.toString()
 
-                },
-                dataType: "json",
-                success: function (data) {
-                    if (data.isSuccess == true) {
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.isSuccess == true) {
 
-                        if (data.ViewName != null && data.ViewName != "" && data.ViewName != undefined) {
-                            $("#content_SaveFilters").css("display", "none");
-                            $("#PlanModulesSection").css("display", "block");
-                            $("#Filtersidebar").css("display", "block");
-                            $("#errorMessageMainSidebar").css("display", "none");
-                            $('div[id=successMessageSidebar]').each(function () {
-                                if ($(this).parent().is(':visible')) {
-                                    $(this).show();
-                                    $(this).find("span[id=spanSuccessMessageRole]").text('@Common.objCached.SavePresetSuccess');
-                                    // $(this).slideDown(600);
-                                    //$(this).slideDown(600).delay(3000).slideUp(600);
-                                }
-                            });
-
-                            $("#txtPresetName").val('');
-                        }
-                    }
-                    else {
-                        $("#successMessageSidebar").css("display", "none");
-                        $('div[id=errorMessageMainSidebar]').each(function () {
+                    if (data.ViewName != null && data.ViewName != "" && data.ViewName != undefined) {
+                        $("#content_SaveFilters").css("display", "none");
+                        $("#PlanModulesSection").css("display", "block");
+                        $("#Filtersidebar").css("display", "block");
+                        $("#errorMessageMainSidebar").css("display", "none");
+                        $('div[id=successMessageSidebar]').each(function () {
                             if ($(this).parent().is(':visible')) {
                                 $(this).show();
-                                $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
+                                $(this).find("span[id=spanSuccessMessageRole]").text('@Common.objCached.SavePresetSuccess');
                                 // $(this).slideDown(600);
                                 //$(this).slideDown(600).delay(3000).slideUp(600);
                             }
                         });
+
+                        $("#txtPresetName").val('');
                     }
                 }
-            });
-        }
+                else {
+                    $("#successMessageSidebar").css("display", "none");
+                    $('div[id=errorMessageMainSidebar]').each(function () {
+                        if ($(this).parent().is(':visible')) {
+                            $(this).show();
+                            $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
+                            // $(this).slideDown(600);
+                            //$(this).slideDown(600).delay(3000).slideUp(600);
+                        }
+                    });
+                }
+            }
+        });
+    }
 
     //Modified By komal Rawal
     function UpdateCalenderView() {
@@ -2757,7 +2757,7 @@
             CurrentPlanId = filters.SelectedPlans[0].toString();
             $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
         }
-        
+
         //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
         var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
         $("#divCustomFieldsFilter").find("div.accordion").each(function () {
@@ -2864,7 +2864,7 @@
 
     // modify by devanshi
     function LoadPlanGrid() {
-      //  $("#btnPlanReport").css("display", "none");// Add By Nishant Sheth
+        //  $("#btnPlanReport").css("display", "none");// Add By Nishant Sheth
         filters.SelectedPlans = [];
         $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
@@ -2931,7 +2931,7 @@
         });        ////End
         //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
         //commented by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
-       // state0 = 0;
+        // state0 = 0;
 
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
@@ -3186,7 +3186,7 @@
                             //$("#divCollaborator").html($("#divCollaborator").html() + tempHTML); // commented by Bhumika #2112
                             $('#divCollaboratorCount').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
                             $('#divCollaboratorCount').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>'); // Changed ID for #2112
-                            
+
                             // Function Added for #2112 to show tooltip - Bhumika
                             $(function () {
                                 $(".profile-info").tooltip({
@@ -3195,12 +3195,12 @@
                                     container: 'body',
                                 });
                             });
-                            // #2112 Custome scrollbar for div - Bhumika                          
+                            // #2112 Custome scrollbar for div - Bhumika
                             $("#scroll-Collaborator").mCustomScrollbar({
                                 axis: "x",
                                 horizontalScroll: true,
                                 scrollButtons: { enable: true },
-                                theme: "light-3",                            
+                                theme: "light-3",
                                 advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
                             });
 
@@ -3255,7 +3255,7 @@
             $('#pMQLs').show();
             $('.changes').show();
             $('#Notabcontent').hide();
-          }
+        }
         else {
             $('#DivloadPlan').hide();
             $('.tab-content').hide();
@@ -3395,7 +3395,7 @@
                     $("#ddlUpComingActivites").selectbox('detach');
                     $("#ddlUpComingActivites").selectbox("attach");
                 }
-    //End
+                //End
             }
         });
     }
@@ -3536,7 +3536,7 @@
         $('.home').removeClass('active');
         $('html head title').html("Plan");
         ChangeTabView(GridId); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
-         @*Added by Maitri Gandhi on 1/3/2016 to resolve the scenario of more than one plan in saved preset*@
+        @*Added by Maitri Gandhi on 1/3/2016 to resolve the scenario of more than one plan in saved preset*@
         $(".dropdown ul li").each(function () {
             if ($(this).find("a").text() == "Load Saved Filters") {
                 $(this).css("display", "none");
@@ -3562,9 +3562,24 @@
         if (isAvailablerecord) {
             // If condition added by Rahul Shah for Export only filtered data after performing global search.
             if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != null && $('#txtGlobalSearch').val().trim() != "") {
-                $(gantt.$grid_data).find('.gantt_row').each(function () {                   
-                    ExportSelectedIdsafterSearch.TaskID.push($(this).attr('task_id'));
-                });               
+                //$(gantt.$grid_data).find('.gantt_row').each(function () {
+                //    ExportSelectedIdsafterSearch.TaskID.push($(this).attr('task_id'));
+                //});
+
+                $(GanttTaskData.data).each(function () {
+                    if ($('#searchCriteria').val().replace(" ", "").toUpperCase() == '@Enums.GlobalSearch.NameOnly.ToString().ToUpper()') {
+                        if (this.text.toLowerCase().indexOf($('#txtGlobalSearch').val().trim().toLowerCase()) > -1) {
+                            ExportSelectedIdsafterSearch.TaskID.push(this.id);
+                        }
+
+                    }
+                    if ($('#searchCriteria').val().replace(" ", "").toUpperCase() == '@Enums.GlobalSearch.MachineName.ToString().ToUpper()') {
+                        if (this.machineName.toLowerCase().indexOf($('#txtGlobalSearch').val().trim().toLowerCase()) > -1) {
+                            ExportSelectedIdsafterSearch.TaskID.push(this.id);
+                        }
+
+                    }
+                });
                 CallPdfHoneyComb();
                 ExportSelectedIdsafterSearch.TaskID = [];
             }
@@ -3753,140 +3768,140 @@
                 $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
                 //  $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg.png")')");
 
-                $("#mqlmaindiv").css("background-position", "right bottom");
-                $("#mqlmaindiv").css("background-repeat", "no-repeat");
-            });
+                    $("#mqlmaindiv").css("background-position", "right bottom");
+                    $("#mqlmaindiv").css("background-repeat", "no-repeat");
+                });
 
-            $("#DivBullhornbg").parent().find('.bullhorn-bg-disabled').each(function () {
-                $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg-disabled.png')");
-                //   $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg-disabled.png")')");
-                $("#mqlmaindiv").css("background-position", "right bottom");
-                $("#mqlmaindiv").css("background-repeat", "no-repeat");
-            });
+                $("#DivBullhornbg").parent().find('.bullhorn-bg-disabled').each(function () {
+                    $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg-disabled.png')");
+                    //   $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg-disabled.png")')");
+                    $("#mqlmaindiv").css("background-position", "right bottom");
+                    $("#mqlmaindiv").css("background-repeat", "no-repeat");
+                });
 
-            $("#DivBullhornbg").parent().find('.bulldoller-bg').each(function () {
+                $("#DivBullhornbg").parent().find('.bulldoller-bg').each(function () {
 
-                $("#budgetmaindiv").css("background-image", "url('" + urlpdf + "Content/images/icon-dollar.png')");
-                //     $("#budgetmaindiv").css("background-image", "url('@Url.Content("~/Content/images/icon-dollar.png")')");
-                $("#budgetmaindiv").css("background-position", "right bottom");
-                $("#budgetmaindiv").css("background-repeat", "no-repeat");
-            });
-
-
-            $("#budgetlabeltest").text($("#pcostLabel").text());
-            $("#budgetspanvalue").text($("#pbudget").text());
-            $("#ptacticcounttest").text($("#ptacticcount").text());
+                    $("#budgetmaindiv").css("background-image", "url('" + urlpdf + "Content/images/icon-dollar.png')");
+                    //     $("#budgetmaindiv").css("background-image", "url('@Url.Content("~/Content/images/icon-dollar.png")')");
+                    $("#budgetmaindiv").css("background-position", "right bottom");
+                    $("#budgetmaindiv").css("background-repeat", "no-repeat");
+                });
 
 
-            if (isQuater.split('-').length > 1) {
-                $("#AttachChartCanvas").html('');
-                $("#legendchart").show();
-                var ChartHtml = $("#chartCanvasmultiyear").html();
-                var Chartlegend = $("#legendchart").html();
-                var Canvas = $("#chart2").find(".dhx_canvas_text");
-                var i = 0;
-                var AttachChartHtml = '';
-                AttachChartHtml = ChartHtml;
-                var leAlignment = 15;
-                var z = 20;
-                var colorchart = "#C633C9;";
-                $.each(Canvas, function () {
-                    if (i > 7) {
+                $("#budgetlabeltest").text($("#pcostLabel").text());
+                $("#budgetspanvalue").text($("#pbudget").text());
+                $("#ptacticcounttest").text($("#ptacticcount").text());
 
-                        var left = $(this).css('left');
-                        var leftvalue = "";
-                        var top = $(this).css('top');
-                        var text = $(this).text();
-                        var BarHeight = 55 - parseInt(top);
-                        if (parseInt(left) > 60) {
-                            colorchart = "#407B22;";
+
+                if (isQuater.split('-').length > 1) {
+                    $("#AttachChartCanvas").html('');
+                    $("#legendchart").show();
+                    var ChartHtml = $("#chartCanvasmultiyear").html();
+                    var Chartlegend = $("#legendchart").html();
+                    var Canvas = $("#chart2").find(".dhx_canvas_text");
+                    var i = 0;
+                    var AttachChartHtml = '';
+                    AttachChartHtml = ChartHtml;
+                    var leAlignment = 15;
+                    var z = 20;
+                    var colorchart = "#C633C9;";
+                    $.each(Canvas, function () {
+                        if (i > 7) {
+
+                            var left = $(this).css('left');
+                            var leftvalue = "";
+                            var top = $(this).css('top');
+                            var text = $(this).text();
+                            var BarHeight = 55 - parseInt(top);
+                            if (parseInt(left) > 60) {
+                                colorchart = "#407B22;";
+                            }
+                            AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
+                            AttachChartHtml += text;
+                            AttachChartHtml += "<div style='width:5px;background-color:" + colorchart + " height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
+                            //AttachChartHtml += "<div id='legend'></div>"
+                            AttachChartHtml += "</div>";
                         }
-                        AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
-                        AttachChartHtml += text;
-                        AttachChartHtml += "<div style='width:5px;background-color:" + colorchart + " height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
-                        //AttachChartHtml += "<div id='legend'></div>"
-                        AttachChartHtml += "</div>";
-                    }
 
-                    i++;
+                        i++;
+                    });
+
+                    //AttachChartHtml += Chartlegend;
+                    $("#firstyear").text(isQuater.split('-')[0]);
+                    $("#secondyear").text(isQuater.split('-')[1]);
+                    $("#AttachChartCanvasmultiyear").html('');
+                    $("#AttachChartCanvasmultiyear").html(AttachChartHtml);
+                }
+                else {
+                    $("#legendchart").hide();
+                    $("#AttachChartCanvasmultiyear").html('');
+                    var ChartHtml = $("#chartCanvas").html();
+                    var Canvas = $("#chart2").find(".dhx_canvas_text");
+                    var i = 0;
+                    var AttachChartHtml = ChartHtml;
+                    $.each(Canvas, function () {
+
+                        if (i > 4) {
+                            var left = $(this).css('left');
+                            var top = $(this).css('top');
+                            var text = $(this).text();
+                            var BarHeight = 55 - parseInt(top);
+                            AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
+                            AttachChartHtml += text;
+                            AttachChartHtml += "<div style='width:5px;background-color: #C633C9;height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
+                            AttachChartHtml += "</div>";
+                        }
+                        i++;
+                    });
+
+                    $("#AttachChartCanvas").html('');
+                    $("#AttachChartCanvas").html(AttachChartHtml);
+                    $('#AttachChartCanvas').css('margin-left', '55px');
+                }
+
+                var headerhtml = $("#testdiv").html();
+                //var Script = "<script>" + "$(document).ready(function () {  $('div').find('[task_id='L10874']').css('background-color','rgb(202, 60, 206)'); });" + "<//script>";
+                var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
+                var datestart;
+                var dateend;
+                if ($.isNumeric(isQuater)) {
+                    datestart = "01-01-" + isQuater;
+                    dateend = "01-01-" + (parseInt(isQuater) + 1).toString();
+                }
+                else if (isQuater == 'thismonth') {
+                    var date = new Date(), m = date.getMonth();
+                    datestart = "01-" + (m + 1).toString() + "-" + date.getFullYear().toString();
+                    dateend = "01-" + (m + 2).toString() + "-" + date.getFullYear().toString();
+                    $('#mainpdfdiv').css('width', '1000px');
+                    var headerhtml = $("#testdiv").html();
+                }
+                else if (isQuater == 'thisquarter') {
+                    var startDate = getQarterStartDate();
+                    var m = startDate.getMonth();
+                    datestart = "01-" + (m + 1).toString() + "-" + startDate.getFullYear().toString();
+                    dateend = "01-" + (m + 4).toString() + "-" + startDate.getFullYear().toString();
+                    $('#mainpdfdiv').css('width', '1000px');
+                    var headerhtml = $("#testdiv").html();
+                }
+                else { //added by Rahul Shah on 17/12/2015 for PL #1766
+                    var PlanYears = isQuater.split("-");
+                    var yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
+                    datestart = "01-01-" + isQuater.split("-")[0];
+                    dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
+                    // $('#AttachChartCanvas').css('margin-left', '160px');
+                    //if (PdfFilters.customFieldIds.toString().trim().length > 0) {
+                    //    $("#legendchart").children().first().css('top', '275px');
+                    //    $("#legendchart").children().last().css('top', '299px');
+                    //}
+                    $('#mainpdfdiv').css('width', '');
+                    var headerhtml = $("#testdiv").html();
+                }
+                gantt.exportToPDF({
+                    header: headerhtml,
+                    start: datestart,
+                    end: dateend
+
                 });
-
-                //AttachChartHtml += Chartlegend;
-                $("#firstyear").text(isQuater.split('-')[0]);
-                $("#secondyear").text(isQuater.split('-')[1]);
-                $("#AttachChartCanvasmultiyear").html('');
-                $("#AttachChartCanvasmultiyear").html(AttachChartHtml);
-            }
-            else {
-                $("#legendchart").hide();
-                $("#AttachChartCanvasmultiyear").html('');
-                var ChartHtml = $("#chartCanvas").html();
-                var Canvas = $("#chart2").find(".dhx_canvas_text");
-                var i = 0;
-                var AttachChartHtml = ChartHtml;
-                $.each(Canvas, function () {
-
-                    if (i > 4) {
-                        var left = $(this).css('left');
-                        var top = $(this).css('top');
-                        var text = $(this).text();
-                        var BarHeight = 55 - parseInt(top);
-                        AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
-                        AttachChartHtml += text;
-                        AttachChartHtml += "<div style='width:5px;background-color: #C633C9;height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
-                        AttachChartHtml += "</div>";
-                    }
-                    i++;
-                });
-
-                $("#AttachChartCanvas").html('');
-                $("#AttachChartCanvas").html(AttachChartHtml);
-                $('#AttachChartCanvas').css('margin-left', '55px');
-            }
-
-            var headerhtml = $("#testdiv").html();
-            //var Script = "<script>" + "$(document).ready(function () {  $('div').find('[task_id='L10874']').css('background-color','rgb(202, 60, 206)'); });" + "<//script>";
-            var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
-            var datestart;
-            var dateend;
-            if ($.isNumeric(isQuater)) {
-                datestart = "01-01-" + isQuater;
-                dateend = "01-01-" + (parseInt(isQuater) + 1).toString();
-            }
-            else if (isQuater == 'thismonth') {
-                var date = new Date(), m = date.getMonth();
-                datestart = "01-" + (m + 1).toString() + "-" + date.getFullYear().toString();
-                dateend = "01-" + (m + 2).toString() + "-" + date.getFullYear().toString();
-                $('#mainpdfdiv').css('width', '1000px');
-                var headerhtml = $("#testdiv").html();
-            }
-            else if (isQuater == 'thisquarter') {
-                var startDate = getQarterStartDate();
-                var m = startDate.getMonth();
-                datestart = "01-" + (m + 1).toString() + "-" + startDate.getFullYear().toString();
-                dateend = "01-" + (m + 4).toString() + "-" + startDate.getFullYear().toString();
-                $('#mainpdfdiv').css('width', '1000px');
-                var headerhtml = $("#testdiv").html();
-            }
-            else { //added by Rahul Shah on 17/12/2015 for PL #1766
-                var PlanYears = isQuater.split("-");
-                var yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
-                datestart = "01-01-" + isQuater.split("-")[0];
-                dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
-                // $('#AttachChartCanvas').css('margin-left', '160px');
-                //if (PdfFilters.customFieldIds.toString().trim().length > 0) {
-                //    $("#legendchart").children().first().css('top', '275px');
-                //    $("#legendchart").children().last().css('top', '299px');
-                //}
-                $('#mainpdfdiv').css('width', '');
-                var headerhtml = $("#testdiv").html();
-            }           
-            gantt.exportToPDF({
-                header: headerhtml,
-                start: datestart,
-                end: dateend
-
-            });
             }
         }
         else {
@@ -6309,7 +6324,7 @@
         $("#modalMainContainer").show();
     });
     function CloseIconClick() {
-        $('.close-x-big-icon').click(function () {            
+        $('.close-x-big-icon').click(function () {
             $("#modal-container-186470").addClass("transition-close");
             $("#modal-container-186470").removeClass("transition_y");
             addDefaultModalPopupBackgroungColor();
@@ -6344,6 +6359,7 @@
                         }
                         else {
                             gantt.refreshData();
+                            GlobalSearch();
                         }                       
                     } else {
                         $('#divPlanEditButtonHome').click();
@@ -6358,6 +6374,7 @@
                     }
                     else {
                         gantt.refreshData();
+                        GlobalSearch();
                     }
                 }
                 else {
