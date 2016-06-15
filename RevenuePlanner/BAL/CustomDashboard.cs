@@ -1,0 +1,83 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using RevenuePlanner.Models;
+using System.Data;
+using RevenuePlanner.Helpers;
+
+namespace RevenuePlanner.BAL
+{
+    public class CustomDashboard
+    {
+        public Custom_Dashboard GetMainDashBoardInfo(int DashboardId)
+        {
+            DataSet ds = new DataSet();
+            StoredProcedure sp = new StoredProcedure();
+            Custom_Dashboard model = new Custom_Dashboard();
+            ds = sp.GetDashboardContent(0, Convert.ToInt32(DashboardId), 0);
+
+            if (ds != null && ds.Tables.Count > 0)
+            {
+                DataTable dt = ds.Tables[0];
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    model.Id = dt.Rows[0]["Id"] == DBNull.Value ? 0 : Convert.ToInt32(dt.Rows[0]["Id"]);
+                    model.Name = Convert.ToString(dt.Rows[0]["DisplayName"]);
+                    model.Rows = dt.Rows[0]["Rows"] == DBNull.Value ? 2 : Convert.ToInt32(dt.Rows[0]["Rows"]);
+                    model.Columns = dt.Rows[0]["Columns"] == DBNull.Value ? 2 : Convert.ToInt32(dt.Rows[0]["Columns"]);
+
+                    if (ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0)
+                    {
+                        DataView dvDashContents = new DataView(ds.Tables[1]);
+                        dvDashContents.RowFilter = "DashboardId = " + model.Id;
+                        DataTable dtContents = new DataTable();
+                        dtContents = dvDashContents.ToTable();
+                        model.DashboardContent = GetDashboardComponents(model.Id, dtContents);
+                    }
+                }
+            }
+
+            return model;
+        }
+
+        public List<DashboardContentModel> GetDashboardComponents(int dashboardID, DataTable dt)
+        {
+            List<DashboardContentModel> model = new List<DashboardContentModel>();
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+                    DashboardContentModel tmp = new DashboardContentModel();
+                    DataView dv = new DataView(dt);
+                    dv.RowFilter = "DashboardContentId = " + Convert.ToInt32(dr["DashboardContentId"]);
+                    DataTable dtDashContents = new DataTable();
+                    dtDashContents = dv.ToTable();
+                    tmp = SetReportGraphModelData(dashboardID, dtDashContents);
+                    model.Add(tmp);
+                }
+            }
+            return model;
+        }
+
+        public DashboardContentModel SetReportGraphModelData(int DashboardId, DataTable dt)
+        {
+            DashboardContentModel tmp = new DashboardContentModel();
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+                    tmp.DashboardContentId = dr["DashboardContentId"] == DBNull.Value ? 0 : Convert.ToInt32(dr["DashboardContentId"]);
+                    tmp.Height = dr["CalculatedHeight"] == DBNull.Value ? 0 : Convert.ToInt32(dr["CalculatedHeight"]);
+                    tmp.Width = dr["CalculatedWidth"] == DBNull.Value ? Convert.ToDecimal(0) : Convert.ToDecimal(dr["CalculatedWidth"]);
+                    tmp.ReportID = dr["ReportGraphId"] == DBNull.Value ? 0 : Convert.ToInt32(dr["ReportGraphId"]);
+                    tmp.DashboardId = DashboardId;
+                }
+            }
+
+            return tmp;
+        }
+    }
+
+
+}

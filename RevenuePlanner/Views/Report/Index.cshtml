@@ -15,6 +15,7 @@
     ViewBag.Title = "Summary";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var PageTitle = "Reports";
+    List<Custom_Dashboard> DashboardList = ViewBag.DashboardList;
 }
 @Html.Hidden("PageTitle", PageTitle)
 @Html.Hidden("FilterName", FilterName)
@@ -494,6 +495,14 @@
        @*<li id="liConversion"><a class="conversion" ><span></span>CONVERSION</a></li>*@
        <li id="liConversion"><a class="conversion" ><span></span>WATERFALL</a></li> @*--title changed by dashrath prajapati*@
        <li id="liBudgetreport"><a class="budget" ><span></span>FINANCE</a></li> @*PL#1545 Dashrath Prajapati*@
+       @if (DashboardList.Count > 0)
+       {
+           foreach (var Dashboard in DashboardList)
+           {
+               string liid = "CustomReportli" + Dashboard.Id;
+               <li id='@liid'><a class="budget"><span></span>@Dashboard.DisplayName.ToUpper()</a></li>
+           }
+       }
    </ul>
 </div>
 
@@ -3343,7 +3352,30 @@ function () {
             }
         }
     });
+
+    
 });
     // End By Nishant Sheth
+    // Add By Nishant Sheth
+    // Desc :: #2262 call particular dashboard 
+    $('li[id^="CustomReportli"]').click(function () {
+        var DashboardID = $(this).attr('id').replace('CustomReportli', '');
+        var url = '@Url.Content("~/Report/GetCustomReport/")';
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+                DashboardId: DashboardID
+            },
+            success: function (response) {
+                $('#divMainReportPart').html('');
+                $('#divMainReportPart').html(response);
+                isAllowClick = true;
+                if ($(".popover.fade.top.in").length != 0) {
+                    $(".popover.fade.top.in").remove();
+                }
+            }
+        });
+    });
 
 </script>

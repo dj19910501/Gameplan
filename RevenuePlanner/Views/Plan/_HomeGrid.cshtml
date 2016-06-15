@@ -160,7 +160,7 @@
         }
         //#1780
 
-        
+
     });
 
 
@@ -207,57 +207,76 @@
     $(document).ajaxComplete(function () {
         HomeGrid.setSizes();
     });
-    function ExportToCsvSp()
-    {
+    function ExportToCsvSp(){    
+        //If condition added by rahul shah for export to csv after performing global search
+        if($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != ""){
+            var ExportdataId = new Array();
+            $(HomeGrid.rowsBuffer).find('td div.honeycombbox-icon-gantt').each(function() {
+                
+                ExportdataId.push($(this).attr('csvid'));            
+            });
 
-        var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
-        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
-            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
-                AllCounter = $(this).find("input[type=checkbox]").length;
-                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-                UncheckedCounter = AllCounter - CheckedCounter;
-                if (AllCounter == UncheckedCounter) {
-                    var Id = $(this).attr("id");
-                    if (Id.indexOf("-") >= 0) {
-                        Id = Id.split('-')[1];
-                        var CustomId = Id + "_null";
-                        filters.customFieldIds.push(CustomId);
-
-                    }
+            var Honeycombids=ExportdataId.toString();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/ExportToCsv/")',
+                data: { HoneycombIds:Honeycombids,PlanId:SelectedPlanIds.toString()},
+                success: function (data) {                    
+                    window.location='@Url.Content("~/Plan/ExportCsvDataTable/")';
                 }
-                else if (AllCounter == CheckedCounter) {
-                    id = this.id;
-                    if (id != null && id != "" && id.indexOf("-") > -1) {
-                        id = this.id.split("-")[1];
-                    }
-                    var i = 0, customfieldid;
-                    for (i = 0; i < filters.customFieldIds.length; i++) {
-                        if (filters.customFieldIds[i].indexOf("_") > -1) {
-                            customfieldid = filters.customFieldIds[i].split("_")[0];
-                            if (id == customfieldid) {
-                                filters.customFieldIds.splice(i, 1);
-                                i--;
+
+            });
+        }
+        else{
+                var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
+                $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+                    if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                        AllCounter = $(this).find("input[type=checkbox]").length;
+                        CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                        UncheckedCounter = AllCounter - CheckedCounter;
+                        if (AllCounter == UncheckedCounter) {
+                            var Id = $(this).attr("id");
+                            if (Id.indexOf("-") >= 0) {
+                                Id = Id.split('-')[1];
+                                var CustomId = Id + "_null";
+                                filters.customFieldIds.push(CustomId);
+
+                            }
+                        }
+                        else if (AllCounter == CheckedCounter) {
+                            id = this.id;
+                            if (id != null && id != "" && id.indexOf("-") > -1) {
+                                id = this.id.split("-")[1];
+                            }
+                            var i = 0, customfieldid;
+                            for (i = 0; i < filters.customFieldIds.length; i++) {
+                                if (filters.customFieldIds[i].indexOf("_") > -1) {
+                                    customfieldid = filters.customFieldIds[i].split("_")[0];
+                                    if (id == customfieldid) {
+                                        filters.customFieldIds.splice(i, 1);
+                                        i--;
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            }
-        });
-        var OwnerIds= filters.OwnerIds.toString();
-        var TacticTypeids=filters.TacticTypeids.toString();
-        var StatusIds=filters.StatusIds.toString();
-        var CustomFieldId=filters.customFieldIds.toString();
-        //window.location='@Url.Content("~/Plan/ExportToCsv/")'+"?ownerIds="+OwnerIds+"&TacticTypeid="+TacticTypeids+"&StatusIds="+StatusIds+"&customFieldIds="+CustomFieldId+"&PlanId="+SelectedPlanIds.toString();
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/ExportToCsv/")',
-            data: { ownerIds: OwnerIds, TacticTypeid: TacticTypeids, StatusIds: StatusIds, customFieldIds:CustomFieldId ,PlanId:SelectedPlanIds.toString()},
-            success: function (data) {
-                @*window.location='@Url.Content("~/Plan/ExportCsvDataTable/")?FileName='+FileName;*@
-                window.location='@Url.Content("~/Plan/ExportCsvDataTable/")';
-            }
+                });
+                var OwnerIds= filters.OwnerIds.toString();
+                var TacticTypeids=filters.TacticTypeids.toString();
+                var StatusIds=filters.StatusIds.toString();
+                var CustomFieldId=filters.customFieldIds.toString();
+                //window.location='@Url.Content("~/Plan/ExportToCsv/")'+"?ownerIds="+OwnerIds+"&TacticTypeid="+TacticTypeids+"&StatusIds="+StatusIds+"&customFieldIds="+CustomFieldId+"&PlanId="+SelectedPlanIds.toString();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/ExportToCsv/")',
+                    data: { ownerIds: OwnerIds, TacticTypeid: TacticTypeids, StatusIds: StatusIds, customFieldIds:CustomFieldId ,PlanId:SelectedPlanIds.toString()},
+                    success: function (data) {
+                        @*window.location='@Url.Content("~/Plan/ExportCsvDataTable/")?FileName='+FileName;*@
+                        window.location='@Url.Content("~/Plan/ExportCsvDataTable/")';
+                    }
 
-        });
+                });          
+        }
     }
 
     function ExportToCSVOld() {
@@ -424,7 +443,7 @@
     // Add By Nishant Sheth
     // Desc :: #2102 CSV file with Customfield attributes
     function ExportCSVHoneyCombSp()
-    {
+    {        
         var Honeycombids=ExportSelectedIds.CsvId.toString();
         $.ajax({
             type: 'POST',
@@ -746,7 +765,7 @@
     //var GridDataCsv;
     var GridDataHomeGrid;
     function BindHomeGrid() {
-        
+
         @*var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid))';*@
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
 
@@ -766,7 +785,7 @@
         HomeGrid.setCustomSorting(sort_TacticType, 7);
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
-        //HomeGrid.splitAt(2);       
+        //HomeGrid.splitAt(2);
         // added by bhavesh - 11-Nov-2015
         // Apply Distributed Parsing
         HomeGrid.attachEvent("onDistributedEnd", function () {
@@ -785,10 +804,10 @@
             }
             //Added by Rahul Shah on 25/03/2016 for PL #2075
             if(!IslineItemDelete){  //Added By Maitri for #2040 Observation
-            if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {
-                HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
-                HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
-            }
+                if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {
+                    HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+                    HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+                }
             }
 
             //  }
@@ -810,10 +829,10 @@
         //GridDataCsv={rows:[],head:[]};
         //GridDataCsv.head=JSON.parse(GridData).head;
         //GridDataCsv.rows=JSON.parse(GridData).rows;
-        HomeGrid.parse(GridDataHomeGrid, "json");       
+        HomeGrid.parse(GridDataHomeGrid, "json");
         //HomeGrid.splitAt(2);
         //Added by Maitri Gandhi for #2040 on 31/3/2016
-        
+
         HomeGrid.collapseAll();
         var cookie = document.cookie;
         if(cookie.indexOf("gridOpengridbox") > -1){
@@ -830,7 +849,7 @@
         else{
             //cookie += "; gridOpen=plan.1";
             document.cookie = "gridOpengridbox=plan.1";
-        } 
+        }
         setTimeout(function () {
             HomeGrid.loadOpenStates();},1000);
 
@@ -877,7 +896,11 @@
             $("#improvements").hide();
             $("#NodatawithfilterGrid").show();
         }
-
+        if($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) 
+        {
+            GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ",""));
+        }
+        
     }
 
     // 1780
@@ -1212,7 +1235,7 @@
             HomeGrid.detachEvent(editidonOpenEnd);
         }
         editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
-            
+
             setTimeout(function () {
                 HomeGrid.saveOpenStates();},1000);  //Added by Maitri Gandhi for #2040 on 31/3/2016
             //Modified by komal Rawal for #1553
@@ -1262,8 +1285,8 @@
         b = HomeGrid.cells(b_id, 8).getText();
         return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
     };
-    function sort_TacticType(a, b, ord, a_id, b_id) {
-
+    function sort_TacticType(a, b, ord, a_id, b_id) {     
+        
         var atype = a_id.split(".")[0].toString();
         var btype = b_id.split(".")[0].toString();
         if (atype == "tact" && btype == "tact") {
@@ -1405,7 +1428,7 @@
     var value;
 
     var TacticName;
-    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {      
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         var updatetype = rowId.split(".")[0];
         var Id;
         var UpdateColumn;
@@ -1522,7 +1545,7 @@
 
             if (nValue != null && nValue != "") {
 
-                //Added By Komal Rawal to Change the value in array if grid updated              
+                //Added By Komal Rawal to Change the value in array if grid updated
                 var NewValue = htmlDecode(nValue);
                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                 var TaskID = HomeGrid.cells(rowId,3).getValue();
@@ -2369,14 +2392,14 @@
                                     }
                                 }
                             }
-                                
-                            ChangeTabView('liGrid'); 
+
+                            ChangeTabView('liGrid');
                             ItemIndex=HomeGrid.getRowIndex(rowid);
                             state0=ItemIndex;
                             // End - Added by Viral related to PL ticket #2112.
 
 
-                           
+
                         }
                     }
                 });
@@ -2455,4 +2478,33 @@
             // $("#useless").click();
         }
     });
+    //Added by Rahul Shah for PL #2271. for Global Search
+    function GlobalSearchonGrid(node , columnName){      
+        var colindex = 0;
+        var text = node;
+        HomeGrid.setFiltrationLevel(-2);
+
+        if (columnName.toLowerCase().toString() == '@RevenuePlanner.Helpers.Enums.GlobalSearch.NameOnly.ToString().ToLower()'){            
+            colindex = HomeGrid.getColIndexById('taskname');           
+        }
+        else if(columnName.toLowerCase().toString() == '@RevenuePlanner.Helpers.Enums.GlobalSearch.MachineName.ToString().ToLower()'){
+            colindex = HomeGrid.getColIndexById('machinename');
+           
+        }
+        HomeGrid.filterTreeBy(colindex,function(data){
+            // true - show the related row, false - hide the related row
+            return  htmlDecode(data).toLowerCase().toString().indexOf(text.toLowerCase())!=-1;
+        });
+        if(HomeGrid.rowsBuffer.length <= 0){            
+            $("#errorMsg").css("display", "block");
+            $("#spanMsgError").empty();
+            $("#spanMsgError").text("No data found specified filter/search text");
+            BindHomeGrid();
+        }
+        else{
+            HomeGrid.expandAll();
+            $("#errorMsg").css("display", "none");
+            $("#spanMsgError").empty();
+        }
+    }
 </script>

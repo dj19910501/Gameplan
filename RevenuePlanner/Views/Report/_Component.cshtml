@@ -1,0 +1,147 @@
+﻿@using RevenuePlanner.Models
+@using RevenuePlanner.Helpers
+@model RevenuePlanner.Models.Custom_Dashboard
+
+
+<link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
+
+@{
+    string ReportDBConnString = Convert.ToString(ViewBag.ReportDBConnString);
+    string AuthorizedReportAPIUserName = Convert.ToString(ViewBag.AuthorizedReportAPIUserName);
+    string AuthorizedReportAPIPassword = Convert.ToString(ViewBag.AuthorizedReportAPIPassword);
+    string ApiUrl = Convert.ToString(ViewBag.ApiUrl);
+}
+
+<div>
+    @if (Model.DashboardContent.Count > 0)
+    {
+        int componentCount = 0;
+        int componentCountRow = 0;
+
+        foreach (var ReportGraph in Model.DashboardContent)
+        {
+            if (componentCount % Model.Columns == 0)
+            {
+                componentCountRow = 0;
+                @Html.Raw("<div class=\"main-row\" style=\"width:100%;\">")
+            }
+            string cssHeight = @ReportGraph.Height.ToString() + "px";
+            string cssWidth = @ReportGraph.Width.ToString() + "%";
+            string cssWidthMinus = "19px";
+            string cssClass = "component";
+            string RepdivId = "divChart" + @ReportGraph.DashboardContentId;
+
+            <div class="@cssClass" style="height:@cssHeight; width:calc(@cssWidth - @cssWidthMinus); float:left;">
+                <div id=@RepdivId style="width: 100%; height:100%" reportgraphid='@ReportGraph.ReportID' dashboardcontentid='@ReportGraph.DashboardContentId'></div>
+            </div>
+
+            componentCount++;
+            componentCountRow++;
+            if (componentCountRow == Model.Columns)
+            {
+                @Html.Raw("</div>")
+            }
+        }
+    }
+</div>
+@if (Model.DashboardContent.Count == 0)
+{
+    <div class="noreportsfound">
+        <p>Report for this dashboard have not been configured. </p>
+    </div>
+}
+
+<script type="text/javascript">
+    @*$(document).ready(function () {
+        var URL = 'http://localhost:54371/api/Report/Chart';
+        $.support.cors = true;
+        $.ajax({
+            url: URL,
+            async: true,
+            data: {
+                Id: 28,
+                ConnectionString: '@ReportDBConnString',
+                Container: 'divChart18',
+                TopOnly: 'true',
+                ViewBy: 'Q',
+                StartDate: '1/1/2014',
+                EndDate: '12/31/2015',
+                UserName: 'testapi@hive9.com',
+                Password: 'testapi123'
+            },
+            dataType: "json",
+            success: function (data) {
+                //$('#divChart18').html(data);
+                eval(data);
+            },
+            error: function (err) {
+                $('#divChart18').attr('id').html('There is some error from Web API:' + '\n' + err.statusText + '\n' + err.responseText);
+            }
+        });
+    });*@
+
+
+    $(document).ready(function () {
+        var ViewBy = $('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html();
+
+        if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Yearly') {
+            ViewBy = 'Y';
+        }
+        else if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Quarterly') {
+            ViewBy = 'Q';
+        }
+        else if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Monthly') {
+            ViewBy = 'M';
+        }
+
+        $('div[id^=divChart]').each(function () {
+            LoadReport(this, ViewBy);
+        });
+    });
+
+    function LoadReport(obj, ViewBy) {
+        var id = $(obj).attr('ReportGraphId');
+        var PlanDate = $('#lstYearActive').html();
+        var ArrPlanDt = [];
+        ArrPlanDt = PlanDate.split(',');
+        ArrPlanDt.sort(function (a, b) { return a - b });
+        var NoOfyrs = ArrPlanDt.length;
+        var StartDate = '';
+        var EndDate = '';
+        if (NoOfyrs > 0 && ArrPlanDt[0] != 'None') {
+            StartDate = "1/1/" + ArrPlanDt[0];
+            EndDate = "12/31/" + ArrPlanDt[NoOfyrs - 1];
+        }
+
+        var URL = '@ApiUrl' + 'api/Report/Chart';
+        if ('@ApiUrl' == '') {
+            $(obj).html('API Url is not configured in config file, please configure it.');
+        }
+        else {
+            //var URL = 'http://localhost:54371/api/Report/Chart';
+            //$.support.cors = true;
+            $.ajax({
+                url: URL,
+                async: true,
+                data: {
+                    Id: id,
+                    ConnectionString: '@ReportDBConnString',
+                    Container: $(obj).attr('id'),
+                    TopOnly: 'True',
+                    ViewBy: ViewBy,
+                    StartDate: StartDate,
+                    EndDate: EndDate,
+                    UserName: '@AuthorizedReportAPIUserName',
+                    Password: '@AuthorizedReportAPIPassword'
+                },
+                dataType: "json",
+                success: function (data) {
+                    eval(data);
+                },
+                error: function (err) {
+                    $(obj).html('There is some error from Web API:' + '\n' + err.statusText + '\n' + err.responseText);
+                }
+            });
+        }
+    }
+</script>

@@ -192,6 +192,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="BAL\CustomDashboard.cs" />
     <Compile Include="Controllers\BoostController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -350,7 +351,7 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
-    <Content Include="Content\css\style_min_June_10.css" />
+    <Content Include="Content\css\style_min_June_14.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -649,6 +650,11 @@
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.min.js.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js" />
+    <Content Include="Scripts\js\heatmap.js" />
+    <Content Include="Scripts\js\highcharts-3d.js" />
+    <Content Include="Scripts\js\highcharts-funnel.js" />
+    <Content Include="Scripts\js\highcharts-more.js" />
+    <Content Include="Scripts\js\highcharts-v2.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js.map" />
@@ -671,19 +677,8 @@
     <Content Include="Content\fonts\ProximaNova-Regular.ttf" />
     <Content Include="Content\fonts\ProximaNova-Regular.woff" />
     <Content Include="Content\fonts\ProximaNova-Regular.woff2" />
+    <Content Include="Scripts\js\scripts_v2.js" />
     <Content Include="Scripts\moment.min.js" />
-    <Content Include="Integration.BDSService.ApplicationActivity.datasource" />
-    <Content Include="Integration.BDSService.Client.datasource" />
-    <Content Include="Integration.BDSService.ClientDatabase.datasource" />
-    <Content Include="Integration.BDSService.CustomRestriction.datasource" />
-    <Content Include="Integration.BDSService.Menu.datasource" />
-    <Content Include="Integration.BDSService.PasswordResetRequest.datasource" />
-    <Content Include="Integration.BDSService.Permission.datasource" />
-    <Content Include="Integration.BDSService.Role.datasource" />
-    <Content Include="Integration.BDSService.SecurityQuestion.datasource" />
-    <Content Include="Integration.BDSService.User.datasource" />
-    <Content Include="Integration.BDSService.UserApplicationPermission.datasource" />
-    <Content Include="Integration.BDSService.UserHierarchy.datasource" />
     <Content Include="Service References\BDSService\BDSService.disco" />
     <Content Include="Service References\BDSService\configuration91.svcinfo" />
     <Content Include="Service References\BDSService\configuration.svcinfo" />
@@ -851,14 +846,11 @@
     <Content Include="Views\Inspect\_ReviewImprovementTactic.cshtml" />
     <Content Include="Views\Inspect\_ReviewProgram.cshtml" />
     <Content Include="Views\Inspect\_SetupCampaign.cshtml" />
-    <Content Include="Views\Inspect\_SetupCampaignBudgetAllocation.cshtml" />
     <Content Include="Views\Inspect\_SetupImprovementTactic.cshtml" />
     <Content Include="Views\Inspect\_SetupLineitem.cshtml" />
     <Content Include="Views\Inspect\_SetupLineitemBudgetAllocation.cshtml" />
     <Content Include="Views\Inspect\_SetupPlan.cshtml" />
     <Content Include="Views\Inspect\_SetupProgram.cshtml" />
-    <Content Include="Views\Inspect\_SetupProgramBudget.cshtml" />
-    <Content Include="Views\Inspect\_SetupTacticBudgetAllocation.cshtml" />
     <Content Include="Views\Inspect\_ShareCampaign.cshtml" />
     <Content Include="Views\Inspect\_ShareProgram.cshtml" />
     <Content Include="Views\Inspect\_ResubmissionPopup.cshtml" />
@@ -947,6 +939,8 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
+    <Content Include="Views\Report\_DynamicReport.cshtml" />
+    <Content Include="Views\Report\_Component.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

@@ -92,6 +92,7 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="PermisssionCode" Type="int" Nullable="false" />
+          <Property Name="IsOwner" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CampaignNameConvention">
           <Key>
@@ -5313,6 +5314,7 @@
           <Property Name="CreatedBy" Type="Guid" Nullable="false" />
           <Property Name="PermisssionCode" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Budget_Detail" Relationship="MRPModel.BudgetID_FK" FromRole="Budget_Permission" ToRole="Budget_Detail" />
+          <Property Name="IsOwner" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_Budget_Columns_Budget_ColumnSet">
           <End Type="MRPModel.Budget_ColumnSet" Role="Budget_ColumnSet" Multiplicity="1" />
@@ -6809,6 +6811,7 @@
           <EntitySetMapping Name="Budget_Permission">
             <EntityTypeMapping TypeName="MRPModel.Budget_Permission">
               <MappingFragment StoreEntitySet="Budget_Permission">
+                <ScalarProperty Name="IsOwner" ColumnName="IsOwner" />
                 <ScalarProperty Name="PermisssionCode" ColumnName="PermisssionCode" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />

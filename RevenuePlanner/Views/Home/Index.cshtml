@@ -2050,6 +2050,9 @@
         PlanFlag: [],
         CsvId:[]
     };
+    var ExportSelectedIdsafterSearch = {
+        TaskID: [],
+    }
     var gridSearchFlag = 0;
     var PlanCount = 0, OwnerCount = 0;
     var isCopyTactic = 0;
@@ -3557,6 +3560,15 @@
             return false;
         }
         if (isAvailablerecord) {
+            // If condition added by Rahul Shah for Export only filtered data after performing global search.
+            if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != null && $('#txtGlobalSearch').val() != "") {
+                $(gantt.$grid_data).find('.gantt_row').each(function () {                   
+                    ExportSelectedIdsafterSearch.TaskID.push($(this).attr('task_id'));
+                });               
+                CallPdfHoneyComb();
+                ExportSelectedIdsafterSearch.TaskID = [];
+            }
+            else {
             $.each(GanttTaskData.data, function () {
                 this.color = '#' + this.colorcode;
             });
@@ -3875,6 +3887,7 @@
                 end: dateend
 
             });
+            }
         }
         else {
             $('#cErrorInspectPopup').html('No plan selected to export the data in .pdf'); //PL #1595 - Dashrath Prajapati
@@ -3983,7 +3996,9 @@
                 tacticId: [],
 
             }
-
+            if (ExportSelectedIds.TaskID.length <= 0) {
+                ExportSelectedIds.TaskID = ExportSelectedIdsafterSearch.TaskID;
+            }
             var Status = "";
             var planyear = GanttTaskDataNew.data[0].start_date.getFullYear();
             for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
@@ -5626,7 +5641,8 @@
             gantt.config.date_scale = " %Y";
 
             gantt.config.scale_height = 60;
-            gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "add", label: "", width: 70 }];
+            //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "add", label: "", width: 70 }];
+            gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
             gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
             //// Getting quarter
@@ -5697,7 +5713,8 @@
             gantt.config.step = 12;
             gantt.config.date_scale = " %Y";
             gantt.config.scale_height = 60;
-            gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "add", label: "", width: 70 }];
+            gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
+            //gantt.config.columns = [{ name: "custom_text", label: "Machine name", width: '*', resize: true }, { name: "add", label: "", width: 70 }];
             gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
             var date = new Date(), m = date.getMonth();
@@ -5773,7 +5790,8 @@
             gantt.config.step = 1;
             gantt.config.date_scale = "%Y";
             gantt.config.scale_height = 60;
-            gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*", resize: true }, { name: "add", label: "", width: 70 }];
+            //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*", resize: true }, { name: "add", label: "", width: 70 }];
+            gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
             gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
             var date = new Date();
@@ -5808,7 +5826,8 @@
             gantt.config.step = 1;
             gantt.config.date_scale = "%Y";
             gantt.config.scale_height = 60;
-            gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*", resize: true }, { name: "add", label: "", width: 70 }];
+            //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*", resize: true }, { name: "add", label: "", width: 70 }];
+            gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
             gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
             var date = new Date();
@@ -5867,6 +5886,7 @@
         hoverRows();
         AttachEventToTactic();
         AttachEventToonTaskRowClick();
+        GlobalSearch();
         //Added by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
         setTimeout(function () {
             var _scrollY = scrollstate.y
@@ -8848,6 +8868,66 @@ function () {
         $("#DefaultFilters").css("display", "none");
         $("#PlanModulesSection").css("display", "block");
         $("#Filtersidebar").css("display", "block");
+    }
+    //Added by Rahul Shah for PL #2270. perform Global Search on calendar.
+    var SearchTextforcal = ""
+    function GlobalSearch() {
+
+        if ($('#divPlanButton').children().hasClass("request-btn-active")) {
+                gantt.refreshData();
+                function contains(haystack, needle) {
+                    var a = (haystack || "").toLowerCase(),
+                        b = (needle || "").toLowerCase();
+
+                    return !!(a.indexOf(b) > -1);
+
+                }
+                function hasValue(parent, value, searchcriteria) {                    
+                    if (value == "") {
+                        return true;
+                    }
+                    if (searchcriteria == '@Enums.GlobalSearch.MachineName.ToString().ToUpper()') {
+                        if (contains(htmlDecode(gantt.getTask(parent).machineName), value))
+                        return true;
+                    }
+                    if (searchcriteria == '@Enums.GlobalSearch.NameOnly.ToString().ToUpper()') {
+                        if (contains(htmlDecode(gantt.getTask(parent).text), value))
+                            return true;
+                    }
+
+                    var child = gantt.getChildren(parent);
+                    for (var i = 0; i < child.length; i++) {
+                        if (hasValue(child[i], value, searchcriteria))
+                            return true;
+                    }
+                    return false;
+                }              
+            gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
+                if (hasValue(id, $('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
+                    return true;
+                } else {
+                    return false;
+                }               
+            });            
+            if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {                
+                SearchTextforcal = $('#txtGlobalSearch').val();
+                $('#txtGlobalSearch').val("");
+                GlobalSearch();
+                $('#txtGlobalSearch').val(SearchTextforcal);
+                $("#errorMsg").css("display", "block");
+                $("#spanMsgError").empty();
+                $("#spanMsgError").text("No data found specified filter/search text");
+            }
+            else {
+                $("#errorMsg").css("display", "none");
+                $("#spanMsgError").empty();
+            }            
+        }
+        else {
+            var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
+            var SearchText = $('#txtGlobalSearch').val();
+            GlobalSearchonGrid(SearchText, SearchDDLValue);
+        }
     }
 
 </script>

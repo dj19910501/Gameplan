@@ -199,7 +199,8 @@
         var entityId = $(obj).attr('entityId');
         var popuptype = $(obj).attr('popupType');
         var returnpara = true;
-        var activeTab = $("#InspectTab li.active a").text();
+        // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
+        var activeTab = $("#InspectTab li.active a").text().replace(" ", "_");
         if (activeTab != null && activeTab != undefined && activeTab != '' && redirectType != undefined) {
             if (sectionType == '@Enums.Section.Tactic.ToString()') {
 
@@ -857,7 +858,26 @@ $(document).on("click", "#aApplyToCalender", function (e) {
     });
 
     // End - Added by Sohel Pathan on 19/08/2014 for Internal Review Points
-
+    function DisplayEditablePopup(id, type) {
+        gridSearchFlag = 1;
+        isEditTactic = id;
+        isDataModified = false;
+        if (type == "Plan") {
+            ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, 0, '@RequestedModule');
+        }
+        else if (type == "CP") {
+            ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, 0, '@RequestedModule');
+        }
+        else if (type == "PP") {
+            ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, 0, '@RequestedModule');
+        }
+        else if (type == "TP") {
+            ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, 0, '@RequestedModule');
+        }
+        else if (type == "LP") {
+            ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, 0, '@RequestedModule');
+        }
+}
     function ShowModels(mode, section, id, ParentId, RequestedModule) {
         removeDefaultModalPopupBackgroungColor();
         modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design

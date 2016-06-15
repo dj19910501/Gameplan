@@ -16,12 +16,23 @@ using RevenuePlanner.BDSService;
 using EvoPdf;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Configuration;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Data.EntityClient;
+using RevenuePlanner.BAL;
+using System.Web.Caching;
+using System.Reflection;
 
 namespace RevenuePlanner.Controllers
 {
     [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class ReportController : CommonController
     {
+
         #region Variables
 
         private MRPEntities db = new MRPEntities();
@@ -47,6 +58,25 @@ namespace RevenuePlanner.Controllers
         private string[] selectedYearList;
         // End By Nishant Sheth
         #endregion
+
+        // Add By Nishant Sheth
+        // Desc :: For Report Controller Test Cases
+        public ReportController()
+        {
+            if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
+            {
+                Common.xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");//Modify by Akashdeep Kadia on 09/05/2016 to resolve PL ticket #989.
+                Common.objCached.loadMsg(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
+                CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache.Insert("CommonMsg", Common.objCached, dependency);
+            }
+            else
+            {
+                Common.objCached = (Message)System.Web.HttpContext.Current.Cache["CommonMsg"];
+
+            }
+        }
 
         #region Report Index
 
@@ -326,6 +356,8 @@ namespace RevenuePlanner.Controllers
             //ViewBag.ViewPlan = lstPlanList.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
             //End Added by Mitesh Vaishnav for PL ticket #846
+            
+            ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ClientId.ToString());// Add By Nishant Sheth // #2262 : display menu for report's dashboard
             return View("Index");
         }
 
@@ -4379,6 +4411,66 @@ namespace RevenuePlanner.Controllers
             return model;
         }
         #endregion
+
+        /// <summary>
+        /// Get Measure-Plan Report Data
+        /// </summary>
+        /// <param name="DashboardId">DashboardId</param>
+        /// <returns>Return Custom_Dashboard Model.</returns>
+        public ActionResult GetCustomReport(string DashboardId = "")
+        {
+            Custom_Dashboard model = new Custom_Dashboard();
+            CustomDashboard cd = new CustomDashboard();
+            
+            if (!string.IsNullOrEmpty(DashboardId))
+            {
+                int DashId = int.Parse(DashboardId.ToString());
+                model = cd.GetMainDashBoardInfo(DashId);
+
+                var efConnectionString = ConfigurationManager.ConnectionStrings["MRPEntities"].ToString();
+                var builder = new EntityConnectionStringBuilder(efConnectionString);
+                string regularConnectionString = builder.ProviderConnectionString;
+
+                string ReportDBConnString = string.Empty;
+                if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
+                {
+                    ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                }
+
+                string AuthorizedReportAPIUserName = string.Empty;
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
+                    {
+                        AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
+                    }
+                }
+
+                string AuthorizedReportAPIPassword = string.Empty;
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
+                    {
+                        AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
+                    }
+                }
+
+                string ApiUrl = string.Empty;
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
+                    {
+                        ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                    }
+                }
+
+                ViewBag.ReportDBConnString = ReportDBConnString;
+                ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
+                ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
+                ViewBag.ApiUrl = ApiUrl;
+            }            
+            return PartialView("_DynamicReport", model);
+        }        
 
         #region "Common Methods"
         /// <summary>

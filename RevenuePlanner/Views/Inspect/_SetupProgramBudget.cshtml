@@ -376,8 +376,8 @@
         $("#AddForm").css("display", "block");
     }
 
-
-    function SaveProgramBudget() {
+// Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+  @*  function SaveProgramBudget() {
         var returnparameter = false;
         var iserror = false;
 
@@ -416,63 +416,6 @@
                $('#InspectTab').removeClass('SpanDisable');
                 return false;
             }
-
-        @* if ($("#hdnIsBudgetAllocated").val() == "True") {
-             var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text-BudgetPopUp');
-             if (lstAllocInputs.length > 0) {
-                 var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
-                    var inputLength = lstAllocInputs.length;
-                    var removeLength = 0;
-                    for (var i = 0; i < lstAllocInputs.length; i++) {
-
-                        if (inputLength == 1) {
-                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
-                        }
-                        else if (inputLength == 2) {
-                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
-                            removeLength = 4;
-                        }
-                        else if (inputLength > 2) {
-                            if (i == inputLength - 2) {
-                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
-                                removeLength = 4;
-                            }
-                            else {
-                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
-                                removeLength = 2;
-                            }
-                        }
-
-                    }
-
-                    errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
-                    errorMsg += '.';
-
-                    ShowError(errorMsg);
-                    return false;
-                }
-
-                if ($("#lblTotalAllocated").hasClass('error-text')) {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted");
-                    return false;
-                }
-
-                if (parseInt(ReplaceCC($("#lblUnallocatedBudget").val())) < 0) {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotSetBudgetLessthanAllocated");
-                    return false;
-                }
-
-                if ($("#txtRemainingBudget").hasClass('error-text')) {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
-                    return false;
-                }
-            }*@
-          @*  else {
-                if ($("#txtRemainingBudget").hasClass('error-text')) {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
-                    return false;
-                }
-            }*@
         
          ////Start added by Kalpesh  #608: Budget allocation for Program
          var allocationValue = [];
@@ -518,6 +461,6 @@
                 }
             });
     return returnparameter
-    }
+    }*@
 
 </script>

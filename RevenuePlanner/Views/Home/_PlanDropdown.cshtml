@@ -24,15 +24,71 @@
     </li>
    
     @*Modified by Komal Rawal for 2013 Home/Plan Layout changes*@
-    <li style="padding-top:5px;" id="liplanrequest">
-        <div class="request-icons hide" id="BtnTabIcons">
+    <li id="liplanrequest" style="padding-top:5px;width:55%">
+        <div class="request-icons hide" id="BtnTabIcons" style="display:inline-block">
 
             <div class="request-icon-block" id="divPlanButton" title="Calendar View"><a href="#" class="new-btn-plan request-btn-active"><i class="fa fa-calendar"></i></a></div>
             <div class="request-icon-block" id="divPlanEditButtonHome" title="Grid View"><a href="#" class="request-icon-link" id="btngrid"><i class="fa fa-table"></i></a></div>
             <div class="request-icon-block" id="BudgetIcon" title="View Budget and Cost" style="display:none" onclick="CallBudget()"><a href=" #" class="request-icon-link"><i class="fa fa-money"></i></a></div>
 
             <div class="request-icon-block" id="RequestTab"><a href="#" class="request" title="Requests"><i class="fa fa-thumbs-o-up"></i><span class="counter badge"></a></span></div>
+
+
+            @*<div class="request-icon-block" id="RequestTab"><span>Search</span><input type="text"  name="filter" id="tSearch"/></div>
+                <div class="request-icon-block" id="divSearch" title="Serch Button" onclick="onSearchCal()"><a href=" #"><i class="fa fa-calendar"></i></a></div>*@
 	    </div>
+        @*  ==== Searchbox new feature start - #2269 ====  *@
+        <div class="search-wrap">
+            <div id=" exp-serach" class="Exp-serach">
+
+            <span class="ExpIcon" id="ExpSearch"><i class="fa fa-search"></i></span>
+            <span class="ExpIconClose" id="ExpClose" style="display:none"><i class="fa fa-times-circle-o" aria-hidden="true"></i></span>
+            @*<input class="Expbtn" type="submit" value="" id="btnSearch">*@
+                <div class="input-group ExpInput">
+                    <div class="input-group-btn">
+                        
+                        <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="'@Enums.GlobalSearch.NameOnly.ToString()'">
+                            N
+                            <span class="fa fa-caret-down"></span>
+                        </button>                        
+                        <div class="dropdown-menu ">
+                            <ul role="menu" aria-labelledby="dropdownMenu">
+                                @*<li><a tabindex="-1" href="#">All</a></li>*@
+                                <li><a tabindex="-1" href="#">@Enums.GlobalSearch.NameOnly.ToString()</a></li>
+                                <li><a tabindex="-1" href="#">@Enums.GlobalSearch.MachineName.ToString()</a></li>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                    <input id="txtGlobalSearch" type="text" class="form-control" aria-label="Text input with dropdown button">
+                </div>
+
+
+            </div>
+
+                @*<div class="input-group">
+                        <div class="input-group-btn">
+                            @*<button class="btn">Please Select From List</button> @
+                            <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="All">All
+                                <span class="caret"></span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <ul role="menu" aria-labelledby="dropdownMenu">
+                                    <li><a tabindex="-1" href="#">All</a></li>
+                                    <li><a tabindex="-1" href="#">Name Only</a></li>
+                                    <li><a tabindex="-1" href="#">Machine Name</a></li>
+                                    <li class="divider"></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <input id="txtSearch" type="text" class="form-control" aria-label="Text input with dropdown button">
+
+                    </div>
+                <button id="btnSearch" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="onSearchCal()" style="min-width:5%">
+                    search
+                </button>*@
+        </div>
+
     </li>
     
     <div style="float: right;margin-bottom: 10px; margin-right: -15px" id="divupcomingact">
@@ -164,8 +220,11 @@
         // Desc :: For performace avoid multiple db trip for same results
         //GetHealderData(SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, Tabid);// Modified By Nishant Sheth Desc header value wrong with plan tab
         //GetNumberOfActivityPerMonByPlanIdPer(SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
+
+     
     });
     var IsViewBy = false;
+    var isOpen = false;
     $("#ddlTabViewBy").change(function () {
         ExportSelectedIds = {
             TaskID: [],
@@ -263,7 +322,7 @@
         $('#ddlTabViewBy').multiselect("close");
     });
     // End - Added by Sohel Pathan on 06/11/2014 for PL ticket #934
-    function requestPlanActiveTab(isRequestTab) {        
+    function requestPlanActiveTab(isRequestTab) {       
         if (isRequestTab) {
             $('.new-btn-plan').removeClass('request-btn-active');
             $('.request').addClass('request-btn-active');
@@ -281,7 +340,13 @@
                 $('#btngrid').removeClass('request-btn-active');
             }
             $('.request').removeClass('request-btn-active');
-            
+            $('#txtGlobalSearch').val("");
+            $('#searchCriteria').val("Name Only");
+            $('#searchCriteria').text("N");           
+            $('.Exp-serach').removeClass('Exp-serach-open');
+            $('#ExpClose').css('display', 'none');
+            $('.ExpIcon').css('display', 'block');
+            isOpen = false;
         }
     }
     //Added by Komal Rawal for 2013 Home/Plan Layout changes
@@ -300,7 +365,50 @@
         {
             ChangeTabView(GridId);
         }
+        $('#txtGlobalSearch').val("");
+        $('#searchCriteria').val("Name Only");
+        $('#searchCriteria').text("N");
+        $('.Exp-serach').removeClass('Exp-serach-open');
+        $('#ExpClose').css('display', 'none');
+        $('.ExpIcon').css('display', 'block');
+        isOpen = false;
     });
+    $(".dropdown-menu li a").click(function () {
+        $("#searchCriteria").text($(this).text()[0]);
+        $("#searchCriteria").val($(this).text());
+    });
+    //Searchbox JS Start - Bhumika  
+    $('#ExpSearch').click(function () {
+
+        if (isOpen == false) {
+            $('#ExpClose').css('display', 'none');
+            $('.Exp-serach').addClass('Exp-serach-open');
+            isOpen = true;
+        }
+        else {
+            if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+                GlobalSearch();
+                $('#ExpSearch').css('display', 'none');
+                $('#ExpClose').css('display', 'block');
+            }
+            else {
+                $('.Exp-serach').removeClass('Exp-serach-open');
+                isOpen = false;
+            }
+        }
+    });
+    $('#ExpClose').click(function () {
+        
+        $('#txtGlobalSearch').val("");
+        $('#searchCriteria').val("Name Only");
+        $('#searchCriteria').text("N");
+        GlobalSearch();
+        //$('.Exp-serach').removeClass('Exp-serach-open');
+        $('#ExpClose').css('display', 'none');
+        $('.ExpIcon').css('display', 'block');
+        //isOpen = false;
+    });
+    //Searchbox JS End
     //End
 </script>
 

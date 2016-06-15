@@ -20,6 +20,7 @@ namespace RevenuePlanner.Models
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public int PermisssionCode { get; set; }
+        public bool IsOwner { get; set; }
     
         public virtual Budget_Detail Budget_Detail { get; set; }
     }

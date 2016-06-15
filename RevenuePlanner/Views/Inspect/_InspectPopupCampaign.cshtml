@@ -184,12 +184,13 @@
                 <li class="pull-left" id="liReview">
                     <a>Review</a>
                 </li>
-                @if (!Sessions.IsBudgetShow)
+		<!--  Commented by Arpita Soni for Ticket #2236 on 06/14/2016 -->
+                @*@if (!Sessions.IsBudgetShow)
                 {
                     <li class="pull-left" id="liBudget">
                         <a>Budget</a>
                     </li>
-                }
+                }*@
             </ul>
             <div id="divTab">
             </div>
@@ -203,7 +204,8 @@
     var divPartial = "#divPartial";
     var TabSetup = "Setup";
     var TabReview = "Review";
-    var TabBudget = "Budget";
+    // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+    //var TabBudget = "Budget";
     var divTab = "#divTab";
     var tabtext = "";
     $(document).ready(
@@ -227,7 +229,9 @@
           $('#div' + tabtext).css({ display: "block" });
 
           // Click on Tab Partialview Refresh Based On Selected Tab
-          $("#liSetup,#liReview,#liBudget").on("click", function () {
+	  // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+          $("#liSetup,#liReview").on("click", function () {
+          //$("#liSetup,#liReview,#liBudget").on("click", function () {
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
               {
@@ -313,11 +317,12 @@
         });
 
                       }
-                      else if (tabtext == "Budget") {
+		      // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+                     @* else if (tabtext == "Budget") {
                           url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
                           $("#divTab").empty();
                           $("#divTab").load(url + '?id=' + planCampaignId);
-                      }
+                      }*@
                       else if (tabtext == "Review") {
                           url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
                           $("#divTab").empty();
@@ -359,18 +364,18 @@
 
                           }
                       }
+			// Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+                      //else if (activeTab == TabBudget) {
+                      //    var ReturnParameter = BudgetCampaignSave();
+                      //    if (ReturnParameter == false) {
+                      //        return false;
+                      //    }
+                      //    else {
+                      //        $('.close-x-big-icon').trigger('click');
 
-                      else if (activeTab == TabBudget) {
-                          var ReturnParameter = BudgetCampaignSave();
-                          if (ReturnParameter == false) {
-                              return false;
-                          }
-                          else {
-                              $('.close-x-big-icon').trigger('click');
 
-
-                          }
-                      }
+                      //    }
+                      //}
 
                       else if (activeTab == TabReview) {
                           var ReturnParameter = SaveTitle();
@@ -439,10 +444,10 @@
                           else if (data.IsSuccess) {
 
                               var currentTab = "Setup";
-
-                              if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+			      // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+                             @* if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
                                   currentTab = "Budget";
-                              }
+                              }*@
                               var planCampaignId = data.Id;
                               var expandplanCampaignId = data.expand;
                               var planProgramId = "";
@@ -489,14 +494,14 @@
                     return false;
                 }
             }
-
-            else if (activeTab == TabBudget) {
-                var ReturnParameter = BudgetCampaignSave();
-                if (ReturnParameter == false) {
-                    $('#InspectTab').removeClass('SpanDisable');
-                    return false;
-                }
-            }
+		// Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+            //else if (activeTab == TabBudget) {
+            //    var ReturnParameter = BudgetCampaignSave();
+            //    if (ReturnParameter == false) {
+            //        $('#InspectTab').removeClass('SpanDisable');
+            //        return false;
+            //    }
+            //}
 
             else if (activeTab = TabReview) {
 
@@ -592,8 +597,8 @@
             }
             url = '@Url.Content("~/Inspect/LoadReviewCampaign/")';
         }
-
-        if (tabValue == TabBudget) {
+	// Commented by Arpita Soni for Ticket #2236 on 06/14/2016
+       @* if (tabValue == TabBudget) {
 
             if (CampaignOpt == "Edit") {
                 $('#txtTitle').css('display', 'block');
@@ -601,7 +606,7 @@
                 // SetupCampaignSave();
             }
             url = '@Url.Content("~/Inspect/LoadCampaignBudgetAllocation/")';
-        }
+        }*@
 
         RemoveTabClass();
         $("#li" + tabValue).removeClass("pull-left");

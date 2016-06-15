@@ -16,8 +16,8 @@
     <!--font Awesome css-->
     <link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css" />
     <!--font Awesome css-->
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_June_10.css")" type="text/css" />
-    @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" type="text/css" />*@
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_June_14.css")" type="text/css" />
+    @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" type="text/css" />*@ 
      <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Oct1.css")" type="text/css" />
 
      @Scripts.Render("~/bundles/GetJS")
@@ -166,35 +166,60 @@
             $("#div_contactSupport").load(url);
         });
         CheckDataInconsistency();
-        switch ($('#ActiveMenu').val().toString().toLowerCase()) {
-            case 'home':
-                $('.home').addClass('active');
-                break;
-            case 'model':
-                $('.model').addClass('active');
-                break;
-            case 'plan':
-                $('.plan').addClass('active');
-                break;
-            case 'boost':
-                $('.boost').addClass('active');
-                break;
-            case 'report':
-                $('.report').addClass('active');
-                break;
-            case 'finance':
-                $('.finance').addClass('active');
-                break;
-            case 'pref':
-                $('.pref').addClass('active');
-                break;
-            default:
-                $('.home').addClass('active');
-                break;
-        }
+
+        // added by devanshi to set header highlighted dynamically for PL #2277 on 23-6-2016
+        SetHeaderHighlighted();
+       
+        //switch ($('#ActiveMenu').val().toString().toLowerCase()) {
+          
+        //    case 'home':
+        //        $('.home').addClass('active');
+        //        break;
+        //    case 'model':
+        //        $('.model').addClass('active');
+        //        break;
+        //    case 'plan':
+        //        $('.plan').addClass('active');
+        //        break;
+        //    case 'boost':
+        //        $('.boost').addClass('active');
+        //        break;
+        //    case 'report':
+        //        $('.report').addClass('active');
+        //        break;
+        //    case 'finance':
+        //        $('.finance').addClass('active');
+        //        break;
+        //    case 'pref':
+        //        $('.settings').addClass('active');
+        //        break;
+        //    default:
+        //        $('.home').addClass('active');
+        //        break;
+        //}
 
 
     });
+    // added by devanshi to set header highlighted dynamically for PL #2277 on 23-6-2016
+    function SetHeaderHighlighted()
+    {
+        var menulist = '@Html.Raw(Json.Encode(Sessions.AppMenus.Where(x => x.ParentApplicationId == null)))';
+        var json = JSON.parse(menulist);
+        $.each(json, function (key, value) {
+            var menucode = value.Code.toLowerCase().replace(/\s/g, '');
+            var submenu = '';
+            var activemenu = $('#ActiveMenu').val().toString().toLowerCase().replace(/\s/g, '');
+            if (menucode == 'settings')
+                submenu = 'pref'
+            else
+                submenu = menucode;
+            if (submenu == activemenu) {
+                $('.' + menucode).addClass('active');
+                return;
+            }
+        });
+    }
+
     function CheckDataInconsistency() {
         if ('@Sessions.IsDisplayDataInconsistencyMsg' == 'True') {
             var IsSessionClient = readCookie('DataClientId' + '@Sessions.User.ClientId.ToString().ToLower()');
