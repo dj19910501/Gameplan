@@ -1,5 +1,5 @@
 -- Updated by Akashdeep Kadia 
--- Updated on :: 01-June-2016
+-- Updated on :: 15-June-2016
 -- Desc :: Special charachters replace with Hyphen in Export to CSV. 
 
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ExportToCSV]') AND type in (N'P', N'PC'))
@@ -13,7 +13,7 @@ AS
 BEGIN
 
 SET NOCOUNT ON;
-Update CustomField set Name =REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Name,')','-'),'(','-'),'*','-'),'&','-'),'^','-'),'%','-'),'$','-'),'#','-'),'@','-'),'~','-'),'–','-') where ClientId=@ClientId-- This is to Special charachter En Dash replace with Hyphen in CustomField Name
+--Update CustomField set Name =REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Name,')','-'),'(','-'),'*','-'),'&','-'),'^','-'),'%','-'),'$','-'),'#','-'),'@','-'),'~','-'),'–','-') where ClientId=@ClientId-- This is to Special charachter En Dash replace with Hyphen in CustomField Name
 IF OBJECT_ID('tempdb..#tblPivot') IS NOT NULL
    DROP TABLE #tblPivot
 
@@ -223,7 +223,7 @@ DECLARE @AlterTable nvarchar(max)=''
 While @Count<=@RowCount
 BEGIN
 
-SELECT @Colname = ColName FROM #tblColName WHERE ROWNUM=@Count
+SELECT @Colname = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ColName,')','-'),'(','-'),'*','-'),'&','-'),'^','-'),'%','-'),'$','-'),'#','-'),'@','-'),'~','-'),'–','-') FROM #tblColName WHERE ROWNUM=@Count --This is to Special charachter En Dash replace with Hyphen in CustomField Name
 SET @AlterTable +=' ALTER TABLE #tblCustomData ADD ['+@Colname+'] NVARCHAR(MAX) ';
 SET @ConcatString= @ConcatString +'['+ @Colname +']'+@Delimeter ;
 
