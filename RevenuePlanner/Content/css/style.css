@@ -15205,7 +15205,9 @@ input[type="search"].ExpInput {
 .Exp-serach, .ExpIcon,
 .Expbtn , .ExpIconClose, #searchCriteria  {height: 34px;} 
 #txtGlobalSearch:focus{box-shadow:none}
-
+#txtGlobalSearch::-ms-clear {/* For IE only */
+    display: none;
+}
 /* new feature Searchbox style #2259 End */
 
 /* ********************  new styles  - End ******************** */
