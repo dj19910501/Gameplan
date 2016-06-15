@@ -4205,12 +4205,6 @@ namespace Integration.Salesforce
             //Make Hireachy for Marketo sync on SFDC
             if (_IsSFDCWithMarketo)
             {
-                // Add by Nishant Shethh
-                // Desc :: #2280 : if tatic is not sync by marketo to salesforce then tactic is not created in salesforce
-                if (planTactic.IntegrationInstanceMarketoID != null && planTactic.IsSyncMarketo.HasValue && planTactic.IsSyncMarketo.Value)
-                {
-                    return planTactic;
-                }
                 if (currentMode == Enums.Mode.Create)
                 {
                     var SFDCgetTacticId = _client.Query<object>("SELECT Id FROM Campaign  WHERE Name IN ('" + planTactic.TacticCustomName + "')");
@@ -4225,6 +4219,15 @@ namespace Integration.Salesforce
                     {
                         planTactic.IntegrationInstanceTacticId = SFDCIntegrationInstanceTacticId;
                         currentMode = Enums.Mode.Update;
+                    }
+                    else
+                    {
+                        // Add by Nishant Sheth
+                        // Desc :: #2280 : if tatic is not sync by marketo to salesforce then tactic is not created in salesforce
+                        if (planTactic.IntegrationInstanceMarketoID != null && planTactic.IsSyncMarketo.HasValue && planTactic.IsSyncMarketo.Value)
+                        {
+                            return planTactic;
+                        }
                     }
                 }
             }
