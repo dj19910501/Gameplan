@@ -13712,16 +13712,19 @@ namespace RevenuePlanner.Controllers
                 headobj.value = "Task Name";
                 headobjlist.Add(headobj);
 
-                // Third Column : Empty
-                headobj = new PlanHead();
-                headobj.type = "ro";
-                headobj.align = "left";
-                headobj.id = "machinename";
-                headobj.sort = "str";
-                headobj.width = 0;
-                headobj.value = "Machine Name";
-                headobjlist.Add(headobj);
-
+                // Modified by Arpita Soni to resolve issue in Ticket #2237 due to #2270/#2271
+                if (IsLineItemListing)
+                {
+                    // Third Column : Empty
+                    headobj = new PlanHead();
+                    headobj.type = "ro";
+                    headobj.align = "left";
+                    headobj.id = "machinename";
+                    headobj.sort = "str";
+                    headobj.width = 0;
+                    headobj.value = "Machine Name";
+                    headobjlist.Add(headobj);
+                }
                 // Third Column : Empty
                 headobj = new PlanHead();
                 headobj.type = "ro";
