@@ -13631,8 +13631,8 @@ SELECT * FROM
 																		ELSE (ISNull(SUBSTRING(Tac.Title,1,@SFDClength),''''))
 																   END)
 							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(Tac.[Description],'''')
-							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),Tac.StartDate),'''')
-							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),Tac.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(100),Tac.StartDate,126),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(100),Tac.EndDate,126),'''')  
 							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(Tac.[Status],'''')
 							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(Tac.CreatedBy as varchar(100)),'''')
 							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
@@ -13674,8 +13674,8 @@ SELECT * FROM
 						CASE 
 							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(prg.Title,1,@SFDClength),''''))
 							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(prg.[Description],'''')
-							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),prg.StartDate),'''')
-							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),prg.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(100),prg.StartDate,126),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(100),prg.EndDate,126),'''')  
 							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(prg.[Status],'''')
 							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(prg.CreatedBy as varchar(100)),'''')
 							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
@@ -13711,8 +13711,8 @@ SELECT * FROM
 						CASE 
 							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(cmpgn.Title,1,@SFDClength),''''))
 							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(cmpgn.[Description],'''')
-							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),cmpgn.StartDate),'''')
-							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),cmpgn.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(100),cmpgn.StartDate,126),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(100),cmpgn.EndDate,126),'''')  
 							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(cmpgn.[Status],'''')
 							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(cmpgn.CreatedBy as varchar(100)),'''')
 							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
@@ -14086,8 +14086,8 @@ SELECT * FROM
 																		ELSE (ISNull(SUBSTRING(Tac.Title,1,@SFDClength),''''))
 																   END)
 							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(Tac.[Description],'''')
-							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),Tac.StartDate),'''')
-							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),Tac.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(100),Tac.StartDate,126),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(100),Tac.EndDate,126),'''')  
 							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(Tac.[Status],'''')
 							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(Tac.CreatedBy as varchar(100)),'''')
 							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
@@ -14130,8 +14130,8 @@ SELECT * FROM
 						CASE 
 							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(prg.Title,1,@SFDClength),''''))
 							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(prg.[Description],'''')
-							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),prg.StartDate),'''')
-							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),prg.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(100),prg.StartDate,126),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(100),prg.EndDate,126),'''')  
 							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(prg.[Status],'''')
 							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(prg.CreatedBy as varchar(100)),'''')
 							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
@@ -14168,8 +14168,8 @@ SELECT * FROM
 						CASE 
 							WHEN Mapp.ActualFieldName=@actTitle THEN (ISNull(SUBSTRING(cmpgn.Title,1,@SFDClength),''''))
 							WHEN Mapp.ActualFieldName=''Description'' THEN ISNull(cmpgn.[Description],'''')
-							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(19),cmpgn.StartDate),'''')
-							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(19),cmpgn.EndDate),'''')  
+							WHEN Mapp.ActualFieldName=@actStartDate THEN ISNull(CONVERT(VARCHAR(100),cmpgn.StartDate,126),'''')
+							WHEN Mapp.ActualFieldName=@actEndDate THEN ISNull(CONVERT(VARCHAR(100),cmpgn.EndDate,126),'''')  
 							WHEN Mapp.ActualFieldName=''Status'' THEN ISNull(cmpgn.[Status],'''')
 							WHEN Mapp.ActualFieldName=@actCreatedBy THEN ISNull(Cast(cmpgn.CreatedBy as varchar(100)),'''')
 							WHEN Mapp.ActualFieldName=''ActivityType'' THEN @entityType
