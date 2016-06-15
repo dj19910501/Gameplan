@@ -135,9 +135,9 @@
             if (ColumnName == "Task Name") {
                 $(".dhx_combo_edit").off("keydown");
                 $(".dhx_combo_edit").on('keydown', (
-                newTreeGrid.editor.obj.onkeypress = function (e) {
+                newTreeGrid.editor.obj.onkeypress = function (event) {
 
-                    var key = window.event ? event.keyCode : event.which;
+                  //  var key = window.event ? event.keyCode : event.which;
                     var text = this.value;
                     if (event.keyCode == 8 || event.keyCode == 46
                      || event.keyCode == 37 || event.keyCode == 39) {
@@ -176,7 +176,7 @@
                     return false;
                 }
                 else {
-                    SaveNewBudgetDetail(newVal);
+                    SaveNewBudgetDetail(htmlDecode(newVal));
                     //newTreeGrid.openItem(parentId);
                     //_newrowid = "";
                     //_isNewRowAdd = false;

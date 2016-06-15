@@ -627,13 +627,12 @@
         if (stage.toString() == '0' || stage.toString() == '1') {
             return true;
         }
-
         if (IsValid) {
 
             if (stage.toString() == '2') {
                 //var _budgetIdVal = $('#ddlParentFinanceMain').val();
                 var _budgetIdVal = $("#hdnBudgetId").val();
-                if (newVal == null || newVal == '' || newVal.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oldVal) {
+                if (newVal == null || newVal == '' || newVal.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oldVal || htmlDecode(newVal).trim() == oldVal) {
                     AddNewrow = true;
                     return false;
                 }

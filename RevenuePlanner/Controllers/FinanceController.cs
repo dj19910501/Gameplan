@@ -1524,12 +1524,15 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-
-                            CurrentobjBudget_Permission.UserId = Guid.Parse(FinalUserData[i].UserId);
-                            CurrentobjBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
-                            CurrentobjBudget_Permission.CreatedDate = DateTime.Now;
-                            CurrentobjBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
-                            db.Entry(CurrentobjBudget_Permission).State = EntityState.Modified;
+                            if(!CurrentobjBudget_Permission.IsOwner)
+                            {
+                                CurrentobjBudget_Permission.UserId = Guid.Parse(FinalUserData[i].UserId);
+                                CurrentobjBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
+                                CurrentobjBudget_Permission.CreatedDate = DateTime.Now;
+                                CurrentobjBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
+                                db.Entry(CurrentobjBudget_Permission).State = EntityState.Modified;
+                            }
+                           
 
 
                         }

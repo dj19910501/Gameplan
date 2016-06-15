@@ -227,9 +227,12 @@
                 var ID = myTreeGrid.getRowId(Maintained);
                 if (ID != undefined || ID == '') {
                     var divname = "#dv" + ID;
-                    $('html, body').animate({
-                        scrollTop: $(divname).offset().top
-                    }, 0);
+                    if ($(divname).html() != undefined && $(divname).html() != "undefined")
+                    {
+                        $('html, body').animate({
+                            scrollTop: $(divname).offset().top
+                        }, 0);
+                    }
                 }
             }
         });
@@ -346,7 +349,6 @@
         myTreeGrid.enableAutoHeight(true); //Modified By Maitri Gandhi on 17/3/2016 for #2066
         myTreeGrid.enableAutoWidth(false);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
-
             if (!_isNewRowAdd) {
                 RevnueTimeFrameChange = false;
             }
@@ -363,7 +365,6 @@
                     $(".dhx_combo_edit").off("keydown");
                     $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
                     myTreeGrid.editor.obj.onkeypress = function (e) {
-
                         e = e || window.event;
                         if ((e.keyCode >= 47) || (e.keyCode == 0)) {
                             var text = this.value;
@@ -378,9 +379,8 @@
                 } else if (ColumnName == "Task Name") {
                     //$(".dhx_combo_edit").off("keydown");
                     $(".dhx_combo_edit").on('keydown', (
-                    myTreeGrid.editor.obj.onkeypress = function (e) {
-
-                        var key = window.event ? event.keyCode : event.which;
+                    myTreeGrid.editor.obj.onkeypress = function (event) {
+                       // var key = window.event ? event.keyCode : event.which;
                         var text = this.value;
                         if (event.keyCode == 8 || event.keyCode == 46
                          || event.keyCode == 37 || event.keyCode == 39) {
