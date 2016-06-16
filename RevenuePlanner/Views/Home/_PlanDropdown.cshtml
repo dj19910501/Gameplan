@@ -46,19 +46,19 @@
                 <div class="input-group ExpInput">
                     <div class="input-group-btn">
                         
-                        <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="@Enums.GlobalSearch.NameOnly.ToString()">
+                        <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="Name Only">
                             N
                         </button>                        
                         <div class="dropdown-menu ">
                             <ul role="menu" aria-labelledby="dropdownMenu">
                                 @*<li><a tabindex="-1" href="#">All</a></li>*@
-                                <li><a tabindex="-1" href="#">@Enums.GlobalSearch.NameOnly.ToString()</a></li>
-                                <li><a tabindex="-1" href="#">@Enums.GlobalSearch.MachineName.ToString()</a></li>
+                                <li><a tabindex="-1" href="#">Name Only</a></li>
+                                <li><a tabindex="-1" href="#">Machine Name</a></li>
                                 
                             </ul>
                         </div>
                     </div>
-                    <input id="txtGlobalSearch" type="text" class="form-control" aria-label="Text input with dropdown button">
+                    <input id="txtGlobalSearch" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Name Only">
                 </div>
 
 
@@ -385,6 +385,7 @@
     $(".dropdown-menu li a").click(function () {
         $("#searchCriteria").text($(this).text()[0]);
         $("#searchCriteria").val($(this).text());
+        $("#txtGlobalSearch").attr('Placeholder', $(this).text())
     });
     //Searchbox JS Start - Bhumika  
     $('#ExpSearch').click(function () {
