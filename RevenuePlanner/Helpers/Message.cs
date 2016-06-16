@@ -1925,18 +1925,19 @@ namespace RevenuePlanner.Helpers
                 _TacticMustDeployedToModel = value;
             }
         }
-        private string _TacticTypeMaybeUsed;
-        public string TacticTypeMaybeUsed
-        {
-            get
-            {
-                return _TacticTypeMaybeUsed;
-            }
-            set
-            {
-                _TacticTypeMaybeUsed = value;
-            }
-        }
+        //revert all the changes regarding 2115
+        //private string _TacticTypeMaybeUsed;
+        //public string TacticTypeMaybeUsed
+        //{
+        //    get
+        //    {
+        //        return _TacticTypeMaybeUsed;
+        //    }
+        //    set
+        //    {
+        //        _TacticTypeMaybeUsed = value;
+        //    }
+        //}
 
         private string _ConfirmationForModifyTargetIntegration;
         public string ConfirmationForModifyTargetIntegration
@@ -3284,9 +3285,10 @@ namespace RevenuePlanner.Helpers
                                         case "TacticMustDeployedToModel":
                                             _TacticMustDeployedToModel = strMsgValue;
                                             break;
-                                        case "TacticTypeMaybeUsed":
-                                            _TacticTypeMaybeUsed = strMsgValue;
-                                            break;
+                                            //revert all the changes regarding 2115
+                                        //case "TacticTypeMaybeUsed":
+                                        //    _TacticTypeMaybeUsed = strMsgValue;
+                                        //    break;
                                         case "ConfirmationForModifyTargetIntegration":
                                             _ConfirmationForModifyTargetIntegration = strMsgValue;
                                             break;

@@ -670,10 +670,13 @@
 		<Name>TacticMustDeployedToModel</Name>
 		<value>The tactic must be deployed to Model before deploying it to an integration.</value>
 	</Field>
-  <Field>
-    <Name>TacticTypeMaybeUsed</Name>
-    <value>Unselecting the "Deploy to Model" flag for selected Tactic will reset all related Tactic(s) at Plan level. Are you sure you want to proceed?</value>
-  </Field>
+	<!--revert all the changes regarding 2115-->
+	<!--
+	<Field>
+		<Name>TacticTypeMaybeUsed</Name>
+		<value>Unselecting the "Deploy to Model" flag for selected Tactic will reset all related Tactic(s) at Plan level. Are you sure you want to proceed?</value>
+	</Field>
+	-->
 	<Field>
 		<Name>ConfirmationForModifyTargetIntegration</Name>
 		<value>Modifying target integration will reset sync details configured at plan level. Are you sure you want to proceed?</value>

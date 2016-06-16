@@ -4110,18 +4110,18 @@ namespace RevenuePlanner.Controllers
                              orderby tacType.Title
                              select tacType).ToList();
 
-            // Commented by Rahul Shah on 02/06/2016 for PL #2115.. display "Please Select" when user off the "Deploye to Model" toggle at Model Level
-            //// Check whether current TacticId related TacticType exist or not.
-            //if (!lstTactic.Any(tacType => tacType.TacticTypeId == pcpt.TacticTypeId))
-            //{
-            //    //// Get list of Tactic Types based on PlanID.
-            //    var tacticTypeSpecial = (from _tacType in lstTactic
-            //                             where _tacType.TacticTypeId == pcpt.TacticTypeId
-            //                             orderby _tacType.Title
-            //                             select _tacType).ToList();
-            //    lstTactic = lstTactic.Concat<TacticType>(tacticTypeSpecial).ToList();
-            //    lstTactic = lstTactic.OrderBy(a => a.Title).ToList();
-            //}
+            
+            // Check whether current TacticId related TacticType exist or not.
+            if (!lstTactic.Any(tacType => tacType.TacticTypeId == pcpt.TacticTypeId))
+            {
+                //// Get list of Tactic Types based on PlanID.
+                var tacticTypeSpecial = (from _tacType in lstTactic
+                                         where _tacType.TacticTypeId == pcpt.TacticTypeId
+                                         orderby _tacType.Title
+                                         select _tacType).ToList();
+                lstTactic = lstTactic.Concat<TacticType>(tacticTypeSpecial).ToList();
+                lstTactic = lstTactic.OrderBy(a => a.Title).ToList();
+            }
 
             ippctm.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcpt.Status);
 
@@ -4252,17 +4252,16 @@ namespace RevenuePlanner.Controllers
             }
 
             List<TacticType> tnewList = lstTactic.ToList();
-            // Commented by Rahul Shah on 02/06/2016 for PL #2115.. display "Please Select" when user off the "Deploye to Model" toggle at Model Level
-            //// if lstTactics contains the same Title tactic then remove from the new Tactic list.
-            //TacticType tobj = tblTacticTypes.Where(_tacType => _tacType.TacticTypeId == ippctm.TacticTypeId).FirstOrDefault();
-            //if (tobj != null)
-            //{
-            //    TacticType tSameExist = tnewList.Where(_newTacType => _newTacType.Title.Equals(tobj.Title)).FirstOrDefault();
-            //    //// if same Title exist then remove that TacticType from New Tactic list.
-            //    if (tSameExist != null)
-            //        tnewList.Remove(tSameExist);
-            //    tnewList.Add(tobj);
-            //}
+            // if lstTactics contains the same Title tactic then remove from the new Tactic list.
+            TacticType tobj = tblTacticTypes.Where(_tacType => _tacType.TacticTypeId == ippctm.TacticTypeId).FirstOrDefault();
+            if (tobj != null)
+            {
+                TacticType tSameExist = tnewList.Where(_newTacType => _newTacType.Title.Equals(tobj.Title)).FirstOrDefault();
+                //// if same Title exist then remove that TacticType from New Tactic list.
+                if (tSameExist != null)
+                    tnewList.Remove(tSameExist);
+                tnewList.Add(tobj);
+            }
 
 
 

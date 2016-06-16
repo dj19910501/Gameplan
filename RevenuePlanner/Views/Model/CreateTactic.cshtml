@@ -272,10 +272,11 @@
                     t_integration_status.addClass("icon-check-gray");
                     t_integration_status.removeClass("icon-check-blue");
                 }
-                var isTrue = confirm(htmlDecode("@Common.objCached.TacticTypeMaybeUsed"));
+                //revert all the changes regarding 2115
+                @*var isTrue = confirm(htmlDecode("@Common.objCached.TacticTypeMaybeUsed"));
                 if (!isTrue) {
                     $(this).addClass('icon-check-blue');
-                }
+                }*@
             }
             else {
                 $(this).val("Deployed to Model");
