@@ -431,14 +431,15 @@ namespace RevenuePlanner.Controllers
                 setColValidators.Append(",CustomNameValid,,,");
                 setColumnIds.Append(",title,action,addrow,");
                 HeaderStyle.Append(",text-align:center;border-right:0px solid #d4d4d4;,border-left:0px solid #d4d4d4;,,");
-                if (!_IsBudgetCreate_Edit && !_IsForecastCreate_Edit)
-                {
-                    setColumnsVisibility.Append("false,false,false,true,");
-                }
-                else
-                {
-                    setColumnsVisibility.Append("false,false,false,false,");
-                }
+                //Modified By Komal rawal for #2242 even if there are no permission from preference show icons according to item permission
+                //if (!_IsBudgetCreate_Edit && !_IsForecastCreate_Edit)
+                //{
+                //    setColumnsVisibility.Append("false,false,false,true,");
+                //}
+                //else
+                //{
+                //    setColumnsVisibility.Append("false,false,false,false,");
+                //}
                 foreach (var columns in objColumns)
                 {
                     setHeader.Append(columns.CustomField.Name + ",");
@@ -912,6 +913,23 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
+                    //Modified By Komal rawal for #2242 even if there are no permission from preference show icons according to item permission
+                    if (id != OtherBudgetId)
+                    {
+                        if (Permission == "Edit")
+                        {
+                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                        }
+                        else
+                        {
+                            addRow = "";
+                        }
+                    }
+                    else
+                    {
+                        addRow = "";
+                    }
+
                     if (Convert.ToBoolean(IsForcast))
                     {
                         if (Permission == "Edit")
@@ -1019,6 +1037,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (Permission == "Edit")
                     {
+                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
                         strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
                     }
                     else if (Permission == "None")
@@ -1895,7 +1914,7 @@ namespace RevenuePlanner.Controllers
                 EditPermission = "View";
             }
             #endregion
-
+     
             var Listofcheckedcol = ListofCheckedColums.Split(',');
             #region Set coulmn base on columnset
             List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
@@ -1946,7 +1965,8 @@ namespace RevenuePlanner.Controllers
                 }
 
                 // Modified by Rushil Bhuptani on 06/06/2016 for #2247
-                if (!_isBudgetCreateEdit && !_isForecastCreateEdit)
+                //Modified By Komal rawal for #2242 even if there are no permission from preference show icons according to item permission
+                if (!_isBudgetCreateEdit && !_isForecastCreateEdit && EditPermission != "Edit")
                 {
                     setColumnsVisibility.Append("false,false,true,true,");
                 }
@@ -1983,7 +2003,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 // Modified by Rushil Bhuptani on 06/06/2016 for #2247
-                if (!_isBudgetCreateEdit && !_isForecastCreateEdit)
+                if (!_isBudgetCreateEdit && !_isForecastCreateEdit && EditPermission != "Edit")
                 {
                     setColumnsVisibility.Append("false,false,true,false,");
                 }
@@ -2006,6 +2026,7 @@ namespace RevenuePlanner.Controllers
             dataTableMain.Columns.Add("Name", typeof(String));
             dataTableMain.Columns.Add("AddRow", typeof(String));
             dataTableMain.Columns.Add("LineItemCount", typeof(Int32));
+            dataTableMain.Columns.Add("Permission", typeof(String)); 
 
             #region set dynamic columns in dataTable
             var IntegerColumnValidation = new string[] { Enums.ColumnValidation.ValidInteger.ToString() };
@@ -2693,6 +2714,7 @@ namespace RevenuePlanner.Controllers
                             row[Enums.DefaultGridColumn.AddRow.ToString()] = Addrow;
 
                             row[Enums.DefaultGridColumn.LineItemCount.ToString()] = PlanLineItemsId.Count();
+                            row[Enums.DefaultGridColumn.Permission.ToString()] = EditPermission;
 
                             foreach (var col in objColumns)
                             {
@@ -2788,6 +2810,8 @@ namespace RevenuePlanner.Controllers
                         row[Enums.DefaultGridColumn.AddRow.ToString()] = Addrow;
 
                         row[Enums.DefaultGridColumn.LineItemCount.ToString()] = PlanLineItemsId.Count();
+
+                        row[Enums.DefaultGridColumn.Permission.ToString()] = EditPermission;
 
                         foreach (var col in objColumns)
                         {
@@ -3050,6 +3074,7 @@ namespace RevenuePlanner.Controllers
             var addRow = variables.Where(a => a.Key == Enums.DefaultGridColumn.AddRow.ToString()).Select(a => Convert.ToString(a.Value)).FirstOrDefault();
             var lineitemcount = variables.Where(a => a.Key == Enums.DefaultGridColumn.LineItemCount.ToString()).Select(a => int.Parse(a.Value.ToString())).FirstOrDefault();
             var parentid = variables.Where(a => a.Key == Enums.DefaultGridColumn.ParentId.ToString()).Select(a => int.Parse(a.Value.ToString())).FirstOrDefault();
+            var permission = variables.Where(a => a.Key == Enums.DefaultGridColumn.Permission.ToString()).Select(a => Convert.ToString(a.Value)).FirstOrDefault();
 
             var budget = variables.Where(a => a.Key == BudgetCol).Select(a => (List<Double?>)a.Value).ToList();
             var forcast = variables.Where(a => a.Key == ForecastCol).Select(a => (List<Double?>)a.Value).ToList();
@@ -3097,10 +3122,10 @@ namespace RevenuePlanner.Controllers
                 row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable. 
                 #endregion
 
-
+                //Modified By Komal rawal for #2242 even if there are no permission from preference show icons according to item permission
                 if (EditLevel.ToUpper().Equals("BUDGET"))
                 {
-                    if (!_IsBudgetCreate_Edit)  // If user has not Create/Edit Budget permission then clear AddRow button Html.
+                    if (!_IsBudgetCreate_Edit && permission != "Edit")  // If user has not Create/Edit Budget permission then clear AddRow button Html.
                     {
                         if (addRow == string.Empty)
                         {
@@ -3117,7 +3142,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    if (!_IsForecastCreate_Edit)    // If user has not Create/Edit Forecast permission then clear AddRow button Html.
+                    if (!_IsForecastCreate_Edit && permission != "Edit")    // If user has not Create/Edit Forecast permission then clear AddRow button Html.
                     {
                         if (addRow == string.Empty)
                         {
@@ -3148,7 +3173,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                if (!_IsForecastCreate_Edit)    // If user has not Create/Edit Forecast permission then clear AddRow button Html.
+                if (!_IsForecastCreate_Edit && permission != "Edit")    // If user has not Create/Edit Forecast permission then clear AddRow button Html.
                 {
                     addRow = string.Empty;
                     objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = IsTitleEdit });
