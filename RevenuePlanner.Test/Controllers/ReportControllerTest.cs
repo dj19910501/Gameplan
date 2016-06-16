@@ -1460,7 +1460,9 @@ namespace RevenuePlanner.Test.Controllers
         public void GetChildLabelDataViewByModel_empty()
         {
             Console.WriteLine("Get data check with Empty Parameter.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
             ReportController reportcontroller = new ReportController();
+            reportcontroller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
             var result = reportcontroller.GetChildLabelDataViewByModel("", "");
@@ -2569,6 +2571,34 @@ namespace RevenuePlanner.Test.Controllers
 
         #region Custom Reports
 
+        #region "GetCustomReport with null DashboardId"
+        /// <summary>
+        /// GetCustomReport with Null DashboardId
+        /// Created By Nishant Sheth
+        /// Created Date : 14-Jun-2016
+        /// </summary>
+        [TestMethod]
+        public void GetCustomReport_Null_DashboardId()
+        {
+            Console.WriteLine("GetCustomReport section with Null DashboardId.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            ReportController ReportController = new ReportController();
+            ReportController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            var result = ReportController.GetCustomReport(null) as PartialViewResult;
+            //// PartialViewResult shoud not be null and should match with Partial viewName
+            if (result != null)
+            {
+
+                Assert.AreEqual("_DynamicReport", result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+        }
+        #endregion
+
         #region "GetCustomReport with Empty DashboardId"
         /// <summary>
         /// GetCustomReport with Empty DashboardId
@@ -2579,7 +2609,9 @@ namespace RevenuePlanner.Test.Controllers
         public void GetCustomReport_Empty_DashboardId()
         {
             Console.WriteLine("GetCustomReport section with Empty DashboardId.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
             ReportController ReportController = new ReportController();
+            ReportController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = ReportController.GetCustomReport(string.Empty) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
             if (result != null)
