@@ -4224,7 +4224,9 @@ namespace Integration.Salesforce
                     {
                         // Add by Nishant Sheth
                         // Desc :: #2280 : if tatic is not sync by marketo to salesforce then tactic is not created in salesforce
-                        if (planTactic.IntegrationInstanceMarketoID != null && planTactic.IsSyncMarketo.HasValue && planTactic.IsSyncMarketo.Value)
+                        // Modified Condition by nishant sheth
+                        // Desc :: #2289 : if tactic is not sync with marketo and pull instance set for sfdc then tactic should not be created in sfdc.
+                        if (planTactic.IsSyncMarketo.HasValue && planTactic.IsSyncMarketo.Value)
                         {
                             return planTactic;
                         }
