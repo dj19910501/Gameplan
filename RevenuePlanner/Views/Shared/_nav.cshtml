@@ -15,22 +15,22 @@
                 {
                     hrefLink = Url.Action(Convert.ToString(o.ActionName), Convert.ToString(o.ControllerName));
                 }
-                string classname=Convert.ToString(o.Code.ToLower().Replace(" ", ""));
+                string classname = Convert.ToString(o.Code.ToLower().Replace(" ", ""));
                 if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
                 {
                     classname = classname + " dropdown";
                 }
             <li class="@classname">
                 <a href="@hrefLink">
-                        <span class="@o.CustomCss"></span>@*Added by Akashdeep Kadia for Ticket #2275 on 10-June-2016*@
-                        <span class="nav-text">@menuname.ToUpper()</span>
-                        @if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
-                        {
-                            <span class="dd-arrow"><i class="fa fa-caret-down"></i></span>
-                        }
+                    <span class="@o.CustomCss"></span>@*Added by Akashdeep Kadia for Ticket #2275 on 10-June-2016*@
+                    <span class="nav-text">@menuname.ToUpper()</span>
+                    @if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
+                    {
+                        <span class="dd-arrow"><i class="fa fa-caret-down"></i></span>
+                    }
                 </a>
-                    
-                    
+
+
                 <ul class="dropdown-menu">
                     @foreach (Menu submenu in Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId))
                     {
@@ -49,19 +49,24 @@
 </nav>
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function () {        
         //$('.dropdown-menu').toggleClass('dropdown-menu');
-        $('.finance').click(
+        ////Modified by Akashdeep Kadia for Ticket #2275 on 16-June-2016
+        $('.dropdown').click(
               function () {
-                  $(this).addClass('dropdown');
-                  $(this).toggleClass('open');
+
+                  if ($('.dropdown.open').length > 0) {
+                      if ($(this).hasClass('open')) {
+                          $(this).toggleClass('open');
+                      } else {
+                          $('.dropdown.open').removeClass('open');
+                          $(this).toggleClass('open');
+                      }
+                  } else {
+                      $(this).toggleClass('open');
+                  }
               });
-        //Added by Akashdeep Kadia for Ticket #2275 on 10-June-2016
-        $('.settings').click(
-              function () {
-                  $(this).addClass('dropdown');
-                  $(this).toggleClass('open');
-              });
+        
     });
 
 </script>
