@@ -6143,7 +6143,19 @@ namespace Integration.Salesforce
                                             }
                                         }
                                         lstPagedEntityList[index] = SyncTacticData(lstPagedEntityList[index], ref sbMessage);
-                                        lstProcessTacIds.Add(tacticId);
+                                        // Add By Nishant Sheth
+                                        // Desc :: #2289 : Mismtach count in email while marketo tactics not pushing in salesforce.
+                                        if (_IsSFDCWithMarketo)
+                                        {
+                                            if (lstPagedEntityList[index].IntegrationInstanceTacticId != null)
+                                            {
+                                                lstProcessTacIds.Add(tacticId);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            lstProcessTacIds.Add(tacticId);
+                                        }
                                         startDate = null; //#2097: reset startDate global variable.
                                         #region "Old Code"
                                         // Save 10 log records to Table.
