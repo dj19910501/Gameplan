@@ -81,7 +81,7 @@ namespace RevenuePlanner
                        "~/Scripts/js/jquery.mCustomScrollbar.concat.min.js",
                        "~/Scripts/js/jquery.actual.js",
                        "~/Scripts/js/highcharts.js",
-                       "~/Scripts/js/highcharts-v2.js",
+                       //"~/Scripts/js/highcharts-v2.js",
                        "~/Scripts/js/highcharts-more.js",
                        "~/Scripts/js/highcharts-3d.js",
                        "~/Scripts/js/highcharts-funnel.js",
