@@ -6342,7 +6342,7 @@ namespace RevenuePlanner.Helpers
                                 List<int> linkedTacticIds = Plan_Campaign_Program_TacticList.Where(tac => tac.LinkedTacticId.HasValue).Select(line => line.LinkedTacticId.Value).Distinct().ToList();
                                 if (linkedTacticIds != null && linkedTacticIds.Count > 0)
                                 {
-                                    var linkedTactics = db.Plan_Campaign_Program_Tactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId) && lnkdtac.PlanTacticId == id).ToList();
+                                    var linkedTactics = db.Plan_Campaign_Program_Tactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId) && lnkdtac.LinkedTacticId == id).ToList();
                                     linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
                                 }
                                 else
