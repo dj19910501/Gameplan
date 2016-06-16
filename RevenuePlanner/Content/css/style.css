@@ -1446,7 +1446,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', end
 }
 
 .font-black {
-    color: #000 !important;
+    color: #3e3f37 !important; /* Edited for #2219 - Bhumika */
 }
 
 .without-margin {
@@ -1698,9 +1698,10 @@ span.requests-logo-icon {
 .btn-blue-disable,
 .btn-blue-disable:focus,
 .btn-blue-disable:hover {
-    background: url(../images/btn-bg-35h-disable.jpg) repeat-x !important;
-    color: #fff;
+    background: #ccc none repeat scroll 0 0;
+    color: inherit;
     cursor: default;
+    opacity: 0.4;
 }
 
 .width-dropown-sidebar {
@@ -1804,14 +1805,15 @@ span.requests-logo-icon {
     .nav-tabs li.disabled a {
         color: #D4D4D4 !important;
     }
-.myaccount-colum .nav-pills a{color:#f8710e } /* Added for #2219 - Bhumika */
+.myaccount-colum .nav-pills a, 
+#internalLink .nav-pills a{color:#f8710e } /* Added for #2219 - Bhumika */
 .nav-pills > .active > a,
 .nav-pills > .active > a:focus,
 .nav-pills > .active > a:hover,
 .nav-pills > li > a:focus,
 .nav-pills > li > a:hover {
     background-color: #F8710E !important;/* Edited for #2219 - Bhumika */
-    color: #FFF;
+    color: #FFF !important;
 }
 
 .nav-tabs-modal {
@@ -2146,8 +2148,10 @@ span.link-blue:hover {
 .nl-field-toggle:hover {
     display: inline;
     color: #2384b8;
-    font-family: source_sans_prosemibold, Arial, sans-serif;
+    font-family: "ProximaNova-Bold",Helvetica,Arial,sans-serif; /* Edited for #2219 - Bhumika */
+
 }
+
 
 .nl-ti-text .nl-field-toggle {
     background: #73c4ee;
@@ -2335,7 +2339,7 @@ span.link-blue:hover {
 }
 
 .gantt_tree_content {
-    font-family: source_sans_proregular, Arial, sans-serif !important;
+    font-family: inherit !important;/*source_sans_proregular ;*//* Edited for #2219 - Bhumika */
     color: #A8A8A8;
     font-size: 15px;
     margin-left: -20px;
@@ -4732,7 +4736,7 @@ a.link-gray {
 }
 
 .myaccount-colum {
-    width: 231px !important;
+    width: 216px !important; /* Edited for #2219 - Bhumika */
     float: left;
 }
 
@@ -4751,7 +4755,7 @@ a.link-gray {
 
 .row-fluid .hierarchy_wrapper {
     overflow: auto;
-    width: 1367px;
+    width: 1366px; /* #2219 */
 }
 
 .hierarchy_wrapper li > ul li ul li,
@@ -5704,21 +5708,21 @@ span.left-arrow {
 
     .form-inspect-share button {
         font-size: 18px !important;
-        font-family: Conv_ProximaNova-Light, Arial, sans-serif !important;
         margin-top: 25px !important;
         color: #fff !important;
-        text-shadow: 0 1px 1px #235d86 !important;
+        text-shadow: none;
+        font-family:inherit;
     }
 
 .form-inspect-share-button {
     float: left;
     width: 120px !important;
     height: 17px !important;
-    background: url(../images/btn-login.jpg) repeat-x #3b9de4 !important;
+    background: #F8710E ; /* Edited for #2219 - Bhumika */
     border: none !important;
     border-top: none !important;
 }
-
+.form-inspect-share-button:hover, .form-inspect-share-button:focus{background: #e2502d}
 .form-inspect-share label {
     font-size: 21px;
     font-family: Conv_HelveticaLTStd-Light, Arial, sans-serif;
@@ -7742,18 +7746,13 @@ input.icon-check-blue {
     background-image: linear-gradient(to bottom, #f6f6f6, #d7d7d7);
     background-repeat: repeat-x;
     filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#fff6f6f6', endColorstr='#ffd7d7d7', GradientType=0);
+    color: inherit;  
 }
 
     .treeview a.btn:hover {
         color: #fff;
-        background-color: #087fc5;
-        background-image: -moz-linear-gradient(top, #8cc7e9, #067dc3);
-        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8cc7e9), to(#067dc3));
-        background-image: -webkit-linear-gradient(top, #8cc7e9, #067dc3);
-        background-image: -o-linear-gradient(top, #8cc7e9, #067dc3);
-        background-image: linear-gradient(to bottom, #8cc7e9, #067dc3);
-        background-repeat: repeat-x;
-        filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#ff8cc7e9', endColorstr='#ff067dc3', GradientType=0);
+        background-color: #3e3f37;/* Edited for #2219 - Bhumika */
+        background-image: none;  
     }
 
 .modal-inspect-review-small {
@@ -7869,9 +7868,11 @@ input.icon-check-blue {
 }
 
 .btn-gray {
-    color: #6d6d6d !important;
     padding: 5px 15px;
-}
+}/* Edited for #2219 - Bhumika */
+.btn-gray,
+.btn.btn-grey:hover,
+.btn.btn-grey:focus{color: inherit !important;} /* Added for #2219 - Bhumika */
 
 .shadow-scroll-table-mask-left.resetVisibility,
 .shadow-scroll-table-mask-right.resetVisibility {
@@ -8658,7 +8659,7 @@ div.sub {
 
         .integrationAccordion .accordion-toggle span {
             float: right;
-            color: #08C;
+    color: #F8710E;/* Edited for #2219 - Bhumika */
             text-decoration: underline;
             font-weight: 400;
         }
@@ -15219,6 +15220,49 @@ input[type="search"].ExpInput {
 #txtGlobalSearch:focus{box-shadow:none}
 #txtGlobalSearch::-ms-clear {/* For IE only */
     display: none;
+}
+.btn-h9p2 {
+    background-color: #89cede;
+    color: #f4f5ed;
+} 
+.btn-h9p2:hover {
+    background-color: #70BBCC;
+    color: #fff;
+}
+.btn-link{color:inherit !important}
+.link-btn .btn-link{color:#F8710E !important}
+.link-btn .btn-link:hover, 
+.link-btn .btn-link:focus{color:#e2502d !important}
+
+.note-editor .btn { 
+  color: #333333;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  background-color: #f5f5f5;
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #e6e6e6;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  border: 1px solid #cccccc;
+  *border: 0;
+  border-bottom-color: #b3b3b3;
+}
+.note-editor .btn:hover,
+.note-editor .btn:focus,
+.note-editor .btn:active,
+.note-editor .btn.active,
+.note-editor .btn.disabled,
+.note-editor .btn[disabled] {
+  color: #333333;
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
 }
 
 /* #2229 */

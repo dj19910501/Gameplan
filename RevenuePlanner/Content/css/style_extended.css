@@ -36,7 +36,7 @@
 
 .spanPlanDefinition span {
     color: #6B6C6E !important;
-    font-weight: bold;
+    font-weight: bold;						    
 }
 
 /*//Add For Overwrite Class CSS - for popup not display as center*/
@@ -712,7 +712,7 @@ span.setbackground {
 }
 
 .nav-gray-planc > li:nth-last-child(2) a {
-    border-bottom: 1px solid #c7c7c7;
+    border-bottom: 1px solid #c7c7c7;						    
 }
 
 .nav-gray-planc li a.inputs span {
@@ -1123,7 +1123,7 @@ a {
     /*End : Added by Mitesh Vaishnav on 26-06-2014*/
 
     .simpleSelectBox.sbOptions a:hover, .sbOptions a:focus, .sbOptions a.sbFocus {
-        color: #FFFFFF;
+        /*color: #FFFFFF;*/ /* Commented for #2219 - Bhumika */
         text-shadow: none;
     }
 
@@ -2375,10 +2375,11 @@ label {
         left: -1em;
     }
 
-    .manage-roles-header .nl-field-toggle {
-        font-family: 'source_sans_prolight', Arial, "sans-serif";
-        background: url(../images/arrow-d-big-icon-blue.png) right center no-repeat;
-        padding-right: 23px;
+    .manage-roles-header .nl-field-toggle { /* Edited for #2219 - Bhumika */
+        color: #3e3f37;
+        /*background: url(../images/arrow-d-big-icon-blue.png) right center no-repeat;*/
+        background: url(../images/arrow-d-icon-active.png) right center no-repeat;
+        padding-right: 17px;
         text-decoration: underline; /*review point*/
     }
 
@@ -2678,9 +2679,9 @@ label {
             margin-left: 0;
         }
 
-    .bottom-btns .btn-blue, .bottom-btns .btn-blue-disable {
+    /*.bottom-btns .btn-blue, .bottom-btns .btn-blue-disable {
         background-color: #2C78AE;
-    }
+    }*/ /* Commented for #2219 - Bhumika */
 
     .bottom-btns .btn-blue {
         min-width: 130px;
@@ -2801,9 +2802,9 @@ label {
             margin-left: 0;
         }
 
-    .bottom-btns .btn-blue, .bottom-btns .btn-blue-disable {
+    /*.bottom-btns .btn-blue, .bottom-btns .btn-blue-disable {
         background-color: #2C78AE;
-    }
+    }*/ /* Commented for #2219 - Bhumika */
 
     .bottom-btns .btn-blue {
         min-width: 130px;
