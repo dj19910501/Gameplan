@@ -1431,9 +1431,10 @@ namespace RevenuePlanner.Test.Controllers
             string mainTimeFrame = "Invalid";
             string BudgetDetailName = "Budget Test";
             string ParentId = "0";
+            string OwnerId = Sessions.User.UserId.ToString(); //Changes by komal for #2243 on 16-06-16 as owner is editable in finance grid now.
             //// Call UpdateBudgetDetail method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.UpdateBudgetDetail(budgetId, BudgetDetailName, BudgetDetailId, ParentId, mainTimeFrame) as PartialViewResult;
+            var result = objFinanceController.UpdateBudgetDetail(budgetId, BudgetDetailId, ParentId, mainTimeFrame, "", OwnerId, BudgetDetailName) as PartialViewResult;
 
             if (result != null)
             {
@@ -1499,7 +1500,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call UpdateBudgetDetail method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.UpdateBudgetDetail(null, null, null, null, null) as JsonResult;
+            var result = objFinanceController.UpdateBudgetDetail(null, null, null, null) as JsonResult;
 
             if (result == null)
             {
