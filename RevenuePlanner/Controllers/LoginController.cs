@@ -535,8 +535,18 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
+            //Modified By komal Rawal for #2283 Could not login  after session timeout from plan page
+            List<BDSService.Menu> ListofControllerMenus = new List<BDSService.Menu>();
+            ListofControllerMenus = AppMenus.ToList().Where(am => am.ControllerName != null && am.ControllerName.ToLower().Equals(controllerName)).ToList();
+            
+
             // Modified by Viral Kadiya on 10/15/14 for #795 Cannot Log In After Session Expiration.
             BDSService.Menu currentMenuOfUrl = (BDSService.Menu)AppMenus.Where(am => am.ControllerName.ToLower().Equals(controllerName)).FirstOrDefault();
+            if(ListofControllerMenus.Count() > 1)
+            {
+                currentMenuOfUrl = ListofControllerMenus.Where(am => am.ControllerName.ToLower().Equals(controllerName) && am.ActionName.Equals(actionName)).FirstOrDefault();
+            }
+
             if (currentMenuOfUrl == null)
                 return RedirectToAction("Index", "Home");
 

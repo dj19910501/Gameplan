@@ -253,7 +253,20 @@
             }
         },
         error: function (x, e) { // Called when error occured
+            //Modified By komal rawal for #2283 to manage 403 error
+            if (x.status == "403") {
+                myApp.hidePleaseWait();
+                //this will catch any and all access denied errors
+                if (isAlerted == false) {
+                    isAlerted = true;
+                    alert("@Common.objCached.SessionExpired");
+                    window.location = "@Url.Content("~/login/Index")";
+               }
+            }
+            else {
             GoToLogin();
+            }
+
         }
     });
 

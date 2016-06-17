@@ -6737,7 +6737,51 @@ namespace RevenuePlanner.Controllers
             // Added by Arpita Soni for Ticket #2202 on 05/24/2016 
             if (PlanId == 0)
             {
-                PlanId = Sessions.PlanId;
+                //Modified By Komal rawal for #2283 if session plan id is 0 then get plan from last view data or the first plan of the year.
+                if(Sessions.PlanId == 0)
+                {
+                    var Label = Enums.FilterLabel.Plan.ToString();
+                    var FinalSetOfPlanSelected = "";
+                    var LastSetOfPlanSelected = new List<string>();
+                    var SetOFLastViews  = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
+                    var SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.UserId).ToList();
+
+                    FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.IsDefaultPreset == true).Select(listview => listview.FilterValues).FirstOrDefault();
+                    if (FinalSetOfPlanSelected == null)
+                    {
+                        FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == null).Select(listview => listview.FilterValues).FirstOrDefault();
+                    }
+                    if (FinalSetOfPlanSelected != null)
+                    {
+                        LastSetOfPlanSelected = FinalSetOfPlanSelected.Split(',').ToList();
+                    }
+                    if (LastSetOfPlanSelected.Count > 0 && LastSetOfPlanSelected != null)
+                    {
+                        PlanId = Convert.ToInt32(LastSetOfPlanSelected.FirstOrDefault());
+                    }
+                    if(PlanId == 0)
+                    {
+                        List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false  && plan.Model.ClientId == Sessions.User.ClientId).ToList();
+                      
+                        string year = Convert.ToString(DateTime.Now.Year);
+                        var checkcurrentplan = tblPlan.Where(plan =>!plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault();
+                        if (checkcurrentplan != null)
+                        {
+                            PlanId = tblPlan.OrderBy(p => p.Title).FirstOrDefault().PlanId;
+                        }
+                        else
+                        {
+                            PlanId = tblPlan.OrderByDescending(p => Convert.ToInt32(p.Year)).OrderBy(p => p.Title).ToList().FirstOrDefault().PlanId; 
+                        }
+                    }
+                   
+                }
+                else
+                {
+                    PlanId = Sessions.PlanId;
+                }
+                //End
+               
             }
             ViewBag.ActiveMenu = Enums.ActiveMenu.Finance;
             HomePlanModel planmodel = new Models.HomePlanModel();

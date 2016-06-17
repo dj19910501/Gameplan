@@ -55,7 +55,13 @@
 
         setTimeout(update, 1000);
     });
+
+    //Modified by Komal rawal on 17-6-16 to clear time once the time is over
     function sessLogOut(returnUrl) {
+
+       warningRunTime = 0;
+       clearTimeout(timerWatch);
+
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Login/destroySessions/")',
@@ -64,8 +70,8 @@
                     window.location = '@Url.Content("~/login/Index?ReturnUrl=")' + returnUrl+'&sessionTimeout='+true;
                 }
             }
-           });
-        
+        });
+
     }
     $('#submit_issue').click(function () {
         warningRunTime = 0;
