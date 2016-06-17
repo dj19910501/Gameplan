@@ -2643,23 +2643,26 @@ namespace Integration.Salesforce
                             }
                         }
                         tacticIdList = ListOfMarketoWithoutSFDC.Select(tac => tac.PlanTacticId).ToList();
-                        #region "Validate Mappings with SFDC fields"
-                        if (campaignList.Count > 0 || programList.Count > 0 || ListOfMarketoWithoutSFDC.Count > 0)
-                        {
+                        // Commented By Nishant Sheth
+                        // Desc ::#2289 - Not need to update tactic while pulling process working, becuase of this process in email counts are wrong.
 
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                            _isResultError = SetMappingDetails();
-                            if (!_isResultError)
-                            {
-                                SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), ListOfMarketoWithoutSFDC, tacticIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                            }
-                            else
-                            {
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
-                            }
-                        }
-                        #endregion
+                        //#region "Validate Mappings with SFDC fields"
+                        //if (campaignList.Count > 0 || programList.Count > 0 || ListOfMarketoWithoutSFDC.Count > 0)
+                        //{
+
+                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        //    _isResultError = SetMappingDetails();
+                        //    if (!_isResultError)
+                        //    {
+                        //        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), ListOfMarketoWithoutSFDC, tacticIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);
+                        //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        //    }
+                        //    else
+                        //    {
+                        //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
+                        //    }
+                        //}
+                        //#endregion
 
                     }
 
