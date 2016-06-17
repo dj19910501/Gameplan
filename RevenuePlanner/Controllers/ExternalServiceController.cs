@@ -2030,6 +2030,7 @@ namespace RevenuePlanner.Controllers
                 #region "Set Enum Variables"
                 string Eloqua = Enums.IntegrationType.Eloqua.ToString();
                 string Marketo = Enums.IntegrationType.Marketo.ToString(); //Added by Rahul Shah on 13/05/2016 for PL #2184
+                string WorkFront = Enums.IntegrationType.WorkFront.ToString();
                 string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
                 string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
                 string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
@@ -2056,29 +2057,29 @@ namespace RevenuePlanner.Controllers
                                                      TargetDataType = _map.TargetDataType
                                                  }).ToList();
 
+                List<GameplanDataTypeModel> listGameplanDataTypeCustomFields = new List<GameplanDataTypeModel>();
                 #region "Declare Enum Variables"
-                //// Start - Added by :- Sohel Pathan on 03/12/2014 for PL #993
-                string Campaign_EntityType = Enums.EntityType.Campaign.ToString();
-                string Program_EntityType = Enums.EntityType.Program.ToString();
-                string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
-                string Plan_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString();
-                string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString();
-                #endregion
+                    //// Start - Added by :- Sohel Pathan on 03/12/2014 for PL #993
+                    string Campaign_EntityType = Enums.EntityType.Campaign.ToString();
+                    string Program_EntityType = Enums.EntityType.Program.ToString();
+                    string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
+                    string Plan_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString();
+                    string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString();
+                    #endregion
 
                 //// Get GamePlan Custom Fields data.
                 // Updated 23 March 2016 PL#2083 by Brad Gray to not retrieve fields where custom field 'IsGet' == true
                 //Modified by Rahul Shah for PL #2184. here on tactic customfied list displayed for Marketo.
-                List<GameplanDataTypeModel> listGameplanDataTypeCustomFields = new List<GameplanDataTypeModel>();
                 listGameplanDataTypeCustomFields = (from custm in db.CustomFields
                                                     join m1 in db.IntegrationInstanceDataTypeMappings on custm.CustomFieldId equals m1.CustomFieldId into mapping
                                                     from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
                                                     where custm.IsDeleted == false && custm.ClientId == Sessions.User.ClientId && custm.IsGet == false &&
-                                                    ((integrationTypeCode == Eloqua ? (custm.EntityType == Tactic_EntityType) : (integrationTypeCode == Marketo ? (custm.EntityType == Tactic_EntityType) : 1 == 1)))
+                                                    ((integrationTypeCode == Eloqua ? (custm.EntityType == Tactic_EntityType) : (integrationTypeCode == Marketo ? (custm.EntityType == Tactic_EntityType) : (integrationTypeCode == WorkFront ? (custm.EntityType == Tactic_EntityType) : 1 == 1)))) //Modified by Viral for PL #2266.
                                                     select new GameplanDataTypeModel
                                                     {
                                                         GameplanDataTypeId = custm.CustomFieldId,   // For Custom Fields CustomFieldId is GameplanDataType Id in Mapping
                                                         IntegrationTypeId = IntegrationTypeId,
-                                                        TableName = custm.EntityType == Campaign_EntityType ? Plan_Campaign : (custm.EntityType == Program_EntityType ? Plan_Campaign_Program : (custm.EntityType == Tactic_EntityType ? Plan_Campaign_Program_Tactic : string.Empty)),
+                                                        TableName = custm.EntityType == Campaign_EntityType ? Plan_Campaign : (custm.EntityType == Program_EntityType ? Plan_Campaign_Program : (custm.EntityType == Tactic_EntityType ? Plan_Campaign_Program_Tactic : string.Empty)), 
                                                         ActualFieldName = custm.Name,
                                                         DisplayFieldName = custm.Name,
                                                         IsGet = false,
