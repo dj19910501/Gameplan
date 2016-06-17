@@ -734,6 +734,37 @@ namespace Integration.Helper
             }
             return dataset;
         }       
+        // Added By Viral 
+        // Desc :: Get SFDC Field Mappings list.
+        public DataSet GetSFDCFieldMappings(Guid clientId, int IntegrationTypeId, int IntegrationInstanceID,bool isSFDCSyncMarketo)
+        {
+            string clientid = clientId.ToString();
+            DataTable datatable = new DataTable();
+            DataSet dataset = new DataSet();
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+
+            command = new SqlCommand("GetSFDCFieldMappings", Connection);
+
+            using (command)
+            {
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@clientId", clientid);
+                command.Parameters.AddWithValue("@integrationTypeId", IntegrationTypeId);
+                command.Parameters.AddWithValue("@id", IntegrationInstanceID);
+                command.Parameters.AddWithValue("@isSFDCMarketoIntegration", isSFDCSyncMarketo);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(dataset);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+            return dataset;
+        }      
     }
     #endregion
     public class CRM_EloquaMapping

@@ -586,7 +586,8 @@ namespace Integration
                             {
                                 Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Data Start.");
                                 List<SyncError> lstSyncError = new List<SyncError>();
-                                _isResultError = integrationSalesforceClient.SyncData(out lstSyncError);
+                                //_isResultError = integrationSalesforceClient.SyncData(out lstSyncError);
+                                _isResultError = integrationSalesforceClient.SyncSFDCDataByAPI(out lstSyncError);
                                 _lstAllSyncError.AddRange(lstSyncError);
                                 Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Data End.");
                             }
@@ -981,7 +982,8 @@ namespace Integration
                 IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
-                    return integrationSalesforceClient.GetTargetDataType("Campaign");
+                    return integrationSalesforceClient.GetSFDCObjectList();
+                    //return integrationSalesforceClient.GetTargetDataType("Campaign");
                 }
             }
             else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))

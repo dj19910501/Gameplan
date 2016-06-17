@@ -1,10 +1,12 @@
 ﻿using Integration.Helper;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RevenuePlanner.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+//using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -20,8 +22,20 @@ namespace Integration
         public bool status { get; set; }
         public List<LogDetails> lstLogDetails;
         public Dictionary<string, string> data;
+        public List<SalesForceFieldsDetails> salesForceFieldsDetails = new List<SalesForceFieldsDetails>();
+        public List<LogDetails> logs = new List<LogDetails>();
+        public List<SFDCAPICampaignResult> campaignIds = new List<SFDCAPICampaignResult>();
     }
-
+    public class SalesForceFieldsDetails
+    {
+        public bool Custom { get; set; }
+        public string DefaultValue { get; set; }
+        public bool AutoNumber { get; set; }
+        public string Name { get; set; }
+        public int Length { get; set; }
+        public string Type { get; set; }
+        public string SoapType { get; set; }
+    }
     public class LogDetails
     {
         public int? SourceId { get; set; }
@@ -33,6 +47,7 @@ namespace Integration
         public string Description { get; set; }
         public string Mode { get; set; }
         public string Url { get; set; }
+        public string ObjectType { get; set; }
     }
     public class Parameters
     {
@@ -43,12 +58,21 @@ namespace Integration
         public string spName { get; set; }
         public List<SpParameters> lstParameterList;
     }
-
+    public class SFDCAPICampaignResult
+    {
+        public string SourceId { get; set; }
+        public string CampaignId { get; set; }
+        public string ObjectType { get; set; }
+        public string Description { get; set; }
+        public string Mode { get; set; }
+        public DateTime EndTimeStamp { get; set; }
+    }
     public class fieldMapping
     {
         public string sourceFieldName { get; set; }
         public string destinationFieldName { get; set; }
         public string marketoFieldType { get; set; }
+        public string fieldType { get; set; }
     }
     public class ApiIntegration
     {
@@ -373,6 +397,132 @@ namespace Integration
             }
             return logdetails;
         }
+
+
+        #region " SFDC related API functions"
+
+        /// <summary>
+        /// Added by Viral
+        /// Added On 13 June 2016
+        /// to check the authentication for Saleforce
+        /// </summary>
+        public bool AuthenticateforSFDC(Dictionary<string,string> sfdcCredentials, string AppId,string clientID)
+        {
+            HttpClient client = new HttpClient();
+            bool isAuthenticated = false;   
+            string IntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+            if (IntegrstionApi != null)
+            {
+                JObject obj = new JObject();
+                obj.Add("credentials", JsonConvert.SerializeObject(sfdcCredentials));
+                obj.Add("applicationId", AppId);
+                obj.Add("clientId", clientID);
+
+                Uri baseAddress = new Uri(IntegrstionApi);
+                client.BaseAddress = baseAddress;
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                HttpResponseMessage response = client.PostAsJsonAsync("api/Sfdc/SalesForce_Authentication", obj).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    ReturnObject objData = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
+                    isAuthenticated = objData.status;
+                }
+            }
+            return isAuthenticated;
+        }
+
+        /// <summary>
+        ///  Get list of Fields Name,Type, Length from SFDC.
+        /// </summary>
+        /// <param name="salesforceCredentials"></param>
+        /// <returns></returns>
+        public List<SalesForceFieldsDetails> GetSFDCmetaDataFields(Dictionary<string, string> salesforceCredentials,string AppId,string clientid)
+        {
+            string objectname = "Campaign";
+            int CommonWebAPITimeout = 0;
+            string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
+            List<SalesForceFieldsDetails> lstSFDCFieldDetails = new List<SalesForceFieldsDetails>();
+            JObject obj = new JObject();
+            obj.Add("credentials", JsonConvert.SerializeObject(salesforceCredentials));
+            obj.Add("applicationId", AppId);
+            obj.Add("clientId", clientid);
+            obj.Add("object", objectname);
+
+            if (!string.IsNullOrEmpty(strwebAPITimeout))
+                CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
+            else
+                CommonWebAPITimeout = 4;    // if user has not defined Integration WEB API timeout then set static value to 4.
+            HttpClient client = new HttpClient();
+            client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
+            string IntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+            Uri baseAddress = new Uri(IntegrstionApi);
+            client.BaseAddress = baseAddress;
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            HttpResponseMessage response = client.PostAsJsonAsync("api/Sfdc/SalesForce_ReadMetadataDetails", obj).Result;
+            ReturnObject ro = new ReturnObject();
+            if (response.IsSuccessStatusCode)
+            {
+                string json = response.Content.ReadAsStringAsync().Result;
+                ReturnObject obj2 = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
+                ro.status = obj2.status;
+                //ro.logs = obj2.logs;
+                lstSFDCFieldDetails = obj2.salesForceFieldsDetails;
+            }
+            return lstSFDCFieldDetails;
+
+        }
+
+        /// <summary>
+        /// Created By Viral
+        /// Created Date : 13-June-2016
+        /// to push the data to the Salesforce and get the loglist from Salesforce
+        /// </summary>
+        /// <returns></returns>
+        public ReturnObject SFDCData_Push(string spName, List<fieldMapping> lstFieldsMap,string AppId, Guid _clientId, List<SpParameters> spParams,Dictionary<string, string> SFDCCredentials)
+        {
+            #region "Declare local varibles"
+            int CommonWebAPITimeout = 0;
+            string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
+            Parameters objParams = new Parameters();
+            List<LogDetails> logdetails = new List<LogDetails>();
+            #endregion
+
+            if (!string.IsNullOrEmpty(strwebAPITimeout))
+                CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
+            else
+                CommonWebAPITimeout = 4;    // if user has not defined Integration WEB API timeout then set static value to 4.
+
+            //objParams.credentials = SFDCCredentials;
+            //objParams.applicationId = AppId;
+            //objParams.clientId = _clientId.ToString();
+            //objParams.fieldMapList = lstFieldsMap;
+            //objParams.spName = spName;
+            //objParams.lstParameterList = spParams;
+
+            JObject obj = new JObject();
+            obj.Add("credentials", JsonConvert.SerializeObject(SFDCCredentials));
+            obj.Add("applicationId", AppId);
+            obj.Add("clientId", _clientId.ToString());
+            obj.Add("spName", spName);
+            obj.Add("fieldMapList", JsonConvert.SerializeObject(lstFieldsMap));
+            obj.Add("spParameterList", JsonConvert.SerializeObject(spParams));
+
+
+            HttpClient client = new HttpClient();
+            client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
+            string IntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+            Uri baseAddress = new Uri(IntegrstionApi);
+            //Uri baseAddress = new Uri("http://localhost:54371/");
+            client.BaseAddress = baseAddress;
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            HttpResponseMessage response = client.PostAsJsonAsync("api/Sfdc/SalesForce_PushObject", obj).Result;
+            ReturnObject ro = new ReturnObject();
+            if (response.IsSuccessStatusCode)
+                ro = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
+            return ro;
+        }
+
+        #endregion
     }
 
 

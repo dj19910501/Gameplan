@@ -81,7 +81,7 @@ namespace Integration.Salesforce
         private string PeriodChar = "Y";
         private string PlanName = string.Empty;
         private DateTime? startDate; // Use this startDate varialbe while push linked tactic to SFDC.
-
+        private int sfdcTitleLengthLimit=255;
         public bool IsAuthenticated
         {
             get
@@ -129,28 +129,35 @@ namespace Integration.Salesforce
 
         public void Authenticate()
         {
+            Dictionary<string, string> sfdcCredentials = new Dictionary<string, string>();
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            /// Added by Bhavesh
-            /// Date: 28/7/2015
-            /// Ticket : #1385	Enable TLS 1.1 or higher Encryption for Salesforce
-            /// Start : #1385
-            if (Common.EnableTLS1AndHigher == "true")
-            {
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-            }
-            /// End : #1385
+            #region "Commented code: SFDC authenticate through Integration Web API"
+            ///// Added by Bhavesh
+            ///// Date: 28/7/2015
+            ///// Ticket : #1385	Enable TLS 1.1 or higher Encryption for Salesforce
+            ///// Start : #1385
+            //if (Common.EnableTLS1AndHigher == "true")
+            //{
+            //    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            //}
+            ///// End : #1385
 
-            _client = new SalesforceClient();
-            var authFlow = new UsernamePasswordAuthenticationFlow(_consumerKey, _consumerSecret, _username, _password + _securityToken);
+            //_client = new SalesforceClient();
+            //var authFlow = new UsernamePasswordAuthenticationFlow(_consumerKey, _consumerSecret, _username, _password + _securityToken); 
+            #endregion
             int entityId = _integrationInstanceId;
-            authFlow.TokenRequestEndpointUrl = _apiURL;
+            //authFlow.TokenRequestEndpointUrl = _apiURL;   // commented by viral #2251.
             try
             {
                 if (_entityType.Equals(EntityType.Tactic) || _entityType.Equals(EntityType.ImprovementTactic))
                     entityId = _id;
                 Common.SaveIntegrationInstanceLogDetails(entityId, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Salesforce Authentication start.");
-                _client.Authenticate(authFlow);
-                _isAuthenticated = true;
+                //_client.Authenticate(authFlow);
+
+                sfdcCredentials = GetsfdcCredentials();
+
+                _isAuthenticated = (new ApiIntegration()).AuthenticateforSFDC(sfdcCredentials, _applicationId.ToString(), _clientId.ToString());
+
                 Common.SaveIntegrationInstanceLogDetails(entityId, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Salesforce Authentication end.");
             }
             catch (SalesforceException ex)
@@ -176,6 +183,20 @@ namespace Integration.Salesforce
             {
                 TargetDataTypeList.Add((string)result["name"]);
             }
+            return TargetDataTypeList.OrderBy(q => q).ToList();
+        }
+
+        /// <summary>
+        /// Created by Viral on 14 June 2016
+        /// </summary>
+        /// <param name="objectName">Sales force object name ex. Campaign</param>
+        /// <returns>Returns property list of salesforce object</returns>
+        public List<string> GetSFDCObjectList()
+        {
+            List<string> TargetDataTypeList = new List<string>();
+            List<SalesForceFieldsDetails> lstAllTargetDataTypeList = new List<SalesForceFieldsDetails>();
+            lstAllTargetDataTypeList = (new ApiIntegration()).GetSFDCmetaDataFields(GetsfdcCredentials(), _applicationId.ToString(), _clientId.ToString());
+            TargetDataTypeList = lstAllTargetDataTypeList.Select(fld => fld.Name).ToList();
             return TargetDataTypeList.OrderBy(q => q).ToList();
         }
 
@@ -234,6 +255,51 @@ namespace Integration.Salesforce
 
             }
             return TargetDataTypeList.OrderBy(q => q.TargetField).ToList();
+        }
+
+        /// <summary>
+        /// Created by Viral
+        /// To Fetch salesforce target field details 
+        /// </summary>
+        /// <param name="objectName">Sales force object name</param>
+        /// <returns>Returns property list with length and data type of sales-force object</returns>
+        public List<SalesForceObjectFieldDetails> GetSFDCTargetFieldList()
+        {
+            List<SalesForceObjectFieldDetails> TargetDataTypeList = new List<SalesForceObjectFieldDetails>();
+            List<SalesForceFieldsDetails> lstAllTargetDataTypeList = new List<SalesForceFieldsDetails>();
+            SalesForceObjectFieldDetails objFieldDetails;
+            lstAllTargetDataTypeList = (new ApiIntegration()).GetSFDCmetaDataFields(GetsfdcCredentials(), _applicationId.ToString(), _clientId.ToString());
+            foreach (SalesForceFieldsDetails objSFDField in lstAllTargetDataTypeList)
+            {
+                objFieldDetails = new SalesForceObjectFieldDetails();
+                objFieldDetails.TargetField = objSFDField.Name;
+                objFieldDetails.Length = objSFDField.Length;
+                objFieldDetails.TargetDatatype = objSFDField.SoapType.Replace("xsd:", "");
+                TargetDataTypeList.Add(objFieldDetails);
+
+                // Assign SFDC Title field length to Global variable(i.e. sfdcTitleLengthLimit)
+                if (objSFDField.Name.Equals("Name"))
+                    sfdcTitleLengthLimit = objSFDField.Length;
+            }
+            
+
+            return TargetDataTypeList.OrderBy(q => q.TargetField).ToList();
+        }
+
+        /// <summary>
+        /// Get SFDC require Authenticate details ex. ConsumerKey,ClientSecret,SecurityToken,Username,Password,APIUrl
+        /// </summary>
+        /// <returns> returns dictionary of SFDC credentials</returns>
+        public Dictionary<string, string> GetsfdcCredentials()
+        {
+            Dictionary<string, string> sfdcCredentials = new Dictionary<string, string>();
+            sfdcCredentials.Add("ConsumerKey", _consumerKey);
+            sfdcCredentials.Add("ClientSecret", _consumerSecret);
+            sfdcCredentials.Add("SecurityToken", _securityToken);
+            sfdcCredentials.Add("Username", _username);
+            sfdcCredentials.Add("Password", _password);
+            sfdcCredentials.Add("APIUrl", _apiURL);
+            return sfdcCredentials;
         }
 
         public class SalesForceObjectFieldDetails
@@ -2643,26 +2709,23 @@ namespace Integration.Salesforce
                             }
                         }
                         tacticIdList = ListOfMarketoWithoutSFDC.Select(tac => tac.PlanTacticId).ToList();
-                        // Commented By Nishant Sheth
-                        // Desc ::#2289 - Not need to update tactic while pulling process working, becuase of this process in email counts are wrong.
+                        #region "Validate Mappings with SFDC fields"
+                        if (campaignList.Count > 0 || programList.Count > 0 || ListOfMarketoWithoutSFDC.Count > 0)
+                        {
 
-                        //#region "Validate Mappings with SFDC fields"
-                        //if (campaignList.Count > 0 || programList.Count > 0 || ListOfMarketoWithoutSFDC.Count > 0)
-                        //{
-
-                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                        //    _isResultError = SetMappingDetails();
-                        //    if (!_isResultError)
-                        //    {
-                        //        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), ListOfMarketoWithoutSFDC, tacticIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);
-                        //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                        //    }
-                        //    else
-                        //    {
-                        //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
-                        //    }
-                        //}
-                        //#endregion
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                            _isResultError = SetMappingDetails();
+                            if (!_isResultError)
+                            {
+                                SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), ListOfMarketoWithoutSFDC, tacticIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);
+                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                            }
+                            else
+                            {
+                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
+                            }
+                        }
+                        #endregion
 
                     }
 
@@ -3593,6 +3656,8 @@ namespace Integration.Salesforce
         {
             List<SalesForceObjectFieldDetails> lstMappingMisMatch = new List<SalesForceObjectFieldDetails>();
             SalesForceObjectFieldDetails objfeildDetails;
+            string strCustmName;
+            int custId = 0;
             foreach (KeyValuePair<string, string> entry in lstSourceTargetMapping)
             {
                 if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && lstSalesForceFieldDetails.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault() != null)
@@ -3614,11 +3679,17 @@ namespace Integration.Salesforce
                     if (!Enums.ActualFieldDatatype[Enums.ActualFields.Other.ToString()].Contains(lstSalesForceFieldDetails.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype))
                     {
                         objfeildDetails = new SalesForceObjectFieldDetails();
-                        objfeildDetails.SourceField = entry.Key;
+                        strCustmName = string.Empty;
+                        custId = 0;
+                        if(int.TryParse(entry.Key,out custId))
+                        {
+                            strCustmName = db.CustomFields.Where(custm => custm.CustomFieldId == custId && custm.IsDeleted == false).Select(v => v.Name).FirstOrDefault();
+                        }
+                        objfeildDetails.SourceField = string.IsNullOrEmpty(strCustmName) ? entry.Key : strCustmName;
                         objfeildDetails.TargetField = entry.Value;
                         objfeildDetails.Section = Section;
                         objfeildDetails.TargetDatatype = lstSalesForceFieldDetails.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype;
-                        objfeildDetails.SourceDatatype = Enums.ActualFieldDatatype[entry.Key].ToString();
+                        objfeildDetails.SourceDatatype = Enums.ActualFieldDatatype[Enums.ActualFields.Other.ToString()].ToString();
                         lstMappingMisMatch.Add(objfeildDetails);
                     }
                 }
@@ -3760,11 +3831,6 @@ namespace Integration.Salesforce
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Info, DateTime.Now));
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, msg);
                 }
-                //if (lstMappingMisMatch.Count > 0)
-                //{
-                //    return true;
-                //}
-
 
                 try
                 {
@@ -7276,6 +7342,1199 @@ namespace Integration.Salesforce
                 throw;
             }
         }
+
+        public void UpdateLinkedTacticCommentForAPI(List<int> lstProcessTacIds, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstCreatedTacIds, Dictionary<int, int> lstTac_LinkTacMapping, string strCrtCampaignIds, string strUpdCampaignIds, string strCrtProgramIds, string strUpdProgramIds, string strCrtImprvTacIds, string strUpdImprvTacIds)
+        {
+            string query = string.Empty;
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            try
+            {
+                string strCreatedLinkedTacIds = string.Empty, strUpdatedLinkedTacIds = string.Empty, strCreatedTacIds = string.Empty, strUpdatedTacIds = string.Empty;
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "UpdateLinkedTacticCommentForAPI method start.");
+                #region "Update linkedTactic Comment & IntegrationInstanceTacticId"
+                // if any tactic processed(push).
+                if (lstProcessTacIds != null && lstProcessTacIds.Count > 0)
+                {
+                    #region "Declare local varialbles"
+                    // Get created linked TacticIds.
+                    List<int> lstCreateLinkedTacIds = new List<int>();
+                    List<int> lstUpdateTacIds = new List<int>();
+                    List<int> lstUpdateLinkedTacIds = new List<int>();
+                    #endregion
+
+                    // if linked tactic exist.
+                    if (lstTac_LinkTacMapping != null && lstTac_LinkTacMapping.Count > 0)
+                    {
+                        if (lstCreatedTacIds != null && lstCreatedTacIds.Count > 0)
+                        {
+                            // get only tactics created to Marketo.
+                            lstCreatedTacIds = lstCreatedTacIds.Where(crtId => lstProcessTacIds.Contains(crtId)).ToList();
+                            lstCreateLinkedTacIds = lstTac_LinkTacMapping.Where(tac => lstCreatedTacIds.Contains(tac.Key)).Select(tac => tac.Value).ToList();
+
+                            // get only tactics update to Marketo.
+                            lstUpdateTacIds = tacticList.Where(tac => !lstCreatedTacIds.Contains(tac.PlanTacticId) && lstProcessTacIds.Contains(tac.PlanTacticId)).Select(tac => tac.PlanTacticId).ToList();
+                        }
+                        else
+                        {
+                            // get only tactics update to Marketo.
+                            lstUpdateTacIds = tacticList.Where(tac => lstProcessTacIds.Contains(tac.PlanTacticId)).Select(tac => tac.PlanTacticId).ToList();
+                        }
+
+                        // Get Updated linked TacIds.
+
+                        if (lstUpdateTacIds != null && lstUpdateTacIds.Count > 0)
+                        {
+                            lstUpdateLinkedTacIds = lstTac_LinkTacMapping.Where(tac => lstUpdateTacIds.Contains(tac.Key)).Select(tac => tac.Value).ToList();
+                        }
+                    }
+                    else
+                    {
+                        // Get list of only tactics but not linked tactics.
+                        if (lstCreatedTacIds != null && lstCreatedTacIds.Count > 0)
+                        {
+                            // get only tactics created to Marketo.
+                            lstCreatedTacIds = lstCreatedTacIds.Where(crtId => lstProcessTacIds.Contains(crtId)).ToList();
+                            // get only tactics update to Marketo.
+                            lstUpdateTacIds = tacticList.Where(tac => !lstCreatedTacIds.Contains(tac.PlanTacticId) && lstProcessTacIds.Contains(tac.PlanTacticId)).Select(tac => tac.PlanTacticId).ToList();
+                        }
+                        else
+                        {
+                            // get only tactics update to Marketo.
+                            lstUpdateTacIds = tacticList.Where(tac => lstProcessTacIds.Contains(tac.PlanTacticId)).Select(tac => tac.PlanTacticId).ToList();
+                        }
+                    }
+
+                    #region "Linked Tactic: Create comma separated created & updated linked tactic"
+                    if (lstCreateLinkedTacIds != null && lstCreateLinkedTacIds.Count > 0)
+                        strCreatedLinkedTacIds = string.Join(",", lstCreateLinkedTacIds);
+                    if (lstUpdateLinkedTacIds != null && lstUpdateLinkedTacIds.Count > 0)
+                        strUpdatedLinkedTacIds = string.Join(",", lstUpdateLinkedTacIds);
+                    #endregion
+
+                    #region "Plan Tactic: Create comma separated created & updated Plan Tactic Ids"
+                    if (lstCreatedTacIds != null && lstCreatedTacIds.Count > 0)
+                        strCreatedTacIds = string.Join(",", lstCreatedTacIds);
+                    if (lstUpdateTacIds != null && lstUpdateTacIds.Count > 0)
+                        strUpdatedTacIds = string.Join(",", lstUpdateTacIds);
+                    #endregion
+                }
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "UpdateTacticInstanceTacticId_Comment execution start.");
+                    MRPEntities mp = new MRPEntities();
+                    SqlConnection conn = new SqlConnection();
+                    conn.ConnectionString = mp.Database.Connection.ConnectionString;
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("UpdateTacticInstanceTacticId_Comment_API", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@strCreatedTacIds", strCreatedTacIds);
+                    cmd.Parameters.AddWithValue("@strUpdatedTacIds", strUpdatedTacIds);
+                    cmd.Parameters.AddWithValue("@strCrtCampaignIds", strCrtCampaignIds);
+                    cmd.Parameters.AddWithValue("@strUpdCampaignIds", strUpdCampaignIds);
+                    cmd.Parameters.AddWithValue("@strCrtProgramIds", strCrtProgramIds);
+                    cmd.Parameters.AddWithValue("@strUpdProgramIds", strUpdProgramIds);
+                    cmd.Parameters.AddWithValue("@strCrtImprvmntTacIds", strCrtImprvTacIds);
+                    cmd.Parameters.AddWithValue("@strUpdImprvmntTacIds", strUpdImprvTacIds);
+                    cmd.Parameters.AddWithValue("@isAutoSync", Common.IsAutoSync);
+                    cmd.Parameters.AddWithValue("@userId", _userId);
+                    cmd.Parameters.AddWithValue("@integrationType", Enums.IntegrationType.Salesforce.ToString());
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    mp.Dispose();
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "UpdateTacticInstanceTacticId_Comment execution end.");
+                
+
+                #endregion
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "UpdateLinkedTacticCommentForAPI method end.");
+        }
+
+        #region "Push SFDC Data by API Methods"
+        /// <summary>
+        /// Function to sync data from gameplan to salesforce through Common Integration WEB API.
+        /// </summary>
+        /// <returns>Return Result Error Value</returns>
+        public bool SyncSFDCDataByAPI(out List<SyncError> lstSyncError)
+        {
+            lstSyncError = new List<SyncError>();
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            // Insert log into IntegrationInstanceSection, Dharmraj PL#684
+            _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
+            _isResultError = false;
+            /// Set client Id based on integration instance.
+            _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+            
+
+            bool IsInstanceSync = false;
+            statusList = Common.GetStatusListAfterApproved();
+            StringBuilder sbMessage = new StringBuilder();
+            int logRecordSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LogRecordSize"]);
+            int pushRecordBatchSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["IntegrationPushRecordBatchSize"]);
+            List<SalesForceObjectFieldDetails> lstMappingMisMatch = new List<SalesForceObjectFieldDetails>();
+            List<fieldMapping> lstMisMatchFields = new List<fieldMapping>();
+            try
+            {
+                #region "Validate SFDC Instance Field Mappings"
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                lstMappingMisMatch = ValidateMappingDetails();
+                if (!_isResultError)
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                }
+                else
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
+                    return _isResultError;
+                }
+                #endregion
+
+                #region "Identify 3-Way integration of Marketo-SFDC"
+                string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
+
+                if (db.Models.Any(model => model.IsDeleted == false && model.IntegrationInstanceId == null &&
+                   (model.IntegrationInstanceIdINQ == _integrationInstanceId || model.IntegrationInstanceIdMQL == _integrationInstanceId
+                   || model.IntegrationInstanceIdCW == _integrationInstanceId)
+                   && model.IntegrationInstanceMarketoID != null && model.IntegrationInstanceMarketoID != _integrationInstanceId))
+                {
+                    _IsSFDCWithMarketo = true;
+                }
+                #endregion
+
+                #region "Get Integration TypeId"
+                int integrationTypeId=0;
+                integrationTypeId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IntegrationTypeId;
+                #endregion
+
+                #region "Get Field Mappinglist"
+                DataSet dsFieldMappings = new DataSet();
+                DataTable dtFieldMappings = new DataTable();
+                StoredProcedure objSp = new StoredProcedure();
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "callling GetSFDCFieldMappings to get mapping fields.");
+                dsFieldMappings = (new StoredProcedure()).GetSFDCFieldMappings(_clientId, Convert.ToInt32(integrationTypeId), Convert.ToInt32(_integrationInstanceId), _IsSFDCWithMarketo);
+                dtFieldMappings = dsFieldMappings.Tables[0];
+                
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "convert filled map datatable to list .");
+                List<Integration.fieldMapping> lstFiledMap = dtFieldMappings.AsEnumerable().Select(m => new Integration.fieldMapping
+                {
+                    sourceFieldName = m.Field<string>("sourceFieldName"),
+                    destinationFieldName = m.Field<string>("destinationFieldName"),
+                    fieldType = m.Field<string>("fieldType")
+                }).ToList();
+
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "creating a parameter list to call the StoreProcedure from API.");
+
+                #endregion
+
+                #region "Remove MisMatch mapping fields from fieldMapping list"
+                
+                #region "Declare local variables"
+                #endregion
+
+
+                lstMisMatchFields = (from p in lstFiledMap
+                                     join l in lstMappingMisMatch on new { sourcefield = p.sourceFieldName, targetfield = p.destinationFieldName } equals new { sourcefield = l.SourceField, targetfield = l.TargetField }
+                                     select p).ToList();
+                if(lstMisMatchFields != null && lstMisMatchFields.Count >0)
+                    lstFiledMap.RemoveAll(itm => lstMisMatchFields.Contains(itm));    // Remove all mis matched source fields from Field Mapping list. 
+
+                #endregion
+
+                #region "Make SP Parameter list"
+
+                List<SpParameters> lstparams = new List<SpParameters>();
+                SpParameters objSPParams;
+
+                objSPParams = new SpParameters();
+                objSPParams.parameterValue = _entityType.ToString();
+                objSPParams.name = "entityType";
+                lstparams.Add(objSPParams);
+
+                objSPParams = new SpParameters();
+                objSPParams.parameterValue = _id;
+                objSPParams.name = "id";
+                lstparams.Add(objSPParams);
+
+                objSPParams = new SpParameters();
+                objSPParams.parameterValue = _clientId.ToString();
+                objSPParams.name = "clientId";
+                lstparams.Add(objSPParams);
+
+                objSPParams = new SpParameters();
+                objSPParams.parameterValue = sfdcTitleLengthLimit;
+                objSPParams.name = "SFDCTitleLengthLimit";
+                lstparams.Add(objSPParams);
+
+                objSPParams = new SpParameters();
+                objSPParams.parameterValue = _integrationInstanceLogId;
+                objSPParams.name = "integrationInstanceLogId";
+                lstparams.Add(objSPParams);
+
+                objSPParams = new SpParameters();
+                objSPParams.parameterValue = IsClientAllowedForCustomNaming;
+                objSPParams.name = "isClientAllowCustomName";
+                lstparams.Add(objSPParams);
+
+                #endregion
+
+                #region "Make SFDC Credential Dictionary"
+                Dictionary<string,string> salesforceCredentials = new Dictionary<string,string>();
+                salesforceCredentials.Add("ConsumerKey", _consumerKey);
+                salesforceCredentials.Add("ClientSecret", _consumerSecret);
+                salesforceCredentials.Add("SecurityToken", _securityToken);
+                salesforceCredentials.Add("Username", _username);
+                salesforceCredentials.Add("Password", _password);
+                salesforceCredentials.Add("APIUrl", _apiURL);
+                #endregion
+
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "parameter list created to call the StoreProcedure from API.");
+
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Call Api to push Marketo Data and return error log.");
+                
+                #region "Declare Local Variables"
+                List<Integration.LogDetails> logDetailsList = new List<LogDetails>();
+                List<SFDCAPICampaignResult> lstCampaigndata = new List<SFDCAPICampaignResult>();
+                ReturnObject ro = new ReturnObject();
+                string spSFDCPUshDataName = string.Empty; 
+                #endregion
+                
+                // Pass SP based on sync process whether it's 3-way between SFDC & Marketo or not
+                if (_IsSFDCWithMarketo)
+                    spSFDCPUshDataName = "spGetSalesforceMarketo3WayData";
+                else
+                    spSFDCPUshDataName = "spGetSalesforceData";
+
+                #region "Call SFDC Integration API"
+                try
+                {
+                    ro = (new ApiIntegration()).SFDCData_Push(spSFDCPUshDataName, lstFiledMap, _applicationId.ToString(), _clientId, lstparams, salesforceCredentials);
+                }
+                catch (Exception)
+                {
+                    // This catch remains blank to continue log execution process getting from Integration WEB API.
+                }
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Marketo Log detail list get successfully.");
+                
+                #endregion
+
+                #region "Get Log details"
+                if (ro != null && ro.logs != null)
+                    logDetailsList = ro.logs;
+                if (ro != null && ro.logs != null)
+                    lstCampaigndata = ro.campaignIds;
+                #endregion
+
+                #region "Insert Logs & Update SFDC Id to respective table"
+
+                #region "Declare local variables"
+                string crtMode = Operation.Create.ToString();
+                IntegrationInstancePlanEntityLog instanceEntity = new IntegrationInstancePlanEntityLog();
+                IntegrationInstanceLogDetail instanceLogDetail = new IntegrationInstanceLogDetail();
+                Dictionary<int, string> TacticMarketoProgMappingIds = new Dictionary<int, string>();
+                Dictionary<int, DateTime> TacticMarketoLastSyncDates = new Dictionary<int, DateTime>();
+
+                // Declare all Plan entities table variables
+                List<Plan_Campaign> tblCampaigns = new List<Plan_Campaign>();
+                List<Plan_Campaign_Program> tblPrograms = new List<Plan_Campaign_Program>();
+                List<Plan_Campaign_Program_Tactic> tblTactics = new List<Plan_Campaign_Program_Tactic>();
+                List<Plan_Improvement_Campaign> tblImprvCampaigns = new List<Plan_Improvement_Campaign>();
+                List<Plan_Improvement_Campaign_Program> tblImprvPrograms = new List<Plan_Improvement_Campaign_Program>();
+                List<Plan_Improvement_Campaign_Program_Tactic> tblImprvTactics = new List<Plan_Improvement_Campaign_Program_Tactic>();
+
+                // Plan Entities variables
+                string campObjType= Enums.EntityType.Campaign.ToString().ToUpper();
+                string progObjType = Enums.EntityType.Program.ToString().ToUpper();
+                string tacObjType = Enums.EntityType.Tactic.ToString().ToUpper();
+                string ImprvCampObjType = Enums.EntityType.ImprovementCampaign.ToString().ToUpper();
+                string ImprvProgObjType = Enums.EntityType.ImprovementProgram.ToString().ToUpper();
+                string ImprvtacObjType = Enums.EntityType.ImprovementTactic.ToString().ToUpper();
+
+                List<int> lstallOthrEntIds = new List<int>();
+                List<int> lstpshOthrEntIds = new List<int>();
+
+                List<int> lstallTacIds = new List<int>();
+                List<int> lstpshTacIds = new List<int>();
+                #endregion
+
+                #region "Get all pushed Campaigns data"
+                if (logDetailsList.Count > 0 && logDetailsList != null)
+                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == campObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                if (lstCampaigndata != null && lstCampaigndata.Count > 0)
+                    lstpshOthrEntIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == campObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
+                lstallOthrEntIds.AddRange(lstpshOthrEntIds);
+                tblCampaigns = db.Plan_Campaign.Where(ent => lstallOthrEntIds.Contains(ent.PlanCampaignId)).ToList();
+                #endregion
+
+                #region "Get all pushed Programs data"
+                lstallOthrEntIds = new List<int>(); // reset variables.
+                lstpshOthrEntIds = new List<int>(); // reset variables.
+
+                if (logDetailsList.Count > 0 && logDetailsList != null)
+                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == progObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                if (lstCampaigndata != null && lstCampaigndata.Count > 0)
+                    lstpshOthrEntIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == progObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
+                lstallOthrEntIds.AddRange(lstpshOthrEntIds);
+                tblPrograms = db.Plan_Campaign_Program.Where(ent => lstallOthrEntIds.Contains(ent.PlanProgramId)).ToList();
+                #endregion
+
+                #region "Get all pushed tactic data"
+                if (logDetailsList.Count > 0 && logDetailsList != null)
+                    lstallTacIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == tacObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                if (lstCampaigndata != null && lstCampaigndata.Count > 0)
+                    lstpshTacIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == tacObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
+                lstallTacIds.AddRange(lstpshTacIds);
+                tblTactics = db.Plan_Campaign_Program_Tactic.Where(tac => lstallTacIds.Contains(tac.PlanTacticId)).ToList(); 
+                #endregion
+
+                #region "Get all pushed Improvement Campaigns data"
+                lstallOthrEntIds = new List<int>(); // reset variables.
+                lstpshOthrEntIds = new List<int>(); // reset variables.
+
+                if (logDetailsList.Count > 0 && logDetailsList != null)
+                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == ImprvCampObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                if (lstCampaigndata != null && lstCampaigndata.Count > 0)
+                    lstpshOthrEntIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == ImprvCampObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
+                lstallOthrEntIds.AddRange(lstpshOthrEntIds);
+
+                tblImprvCampaigns = db.Plan_Improvement_Campaign.Where(ent => lstallOthrEntIds.Contains(ent.ImprovementPlanCampaignId)).ToList();
+                #endregion
+
+                #region "Get all pushed Improvement Program data"
+                lstallOthrEntIds = new List<int>(); // reset variables.
+                lstpshOthrEntIds = new List<int>(); // reset variables.
+
+                if (logDetailsList.Count > 0 && logDetailsList != null)
+                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == ImprvProgObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                if (lstCampaigndata != null && lstCampaigndata.Count > 0)
+                    lstpshOthrEntIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == ImprvProgObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
+                lstallOthrEntIds.AddRange(lstpshOthrEntIds);
+
+                tblImprvPrograms = db.Plan_Improvement_Campaign_Program.Where(ent => lstallOthrEntIds.Contains(ent.ImprovementPlanProgramId)).ToList();
+                #endregion
+                
+                #region "Get all pushed Improvement Tactic data"
+                lstallOthrEntIds = new List<int>(); // reset variables.
+                lstpshOthrEntIds = new List<int>(); // reset variables.
+
+                if (logDetailsList.Count > 0 && logDetailsList != null)
+                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == ImprvtacObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                if (lstCampaigndata != null && lstCampaigndata.Count > 0)
+                    lstpshOthrEntIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == ImprvtacObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
+                lstallOthrEntIds.AddRange(lstpshOthrEntIds);
+
+                tblImprvTactics = db.Plan_Improvement_Campaign_Program_Tactic.Where(ent => lstallOthrEntIds.Contains(ent.ImprovementPlanTacticId)).ToList();
+                #endregion
+
+                #region "Declare Enums & local variables"
+                string preIntgrtnWebAPIMsg = "Error throws from Integration Web API: ";
+                string strEventAuthentication = Enums.MarketoAPIEventNames.Authentication.ToString();
+                string strFailure = "FAILURE";
+                int entId = 0;
+                string entTitle, exMessage;
+                #endregion
+
+                #region "Check log for integration instance section"
+                string strSalesforcePush = "SalesforcePush";
+                //isExist = logDetailsList.Where(log => (log.EventName.Equals(strSalesforcePush)) && log.Status.ToUpper().Equals("FAILURE")).Any();
+                if (logDetailsList.Any(log => (log.EventName.ToUpper() == strSalesforcePush.ToUpper()) && log.Status.ToUpper() == strFailure))
+                {
+                    _isResultError = true;
+                    _ErrorMessage = logDetailsList.Where(log => (log.EventName.ToUpper() == strSalesforcePush.ToUpper()) && log.Status.ToUpper() == strFailure).Select(err => err.Description).FirstOrDefault();//"Error in getting data from source, to push to marketo";
+                }
+                #endregion
+
+                #region "Original Log for Push SFDC"
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Insert Log detail into IntegrationInstanceLogDetails start.");
+                //Insert Failure error log to IntegrationInstanceLogDetails table 
+                foreach (var logdetail in logDetailsList.Where(log => log.Status.ToUpper() == strFailure))
+                {
+                    //if (logdetail.Status.ToUpper().Equals("FAILURE"))
+                    //{
+
+                    instanceLogDetail = new IntegrationInstanceLogDetail();
+                    entId = Convert.ToInt32(logdetail.SourceId);
+                    instanceLogDetail.EntityId = entId;
+                    instanceLogDetail.IntegrationInstanceLogId = _integrationInstanceLogId;
+                    instanceLogDetail.LogTime = logdetail.EndTimeStamp;
+                    instanceLogDetail.LogDescription = preIntgrtnWebAPIMsg + logdetail.Description;
+                    db.Entry(instanceLogDetail).State = EntityState.Added;
+                    //}
+                }
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Insert Log detail into IntegrationInstanceLogDetails end.");
+                #endregion
+               
+                #region "Entity Logs for each tactic"
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Insert Log detail into IntegrationInstancePlanEntityLog start.");
+                List<Integration.LogDetails> logDetailsList1 = logDetailsList.Where(log => (log.EventName.ToUpper() == strSalesforcePush.ToUpper()) && log.Status.ToUpper() == strFailure && log.SourceId.HasValue && log.SourceId.Value > 0).ToList();
+                int pushCntr = 0;
+                try
+                {
+                    #region "Insert error logs to PlanEntityLog table"
+                    foreach (var logdetail in logDetailsList1)
+                    {
+
+                        db.Configuration.AutoDetectChangesEnabled = false;
+                        //Insert  log into IntegrationInstancePlanEntityLog table 
+                        entId = Convert.ToInt32(logdetail.SourceId);
+                        instanceEntity = new IntegrationInstancePlanEntityLog();
+                        instanceEntity.IntegrationInstanceId = _integrationInstanceId;
+                        instanceEntity.EntityId = entId;
+                        instanceEntity.EntityType = logdetail.ObjectType;//Enums.EntityType.Tactic.ToString();
+                        instanceEntity.SyncTimeStamp = logdetail.EndTimeStamp;
+                        if (logdetail.Mode != null)
+                            instanceEntity.Operation = logdetail.Mode.ToString();
+                        if (logdetail.Status.ToUpper() == strFailure)
+                        {
+                            instanceEntity.Status = Enums.SyncStatus.Error.ToString();
+                        }
+                        else
+                        {
+                            instanceEntity.Status = logdetail.Status.ToString();
+                        }
+                        instanceEntity.ErrorDescription = logdetail.Description;
+                        instanceEntity.CreatedBy = _userId;
+                        instanceEntity.CreatedDate = DateTime.Now;
+                        instanceEntity.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                        db.Entry(instanceEntity).State = EntityState.Added;
+
+                        if (!_lstSyncError.Any(lserr => lserr.EntityId.Equals(entId)))
+                        {
+                            if (logdetail.Status.ToUpper() == strFailure)
+                            {
+                                //Add Failure Log for Summary Email.
+                                _isResultError = true;
+                                entTitle = string.Empty;
+
+                                #region " Insert error logs for each entity to  summary email list"
+                                if (logdetail.ObjectType.ToUpper() == campObjType)
+                                {
+                                    entTitle = tblCampaigns.Where(ent => ent.PlanCampaignId == entId).Select(ent => ent.Title).FirstOrDefault();
+                                    exMessage = "System error occurred while create/update " + logdetail.ObjectType + " \"" + entTitle + "\": " + logdetail.Description;
+                                    _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.Campaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                                }
+                                else if (logdetail.ObjectType.ToUpper() == progObjType)
+                                {
+                                    entTitle = tblPrograms.Where(ent => ent.PlanProgramId == entId).Select(ent => ent.Title).FirstOrDefault();
+                                    exMessage = "System error occurred while create/update " + logdetail.ObjectType + " \"" + entTitle + "\": " + logdetail.Description;
+                                    _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.Program, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                                }
+                                else if (logdetail.ObjectType.ToUpper() == tacObjType)
+                                {
+                                    entTitle = tblTactics.Where(ent => ent.PlanTacticId == entId).Select(ent => ent.Title).FirstOrDefault();
+                                    exMessage = "System error occurred while create/update " + logdetail.ObjectType + " \"" + entTitle + "\": " + logdetail.Description;
+                                    _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                                }
+                                if (logdetail.ObjectType.ToUpper() == ImprvCampObjType)
+                                {
+                                    entTitle = tblImprvCampaigns.Where(ent => ent.ImprovementPlanCampaignId == entId).Select(ent => ent.Title).FirstOrDefault();
+                                    exMessage = "System error occurred while create/update " + logdetail.ObjectType + " \"" + entTitle + "\": " + logdetail.Description;
+                                    _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.ImprovementCampaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                                }
+                                if (logdetail.ObjectType.ToUpper() == ImprvProgObjType)
+                                {
+                                    entTitle = tblImprvPrograms.Where(ent => ent.ImprovementPlanProgramId == entId).Select(ent => ent.Title).FirstOrDefault();
+                                    exMessage = "System error occurred while create/update " + logdetail.ObjectType + " \"" + entTitle + "\": " + logdetail.Description;
+                                    _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.ImprovementProgram, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                                }
+                                if (logdetail.ObjectType.ToUpper() == ImprvtacObjType)
+                                {
+                                    entTitle = tblImprvTactics.Where(ent => ent.ImprovementPlanTacticId == entId).Select(ent => ent.Title).FirstOrDefault();
+                                    exMessage = "System error occurred while create/update " + logdetail.ObjectType + " \"" + entTitle + "\": " + logdetail.Description;
+                                    _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.ImprovementTactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                                } 
+                                #endregion
+                            }
+                            else
+                            {
+                                if (logdetail.ObjectType.ToUpper() == tacObjType)
+                                {
+                                    //Add Success Log for Summary Email.
+                                    exMessage = logdetail.Mode != null ? logdetail.Mode.ToString() : string.Empty;
+                                    _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Success, DateTime.Now));
+                                }
+                            }
+                        }
+                        pushCntr++;
+                        if (((pushCntr) % pushRecordBatchSize) == 0)
+                        {
+                            pushCntr = 0;
+                            db.SaveChanges();
+                        }
+                    } 
+                    #endregion
+                    
+                    // if there is any record remaining to save then save by below check.
+                    if (pushCntr > 0)
+                        db.SaveChanges();
+                    pushCntr = 0;
+
+                    // Insert logs for all successfully pushed sfdc data.
+                    #region "Insert logs to PlanEntityLog table for all successfully pushed sfdc data"
+                    foreach (SFDCAPICampaignResult objEnt in lstCampaigndata)
+                    {
+
+                        db.Configuration.AutoDetectChangesEnabled = false;
+                        //Insert  log into IntegrationInstancePlanEntityLog table 
+                        entId = Convert.ToInt32(objEnt.SourceId);
+                        instanceEntity = new IntegrationInstancePlanEntityLog();
+                        instanceEntity.IntegrationInstanceId = _integrationInstanceId;
+                        instanceEntity.EntityId = entId;
+                        instanceEntity.EntityType = objEnt.ObjectType;//Enums.EntityType.Tactic.ToString();
+                        instanceEntity.SyncTimeStamp = objEnt.EndTimeStamp;
+                        instanceEntity.Operation = objEnt.Mode;
+                        instanceEntity.Status = "Success";
+                        instanceEntity.ErrorDescription = string.Empty;
+                        instanceEntity.CreatedBy = _userId;
+                        instanceEntity.CreatedDate = DateTime.Now;
+                        instanceEntity.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+                        db.Entry(instanceEntity).State = EntityState.Added;
+
+                        //Add Success Log for Summary Email.
+                        if (objEnt.ObjectType.ToUpper() == tacObjType)
+                        {
+                            exMessage = objEnt.Mode.ToString();
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(entId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Success, DateTime.Now));
+                        }
+
+                        pushCntr++;
+                        if (((pushCntr) % pushRecordBatchSize) == 0)
+                        {
+                            pushCntr = 0;
+                            db.SaveChanges();
+                        }
+                    } 
+                    #endregion
+                    
+                    // if there is any record remaining to save then save by below check.
+                    if (pushCntr > 0)
+                        db.SaveChanges();
+                    pushCntr = 0;
+                }
+                finally
+                {
+                    db.Configuration.AutoDetectChangesEnabled = true;
+                }
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Insert Log detail into IntegrationInstancePlanEntityLog end.");
+                #endregion
+
+                #region "Update new created Campaign's SFDC Id"
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Update Campaign's SFDC Id start.");
+                List<int> lstCreatedCampIds = new List<int>();
+                Dictionary<int, string> lstCampSFDCIdMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == campObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.CampaignId.ToString());
+                Dictionary<int, DateTime> lstCampSyncMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == campObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.EndTimeStamp);
+
+                if (lstCampSFDCIdMapping != null && lstCampSFDCIdMapping.Count > 0)
+                {
+                    string strSFDCId;
+                    DateTime campLastSync;
+                    lstCreatedCampIds = lstCampSFDCIdMapping.Select(ent => ent.Key).ToList();
+                    List<Plan_Campaign> lstCreatedCamps = tblCampaigns.Where(ent => lstCreatedCampIds.Contains(ent.PlanCampaignId)).ToList();
+                    pushCntr = 0;
+                    try
+                    {
+                        foreach (Plan_Campaign ent in lstCreatedCamps)
+                        {
+                            db.Configuration.AutoDetectChangesEnabled = false;
+                            #region "Update LastSync & SalesforceId for created Campaign"
+                            strSFDCId = string.Empty;
+                            strSFDCId = lstCampSFDCIdMapping.Where(prg => prg.Key == ent.PlanCampaignId).Select(prg => prg.Value).FirstOrDefault();
+                            campLastSync = lstCampSyncMapping.Where(prg => prg.Key == ent.PlanCampaignId).Select(prg => prg.Value).FirstOrDefault();
+                            if (strSFDCId != null)
+                            {
+                                ent.IntegrationInstanceCampaignId = strSFDCId;
+                                ent.LastSyncDate = campLastSync; // Modified By Rahul shah // To add last sync date
+                                db.Entry(ent).State = EntityState.Modified;
+                            }
+                            else
+                            {
+                                _isResultError = true;
+                                _ErrorMessage = "Error updating Salesforce id for Campaign - " + ent.Title;
+                            }
+                            #endregion
+                            pushCntr++;
+                            if (((pushCntr) % pushRecordBatchSize) == 0)
+                            {
+                                pushCntr = 0;
+                                db.SaveChanges();
+                            }
+                            // End By Nishant Sheth
+                        }
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
+                    finally
+                    {
+                        db.Configuration.AutoDetectChangesEnabled = true;
+                    }
+                }
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Update Campaign's SFDC Id end.");
+                #endregion
+
+                #region "Update new created Program's SFDC Id"
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Update Program's SFDC Id start.");
+                List<int> lstCreatedProgIds = new List<int>();
+                Dictionary<int, string> lstProgSFDCIdMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == progObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.CampaignId.ToString());
+                Dictionary<int, DateTime> lstProgSyncMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == progObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.EndTimeStamp);
+
+                if (lstProgSFDCIdMapping != null && lstProgSFDCIdMapping.Count > 0)
+                {
+                    string strSFDCId;
+                    DateTime progLastSync;
+                    lstCreatedProgIds = lstProgSFDCIdMapping.Select(ent => ent.Key).ToList();
+                    List<Plan_Campaign_Program> lstCreatedProgs = tblPrograms.Where(ent => lstCreatedProgIds.Contains(ent.PlanProgramId)).ToList();
+                    pushCntr = 0;
+                    try
+                    {
+                        foreach (Plan_Campaign_Program ent in lstCreatedProgs)
+                        {
+                            db.Configuration.AutoDetectChangesEnabled = false;
+                            #region "Update LastSync & SalesforceId for created Program"
+                            strSFDCId = string.Empty;
+                            strSFDCId = lstProgSFDCIdMapping.Where(prg => prg.Key == ent.PlanProgramId).Select(prg => prg.Value).FirstOrDefault();
+                            progLastSync = lstProgSyncMapping.Where(prg => prg.Key == ent.PlanProgramId).Select(prg => prg.Value).FirstOrDefault();
+                            if (strSFDCId != null)
+                            {
+                                ent.IntegrationInstanceProgramId = strSFDCId;
+                                ent.LastSyncDate = progLastSync; // Modified By Rahul shah // To add last sync date
+                                db.Entry(ent).State = EntityState.Modified;
+                            }
+                            else
+                            {
+                                _isResultError = true;
+                                _ErrorMessage = "Error updating Salesforce id for Program - " + ent.Title;
+                            }
+                            #endregion
+                            pushCntr++;
+                            if (((pushCntr) % pushRecordBatchSize) == 0)
+                            {
+                                pushCntr = 0;
+                                db.SaveChanges();
+                            }
+                            // End By Nishant Sheth
+                        }
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
+                    finally
+                    {
+                        db.Configuration.AutoDetectChangesEnabled = true;
+                    }
+                }
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Update Program's SFDC Id end.");
+                #endregion
+
+                #region "Update new created Tactic's SFDC Id"
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Update Tactic's SFDC Id start.");
+                List<int> lstCreatedTacIds = new List<int>();
+                Dictionary<int, string> lstTactSFDCIdMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == tacObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.CampaignId.ToString());
+                Dictionary<int, DateTime> lstTactSyncMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == tacObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.EndTimeStamp);
+
+                if (lstTactSFDCIdMapping != null && lstTactSFDCIdMapping.Count > 0)
+                {
+                    string EntityType = Enums.EntityType.Tactic.ToString();
+                    
+                    string strSFDCId;
+                    DateTime tacLastSync;
+                    lstCreatedTacIds = lstTactSFDCIdMapping.Select(tac => tac.Key).ToList();
+                    List<Plan_Campaign_Program_Tactic> lstCreatedTacs = tblTactics.Where(tac => lstCreatedTacIds.Contains(tac.PlanTacticId)).ToList();
+                    pushCntr = 0;
+                    try
+                    {
+                        foreach (Plan_Campaign_Program_Tactic tac in lstCreatedTacs)
+                        {
+                            db.Configuration.AutoDetectChangesEnabled = false;
+                            #region "Update LastSync & SalesforceId for created Campaign, Program & Tactic"
+                            strSFDCId = string.Empty;
+                            strSFDCId = lstTactSFDCIdMapping.Where(prg => prg.Key == tac.PlanTacticId).Select(prg => prg.Value).FirstOrDefault();
+                            tacLastSync = lstTactSyncMapping.Where(prg => prg.Key == tac.PlanTacticId).Select(prg => prg.Value).FirstOrDefault();
+                            if (strSFDCId != null)
+                            {
+                                tac.IntegrationInstanceTacticId = strSFDCId;
+                                tac.LastSyncDate = tacLastSync; // Modified By Rahul shah // To add last sync date
+                                db.Entry(tac).State = EntityState.Modified;
+                            }
+                            else
+                            {
+                                _isResultError = true;
+                                _ErrorMessage = "Error updating Salesforce id for Tactic - " + tac.Title;
+                            } 
+                            #endregion
+                            pushCntr++;
+                            if (((pushCntr) % pushRecordBatchSize) == 0)
+                            {
+                                pushCntr = 0;
+                                db.SaveChanges();
+                            }
+                            // End By Nishant Sheth
+                        }
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
+                    finally
+                    {
+                        db.Configuration.AutoDetectChangesEnabled = true;
+                    }
+                }
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Update Tactic's SFDC Id end.");
+                #endregion
+
+                #region "Update new created Improvement Campaign's SFDC Id"
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Update Improvement Campaign's SFDC Id start.");
+                List<int> lstCreatedImprvCampIds = new List<int>();
+                Dictionary<int, string> lstImprvCampSFDCIdMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == ImprvCampObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.CampaignId.ToString());
+                Dictionary<int, DateTime> lstImprvCampSyncMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == ImprvCampObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.EndTimeStamp);
+
+                if (lstImprvCampSFDCIdMapping != null && lstImprvCampSFDCIdMapping.Count > 0)
+                {
+                    string strSFDCId;
+                    DateTime ImprvCampLastSync;
+                    lstCreatedImprvCampIds = lstImprvCampSFDCIdMapping.Select(ent => ent.Key).ToList();
+                    List<Plan_Improvement_Campaign> lstCreatedImprvCamp = tblImprvCampaigns.Where(ent => lstCreatedImprvCampIds.Contains(ent.ImprovementPlanCampaignId)).ToList();
+                    pushCntr = 0;
+                    try
+                    {
+                        foreach (Plan_Improvement_Campaign ent in lstCreatedImprvCamp)
+                        {
+                            db.Configuration.AutoDetectChangesEnabled = false;
+                            #region "Update LastSync & SalesforceId for created Program"
+                            strSFDCId = string.Empty;
+                            strSFDCId = lstImprvCampSFDCIdMapping.Where(prg => prg.Key == ent.ImprovementPlanCampaignId).Select(prg => prg.Value).FirstOrDefault();
+                            ImprvCampLastSync = lstImprvCampSyncMapping.Where(prg => prg.Key == ent.ImprovementPlanCampaignId).Select(prg => prg.Value).FirstOrDefault();
+                            if (strSFDCId != null)
+                            {
+                                ent.IntegrationInstanceCampaignId = strSFDCId;
+                                ent.LastSyncDate = ImprvCampLastSync; // Modified By Rahul shah // To add last sync date
+                                db.Entry(ent).State = EntityState.Modified;
+                            }
+                            else
+                            {
+                                _isResultError = true;
+                                _ErrorMessage = "Error updating Salesforce id for Improvement Campaign - " + ent.Title;
+                            }
+                            #endregion
+                            pushCntr++;
+                            if (((pushCntr) % pushRecordBatchSize) == 0)
+                            {
+                                pushCntr = 0;
+                                db.SaveChanges();
+                            }
+                            // End By Nishant Sheth
+                        }
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
+                    finally
+                    {
+                        db.Configuration.AutoDetectChangesEnabled = true;
+                    }
+                }
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Update Improvement Campaign's SFDC Id end.");
+                #endregion
+
+                #region "Update new created Improvement Program's SFDC Id"
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Update Improvement Program's SFDC Id start.");
+                List<int> lstCreatedImprvPrgIds = new List<int>();
+                Dictionary<int, string> lstImprvPrgSFDCIdMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == ImprvProgObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.CampaignId.ToString());
+                Dictionary<int, DateTime> lstImprvPrgSyncMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == ImprvProgObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.EndTimeStamp);
+
+                if (lstImprvPrgSFDCIdMapping != null && lstImprvPrgSFDCIdMapping.Count > 0)
+                {
+                    string strSFDCId;
+                    DateTime ImprvPrgLastSync;
+                    lstCreatedImprvPrgIds = lstImprvPrgSFDCIdMapping.Select(ent => ent.Key).ToList();
+                    List<Plan_Improvement_Campaign_Program> lstCreatedImprvPrg = tblImprvPrograms.Where(ent => lstCreatedImprvPrgIds.Contains(ent.ImprovementPlanProgramId)).ToList();
+                    pushCntr = 0;
+                    try
+                    {
+                        foreach (Plan_Improvement_Campaign_Program ent in lstCreatedImprvPrg)
+                        {
+                            db.Configuration.AutoDetectChangesEnabled = false;
+                            #region "Update LastSync & SalesforceId for created Program"
+                            strSFDCId = string.Empty;
+                            strSFDCId = lstImprvPrgSFDCIdMapping.Where(prg => prg.Key == ent.ImprovementPlanProgramId).Select(prg => prg.Value).FirstOrDefault();
+                            ImprvPrgLastSync = lstImprvPrgSyncMapping.Where(prg => prg.Key == ent.ImprovementPlanProgramId).Select(prg => prg.Value).FirstOrDefault();
+                            if (strSFDCId != null)
+                            {
+                                ent.IntegrationInstanceProgramId = strSFDCId;
+                                ent.LastSyncDate = ImprvPrgLastSync; // Modified By Rahul shah // To add last sync date
+                                db.Entry(ent).State = EntityState.Modified;
+                            }
+                            else
+                            {
+                                _isResultError = true;
+                                _ErrorMessage = "Error updating Salesforce id for Improvement Program - " + ent.Title;
+                            }
+                            #endregion
+                            pushCntr++;
+                            if (((pushCntr) % pushRecordBatchSize) == 0)
+                            {
+                                pushCntr = 0;
+                                db.SaveChanges();
+                            }
+                            // End By Nishant Sheth
+                        }
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
+                    finally
+                    {
+                        db.Configuration.AutoDetectChangesEnabled = true;
+                    }
+                }
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Update Improvement Program's SFDC Id end.");
+                #endregion
+
+                #region "Update new created Improvement Tactic's SFDC Id"
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Update Improvement Tactic's SFDC Id start.");
+                List<int> lstCreatedImprvTacIds = new List<int>();
+                Dictionary<int, string> lstImprvTacSFDCIdMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == ImprvtacObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.CampaignId.ToString());
+                Dictionary<int, DateTime> lstImprvTacSyncMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == ImprvtacObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.EndTimeStamp);
+
+                if (lstImprvTacSFDCIdMapping != null && lstImprvTacSFDCIdMapping.Count > 0)
+                {
+                    string strSFDCId;
+                    DateTime ImprvTacLastSync;
+                    lstCreatedImprvTacIds = lstImprvTacSFDCIdMapping.Select(ent => ent.Key).ToList();
+                    List<Plan_Improvement_Campaign_Program_Tactic> lstCreatedImprvTac = tblImprvTactics.Where(ent => lstCreatedImprvTacIds.Contains(ent.ImprovementPlanTacticId)).ToList();
+                    pushCntr = 0;
+                    try
+                    {
+                        foreach (Plan_Improvement_Campaign_Program_Tactic ent in lstCreatedImprvTac)
+                        {
+                            db.Configuration.AutoDetectChangesEnabled = false;
+                            #region "Update LastSync & SalesforceId for created Program"
+                            strSFDCId = string.Empty;
+                            strSFDCId = lstImprvTacSFDCIdMapping.Where(prg => prg.Key == ent.ImprovementPlanTacticId).Select(prg => prg.Value).FirstOrDefault();
+                            ImprvTacLastSync = lstImprvTacSyncMapping.Where(prg => prg.Key == ent.ImprovementPlanTacticId).Select(prg => prg.Value).FirstOrDefault();
+                            if (strSFDCId != null)
+                            {
+                                ent.IntegrationInstanceTacticId = strSFDCId;
+                                ent.LastSyncDate = ImprvTacLastSync; // Modified By Rahul shah // To add last sync date
+                                db.Entry(ent).State = EntityState.Modified;
+                            }
+                            else
+                            {
+                                _isResultError = true;
+                                _ErrorMessage = "Error updating Salesforce id for ImprovementTactic - " + ent.Title;
+                            }
+                            #endregion
+                            pushCntr++;
+                            if (((pushCntr) % pushRecordBatchSize) == 0)
+                            {
+                                pushCntr = 0;
+                                db.SaveChanges();
+                            }
+                            // End By Nishant Sheth
+                        }
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
+                    finally
+                    {
+                        db.Configuration.AutoDetectChangesEnabled = true;
+                    }
+                }
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Update Improvement Tactic's SFDC Id end.");
+                #endregion
+
+                db.SaveChanges();
+
+                #region "Create Tactic-Linked Tactic Mapping"
+                Dictionary<int, int> lstTacLinkIdMappings = new Dictionary<int, int>();
+                lstTacLinkIdMappings = tblTactics.Where(tac => lstallTacIds.Contains(tac.PlanTacticId) && tac.LinkedTacticId.HasValue).ToDictionary(tac => tac.PlanTacticId, tac => tac.LinkedTacticId.Value);
+                #endregion
+
+                #region "Make list of Created/Updated Campaign, Program and Improvement Tactic Ids"
+                string strCrtCampaignIds, strUpdCampaignIds, strCrtProgramIds, strUpdProgramIds, strCrtImprvTacIds, strUpdImprvTacIds;
+                strCrtCampaignIds = strUpdCampaignIds = strCrtProgramIds = strUpdProgramIds = strCrtImprvTacIds = strUpdImprvTacIds = string.Empty;
+                List<int> lstUpdEntIds = new List<int>();
+                // Get Created Campaigns
+                if (lstCreatedCampIds != null && lstCreatedCampIds.Count > 0)
+                    strCrtCampaignIds = string.Join(",", lstCreatedCampIds);
+
+                // Get Updated Campaigns
+                lstUpdEntIds = new List<int>();
+                lstUpdEntIds = tblCampaigns.Where(ent => !lstCreatedCampIds.Contains(ent.PlanCampaignId)).Select(ent => ent.PlanCampaignId).ToList();
+                if (lstUpdEntIds != null && lstUpdEntIds.Count > 0)
+                    strUpdCampaignIds = string.Join(",", lstUpdEntIds);
+
+                // Get Created Programs
+                if (lstCreatedProgIds != null && lstCreatedProgIds.Count > 0)
+                    strCrtProgramIds = string.Join(",", lstCreatedProgIds);
+
+                // Get Updated Programs
+                lstUpdEntIds = new List<int>();
+                lstUpdEntIds = tblPrograms.Where(ent => !lstCreatedProgIds.Contains(ent.PlanProgramId)).Select(ent => ent.PlanProgramId).ToList();
+                if (lstUpdEntIds != null && lstUpdEntIds.Count > 0)
+                    strUpdProgramIds = string.Join(",", lstUpdEntIds);
+
+                // Get Created Improvement Tactic
+                if (lstCreatedImprvTacIds != null && lstCreatedImprvTacIds.Count > 0)
+                    strCrtImprvTacIds = string.Join(",", lstCreatedImprvTacIds);
+
+                // Get Updated Improvement Tactics
+                lstUpdEntIds = new List<int>();
+                lstUpdEntIds = tblImprvTactics.Where(ent => !lstCreatedImprvTacIds.Contains(ent.ImprovementPlanTacticId)).Select(ent => ent.ImprovementPlanTacticId).ToList();
+                if (lstUpdEntIds != null && lstUpdEntIds.Count > 0)
+                    strUpdImprvTacIds = string.Join(",", lstUpdEntIds);
+
+                #endregion
+
+                UpdateLinkedTacticCommentForAPI(lstallTacIds, tblTactics, lstCreatedTacIds, lstTacLinkIdMappings,strCrtCampaignIds,strUpdCampaignIds,strCrtProgramIds,strUpdProgramIds,strCrtImprvTacIds,strUpdImprvTacIds);
+
+                #endregion
+            }
+            catch (Exception e)
+            {
+                string exMessage = Common.GetInnermostException(e);
+                _isResultError = true;
+                _ErrorMessage = exMessage;
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while syncing Tactic :- " + exMessage);
+            }
+
+            if (_isResultError)
+            {
+                // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
+                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, _ErrorMessage);
+            }
+            else
+            {
+                // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
+            }
+
+            if (IsInstanceSync)
+            {
+                bool isImport = false;
+                IntegrationInstance objInstance = new IntegrationInstance();
+                objInstance = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId));
+                isImport = objInstance != null ? objInstance.IsImportActuals : false;
+                if (isImport)
+                {
+                    //GetDataForTacticandUpdate();  // Commented by Sohel Pathan on 12/09/2014 for PL ticket #773
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Pulling Response execution start.");
+                    PullingResponses();
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Pulling Response execution end.");
+
+                    #region "Pull MQL based on client level MQL permission for SFDC"
+                    // Pulling MQL from SFDC based on client level MQL permission for SFDC.
+                    string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
+                    if (db.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(_clientId)) && (intPermission.IntegrationTypeId.Equals(objInstance.IntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
+                    {
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Pulling MQL execution start.");
+                        PullingMQL();
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Pulling MQL execution end.");
+                    }
+                    #endregion
+
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Pulling CWRevenue execution start.");
+                    PullingCWRevenue();
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Pulling CWRevenue execution end.");
+                }
+                else
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pulling Data does not procceed due to IsImportActuals field not enabled for this Integration Instance.");
+                }
+            }
+            lstSyncError.AddRange(_lstSyncError);
+            return _isResultError;
+        }
+
+        /// <summary>
+        ///  Validate SFDC mapping fields for Campaign, Program, Tactic & Improvement Campaign, Program & Tactic
+        /// </summary>
+        /// <returns>Returns invalid mapping fields list</returns>
+        private List<SalesForceObjectFieldDetails> ValidateMappingDetails()
+        {
+            #region "Declare local variables"
+            string Campaign_EntityType = Enums.EntityType.Campaign.ToString();
+            string Program_EntityType = Enums.EntityType.Program.ToString();
+            string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
+            string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
+            string Plan_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign.ToString();
+            string Plan_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program.ToString();
+            string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
+            string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
+            string Plan_Improvement_Campaign_Program = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program.ToString();
+            string Plan_Improvement_Campaign = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign.ToString();
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            List<SalesForceObjectFieldDetails> lstMappingMisMatch = new List<SalesForceObjectFieldDetails>(); 
+            #endregion
+            try
+            {
+
+                #region "Validate if user has not mapped any single field"
+                List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
+                if (!dataTypeMapping.Any()) // check if there is no field mapping configure then log error to IntegrationInstanceLogDetails table.
+                {
+                    Enums.EntityType _entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Convert.ToString(_entityType), true);
+                    _ErrorMessage = "You have not configure any single field with Salesforce field.";
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, _entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), _ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "You have not configure any single field with Salesforce field.");
+                    _isResultError = true;    // return true value that means error exist and do not proceed for the further mapping list.
+                } 
+                #endregion
+
+                lstSalesforceFieldDetail = GetSFDCTargetFieldList();
+
+                #region " Verify Field mapping for each entity "
+                _mappingTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
+                                                                || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Tactic_EntityType) &&
+                                                                (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
+                                                            .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
+                                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+                lstMappingMisMatch = IdentifyDataTypeMisMatch(_mappingTactic, lstSalesforceFieldDetail, Enums.EntityType.Tactic.ToString());
+
+
+                _mappingProgram = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program
+                                                        || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Program_EntityType) &&
+                                                        (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
+                                                    .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
+                                                    .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+                lstMappingMisMatch = lstMappingMisMatch.Concat(IdentifyDataTypeMisMatch(_mappingProgram, lstSalesforceFieldDetail, Enums.EntityType.Program.ToString())).ToList();
+
+
+                _mappingCampaign = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign
+                                                        || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Campaign_EntityType) &&
+                                                        (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
+                                                    .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
+                                                    .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+                lstMappingMisMatch = lstMappingMisMatch.Concat(IdentifyDataTypeMisMatch(_mappingCampaign, lstSalesforceFieldDetail, Enums.EntityType.Campaign.ToString())).ToList();
+                
+                dataTypeMapping = dataTypeMapping.Where(gp => gp.GameplanDataType != null).Select(gp => gp).ToList();
+                
+                _mappingImprovementTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType.TableName == Plan_Improvement_Campaign_Program_Tactic
+                                                                || (gameplandata.GameplanDataType.TableName == Global && gameplandata.GameplanDataType.IsImprovement == true)) &&
+                                                                    !gameplandata.GameplanDataType.IsGet)
+                                                .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
+                                                .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+                lstMappingMisMatch = lstMappingMisMatch.Concat(IdentifyDataTypeMisMatch(_mappingImprovementTactic, lstSalesforceFieldDetail, Enums.EntityType.ImprovementTactic.ToString())).ToList();
+
+
+
+                _mappingImprovementProgram = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType.TableName == Plan_Improvement_Campaign_Program
+                                                                || (gameplandata.GameplanDataType.TableName == Global && gameplandata.GameplanDataType.IsImprovement == true)) &&
+                                                                    !gameplandata.GameplanDataType.IsGet)
+                                               .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
+                                               .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+                lstMappingMisMatch = lstMappingMisMatch.Concat(IdentifyDataTypeMisMatch(_mappingImprovementProgram, lstSalesforceFieldDetail, Enums.EntityType.ImprovementProgram.ToString())).ToList();
+
+
+
+                _mappingImprovementCampaign = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType.TableName == Plan_Improvement_Campaign
+                                                                || (gameplandata.GameplanDataType.TableName == Global && gameplandata.GameplanDataType.IsImprovement == true)) &&
+                                                                    !gameplandata.GameplanDataType.IsGet)
+                                               .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
+                                               .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+                lstMappingMisMatch = lstMappingMisMatch.Concat(IdentifyDataTypeMisMatch(_mappingImprovementCampaign, lstSalesforceFieldDetail, Enums.EntityType.ImprovementCampaign.ToString())).ToList(); 
+                #endregion
+
+                #region "Remove mismatch record from  Mapping list"
+                //foreach (SalesForceObjectFieldDetails objMisMatchItem in lstMappingMisMatch)
+                //{
+                //    if (objMisMatchItem.Section.Equals(Enums.EntityType.Tactic.ToString()))
+                //    {
+                //        _mappingTactic.Remove(objMisMatchItem.SourceField);
+                //    }
+                //    else if (objMisMatchItem.Section.Equals(Enums.EntityType.Program.ToString()))
+                //    {
+                //        _mappingProgram.Remove(objMisMatchItem.SourceField);
+                //    }
+                //    else if (objMisMatchItem.Section.Equals(Enums.EntityType.Campaign.ToString()))
+                //    {
+                //        _mappingCampaign.Remove(objMisMatchItem.SourceField);
+                //    }
+                //    else if (objMisMatchItem.Section.Equals(Enums.EntityType.ImprovementTactic.ToString()))
+                //    {
+                //        _mappingImprovementTactic.Remove(objMisMatchItem.SourceField);
+                //    }
+                //    else if (objMisMatchItem.Section.Equals(Enums.EntityType.ImprovementProgram.ToString()))
+                //    {
+                //        _mappingImprovementProgram.Remove(objMisMatchItem.SourceField);
+                //    }
+                //    else if (objMisMatchItem.Section.Equals(Enums.EntityType.ImprovementCampaign.ToString()))
+                //    {
+                //        _mappingImprovementCampaign.Remove(objMisMatchItem.SourceField);
+                //    }
+
+                //}
+                #endregion
+
+                #region "Add data type mismatch message to lstSyncErrror list to display in Summary email"
+                string otherDataType = Enums.ActualFieldDatatype[Enums.ActualFields.Other.ToString()].ToString();
+                string misMatchfields;
+                //int custmId=0;
+                //List<int> lstCustomFieldIds=lstMappingMisMatch.Where(map => map.SourceDatatype == otherDataType && int.TryParse(map.SourceField,out custmId)).Select(key=> int.Parse(key.SourceField)).ToList();
+                //Dictionary<int,string> tblCustomFields = db.CustomFields.Where(custm => lstCustomFieldIds.Contains(custm.CustomFieldId) && custm.IsDeleted==false).ToDictionary(k=> k.CustomFieldId,v=>v.Name);
+                foreach (var Section in lstMappingMisMatch.Select(m => m.Section).Distinct().ToList())
+                {
+                    misMatchfields =  string.Empty;
+                    misMatchfields = string.Join(",", lstMappingMisMatch.Where(m => m.Section == Section).Select(m => m.SourceField).ToList());
+
+                    // check that any customfield mismatch record exist or not.
+                    //if (lstMappingMisMatch.Any(map => map.Section == Section && map.SourceDatatype == otherDataType && int.TryParse(map.SourceField, out custmId)))
+                    //{
+                    //    //Append comma separated customfield title to misMatchfields variable. 
+                    //    foreach (SalesForceObjectFieldDetails item in lstMappingMisMatch.Where(map => map.Section == Section && map.SourceDatatype == otherDataType && int.TryParse(map.SourceField, out custmId)))
+                    //    {
+                    //        strCustomName=string.Empty;
+                    //        strCustomName=tblCustomFields.Where(custm=> custm.Key.ToString() == item.SourceField).Select(custm=>custm.Value).FirstOrDefault();
+                    //        misMatchfields += "," + strCustomName;
+                    //    }
+                    //}
+                    //misMatchfields = misMatchfields.TrimStart(new char[] { ',' }).TrimEnd(new char[] { ',' });
+                    
+                    string msg = "Data type mismatch for " + misMatchfields +" in salesforce for " + Section + ".";
+                    Enums.EntityType entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Section, true);
+
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Info, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, msg);
+                } 
+                #endregion
+
+                #region "Identify that client has Custom name generate permission or not"
+                try
+                {
+                    BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
+                    _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
+
+                    if (_CustomNamingPermissionForInstance)
+                    {
+                        // Get sequence for custom name of tactic
+                        SequencialOrderedTableList = db.CampaignNameConventions.Where(c => c.ClientId == _clientId && c.IsDeleted == false).OrderBy(c => c.Sequence).ToList();
+                        var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == _clientId).ToList();
+                        var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
+                        var clientApplicationActivityList = (from c in clientActivityList
+                                                             join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
+                                                             select new
+                                                             {
+                                                                 Code = ca.Code,
+                                                                 ActivityTitle = ca.ActivityTitle,
+                                                                 clientId = c.ClientId
+                                                             }).Select(c => c).ToList();
+                        IsClientAllowedForCustomNaming = clientApplicationActivityList.Where(clientActivity => clientActivity.Code == Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string exMessage = Common.GetInnermostException(ex);
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while executing BDS Service:- " + exMessage);
+                    _isResultError = true;
+                } 
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Mapping list:- " + exMessage);
+                _isResultError = true;
+            }
+            return lstMappingMisMatch;
+        } 
+        #endregion
 
     }
 }
