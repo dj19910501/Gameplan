@@ -7569,105 +7569,109 @@ namespace RevenuePlanner.Controllers
                 objPlanMainDHTMLXGrid.head = objPlanController.GenerateJsonHeader("", 0, null, "", false);
 
                 Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId.Equals(tacticId) && _tactic.IsDeleted.Equals(false)).FirstOrDefault();
-
-                string type = string.Empty;
-                List<Plan_Campaign_Program_Tactic_LineItem> finalLineitem = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                string cellTextColor = string.Empty;
-                // Declare Variable for XML to JSON
-                List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
-                PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
-
-                string lockedstateone = "1";
-                string bgcolorLineItem = "#ffffff";
-
-                string stylecolorblack = "color:#000";
-                string stylecolorgray = "color:#999"; // Add By Nishant Sheth #1987
-
-                finalLineitem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.PlanTacticId == tacticId && lineitem.IsDeleted == false).OrderBy(l => l.Title).ToList(); // Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for line item title
-
+                // Add Condition by nishant sheth
+                // Desc :: To resolve test case when tactic object is null
                 if (objTactic != null)
                 {
+                    string type = string.Empty;
+                    List<Plan_Campaign_Program_Tactic_LineItem> finalLineitem = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                    string cellTextColor = string.Empty;
+                    // Declare Variable for XML to JSON
+                    List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+                    PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
 
-                    cellTextColor = isLocked ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
+                    string lockedstateone = "1";
+                    string bgcolorLineItem = "#ffffff";
 
-                    if (finalLineitem != null && finalLineitem.Count > 0)
+                    string stylecolorblack = "color:#000";
+                    string stylecolorgray = "color:#999"; // Add By Nishant Sheth #1987
+
+                    finalLineitem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.PlanTacticId == tacticId && lineitem.IsDeleted == false).OrderBy(l => l.Title).ToList(); // Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for line item title
+
+                    if (objTactic != null)
                     {
-                        var lstLineItemTaskData = finalLineitem.Select((taskdata, index) => new
+
+                        cellTextColor = isLocked ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
+
+                        if (finalLineitem != null && finalLineitem.Count > 0)
                         {
-                            index = index,
-                            Cost = taskdata.Cost,
-                            lineitemtype = taskdata.LineItemTypeId,
-                            PlanLineItemId = taskdata.PlanLineItemId,
-                            title = taskdata.Title,
-                            Typeid = taskdata.LineItemTypeId,
-                            Type = taskdata.LineItemTypeId != null ? taskdata.LineItemType.Title : "",
-                            CreatedBy = taskdata.CreatedBy,
-                            IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || !isLocked) == true ? "0" : "1"//Tactic created by condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
-                        });
+                            var lstLineItemTaskData = finalLineitem.Select((taskdata, index) => new
+                            {
+                                index = index,
+                                Cost = taskdata.Cost,
+                                lineitemtype = taskdata.LineItemTypeId,
+                                PlanLineItemId = taskdata.PlanLineItemId,
+                                title = taskdata.Title,
+                                Typeid = taskdata.LineItemTypeId,
+                                Type = taskdata.LineItemTypeId != null ? taskdata.LineItemType.Title : "",
+                                CreatedBy = taskdata.CreatedBy,
+                                IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || !isLocked) == true ? "0" : "1"//Tactic created by condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
+                            });
 
-                        #region LineItems
-                        foreach (var lineitem in lstLineItemTaskData)
-                        {
-                            cellTextColor = lineitem.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
+                            #region LineItems
+                            foreach (var lineitem in lstLineItemTaskData)
+                            {
+                                cellTextColor = lineitem.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
 
-                            lineitemrowsobj = new PlanDHTMLXGridDataModel();
-                            lineitemrowsobj.id = "line." + lineitem.index;
-                            lineitemrowsobj.bgColor = bgcolorLineItem;
-                            List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
-                            Plandataobj lineitemdataobj = new Plandataobj();
+                                lineitemrowsobj = new PlanDHTMLXGridDataModel();
+                                lineitemrowsobj.id = "line." + lineitem.index;
+                                lineitemrowsobj.bgColor = bgcolorLineItem;
+                                List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
+                                Plandataobj lineitemdataobj = new Plandataobj();
 
-                            lineitemdataobj.value = "LineItem";
-                            lineitemdataobjlist.Add(lineitemdataobj);
+                                lineitemdataobj.value = "LineItem";
+                                lineitemdataobjlist.Add(lineitemdataobj);
 
-                            lineitemdataobj = new Plandataobj();
-                            lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.title);
-                            lineitemdataobj.locked = lineitem.IstactEditable;
-                            lineitemdataobj.style = cellTextColor;
-                            lineitemdataobjlist.Add(lineitemdataobj);
+                                lineitemdataobj = new Plandataobj();
+                                lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.title);
+                                lineitemdataobj.locked = lineitem.IstactEditable;
+                                lineitemdataobj.style = cellTextColor;
+                                lineitemdataobjlist.Add(lineitemdataobj);
 
-                            lineitemdataobj = new Plandataobj();
-                            lineitemdataobj.value = "<div class=grid_Search id=LP></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Line1 onclick=javascript:OpenLineItemGridPopup(this,event) alt=" + tacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
-                            lineitemdataobjlist.Add(lineitemdataobj);
+                                lineitemdataobj = new Plandataobj();
+                                lineitemdataobj.value = "<div class=grid_Search id=LP></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Line1 onclick=javascript:OpenLineItemGridPopup(this,event) alt=" + tacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
+                                lineitemdataobjlist.Add(lineitemdataobj);
 
-                            lineitemdataobj = new Plandataobj();
-                            lineitemdataobj.value = lineitem.PlanLineItemId.ToString();
-                            lineitemdataobjlist.Add(lineitemdataobj);
+                                lineitemdataobj = new Plandataobj();
+                                lineitemdataobj.value = lineitem.PlanLineItemId.ToString();
+                                lineitemdataobjlist.Add(lineitemdataobj);
 
-                            lineitemdataobj = new Plandataobj();
-                            lineitemdataobj.value = lineitem.Cost.ToString();
-                            lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
-                            lineitemdataobj.type = "edn";
-                            lineitemdataobj.style = cellTextColor;
-                            lineitemdataobjlist.Add(lineitemdataobj);
+                                lineitemdataobj = new Plandataobj();
+                                lineitemdataobj.value = lineitem.Cost.ToString();
+                                lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
+                                lineitemdataobj.type = "edn";
+                                lineitemdataobj.style = cellTextColor;
+                                lineitemdataobjlist.Add(lineitemdataobj);
 
-                            lineitemdataobj = new Plandataobj();
-                            lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.Type);
-                            lineitemdataobj.style = cellTextColor;
-                            lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
-                            lineitemdataobjlist.Add(lineitemdataobj);
+                                lineitemdataobj = new Plandataobj();
+                                lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.Type);
+                                lineitemdataobj.style = cellTextColor;
+                                lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
+                                lineitemdataobjlist.Add(lineitemdataobj);
 
-                            lineitemdataobj = new Plandataobj();
-                            lineitemdataobj.value = objPlanController.GetUserName(lineitem.CreatedBy);
-                            lineitemdataobj.locked = lineitem.IstactEditable;
-                            lineitemdataobj.style = cellTextColor;
-                            lineitemdataobjlist.Add(lineitemdataobj);
+                                lineitemdataobj = new Plandataobj();
+                                lineitemdataobj.value = objPlanController.GetUserName(lineitem.CreatedBy);
+                                lineitemdataobj.locked = lineitem.IstactEditable;
+                                lineitemdataobj.style = cellTextColor;
+                                lineitemdataobjlist.Add(lineitemdataobj);
 
-                            lineitemrowsobj.data = lineitemdataobjlist;
+                                lineitemrowsobj.data = lineitemdataobjlist;
 
-                            Planuserdatagrid lineitemuserdata = new Planuserdatagrid();
-                            lineitemuserdata.IsOther = ((lineitem.Type == null || lineitem.Type == "") ? true : false).ToString();
-                            lineitemrowsobj.userdata = lineitemuserdata;
+                                Planuserdatagrid lineitemuserdata = new Planuserdatagrid();
+                                lineitemuserdata.IsOther = ((lineitem.Type == null || lineitem.Type == "") ? true : false).ToString();
+                                lineitemrowsobj.userdata = lineitemuserdata;
 
-                            lineitemrowsobjlist.Add(lineitemrowsobj);
+                                lineitemrowsobjlist.Add(lineitemrowsobj);
+                            }
+                            #endregion
                         }
-                        #endregion
                     }
-                }
-                objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
-                objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
+                    objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
+                    objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
 
-                var lstLineItemType = db.LineItemTypes.Where(litemtype => litemtype.ModelId == objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
-                TempData["lineItemTypes"] = lstLineItemType;
+                    var lstLineItemType = db.LineItemTypes.Where(litemtype => litemtype.ModelId == objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
+                    TempData["lineItemTypes"] = lstLineItemType;
+                }
             }
             catch (Exception objException)
             {
