@@ -438,8 +438,8 @@ namespace RevenuePlanner.Controllers
                 //}
                 //else
                 //{
-                //    setColumnsVisibility.Append("false,false,false,false,");
-                //}
+                    setColumnsVisibility.Append("false,false,false,false,");
+               // }
                 foreach (var columns in objColumns)
                 {
                     setHeader.Append(columns.CustomField.Name + ",");
