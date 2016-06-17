@@ -2643,23 +2643,26 @@ namespace Integration.Salesforce
                             }
                         }
                         tacticIdList = ListOfMarketoWithoutSFDC.Select(tac => tac.PlanTacticId).ToList();
-                        #region "Validate Mappings with SFDC fields"
-                        if (campaignList.Count > 0 || programList.Count > 0 || ListOfMarketoWithoutSFDC.Count > 0)
-                        {
+                        // Commented By Nishant Sheth
+                        // Desc ::#2289 - Not need to update tactic while pulling process working, becuase of this process in email counts are wrong.
 
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                            _isResultError = SetMappingDetails();
-                            if (!_isResultError)
-                            {
-                                SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), ListOfMarketoWithoutSFDC, tacticIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                            }
-                            else
-                            {
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
-                            }
-                        }
-                        #endregion
+                        //#region "Validate Mappings with SFDC fields"
+                        //if (campaignList.Count > 0 || programList.Count > 0 || ListOfMarketoWithoutSFDC.Count > 0)
+                        //{
+
+                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        //    _isResultError = SetMappingDetails();
+                        //    if (!_isResultError)
+                        //    {
+                        //        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), ListOfMarketoWithoutSFDC, tacticIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);
+                        //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        //    }
+                        //    else
+                        //    {
+                        //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
+                        //    }
+                        //}
+                        //#endregion
 
                     }
 
@@ -4224,7 +4227,9 @@ namespace Integration.Salesforce
                     {
                         // Add by Nishant Sheth
                         // Desc :: #2280 : if tatic is not sync by marketo to salesforce then tactic is not created in salesforce
-                        if (planTactic.IntegrationInstanceMarketoID != null && planTactic.IsSyncMarketo.HasValue && planTactic.IsSyncMarketo.Value)
+                        // Modified Condition by nishant sheth
+                        // Desc :: #2289 : if tactic is not sync with marketo and pull instance set for sfdc then tactic should not be created in sfdc.
+                        if (planTactic.IsSyncMarketo.HasValue && planTactic.IsSyncMarketo.Value)
                         {
                             return planTactic;
                         }
@@ -6141,7 +6146,19 @@ namespace Integration.Salesforce
                                             }
                                         }
                                         lstPagedEntityList[index] = SyncTacticData(lstPagedEntityList[index], ref sbMessage);
+                                        // Add By Nishant Sheth
+                                        // Desc :: #2289 : Mismtach count in email while marketo tactics not pushing in salesforce.
+                                        if (_IsSFDCWithMarketo)
+                                        {
+                                            if (lstPagedEntityList[index].IntegrationInstanceTacticId != null)
+                                            {
                                         lstProcessTacIds.Add(tacticId);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            lstProcessTacIds.Add(tacticId);
+                                        }
                                         startDate = null; //#2097: reset startDate global variable.
                                         #region "Old Code"
                                         // Save 10 log records to Table.
