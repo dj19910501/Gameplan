@@ -292,9 +292,10 @@
 
     $("#hdnRequestedModule").val(RequestedModule);
     var currentTab = "Setup";
-    if ((RequestedModule == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") && (mode == "@Enums.InspectPopupMode.ReadOnly.ToString()")) {
+      // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+    @*if ((RequestedModule == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") && (mode == "@Enums.InspectPopupMode.ReadOnly.ToString()")) {
         currentTab = "Budget";
-    }
+    }*@
 
     if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()") {
         if (mode == "@Enums.InspectPopupMode.Add.ToString()") {

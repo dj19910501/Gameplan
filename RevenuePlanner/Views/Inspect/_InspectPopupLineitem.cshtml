@@ -156,7 +156,8 @@
                         <a>Actuals</a>
                     </li>
                 }
-                @if (!IsOtherLineItem)
+                // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+                @*@if (!IsOtherLineItem)
                 {
                     if (!Sessions.IsBudgetShow)
                     {
@@ -164,7 +165,7 @@
                             <a>Budget</a>
                         </li>
                     }
-                }
+                }*@
             </ul>
             <div id="divTab">
             </div>
@@ -177,8 +178,8 @@
 
     var divPartial = "#divPartial";
     var TabSetup = "Setup";
-
-    var TabBudget = "Budget";
+    // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+    //var TabBudget = "Budget";
     var divTab = "#divTab";
     var TabActual = "Actuals";
     var tabtext = "";
@@ -204,14 +205,14 @@
                     return false;
                 }
             }
-
-            else if (activeTab == TabBudget) {
-                var ReturnParameter = SaveLineitemBudget();
-                if (ReturnParameter == false) {
-                    $('#InspectTab').removeClass('SpanDisable');
-                    return false;
-                }
-            }
+            // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+            //else if (activeTab == TabBudget) {
+            //    var ReturnParameter = SaveLineitemBudget();
+            //    if (ReturnParameter == false) {
+            //        $('#InspectTab').removeClass('SpanDisable');
+            //        return false;
+            //    }
+            //}
             else if (activeTab == TabActual) {
                 //var ReturnParameter = SaveLineitemActual();
                 //if (ReturnParameter == false) {
@@ -276,14 +277,14 @@
                 url = '@Url.Content("~/Inspect/LoadSetupLineitem/")';
             }
         }
-
-        if (tabValue == TabBudget) {
+        // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+        @*if (tabValue == TabBudget) {
             if (LineitemOpt == "Edit") {
                 $('#txtTitle').css('display', 'block');
                 $('#lblLineitemTitle').css('display', 'none');
             }
             url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
-        }
+        }*@
         if (tabValue == TabActual) {
             if (LineitemOpt == "Edit") {
                 $('#txtTitle').css('display', 'block');
@@ -379,7 +380,7 @@
          // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
          tabtext = ($("#li" + InspectValue).children('a').text().replace(" ","_"));
          $('#div' + tabtext).css({ display: "block" });
-         $("#liSetup,#liReview,#liBudget,#liActuals").on("click", function () {
+         $("#liSetup,#liReview,#liActuals").on("click", function () {
              // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
              if ($('#InspectTab').hasClass('SpanDisable') == false) {
 
@@ -469,10 +470,10 @@
                          else if (data.IsSuccess) {
 
                              var currentTab = "Setup";
-
-                             if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                             // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+                            @* if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
                                  currentTab = "Budget";
-                             }
+                             }*@
 
                              var lineItemId = data.Id;
                              var expandplanLineItemId = data.expand;
@@ -529,11 +530,11 @@
                              }
                          });
                      }
-                     else if (tabtext == "Budget") {
+                    @* else if (tabtext == "Budget") {
                          url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
                          $("#divTab").empty();
                          $("#divTab").load(url + '?id=' + PlanLineItemId);
-                     }
+                     }*@
                      else if (tabtext == "Actuals") {
                          //// Modified By: Arpita Soni on 1/17/2015.
                          //// Ticket: 1067
@@ -569,18 +570,18 @@
 
                          }
                      }
+                         // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+                     //else if (activeTab == TabBudget) {
+                     //    var ReturnParameter = SaveLineitemBudget();
+                     //    if (ReturnParameter == false) {
+                     //        return false;
+                     //    }
+                     //    else {
+                     //        $('.close-x-big-icon').trigger('click');
 
-                     else if (activeTab == TabBudget) {
-                         var ReturnParameter = SaveLineitemBudget();
-                         if (ReturnParameter == false) {
-                             return false;
-                         }
-                         else {
-                             $('.close-x-big-icon').trigger('click');
 
-
-                         }
-                     }
+                     //    }
+                     //}
 
                      else if (activeTab == TabActual) {
                          var hdnTacticStatus = $("#hdnParentTacticStatus").val();

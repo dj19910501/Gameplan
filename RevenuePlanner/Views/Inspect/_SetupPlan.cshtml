@@ -76,6 +76,22 @@
                  @Html.TextBox("txtRevenue", "", new { placeholder = "$0", id = "txtRevenue", @class = "span5 input-small truncate width96px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
              </div>
          }
+         <!-- Added by Arpita Soni for Ticket #2236 on 06/20/2016 -->
+         <div style="width:50%; float:left;"><p>Budget</p></div>
+         <div style="width:50%; float:left;">
+            @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+            {
+                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id = "txtPlanBudget", @class = "span5 input-small truncate width96px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })
+            }
+            else if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id = "txtPlanBudget", @class = "span5 input-small truncate width96px currency_dollar light-blue-background", style = "", title = planDetails.Budget, require = "true", })
+            }
+          </div>
+     </div>
+     <div class="span3" id="inspect-modal-left-column4">
+          
+          
      </div>
  </div>
  @* if (InspectMode == Enums.InspectPopupMode.Edit.ToString())

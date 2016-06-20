@@ -19,53 +19,53 @@ namespace RevenuePlanner.Test.Controllers
     {
 
         #region Save Plan
-        /// <summary>
-        /// To Save the Plan
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>29June2015</createddate>
-        [TestMethod]
-        public void Save_Plan()
-        {
-            Console.WriteLine("To Save the Plan.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            //// Call index method
-            //base.Initialize(System.Web.HttpContext.Current.r);
-            InspectController objInspectController = new InspectController();
+        ///// <summary>
+        ///// To Save the Plan
+        ///// </summary>
+        ///// <auther>Komal Rawal</auther>
+        ///// <createddate>29June2015</createddate>
+        //[TestMethod]
+        //public void Save_Plan()
+        //{
+        //    Console.WriteLine("To Save the Plan.\n");
+        //    MRPEntities db = new MRPEntities();
+        //    //// Set session value
+        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    //// Call index method
+        //    //base.Initialize(System.Web.HttpContext.Current.r);
+        //    InspectController objInspectController = new InspectController();
 
-            InspectModel objPlanModel = new InspectModel();
-            objPlanModel.GoalType = Enums.PlanGoalType.MQL.ToString();
-            objPlanModel.GoalValue = "0";
-            objPlanModel.Title = "test plan #975";
-            objPlanModel.ModelId = DataHelper.GetModelId();
-            objPlanModel.StartDate = DateTime.Now;
-            objPlanModel.EndDate = DateTime.MaxValue;
-            objPlanModel.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
-            objPlanModel.PlanId = db.Plans.Where(plan => plan.Title == objPlanModel.Title && plan.ModelId == objPlanModel.ModelId).Select(plan => plan.PlanId).FirstOrDefault();
-            List<int> PlanIds = new List<int>();
-            PlanIds.Add(objPlanModel.PlanId);
-            Sessions.PlanPlanIds = PlanIds;
-            string UserID = (Sessions.User.UserId).ToString();
-            string planBudget = "50000";
+        //    InspectModel objPlanModel = new InspectModel();
+        //    objPlanModel.GoalType = Enums.PlanGoalType.MQL.ToString();
+        //    objPlanModel.GoalValue = "0";
+        //    objPlanModel.Title = "test plan #975";
+        //    objPlanModel.ModelId = DataHelper.GetModelId();
+        //    objPlanModel.StartDate = DateTime.Now;
+        //    objPlanModel.EndDate = DateTime.MaxValue;
+        //    objPlanModel.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
+        //    objPlanModel.PlanId = db.Plans.Where(plan => plan.Title == objPlanModel.Title && plan.ModelId == objPlanModel.ModelId).Select(plan => plan.PlanId).FirstOrDefault();
+        //    List<int> PlanIds = new List<int>();
+        //    PlanIds.Add(objPlanModel.PlanId);
+        //    Sessions.PlanPlanIds = PlanIds;
+        //    string UserID = (Sessions.User.UserId).ToString();
+        //    string planBudget = "50000";
 
-            string Budgetvalues = GetBudgetValues(objPlanModel.AllocatedBy);
+        //    string Budgetvalues = GetBudgetValues(objPlanModel.AllocatedBy);
 
-            var result = objInspectController.SavePlanDetails(objPlanModel, Budgetvalues, planBudget, "", UserID) as JsonResult;
+        //    var result = objInspectController.SavePlanDetails(objPlanModel, Budgetvalues, planBudget, "", UserID) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
+        //    if (result != null)
+        //    {
+        //        //// ViewResult shoud not be null and should match with viewName
+        //        Assert.IsNotNull(result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //    }
+        //    else
+        //    {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-        }
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+        //    }
+        //}
 
 
         #endregion
@@ -978,50 +978,50 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #region Save LineItem Budget Allocation
-        /// <summary>
-        /// To Save the LineItem Budget Allocation
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>29June2015</createddate>
-        [TestMethod]
-        public void Save_LineItem_Budget_Allocation()
-        {
-            Console.WriteLine("To Save the LineItem Budget Allocation.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            //// Call index method
-            InspectController objInspectController = new InspectController();
-            string UserID = (Sessions.User.UserId).ToString();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
-            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
-            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
-            int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
-            int LineitemId = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.PlanTacticId == PlanTacticId).Select(tactic => tactic.PlanLineItemId).FirstOrDefault();
+        ///// <summary>
+        ///// To Save the LineItem Budget Allocation
+        ///// </summary>
+        ///// <auther>Komal Rawal</auther>
+        ///// <createddate>29June2015</createddate>
+        //[TestMethod]
+        //public void Save_LineItem_Budget_Allocation()
+        //{
+        //    Console.WriteLine("To Save the LineItem Budget Allocation.\n");
+        //    MRPEntities db = new MRPEntities();
+        //    //// Set session value
+        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    //// Call index method
+        //    InspectController objInspectController = new InspectController();
+        //    string UserID = (Sessions.User.UserId).ToString();
+        //    int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+        //    int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+        //    int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
+        //    int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
+        //    int LineitemId = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.PlanTacticId == PlanTacticId).Select(tactic => tactic.PlanLineItemId).FirstOrDefault();
 
-            string Title = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.Title).FirstOrDefault();
-            Plan_Campaign_Program_Tactic_LineItemModel Form = new Plan_Campaign_Program_Tactic_LineItemModel();
-            Form.PlanTacticId = PlanTacticId;
-            Form.PlanLineItemId = LineitemId;
-            Form.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
-            Form.Cost = 10000;
+        //    string Title = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.Title).FirstOrDefault();
+        //    Plan_Campaign_Program_Tactic_LineItemModel Form = new Plan_Campaign_Program_Tactic_LineItemModel();
+        //    Form.PlanTacticId = PlanTacticId;
+        //    Form.PlanLineItemId = LineitemId;
+        //    Form.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
+        //    Form.Cost = 10000;
 
 
-            string Budgetvalues = GetBudgetValues(Form.AllocatedBy);
+        //    string Budgetvalues = GetBudgetValues(Form.AllocatedBy);
 
-            var result = objInspectController.SaveLineItemBudgetAllocation(Form, Budgetvalues, UserID, Title) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
+        //    var result = objInspectController.SaveLineItemBudgetAllocation(Form, Budgetvalues, UserID, Title) as JsonResult;
+        //    if (result != null)
+        //    {
+        //        //// ViewResult shoud not be null and should match with viewName
+        //        Assert.IsNotNull(result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //    }
+        //    else
+        //    {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-        }
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+        //    }
+        //}
 
         #endregion
 

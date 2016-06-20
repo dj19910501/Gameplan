@@ -140,12 +140,13 @@
         <li class="active pull-left" id="liSetup">
             <a>Setup</a>
         </li>
-        @if(!Sessions.IsBudgetShow)
+        @*Commented by Arpita Soni for Ticket #2236 on 06/20/2016*@
+        @*@if(!Sessions.IsBudgetShow)
         {
             <li class="pull-left" id="liBudget">
                 <a>Budget</a>
             </li>
-        }
+        }*@
     </ul>
     <div id="divTab">
     </div>
@@ -157,7 +158,8 @@
 
     var divPartial = "#divPartial";
     var TabSetup = "Setup";
-    var TabBudget = "Budget";
+    // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+    //var TabBudget = "Budget";
     var divTab = "#divTab";
 
     $(document).ready(function () {
@@ -195,9 +197,10 @@
         if (tabValue == TabSetup) {
             url = '@Url.Content("~/Inspect/LoadPlanSetup/")';
         }
-        else if (tabValue == TabBudget) {
+        // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+        @*else if (tabValue == TabBudget) {
             url = '@Url.Content("~/Inspect/LoadPlanBudget/")';
-        }
+        }*@
 
         RemoveTabClass();
         $("#li" + tabValue).removeClass("pull-left");
@@ -218,7 +221,7 @@
     }
 
     // Click on Tab Partialview Refresh Based On Selected Tab
-    $("#liSetup,#liBudget").on("click", function () {
+    $("#liSetup").on("click", function () {
         // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
         if ($('#InspectTab').hasClass('SpanDisable') == false) {
             $('#EditForm').removeClass('SpanDisable');
@@ -253,14 +256,14 @@
                     return false;
                 }
             }
-
-            else if (activeTab == TabBudget) {
-                var ReturnParameter = SavePlanBudget();
-                if (ReturnParameter == false) {
-                    $('#InspectTab').removeClass('SpanDisable');
-                    return false;
-                }
-            }
+            // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+            //else if (activeTab == TabBudget) {
+            //    var ReturnParameter = SavePlanBudget();
+            //    if (ReturnParameter == false) {
+            //        $('#InspectTab').removeClass('SpanDisable');
+            //        return false;
+            //    }
+            //}
         }
         return true
 
@@ -312,17 +315,17 @@
 
                     }
                 }
+                // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+                //else if (activeTab == TabBudget) {
+                //    var ReturnParameter = SavePlanBudget();
+                //    if (ReturnParameter == false) {
+                //        return false;
+                //    }
+                //    else {
+                //        $('.close-x-big-icon').trigger('click');
 
-                else if (activeTab == TabBudget) {
-                    var ReturnParameter = SavePlanBudget();
-                    if (ReturnParameter == false) {
-                        return false;
-                    }
-                    else {
-                        $('.close-x-big-icon').trigger('click');
-
-                    }
-                }
+                //    }
+                //}
 
             }
             updatePlanNameDrp();
@@ -409,10 +412,10 @@
                         else {
                             if (data.redirect) {
                                 var currentTab = "Setup";
-
-                                if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                                // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
+                                @*if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
                                     currentTab = "Budget";
-                                }
+                                }*@
 
                                 var planId = data.Id;
                                 var expandplanProgramId = data.expand;
