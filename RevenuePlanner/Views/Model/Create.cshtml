@@ -657,6 +657,12 @@
         $(this).datepicker('hide');
     });;
     $(".savebtn").click(function (e) {
+        if (CheckHtmlTag($("#lnkTitle").html()) == false) {
+            $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> '+'@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString'+'. ')
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+            return false;
+        }
         if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
             var val = 0;
             var cntFill = 0;
@@ -1075,5 +1081,6 @@
         }
     });
     // End - Added by Sohel Pathan on 08/09/2014 for PL ticket #754
+   
 </script>
 

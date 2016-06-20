@@ -328,7 +328,12 @@
           else {
               $('#revenueSign').hide();
           }
-          
+          $('.nl-field').each(function () {
+              debugger;
+              if ($(this).next().attr('datadefault') == "Title") {
+                  $(this).children('a').attr('id', 'lnkTitle');
+              }
+          });
           @* Start - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
           //$('#txtBudget').parent().find('.currency_dollar').keydown(function (e) {
           //    var keycode = (e.keyCode ? e.keyCode : e.which);
@@ -418,7 +423,11 @@
 
      var TotalAllocatedCampaignBudget = $('#TotalAllocatedCampaignBudget').val();
      var totalBudget = parseInt(ReplaceCC($("#txtBudget").val()));
+     if (CheckHtmlTag($(sender).val()) == false) {
     
+         alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+         return false;
+     }
 
      if (!isError) {
          $("#GoalValue").val(ReplaceCC($("#GoalValue").val()));    @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
@@ -1321,6 +1330,16 @@ function GetAllocatedBudgetForPlan(planId) {
         isErrorShown = true;
     });
     function getblurvalue(sender) {
+        var aHrefElement = $("a")
+        if ($(sender).parent().parent().parent().find(aHrefElement).attr("id") == "lnkTitle") {
+            if (CheckHtmlTag($(sender).val()) == false) {
+                alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                var a = $(sender).data('placeholder');
+                $(sender).attr('placeholder', a);
+                $(sender).val('');
+                return false;
+            }
+        }
         $(sender).attr('placeholder', $(sender).data('placeholder'));
         var IsEditable = $(sender).attr('isedit');
         var TextValue = $(sender).val();

@@ -2732,6 +2732,15 @@ namespace RevenuePlanner.Helpers
                 _PasswordExpired = value;
             }
         }
+        //// Start - Ticket #2276, by devanshi gandhi
+        private string _TitleContainHTMLString;
+        public string TitleContainHTMLString
+        {
+            get { return _TitleContainHTMLString; }
+            set { _TitleContainHTMLString = value; }
+        }
+
+        //// End - Ticket #994, by Pratik chauhan
         #endregion
 
         #region  Functions
@@ -3603,6 +3612,11 @@ namespace RevenuePlanner.Helpers
                                         case "PasswordExpired":
                                             _PasswordExpired = strMsgValue;
                                             break;
+                                        ////added by devanshi for pl ticket #2276
+                                        case "TitleContainHTMLString":
+                                            _TitleContainHTMLString = strMsgValue;
+                                            break;
+
                                     }
                                 }
                                 i = i + 1;

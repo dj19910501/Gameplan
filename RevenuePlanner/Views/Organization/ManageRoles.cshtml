@@ -203,10 +203,22 @@
                 $(this).addClass("error");
                 flag = 1;
             }
+            else if (CheckHtmlTag($(this).val()) == false) {
+                $(this).addClass("error");
+                flag = 2;
+                return false;
+
+            }
         });
 
-        if (flag == 1) {
-            var msgspan = "@Common.objCached.ValidateEnteredField";
+        if (flag != 0) {
+            var msgspan = "";
+
+            if (flag == 1)
+                msgspan = "@Common.objCached.ValidateEnteredField";
+            else if (flag == 2)
+                msgspan = "@Common.objCached.TitleContainHTMLString";
+
             $("#errorMessage").css("display", "block");
             $("#spanErrorMessageRole").text(msgspan);
         } else {

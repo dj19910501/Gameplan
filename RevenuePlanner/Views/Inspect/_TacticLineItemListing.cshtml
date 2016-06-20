@@ -510,7 +510,14 @@ else {
                 //Modified by Rahul Shah on 09/03/2016 for PL #1939
                 if (UpdateColumn == "" || UpdateColumn == null)
                     UpdateColumn = HomeGrid.getColLabel(Colind, 0);
-                if(UpdateColumn == "Task Name"){
+                if(UpdateColumn == "Task Name"){  
+//added by devanshi for PL ticket #2276
+                    if (CheckHtmlTag(nValue) == false) {
+                        alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                       
+                        return false;
+
+                    }
                     //updatePlanNameDrp(TaskID,NewValue);
                 }
                 if(cellInd == 1)

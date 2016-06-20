@@ -46,8 +46,17 @@ else
     // function added to handle the blur event of NaturalLanguageForm textbox to check for duplicate model
     function getblurvalue(sender) {
         var aHrefElement = $("a")
-        
         if ($(sender).parent().parent().parent().find(aHrefElement).attr("id") == "lnkTitle") {
+            if (CheckHtmlTag($(sender).val()) == false) {
+                alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                var a = $(sender).data('placeholder');
+                $(sender).attr('placeholder', a);
+                if (a == "Baseline Model")
+                $(sender).val('');
+                else
+                    $(sender).val(a);
+                return false;
+            }
             $("#lnkTitle").html($(sender).val());
             $.ajax(
             {

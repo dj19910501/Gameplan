@@ -188,7 +188,16 @@
                     if (input == '') {
                         $(this).addClass("error");
                         testIntegrationValidation = false;
-                    } else {
+                    }
+//added by devanshi for PL ticket #2276
+                    else if ($(this).attr('type') != 'password') {
+                        if (CheckHtmlTag($(this).val()) == false) {
+
+                            $(this).addClass("error");
+                            testIntegrationValidation = false;
+                        }
+                    }
+                    else {
                         $(this).removeClass("error");
                     }
                 }
@@ -331,7 +340,15 @@
                         if (input == '') {
                             $(this).addClass("error");
                             isValidate = false;
-                        } else {
+                        }
+                        else if ($(this).attr('type') != 'password') {
+                            if (CheckHtmlTag($(this).val()) == false) {
+
+                                $(this).addClass("error");
+                                isValidate = false;
+                            }
+                        }
+                        else {
                             $(this).removeClass("error");
                         }
                     }
@@ -344,7 +361,15 @@
                     if (this.id != 'importActuals' && this.id != 'integrationStatus') {
                         if ($(this).val() == '') {
                             $(this).addClass("error");
-                        } else {
+                        } 
+//added by devanshi for PL ticket #2276
+                        else if ($(this).attr('type') != 'password') {
+                            if (CheckHtmlTag($(this).val()) == false) {
+                                $(this).addClass("error");
+                             
+                            }
+                        }
+                        else {
                             $(this).removeClass("error");
                         }
                     }

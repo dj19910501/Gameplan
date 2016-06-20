@@ -668,6 +668,14 @@
                 $("#Description").addClass("error");
                 $('#InspectTab').removeClass('SpanDisable');
                 return false;
+            }	
+//added by devanshi for PL ticket #2276
+        if (CheckHtmlTag($("#txtProgramTitle").val()) == false) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+            $("#txtProgramTitle").addClass("error");
+            iserror = true;
+            return false;
+
             }
         
         sdate = $('#t_startdate').val();

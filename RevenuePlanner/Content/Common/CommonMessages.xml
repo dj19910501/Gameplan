@@ -1081,4 +1081,9 @@
 		<Name>PasswordExpired</Name>
 		<value>Password expired, please reset your password</value>
 	</Field>
+	<!--Added by devanshi for #2276-->
+	<Field>
+		<Name>TitleContainHTMLString</Name>
+		<value>Title contain HTML String, Please reset the Value.</value>
+	</Field>
 </Messages>

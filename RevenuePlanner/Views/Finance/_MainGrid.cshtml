@@ -632,7 +632,14 @@
             if (stage.toString() == '2') {
                 //var _budgetIdVal = $('#ddlParentFinanceMain').val();
                 var _budgetIdVal = $("#hdnBudgetId").val();
-                if (newVal == null || newVal == '' || newVal.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oldVal || htmlDecode(newVal).trim() == oldVal) {
+//added by devanshi for PL ticket #2276           
+ if (CheckHtmlTag(newVal) == false) {
+                alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+
+                return false;
+
+            }
+            if (newVal == null || newVal == '' || newVal.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oldVal) {
                     AddNewrow = true;
                     return false;
                 }

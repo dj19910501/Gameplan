@@ -1166,8 +1166,15 @@
             $("#txtDescription").addClass("error");
             $('#InspectTab').removeClass('SpanDisable');
             return false;
-        }
+        } 
+//added by devanshi for PL ticket #2276
+        if (CheckHtmlTag($("#txtTitle").val()) == false) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+            $("#txtTitle").addClass("error");
+            iserror = true;
+            return false;
 
+        }
         $("#txtLineItemCost").val(ReplaceCC($("#txtLineItemCost").val()));
         document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());
         var uId = $(window).attr('name');

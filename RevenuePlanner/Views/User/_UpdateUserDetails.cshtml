@@ -21,24 +21,32 @@
             @Html.LabelFor(model => model.FirstName)
             @if (Convert.ToString(Model.UserId) == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
                     {
-                @Html.TextBoxFor(model => model.FirstName, new { @class = "input-small" })
+                                                            @Html.TextBoxFor(model => model.FirstName, new { @class = "input-small", id = "txtFirstName" })
                 @Html.ValidationMessageFor(model => model.FirstName)
+                                                            @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblFNameInvalid", For = "txtFirstName", style="display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
+
                     }
                     else
                     {
                 @Html.TextBox("txtFirstName", Model.FirstName, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.FirstName })
+                                                            @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblFNameInvalid", For = "txtFirstName", style = "display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
+
                     }
         </div>
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.LastName)
             @if (Convert.ToString(Model.UserId) == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) // || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
-                @Html.TextBoxFor(model => model.LastName)
+                                                            @Html.TextBoxFor(model => model.LastName, new { id = "txtLastName" })
                 @Html.ValidationMessageFor(model => model.LastName)
+                                                            @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblLNameInvalid", For = "txtLastName", style = "display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
+
                     }
                     else
                     {
                 @Html.TextBox("txtLastName", Model.LastName, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.LastName })
+                                                            @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblLNameInvalid", For = "txtLastName", style = "display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
+
                     }
         </div>
         <div class="cf inputs-aligned-horizontal">
@@ -70,12 +78,16 @@
             @Html.LabelFor(model => model.JobTitle)
             @if ((Convert.ToString(Model.UserId) == currentUserId) || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
                     {
-                @Html.TextBoxFor(model => model.JobTitle)
+                                                                    @Html.TextBoxFor(model => model.JobTitle, new { id = "txtJobTitle" })
                 @Html.ValidationMessageFor(model => model.JobTitle)
+                                                                    @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblJobtitleInvalid", For = "txtJobTitle", style = "display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
+
                     }
                     else
                     {
                 @Html.TextBox("txtJobTitle", Model.JobTitle, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.JobTitle })
+                                                                    @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblJobtitleInvalid", For = "txtJobTitle", style = "display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
+
                     }
 
         </div>
@@ -231,7 +243,11 @@
         $('#lblManagerIdRequired').hide();
         $('#lblNewManagerIdRequired').hide();
         // End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-
+        //added by devanshi for PL ticket #2276
+        $('#lblFNameInvalid').hide();
+        $('#lblLNameInvalid').hide();
+        $('#lblJobtitleInvalid').hide();
+        //end
         //Added by :- Sohel on 27 March 2014 for ticket #334
         $(".selectBox select").selectbox();
 
@@ -263,6 +279,23 @@
         $('#btnSubmit').click(function () {
             var isValid = true;
 
+            //added by devanshi for PL ticket #2276
+            if (CheckHtmlTag($("#txtFirstName").val()) == false) {
+                $("#lblFNameInvalid").show();
+                $("#txtFirstName").addClass("error");
+                isValid = false;
+            }
+            if (CheckHtmlTag($("#txtLastName").val()) == false) {
+                $("#lblLNameInvalid").show();
+                $("#txtLastName").addClass("error");
+                isValid = false;
+            }
+            if (CheckHtmlTag($("#txtJobTitle").val()) == false) {
+                $("#lblJobtitleInvalid").show();
+                $("#txtJobTitle").addClass("error");
+                isValid = false;
+            }
+            //end
             //ClientId Dropdown Required Validtion
             if (($("#ClientId option").eq(0).val() == "" && $("#ClientId").val() == "")) {
                 $("#ddlClientIdSelectBox .sbHolder").addClass("selectBoxError");
@@ -294,8 +327,7 @@
                         $("#ddlManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
                         $('#lblManagerIdRequired').hide();  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     }
-
-                if ($('#IsDeleted').val().toLowerCase() == 'yes' && $('#IsManager').val().toLowerCase() == 'true') {
+            if ($('#IsDeleted').val()!= null && $('#IsDeleted').val().toLowerCase() == 'yes' && $('#IsManager').val().toLowerCase() == 'true') {
                     if ($("#NewManagerId option").eq(0).val() == "" && $("#NewManagerId").val() == "") {
                         $("#ddlNewManagerIdSelectBox .sbHolder").addClass("selectBoxError");
                         $('#lblNewManagerIdRequired').show();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
@@ -336,7 +368,16 @@
             if ($(this).attr('type') == 'text' && !$(this).is('[readonly]') && this.id != 'Phone') {
                 if ($(this).val() == '') {
                     $(this).addClass("error");
-                } else {
+                }
+                else if (CheckHtmlTag($(this).val()) == false) {
+
+                    var label = $("label[for='" + $(this).attr('id') + "']");
+                    $(label).show();
+                    $(this).addClass("error");
+                }
+                else {
+                    var label = $("label[for='" + $(this).attr('id') + "']");
+                    $(label).hide();
                     $(this).removeClass("error");
                 }
             }

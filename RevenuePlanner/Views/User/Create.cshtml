@@ -70,21 +70,21 @@
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.FirstName)
 
-                    @Html.EditorFor(model => model.FirstName)
+                    @Html.TextBoxFor(model => model.FirstName, new { id = "txtFirstName" })
                     @Html.ValidationMessageFor(model => model.FirstName)
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.LastName)
 
-                    @Html.EditorFor(model => model.LastName)
+                    @Html.TextBoxFor(model => model.LastName, new { id = "txtLastName" })
                     @Html.ValidationMessageFor(model => model.LastName)
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.Email)
 
-                    @Html.EditorFor(model => model.Email)
+                    @Html.TextBoxFor(model => model.Email)
                     <span class="field-validation-error" id="isEmailExist"></span>
                     @Html.ValidationMessageFor(model => model.Email)
                 </div>
@@ -117,8 +117,11 @@
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.JobTitle)
 
-                    @Html.EditorFor(model => model.JobTitle)
+                    @Html.TextBoxFor(model => model.JobTitle, new { id = "txtJobTitle" })
                     @Html.ValidationMessageFor(model => model.JobTitle)
+                    @Html.Label("", Common.objCached.TitleContainHTMLString, new { @class = "field-validation-error selectbox-validation-message", id = "lblJobtitleInvalid", For = "txtJobTitle", style = "display:none;" })  @* Added by devanshi gandhi on 17/06/2016 for PL ticket #2276 *@
+
+
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
@@ -340,7 +343,24 @@
             if (($(this).attr('type') == 'text' || $(this).attr('type') == 'password') && this.id != 'Phone') {
                 if ($(this).val() == '') {
                     $(this).addClass("error");
-                } else {
+                }
+                else if (this.id != 'Email' && this.id != 'Password' && this.id!='ConfirmPassword') {
+                    if (CheckHtmlTag($(this).val()) == false) {
+                        var label = $("label[for='" + $(this).attr('id') + "']");
+                        $(label).show();
+                        $(this).addClass("error");
+                    }
+
+                    else {
+
+                        var label = $("label[for='" + $(this).attr('id') + "']");
+                        $(label).hide();
+                        $(this).removeClass("error");
+
+                    }
+                }
+                else {
+                  
                     $(this).removeClass("error");
                 }
             }

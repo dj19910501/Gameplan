@@ -201,8 +201,13 @@
             ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
             $("#txtDescription").addClass("error");
             iserror = true;
+        }	 
+//added by devanshi for PL ticket #2276
+        if (CheckHtmlTag($("#txtTitle").val()) == false) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+            $("#txtTitle").addClass("error");
+            iserror = true;
         }
-
         if (!iserror) {
             if ($("#hdnIsBudgetAllocated").val() == "True") {
                 var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');

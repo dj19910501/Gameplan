@@ -219,7 +219,20 @@
             }
         });
     }
+    function CheckHtmlTag(inputval) {
+        var regex = /(>|<)/m; // validation for not allowing < and > 
+        var reg = /<[a-zA-Z|?!]|<(.|\n)*?>/g; // validation for not allowing htmltag means <script>, <dfg>
 
+        if (reg.test(inputval) == true) {
+
+            var ErrorText = 'do not allow HTMLTAGS';
+
+            //(ErrorText);
+            return false;
+        }
+        else
+            return true;
+    }
     function CheckDataInconsistency() {
         if ('@Sessions.IsDisplayDataInconsistencyMsg' == 'True') {
             var IsSessionClient = readCookie('DataClientId' + '@Sessions.User.ClientId.ToString().ToLower()');

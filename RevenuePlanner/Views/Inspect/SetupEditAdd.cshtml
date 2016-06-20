@@ -1023,8 +1023,15 @@
             $("#Description").addClass("error");
             $('#InspectTab').removeClass('SpanDisable');
             return false;
-        }
+        }  
+//added by devanshi for PL ticket #2276
+        if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+            $("#txtTacticTitle").addClass("error");
+            iserror = true;
+            return false;
 
+        }
         var sdate = $('#t_startdate').val();
         var edate = $('#t_enddate').val();
         if (!isDate(sdate)) {

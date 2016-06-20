@@ -814,7 +814,14 @@
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
+//added by devanshi for PL ticket #2276
+        if (CheckHtmlTag($("#txtTitle").val()) == false) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+            $("#txtTitle").addClass("error");
+            iserror = true;
+            return false;
 
+        }
         sdate = $('#t_startdate').val();
         edate = $('#t_enddate').val();
         var psdate = $('#hdnPStartDate').val();

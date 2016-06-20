@@ -277,8 +277,13 @@
             $('#txtBudget').val($(this).val());
             changeBudgetValues();
         });
-
-
+        debugger;
+        $('.nl-field').each(function () {
+            debugger;
+            if ($(this).next().attr('datadefault') == "Title") {
+                $(this).children('a').attr('id', 'lnkTitle');
+            }
+        });
         $("#button-save").click(function () {
             $("#button-save").attr('disabled', 'disabled');
             var isError = false;
@@ -354,7 +359,10 @@
             else {
                 $("#errorMsg").css("display", "none");
             }
-
+            if (CheckHtmlTag($("#lnkTitle").html()) == false) {
+                alert('@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString');
+                return false;
+            }
             var TotalAllocatedCampaignBudget = $('#TotalAllocatedCampaignBudget').val();
             var totalBudget = parseInt(ReplaceCC($("#txtBudget").val()));
 
@@ -497,7 +505,7 @@
                 GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
                 GetPlan(CurrentPlanId, IsPlanChangefromheader);
-             
+
             }
         });
     }
@@ -703,4 +711,25 @@
         var queryStringArr = [];
         formSubmitEvent(url, queryStringArr);
     });
+    function getblurvalue(sender) {
+        var aHrefElement = $("a")
+        if ($(sender).parent().parent().parent().find(aHrefElement).attr("id") == "lnkTitle") {
+            if (CheckHtmlTag($(sender).val()) == false) {
+                alert('@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString');
+                var a = $(sender).data('placeholder');
+                $(sender).attr('placeholder', a);
+                if (a == "Plan Title")
+                    $(sender).val('');
+                else
+                    $(sender).val(a);
+                return false;
+            }
+        }
+        $(sender).attr('placeholder', $(sender).data('placeholder'));
+        var IsEditable = $(sender).attr('isedit');
+        var TextValue = $(sender).val();
+        if (IsEditable != null && IsEditable != 'undefined' && IsEditable != '' && IsEditable.toLowerCase() == "true") {
+            $(sender).attr('value', TextValue);
+        }
+    }
 </script>
