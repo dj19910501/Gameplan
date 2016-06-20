@@ -11903,22 +11903,28 @@ div.clue-bottom-default .cluetip-arrows {
     margin: 0;
     padding: 0;
     border-bottom: 1px solid #c9c9c9;
+    display: table; /*Added for #2257 - Bhumika */
+    width:99.9%;
 }
 
-.report-heder-tab li {
+.report-heder-tab > ul > li { /*Edited for #2257 - Bhumika */
     border-right: 1px solid #c9c9c9;
-    display: inline-block;
+    display: table-cell;
     line-height: 38px;
     margin-right: -3.3px;
-    padding: .5% 6%;
-    width: 12.96%;
+    padding: .5% 0;
+    /*width: 19%;*/
     background-color: #f2f2f2;
+    text-align: center;
+    vertical-align:middle;
 }
 
-    .report-heder-tab li:last-child {
-        border-right: medium none;
-    }
-
+.report-heder-tab li:last-child {
+    border-right: medium none;
+}
+.report-heder-tab > ul > li.open {
+    background: #dff0f8 none repeat scroll 0 0;
+}
 .report-heder-tab .budget,
 .report-heder-tab .conversion,
 .report-heder-tab .overview,
@@ -11978,17 +11984,98 @@ div.clue-bottom-default .cluetip-arrows {
     height: 40px;
     line-height: 40px;
     padding: 3px 15px;
+    
+}
+.report-heder-tab  li  a {
+    display: inline-block;/*Added for #2257 - Bhumika */
+    text-align: center;
+    width: 100%;
+    color: #908d88 !important;
+    cursor: pointer;
+}
+.report-heder-tab .active {
+    background-color: #dff0f8;
 }
 
-.report-heder-tab li a span {
+.report-heder-tab .active a {
+    color: #3f3f3f !important;
+}
+
+.report-heder-tab .active .overview > span.rMenu-icon {
+    background-position: -29px 0 !important;
+}
+
+.report-heder-tab .active .revenue > span.rMenu-icon {
+    background-position: -29px -31px !important;
+}
+
+.report-heder-tab .active .conversion > span.rMenu-icon {
+    background-position: -29px -61px !important;
+}
+
+.report-heder-tab .active .budget > span.rMenu-icon {
+    background-position: -29px -92px !important;
+}
+
+.overview > span.rMenu-icon {
+    background-position: 0 0 !important;
+}
+
+.revenue > span.rMenu-icon {
+    background-position: 0 -31px !important;
+}
+
+.conversion > span.rMenu-icon {
+    background-position: 0 -61px !important;
+}
+
+.budget > span.rMenu-icon {
+    background-position: 0 -92px !important;
+}
+
+
+.report-heder-tab li a span.rMenu-icon, 
+.report-heder-tab li a span.rMenu-iconFa {/*Edited for #2257 - Bhumika */
     background: url(../images/icons-nav-black-reports.png) no-repeat;
     width: 30px !important;
     height: 30px !important;
-    display: block;
-    float: left;
-    margin: 4px 20px 0 0;
+    display: inline-block; /*Edited for #2257 - Bhumika */
+    float: none;
+    /*margin: 4px 20px 0 0;*/
+    vertical-align: middle;
+    margin-right:15px;
+}
+.report-heder-tab li a span.rMenu-iconFa{background:none; font-size:24px}
+.report-heder-tab .overview > span.rMenu-icon {
+    margin-bottom: 5px;
+}
+/* Added for #2257 */
+.report-heder-tab ul li.dropdown ul.dropdown-menu{
+    background: #f2f2f2 none repeat scroll 0 0;
+    border-radius: 0;
+    box-shadow: inherit;
+    left: -1px;
+    margin: 0;
+    padding:0;
+    width: 100%;
+    z-index: 9999;
 }
 
+.report-heder-tab ul li.dropdown ul.dropdown-menu li{
+    border-bottom:1px solid #ccc; 
+}
+.report-heder-tab ul li.dropdown ul.dropdown-menu li:last-child{border:0 none}
+.report-heder-tab ul li.dropdown ul.dropdown-menu a{
+    font-family: proximanova-regular;
+    padding: 6px;
+    width: 95.5%;
+}
+.report-heder-tab .dropdown-menu > li > a:hover,
+.report-heder-tab .dropdown-menu > li > a:focus {
+    background-color: transparent;
+    color:#3f3f3f  !important;
+    background-image:none;
+}
 .revenue-wrapper {
     width: 100%;
 }

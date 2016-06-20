@@ -490,19 +490,38 @@
 
 <div class="report-heder-tab">
    <ul id="ulLeftPane">
-       <li class="active" id="liSummary"><a class="overview"><span></span>OVERVIEW</a></li>
-       <li id="liRevenue"><a class="revenue" ><span></span>REVENUE</a></li>
+       <li class="active" id="liSummary"><a class="overview"><span class="rMenu-icon"></span>OVERVIEW</a></li>
+       <li id="liRevenue"><a class="revenue" ><span class="rMenu-icon"></span>REVENUE</a></li>
        @*<li id="liConversion"><a class="conversion" ><span></span>CONVERSION</a></li>*@
-       <li id="liConversion"><a class="conversion" ><span></span>WATERFALL</a></li> @*--title changed by dashrath prajapati*@
-       <li id="liBudgetreport"><a class="budget" ><span></span>FINANCE</a></li> @*PL#1545 Dashrath Prajapati*@
+       <li id="liConversion"><a class="conversion" ><span class="rMenu-icon"></span>WATERFALL</a></li> @*--title changed by dashrath prajapati*@
+       <li id="liBudgetreport"><a class="budget" ><span class="rMenu-icon"></span>FINANCE</a></li> @*PL#1545 Dashrath Prajapati*@
        @if (DashboardList.Count > 0)
+       {
+       <li id="liid" class="dropdown">
+           <a class="custom dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-target="#"><span class="fa fa-bar-chart rMenu-iconFa" aria-hidden="true"></span>Custom</a>
+           <ul class="dropdown-menu">
+               @foreach (var Dashboard in DashboardList)
+               {
+                   string liid = "CustomReportli" + Dashboard.Id;
+                <li id='@liid'>
+                    <a class="budget">
+                        @Dashboard.DisplayName.ToUpper()
+                    </a>
+                </li>
+               
+               }
+           </ul>
+
+       </li> 
+       }   @*Change for #2257- Bhumika*@
+       @*@if (DashboardList.Count > 0)
        {
            foreach (var Dashboard in DashboardList)
            {
                string liid = "CustomReportli" + Dashboard.Id;
                <li id='@liid'><a class="budget"><span></span>@Dashboard.DisplayName.ToUpper()</a></li>
            }
-       }
+       }*@
    </ul>
 </div>
 
@@ -1049,6 +1068,8 @@
         $('.accordion').on('hidden.bs.collapse', toggleChevron);
         $('.accordion').on('shown.bs.collapse', toggleChevron);
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
+
+        $('#ulLeftPane .dropdown-toggle').dropdown(); // Added for #2257 
     });
 
     function GetLastSetofViews(presetName) {
