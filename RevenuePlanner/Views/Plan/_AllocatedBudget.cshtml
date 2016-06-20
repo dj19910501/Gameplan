@@ -26,11 +26,13 @@
    
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
+<link href="~/Content/css/fileinput.css" rel="stylesheet" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
 <script src="~/Scripts/jquery.cluetip.js"></script>
+<script src="~/Scripts/js/fileinput.js"></script>
 <style>
-    
-       div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell
+
+    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell
     {
         text-align: center;
         padding-left: 0px !important;
@@ -41,52 +43,52 @@
         width: 100% !important;
     }
 
-        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr tr
-        {
-            color: black;
-        }
+    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr tr
+    {
+        color: black;
+    }
 
     div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px
     {
         width: 100% !important;
     }
 
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr
-        {
-            color: black;
-        }
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr
+    {
+        color: black;
+    }
 
-            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.treegrid_cell
-            {
-                text-align: left !important;
-            }
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.treegrid_cell
+    {
+        text-align: left !important;
+    }
 
-            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div
-            {
-                text-align: center;
-            }
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div
+    {
+        text-align: center;
+    }
 
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar.budgetError
-        {
-            background: #ff1e26 none repeat scroll 0 0;
-        }
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar.budgetError
+    {
+        background: #ff1e26 none repeat scroll 0 0;
+    }
 
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar
-        {
-            background: #3fa9f5 none repeat scroll 0 0;
-            bottom: 0;
-            height: 2px !important;
-            left: 0;
-            margin: 0;
-            max-width: 100%;
-            padding: 0;
-            position: absolute;
-        }
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar
+    {
+        background: #3fa9f5 none repeat scroll 0 0;
+        bottom: 0;
+        height: 2px !important;
+        left: 0;
+        margin: 0;
+        max-width: 100%;
+        padding: 0;
+        position: absolute;
+    }
 
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.budgetError, span.budgetError
-        {
-            color: #ff1e26;
-        }
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.budgetError, span.budgetError
+    {
+        color: #ff1e26;
+    }
 
     #gridbox.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td
     {
@@ -100,13 +102,17 @@
         top: 44px !important;
         width: 15px;
     }
-  
+
 
     .clickmeAnchor {
         color: #000 !important;
         cursor: pointer;
     }
 </style>
+@*Added by Rushil Bhuptani on 14/06/2016 for #2227 to refresh grid data after file is uploaded.*@
+<label class="control-label">Select File</label>
+<input id="input-43" name="input43[]" type="file" multiple class="file-loading">
+<div id="errorBlock" class="help-block"></div>
 <div class="tab-content all-height cf">
     <div class="tab-pane active all-height" id="panel-656352">
         <div id="paln-populated-collaborators-panel-wrapper" class="pl20 cf">
@@ -212,6 +218,36 @@
     }).get();
 
     $(document).ready(function () {
+
+        // Added by Rushil Bhuptani on 14/06/2016 for #2227 for initializing file input plugin
+        $("#input-43").fileinput({
+            type: 'POST',
+            showPreview: false,
+            uploadUrl: '@Url.Action("ExcelFileUpload", "Plan")',
+            allowedFileExtensions: ["xls", "xlsx", "csv"],
+            msgInvalidFileExtension: 'Incorrect file format. Please export the file and use that file to upload your changes',
+            elErrorContainer: "#errorBlock"
+
+        });
+
+        // Added by Rushil Bhuptani on 16/06/2016 for #2227 for showing progress bar while importing file.
+        $('#input-43').on('filepreupload', function (event, data, previewId, index) {
+            myApp.showPleaseWait();
+        });
+
+        // Added by Rushil Bhuptani on 15/06/2016 for #2227 to refresh grid data after file is uploaded.
+        $('#input-43').on('fileuploaded', function (event, data, previewId, index) {
+            $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId, function (response, status, xhr) {
+                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
+                ExpandItems();
+            });
+            $("#DivloadPlan").removeClass('margin-top-50');
+
+            myApp.hidePleaseWait();
+        });
+
         $('#errorMessageDuplicatePlan').slideUp(400);
         //The object CurrentTab is initiate in parent of this view
         var TacCustomTitle = "@Common.TacticCustomTitle";

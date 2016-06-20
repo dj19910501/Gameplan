@@ -8967,7 +8967,57 @@ namespace RevenuePlanner.Helpers
 
             return dataset;
         }
+
+        /// <summary>
+        /// Added by Rushil Bhuptani on 15/06/2016 for #2227 
+        /// Method to updated imported excel data in database.
+        /// </summary>
+        /// <param name="dtNew">Datatable containing excel data.</param>
+        /// <param name="isMonthly">Flag to indicate whether data is monthly or quarterly.</param>
+        /// <param name="userId">Id of user.</param>
+        /// <returns>True or false whether data updated successfully or not.</returns>
+        public bool GetPlanBudgetList(DataTable dtNew, bool isMonthly, Guid userId)
+        {
+            try
+            {
+                DataTable datatable = new DataTable();
+                DataSet dataset = new DataSet();
+                MRPEntities db = new MRPEntities();
+                ///If connection is closed then it will be open
+                var Connection = db.Database.Connection as SqlConnection;
+                if (Connection.State == System.Data.ConnectionState.Closed)
+                    Connection.Open();
+                SqlCommand command = null;
+                if (!isMonthly)
+                {
+                    command = new SqlCommand("Sp_GetPlanBudgetDataQuarterly", Connection);
+                }
+                else
+                {
+                    command = new SqlCommand("Sp_GetPlanBudgetDataMonthly", Connection);
+                }
+
+                using (command)
+                {
+
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
+                    command.Parameters.AddWithValue("@ImportData", dtNew);
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    //  SqlDataAdapter adp = new SqlDataAdapter(command);
+                    command.CommandTimeout = 0;
+                    command.ExecuteScalar();
+                    if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
     #endregion
+
 
 }

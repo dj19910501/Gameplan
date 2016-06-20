@@ -23,6 +23,12 @@ using System.Web;
 using System.IO;
 using System.Reflection;
 using System.Web.Caching;
+using System.Web.UI.WebControls;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.Data.OleDb;
 
 /*
  * Added By :
@@ -17839,5 +17845,228 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #endregion
+
+        /// <summary>
+        /// Added by Rushil Bhuptani on 14/06/2016 for ticket #2227
+        /// Import excel file data and update database with imported data.
+        /// </summary>
+        [HttpPost]
+        public ActionResult ExcelFileUpload()
+        {
+            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
+            try
+            {
+                if (Request.Files[0].ContentLength > 0)
+                {
+                    string fileExtension =
+                        System.IO.Path.GetExtension(Request.Files[0].FileName);
+
+                    if (fileExtension == ".xls" || fileExtension == ".xlsx")
+                    {
+                        string fileLocation = Server.MapPath("~/Content/") + Request.Files[0].FileName;
+                        if (System.IO.File.Exists(fileLocation))
+                        {
+
+                            System.IO.File.Delete(fileLocation);
+                        }
+                        Request.Files[0].SaveAs(fileLocation);
+                        string excelConnectionString = string.Empty;
+
+                        if (fileExtension == ".xls")
+                        {
+                            excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+                                                    fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
+                            ds = GetXLS(excelConnectionString);
+                            if (ds == null)
+                            {
+                                return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                            }
+                            dt = ds.Tables[0];
+                        }
+                        else if (fileExtension == ".xlsx")
+                        {
+                            dt = GetXLSX(fileLocation);
+                            if (dt == null)
+                            {
+                                return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                            }
+
+                        }
+
+                        if (dt.Rows.Count == 0 || dt.Rows[0][0] == DBNull.Value)
+                        {
+                            return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        if (Convert.ToInt32(dt.Rows[0][0]) != Sessions.PlanId)
+                        {
+                            return Json(new { msg = "error", error = "Data in excel does not match actual data." }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            if (string.IsNullOrEmpty(row["ActivityId"].ToString().Trim()))
+                            {
+                                return Json(new { msg = "error", error = "ActivityId must have a proper value." }, JsonRequestBehavior.AllowGet);
+                            }
+                        }
+                        var dsOrigninal = new DataSet();
+                        StoredProcedure objSp = new StoredProcedure();
+
+
+                        dt.Columns.RemoveAt(dt.Columns.Count - 1);
+                        dt.Rows.RemoveAt(dt.Rows.Count - 1);
+                        for (int i = 0; i < dt.Columns.Count; i++)
+                        {
+                            for (int j = 0; j < dt.Rows.Count; j++)
+                            {
+                                if (i > 1)
+                                {
+                                    dt.Rows[j][i] = dt.Rows[j][i].ToString().Replace(",", "").Replace("---", "");
+                                }
+
+                            }
+                        }
+                        dt.AcceptChanges();
+
+                        bool isMonthly = dt.Columns.Count > 7;
+
+                        bool isUpdatedSuccessfully = objSp.GetPlanBudgetList(dt, isMonthly, Sessions.User.UserId);
+
+                        if (!isUpdatedSuccessfully)
+                        {
+                            return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+            }
+
+            return new EmptyResult();
+
+
+        }
+
+        /// <summary>
+        /// Added by Rushil Bhuptani on 16/06/2016 for ticket #2227
+        /// Method that store xls file data in dataset.
+        /// </summary>
+        /// <param name="excelConnectionString">OLEDB connection string.</param>
+        /// <returns>Dataset containing xls file data.</returns>
+        private DataSet GetXLS(string excelConnectionString)
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                OleDbConnection excelConnection = new OleDbConnection(excelConnectionString);
+                excelConnection.Open();
+                DataTable dt = new DataTable();
+
+                dt = excelConnection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
+                if (dt == null)
+                {
+                    //return true;
+                }
+                String[] excelSheets = new String[dt.Rows.Count];
+                int t = 0;
+                //excel data saves in temp file here.
+                foreach (DataRow row in dt.Rows)
+                {
+                    excelSheets[t] = row["TABLE_NAME"].ToString();
+                    t++;
+                }
+                OleDbConnection excelConnection1 = new OleDbConnection(excelConnectionString);
+
+
+                string query = string.Format("Select * from [{0}]", excelSheets[0]);
+                using (OleDbDataAdapter dataAdapter = new OleDbDataAdapter(query, excelConnection1))
+                {
+                    dataAdapter.Fill(ds);
+                }
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+
+            return ds;
+        }
+
+        /// <summary>
+        /// Added by Rushil Bhuptani on 16/06/2016 for ticket #2227
+        /// Method that store xlsx file data in data table.
+        /// </summary>
+        /// <param name="fileLocation">Path of file where it is stored.</param>
+        /// <returns>Datatable containing xlsx file data.</returns>
+        private DataTable GetXLSX(string fileLocation)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SpreadsheetDocument doc = SpreadsheetDocument.Open(fileLocation, false))
+                {
+                    //Read the first Sheet from Excel file.
+                    Sheet sheet = doc.WorkbookPart.Workbook.Sheets.GetFirstChild<Sheet>();
+
+                    //Get the Worksheet instance.
+                    Worksheet worksheet = (doc.WorkbookPart.GetPartById(sheet.Id.Value) as WorksheetPart).Worksheet;
+
+                    //Fetch all the rows present in the Worksheet.
+                    IEnumerable<Row> rows = worksheet.GetFirstChild<SheetData>().Descendants<Row>();
+
+                    //Loop through the Worksheet rows.
+                    foreach (Row row in rows)
+                    {
+                        //Use the first row to add columns to DataTable.
+                        if (row.RowIndex.Value == 1)
+                        {
+                            foreach (Cell cell in row.Descendants<Cell>())
+                            {
+                                dt.Columns.Add(GetValue(doc, cell));
+                            }
+                        }
+                        else
+                        {
+                            //Add rows to DataTable.
+                            dt.Rows.Add();
+                            int i = 0;
+                            foreach (Cell cell in row.Descendants<Cell>())
+                            {
+                                dt.Rows[dt.Rows.Count - 1][i] = GetValue(doc, cell);
+                                i++;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            return dt;
+        }
+
+        /// <summary>
+        /// Added by Rushil Bhuptani on 16/06/2016 for ticket #2227
+        /// Get the value of cell from excel sheet.
+        /// </summary>
+        /// <param name="doc">Excel document.</param>
+        /// <param name="cell">Cell of excel document.</param>
+        /// <returns>The value of cell.</returns>
+        private string GetValue(SpreadsheetDocument doc, Cell cell)
+        {
+            string value = cell.CellValue.InnerText;
+            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+            {
+                return doc.WorkbookPart.SharedStringTablePart.SharedStringTable.ChildElements.GetItem(int.Parse(value)).InnerText;
+            }
+            return value;
+        }
     }
 }

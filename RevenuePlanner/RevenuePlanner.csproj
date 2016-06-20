@@ -44,6 +44,10 @@
     <AutoParameterizationWebConfigConnectionStrings>false</AutoParameterizationWebConfigConnectionStrings>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
     <Reference Include="Elmah, Version=1.2.14706.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Exedfsdwdf\Elmah with client ID\Elmah.dll</HintPath>
@@ -185,6 +189,7 @@
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.1.0\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\AuthConfig.cs" />
@@ -324,6 +329,7 @@
     <Content Include="Content\css\DHTMLX\imgs\dhxcalendar_skyblue\dhxcalendar_selector_bottom.gif" />
     <Content Include="Content\css\DHTMLX\imgs\dhxcalendar_skyblue\dhxcalendar_selector_top.gif" />
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_asc.gif" />
+    <Content Include="Content\css\fileinput.css" />
     <Content Include="Content\css\jquery.mCustomScrollbar-new.css" />
     <Content Include="Content\css\style_extended_min_Oct1.css" />
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_desc.gif" />
@@ -650,6 +656,7 @@
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.min.js.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js" />
+    <Content Include="Scripts\js\fileinput.js" />
     <Content Include="Scripts\js\heatmap.js" />
     <Content Include="Scripts\js\highcharts-3d.js" />
     <Content Include="Scripts\js\highcharts-funnel.js" />
