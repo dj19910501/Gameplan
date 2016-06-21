@@ -14,6 +14,8 @@ using System.Text;
 using System.Data.Common;
 using System.Net;
 using System.Data.SqlClient;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 /*
  *  Author: 
@@ -7404,7 +7406,7 @@ namespace Integration.Salesforce
                         }
                     }
 
-                    #region "Linked Tactic: Create comma separated created & updated linked tactic"
+                    #region "Linked Tactic: Create comma separated list of Ids for created & updated linked tactic"
                     if (lstCreateLinkedTacIds != null && lstCreateLinkedTacIds.Count > 0)
                         strCreatedLinkedTacIds = string.Join(",", lstCreateLinkedTacIds);
                     if (lstUpdateLinkedTacIds != null && lstUpdateLinkedTacIds.Count > 0)
@@ -7418,6 +7420,8 @@ namespace Integration.Salesforce
                         strUpdatedTacIds = string.Join(",", lstUpdateTacIds);
                     #endregion
                 }
+
+                #region "Updating the comment section for Campaign, Program, Tactic & Improvement Tactic"
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "UpdateTacticInstanceTacticId_Comment execution start.");
                     MRPEntities mp = new MRPEntities();
                     SqlConnection conn = new SqlConnection();
@@ -7441,6 +7445,7 @@ namespace Integration.Salesforce
                     mp.Dispose();
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "UpdateTacticInstanceTacticId_Comment execution end.");
                 
+                #endregion
 
                 #endregion
 
@@ -7466,8 +7471,13 @@ namespace Integration.Salesforce
             _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
             _isResultError = false;
             /// Set client Id based on integration instance.
-            _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
-            
+            IntegrationInstance objInstance = new IntegrationInstance();
+            objInstance = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId);
+            _clientId = objInstance.ClientId;
+            #region "Get Integration TypeId"
+            int integrationTypeId = 0;
+            integrationTypeId = objInstance.IntegrationTypeId;
+            #endregion
 
             bool IsInstanceSync = false;
             statusList = Common.GetStatusListAfterApproved();
@@ -7494,19 +7504,29 @@ namespace Integration.Salesforce
 
                 #region "Identify 3-Way integration of Marketo-SFDC"
                 string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
-
-                if (db.Models.Any(model => model.IsDeleted == false && model.IntegrationInstanceId == null &&
+                List<SFDCWithMarketoList> lstSFDCMarketoModels = new List<SFDCWithMarketoList>();
+                // Desc ::  Get model list which are configure like salesforce integration instance as pull for marketo and same instance for another model to push salesforce.
+                lstSFDCMarketoModels = db.Models.Where(model => model.IsDeleted == false &&
                    (model.IntegrationInstanceIdINQ == _integrationInstanceId || model.IntegrationInstanceIdMQL == _integrationInstanceId
-                   || model.IntegrationInstanceIdCW == _integrationInstanceId)
-                   && model.IntegrationInstanceMarketoID != null && model.IntegrationInstanceMarketoID != _integrationInstanceId))
+                   || model.IntegrationInstanceIdCW == _integrationInstanceId || model.IntegrationInstanceId == _integrationInstanceId)
+                   && (model.IntegrationInstanceMarketoID != _integrationInstanceId || model.IntegrationInstanceMarketoID == null))
+                   .Select(model => new SFDCWithMarketoList
                 {
-                    _IsSFDCWithMarketo = true;
-                }
-                #endregion
+                       ModelId = model.ModelId,
+                       IntegrationInstanceMarketoID = model.IntegrationInstanceMarketoID,
+                       IntegrationInstanceId = model.IntegrationInstanceId
+                   }).ToList();
 
-                #region "Get Integration TypeId"
-                int integrationTypeId=0;
-                integrationTypeId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IntegrationTypeId;
+                if (lstSFDCMarketoModels.Count > 0 && lstSFDCMarketoModels.Any(model => model.IntegrationInstanceMarketoID != null))
+                    _IsSFDCWithMarketo = true;
+
+                //if (db.Models.Any(model => model.IsDeleted == false &&
+                //       (model.IntegrationInstanceIdINQ == _integrationInstanceId || model.IntegrationInstanceIdMQL == _integrationInstanceId
+                //       || model.IntegrationInstanceIdCW == _integrationInstanceId || model.IntegrationInstanceId == _integrationInstanceId)
+                //       && (model.IntegrationInstanceMarketoID != _integrationInstanceId || model.IntegrationInstanceMarketoID == null)))
+                //{
+                //    _IsSFDCWithMarketo = true;
+                //}
                 #endregion
 
                 #region "Get Field Mappinglist"
@@ -7608,15 +7628,23 @@ namespace Integration.Salesforce
                     spSFDCPUshDataName = "spGetSalesforceData";
 
                 #region "Call SFDC Integration API"
+                HttpResponseMessage response = new HttpResponseMessage();
                 try
                 {
-                    ro = (new ApiIntegration()).SFDCData_Push(spSFDCPUshDataName, lstFiledMap, _applicationId.ToString(), _clientId, lstparams, salesforceCredentials);
+                    response = (new ApiIntegration()).SFDCData_Push(spSFDCPUshDataName, lstFiledMap, _applicationId.ToString(), _clientId, lstparams, salesforceCredentials);
+                    if (response != null && response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        string errMsg = "Integration Web API does not found.";
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), errMsg, Enums.SyncStatus.Error, DateTime.Now));
+                    }
+                    else if (response.IsSuccessStatusCode)
+                        ro = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
                 }
                 catch (Exception)
                 {
                     // This catch remains blank to continue log execution process getting from Integration WEB API.
                 }
-                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Marketo Log detail list get successfully.");
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "SFDC Log detail list get successfully.");
                 
                 #endregion
 
@@ -7965,6 +7993,12 @@ namespace Integration.Salesforce
                         if (pushCntr > 0)
                             db.SaveChanges();
                     }
+                    catch(Exception ex) {
+                        string innerMostMsg = Common.GetInnermostException(ex);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occured while updating campaign's SFDC Id:" + innerMostMsg);
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
                     finally
                     {
                         db.Configuration.AutoDetectChangesEnabled = true;
@@ -8015,6 +8049,13 @@ namespace Integration.Salesforce
                             }
                             // End By Nishant Sheth
                         }
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        string innerMostMsg = Common.GetInnermostException(ex);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occured while updating program's SFDC Id:" + innerMostMsg);
                         if (pushCntr > 0)
                             db.SaveChanges();
                     }
@@ -8073,6 +8114,13 @@ namespace Integration.Salesforce
                         if (pushCntr > 0)
                             db.SaveChanges();
                     }
+                    catch (Exception ex)
+                    {
+                        string innerMostMsg = Common.GetInnermostException(ex);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occured while updating tactic's SFDC Id:" + innerMostMsg);
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
                     finally
                     {
                         db.Configuration.AutoDetectChangesEnabled = true;
@@ -8123,6 +8171,13 @@ namespace Integration.Salesforce
                             }
                             // End By Nishant Sheth
                         }
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        string innerMostMsg = Common.GetInnermostException(ex);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occured while updating improvement campaign's SFDC Id:" + innerMostMsg);
                         if (pushCntr > 0)
                             db.SaveChanges();
                     }
@@ -8179,6 +8234,13 @@ namespace Integration.Salesforce
                         if (pushCntr > 0)
                             db.SaveChanges();
                     }
+                    catch (Exception ex)
+                    {
+                        string innerMostMsg = Common.GetInnermostException(ex);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occured while updating improvement program's SFDC Id:" + innerMostMsg);
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
                     finally
                     {
                         db.Configuration.AutoDetectChangesEnabled = true;
@@ -8229,6 +8291,13 @@ namespace Integration.Salesforce
                             }
                             // End By Nishant Sheth
                         }
+                        if (pushCntr > 0)
+                            db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        string innerMostMsg = Common.GetInnermostException(ex);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occured while updating improvement tactic's SFDC Id:" + innerMostMsg);
                         if (pushCntr > 0)
                             db.SaveChanges();
                     }
@@ -8306,11 +8375,12 @@ namespace Integration.Salesforce
                 Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
             }
 
+            #region "Pull Responses, MQL & CW related functions"
             if (IsInstanceSync)
             {
                 bool isImport = false;
-                IntegrationInstance objInstance = new IntegrationInstance();
-                objInstance = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId));
+                //IntegrationInstance objInstance = new IntegrationInstance();
+                //objInstance = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId));
                 isImport = objInstance != null ? objInstance.IsImportActuals : false;
                 if (isImport)
                 {
@@ -8339,6 +8409,7 @@ namespace Integration.Salesforce
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pulling Data does not procceed due to IsImportActuals field not enabled for this Integration Instance.");
                 }
             }
+            #endregion
             lstSyncError.AddRange(_lstSyncError);
             return _isResultError;
         }
@@ -8466,27 +8537,11 @@ namespace Integration.Salesforce
                 #region "Add data type mismatch message to lstSyncErrror list to display in Summary email"
                 string otherDataType = Enums.ActualFieldDatatype[Enums.ActualFields.Other.ToString()].ToString();
                 string misMatchfields;
-                //int custmId=0;
-                //List<int> lstCustomFieldIds=lstMappingMisMatch.Where(map => map.SourceDatatype == otherDataType && int.TryParse(map.SourceField,out custmId)).Select(key=> int.Parse(key.SourceField)).ToList();
-                //Dictionary<int,string> tblCustomFields = db.CustomFields.Where(custm => lstCustomFieldIds.Contains(custm.CustomFieldId) && custm.IsDeleted==false).ToDictionary(k=> k.CustomFieldId,v=>v.Name);
                 foreach (var Section in lstMappingMisMatch.Select(m => m.Section).Distinct().ToList())
                 {
                     misMatchfields =  string.Empty;
                     misMatchfields = string.Join(",", lstMappingMisMatch.Where(m => m.Section == Section).Select(m => m.SourceField).ToList());
 
-                    // check that any customfield mismatch record exist or not.
-                    //if (lstMappingMisMatch.Any(map => map.Section == Section && map.SourceDatatype == otherDataType && int.TryParse(map.SourceField, out custmId)))
-                    //{
-                    //    //Append comma separated customfield title to misMatchfields variable. 
-                    //    foreach (SalesForceObjectFieldDetails item in lstMappingMisMatch.Where(map => map.Section == Section && map.SourceDatatype == otherDataType && int.TryParse(map.SourceField, out custmId)))
-                    //    {
-                    //        strCustomName=string.Empty;
-                    //        strCustomName=tblCustomFields.Where(custm=> custm.Key.ToString() == item.SourceField).Select(custm=>custm.Value).FirstOrDefault();
-                    //        misMatchfields += "," + strCustomName;
-                    //    }
-                    //}
-                    //misMatchfields = misMatchfields.TrimStart(new char[] { ',' }).TrimEnd(new char[] { ',' });
-                    
                     string msg = "Data type mismatch for " + misMatchfields +" in salesforce for " + Section + ".";
                     Enums.EntityType entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Section, true);
 
@@ -8499,7 +8554,7 @@ namespace Integration.Salesforce
                 try
                 {
                     BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-                    _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
+                    //_mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
 
                     if (_CustomNamingPermissionForInstance)
                     {

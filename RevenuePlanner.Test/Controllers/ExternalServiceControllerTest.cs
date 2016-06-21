@@ -971,5 +971,288 @@ namespace RevenuePlanner.Test.Controllers
         }
 
         #endregion
+
+        #region Display and Save general settings of Salesforce instance
+
+        /// <summary>
+        /// To get general settings of an instance
+        /// </summary>
+        /// <auther>Viral</auther>
+        /// <createddate>17June2016</createddate>
+        [TestMethod]
+        public void GetExternalServiceIntegrationsforSalesforce()
+        {
+            Console.WriteLine("To get general settings of an instance.\n");
+            string strSFDCTitle = Enums.IntegrationType.Salesforce.ToString();
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            int sfdcIntegrationTypeId = db.IntegrationTypes.Where(inst => inst.Title == strSFDCTitle).Select(id => id.IntegrationTypeId).FirstOrDefault();
+            int sfdcIntegrationInstanceId = DataHelper.GetIntegrationInstanceId(strSFDCTitle);
+            //int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == MarketoInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
+            ExternalServiceController controller = new ExternalServiceController();
+            var result = controller.editIntegration(sfdcIntegrationInstanceId, sfdcIntegrationTypeId) as ViewResult;
+            if (result != null)
+            {
+                Assert.AreEqual("edit", result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+
+        /// <summary>
+        /// To test Salesforce integration credentials
+        /// </summary>
+        /// <auther>Viral</auther>
+        /// <createddate>17June2016</createddate>
+        [TestMethod]
+        public void TestSalesforceIntegrationCredentials_withvaliddata()
+        {
+            Console.WriteLine("To test salesforce integration credentials.\n");
+            string strSFDCTitle = Enums.IntegrationType.Salesforce.ToString();
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            ExternalServiceController controller = new ExternalServiceController();
+            IntegrationModel form = new IntegrationModel();
+            IntegrationType objSFDCInstanceTypeId = db.IntegrationTypes.Where(inst => inst.Title == strSFDCTitle).FirstOrDefault();
+            int sfdcInstanceTypeId = objSFDCInstanceTypeId.IntegrationTypeId;
+            int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == sfdcInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
+            var record = db.IntegrationInstances
+                                   .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationInstanceId == IntegrationInstanceId)
+                                   .Select(ii => ii).FirstOrDefault();
+
+            var recordAttribute = db.IntegrationInstance_Attribute
+                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                         .Select(attr => attr).ToList();
+
+            //// Add IntegrationType Attributes data to List.
+            List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
+            foreach (var item in recordAttribute)
+            {
+
+                IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
+                objIntegrationTypeAttributeModel.Attribute = item.IntegrationTypeAttribute.Attribute;
+                objIntegrationTypeAttributeModel.AttributeType = item.IntegrationTypeAttribute.AttributeType;
+                objIntegrationTypeAttributeModel.IntegrationTypeAttributeId = item.IntegrationTypeAttribute.IntegrationTypeAttributeId;
+                objIntegrationTypeAttributeModel.IntegrationTypeId = item.IntegrationTypeAttribute.IntegrationTypeId;
+                objIntegrationTypeAttributeModel.Value = item.Value;
+                lstObjIntegrationTypeAttributeModel.Add(objIntegrationTypeAttributeModel);
+            }
+
+            if (lstObjIntegrationTypeAttributeModel.Count == 0)
+            {
+                lstObjIntegrationTypeAttributeModel = null;
+            }
+            //Valid credentials of an instance
+            if (record != null)
+            {
+                form.Instance = record.Instance;
+                form.Username = record.Username;
+                form.Password = Common.Decrypt(record.Password);
+                form.IntegrationInstanceId = record.IntegrationInstanceId;
+                form.IntegrationTypeId = record.IntegrationTypeId;
+                form.IsActive = record.IsActive;
+                form.ClientId = Sessions.User.ClientId;
+                form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel; 
+            }
+
+            IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
+            objIntegrationTypeModel.Title = objSFDCInstanceTypeId.Title;
+            objIntegrationTypeModel.Code = objSFDCInstanceTypeId.Code;
+
+            form.IntegrationType = objIntegrationTypeModel;
+
+
+            var result = controller.TestIntegration(form) as JsonResult;
+            if (result != null)
+            {
+                Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+            }
+
+
+        }
+
+        /// <summary>
+        /// To test Salesforce integration credentials
+        /// </summary>
+        /// <auther>Viral</auther>
+        /// <createddate>17June2016</createddate>
+        [TestMethod]
+        public void TestSalesforceIntegrationCredentials_withInvaliddata()
+        {
+            Console.WriteLine("To test salesforce integration credentials.\n");
+            string strSFDCTitle = Enums.IntegrationType.Salesforce.ToString();
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            ExternalServiceController controller = new ExternalServiceController();
+            IntegrationModel form = new IntegrationModel();
+            IntegrationType objSFDCInstanceTypeId = db.IntegrationTypes.Where(inst => inst.Title == strSFDCTitle).FirstOrDefault();
+            int sfdcInstanceTypeId = objSFDCInstanceTypeId.IntegrationTypeId;
+            int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == sfdcInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
+            var recordAttribute = db.IntegrationInstance_Attribute
+                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                         .Select(attr => attr).ToList();
+
+            //// Add IntegrationType Attributes data to List.
+            List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
+            foreach (var item in recordAttribute)
+            {
+
+                IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
+                objIntegrationTypeAttributeModel.Attribute = item.IntegrationTypeAttribute.Attribute;
+                objIntegrationTypeAttributeModel.AttributeType = item.IntegrationTypeAttribute.AttributeType;
+                objIntegrationTypeAttributeModel.IntegrationTypeAttributeId = item.IntegrationTypeAttribute.IntegrationTypeAttributeId;
+                objIntegrationTypeAttributeModel.IntegrationTypeId = item.IntegrationTypeAttribute.IntegrationTypeId;
+                objIntegrationTypeAttributeModel.Value = item.Value;
+                lstObjIntegrationTypeAttributeModel.Add(objIntegrationTypeAttributeModel);
+            }
+
+            if (lstObjIntegrationTypeAttributeModel.Count == 0)
+            {
+                lstObjIntegrationTypeAttributeModel = null;
+            }
+
+
+            form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
+
+            IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
+            objIntegrationTypeModel.Title = objSFDCInstanceTypeId.Title;
+            objIntegrationTypeModel.Code = objSFDCInstanceTypeId.Code;
+
+            form.IntegrationType = objIntegrationTypeModel;
+
+            var result = controller.TestIntegration(form) as JsonResult;
+            if (result != null)
+            {
+                Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+            }
+
+
+        }
+
+
+        /// <summary>
+        /// To Save salesforce settings
+        /// </summary>
+        /// <auther>Viral</auther>
+        /// <createddate>17June2016</createddate>
+        [TestMethod]
+        public void SaveGeneralSalesforceSettings()
+        {
+            Console.WriteLine("To Save general salesforce settings.\n");
+            string strSFDCTitle = Enums.IntegrationType.Salesforce.ToString();
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            ExternalServiceController controller = new ExternalServiceController();
+            IntegrationModel form = new IntegrationModel();
+            IntegrationType objSFDCInstanceTypeId = db.IntegrationTypes.Where(inst => inst.Title == strSFDCTitle).FirstOrDefault();
+            int sfdcInstanceTypeId = objSFDCInstanceTypeId.IntegrationTypeId;
+            int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == sfdcInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
+            var record = db.IntegrationInstances
+                                   .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationInstanceId == IntegrationInstanceId)
+                                   .Select(ii => ii).FirstOrDefault();
+
+            var recordAttribute = db.IntegrationInstance_Attribute
+                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                         .Select(attr => attr).ToList();
+
+            //// Add IntegrationType Attributes data to List.
+            List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
+            foreach (var item in recordAttribute)
+            {
+
+                IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
+                objIntegrationTypeAttributeModel.Attribute = item.IntegrationTypeAttribute.Attribute;
+                objIntegrationTypeAttributeModel.AttributeType = item.IntegrationTypeAttribute.AttributeType;
+                objIntegrationTypeAttributeModel.IntegrationTypeAttributeId = item.IntegrationTypeAttribute.IntegrationTypeAttributeId;
+                objIntegrationTypeAttributeModel.IntegrationTypeId = item.IntegrationTypeAttribute.IntegrationTypeId;
+                objIntegrationTypeAttributeModel.Value = item.Value;
+                lstObjIntegrationTypeAttributeModel.Add(objIntegrationTypeAttributeModel);
+            }
+
+            if (lstObjIntegrationTypeAttributeModel.Count == 0)
+            {
+                lstObjIntegrationTypeAttributeModel = null;
+            }
+
+            //Credentials of an instance
+            if (record != null)
+            {
+                form.Instance = record.Instance;
+                form.Username = record.Username;
+                form.Password = Common.Decrypt(record.Password);
+                form.IntegrationInstanceId = record.IntegrationInstanceId;
+                form.IntegrationTypeId = record.IntegrationTypeId;
+                form.IsActive = record.IsActive;
+                form.ClientId = Sessions.User.ClientId;
+                form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel; 
+            }
+
+            IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
+            objIntegrationTypeModel.Title = objSFDCInstanceTypeId.Title;
+            objIntegrationTypeModel.Code = objSFDCInstanceTypeId.Code;
+
+            form.IntegrationType = objIntegrationTypeModel;
+
+            var recordSync = db.SyncFrequencies
+                                      .Where(freq => freq.IntegrationInstanceId == IntegrationInstanceId && freq.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                                      .Select(freq => freq).FirstOrDefault();
+
+            SyncFrequencyModel objSync = new SyncFrequencyModel();
+            if (recordSync != null)
+            {
+                objSync.Day = !string.IsNullOrEmpty(recordSync.Day) ? recordSync.Day : string.Empty;
+                objSync.DayofWeek = !string.IsNullOrEmpty(recordSync.DayofWeek) ? recordSync.DayofWeek : string.Empty;
+                objSync.Frequency = recordSync.Frequency;
+
+                // Set Time data to SyncFrequencyModel Object.
+                if (recordSync.Time.HasValue)
+                {
+                    if (recordSync.Time.Value.Hours > 12)
+                        objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "PM";
+                    else
+                        objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "AM";
+                }
+                objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;
+            }
+            form.SyncFrequency = objSync;
+
+            var result = controller.SaveGeneralSetting(form) as JsonResult;
+            if (result != null)
+            {
+                Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+            }
+
+
+        }
+
+        #endregion
+
     }
 }

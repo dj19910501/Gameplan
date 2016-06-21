@@ -478,7 +478,7 @@ namespace Integration
         /// to push the data to the Salesforce and get the loglist from Salesforce
         /// </summary>
         /// <returns></returns>
-        public ReturnObject SFDCData_Push(string spName, List<fieldMapping> lstFieldsMap,string AppId, Guid _clientId, List<SpParameters> spParams,Dictionary<string, string> SFDCCredentials)
+        public HttpResponseMessage SFDCData_Push(string spName, List<fieldMapping> lstFieldsMap, string AppId, Guid _clientId, List<SpParameters> spParams, Dictionary<string, string> SFDCCredentials)
         {
             #region "Declare local varibles"
             int CommonWebAPITimeout = 0;
@@ -515,11 +515,19 @@ namespace Integration
             //Uri baseAddress = new Uri("http://localhost:54371/");
             client.BaseAddress = baseAddress;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-            HttpResponseMessage response = client.PostAsJsonAsync("api/Sfdc/SalesForce_PushObject", obj).Result;
-            ReturnObject ro = new ReturnObject();
-            if (response.IsSuccessStatusCode)
-                ro = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
-            return ro;
+            HttpResponseMessage response = new HttpResponseMessage();
+            try
+            {
+                response = client.PostAsJsonAsync("api/Sfdc/SalesForce_PushObject", obj).Result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            //ReturnObject ro = new ReturnObject();
+            //if (response.IsSuccessStatusCode)
+            //    ro = JsonConvert.DeserializeObject<ReturnObject>(response.Content.ReadAsStringAsync().Result);
+            return response;
         }
 
         #endregion

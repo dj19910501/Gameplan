@@ -15317,7 +15317,7 @@ END
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[spGetSalesforceMarketo3WayData]    Script Date: 06/10/2016 11:02:02 AM ******/
+/****** Object:  StoredProcedure [dbo].[spGetSalesforceMarketo3WayData]    Script Date: 06/21/2016 1:27:17 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -15351,9 +15351,6 @@ BEGIN
 		Declare @entityTypeTac varchar(255)='Tactic'
 		Declare @entityTypeProg varchar(255)='Program'
 		Declare @entityTypeCampgn varchar(255)='Campaign'
-		Declare @entityTypeImprvTac varchar(255)='ImprovementTactic'
-		Declare @entityTypeImprvProg varchar(255)='ImprovementProgram'
-		Declare @entityTypeImprvCamp varchar(255)='ImprovementCampaign'
 		Declare @entityTypeIntegrationInstance varchar(255)='IntegrationInstance'
 		-- END: Entity Type variables
 
@@ -15437,9 +15434,9 @@ BEGIN
 					-- START: Identify 3 Way integration between Marketo & SFDC - Create hierarchy in SFDC 
 					BEGIN
 						Declare @isSyncSFDCWithMarketo bit='1'
-						Declare @ModelIds varchar(max)=''
-						SELECT @ModelIds = ISNULL(@ModelIds  + ',','') + (mdlId)
-						FROM (Select DISTINCT Cast (ModelId as varchar(max)) mdlId from Model where ((IsNull(IsDeleted,'0')='0') AND (IsNull(IntegrationInstanceId,0)=0) AND (IntegrationInstanceMarketoID>0) AND IntegrationInstanceMarketoID<>@id AND (IntegrationInstanceIdINQ=@id OR IntegrationInstanceIdMQL=@id OR IntegrationInstanceIdCW=@id))) AS planIds
+						--Declare @ModelIds varchar(max)=''
+						--SELECT @ModelIds = ISNULL(@ModelIds  + ',','') + (mdlId)
+						--FROM (Select DISTINCT Cast (ModelId as varchar(max)) mdlId from Model where ((IsNull(IsDeleted,'0')='0') AND (IntegrationInstanceMarketoID<>@id OR (IsNull(IntegrationInstanceMarketoID,0)=0)) AND (IntegrationInstanceIdINQ=@id OR IntegrationInstanceIdMQL=@id OR IntegrationInstanceIdCW=@id OR IntegrationInstanceId=@id))) AS planIds
 					END
 
 					-- START: Get Tactic Data by Instance Id
@@ -15455,9 +15452,9 @@ BEGIN
 								join [Plan] as pln on mdl.ModelId = pln.ModelId and pln.IsDeleted=0
 								Join Plan_Campaign as campgn ON campgn.PlanId = pln.PlanId and campgn.IsDeleted=0
 								join Plan_Campaign_Program as prgrm on campgn.PlanCampaignId = prgrm.PlanCampaignId and prgrm.IsDeleted=0
-								join Plan_Campaign_Program_Tactic as tact on prgrm.PlanProgramId = tact.PlanProgramId and tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and tact.IsSyncMarketo='1' and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete')
+								join Plan_Campaign_Program_Tactic as tact on prgrm.PlanProgramId = tact.PlanProgramId and tact.IsDeleted=0 and tact.IsDeployedToIntegration='1' and ( (tact.IsSyncMarketo='1') OR (tact.IsSyncSalesForce='1') ) and (tact.[Status]='Approved' or tact.[Status]='In-Progress' or tact.[Status]='Complete')
 								where  mdl.ModelId IN (
-														Select DISTINCT ModelId from Model where ((IsNull(IsDeleted,'0')='0') AND (IsNull(IntegrationInstanceId,0)=0) AND (IntegrationInstanceMarketoID>0) AND IntegrationInstanceMarketoID<>@id AND (IntegrationInstanceIdINQ=@id OR IntegrationInstanceIdMQL=@id OR IntegrationInstanceIdCW=@id))
+														Select DISTINCT ModelId from Model where ((IsNull(IsDeleted,'0')='0') AND (IntegrationInstanceMarketoID<>@id OR (IsNull(IntegrationInstanceMarketoID,0)=0)) AND (IntegrationInstanceIdINQ=@id OR IntegrationInstanceIdMQL=@id OR IntegrationInstanceIdCW=@id OR IntegrationInstanceId=@id))
 													   ) and mdl.[Status]='Published' and mdl.IsActive='1'
 							),
 							 tactList AS (
@@ -15713,9 +15710,8 @@ BEGIN
 	
 END
 
-
-
 GO
+
 --- END: PL ticket #2251 related SPs & Functions --------------------
 
 -- Added by Komal Rawal
@@ -15743,11 +15739,11 @@ GO
 -- Added on :: 17-June-2016
 -- Desc :: Insert Campaign,Program,Tactic & Improvement Tactic Comment.
 
-/****** Object:  StoredProcedure [dbo].[UpdateTacticInstanceTacticId_Comment_API]    Script Date: 06/17/2016 5:34:36 PM ******/
+/****** Object:  StoredProcedure [dbo].[UpdateTacticInstanceTacticId_Comment_API]    Script Date: 06/21/2016 1:27:17 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdateTacticInstanceTacticId_Comment_API]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[UpdateTacticInstanceTacticId_Comment_API]
 GO
-/****** Object:  StoredProcedure [dbo].[UpdateTacticInstanceTacticId_Comment_API]    Script Date: 06/17/2016 5:34:36 PM ******/
+/****** Object:  StoredProcedure [dbo].[UpdateTacticInstanceTacticId_Comment_API]    Script Date: 06/21/2016 1:27:17 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -15897,6 +15893,5 @@ BEGIN
     
 END
 
-
-
 GO
+
