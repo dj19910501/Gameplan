@@ -5115,7 +5115,7 @@ margin-right:12px;
 
 .user-table table th {
     font-size: 14px;
-    color: grey;
+    color: #3e3f37;
     font-family: source_sans_prosemibold;
     font-weight: 400;
     border-right: 1px solid #a6a6a6;/*by bheru 1-11-2015*/
@@ -5139,7 +5139,7 @@ table.myteam tbody tr > td:last-child {
         line-height: normal;
         margin: 0 4px;
         vertical-align: middle;
-        color: grey;
+        color: #3e3f37;
     }
 /*by bheru 28-10-2015*/
 /*.table td,
@@ -5159,7 +5159,7 @@ table.myteam tbody tr > td:last-child {
 
 
 .user-table table.myteam {
-    color: grey;
+    color: #3e3f37;
     font-family: source_sans_proregular;
 }
 

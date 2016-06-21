@@ -15733,7 +15733,7 @@ GO
 -- Added by Komal Rawal
 -- Added on :: 13-June-2016
 -- Desc :: Update isowner flag for existing data.
-IF (EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '[Budget_Permission]'))
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Budget_Permission]') AND type in (N'U'))
 BEGIN
 UPDATE [dbo].[Budget_Permission]
 SET IsOwner = 1 WHERE UserId = CreatedBy
