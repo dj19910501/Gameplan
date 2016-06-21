@@ -430,7 +430,6 @@
                   }
 
                   else if (activeTab == TabReview) {
-
                       var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
                       if (ReturnParameter == false) {
                           return false;
@@ -493,11 +492,12 @@
                     return false;
                 }
             }
-            // Added by Arpita Soni for Ticket #2237 on 06/09/2016
-            else if (activeTab = TabLineItem) {
+                // Added by Arpita Soni for Ticket #2237 on 06/09/2016
+                //Modified by Komal for #2296
+            else if (activeTab == TabLineItem) {
                     $('#InspectTab').removeClass('SpanDisable');
             }
-            else if (activeTab = TabReview) {
+            else if (activeTab == TabReview) {
                 var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
 
                 if (ReturnParameter == false) {
