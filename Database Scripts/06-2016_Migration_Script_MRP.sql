@@ -13461,12 +13461,17 @@ BEGIN
 	DROP PROCEDURE [dbo].[GetDashboarContentData]
 END
 
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetDashboardContentData]') AND type in (N'P', N'PC'))
+BEGIN
+	DROP PROCEDURE [dbo].[GetDashboardContentData]
+END
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[GetDashboarContentData]
+CREATE PROCEDURE [dbo].[GetDashboardContentData]
 	-- Add the parameters for the stored procedure here
 	@UserId varchar(max),
 	@DashboardID int = 0

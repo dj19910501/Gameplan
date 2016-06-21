@@ -28,7 +28,7 @@ SET @CustomQuery='
 		SET @DashboardId = (SELECT DashboardId FROM @TempTable WHERE id = @intFlag)
 
 		INSERT INTO '+@DBName+'.dbo.User_Permission
-		SELECT @DashboardId, NULL, UA.UserId, GETDATE(), ''14D7D588-CF4D-46BE-B4ED-A74063B67D66'', ''View'', NULL
+		SELECT @DashboardId, NULL, UA.UserId, GETDATE(), UA.UserId, ''View'', NULL
 		FROM '+@AuthDBName+'.dbo.User_Application UA
 		INNER JOIN '+@AuthDBName+'.dbo.[Application] App ON (App.ApplicationId = UA.ApplicationId AND App.Code = ''MRP'' AND App.IsDeleted = 0)
 		INNER JOIN '+@AuthDBName+'.dbo.[User] Usr ON (Usr.UserId = UA.UserId AND Usr.IsDeleted = 0)
