@@ -237,6 +237,11 @@
 
         // Added by Rushil Bhuptani on 15/06/2016 for #2227 to refresh grid data after file is uploaded.
         $('#input-43').on('fileuploaded', function (event, data, previewId, index) {
+           
+            // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
+            if (data.response.conflict == true) {
+             ShowMessage(false,data.response.message);
+            }
             $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId, function (response, status, xhr) {
                 if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';

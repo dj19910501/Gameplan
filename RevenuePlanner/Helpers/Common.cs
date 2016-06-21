@@ -8975,8 +8975,8 @@ namespace RevenuePlanner.Helpers
         /// <param name="dtNew">Datatable containing excel data.</param>
         /// <param name="isMonthly">Flag to indicate whether data is monthly or quarterly.</param>
         /// <param name="userId">Id of user.</param>
-        /// <returns>True or false whether data updated successfully or not.</returns>
-        public bool GetPlanBudgetList(DataTable dtNew, bool isMonthly, Guid userId)
+        /// <returns>Dataset with conflicted ActivityIds.</returns>
+        public DataSet GetPlanBudgetList(DataTable dtNew, bool isMonthly, Guid userId)
         {
             try
             {
@@ -9004,16 +9004,18 @@ namespace RevenuePlanner.Helpers
                     command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
                     command.Parameters.AddWithValue("@ImportData", dtNew);
                     command.Parameters.AddWithValue("@UserId", userId);
-                    //  SqlDataAdapter adp = new SqlDataAdapter(command);
+                    SqlDataAdapter adp = new SqlDataAdapter(command);
                     command.CommandTimeout = 0;
-                    command.ExecuteScalar();
+
+                    // Modified by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
+                    adp.Fill(dataset);
                     if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
                 }
-                return true;
+                return dataset;
             }
             catch (Exception ex)
             {
-                return false;
+                return null;
             }
         }
     }

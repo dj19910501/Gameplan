@@ -17932,11 +17932,17 @@ namespace RevenuePlanner.Controllers
 
                         bool isMonthly = dt.Columns.Count > 7;
 
-                        bool isUpdatedSuccessfully = objSp.GetPlanBudgetList(dt, isMonthly, Sessions.User.UserId);
+                        var dataResponse = objSp.GetPlanBudgetList(dt, isMonthly, Sessions.User.UserId);
 
-                        if (!isUpdatedSuccessfully)
+                        if (dataResponse == null)
                         {
                             return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
+                        if (dataResponse.Tables[0].Rows.Count > 0)
+                        {
+                            return Json(new { conflict = true, message = "Tactics that were not part of exported file were not added or updated." }, JsonRequestBehavior.AllowGet);
                         }
                     }
                 }
