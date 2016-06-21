@@ -10370,6 +10370,7 @@ namespace RevenuePlanner.Controllers
             {
                 return null;
             }
+            ViewBag.IsCreated = true;
             ViewBag.RedirectType = false;
 
             /// Get LineItemTypes List by ModelId for current PlanId.

@@ -17,6 +17,7 @@
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
+    bool isCreated = Convert.ToBoolean(ViewBag.IsCreated);
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxTreeGrid.js")">
@@ -197,6 +198,7 @@
     @Html.HiddenFor(model => model.PlanTacticId, new { id = "PlanTacticId" })
     @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
+    @Html.HiddenFor(model => model.PlanId, new { id="hdnPlanId"})
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom:0px;">
 
         <div class="span6" id="inspect-modal-left-column1">
@@ -241,7 +243,12 @@
 
             @if (!isOtherLineitem)
             {
-                <p>@Html.Raw("Line Item Cost")</p>
+                <p>@Html.Raw("Line Item Cost") 
+            @if (!isCreated)
+            { 
+                <a href="#" class="allocatecost" style="float:right;text-decoration:underline;">Allocate cost</a>
+            }
+             </p>
                 @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate input-setup", id = "txtLineItemCost" });
             }
             else
@@ -1002,7 +1009,16 @@
         //$('.dropdown_new_btn').click();
         //$("#treeviewddl").css("width","0px");
         //$("#treeviewddl").css("display","none");
-
+        //added by devanshi reg pl #2213
+        $(".allocatecost").on("click", function (e) {
+            var result = SetupSaveLineitem();
+            if (result) {
+                var lineitemid = $("#PlanLineItemId").val();
+                var pid = $("#hdnPlanId").val();
+                var redirecturl = '@Url.Action("Budgeting", "Plan")' + '?PlanId=' + pid + '&selectedid=' + lineitemid + '&type=plan&ItemType=LineItem';
+                window.location = redirecturl;
+            }
+        });
     });
 
     // Add By Nishant Sheth

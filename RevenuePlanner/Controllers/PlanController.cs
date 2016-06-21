@@ -6738,7 +6738,7 @@ namespace RevenuePlanner.Controllers
         /// View fro the initial render page 
         /// </summary>
         /// <returns></returns>
-        public ActionResult Budgeting(int PlanId = 0, bool isGridView = false) // Added by Komal Rawal for 2013 to identify grid view
+        public ActionResult Budgeting(int PlanId = 0, bool isGridView = false, int selectedid=0) // Added by Komal Rawal for 2013 to identify grid view // add selectedid by devanshi for pl #2213
         {
             // Added by Arpita Soni for Ticket #2202 on 05/24/2016 
             if (PlanId == 0)
@@ -6857,7 +6857,9 @@ namespace RevenuePlanner.Controllers
 
                 planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(PlanId, onlyplan: true);
                 ViewBag.IsPlanCreateAll = IsPlanCreateAll;
-                ViewBag.IsQuarter = IsQuarter;
+                ViewBag.IsQuarter = IsQuarter;	
+//added by devanshi for PL #2213
+                ViewBag.SelectedId = selectedid.ToString();
                 #endregion
             }
             catch (Exception e)

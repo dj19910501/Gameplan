@@ -156,7 +156,12 @@
             <span style="min-width: 100%; position: relative; display: block;">
                 @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)Model.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
             </span>
-            <p>Tactic Planned Cost</p>
+            <p>Tactic Planned Cost 
+            @if (IsTackticAddEdit && !isCreated)
+            {
+                <a href="#" class="allocatecost" style="float:right;text-decoration:underline;">Allocate cost</a>
+            }
+        </p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Start Date</p>
             <span style="position: relative;">
@@ -883,6 +888,16 @@
           $("#ddlcampaign").val(htmlDecode($("#ddlcampaign").val())); // added by dashrath prajapati for pl#1916 Ampersand
           $("#ddlProgram").val(htmlDecode($("#ddlProgram").val()));  // added by dashrath prajapati for pl#1916 Ampersand
 
+          //added by devanshi reg pl #2213
+          $(".allocatecost").on("click", function (e) {
+              var result = SetupSavetactic();
+              if (result) {
+                  var tacticid = $("#hdnPlanTacticId").val();
+                  var pid = $("#hdnPlanId").val();
+                  var redirecturl = '@Url.Action("Budgeting", "Plan")' + '?PlanId=' + pid + '&selectedid=' + tacticid + '&type=plan&ItemType=Tactic';
+                  window.location = redirecturl;
+              }
+          });
       });
     function loadChildProgramList(parentOption, id) {
         $.ajax({

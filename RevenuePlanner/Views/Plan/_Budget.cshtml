@@ -389,6 +389,38 @@
         //    $('.treegrid_cell').find('img').css('display', 'none');
 
         //}
+        //added by devanshi for pl ticket #2213
+        var selectedid = $("#hdnSelectedTacticLineItemId").val();
+        if (selectedid != "0") {
+            var selectedrowid= "";
+            var selecteditemtype=$("#hdnSelectedItemType").val();
+            if(selecteditemtype.toLowerCase()=='tactic')
+                selectedrowid='tacticcpt_' + selectedid;
+            else if(selecteditemtype.toLowerCase()=='lineitem')
+                selectedrowid='lineitemcptl_' + selectedid;
+         
+            HomeGrid.forEachRow(function (rowid) {
+
+                if (rowid == selectedrowid) {
+                    var pid = HomeGrid.getParentId(rowid);
+                    HomeGrid.openItem(pid);
+                    HomeGrid.openItem(HomeGrid.getParentId(pid));
+                    HomeGrid.openItem(HomeGrid.getParentId(HomeGrid.getParentId(pid)));
+                    if(selecteditemtype.toLowerCase()=='lineitem')
+                    {
+                        HomeGrid.openItem(HomeGrid.getParentId(HomeGrid.getParentId(HomeGrid.getParentId(pid))));
+                    }
+
+                   HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+
+                    if ($("#gridbox").find(".rowselected").length >= 1) {
+                        var scrolltop = $(".rowselected").offset().top;
+                        $(window).scrollTop(scrolltop - 100);
+                    }
+                }
+            });
+        }
+        //end
     }
     
     function SetHeader() {

@@ -33,6 +33,11 @@
    var BudgetingCurrentTab = "aAllocated";
    var BudgetingCurrentPlanId = 0;
    var IsGridView = (bool)ViewBag.GridView; //Added by Komal Rawal for 2013 Home/Plan Layout changes
+ // Added by devanshi for PL #2213
+   var SelectedId = string.Empty;
+   SelectedId = ViewBag.SelectedId.ToString();
+   string ItemType = Request.QueryString["ItemType"] != null ? Convert.ToString(Request.QueryString["ItemType"]) : "";
+
 }
 
 @section PlanHeader{
@@ -92,7 +97,8 @@
 @Html.Hidden("hdnBudgetingIsSave", BudgetingIsSave)
 @Html.Hidden("hdnRequestedModule", RequestedModule)
 @Html.Hidden("hdnBudgetingCurrentPlanId", BudgetingCurrentPlanId)
-
+@Html.Hidden("hdnSelectedTacticLineItemId", SelectedId)
+@Html.Hidden("hdnSelectedItemType", ItemType)
 <div id="listingsuccessMessage" class="alert alert-success message-position" style="display: none;">
     <a class="close">×</a>
     <strong>Success.</strong> <span id="listingspanMessageSuccess"></span>

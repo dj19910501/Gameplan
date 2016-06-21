@@ -399,6 +399,28 @@
         //    $('.treegrid_cell').find('img').css('display', 'none');
 
         //}
+        //added by devanshi for pl ticke #2213
+        var selectedid = $("#hdnSelectedTacticLineItemId").val();
+        if (selectedid != "0") {
+            var selectedrowid = 'tactic' + selectedid;
+            HomeGrid.forEachRow(function (rowid) {
+                if (rowid == selectedrowid) {
+                    var pid = HomeGrid.getParentId(rowid);
+                    HomeGrid.openItem(pid);
+                    HomeGrid.openItem(HomeGrid.getParentId(pid));
+                    HomeGrid.openItem(HomeGrid.getParentId(HomeGrid.getParentId(pid)));
+
+                    HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+
+                    if ($("#gridbox").find(".rowselected").length >= 1) {
+                        var scrolltop = $(".rowselected").offset().top;
+                        $(window).scrollTop(scrolltop - 100);
+                    }
+                }
+            });
+        }
+    //end
+
     }
 
     function SetHeader() {
