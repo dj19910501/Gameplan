@@ -11937,12 +11937,6 @@ div.clue-bottom-default .cluetip-arrows {
     background-color: #dff0f8;
 }
 
-    .report-heder-tab .active .budget,
-    .report-heder-tab .active .conversion,
-    .report-heder-tab .active .overview,
-    .report-heder-tab .active .revenue {
-        color: #3f3f3f !important;
-    }
 
         .report-heder-tab .active .overview > span {
             background-position: -29px 0 !important;
@@ -11997,7 +11991,7 @@ div.clue-bottom-default .cluetip-arrows {
     background-color: #dff0f8;
 }
 
-.report-heder-tab .active a {
+.report-heder-tab ul > li.active > a {
     color: #3f3f3f !important;
 }
 
@@ -12068,8 +12062,13 @@ div.clue-bottom-default .cluetip-arrows {
 .report-heder-tab ul li.dropdown ul.dropdown-menu a{
     font-family: proximanova-regular;
     padding: 6px;
-    width: 95.5%;
+    width: 94%;
+    white-space: normal; 
+    text-align:left;
+    font-size:13px;
 }
+.report-heder-tab ul li.dropdown ul.dropdown-menu a .fa{margin-right:4px}
+.report-heder-tab .dropdown-menu > li.selected a,
 .report-heder-tab .dropdown-menu > li > a:hover,
 .report-heder-tab .dropdown-menu > li > a:focus {
     background-color: transparent;
@@ -12149,6 +12148,7 @@ div.clue-bottom-default .cluetip-arrows {
 
 .revenue-graph {
     width: 100%;
+    overflow:auto;
 }
 
     .revenue-graph .revenue-graph-info {
@@ -15359,6 +15359,19 @@ input[type="search"].ExpInput {
     padding-top: 5px;
     text-decoration: underline;
 }
+.report-wrap .main-row{
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+}
+.component {
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid #ccc;
+    display: inline-block;
+    margin: 15px;
+    width: 47.8% !important; 
+}
+.report-wrap .main-row .component .highcharts-container{width:100% !important}
 
 a:focus, a:hover{outline:0 none !important}
 
@@ -15425,9 +15438,7 @@ a:focus, a:hover{outline:0 none !important}
  .budgeting-linechart {
  padding: 10px 50px;
 }
- .report-heder-tab li {
- padding: 1% 6%;
-}
+
 .report-btn-group {
  padding: 1% 0 0 2%;
 }
@@ -15450,9 +15461,7 @@ a:focus, a:hover{outline:0 none !important}
  .budgeting-linechart {
  padding: 10px 50px;
 }
- .report-heder-tab li {
- padding: 1% 6%;
-}
+
  #RevenueSparklinecharts .row:last-child {
  border-bottom: none;
 }
@@ -15499,9 +15508,7 @@ a:focus, a:hover{outline:0 none !important}
 .report-btn-group {
  padding: 1% 0 0 2%;
 }
- .report-heder-tab li {
- padding: 1% 6%;
-}
+
  .top-revenue-table table thead tr th:nth-child(1) {
  width: 40%;
 }
@@ -15524,9 +15531,7 @@ a:focus, a:hover{outline:0 none !important}
 .report-btn-group {
  padding: 1% 0 0 2%;
 }
- .report-heder-tab li {
- padding: 1% 6%;
-}
+ 
 }
  @media screen and (max-width: 1366px) {
 .report-btn-group {
@@ -15542,10 +15547,7 @@ a:focus, a:hover{outline:0 none !important}
  .revenue-graph .revenue-graph-info {
  width: 21%;
 }
- .report-heder-tab li {
- padding: 1% 5% !important;
- width: 14.96%;
-}
+
  .top-revenue-table table thead tr th:nth-child(1) {
  width: 40%;
 }
@@ -15597,9 +15599,7 @@ a:focus, a:hover{outline:0 none !important}
  .revenue-graph .revenue-graph-info {
  width: 21%;
 }
- .report-heder-tab li {
- padding: 1% 6%;
-}
+
 }
  @media (max-width: 1306px) {
  .nav-tabs .title-header h2 {
