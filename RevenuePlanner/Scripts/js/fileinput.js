@@ -3161,7 +3161,7 @@
         cancelIcon: '<i class="glyphicon glyphicon-ban-circle"></i>',
         cancelClass: 'btn btn-default',
         uploadIcon: '<i class="glyphicon glyphicon-upload"></i>',
-        uploadClass: 'btn btn-default',
+        uploadClass: 'btn btn-primary',
         uploadUrl: null,
         uploadAsync: true,
         uploadExtraData: {},
