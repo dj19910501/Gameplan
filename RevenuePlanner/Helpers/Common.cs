@@ -8951,7 +8951,7 @@ namespace RevenuePlanner.Helpers
                 Connection.Open();
             SqlCommand command = null;
 
-            command = new SqlCommand("GetDashboarContentData", Connection);
+            command = new SqlCommand("GetDashboardContentData", Connection);
 
             using (command)
             {
