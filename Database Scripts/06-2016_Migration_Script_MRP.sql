@@ -13468,57 +13468,62 @@ GO
 
 CREATE PROCEDURE [dbo].[GetDashboarContentData]
 	-- Add the parameters for the stored procedure here
-	@ClientId varchar(max),
-	@DashboardID int = 0    
+	@UserId varchar(max),
+	@DashboardID int = 0
 AS
 BEGIN
-	IF (@ClientId IS NOT NULL AND @ClientId != '')
+	IF (@UserId IS NOT NULL AND @UserId != '')
 	BEGIN
 		IF (ISNULL(@DashboardID, 0) > 0)
 		BEGIN
-			IF EXISTS (SELECT db.id
-				FROM Dashboard db
-				INNER JOIN Report_Intergration_Conf AS RIC ON (RIC.IdentifierValue = db.id AND TableName = 'Dashboard' AND IdentifierColumn = 'id' AND ClientId = @ClientId)
-				WHERE IsDeleted = 0 AND db.id = @DashboardID)
+			IF EXISTS (SELECT D.id
+					FROM Dashboard D
+                    INNER JOIN User_Permission UP ON d.id = UP.DashboardId AND UP.UserId = @UserId
+					WHERE D.ParentDashboardId IS NULL AND D.IsDeleted = 0 AND d.id = @DashboardID)
 			BEGIN
-				SELECT db.id, Name, DisplayName, DisplayOrder, CustomCSS, [Rows], [Columns], ParentDashboardId, IsDeleted, IsComparisonDisplay, HelpTextId
-				FROM Dashboard db
-				INNER JOIN Report_Intergration_Conf AS RIC ON (RIC.IdentifierValue = db.id AND TableName = 'Dashboard' AND IdentifierColumn = 'id' AND ClientId = @ClientId)
-				WHERE IsDeleted = 0 AND db.id = @DashboardID
+				SELECT DISTINCT D.id,D.Name, D.DisplayName, D.DisplayOrder, D.CustomCSS, [Rows], [Columns], ParentDashboardId, IsDeleted,IsComparisonDisplay=ISNULL(D.IsComparisonDisplay,0), 
+					ISNULL(HelpTextId,0) AS HelpTextId 
+					FROM Dashboard D
+                    INNER JOIN User_Permission UP ON d.id = UP.DashboardId AND UP.UserId = @UserId
+					WHERE D.ParentDashboardId IS NULL AND D.IsDeleted = 0 AND d.id = @DashboardID
+                    ORDER BY D.DisplayOrder
+
 
 				SELECT dc.id, dc.DisplayName, dc.DashboardId, dc.DisplayOrder, dc.ReportTableId, dc.ReportGraphId, dc.Height, dc.Width, dc.Position, dc.IsCumulativeData, dc.IsCommunicativeData, dc.DashboardPageID,					dc.IsDeleted, dc.DisplayIfZero, dc.KeyDataId, dc.HelpTextId
-				FROM DashboardContents AS dc 
-				INNER JOIN Dashboard AS db ON db.id = dc.DashboardId AND db.IsDeleted = 0
-				INNER JOIN Report_Intergration_Conf AS RIC ON (RIC.IdentifierValue = db.id AND TableName = 'Dashboard' AND IdentifierColumn = 'id' AND ClientId = @ClientId)
-				WHERE dc.IsDeleted = 0 AND dc.DashboardId = @DashboardID
+					FROM DashboardContents AS dc 
+					INNER JOIN Dashboard AS D ON D.id = dc.DashboardId AND D.IsDeleted = 0 AND D.ParentDashboardId IS NULL
+					INNER JOIN User_Permission UP ON d.id = UP.DashboardId AND UP.UserId = @UserId
+					WHERE dc.IsDeleted = 0 AND dc.DashboardId = @DashboardID
+					ORDER BY D.DisplayOrder
 			END
 			ELSE
 			BEGIN
-				SELECT 'Client Not Authorize to Access Dashboard'
+				SELECT 'User Not Authorize to Access Dashboard'
 			END
 		END
 		ELSE
 		BEGIN
-			IF EXISTS (SELECT db.id
-						FROM Dashboard AS db
-						INNER JOIN Report_Intergration_Conf RIC ON db.id = RIC.IdentifierValue AND TableName = 'Dashboard' AND IdentifierColumn = 'id' AND ClientId = @ClientId
-						WHERE db.IsDeleted = 0)
+			IF EXISTS (SELECT D.id
+				FROM Dashboard D
+                INNER JOIN User_Permission UP ON d.id = UP.DashboardId  AND UP.UserId = @UserId
+				WHERE D.ParentDashboardId IS NULL AND D.IsDeleted = 0)
 			BEGIN
 
-				SELECT db.id, Name, DisplayName, DisplayOrder, CustomCSS, [Rows], [Columns], ParentDashboardId, IsDeleted, IsComparisonDisplay, HelpTextId
-					FROM Dashboard AS db
-					INNER JOIN Report_Intergration_Conf RIC ON db.id = RIC.IdentifierValue AND TableName = 'Dashboard' AND IdentifierColumn = 'id' AND ClientId = @ClientId
-					WHERE db.IsDeleted = 0
+				SELECT DISTINCT D.id,D.Name, D.DisplayName, D.DisplayOrder, D.CustomCSS, D.[Rows], D.[Columns], D.ParentDashboardId, D.IsDeleted, D.IsComparisonDisplay, D.HelpTextId
+					FROM Dashboard D
+                    INNER JOIN User_Permission UP ON d.id = UP.DashboardId AND UP.UserId = @UserId
+					WHERE D.ParentDashboardId IS NULL AND D.IsDeleted = 0
+                    ORDER BY D.DisplayOrder
 			END
 			ELSE
 			BEGIN
-				SELECT 'No Dashboard Configured For Client'
+				SELECT 'No Dashboard Configured For User'
 			END
 		END
 	END
 	ELSE
 	BEGIN
-		SELECT 'Please Provide Proper ClientId'
+		SELECT 'Please Provide Proper UserId'
 	END
 END
 
