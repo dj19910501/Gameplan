@@ -564,12 +564,20 @@
                     break;
             }
 
-            if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+            //if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+            //    $(".honeycombbox").hide();
+            //}
+            //else {
+
+            //    $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+            //    $(".honeycombbox").show();
+            //}            
+            if (ExportSelectedIds.TaskID.length == 0) {
                 $(".honeycombbox").hide();
             }
             else {
 
-                $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+                $("#totalEntity").text(ExportSelectedIds.TaskID.length);
                 $(".honeycombbox").show();
             }
             //$("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
@@ -4737,20 +4745,20 @@
                     var HasActiveClass = false;
                     if ($('#IsGridView').val() == "True") {
                         HasActiveClass = $("div[altid='" + ExportSelectedIds.TaskID[i] + "']").hasClass("honeycombbox-icon-gantt-Active");
+                        if (HasActiveClass == true) {
+                            htmlstring += '<div class="hc-block"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + ExportSelectedIds.Title[i] + '">' + ExportSelectedIds.Title[i] + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                        }
+                        else {
+
+                            Removefromlist.push(ExportSelectedIds.TaskID[i]);
+
+
+                        }
                     }
                     else {
-                        HasActiveClass = $("div[name1='" + ExportSelectedIds.TaskID[i] + "']").hasClass("honeycombbox-icon-gantt-Active");
-                    }
-                    if (HasActiveClass == true) {
                         htmlstring += '<div class="hc-block"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + ExportSelectedIds.Title[i] + '">' + ExportSelectedIds.Title[i] + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                     }
-                    else {
-
-                        Removefromlist.push(ExportSelectedIds.TaskID[i]);
-
-
-                    }
-
+                    
                 }
             }
 

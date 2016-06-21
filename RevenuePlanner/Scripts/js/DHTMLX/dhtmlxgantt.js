@@ -3072,9 +3072,9 @@ gantt._render_data = function () {
     for (var i = 0; i < renderers.length; i++) {
         renderers[i].render_items(data);
     }
-
+   
     //#1780
-
+   
     if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "") {
         if (ExportSelectedIds.TaskID.length > 0) {
             for (var i = 0; i < ExportSelectedIds.TaskID.length; i++) {
@@ -3084,13 +3084,13 @@ gantt._render_data = function () {
             }
         }
     }
-
-    if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+  
+    if (ExportSelectedIds.TaskID.length == 0) {
         $(".honeycombbox").hide();
     }
     else {
 
-        $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+        $("#totalEntity").text(ExportSelectedIds.TaskID.length);
         $(".honeycombbox").show();
     }
 
@@ -3112,7 +3112,7 @@ gantt._update_layout_sizes = function () {
     //task bars layer
     this.$task_data.style.height = Math.max(this.$task.offsetHeight - this.config.scale_height, 0) + 'px';
 
-    if (gantt.config.smart_rendering) {
+    if (gantt.config.smart_rendering) {       
         this.$task_bg.style.height = gantt.config.row_height * this.getVisibleTaskCount() + "px";
     } else {
         this.$task_bg.style.height = "";
@@ -3324,7 +3324,7 @@ gantt._render_bg_line = function (item) {
     if (gantt.config.smart_rendering) {
         row.style.position = "absolute";
         row.style.top = this.getTaskTop(item.id) + "px";
-        row.style.width = "100%";
+        row.style.width = "100%";     
     }
     row.style.height = (gantt.config.row_height) + "px";
     row.setAttribute(this.config.task_attribute, item.id);
@@ -8531,6 +8531,20 @@ gantt.scrollTo = function (left, top) {
         this.$grid_data.scrollTop = top;
 
         if (gantt.config.smart_rendering) {
+            //Added by Rahul Shah for PL #2300. to maintain honeycomb selection for calendar after applying smart rendering.
+            if ($(".gantt_last_cell").find("div").hasClass("honeycombbox-icon-gantt-Active")) {
+                $(".gantt_last_cell").find("div").removeClass("honeycombbox-icon-gantt-Active")
+
+            }
+            if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "") {
+                if (ExportSelectedIds.TaskID.length > 0) {
+                    for (var i = 0; i < ExportSelectedIds.TaskID.length; i++) {
+                        if (ExportSelectedIds.PlanFlag[i] == 'Calender') {
+                            $("div").find("[name1='" + ExportSelectedIds.TaskID[i] + "']").addClass("honeycombbox-icon-gantt-Active");
+                        }
+                    }
+                }
+            }
             if (this.$grid_data.scrollTop != top) {
                 this.$grid_data.scrollTop = top % gantt.config.row_height;
             }
