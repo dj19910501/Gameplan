@@ -169,6 +169,9 @@
     <Compile Include="Models\IntegrationWorkFrontPortfolio_Mapping.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\IntegrationWorkFrontProgram_Mapping.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IntegrationWorkFrontRequest.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

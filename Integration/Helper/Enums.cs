@@ -23,7 +23,8 @@ namespace Integration.Helper
         public enum WorkFrontTacticApprovalObject
         {
             Project,
-            Request
+            Request,
+            Project2 // Added by Arpita Soni for Ticket #2279 on 06/21/2016
         }
         // Add By Nishant Sheth
         public enum IntegrationTypeAttribute

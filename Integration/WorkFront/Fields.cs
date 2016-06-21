@@ -193,6 +193,8 @@ namespace Integration.WorkFront
             public static readonly GameplanField CAMPAIGN_END = new GameplanField("CampaignEndDate", "Campaign End Date");
             public static readonly GameplanField PROGRAM_START = new GameplanField("ProgramStartDate", "Program Start Date");
             public static readonly GameplanField PROGRAM_END = new GameplanField("ProgramEndDate", "Program End Date");
+			// Added by Arpita Soni for Ticket #2201 on 20/06/2016 to push program as an attribute of WF project
+            public static readonly GameplanField PROGRAM_NAME = new GameplanField("ProgramName", "Program Name");
 
 
             /// <summary>

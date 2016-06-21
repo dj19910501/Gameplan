@@ -17,15 +17,18 @@ namespace RevenuePlanner.Models
         public IntegrationWorkFrontPortfolio()
         {
             this.IntegrationWorkFrontPortfolio_Mapping = new HashSet<IntegrationWorkFrontPortfolio_Mapping>();
+            this.IntegrationWorkFrontProgram_Mapping = new HashSet<IntegrationWorkFrontProgram_Mapping>();
         }
     
         public int Id { get; set; }
         public int IntegrationInstanceId { get; set; }
         public string PortfolioId { get; set; }
         public string PortfolioName { get; set; }
-        public int PlanProgramId { get; set; }
+        public Nullable<int> PlanProgramId { get; set; }
         public bool IsDeleted { get; set; }
+        public Nullable<int> PlanId { get; set; }
     
         public virtual ICollection<IntegrationWorkFrontPortfolio_Mapping> IntegrationWorkFrontPortfolio_Mapping { get; set; }
+        public virtual ICollection<IntegrationWorkFrontProgram_Mapping> IntegrationWorkFrontProgram_Mapping { get; set; }
     }
 }

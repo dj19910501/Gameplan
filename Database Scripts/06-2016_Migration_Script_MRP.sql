@@ -15900,3 +15900,57 @@ END
 
 GO
 
+--===========================================================================================================================================
+/* Start - Added by Arpita Soni for Ticket #2279 on 06/21/2016 */
+
+-- Add column PlanId into IntegrationWorkFrontPortfolios table
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = 'PlanId' AND [object_id] = OBJECT_ID(N'IntegrationWorkFrontPortfolios'))
+BEGIN
+	ALTER TABLE dbo.IntegrationWorkFrontPortfolios ADD PlanId INT NULL
+END
+GO
+
+-- Alter column PlanProgramId into IntegrationWorkFrontPortfolios table
+IF EXISTS(SELECT * FROM sys.columns WHERE [name] = 'PlanProgramId' AND [object_id] = OBJECT_ID(N'IntegrationWorkFrontPortfolios'))
+BEGIN
+	ALTER TABLE dbo.IntegrationWorkFrontPortfolios ALTER COLUMN PlanProgramId INT NULL
+END
+GO
+
+-- Add column IntegrationWorkFrontProgramID into Plan_Campaign table
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = 'IntegrationWorkFrontProgramID' AND [object_id] = OBJECT_ID(N'Plan_Campaign'))
+BEGIN
+	ALTER TABLE dbo.Plan_Campaign ADD IntegrationWorkFrontProgramID NVARCHAR(50) NULL
+END
+GO
+
+-- Create table IntegrationWorkFrontPortfolio_Mapping
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[IntegrationWorkFrontProgram_Mapping]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[IntegrationWorkFrontPortfolio_Mapping](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[PortfolioTableId] [int] NOT NULL,
+	[ProjectId] [nvarchar](50) NOT NULL,
+	[IsDeleted] [bit] NOT NULL,
+ CONSTRAINT [PK_IntegrationWorkFrontPortfolio_Mapping] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+
+-- Create FK on PortfolioTableId column in table IntegrationWorkFrontPortfolio_Mapping  
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PortfolioTableId]') AND parent_object_id = OBJECT_ID(N'[dbo].[IntegrationWorkFrontPortfolio_Mapping]'))
+ALTER TABLE [dbo].[IntegrationWorkFrontPortfolio_Mapping]  WITH CHECK ADD  CONSTRAINT [FK_PortfolioTableId] FOREIGN KEY([PortfolioTableId])
+REFERENCES [dbo].[IntegrationWorkFrontPortfolios] ([Id])
+GO
+
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PortfolioTableId]') AND parent_object_id = OBJECT_ID(N'[dbo].[IntegrationWorkFrontPortfolio_Mapping]'))
+ALTER TABLE [dbo].[IntegrationWorkFrontPortfolio_Mapping] CHECK CONSTRAINT [FK_PortfolioTableId]
+GO
+
+/* End - Added by Arpita Soni for Ticket #2279 on 06/21/2016 */
+--===========================================================================================================================================
+
+

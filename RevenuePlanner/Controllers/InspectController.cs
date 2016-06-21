@@ -6883,7 +6883,9 @@ namespace RevenuePlanner.Controllers
                 IntegrationWorkFrontTacticSetting wfSetting = db.IntegrationWorkFrontTacticSettings.Where(set => set.TacticId == objTactic.PlanTacticId && set.IsDeleted == false).FirstOrDefault();
 
                 //verify we have the information we need
-                if (approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString() && approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString())
+                if (approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString() 
+                    && approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()
+                    && approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project2.ToString())
                 {
                     throw new Exception("Attempted to save WorkFront information without valid Tactic Approval Options");
                 }

@@ -362,21 +362,27 @@
                                     <label id="workfrontTemplate" class="margin-top20">WorkFront Template</label>
                                     <label id="workfront_template" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.WorkFrontTemplate) ">@Html.Raw(tacticReview.WorkFrontTemplate)</label>
                                 </div>
-                                <div class="span2" style="padding-left:40px">
+                                <div class="span2" style="width:24%">
                                     <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
                                     <div class="radio " style="width:100%; float:left;margin-left:20px">
                                         <label class="font-size12">
-                                            <input type="radio" name="optionsRadios" id="workFrontProjectOnApproval" value="Create a Project" checked="" onclick="toggleRequestOptions()">Create a Project
+                                            <input type="radio" name="optionsRadios" id="workFrontProjectOnApproval" value="Create a Project(Program to Portfolio)" checked="" onclick="toggleRequestOptions()">Create a Project (Program to Portfolio)
                                         </label>
                                     </div>
                                     <div class="radio" style="width:100%; float:left; margin-left:20px">
                                         <label class="font-size12">
                                             <input id="workFrontRequestOnApproval" type="radio" name="optionsRadios" value="Create a Request" onclick="toggleRequestOptions()">Create a Request
+                                            @*<span class="fa fa-angle-double-right" style="margin-left:5px"></span>*@
+                                        </label>
+                                    </div>
+                                    <div class="radio" style="width:100%; float:left; margin-left:20px">
+                                        <label class="font-size12">
+                                            <input id="workFrontProject2OnApproval" type="radio" name="optionsRadios" value="Create a Project(Plan to Portfolio)" onclick="toggleRequestOptions()">Create a Project (Plan to Portfolio)
                                             <span class="fa fa-angle-double-right" style="margin-left:5px"></span>
                                         </label>
                                     </div>
                                 </div>
-                                <div id="workFrontRequestOptions" class="span3 margin-bottom20" style="padding-left: 20px;">
+                                <div id="workFrontRequestOptions" class="span3 margin-bottom20" style="padding-left: 20px;float:right">
                                     <div class="cf form-group">
                                         @Html.Label("Request Queue")
                                         <span style="min-width: 100%; position: relative; display: block;">
@@ -743,8 +749,10 @@
 
                 var wfP = document.getElementById("workFrontProjectOnApproval");
                 var wfR = document.getElementById("workFrontRequestOnApproval");
+                var wfP2 = document.getElementById("workFrontProject2OnApproval");
                 wfP.disabled=true;
                 wfR.disabled=true;
+                wfP2.disabled=true;
             }
         }
 
@@ -818,14 +826,19 @@
             var workFrontApproval = @Html.Raw(Json.Encode(Model.WorkFrontTacticApprovalBehavior));
             var requestBtn = document.getElementById('workFrontRequestOnApproval');
             var projectBtn = document.getElementById('workFrontProjectOnApproval');
+            var project2Btn = document.getElementById('workFrontProject2OnApproval');
             if (workFrontApproval == '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()')
             {
                 requestBtn.checked = true;
                 $('#workFrontRequestOptions').addClass("show");
             }
-            else
+            else if (workFrontApproval == '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString()')
             {
                 projectBtn.checked = true;
+                $('#workFrontRequestOptions').addClass("hidden");
+            }
+            else{
+                project2Btn.checked = true;
                 $('#workFrontRequestOptions').addClass("hidden");
             }
         }
@@ -936,9 +949,12 @@
                     requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
                     assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
                 }
-                else
+                else if(document.getElementById('workFrontProjectOnApproval').checked)
                 {
                     wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString()';
+                }
+                else{
+                    wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project2.ToString()';
                 }
             }
             // End - Added by Viral Kaidya for #2002 - Save Sync settings for Workfront on Sync button click
@@ -1147,9 +1163,12 @@
                     requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
                     assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
                 }
-                else
+                else if(document.getElementById('workFrontProjectOnApproval').checked)
                 {
                     wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString()';
+                }
+                else{
+                    wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project2.ToString()';
                 }
             }
 
@@ -1380,11 +1399,13 @@
                     requestQueue = document.getElementById('WorkFrontRequestQueue').value; //value will be the Id of the queue in the table, not the Queue Name
                     assignee = document.getElementById('WorkFrontRequestAssignee').value;  //value will be the Id of the user in the table, not the User Name
                 }
-
             }
-            else
+            else if(document.getElementById('workFrontProjectOnApproval').checked)
             {
                 wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString()';
+            }
+            else{
+                wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project2.ToString()';
             }
         }
 

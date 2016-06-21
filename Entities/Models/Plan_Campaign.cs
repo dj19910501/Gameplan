@@ -39,6 +39,7 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> LastSyncDate { get; set; }
         public double CampaignBudget { get; set; }
         public string Abbreviation { get; set; }
+        public string IntegrationWorkFrontProgramID { get; set; }
     
         public virtual Plan Plan { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
