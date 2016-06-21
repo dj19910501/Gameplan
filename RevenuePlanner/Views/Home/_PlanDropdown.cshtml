@@ -397,7 +397,9 @@
         }
         else {
             if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null) {
+                myApp.showPleaseWait();
                 GlobalSearch();
+                myApp.hidePleaseWait();
                 $('#ExpSearch').css('display', 'none');
                 $('#ExpClose').css('display', 'block');
             }
@@ -412,12 +414,21 @@
         $('#txtGlobalSearch').val("");
         $('#searchCriteria').val("Name Only");
         $('#searchCriteria').text("N");
+        myApp.showPleaseWait();
         GlobalSearch();
+        myApp.hidePleaseWait();
         //$('.Exp-serach').removeClass('Exp-serach-open');
         $('#ExpClose').css('display', 'none');
         $('.ExpIcon').css('display', 'block');
         //isOpen = false;
     });
+    $("#txtGlobalSearch").focusout(function () {     
+        if ($("#txtGlobalSearch").val().length <= 0) {
+            $('#ExpClose').css('display', 'none');
+            $('.ExpIcon').css('display', 'block');
+        }
+    });
+  
     //Searchbox JS End
     //End
 </script>
