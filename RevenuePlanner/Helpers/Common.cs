@@ -8589,11 +8589,11 @@ namespace RevenuePlanner.Helpers
         /// <param name="ClientId"></param>
         /// <param name="DashboardID"></param>
         /// <returns></returns>
-        public static List<Custom_Dashboard> GetSpDashboarData(string ClientId, int DashboardID = 0)
+        public static List<Custom_Dashboard> GetSpDashboarData(string UserId, int DashboardID = 0)
         {
             var DashboardList = new List<Custom_Dashboard>();
             StoredProcedure objSp = new StoredProcedure();
-            DataTable dt = objSp.GetDashboarContentData(ClientId, DashboardID).Tables[0];
+            DataTable dt = objSp.GetDashboarContentData(UserId, DashboardID).Tables[0];
             if (dt != null && dt.Rows.Count > 0 && dt.Columns.Count > 1)
             {
                 DashboardList = dt.AsEnumerable().Select(row => new Custom_Dashboard
@@ -8940,7 +8940,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ClientId"></param>
         /// <param name="DashboardID"></param>
         /// <returns></returns>
-        public DataSet GetDashboarContentData(string ClientId, int DashboardID = 0)
+        public DataSet GetDashboarContentData(string UserId, int DashboardID = 0)
         {
             DataTable datatable = new DataTable();
             DataSet dataset = new DataSet();
@@ -8957,7 +8957,7 @@ namespace RevenuePlanner.Helpers
             {
 
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@ClientId", ClientId);
+                command.Parameters.AddWithValue("@UserId", UserId);
                 command.Parameters.AddWithValue("@DashboardID", DashboardID);
                 command.CommandTimeout = 0;
                 SqlDataAdapter adp = new SqlDataAdapter(command);

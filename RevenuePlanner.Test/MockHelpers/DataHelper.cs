@@ -346,7 +346,7 @@ namespace RevenuePlanner.Test.MockHelpers
         public static string GetDashboardId()
         {
             int planId = DataHelper.GetPlanId();
-            var ClientId = DataHelper.GetClientId(planId).ToString();
+            var ClientId = Sessions.User.UserId;
             var DashboardId = Common.GetSpDashboarData(ClientId.ToString()).Select(a => a.Id).FirstOrDefault();
             return Convert.ToString(DashboardId);
         }
