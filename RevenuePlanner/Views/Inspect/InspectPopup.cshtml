@@ -280,7 +280,7 @@
           // Click on Tab Partialview Refresh Based On Selected Tab
 
           // $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
-               $("#liSetup,#liReview,#liActuals,#liLine_Items").on("click", function () {
+          $("#liSetup,#liReview,#liActuals,#liLine_Items").on("click", function () {
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
               {
@@ -295,6 +295,7 @@
                   //}
                   // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
                   var returnpara = true;
+                 
                   if (tabtext != activeTab) {
                       returnpara = SaveAllData(activeTab); //Added By Komal Rawal for #1213 to save data to tab click
                   }
@@ -316,6 +317,8 @@
 
                       loadReview(planTacticId, tabtext);
                   }
+                  else
+                  { $('#InspectTab').removeClass('SpanDisable');}
               }
 
           });
@@ -454,6 +457,13 @@
  
     //Added By Komal Rawal for #1213
     function SaveAllData(activeTab) {
+        //added by devanshi for PL ticket #2276
+        if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+            $("#txtTacticTitle").addClass("error");
+            return false;
+        }
+        //end
         var ProgramOpt = $("#hdnTacticBudgetAllocationOpt").val();
         $('.btn-dropdwn').hide();
         if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
