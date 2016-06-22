@@ -246,6 +246,7 @@
             $('#txtGlobalSearch').val("");
             $('#searchCriteria').val("Name Only");
             $('#searchCriteria').text("N");
+            $("#txtGlobalSearch").attr('Placeholder', "Name Only")
             $('.Exp-serach').removeClass('Exp-serach-open');
             $('#ExpClose').css('display', 'none');
             $('.ExpIcon').css('display', 'block');
@@ -362,6 +363,7 @@
     }
     //Added by Komal Rawal for 2013 Home/Plan Layout changes
     $('#divPlanEditButtonHome').click(function () {
+       
         $("#divupcomingact").hide();
         $("#RequestTab").hide();
         $("#BudgetIcon").show();
@@ -376,9 +378,11 @@
         {
             ChangeTabView(GridId);
         }
+      
         $('#txtGlobalSearch').val("");
         $('#searchCriteria').val("Name Only");
         $('#searchCriteria').text("N");
+        $("#txtGlobalSearch").attr('Placeholder', "Name Only");
         $('.Exp-serach').removeClass('Exp-serach-open');
         $('#ExpClose').css('display', 'none');
         $('.ExpIcon').css('display', 'block');
@@ -415,6 +419,7 @@
         $('#txtGlobalSearch').val("");
         $('#searchCriteria').val("Name Only");
         $('#searchCriteria').text("N");
+        $("#txtGlobalSearch").attr('Placeholder', "Name Only");
         $('#ExpClose').css('display', 'none');
         GlobalSearch();
         $('.ExpIcon').css('display', 'block');
