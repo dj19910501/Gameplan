@@ -193,13 +193,46 @@ namespace Integration.Salesforce
         /// </summary>
         /// <param name="objectName">Sales force object name ex. Campaign</param>
         /// <returns>Returns property list of salesforce object</returns>
-        public List<string> GetSFDCObjectList()
+        public List<string> GetSFDCObjectList(string objectName)
         {
             List<string> TargetDataTypeList = new List<string>();
             List<SalesForceFieldsDetails> lstAllTargetDataTypeList = new List<SalesForceFieldsDetails>();
-            lstAllTargetDataTypeList = (new ApiIntegration()).GetSFDCmetaDataFields(GetsfdcCredentials(), _applicationId.ToString(), _clientId.ToString());
+            lstAllTargetDataTypeList = (new ApiIntegration()).GetSFDCmetaDataFields(GetsfdcCredentials(), _applicationId.ToString(), _clientId.ToString(), objectName);
             TargetDataTypeList = lstAllTargetDataTypeList.Select(fld => fld.Name).ToList();
             return TargetDataTypeList.OrderBy(q => q).ToList();
+        }
+
+        /// <summary>
+        /// Created by Viral on 22 June 2016
+        /// </summary>
+        /// <param name="objectName">Sales force object name ex. Campaign</param>
+        /// <returns>Returns property list of salesforce object</returns>
+        public List<PullClosedDealModel> GetSFDCPullClosedDealsObjectList(string objectName)
+        {
+            List<string> TargetDataTypeList = new List<string>();
+            List<SalesForceFieldsDetails> lstAllTargetDataTypeList = new List<SalesForceFieldsDetails>();
+            lstAllTargetDataTypeList = (new ApiIntegration()).GetSFDCmetaDataFields(GetsfdcCredentials(), _applicationId.ToString(), _clientId.ToString(), objectName);
+
+            List<PullClosedDealModel> pickListresult = new List<PullClosedDealModel>();
+            PullClosedDealModel objPickItem;
+            foreach (SalesForceFieldsDetails item in lstAllTargetDataTypeList)
+            {
+               objPickItem = new PullClosedDealModel();
+                objPickItem.fieldname = item.Name;
+                if (item.picklistValues != null && item.picklistValues.Count > 0)
+                {
+                    objPickItem.IsPicklistExist = true;
+                    objPickItem.pickList = item.picklistValues;
+                }
+                else
+                {
+                    objPickItem.IsPicklistExist = false;
+                    objPickItem.pickList = new List<string>();
+                }
+
+                pickListresult.Add(objPickItem); 
+            }
+            return pickListresult;
         }
 
         /// <summary>
@@ -270,7 +303,8 @@ namespace Integration.Salesforce
             List<SalesForceObjectFieldDetails> TargetDataTypeList = new List<SalesForceObjectFieldDetails>();
             List<SalesForceFieldsDetails> lstAllTargetDataTypeList = new List<SalesForceFieldsDetails>();
             SalesForceObjectFieldDetails objFieldDetails;
-            lstAllTargetDataTypeList = (new ApiIntegration()).GetSFDCmetaDataFields(GetsfdcCredentials(), _applicationId.ToString(), _clientId.ToString());
+            string strCampaignObject = "Campaign";
+            lstAllTargetDataTypeList = (new ApiIntegration()).GetSFDCmetaDataFields(GetsfdcCredentials(), _applicationId.ToString(), _clientId.ToString(), strCampaignObject);
             foreach (SalesForceFieldsDetails objSFDField in lstAllTargetDataTypeList)
             {
                 objFieldDetails = new SalesForceObjectFieldDetails();

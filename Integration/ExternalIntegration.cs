@@ -982,7 +982,7 @@ namespace Integration
                 IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
-                    return integrationSalesforceClient.GetSFDCObjectList();
+                    return integrationSalesforceClient.GetSFDCObjectList("Campaign");
                     //return integrationSalesforceClient.GetTargetDataType("Campaign");
                 }
             }
@@ -1029,7 +1029,8 @@ namespace Integration
                 IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
-                    return integrationSalesforceClient.GetPullClosedDealsTargetDataType("Opportunity");
+                    return integrationSalesforceClient.GetSFDCPullClosedDealsObjectList("Opportunity");
+                    //return integrationSalesforceClient.GetPullClosedDealsTargetDataType("Opportunity");
                 }
             }
 
@@ -1053,7 +1054,8 @@ namespace Integration
                 IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
-                    return integrationSalesforceClient.GetTargetDataType("CampaignMember");
+                    return integrationSalesforceClient.GetSFDCObjectList("CampaignMember");
+                    //return integrationSalesforceClient.GetTargetDataType("CampaignMember");
                 }
             }
             //// Start - Added by Sohel Pathan on 23/12/2014 for PL ticket #1061

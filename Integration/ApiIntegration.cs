@@ -35,6 +35,7 @@ namespace Integration
         public int Length { get; set; }
         public string Type { get; set; }
         public string SoapType { get; set; }
+        public List<string> picklistValues { get; set; }
     }
     public class LogDetails
     {
@@ -436,30 +437,41 @@ namespace Integration
         /// </summary>
         /// <param name="salesforceCredentials"></param>
         /// <returns></returns>
-        public List<SalesForceFieldsDetails> GetSFDCmetaDataFields(Dictionary<string, string> salesforceCredentials,string AppId,string clientid)
+        public List<SalesForceFieldsDetails> GetSFDCmetaDataFields(Dictionary<string, string> salesforceCredentials,string AppId,string clientid,string objectName)
         {
-            string objectname = "Campaign";
-            int CommonWebAPITimeout = 0;
-            string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
-            List<SalesForceFieldsDetails> lstSFDCFieldDetails = new List<SalesForceFieldsDetails>();
-            JObject obj = new JObject();
-            obj.Add("credentials", JsonConvert.SerializeObject(salesforceCredentials));
-            obj.Add("applicationId", AppId);
-            obj.Add("clientId", clientid);
-            obj.Add("object", objectname);
+            #region "Old Code"
+            //
+            //int CommonWebAPITimeout = 0;
+            //string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
+            //
+            //JObject obj = new JObject();
+            //obj.Add("credentials", JsonConvert.SerializeObject(salesforceCredentials));
+            //obj.Add("applicationId", AppId);
+            //obj.Add("clientId", clientid);
+            //obj.Add("object", objectname);
 
-            if (!string.IsNullOrEmpty(strwebAPITimeout))
-                CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
-            else
-                CommonWebAPITimeout = 4;    // if user has not defined Integration WEB API timeout then set static value to 4.
-            HttpClient client = new HttpClient();
-            client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
-            string IntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
-            Uri baseAddress = new Uri(IntegrstionApi);
-            client.BaseAddress = baseAddress;
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-            HttpResponseMessage response = client.PostAsJsonAsync("api/Sfdc/SalesForce_ReadMetadataDetails", obj).Result;
+            //if (!string.IsNullOrEmpty(strwebAPITimeout))
+            //    CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
+            //else
+            //    CommonWebAPITimeout = 4;    // if user has not defined Integration WEB API timeout then set static value to 4.
+            //HttpClient client = new HttpClient();
+            //client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
+            //string IntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+            //Uri baseAddress = new Uri(IntegrstionApi);
+            //client.BaseAddress = baseAddress;
+            //ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            //HttpResponseMessage response = client.PostAsJsonAsync("api/Sfdc/SalesForce_ReadMetadataDetails", obj).Result;
+            //
+            #endregion
+
+            #region "Declare local variables"
+            //string objectname = "Campaign";
+            HttpResponseMessage response = new HttpResponseMessage();
             ReturnObject ro = new ReturnObject();
+            List<SalesForceFieldsDetails> lstSFDCFieldDetails = new List<SalesForceFieldsDetails>(); 
+            #endregion
+
+            response = GetSFDCDataFields(salesforceCredentials, AppId, clientid, objectName);
             if (response.IsSuccessStatusCode)
             {
                 string json = response.Content.ReadAsStringAsync().Result;
@@ -470,6 +482,40 @@ namespace Integration
             }
             return lstSFDCFieldDetails;
 
+        }
+
+        /// <summary>
+        ///  Get list of Fields Name,Type, Length from SFDC.
+        /// </summary>
+        /// <param name="salesforceCredentials"></param>
+        /// <returns></returns>
+        public HttpResponseMessage GetSFDCDataFields(Dictionary<string, string> salesforceCredentials, string AppId, string clientid, string objectName)
+        {
+            #region "Declare local variables"
+            int CommonWebAPITimeout = 0;
+            string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
+            List<SalesForceFieldsDetails> lstSFDCFieldDetails = new List<SalesForceFieldsDetails>();
+            JObject obj = new JObject();
+            obj.Add("credentials", JsonConvert.SerializeObject(salesforceCredentials));
+            obj.Add("applicationId", AppId);
+            obj.Add("clientId", clientid);
+            obj.Add("object", objectName);
+
+            if (!string.IsNullOrEmpty(strwebAPITimeout))
+                CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
+            else
+                CommonWebAPITimeout = 4;    // if user has not defined Integration WEB API timeout then set static value to 4.
+            HttpClient client = new HttpClient(); 
+            #endregion
+
+            client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
+            string IntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+            Uri baseAddress = new Uri(IntegrstionApi);
+            client.BaseAddress = baseAddress;
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            HttpResponseMessage response = new HttpResponseMessage();
+            response = client.PostAsJsonAsync("api/Sfdc/SalesForce_ReadMetadataDetails", obj).Result;
+            return response;
         }
 
         /// <summary>
