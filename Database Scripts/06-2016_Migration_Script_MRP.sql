@@ -15926,12 +15926,12 @@ GO
 -- Create table IntegrationWorkFrontPortfolio_Mapping
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[IntegrationWorkFrontProgram_Mapping]') AND type in (N'U'))
 BEGIN
-CREATE TABLE [dbo].[IntegrationWorkFrontPortfolio_Mapping](
+CREATE TABLE [dbo].[IntegrationWorkFrontProgram_Mapping](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[PortfolioTableId] [int] NOT NULL,
-	[ProjectId] [nvarchar](50) NOT NULL,
+	[ProgramId] [nvarchar](50) NOT NULL,
 	[IsDeleted] [bit] NOT NULL,
- CONSTRAINT [PK_IntegrationWorkFrontPortfolio_Mapping] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_IntegrationWorkFrontProgram_Mapping] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -15940,13 +15940,13 @@ END
 GO
 
 -- Create FK on PortfolioTableId column in table IntegrationWorkFrontPortfolio_Mapping  
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PortfolioTableId]') AND parent_object_id = OBJECT_ID(N'[dbo].[IntegrationWorkFrontPortfolio_Mapping]'))
-ALTER TABLE [dbo].[IntegrationWorkFrontPortfolio_Mapping]  WITH CHECK ADD  CONSTRAINT [FK_PortfolioTableId] FOREIGN KEY([PortfolioTableId])
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Program_PortfolioTableId]') AND parent_object_id = OBJECT_ID(N'[dbo].[IntegrationWorkFrontProgram_Mapping]'))
+ALTER TABLE [dbo].[IntegrationWorkFrontProgram_Mapping]  WITH CHECK ADD  CONSTRAINT FK_Program_PortfolioTableId FOREIGN KEY([PortfolioTableId])
 REFERENCES [dbo].[IntegrationWorkFrontPortfolios] ([Id])
 GO
 
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PortfolioTableId]') AND parent_object_id = OBJECT_ID(N'[dbo].[IntegrationWorkFrontPortfolio_Mapping]'))
-ALTER TABLE [dbo].[IntegrationWorkFrontPortfolio_Mapping] CHECK CONSTRAINT [FK_PortfolioTableId]
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Program_PortfolioTableId]') AND parent_object_id = OBJECT_ID(N'[dbo].[IntegrationWorkFrontProgram_Mapping]'))
+ALTER TABLE [dbo].[IntegrationWorkFrontProgram_Mapping] CHECK CONSTRAINT FK_Program_PortfolioTableId
 GO
 
 /* End - Added by Arpita Soni for Ticket #2279 on 06/21/2016 */
