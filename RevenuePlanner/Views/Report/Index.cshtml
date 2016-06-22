@@ -532,7 +532,7 @@
        <li id="liBudgetreport"><a class="budget" ><span class="rMenu-icon"></span>FINANCE</a></li> @*PL#1545 Dashrath Prajapati*@
        @if (DashboardList.Count > 0)
        {
-       <li id="liid" class="dropdown">
+       <li id="liCustomReport" class="dropdown">
            <a class="custom dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-target="#"><span class="fa fa-bar-chart rMenu-iconFa" aria-hidden="true"></span>Custom</a>
            <ul class="dropdown-menu">
                @foreach (var Dashboard in DashboardList)
@@ -548,15 +548,7 @@
            </ul>
 
        </li> 
-       }   @*Change for #2257- Bhumika*@
-       @*@if (DashboardList.Count > 0)
-       {
-           foreach (var Dashboard in DashboardList)
-           {
-               string liid = "CustomReportli" + Dashboard.Id;
-               <li id='@liid'><a class="budget"><span></span>@Dashboard.DisplayName.ToUpper()</a></li>
-           }
-       }*@
+       }  
    </ul>
 </div>
 
@@ -3445,6 +3437,17 @@ function () {
     // Add By Nishant Sheth
     // Desc :: #2262 call particular dashboard 
     $('li[id^="CustomReportli"]').click(function () {
+        // Add By Nishant Sheth
+        // #2257 : set selected custom report tab and it's option
+        RemoveAllActiveItem();
+        $('#liCustomReport').addClass('active');
+        $.each($('li[id^="CustomReportli"]'), function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+        });
+        $(this).addClass('selected');
+        // End By Nishant Sheth
         var DashboardID = $(this).attr('id').replace('CustomReportli', '');
         var url = '@Url.Content("~/Report/GetCustomReport/")';
         $.ajax({
