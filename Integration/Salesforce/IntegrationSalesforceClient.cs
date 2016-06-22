@@ -7522,6 +7522,10 @@ namespace Integration.Salesforce
             List<fieldMapping> lstMisMatchFields = new List<fieldMapping>();
             try
             {
+
+                if(_entityType == EntityType.IntegrationInstance)
+                    IsInstanceSync = true;  // set flag true for SyncNow process.
+
                 #region "Validate SFDC Instance Field Mappings"
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
                 lstMappingMisMatch = ValidateMappingDetails();
