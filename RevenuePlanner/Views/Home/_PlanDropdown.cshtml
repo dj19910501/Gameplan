@@ -428,8 +428,10 @@
             $('.ExpIcon').css('display', 'block');
         }
     });
-  
-    //Searchbox JS End
-    //End
+    $('#txtGlobalSearch').on('keypress', function (event) {
+        if (event.which === 13) {
+            $('#ExpSearch').click();            
+        }
+    });
 </script>
 
