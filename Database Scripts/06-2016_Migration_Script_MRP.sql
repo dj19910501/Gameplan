@@ -12398,6 +12398,7 @@ BEGIN
 	DECLARE @DimensionName VARCHAR(8000);
 	DECLARE @FilterXML NVARCHAR(MAX) = NULL
 	DECLARE @FilterXMLString NVARCHAR(MAX) = NULL
+	DECLARE @DimList NVARCHAR(MAX) = NULL
 		IF(@CustomQuery != '') --In case of custom query is configured for the report
 		BEGIN
 			
@@ -12408,7 +12409,16 @@ BEGIN
 				INNER JOIN Dimension D			ON D.id = A.Dimensionid AND D.IsDateDimension = 1 AND D.IsDeleted = 0
 			WHERE G.Id = @Id
 
-			SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM dbo.[IdentifyDimensions](@Id,1,@DateDimensionId)
+			IF (@FilterValues IS NOT NULL AND @FilterValues != '')
+			BEGIN
+				SELECT @DimList = COALESCE(@DimList, '') + 'D' + LEFT(dimension, CHARINDEX(':',dimension)-1) FROM [dbo].[fnSplitString](@FilterVAlues, ',')
+				SET @DimList = CONCAT(@DimList, 'D', CAST(@DateDimensionId AS NVARCHAR(MAX)))
+				SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM dbo.[IdentifyDimensions](@Id,1,@DimList)
+			END
+			ELSE
+			BEGIN
+				SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM dbo.[IdentifyDimensions](@Id,1,@DateDimensionId)
+			END
 
 			IF (@FilterValues IS NOT NULL AND @FilterValues != '' AND @DimensionName IS NOT NULL AND @DimensionName != '')
 			BEGIN
@@ -12470,12 +12480,21 @@ BEGIN
 
 				IF(ISNULL(@DateDimensionId,0) != 0 )  -- We must have one dimension (date) configured for the report
 				BEGIN
-						SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM dbo.[IdentifyDimensions](@Id,1,@DateDimensionId)
+						IF (@FilterValues IS NOT NULL AND @FilterValues != '')
+						BEGIN
+							SELECT @DimList = COALESCE(@DimList, '') + 'D' + LEFT(dimension, CHARINDEX(':',dimension)-1) FROM [dbo].[fnSplitString](@FilterVAlues, ',')
+							SET @DimList = CONCAT(@DimList, 'D', CAST(@DateDimensionId AS NVARCHAR(MAX)))
+							SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM dbo.[IdentifyDimensions](@Id,1,@DimList)
+						END
+						ELSE
+						BEGIN
+							SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM dbo.[IdentifyDimensions](@Id,1,@DateDimensionId)
+						END
 
 						IF (@FilterValues IS NOT NULL AND @FilterValues != '' AND @DimensionName IS NOT NULL AND @DimensionName != '')
 						BEGIN
 							SET @FilterXMLString = (SELECT [dbo].[GetFilterXmlString] (@FilterValues, @DimensionName))
-						END
+						END						
 
 						IF (@FilterXMLString IS NOT NULL AND @FilterXMLString != '')
 						BEGIN

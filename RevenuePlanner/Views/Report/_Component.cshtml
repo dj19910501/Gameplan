@@ -2,14 +2,22 @@
 @using RevenuePlanner.Helpers
 @model RevenuePlanner.Models.Custom_Dashboard
 
-
-<link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
-
 @{
     string ReportDBConnString = Convert.ToString(ViewBag.ReportDBConnString);
     string AuthorizedReportAPIUserName = Convert.ToString(ViewBag.AuthorizedReportAPIUserName);
     string AuthorizedReportAPIPassword = Convert.ToString(ViewBag.AuthorizedReportAPIPassword);
     string ApiUrl = Convert.ToString(ViewBag.ApiUrl);
+    string ClientDimensionId = string.Empty;
+    string ClientDimensionValueId = string.Empty;
+    if (Convert.ToString(ViewBag.ClientDimensionId) != RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet)
+    {
+        ClientDimensionId = Convert.ToString(ViewBag.ClientDimensionId);
+        ClientDimensionValueId = Convert.ToString(ViewBag.ClientDimensionValueId);
+    }
+    else
+    {
+        ClientDimensionId = Convert.ToString(ViewBag.ClientDimensionId);
+    }    
 }
 @* Edited for #2264 - Bhumika Report Design *@
 <div class="report-wrap clearfix">
@@ -47,56 +55,32 @@
 @if (Model.DashboardContent.Count == 0)
 {
     <div class="noreportsfound">
-        <p>Report for this dashboard have not been configured. </p>
+        <p>"@RevenuePlanner.Helpers.Common.objCached.ReportNotConfigured"</p>
     </div>
 }
 
 <script type="text/javascript">
-    @*$(document).ready(function () {
-        var URL = 'http://localhost:54371/api/Report/Chart';
-        $.support.cors = true;
-        $.ajax({
-            url: URL,
-            async: true,
-            data: {
-                Id: 28,
-                ConnectionString: '@ReportDBConnString',
-                Container: 'divChart18',
-                TopOnly: 'true',
-                ViewBy: 'Q',
-                StartDate: '1/1/2014',
-                EndDate: '12/31/2015',
-                UserName: 'testapi@hive9.com',
-                Password: 'testapi123'
-            },
-            dataType: "json",
-            success: function (data) {
-                //$('#divChart18').html(data);
-                eval(data);
-            },
-            error: function (err) {
-                $('#divChart18').attr('id').html('There is some error from Web API:' + '\n' + err.statusText + '\n' + err.responseText);
-            }
-        });
-    });*@
-
-
     $(document).ready(function () {
-        var ViewBy = $('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html();
+        if ('@ClientDimensionId' != "@RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet") {
+            var ViewBy = $('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html();
 
-        if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Yearly') {
-            ViewBy = 'Y';
-        }
-        else if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Quarterly') {
-            ViewBy = 'Q';
-        }
-        else if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Monthly') {
-            ViewBy = 'M';
-        }
+            if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Yearly') {
+                ViewBy = 'Y';
+            }
+            else if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Quarterly') {
+                ViewBy = 'Q';
+            }
+            else if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Monthly') {
+                ViewBy = 'M';
+            }
 
-        $('div[id^=divChart]').each(function () {
-            LoadReport(this, ViewBy);
-        });
+            $('div[id^=divChart]').each(function () {
+                LoadReport(this, ViewBy);
+            });
+        }
+        else {
+            $('#mainContent').html("@RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet");
+        }
     });
 
     function LoadReport(obj, ViewBy) {
@@ -113,33 +97,92 @@
             EndDate = "12/31/" + ArrPlanDt[NoOfyrs - 1];
         }
 
-        var URL = '@ApiUrl' + 'api/Report/Chart';
+        var URL;
+        if ('@ApiUrl'.slice(-1) == '/') {
+            URL = '@ApiUrl' + 'api/Report/Chart';
+        }
+        else {
+            URL = '@ApiUrl' + '/api/Report/Chart';
+        }
+
         if ('@ApiUrl' == '') {
-            $(obj).html('API Url is not configured in config file, please configure it.');
+            $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured");
         }
         else {
             //var URL = 'http://localhost:54371/api/Report/Chart';
-            //$.support.cors = true;
+            var _ElqFieldMapping = [];
+            _ElqFieldMapping.push(
+                '@ClientDimensionId' + ":" + '@ClientDimensionValueId'
+            );
+
+            $("#divCustomFieldsFilter").find("input[type=checkbox]").each(function () {
+                if ($(this).is(":checked")) {
+                    if ($(this).attr('dimensionid')) {
+                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                        var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
+                        _ElqFieldMapping.push(
+                            DimId + ":" + DimValId
+                        );
+                    }
+                }
+            });
+            $("#accordion-Owner").find("input[type=checkbox]").each(function () {
+                if ($(this).is(":checked")) {
+                    if ($(this).attr('dimensionid')) {
+                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                        var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
+                        _ElqFieldMapping.push(
+                            DimId + ":" + DimValId
+                        );
+                    }
+                }
+            });
+            $("#accordion-TacticType").find("input[type=checkbox]").each(function () {
+                if ($(this).is(":checked")) {
+                    if ($(this).attr('dimensionid')) {
+                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                        var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
+                        _ElqFieldMapping.push(
+                            DimId + ":" + DimValId
+                        );
+                    }
+                }
+            });
+            $("#accordion-element-Plan").find("input[type=checkbox]").each(function () {
+                if ($(this).is(":checked")) {
+                    if ($(this).attr('dimensionid')) {
+                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                        var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
+                        _ElqFieldMapping.push(
+                            DimId + ":" + DimValId
+                        );
+                    }
+                }
+            });
+
+            var params = {};
+            params.Id = id;
+            params.ConnectionString = '@ReportDBConnString';
+            params.Container = $(obj).attr('id');
+            params.SDV = _ElqFieldMapping;
+            params.TopOnly = 'True';
+            params.ViewBy = ViewBy;
+            params.StartDate = StartDate;
+            params.EndDate = EndDate;
+            params.UserName = '@AuthorizedReportAPIUserName';
+            params.Password = '@AuthorizedReportAPIPassword';
+
             $.ajax({
                 url: URL,
                 async: true,
-                data: {
-                    Id: id,
-                    ConnectionString: '@ReportDBConnString',
-                    Container: $(obj).attr('id'),
-                    TopOnly: 'True',
-                    ViewBy: ViewBy,
-                    StartDate: StartDate,
-                    EndDate: EndDate,
-                    UserName: '@AuthorizedReportAPIUserName',
-                    Password: '@AuthorizedReportAPIPassword'
-                },
+                traditional: true,
+                data: $.param(params, true),
                 dataType: "json",
                 success: function (data) {
                     eval(data);
                 },
                 error: function (err) {
-                    $(obj).html('There is some error from Web API:' + '\n' + err.statusText + '\n' + err.responseText);
+                    $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
                 }
             });
         }

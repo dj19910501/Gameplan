@@ -2740,6 +2740,33 @@ namespace RevenuePlanner.Helpers
             set { _TitleContainHTMLString = value; }
         }
 
+        private string _ReportNotConfigured;
+        public string ReportNotConfigured
+        {
+            get { return _ReportNotConfigured; }
+            set { _ReportNotConfigured = value; }
+        }
+
+        private string _ApiUrlNotConfigured;
+        public string ApiUrlNotConfigured
+        {
+            get { return _ApiUrlNotConfigured; }
+            set { _ApiUrlNotConfigured = value; }
+        }
+
+        private string _ErrorInWebApi;
+        public string ErrorInWebApi
+        {
+            get { return _ErrorInWebApi; }
+            set { _ErrorInWebApi = value; }
+        }
+        private string _ClientDimenisionNotSet;
+        public string ClientDimenisionNotSet
+        {
+            get { return _ClientDimenisionNotSet; }
+            set { _ClientDimenisionNotSet = value; }
+        }        
+
         //// End - Ticket #994, by Pratik chauhan
         #endregion
 
@@ -3615,6 +3642,18 @@ namespace RevenuePlanner.Helpers
                                         ////added by devanshi for pl ticket #2276
                                         case "TitleContainHTMLString":
                                             _TitleContainHTMLString = strMsgValue;
+                                            break;
+                                        case "ReportNotConfigured":
+                                            _ReportNotConfigured = strMsgValue;
+                                            break;
+                                        case "ApiUrlNotConfigured":
+                                            _ApiUrlNotConfigured = strMsgValue;
+                                            break;
+                                        case "ErrorInWebApi":
+                                            _ErrorInWebApi = strMsgValue;
+                                            break;
+                                        case "ClientDimenisionNotSet":
+                                            _ClientDimenisionNotSet = strMsgValue;
                                             break;
 
                                     }

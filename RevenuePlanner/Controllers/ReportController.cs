@@ -4490,6 +4490,17 @@ namespace RevenuePlanner.Controllers
                 ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
                 ViewBag.ApiUrl = ApiUrl;
             }
+            string ClientId = Convert.ToString(Sessions.User.ClientId);
+            var ClientIdCnt = db.DimensionValues.Where(dv => dv.Value.Equals(ClientId)).ToList();
+            if (ClientIdCnt.Count > 0)
+            {
+                ViewBag.ClientDimensionId = ClientIdCnt[0].DimensionID;
+                ViewBag.ClientDimensionValueId = ClientIdCnt[0].id;
+            }
+            else
+            {
+                ViewBag.ClientDimensionId = RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet;
+            }
             return PartialView("_DynamicReport", model);
         }
 

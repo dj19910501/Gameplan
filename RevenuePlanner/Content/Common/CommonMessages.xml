@@ -1086,4 +1086,20 @@
 		<Name>TitleContainHTMLString</Name>
 		<value>Title contain HTML String, Please reset the Value.</value>
 	</Field>
+  <Field>
+    <Name>ReportNotConfigured</Name>
+    <value>Report for this dashboard have not been configured.</value>
+  </Field>
+  <Field>
+    <Name>ApiUrlNotConfigured</Name>
+    <value>API Url is not configured in config file, please configure it.</value>
+  </Field>
+  <Field>
+    <Name>ErrorInWebApi</Name>
+    <value>There is some error from Web API.</value>
+  </Field>
+  <Field>
+    <Name>ClientDimenisionNotSet</Name>
+    <value>ClientId dimension is not configured</value>
+  </Field>
 </Messages>

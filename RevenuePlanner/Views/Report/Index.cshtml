@@ -812,7 +812,7 @@
                                     // checkedclass = "close-list";
                                     //}
 
-                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + ' dimensionid=' + DimensionOwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" dimensionid=' + DimensionOwnerId + ' id="' + OwnerItem.OwnerId + '"' + checked + ' ></input></li>'); /*<span class="chkbx-icon"></span>*/
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + ' dimensionid="' + DimensionOwnerId + '""><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" dimensionid="' + DimensionOwnerId + '" id="' + OwnerItem.OwnerId + '"' + checked + ' ></input></li>'); /*<span class="chkbx-icon"></span>*/
 
 
 
@@ -996,7 +996,7 @@
                                     //    }
                                     //}
                                     //}
-                                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + ' dimensionid=' + TacticTypeDimensionId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" dimensionid=' + TacticTypeDimensionId + ' TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + ' dimensionid="' + TacticTypeDimensionId + '""><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" dimensionid="' + TacticTypeDimensionId + '" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
                                 });
                             }
                             else {
