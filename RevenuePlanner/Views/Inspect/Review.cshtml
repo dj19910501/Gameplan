@@ -46,6 +46,25 @@
      .dd-Wraper .ui-multiselect{
         width:150px;
     }
+  .toggle.integrationToggle, .toggle-on.integrationToggle, .toggle-off.integrationToggle { border-radius: 20px;-webkit-border-radius: 20px;-ms-border-radius: 20px;}
+  .toggle.integrationToggle .toggle-handle { border-radius: 20px;-webkit-border-radius: 20px;-ms-border-radius: 20px; }
+  .integrationToggle .toggle-group { transition: left 0.1s; -webkit-transition: left 0.1s; }
+  .toggle.integrationToggle {min-height: 20px;}
+
+  /* Add to solve Chrome Browser issue of on/off button radius #2296 - Bhumika*/
+  .toggle-on, .toggle-off{background:transparent !important; box-shadow:none !important; }
+  .toggle-handle{height: 71%; background: #DBDBDB; padding: 4px 10px;}
+  .btn-success .toggle-handle{    
+        position: absolute;
+        right: 54px;
+        border-radius: 0 20px 20px 0 !important;
+  }
+  .btn-default.off .toggle-handle{
+      position:absolute;  
+      left: 55px;
+       border-radius: 20px 0 0 20px!important;
+  }
+
 </style>
 
 <style type="text/css">
@@ -93,12 +112,6 @@
     top: auto !important;
 }
 
-  .toggle.integrationToggle, .toggle-on.integrationToggle, .toggle-off.integrationToggle { border-radius: 20px; }
-  .toggle.integrationToggle .toggle-handle { border-radius: 20px; }
-  .integrationToggle .toggle-group { transition: left 0.1s; -webkit-transition: left 0.1s; }
-  .toggle.integrationToggle {min-height: 20px;}
-
- 
 </style>
 
 @*<!-- Added by Arpita Soni to resolve issue in clicking of Review tab inside plan menu -->
