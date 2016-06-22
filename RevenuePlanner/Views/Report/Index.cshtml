@@ -1747,8 +1747,10 @@
     $("#BtnAddActual").click(function () {
         //Button of add actual only display when single plan selected
         var planIdForAddActual = GetFilterIdForPlan(multiselectPlanId);
+        if (planIdForAddActual != "" && planIdForAddActual != null) {
         var url = '@Url.Action("AddActual", "Plan")' + '?PlanId=' + planIdForAddActual;
         window.location.href = url;
+        }
     });
     //// Call function based on option
     function loadBasedOnPlan() {
@@ -2331,6 +2333,13 @@
         }
         checkedYearcount = $('#ulSelectedYear li input:checked').length;
         $('#cYearcount').text(checkedYearcount);
+        //added by devanshi for PL ticket #2175
+        if (checkedYearcount == 0)
+        {
+            $("#divAddActual").hide();
+            $("#divShareRep").hide();
+        }
+       
         //$(_yearli).addClass('close-list');
         // Add By Nishant Sheth
         // Desc :: #1842 multiple year selection base on #1821
