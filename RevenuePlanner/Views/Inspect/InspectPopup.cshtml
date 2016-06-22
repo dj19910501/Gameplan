@@ -281,6 +281,13 @@
 
           // $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
           $("#liSetup,#liReview,#liActuals,#liLine_Items").on("click", function () {
+              //added by devanshi for PL ticket #2276
+        if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+            $("#txtTacticTitle").addClass("error");
+            return false;
+        }
+        //end
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
               {
@@ -341,6 +348,13 @@
           //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
           $('#EditForm').on("click", function (e) {
+              //added by devanshi for PL ticket #2276
+              if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
+                  ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                  $("#txtTacticTitle").addClass("error");
+                  return false;
+              }
+              //end
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($(this).hasClass('SpanDisable') == false)
               {

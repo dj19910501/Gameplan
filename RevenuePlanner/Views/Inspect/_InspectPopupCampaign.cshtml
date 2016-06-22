@@ -231,6 +231,13 @@
           // Click on Tab Partialview Refresh Based On Selected Tab
 	  // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
           $("#liSetup,#liReview").on("click", function () {
+              //added by devanshi for PL ticket #2276
+              if (CheckHtmlTag($("#txtTitle").val()) == false) {
+                  ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                  $("#txtTitle").addClass("error");
+                  return false;
+              }
+              //end
           //$("#liSetup,#liReview,#liBudget").on("click", function () {
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
@@ -289,6 +296,13 @@
               loadAddSetup();
           }
           $("#btnEditCampaign").on("click", function () {
+              //added by devanshi for PL ticket #2276
+              if (CheckHtmlTag($("#txtTitle").val()) == false) {
+                  ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                  $("#txtTitle").addClass("error");
+                  return false;
+              }
+              //end
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($(this).hasClass('SpanDisable') == false)
               {

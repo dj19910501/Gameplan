@@ -292,6 +292,13 @@
               loadAddSetup();
           }       
           $("#EditProgram").on("click", function () {
+              //added by devanshi for PL ticket #2276
+              if (CheckHtmlTag($("#txtProgramTitle").val()) == false) {
+                  ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                  $("#txtProgramTitle").addClass("error");
+                  return false;
+              }
+              //end
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($(this).hasClass('SpanDisable') == false)
               {
