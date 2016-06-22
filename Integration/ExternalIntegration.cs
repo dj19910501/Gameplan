@@ -68,7 +68,7 @@ namespace Integration
         Guid _userId { get; set; }
         EntityType _entityType { get; set; }
         string _integrationType { get; set; }
-        bool _isResultError { get; set; }
+        public bool _isResultError { get; set; }
         Guid _applicationId { get; set; }
         bool _isTacticMoved { get; set; }
         private List<SyncError> _lstAllSyncError = new List<SyncError>();

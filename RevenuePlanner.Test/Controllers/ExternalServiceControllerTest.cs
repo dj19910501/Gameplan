@@ -32,7 +32,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To check that it returns a proper view for the main screen or not.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
-        
+
 
             //Eloqua
             var result = controller.GetIntegrationFolder(0, 1) as ViewResult;
@@ -63,7 +63,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To check that it returns a proper view for the main screen or not.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
-        
+
 
             //Eloqua
             var result = controller.GetIntegrationFolder(1) as ViewResult;
@@ -94,7 +94,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To check that it returns a proper integration code for view in the main screen or not.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
-    
+
 
             //Eloqua
             var result = controller.GetIntegrationFolder(1, 0) as ViewResult;
@@ -129,7 +129,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To check that it returns a proper partial view for plan listing or not.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
-          
+
             var result = controller.GetIntegrationFolderPlanList(DateTime.Now.Year.ToString()) as PartialViewResult;
             if (result != null)
             {
@@ -405,7 +405,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("Set Parameter IntegrationTypeId for Eloqua.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
-           
+
 
             //// Set Parameter IntegrationTypeId for Eloqua
             int IntegrationTypeId = DataHelper.GetIntegrationTypeId(Enums.IntegrationType.Eloqua.ToString());
@@ -440,7 +440,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To check that SaveDataMappingPulling method save data with null form data.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
-       
+
 
             IList<GameplanDataTypePullModel> lstGameplanDataTypePullModel = null;
 
@@ -474,7 +474,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To check that SaveDataMappingPulling method save data with form data.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
-        
+
 
             //// Set form data parameter for save method
             GameplanDataTypePullModel objGameplanDataTypePullModel = new GameplanDataTypePullModel();
@@ -576,13 +576,13 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To check that it returns a proper partial view for plan listing of marketo or not.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
-          
+
             MRPEntities db = new MRPEntities();
             int planId = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(planId);
             int MarketoInstanceTypeId = db.IntegrationTypes.Where(inst => inst.Title == "Marketo").Select(id => id.IntegrationTypeId).FirstOrDefault();
             int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == MarketoInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
-            var result = controller.GetMarketoFolderPlanList(DateTime.Now.Year.ToString(),IntegrationInstanceId) as PartialViewResult;
+            var result = controller.GetMarketoFolderPlanList(DateTime.Now.Year.ToString(), IntegrationInstanceId) as PartialViewResult;
             if (result != null)
             {
                 Assert.AreEqual("_MarketoFolderPlanList", result.ViewName);
@@ -609,13 +609,13 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-           
+
             MRPEntities db = new MRPEntities();
             int MarketoInstanceTypeId = db.IntegrationTypes.Where(inst => inst.Title == "Marketo").Select(id => id.IntegrationTypeId).FirstOrDefault();
             int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == MarketoInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
-           List<IntegrationPlanList> IntegrationPlanList = new List<IntegrationPlanList>();
+            List<IntegrationPlanList> IntegrationPlanList = new List<IntegrationPlanList>();
 
-           var result = controller.SaveMarketoCampaignFolderPlanList(IntegrationPlanList, IntegrationInstanceId) as JsonResult;
+            var result = controller.SaveMarketoCampaignFolderPlanList(IntegrationPlanList, IntegrationInstanceId) as JsonResult;
             if (result != null)
             {
                 Assert.IsNotNull(result.Data);
@@ -749,7 +749,7 @@ namespace RevenuePlanner.Test.Controllers
             IntegrationType ObjMarketoInstanceTypeId = db.IntegrationTypes.Where(inst => inst.Title == "Marketo").FirstOrDefault();
             int MarketoInstanceTypeId = ObjMarketoInstanceTypeId.IntegrationTypeId;
             int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == MarketoInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
-            var  record = db.IntegrationInstances
+            var record = db.IntegrationInstances
                                    .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationInstanceId == IntegrationInstanceId)
                                    .Select(ii => ii).FirstOrDefault();
 
@@ -761,7 +761,7 @@ namespace RevenuePlanner.Test.Controllers
             List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
             foreach (var item in recordAttribute)
             {
-                
+
                 IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
                 objIntegrationTypeAttributeModel.Attribute = item.IntegrationTypeAttribute.Attribute;
                 objIntegrationTypeAttributeModel.AttributeType = item.IntegrationTypeAttribute.AttributeType;
@@ -790,7 +790,7 @@ namespace RevenuePlanner.Test.Controllers
             objIntegrationTypeModel.Code = ObjMarketoInstanceTypeId.Code;
 
             form.IntegrationType = objIntegrationTypeModel;
-          
+
 
             var result = controller.TestIntegration(form) as JsonResult;
             if (result != null)
@@ -803,7 +803,7 @@ namespace RevenuePlanner.Test.Controllers
 
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
-            
+
 
         }
 
@@ -847,7 +847,7 @@ namespace RevenuePlanner.Test.Controllers
                 lstObjIntegrationTypeAttributeModel = null;
             }
 
-        
+
             form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
 
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
@@ -1059,7 +1059,7 @@ namespace RevenuePlanner.Test.Controllers
                 form.IntegrationTypeId = record.IntegrationTypeId;
                 form.IsActive = record.IsActive;
                 form.ClientId = Sessions.User.ClientId;
-                form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel; 
+                form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
             }
 
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
@@ -1205,7 +1205,7 @@ namespace RevenuePlanner.Test.Controllers
                 form.IntegrationTypeId = record.IntegrationTypeId;
                 form.IsActive = record.IsActive;
                 form.ClientId = Sessions.User.ClientId;
-                form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel; 
+                form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
             }
 
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
@@ -1254,5 +1254,97 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
+        #region WorkFront Integration
+        /// <summary>
+        /// To sync data into work front by integration instance
+        /// <author>Arpita Soni</author>
+        /// <createddate>22Jun2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Sync_Interation_Instance_With_Interation_Instance_Id_WorkFront()
+        {
+            Console.WriteLine("To check sync method of work front intrgration.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            ExternalServiceController controller = new ExternalServiceController();
+
+            // Set Parameter IntegrationInstancesId
+            int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.WorkFront.ToString());
+            var result = controller.SyncNow(IntegrationInstanceId) as JsonResult;
+            if (result != null)
+            {
+                // Check Json result data object is null or not
+                Assert.IsNotNull(result.Data);
+
+                // Check sync status is success or not
+                if (result.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
+                {
+                    Assert.AreEqual("Success", result.GetValue("status").ToString(), true);
+                }
+                else if (result.GetValue("status").ToString().Equals("In-Progress", StringComparison.OrdinalIgnoreCase))
+                {
+                    Assert.AreEqual("In-Progress", result.GetValue("status").ToString(), true);
+                }
+                else
+                {
+                    Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
+                }
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("status").ToString());
+            }
+            else
+            {
+
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+
+        /// <summary>
+        /// To sync data into work front from the review tab 
+        /// of tactic inspect popup
+        /// <author>Arpita Soni</author>
+        /// <createddate>22Jun2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Sync_Interation_Instance_WorkFront_From_Review_Tab()
+        {
+            Console.WriteLine("To check sync method of work front intrgration.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            MRPEntities db = new MRPEntities();
+
+            // Set Parameter IntegrationInstancesId
+            int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.WorkFront.ToString());
+
+            int planTacticId = db.Plan_Campaign_Program_Tactic.
+                                Where(tac => tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt == IntegrationInstanceId
+                                && tac.IntegrationWorkFrontProjectID != null).
+                                Select(t => t.PlanTacticId).FirstOrDefault();
+            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
+
+            externalIntegration.Sync();
+            var result = externalIntegration;
+
+            if (result != null)
+            {
+                // Check Json result data object is null or not
+                Assert.IsNotNull(result);
+
+                // Check sync status is success or not
+                if (result._isResultError)
+                {
+                    Assert.AreEqual("true", result._isResultError.ToString(), true);
+                }
+                else
+                {
+                    Assert.AreEqual("false", result._isResultError.ToString(), true);
+                }
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result._isResultError);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
     }
 }
