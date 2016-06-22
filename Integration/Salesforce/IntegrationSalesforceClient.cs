@@ -8113,8 +8113,6 @@ namespace Integration.Salesforce
 
                 if (lstTactSFDCIdMapping != null && lstTactSFDCIdMapping.Count > 0)
                 {
-                    string EntityType = Enums.EntityType.Tactic.ToString();
-                    
                     string strSFDCId;
                     DateTime tacLastSync;
                     lstCreatedTacIds = lstTactSFDCIdMapping.Select(tac => tac.Key).ToList();
