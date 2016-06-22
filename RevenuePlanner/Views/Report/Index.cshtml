@@ -16,6 +16,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var PageTitle = "Reports";
     List<Custom_Dashboard> DashboardList = ViewBag.DashboardList;
+    // Add By Nishant Sheth // Desc :: Add Dimension id and dimension value attribute in checkbox list
+    List<Dimension> ListDimension = ViewBag.ListDimension;
+    List<DimensionValue> ListDimensionVaule = ViewBag.ListDimensionVaule;
+    var OwnerDimensionId= ListDimension.Where(a=>a.Name==Enums.Dimension.CreatedBy.ToString()).Select(a=>a.id).FirstOrDefault();
+    var OwnerDimensionList = ListDimensionVaule.Where(a => a.DimensionID == OwnerDimensionId).Select(a => new { Value= a.Value, Id = a.id.ToString() }).ToList();
+    var TacticTypeDimensionId = ListDimension.Where(a => a.Name == Enums.Dimension.TacticTypeId.ToString()).Select(a => a.id).FirstOrDefault();
+    var TacticTypeDimensionList = ListDimensionVaule.Where(a => a.DimensionID == TacticTypeDimensionId).Select(a => new { Value = a.Value, Id = a.id.ToString() }).ToList();
+    // End By Nishant Sheth
 }
 @Html.Hidden("PageTitle", PageTitle)
 @Html.Hidden("FilterName", FilterName)
@@ -282,16 +290,28 @@
                         <ul class="scroll-list" id="ulSelectedPlans">
                          @{
                              string ddlId = string.Empty;
+                             string dimensionId = string.Empty;
+                             var PlanDimensionId = ListDimension.Where(a => a.Name == Enums.Dimension.PlanId.ToString()).Select(a => a.id).FirstOrDefault();
+                             var ListPlanDimensionValue = ListDimensionVaule.Where(a => a.DimensionID == PlanDimensionId).ToList();
                              foreach (var item in planList)
                              {
                                  ddlId = "liPlan" + "_" + item.PlanId;
+                                 dimensionId = string.Empty;
+                                 if (PlanDimensionId != null && PlanDimensionId > 0 && ListPlanDimensionValue != null && ListDimensionVaule.Count > 0)
+                                 {
+                                     var PlanDimensionValue = ListPlanDimensionValue.Where(a=>a.Value==item.PlanId.ToString()).Select(a=>a.id).FirstOrDefault();
+                                     if(!string.IsNullOrEmpty(Convert.ToString(PlanDimensionValue)))
+                                     { 
+                                        dimensionId = PlanDimensionId.ToString() + "_" + PlanDimensionValue.ToString();
+                                     }
+                                 }
                                  if (item.Checked == "checked")
                                  {
-                                     <li class="accordion-inner close-list" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" checked="checked" id="@item.PlanId" onchange="OnPlanchange(this);"></input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@</li>
+                                     <li class="accordion-inner close-list" title="@item.Title" id="@ddlId" dimensionid="@dimensionId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" checked="checked" id="@item.PlanId" dimensionid="@dimensionId" onchange="OnPlanchange(this);" ></input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@</li>
                                  }
                                  else
                                  {
-                                    <li class="accordion-inner" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" id="@item.PlanId" onchange="OnPlanchange(this);"></input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@</li>
+                                    <li class="accordion-inner" title="@item.Title" id="@ddlId" dimensionid="@dimensionId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" id="@item.PlanId" dimensionid="@dimensionId" onchange="OnPlanchange(this);"></input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@</li>
                                  }
 
                              }
@@ -387,10 +407,15 @@
                 acordionId = acordionParentId = acordionElementId = acordionElementHref =liCustom =ulCustom = allCustom = noCustom =string.Empty;
                 List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
                 List<CustomFieldOption> tblCustomFieldOption = ViewCustomFieldOptions;
+                List<DimensionValue> lstCustomFieldDimensionValue = new List<DimensionValue>();
+                
                 int custFieldCount = 0;
                 foreach (CustomField custField in ViewCustomFields)
                 {
                     lstCutomFieldOptions = tblCustomFieldOption.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Value).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Value, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
+                    var CustomDimension = Convert.ToString(custField.Name + "_" + custField.CustomFieldId);
+                    var CustomDimensionId = ListDimension.Where(a => a.Name == CustomDimension).Select(a => a.id).FirstOrDefault();
+                    var ListCustomDimensionValues = ListDimensionVaule.Where(a => a.DimensionID == CustomDimensionId).ToList();
                     acordionId = "accordion" + custField.CustomFieldId;
                     acordionParentId = "#" + acordionId;
                     acordionElementId = "accordion-element-Plan" + custField.CustomFieldId;
@@ -410,8 +435,18 @@
                     {
                         liCustom = "liCustom" + item.Value;
                         cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
-                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span>
-                            <input type="checkbox" cutomtitle="@item.Text" class="chkbxfilter" id="@cutomoptioninputid" onchange="OnMultiselectchange(this,@custField.CustomFieldId,@custFieldCount);"></input> @*<span class="chkbx-icon"></span>#1951 - sidebar design  checkbox styling*@
+                        dimensionId = string.Empty;
+                        if (CustomDimensionId != null && CustomDimensionId > 0 && ListCustomDimensionValues != null && ListCustomDimensionValues.Count > 0)
+                        {
+                            var CustomDimensionValue = ListCustomDimensionValues.Where(a => a.Value == item.Value.ToString()).Select(a => a.id).FirstOrDefault();
+                            if (!string.IsNullOrEmpty(Convert.ToString(CustomDimensionValue)))
+                            {
+                                dimensionId = CustomDimensionId.ToString() + "_" + CustomDimensionValue.ToString();
+                            }
+                        }
+                        <li class="accordion-inner" title="@item.Text" id="@liCustom" dimensionid="@dimensionId">
+                            <span class="sidebarliwidth">@item.Text</span>
+                            <input type="checkbox" cutomtitle="@item.Text" class="chkbxfilter" dimensionid="@dimensionId" id="@cutomoptioninputid" onchange="OnMultiselectchange(this,@custField.CustomFieldId,@custFieldCount);"></input> @*<span class="chkbx-icon"></span>#1951 - sidebar design  checkbox styling*@
                         </li>
                     }
                                 }
@@ -660,6 +695,8 @@
     var ids = [];
     var IsDeselectAll = false;
     var currentRequest = null;//Added By Komal Rawal for #1992 to abort previous ajax if any request is called before completion of previou request.
+    var OwnerDimensionList = JSON.parse('@Html.Raw(Json.Encode(OwnerDimensionList))');
+    var TacticTypeDimensionList = JSON.parse('@Html.Raw(Json.Encode(TacticTypeDimensionList))');
     function GetOwnerListForFilter(Planids, ifexists, OnPlanChange) {
         var type = '@PlanGanttTypes.Tactic.ToString()';
         var asyncval = false;
@@ -750,6 +787,16 @@
                                 $.each(data.AllowedOwner, function (i, OwnerItem) {
                                     var checked = "";
                                     var checkedclass = "";
+                                    var DimensionOwnerId = "";
+                                    
+                                    $.each(OwnerDimensionList, function () {
+                                        var OwnerValue = this;
+                                        if (OwnerValue.Value == OwnerItem.OwnerId.toUpperCase())
+                                        {
+                                            DimensionOwnerId = '@OwnerDimensionId' + '_' + OwnerValue.Id;
+                                        }
+                                    });
+        
 
                                     if (OwnerItem.OwnerId == LoggedInOwner) {
                                         IsOwnerPresent = true;
@@ -773,7 +820,7 @@
                                     // checkedclass = "close-list";
                                     //}
 
-                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>'); /*<span class="chkbx-icon"></span>*/
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + ' dimensionid=' + DimensionOwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" dimensionid=' + DimensionOwnerId + ' id="' + OwnerItem.OwnerId + '"' + checked + ' ></input></li>'); /*<span class="chkbx-icon"></span>*/
 
 
 
@@ -789,7 +836,7 @@
                                     checked = "checked"
                                     checkedclass = "close-list"
                                     //}
-                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + ' dimensionid=' + DimensionOwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" dimensionid=' + DimensionOwnerId + ' onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                 }
                                 //Commented By Maitri Gandhi on 24/2/2016 For #2014
                                 //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
@@ -937,6 +984,15 @@
                                 $.each(data.TacticTypelist, function (i, TactictypeItem) {
                                     var checked = "";
                                     var checkedclass = "";
+
+                                    var TacticTypeDimensionId = "";
+                                    $.each(TacticTypeDimensionList, function () {
+                                        var TacticTypeValue = this;
+                                        if (TacticTypeValue.Value == TactictypeItem.TacticTypeId.toString()) {
+                                            TacticTypeDimensionId = '@TacticTypeDimensionId' + '_' + TacticTypeValue.Id;
+                                        }
+                                    });
+                                    
                                     //Modify by Rahul Shah on 28/10/2015 for PL #1438
                                     checked = "checked"
                                     checkedclass = "close-list"
@@ -948,7 +1004,7 @@
                                     //    }
                                     //}
                                     //}
-                                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                    $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + ' dimensionid=' + TacticTypeDimensionId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" dimensionid=' + TacticTypeDimensionId + ' TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
                                 });
                             }
                             else {

@@ -54,7 +54,7 @@ namespace RevenuePlanner.Controllers
         private const double _PlotBandToValue = 5;
         // Add By Nishant Sheth
         // Desc #1842
-        
+
         private string[] selectedYearList;
         // End By Nishant Sheth
         #endregion
@@ -234,7 +234,28 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.ViewCustomFields = lstCustomFields;//@N : fill CustomFields dropdown
             ViewBag.ViewCustomFieldOptions = tblCustomFieldOption.Where(_option => lstCustomFieldIds.Contains(_option.CustomFieldId)).ToList();//@N : fill CustomFields option dropdown
-            //// End - Added by Arpita Soni for Ticket #1148 on 01/23/2015			
+            //// End - Added by Arpita Soni for Ticket #1148 on 01/23/2015		
+
+            // Add By Nishant Sheth
+            // Desc ::  To get dimension list and it's values
+            List<string> DefaultDimensionList = Common.GetDefaultDimensionList();
+            List<Dimension> ListDimension = new List<Dimension>();
+            List<DimensionValue> ListDimensionVaule = new List<DimensionValue>();
+            List<string> listCustomFieldDimension = new List<string>();
+            List<int> listDimensionIds = new List<int>();
+            listCustomFieldDimension = lstCustomFields.Select(a => Convert.ToString(a.Name + "_" + a.CustomFieldId)).ToList();
+
+            ListDimension = db.Dimensions.Where(a => listCustomFieldDimension.Contains(a.Name) || DefaultDimensionList.Contains(a.Name)
+                && a.IsDeleted == false).ToList();
+            if (ListDimension.Count > 0 && ListDimension != null)
+            {
+                listDimensionIds = ListDimension.Select(a => a.id).ToList();
+                ListDimensionVaule = db.DimensionValues.Where(a => listDimensionIds.Contains(a.DimensionID)).ToList();
+            }
+
+            ViewBag.ListDimension = ListDimension;
+            ViewBag.ListDimensionVaule = ListDimensionVaule;
+            // End By Nishant Sheth
 
             //// Get Plan List
             List<SelectListItem> lstYear = new List<SelectListItem>();
@@ -356,7 +377,7 @@ namespace RevenuePlanner.Controllers
             //ViewBag.ViewPlan = lstPlanList.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
             //End Added by Mitesh Vaishnav for PL ticket #846
-            
+
             ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.UserId.ToString());// Add By Nishant Sheth // #2262 : display menu for report's dashboard
             return View("Index");
         }
@@ -1793,9 +1814,9 @@ namespace RevenuePlanner.Controllers
                 programIds = db.Plan_Campaign_Program.Where(prog => campaignlist.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).Select(tactic => tactic.PlanProgramId).Distinct().ToList<int>();
             }
             //Modified by Maitri Gandhi on 24/5/2016 for #2193
-            var programList = db.Plan_Campaign_Program.Where(pc => programIds.Contains(pc.PlanProgramId) && pc.IsDeleted==false)
+            var programList = db.Plan_Campaign_Program.Where(pc => programIds.Contains(pc.PlanProgramId) && pc.IsDeleted == false)
                     .Select(program => new { PlanProgramId = program.PlanProgramId, Title = program.Title })
-                    .OrderBy(pcp => pcp.Title).ToList();            
+                    .OrderBy(pcp => pcp.Title).ToList();
             if (programList == null)
                 return Json(new { });
             programList = programList.Where(program => !string.IsNullOrEmpty(program.Title)).OrderBy(program => program.Title, new AlphaNumericComparer()).ToList();
@@ -3492,7 +3513,7 @@ namespace RevenuePlanner.Controllers
             if (ViewBag.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
                 incrementCount = 3;
-              //  isQuarter = true;
+                //  isQuarter = true;
             }
             BudgetModelReport budgetPlan = model.SingleOrDefault(pl => pl.ActivityType == Activitytype && pl.ActivityId == activityId);
             for (int i = 1; i <= 12; i += incrementCount)
@@ -4421,7 +4442,7 @@ namespace RevenuePlanner.Controllers
         {
             Custom_Dashboard model = new Custom_Dashboard();
             CustomDashboard cd = new CustomDashboard();
-            
+
             if (!string.IsNullOrEmpty(DashboardId))
             {
                 int DashId = int.Parse(DashboardId.ToString());
@@ -4468,9 +4489,9 @@ namespace RevenuePlanner.Controllers
                 ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
                 ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
                 ViewBag.ApiUrl = ApiUrl;
-            }            
+            }
             return PartialView("_DynamicReport", model);
-        }        
+        }
 
         #region "Common Methods"
         /// <summary>
@@ -9250,7 +9271,7 @@ namespace RevenuePlanner.Controllers
                 List<TacticDataTable> TacticDataTable = new List<TacticDataTable>();
                 List<TacticStageValue> fltrTacticData = new List<TacticStageValue>();
                 List<TacticMonthValue> TacticListMonth = new List<TacticMonthValue>();
-               // double GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
+                // double GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
                 #endregion
 
                 #region "Evaluate Customfield Option wise Sparkline chart data"
@@ -9268,7 +9289,7 @@ namespace RevenuePlanner.Controllers
                 {
                     #region "if timeframe Quarterly"
 
-                  //  GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
+                    //  GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
 
                     #region "Calculate Trend Quarterly"
 
@@ -9424,7 +9445,7 @@ namespace RevenuePlanner.Controllers
                     //TotalTrendQ3 = TotalTrendQ3 + (ActualQ3);
                     //TotalTrendQ4 = TotalTrendQ4 + (ActualQ4);
                     // Add By Nishant Sheth #1839
-                     bool Quarteryvalues = false;
+                    bool Quarteryvalues = false;
                     foreach (var year in ListYear)
                     {
                         string YearName = year;
@@ -9541,7 +9562,7 @@ namespace RevenuePlanner.Controllers
                 #region "Calcualte Actual & Projected value Quarterly"
                 if (IsQuarterly)
                 {
-                  //  costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = 0;
+                    //  costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = 0;
 
                     //TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
@@ -9862,7 +9883,7 @@ namespace RevenuePlanner.Controllers
                 if (IsQuarterly)
                 {
                     #region "if timeframe Quarterly"
-                   // GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
+                    // GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
 
                     #region "Calculate Trend Quarterly"
                     #region "Newly added Code"
@@ -10002,7 +10023,7 @@ namespace RevenuePlanner.Controllers
                 #region "Calcualte Actual & Projected value Quarterly"
                 if (IsQuarterly)
                 {
-                   // ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = 0;
+                    // ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = 0;
                     //ActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
                     //// return record from list which contains Q1 or Q2 months : Summed Up (Q1 + Q2) Actuals Value
                     //ActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
@@ -10105,7 +10126,7 @@ namespace RevenuePlanner.Controllers
 
                 #region "Code for ROI"
                 #region "Declare Local Variables"
-               // double costActualQ1 = 0, costActualQ2 = 0, costActualQ3 = 0, costActualQ4 = 0;
+                // double costActualQ1 = 0, costActualQ2 = 0, costActualQ3 = 0, costActualQ4 = 0;
                 #endregion
 
                 #region "Declare Local variables for ROI Trend"
@@ -10116,9 +10137,9 @@ namespace RevenuePlanner.Controllers
                 #region "Calcualte Actual & Projected value Quarterly"
                 if (IsQuarterly)
                 {
-                   // costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = 0;
+                    // costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = 0;
 
-                   // TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                    // TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
                     //// Get Actual Revenue value upto currentmonth by Quarterly.
                     //// Get Actual Cost value upto currentmonth by Quarterly.
@@ -10877,7 +10898,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 List<double> _monthTrendList = new List<double>();
-               // TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                // TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
                 #region "Calcualte Actual & Projected value Quarterly"
                 ActualList = BasicModelData.ActualList; //added by  Dashrath Prajapati- PL #1422

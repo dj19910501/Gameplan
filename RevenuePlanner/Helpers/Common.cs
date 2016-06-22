@@ -2954,6 +2954,22 @@ namespace RevenuePlanner.Helpers
             return tacticStatus;
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Fuction to get list of default dimension
+        /// </summary>
+        /// <returns>returns list of default dimensions</returns>
+        public static List<string> GetDefaultDimensionList()
+        {
+            List<string> Dimension = new List<string>();
+            Dimension.Add(Enums.DimensionValues[Enums.Dimension.ClientId.ToString()].ToString());
+            Dimension.Add(Enums.DimensionValues[Enums.Dimension.CreatedBy.ToString()].ToString());
+            Dimension.Add(Enums.DimensionValues[Enums.Dimension.PlanId.ToString()].ToString());
+            Dimension.Add(Enums.DimensionValues[Enums.Dimension.StartDate.ToString()].ToString());
+            Dimension.Add(Enums.DimensionValues[Enums.Dimension.TacticTypeId.ToString()].ToString());
+            return Dimension;
+        }
+
         #endregion
 
         #region Manoj Limbachiya TFS:263

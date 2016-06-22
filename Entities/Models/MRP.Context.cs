@@ -108,6 +108,8 @@ namespace RevenuePlanner.Models
         public DbSet<MarketoEntityValueMapping> MarketoEntityValueMappings { get; set; }
         public DbSet<EntityIntegration_Attribute> EntityIntegration_Attribute { get; set; }
         public DbSet<IntegrationWorkFrontProgram_Mapping> IntegrationWorkFrontProgram_Mapping { get; set; }
+        public DbSet<Dimension> Dimensions { get; set; }
+        public DbSet<DimensionValue> DimensionValues { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

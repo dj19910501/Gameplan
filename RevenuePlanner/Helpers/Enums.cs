@@ -43,6 +43,26 @@ namespace RevenuePlanner.Helpers
             {TacticStatus.Complete.ToString(), "Complete"}
         };
 
+        // Add By Nishant Sheth
+        // Default Dimensions for custom reports
+        public enum Dimension
+        {
+            StartDate = 0,
+            ClientId = 1,
+            CreatedBy = 2,
+            PlanId = 3,
+            TacticTypeId = 4
+        }
+        public static Dictionary<string, string> DimensionValues = new Dictionary<string, string>()
+        {
+            {Dimension.StartDate.ToString(), "StartDate"},
+            {Dimension.ClientId.ToString(), "ClientId"},
+            {Dimension.CreatedBy.ToString(), "CreatedBy"},
+            {Dimension.PlanId.ToString(), "PlanId"},
+            {Dimension.TacticTypeId.ToString(), "TacticTypeId"}
+         };
+
+
         /// <summary>
         /// Data Dictionary to hold tactic status color code.
         /// Added By: Sohel Pathan
@@ -295,7 +315,7 @@ namespace RevenuePlanner.Helpers
             Boost = 3,
             Report = 4,
             Pref = 5,
-            Finance=6,
+            Finance = 6,
             ExternalService,
             Organization,
             MarketingBudget,  // Added by Arpita Soni for Ticket #2202 on 05/23/2016 
@@ -391,7 +411,7 @@ namespace RevenuePlanner.Helpers
             Salesforce,
             Marketo,
             WorkFront,
-            
+
         }
         public static Dictionary<string, string> IntegrationActivity = new Dictionary<string, string>()
         {
@@ -1174,7 +1194,7 @@ namespace RevenuePlanner.Helpers
            {"owner","Owner"},
            {"targetstagegoal","Target Stage Goal"}
        };
-     
+
         #endregion
 
         #region "Finance MainGrid"
@@ -1293,7 +1313,7 @@ namespace RevenuePlanner.Helpers
             TacticType,
             Status,
             Year,
-            Filters,   
+            Filters,
             Active_Attributes,
             Active_Plans,
             Update_Attributes,
@@ -1388,8 +1408,8 @@ namespace RevenuePlanner.Helpers
             CustomFieldEntityId,
             CreatedBy,
             DummyCol
-        }	  
-    public enum AppConfiguration
+        }
+        public enum AppConfiguration
         {
             Pwd_MaxAttempts,
             PasswordHistoryCount,
@@ -1403,7 +1423,7 @@ namespace RevenuePlanner.Helpers
         }
 
         public enum GlobalSearch
-        {            
+        {
             NameOnly,
             MachineName,
         }
@@ -1482,6 +1502,6 @@ namespace RevenuePlanner.Helpers
         public const string Plan = "Plan";
     }
 
-   
+
 
 }
