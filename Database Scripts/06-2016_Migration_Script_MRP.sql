@@ -15727,18 +15727,23 @@ WHERE Name = N'IsOwner' AND OBJECT_ID = OBJECT_ID(N'[Budget_Permission]'))
 BEGIN
 ALTER TABLE [dbo].[Budget_Permission]
 ADD [IsOwner] [bit] NOT NULL CONSTRAINT [DF_Budget_Permission_IsOwner]  DEFAULT 0
+END 
+Go
 
--- Desc :: Update isowner flag for existing data.
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Budget_Permission]') AND type in (N'U'))
+-- Added by Komal Rawal
+-- Added on :: 13-June-2016
+-- Desc ::update isowner flag for existing budget.
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Budget_Permission]') AND type in (N'U') )
 BEGIN
-UPDATE [dbo].[Budget_Permission]
-SET IsOwner = 1 WHERE UserId = CreatedBy
+	Declare @cntOwner int=0
+	select @cntOwner = Count(*) FROM  [dbo].[Budget_Permission] where IsOwner = 1
+	IF(@cntOwner=0)
+	BEGIN
+		UPDATE [dbo].[Budget_Permission]
+		SET IsOwner = 1 WHERE UserId = CreatedBy 
+	END
 END 
-
-END 
-GO
-
-
+Go
 -- Added by Viral Kadiya
 -- Added on :: 17-June-2016
 -- Desc :: Insert Campaign,Program,Tactic & Improvement Tactic Comment.
