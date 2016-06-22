@@ -8898,8 +8898,9 @@ function () {
     //Added by Rahul Shah for PL #2270. perform Global Search on calendar.
     var SearchTextforcal = ""
     function GlobalSearch() {
-
-        if ($('#divPlanButton').children().hasClass("request-btn-active")) {
+        $('#ExpLoading').css('display', 'block');
+        
+        if ($('#divPlanButton').children().hasClass("request-btn-active") || $('#RequestTab').children().hasClass("request-btn-active")) {
                 gantt.refreshData();
                 function contains(haystack, needle) {
                     var a = (haystack || "").toLowerCase(),
@@ -8936,6 +8937,7 @@ function () {
                 }               
             });            
             if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {                
+                if ($('#txtGlobalSearch').val().length > 0) {
                 SearchTextforcal = $('#txtGlobalSearch').val().trim();
                 $('#txtGlobalSearch').val("");
                 GlobalSearch();
@@ -8943,6 +8945,7 @@ function () {
                 $("#errorMsg").css("display", "block");
                 $("#spanMsgError").empty();
                 $("#spanMsgError").text("No data found specified filter/search text");
+            }
             }
             else {
                 $("#errorMsg").css("display", "none");
@@ -8954,6 +8957,7 @@ function () {
             var SearchText = $('#txtGlobalSearch').val();
             GlobalSearchonGrid(SearchText, SearchDDLValue);
         }
+        $('#ExpLoading').css('display', 'none');
     }
 
 </script>

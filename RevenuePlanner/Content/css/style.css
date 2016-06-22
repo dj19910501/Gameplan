@@ -7479,12 +7479,13 @@ input.icon-check-blue {
     width: 134px;
 }
 .integration-review-imglink {
-    height: 79px !important;
+    /*height: 79px !important;*/ /* Edited for #2229 */
     text-align: left;
     width: 136px !important;
     display: block;
     border: 1px solid transparent;
     border-radius: 4px;
+    padding-bottom: 10px;
 }
 
     .integration-review-imglink:hover {
@@ -15233,7 +15234,7 @@ input[type="search"].ExpInput {
     -webkit-border-radius: 0px;
 }
 .ExpIcon,
-.Expbtn , .ExpIconClose {
+.Expbtn , .ExpIconClose,.search-loader {
     width: 35px;
     display: block;
     position: absolute;
@@ -15276,6 +15277,12 @@ input[type="search"].ExpInput {
     right:0;
     left: auto;
 }
+.Exp-serach.Exp-serach-open .search-loader {
+     z-index: 11; 
+    right:0;
+    left: auto;
+}
+
 .Exp-serach.Exp-serach-open .Expbtn,.Exp-serach.Exp-serach-open .ExpIconClose,
 .no-js .Exp-serach .Expbtn {
     right:0;left: auto;
@@ -15358,6 +15365,11 @@ input[type="search"].ExpInput {
     font-size: 15px;
     padding-top: 5px;
     text-decoration: underline;
+    width: auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 99%;/* Edited for #2229 */ 
 }
 .report-wrap .main-row{
     display: block;
