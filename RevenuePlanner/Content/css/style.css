@@ -7560,8 +7560,8 @@ input.icon-check-blue {
     display: none;
 }
  /*#2015 Bhumika Start*/
-.toggle-status a, .export-link {text-decoration:underline; color: #F8710E; font-size:14px} /* #005580 Edited for #2219 - Bhumika */
-.toggle-status a:hover, .export-link:hover{color: #F8710E;}
+.toggle-status a {text-decoration:underline; color: #F8710E; font-size:14px} /* #005580 Edited for #2219, #2227 - Bhumika */
+.toggle-status a:hover{color: #F8710E;}
 .pdfExport{padding-left:10px}
 .pdfExport .fa.fa-external-link, .export-link  .fa.fa-external-link{
     position: relative;
@@ -14747,13 +14747,13 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .nav-tabs {
     border-bottom:0px solid #ddd;
 }
-#exportcsv {
+/*#exportcsv {
     margin: 0 10px 0 0; float:right;cursor:pointer;
 }
 #exportcsv > span {
     margin: 0;
     padding: 0;
-}
+}*/ /* Commented for #2227 - Bhumika*/
 
 
 /* #2015 new style Icons  End*/
@@ -15386,6 +15386,38 @@ input[type="search"].ExpInput {
 .report-wrap .main-row .component .highcharts-container{width:100% !important}
 
 a:focus, a:hover{outline:0 none !important}
+
+.main.report-main{min-height: 700px;}
+
+/* #2227 - Bhumika */
+    .ExpImp-Btnwrap{
+        position:absolute;
+        display: block;
+        top: -60px;
+        padding: 0 20px;
+        width: 25%;
+    }
+    .export-link, #ImportBtn{line-height: 34px; float:left; display:inline-block;}
+    .import-popover {
+        z-index: 9999;
+        position: fixed;
+    }
+    #ImportModal ul {list-style-type: number; margin-bottom:0}
+    #ImportModal ul li {line-height: 15px;padding-bottom: 5px;}
+    #ImportModal ul li:last-child{padding-bottom: 0;}
+    #ImportModal ul li span{font-size:12px}
+    .btn-primary.btn-file {
+        background-color: #f8710e;
+        float: right;
+    }
+    #ImportModal {width: 400px;}
+    #ImportModal .modal-header {padding: 2px 15px;}
+    /*#ImportModal.fade.in {
+        top: 40%; margin-left:-500px;
+    }*/
+    #ImportBtn{width: 65px;margin-right:10px}
+    .btn-primary.btn-file:hover, .btn-primary.btn-file:focus{ background-color: #e2502d;}
+    #kvFileinputModal {display: none;}
 
 /* new feature Searchbox style #2259 End */
 

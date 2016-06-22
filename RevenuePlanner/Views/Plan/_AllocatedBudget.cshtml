@@ -109,11 +109,16 @@
         cursor: pointer;
     }
 </style>
-@*Added by Rushil Bhuptani on 14/06/2016 for #2227 to refresh grid data after file is uploaded.*@
-<label class="control-label">Select File</label>
-<input id="input-43" name="input43[]" type="file" multiple class="file-loading">
-<div id="errorBlock" class="help-block"></div>
-<div class="tab-content all-height cf">
+<div class="tab-content all-height cf" style="position:relative">
+    
+    <div class="ExpImp-Btnwrap clearfix">
+        <a class="btn btn-blue text-shadow-blue" onclick="showModal();" id="ImportBtn" role="button" data-toggle="modal" style="">
+            Import
+        </a>
+        <a class="btn btn-blue text-shadow-blue export-link" style="cursor: pointer" id="exportcsv" onclick="return ExportToExcel(); ">
+            <i class="fa fa-external-link"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Export.xls</span>
+        </a>
+    </div>
     <div class="tab-pane active all-height" id="panel-656352">
         <div id="paln-populated-collaborators-panel-wrapper" class="pl20 cf">
             <div class="cf all-height lenght-div">
@@ -201,9 +206,42 @@
     </div>
 </div>
 
+@* #2227 Popup Modal - Added by Bhumika*@
+<div id="ImportModal" class="modal hide fade import-popover">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4>To Import Data for </h4>
+    </div>
+    <div class="modal-body">
+        <ul>
+            <li><strong>Download file format <a onclick="downloadFile()">here</a></strong></li>
+            <li><strong>Make any necessary changes</strong><br />
+                <span>Note: Any additional rows or columns added will not appear after imported</span></li>
+            <li><strong>Import the file</strong><br />
+<span>Note:The file name must match grid.xls</span>
+</li>
+        </ul>
+        <input id="input-43" name="input43[]" type="file" multiple class="file-loading select-file">
+        <div id="errorBlock" class="help-block"></div>
+    </div>
 
+    @*<div class="modal-footer">
+            <a href="#" class="btn">Close</a>
+            <a href="#" class="btn btn-primary">Save changes</a>
+        </div>*@
+</div>
 
 <script type="text/javascript">
+    
+    // Added by Rushil Bhuptani on 22/06/2016 for #2227 to download sample excel file.
+    function downloadFile() {
+        window.location = '/Plan/DownloadSampleExcelFile';
+    }
+
+    // Added by Rushil Bhuptani on 22/06/2016 for #2227 to show popup.
+    function showModal() {
+        $('#ImportModal').modal('show');
+    }
 
     var heights = $('.column1').find('div').map(function () {
         var intWidth = 0;
@@ -218,6 +256,11 @@
     }).get();
 
     $(document).ready(function () {
+        
+        // Added by Rushil Bhuptani on 22/06/2016 for #2227 to clear file input on modal hide.
+        $('#ImportModal').on('hidden.bs.modal', function() {
+            $('#input-43').fileinput('clear');
+        });
 
         // Added by Rushil Bhuptani on 14/06/2016 for #2227 for initializing file input plugin
         $("#input-43").fileinput({
@@ -240,7 +283,7 @@
            
             // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
             if (data.response.conflict == true) {
-             ShowMessage(false,data.response.message);
+                ShowMessage(false,data.response.message);
             }
             $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId, function (response, status, xhr) {
                 if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
@@ -249,8 +292,14 @@
                 ExpandItems();
             });
             $("#DivloadPlan").removeClass('margin-top-50');
-
+            // Added by Rushil Bhuptani on 22/06/2016 for #2227 to close popup on successful import of data.
+            $('#ImportModal').modal('hide');
             myApp.hidePleaseWait();
+        });
+
+        $('#input-43').on('fileselect', function (event, numFiles, label) {
+            debugger;
+            alert(3);
         });
 
         $('#errorMessageDuplicatePlan').slideUp(400);
@@ -419,7 +468,7 @@
                 }
             });
         }
-    //end
+        //end
 
     }
 
@@ -703,15 +752,15 @@
 
     //Added By Maitri Gandhi on 19/5/2016 for #2197
     function OpenOtherInspectPopup(id, section) {
-            // Modified by Arpita Soni for Ticket #2237 on 06/15/2016
-            var section = section;
-            var id = id;//$(this).attr('id');
-            timer = setTimeout(function () {
-                if (!prevent) {
-                    ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-                }
-                prevent = false;
-            }, 200);
+        // Modified by Arpita Soni for Ticket #2237 on 06/15/2016
+        var section = section;
+        var id = id;//$(this).attr('id');
+        timer = setTimeout(function () {
+            if (!prevent) {
+                ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
+            }
+            prevent = false;
+        }, 200);
         
     }
 
@@ -904,7 +953,7 @@
         }
     });
 
-     @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
+    @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
     function ExportToExcelBudget() {
       
         var JsonExportModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';

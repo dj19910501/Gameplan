@@ -121,14 +121,20 @@
     <a class="close">×</a> 
     <div id="cErrorInspectPopup"></div>
 </div>
-<div class="tab-content all-height cf">
-        <div class="tab-pane active all-height" id="panel-656352">
-            <div id="paln-populated-collaborators-panel-wrapper" class="pl20 cf">
-                <div class="cf all-height lenght-div">
-                    <div class="budget-table source-sans-proregular">
-                       @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
+<div class="tab-content all-height cf" style="position: relative">
+    <div class="ExpImp-Btnwrap clearfix">
+     
+        <a class="btn btn-blue text-shadow-blue export-link" style="cursor: pointer" id="exportcsv" onclick="return ExportToExcel(); ">
+            <i class="fa fa-external-link"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Export.xls</span>
+        </a>
+    </div>
+    <div class="tab-pane active all-height" id="panel-656352">
+        <div id="paln-populated-collaborators-panel-wrapper" class="pl20 cf">
+            <div class="cf all-height lenght-div">
+                <div class="budget-table source-sans-proregular">
+                    @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
 
-                        @*<table cellpadding="0" cellspacing="0" border="0" class="budget-table">
+                    @*<table cellpadding="0" cellspacing="0" border="0" class="budget-table">
                             <tbody class="column1 display-table-row @columnBorderClass">
                                 <tr>
                                     <td>
@@ -199,15 +205,15 @@
                                 </tbody>
                             }
                         </table>*@
-                        <div style="clear: both;"></div>
-                    </div>
-                    <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
-                    @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
-                    <div id="gridExport" style="background-color: white; width: 100%;display:none" class="exportReportGrid"></div>
+                    <div style="clear: both;"></div>
                 </div>
+                <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
+                @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
+                <div id="gridExport" style="background-color: white; width: 100%; display: none" class="exportReportGrid"></div>
             </div>
         </div>
     </div>
+</div>
 <div id="loadme" class="loadme-true" style="display:none">
    	<h3 class="source-sans-proregular"></h3>
    	<div class="tooltip-field">

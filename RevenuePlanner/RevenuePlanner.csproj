@@ -357,7 +357,7 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
-    <Content Include="Content\css\style_min_June_23.css" />
+    <Content Include="Content\css\style_min_June_24.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -752,6 +752,7 @@
     </Content>
     <Content Include="Views\Report\ShareReport.cshtml" />
     <Content Include="Views\Plan\_DeleteImprovementTactic.cshtml" />
+    <Content Include="Content\Common\grid sample.xls" />
     <None Include="Properties\PublishProfiles\MRP-Dev.pubxml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />

@@ -18088,5 +18088,15 @@ namespace RevenuePlanner.Controllers
             }
             return value;
         }
+
+        /// <summary>
+        /// Added by Rushil Bhuptani on 22/06/2016
+        /// Download the sample excel file.
+        /// </summary>
+        /// <returns>File path result.</returns>
+        public ActionResult DownloadSampleExcelFile()
+        {
+            return File("~/Content/Common/grid sample.xls", "application/vnd.ms-excel", "grid sample.xls");
+        }
     }
 }
