@@ -144,17 +144,17 @@ namespace Integration.Salesforce
             //}
             ///// End : #1385
 
-            //_client = new SalesforceClient();
-            //var authFlow = new UsernamePasswordAuthenticationFlow(_consumerKey, _consumerSecret, _username, _password + _securityToken); 
+            _client = new SalesforceClient();
+            var authFlow = new UsernamePasswordAuthenticationFlow(_consumerKey, _consumerSecret, _username, _password + _securityToken); 
             #endregion
             int entityId = _integrationInstanceId;
-            //authFlow.TokenRequestEndpointUrl = _apiURL;   // commented by viral #2251.
+            authFlow.TokenRequestEndpointUrl = _apiURL;   // commented by viral #2251.
             try
             {
                 if (_entityType.Equals(EntityType.Tactic) || _entityType.Equals(EntityType.ImprovementTactic))
                     entityId = _id;
                 Common.SaveIntegrationInstanceLogDetails(entityId, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Salesforce Authentication start.");
-                //_client.Authenticate(authFlow);
+                _client.Authenticate(authFlow);
 
                 sfdcCredentials = GetsfdcCredentials();
 
