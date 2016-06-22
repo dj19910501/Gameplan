@@ -7671,8 +7671,11 @@ namespace RevenuePlanner.Controllers
                     }
                     objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
                     objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
-
-                    var lstLineItemType = db.LineItemTypes.Where(litemtype => litemtype.ModelId == objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
+                    // Modified by Arpita Soni for Ticket #2237 on 06/22/2016
+                    var lstLineItemType = db.LineItemTypes.
+                                            Where(litemtype => litemtype.ModelId == objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId
+                                            && litemtype.IsDeleted == false).
+                                            Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
                     TempData["lineItemTypes"] = lstLineItemType;
                 }
             }

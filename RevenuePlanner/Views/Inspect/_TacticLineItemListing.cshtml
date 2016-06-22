@@ -40,7 +40,7 @@
 </style>
 <!-- Added by Arpita Soni for Ticket #2237 on 06/13/2016 -->
 @if(countrows > 0) {
-    <div id="lineItemGrid" style="background-color: white; width: 100%;" class="gridViewGrid"></div>
+    <div id="lineItemGrid" style="background-color: white; width: 99.5%;" class="gridViewGrid"></div>
 }
 else {
     <div>No records available.</div>
@@ -263,7 +263,7 @@ else {
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
         HomeGrid.enableAutoHeight(true);
-        HomeGrid.enableAutoWidth(true);
+        //HomeGrid.enableAutoWidth(true);
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setCustomSorting(sort_Owner, 6);
         HomeGrid.setCustomSorting(sort_TacticType, 5);
@@ -567,11 +567,11 @@ else {
                                     diffLineAndTactic = states.lineItemCost - states.tacticCost
                                     if (states.lineItemCost > states.tacticCost) {
 
-                                        SetColumUpdatedValue(6, diffLineAndTactic);
-                                        HomeGrid.cells(progid, 6).setValue((newProgVal));
-                                        HomeGrid.cells(campid, 6).setValue((newCampVal));
-                                        HomeGrid.cells(planid, 6).setValue((newPlanVal));
-                                        HomeGrid.cells(tactid, 6).setValue((newTactVal));
+                                        SetColumUpdatedValue(4, diffLineAndTactic);
+                                        HomeGrid.cells(progid, 4).setValue((newProgVal));
+                                        HomeGrid.cells(campid, 4).setValue((newCampVal));
+                                        HomeGrid.cells(planid, 4).setValue((newPlanVal));
+                                        HomeGrid.cells(tactid, 4).setValue((newTactVal));
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                             //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
                                             if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") { //Modiied by Rahul Shah
@@ -602,6 +602,8 @@ else {
                                             }
                                         }
                                     }
+                                    // Added by Arpita Soni for Ticket #2237 on 06/22/2016
+                                    $("#liLine_Items").trigger("click");
                                     ItemIndex=HomeGrid.getRowIndex(tactid);
                                     state0=ItemIndex;
                                     HomeGrid.cells(rowId, 4).setValue((nValue));
@@ -698,11 +700,11 @@ else {
                                     else {
 
                                         diff = parseInt(nValue) - parseInt(oValue);
-                                        SetColumUpdatedValue(6, diff);
-                                        HomeGrid.cells(progid, 6).setValue((newProgVal));
-                                        HomeGrid.cells(campid, 6).setValue((newCampVal));
-                                        HomeGrid.cells(planid, 6).setValue((newPlanVal));
-                                        HomeGrid.cells(rowId, 6).setValue((nValue));
+                                        SetColumUpdatedValue(4, diff);
+                                        HomeGrid.cells(progid, 4).setValue((newProgVal));
+                                        HomeGrid.cells(campid, 4).setValue((newCampVal));
+                                        HomeGrid.cells(planid, 4).setValue((newPlanVal));
+                                        HomeGrid.cells(rowId, 4).setValue((nValue));
                                         if (TotalRowIds != "") {
                                             for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                                 //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
@@ -713,7 +715,8 @@ else {
                                         }
                                     
                                     }
-                                    ChangeTabView('liGrid'); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+                                    // Added by Arpita Soni for Ticket #2237 on 06/22/2016
+                                    $("#liLine_Items").trigger("click");
                                     ItemIndex=HomeGrid.getRowIndex(rowId);
                                     state0=ItemIndex;
                                 }
@@ -765,6 +768,5 @@ else {
             }
         }
     }
-
     
 </script>

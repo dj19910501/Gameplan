@@ -13715,7 +13715,7 @@ namespace RevenuePlanner.Controllers
         }
 
         #region method to generate grid header
-        public List<PlanHead> GenerateJsonHeader(string MQLTitle, int modelid, List<TacticTypeModel> TacticTypeList, string PlanYear, bool IsLineItemListing = true)
+        public List<PlanHead> GenerateJsonHeader(string MQLTitle, int modelid, List<TacticTypeModel> TacticTypeList, string PlanYear, bool IsNotLineItemListing = true)
         {
             // Modified by Arpita Soni for Ticket #2237 on 06/09/2016
             List<PlanHead> headobjlist = new List<PlanHead>();
@@ -13747,7 +13747,7 @@ namespace RevenuePlanner.Controllers
                 }
                 // First Column Activity Type
                 headobj.type = "ro";
-                headobj.align = "center";
+                //headobj.align = "center";
                 headobj.id = "activitytype";
                 headobj.sort = "na";
                 headobj.width = 0;
@@ -13765,39 +13765,51 @@ namespace RevenuePlanner.Controllers
                 headobjlist.Add(headobj);
 
                 // Modified by Arpita Soni to resolve issue in Ticket #2237 due to #2270/#2271
-                if (IsLineItemListing)
+                if (IsNotLineItemListing)
                 {
                     // Third Column : Empty
                     headobj = new PlanHead();
                     headobj.type = "ro";
-                    headobj.align = "left";
+                    //headobj.align = "left";
                     headobj.id = "machinename";
                     headobj.sort = "str";
                     headobj.width = 0;
                     headobj.value = "Machine Name";
                     headobjlist.Add(headobj);
-                }
-                // Third Column : Empty
-                headobj = new PlanHead();
-                headobj.type = "ro";
-                headobj.align = "center";
-                headobj.id = "add";
-                headobj.sort = "na";
-                headobj.width = 85; //modified by Rahul shah on 04/12/2015-to increase width for honeycomb feature
-                headobj.value = "";
-                headobjlist.Add(headobj);
 
+                    // Third Column : Empty
+                    headobj = new PlanHead();
+                    headobj.type = "ro";
+                    headobj.align = "center";
+                    headobj.id = "add";
+                    headobj.sort = "na";
+                    headobj.width = 85; //modified by Rahul shah on 04/12/2015-to increase width for honeycomb feature
+                    headobj.value = "";
+                    headobjlist.Add(headobj);
+                }
+                else
+                {
+                    // Third Column : Empty
+                    headobj = new PlanHead();
+                    headobj.type = "ro";
+                    headobj.align = "center";
+                    headobj.id = "add";
+                    headobj.sort = "na";
+                    headobj.width = 45; // decreased width of column in case of line item grid
+                    headobj.value = "";
+                    headobjlist.Add(headobj);
+                }
                 // Fourth Column : Id
                 headobj = new PlanHead();
                 headobj.type = "ro";
-                headobj.align = "center";
+                //headobj.align = "center";
                 headobj.id = "id";
                 headobj.sort = "na";
                 headobj.width = 0;
                 headobj.value = "id";
                 headobjlist.Add(headobj);
 
-                if (IsLineItemListing)
+                if (IsNotLineItemListing)
                 {
                     // Fifth Column : Start Date
                     headobj = new PlanHead();
@@ -13851,7 +13863,7 @@ namespace RevenuePlanner.Controllers
                 headobj.options = lstOwner;
                 headobjlist.Add(headobj);
 
-                if (IsLineItemListing)
+                if (IsNotLineItemListing)
                 {
                     // Tenth Column : Target Stage Goal
                     headobj = new PlanHead();
