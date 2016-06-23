@@ -4491,15 +4491,25 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ApiUrl = ApiUrl;
             }
             string ClientId = Convert.ToString(Sessions.User.ClientId);
-            var ClientIdCnt = db.DimensionValues.Where(dv => dv.Value.Equals(ClientId)).ToList();
+            //var ClientIdCnt = db.DimensionValues.Where(dv => dv.Value.Equals(ClientId)).ToList();
+            var ClientIdCnt = db.Dimensions.Where(dv => dv.Name.Equals("ClientId")).ToList();
             if (ClientIdCnt.Count > 0)
             {
-                ViewBag.ClientDimensionId = ClientIdCnt[0].DimensionID;
-                ViewBag.ClientDimensionValueId = ClientIdCnt[0].id;
+                var ClientIdValCnt = db.DimensionValues.Where(dv => dv.Value.Equals(ClientId)).ToList();
+                if (ClientIdValCnt.Count > 0)
+                {
+                    ViewBag.ClientDimensionId = ClientIdValCnt[0].DimensionID;
+                    ViewBag.ClientDimensionValueId = ClientIdValCnt[0].id;
+                }
+                else
+                {
+                    ViewBag.ClientDimensionId = ClientIdValCnt[0].DimensionID;
+                    ViewBag.ClientDimensionValueId = "0";
+                }                
             }
             else
             {
-                ViewBag.ClientDimensionId = RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet;
+                ViewBag.ClientDimensionId = RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet;                
             }
             return PartialView("_DynamicReport", model);
         }
