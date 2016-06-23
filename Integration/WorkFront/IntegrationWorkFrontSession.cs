@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Text;
 using System.Data;
 using System.Data.Common;
+using System.Web;
 
 
 namespace Integration.WorkFront
@@ -394,6 +395,7 @@ namespace Integration.WorkFront
                 program.ModifiedDate = DateTime.Now;
                 program.ModifiedBy = _userId;
                 db.Entry(program).State = EntityState.Modified;
+                string defaultPortfolioName = program.Plan_Campaign.Title + " : " + program.Title;
 
                 if (currentMode.Equals(Enums.Mode.Create))
                 {
@@ -401,8 +403,7 @@ namespace Integration.WorkFront
                     program.LastSyncDate = DateTime.Now;
                     program.ModifiedDate = DateTime.Now;
                     program.ModifiedBy = _userId;
-                    string defaultPortfolioName = program.Plan_Campaign.Title + " : " + program.Title;
-                    JToken createdPortfolio = client.Create(ObjCode.PORTFOLIO, new { name = defaultPortfolioName});
+                    JToken createdPortfolio = client.Create(ObjCode.PORTFOLIO, new { name = HttpUtility.UrlEncode(defaultPortfolioName)});
                     if (createdPortfolio == null || !createdPortfolio["data"].HasValues)
                     {
                         throw new ClientException("WorkFront Portfolio Not Created for Program " + program.Title + ".");
@@ -419,6 +420,11 @@ namespace Integration.WorkFront
                 else if (currentMode.Equals(Enums.Mode.Update))
                 {
                     instanceLogProgram.Operation = Operation.Update.ToString();
+                    JToken updatePortfolio = client.Update(ObjCode.PORTFOLIO, new { id = portfolio.PortfolioId, name = HttpUtility.UrlEncode(defaultPortfolioName) });
+                    if (updatePortfolio == null || !updatePortfolio["data"].HasValues)
+                    {
+                        throw new ClientException("Portfolio name is not updated for program " + program.Title + ".");
+                    }
                     JToken existingPortfolio = client.Search(ObjCode.PORTFOLIO, new { ID = portfolio.PortfolioId });
                     if (existingPortfolio == null) { throw new ClientException("Portfolio Not found in WorkFront but exists in Database."); }
                     portfolio.PortfolioName = (string)existingPortfolio["data"][0]["name"];
@@ -534,6 +540,7 @@ namespace Integration.WorkFront
                 plan.ModifiedDate = DateTime.Now;
                 plan.ModifiedBy = _userId;
                 db.Entry(plan).State = EntityState.Modified;
+                string defaultPortfolioName = plan.Title;
 
                 if (currentMode.Equals(Enums.Mode.Create))
                 {
@@ -541,8 +548,7 @@ namespace Integration.WorkFront
                     //plan.LastSyncDate = DateTime.Now;
                     plan.ModifiedDate = DateTime.Now;
                     plan.ModifiedBy = _userId;
-                    string defaultPortfolioName = plan.Title;
-                    JToken createdPortfolio = client.Create(ObjCode.PORTFOLIO, new { name = defaultPortfolioName });
+                    JToken createdPortfolio = client.Create(ObjCode.PORTFOLIO, new { name = HttpUtility.UrlEncode(defaultPortfolioName)});
                     if (createdPortfolio == null || !createdPortfolio["data"].HasValues)
                     {
                         throw new ClientException("WorkFront Portfolio Not Created for Plan " + plan.Title + ".");
@@ -559,6 +565,11 @@ namespace Integration.WorkFront
                 else if (currentMode.Equals(Enums.Mode.Update))
                 {
                     instanceLogPlan.Operation = Operation.Update.ToString();
+                    JToken updatePortfolio = client.Update(ObjCode.PORTFOLIO, new { id = portfolio.PortfolioId, name = HttpUtility.UrlEncode(defaultPortfolioName) });
+                    if (updatePortfolio == null || !updatePortfolio["data"].HasValues)
+                    {
+                        throw new ClientException("Portfolio name is not updated for Plan " + plan.Title + ".");
+                    }
                     JToken existingPortfolio = client.Search(ObjCode.PORTFOLIO, new { ID = portfolio.PortfolioId });
                     if (existingPortfolio == null) { throw new ClientException("Portfolio Not found in WorkFront but exists in Database."); }
                     portfolio.PortfolioName = (string)existingPortfolio["data"][0]["name"];
@@ -633,7 +644,7 @@ namespace Integration.WorkFront
                 //consolidated creation : create project with appropriate template, timeline & place in correct portfolio
                 JToken program = client.Create(ObjCode.PROGRAM, new
                 {
-                    name = tactic.Plan_Campaign_Program.Plan_Campaign.Title,
+                    name = HttpUtility.UrlEncode(tactic.Plan_Campaign_Program.Plan_Campaign.Title),
                     portfolioID = portfolioInfo.PortfolioId
                 });
                 if (program == null || !program["data"].HasValues)
@@ -669,6 +680,11 @@ namespace Integration.WorkFront
             else if (currentMode.Equals(Enums.Mode.Update))
             {
                 instanceLogTactic.Operation = Operation.Update.ToString();
+                JToken updateProgram = client.Update(ObjCode.PROGRAM, new { id = tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationWorkFrontProgramID, name = HttpUtility.UrlEncode(tactic.Plan_Campaign_Program.Plan_Campaign.Title) });
+                if (updateProgram == null || !updateProgram["data"].HasValues)
+                {
+                    throw new ClientException("Program name is not updated for tactic " + tactic.Title + ".");
+                }
             }
             return tacticError;
         }
@@ -1164,7 +1180,7 @@ namespace Integration.WorkFront
                 //consolidated creation : create project with appropriate template, timeline & place in correct portfolio
                 JToken project = client.Create(ObjCode.PROJECT, new
                 {
-                    name = tactic.Title,
+                    name = HttpUtility.UrlEncode(tactic.Title),
                     templateID = templateID,
                     scheduleMode = 'C',
                     plannedCompletionDate = tactic.StartDate,
@@ -1211,6 +1227,11 @@ namespace Integration.WorkFront
             else if (currentMode.Equals(Enums.Mode.Update))
             {
                 instanceLogTactic.Operation = Operation.Update.ToString();
+                JToken updateProject = client.Update(ObjCode.PROJECT, new { id = tactic.IntegrationWorkFrontProjectID, name = HttpUtility.UrlEncode(tactic.Title) });
+                if (updateProject == null || !updateProject["data"].HasValues)
+                {
+                    throw new ClientException("Project name is not updated for tactic " + tactic.Title + ".");
+                }
                 tacticError = UpdateTacticInfo(tactic, portfolioInfo, ref SyncErrors);
             }
 
@@ -1282,7 +1303,7 @@ namespace Integration.WorkFront
                 //consolidated creation : create project with appropriate template, timeline & place in correct portfolio
                 JToken project = client.Create(ObjCode.PROJECT, new
                 {
-                    name = tactic.Title,
+                    name = HttpUtility.UrlEncode(tactic.Title),
                     templateID = templateID,
                     scheduleMode = 'C',
                     plannedCompletionDate = tactic.StartDate,
@@ -1323,6 +1344,11 @@ namespace Integration.WorkFront
             else if (currentMode.Equals(Enums.Mode.Update))
             {
                 instanceLogTactic.Operation = Operation.Update.ToString();
+                JToken updateProject = client.Update(ObjCode.PROJECT, new { id = tactic.IntegrationWorkFrontProjectID, name = HttpUtility.UrlEncode(tactic.Title) });
+                if (updateProject == null || !updateProject["data"].HasValues)
+                {
+                    throw new ClientException("Project name is not updated for tactic " + tactic.Title + ".");
+                }
                 tacticError = UpdateTacticInfo(tactic, portfolioInfo, ref SyncErrors, true);
             }
 
@@ -1399,7 +1425,7 @@ namespace Integration.WorkFront
                     string requestQueueId = db.IntegrationWorkFrontRequestQueues.Single(q => q.Id == requestFromDB.QueueId).RequestQueueId;
                     JToken queue = client.Search(ObjCode.QUEUE, new {ID = requestQueueId, fields="projectID"});
                     string projectForRequest = queue["data"][0]["projectID"].ToString();
-                    JToken request = client.Create(ObjCode.OPTASK, new { projectID = projectForRequest, name = requestFromDB.RequestName, isHelpDesk = "true", opTaskType = "REQ", assignedToID = assignee });
+                    JToken request = client.Create(ObjCode.OPTASK, new { projectID = projectForRequest, name = HttpUtility.UrlEncode(requestFromDB.RequestName), isHelpDesk = "true", opTaskType = "REQ", assignedToID = assignee });
                     if (request == null)
                     {
                         throw new ClientException("Cannot create request for tactic " + tactic.Title);
@@ -1537,6 +1563,7 @@ namespace Integration.WorkFront
                 var last = _mappingTacticPushData.Last();
                 updateList.Append(GenerateUpdateData(tactic, isPlanToPortfolio));
                 JToken jUpdates = JToken.FromObject(updateList.ToString());
+                
                 JToken project = client.Update(ObjCode.PROJECT, new { id = tactic.IntegrationWorkFrontProjectID, fields = "parameterValues,status", updates = jUpdates });
                 if (project == null) { throw new ClientException("Update not completed on " + tactic.Title + "."); }
                 //End push to WorkFront only sync
@@ -1800,7 +1827,7 @@ namespace Integration.WorkFront
             Console.WriteLine("** Adding issues to project...");
             for(int i = 1; i <= 3; i++) {
                 string issueName = "issue " + i.ToString();
-                client.Create(ObjCode.ISSUE, new { name = issueName, projectID = projectID });
+                client.Create(ObjCode.ISSUE, new { name = HttpUtility.UrlEncode(issueName), projectID = projectID });
             }
             Console.WriteLine(client.Search(ObjCode.ISSUE, new { projectID = projectID, fields = "projectID" }));
             Console.WriteLine("Done");

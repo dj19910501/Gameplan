@@ -357,7 +357,7 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
-    <Content Include="Content\css\style_min_June_26.css" />
+    <Content Include="Content\css\style_min_June_23_1.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
