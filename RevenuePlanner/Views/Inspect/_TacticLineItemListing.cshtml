@@ -268,6 +268,9 @@ else {
         HomeGrid.setCustomSorting(sort_Owner, 6);
         HomeGrid.setCustomSorting(sort_TacticType, 5);
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
+        // Added by Arpita Soni for Ticket #2237 on 06/23/2016 
+        HomeGrid.setColumnHidden(0,true); // hide column activity type
+        HomeGrid.setColumnHidden(3,true); // hide column id
         HomeGrid.init();
         HomeGrid.parse(GridDataHomeGrid, "json");
     }
