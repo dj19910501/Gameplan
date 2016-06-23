@@ -1975,13 +1975,15 @@ span.link-blue:hover {
     text-decoration: underline;
 }
 
-.support-icon {
+.support-icon {/*Edited for #2219 */
     width: 34px;
-    height: 35px;
+    height: 30px;
     margin: 0 auto;
     cursor: pointer;
     display: block;
-    background: url(../images/support-login-blue-icon.png) no-repeat !important;
+    /*background: url(../images/support-login-blue-icon.png) no-repeat !important;*/  
+    color: #3e3f37;
+    font-size: 25px;
 }
 
 .icon-info-support {
@@ -15425,6 +15427,11 @@ a:focus, a:hover{outline:0 none !important}
 
 /* To set orange corner on Grid Table End  */
 /************************************************ Responsive css start here **********************************************************/
+@media (max-width: 1820px) { /* #2264 */
+    .component {
+        width: 46.8% !important;
+    }
+}
 @media (max-width: 1600px) {
 
     .grid_Delete{margin-right:0;} /*by bheru 1678 05-11-2015*/
