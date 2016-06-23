@@ -27,6 +27,7 @@ using Integration;
 using System.Web.Caching;
 using System.Data.SqlClient;
 using System.Reflection;
+using System.Data.EntityClient;
 
 namespace RevenuePlanner.Helpers
 {
@@ -181,7 +182,7 @@ namespace RevenuePlanner.Helpers
         public static List<string> TOPPerformanceColumnList = new List<string>() { "Name", "Proj. vs Goal", "Trend" };
         public static List<string> TOPCostColumnList = new List<string>() { "Name", "Cost", "Trend" };
         public static List<string> TOPROIColumnList = new List<string>() { "Name", "ROI", "Trend" };
-        
+
         #region "Eloqua ClientID & ClientSecret"
         public static string eloquaClientIdLabel = "ClientId";
         public static string eloquaClientSecretLabel = "ClientSecret";
@@ -1750,7 +1751,7 @@ namespace RevenuePlanner.Helpers
                     int Year;
                     // Modified By Komal Rawal to get proper HUd values for #1788
                     string[] ListYear = year.Split('-');
-                  
+
                     bool isNumeric = int.TryParse(year, out Year);
 
                     if (isNumeric)
@@ -1771,7 +1772,7 @@ namespace RevenuePlanner.Helpers
                         }
                         // End By Nishant Sheth
                     }
-                
+
                     DateTime StartDate;
                     DateTime EndDate;
                     StartDate = EndDate = DateTime.Now;
@@ -1783,22 +1784,22 @@ namespace RevenuePlanner.Helpers
                 else
                 {
                     //Added by Arpita Soni for solving multiyear issue in budget tab
-                        List<Plan> lstPlans = new List<Plan>();
-                        lstPlans = Common.GetPlan();
-                        Plan objectPlan = lstPlans.Where(x => x.PlanId == planId).FirstOrDefault();
-                        if (objectPlan != null)
-                        {
-                            planYear = objectPlan.Year;
-                            year = planYear;
-                        }
+                    List<Plan> lstPlans = new List<Plan>();
+                    lstPlans = Common.GetPlan();
+                    Plan objectPlan = lstPlans.Where(x => x.PlanId == planId).FirstOrDefault();
+                    if (objectPlan != null)
+                    {
+                        planYear = objectPlan.Year;
+                        year = planYear;
+                    }
 
-                        DateTime StartDate;
-                        DateTime EndDate;
-                        StartDate = EndDate = DateTime.Now;
-                        Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
+                    DateTime StartDate;
+                    DateTime EndDate;
+                    StartDate = EndDate = DateTime.Now;
+                    Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
 
-                        planTacticIds = planTacticIds.Where(t => (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
-                   //End 
+                    planTacticIds = planTacticIds.Where(t => (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
+                    //End 
                 }
                 //Modified By Komal Rawal for #1447
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
@@ -2239,7 +2240,7 @@ namespace RevenuePlanner.Helpers
                     //// Addressed PL Ticket: 37,38,47,49
                     //// Getting improved MQL.
                     double? improvedMQL = GetTacticStageRelationPerformance(planTacticIds, true).Sum(tactic => tactic.MQLValue);
-                    
+
                     //// Calculating percentage increase.
                     if (improvedMQL.HasValue && objHomePlanModelHeader.MQLs != 0)
                     {
@@ -2392,9 +2393,9 @@ namespace RevenuePlanner.Helpers
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
 
-                    planTacticsList = planTacticsList.Where(pcptobj => ( filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy)) &&
+                    planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy)) &&
                                              (filterTacticType.Contains(pcptobj.objPlanTactic.TacticType.TacticTypeId)) &&
-                                             ( filterStatus.Contains(pcptobj.objPlanTactic.Status))).ToList();
+                                             (filterStatus.Contains(pcptobj.objPlanTactic.Status))).ToList();
 
 
                     //// Apply Custom restriction for None type
@@ -2411,13 +2412,13 @@ namespace RevenuePlanner.Helpers
                     }
                     lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.objPlanTactic.PlanTacticId) || ( filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy))).ToList();// Modified By Nishant Sheth
+                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.objPlanTactic.PlanTacticId) || (filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy))).ToList();// Modified By Nishant Sheth
                 }
                 else
                 {
 
 
-                    planTacticsList = planTacticsList.Where(tactic => ( filterOwner.Contains(tactic.objPlanTactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
+                    planTacticsList = planTacticsList.Where(tactic => (filterOwner.Contains(tactic.objPlanTactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
 
 
                 }
@@ -2596,10 +2597,10 @@ namespace RevenuePlanner.Helpers
             var planList = dataCache.Returncache(Enums.CacheObject.Plan.ToString()) as List<Plan>;
             var planData = planList.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == year).Select(a => a.PlanId).ToList();
             planIds = planList.Select(a => a.PlanId).ToList();
-            
+
             var campplist = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).Where(campaign => (!((campaign.EndDate < StartDate) || (campaign.StartDate > EndDate))) && planIds.Contains(campaign.PlanId)).ToList();
             //var campplist = ((List<Plan_Campaign>)dataCache.Returncache(Enums.CacheObject.Campaign.ToString())).Where(camp => (!((camp.EndDate < StartDate) || (camp.StartDate > EndDate))) && planIds.Contains(camp.PlanId)).Select(a => a).ToList();
-            
+
             //campplist = campplist.Where(camp => (!((camp.EndDate < StartDate) || (camp.StartDate > EndDate))) && planIds.Contains(camp.PlanId)).Select(a => new { PlanCampaignId = a.PlanCampaignId, PlanId = a.PlanId }).ToList();
             //campplist = campplist.Where(camp => (!((camp.EndDate < StartDate) || (camp.StartDate > EndDate))) && planIds.Contains(camp.PlanId)).Select(a => a).ToList();
             var campplanid = campplist.Select(a => a.PlanId).ToList();
@@ -2666,9 +2667,9 @@ namespace RevenuePlanner.Helpers
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
 
-                    planTacticsList = planTacticsList.Where(pcptobj => ( filterOwner.Contains(pcptobj.CreatedBy)) &&
+                    planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Contains(pcptobj.CreatedBy)) &&
                                              (filterTacticType.Contains(pcptobj.TacticTypeId)) &&
-                                             ( filterStatus.Contains(pcptobj.Status))).ToList();
+                                             (filterStatus.Contains(pcptobj.Status))).ToList();
 
 
                     //// Apply Custom restriction for None type
@@ -2689,7 +2690,7 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
-                    planTacticsList = planTacticsList.Where(tactic => ( filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
+                    planTacticsList = planTacticsList.Where(tactic => (filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
                 }
 
                 //End
@@ -3801,10 +3802,10 @@ namespace RevenuePlanner.Helpers
         /// <param name="tStagelevel"></param>
         /// <param name="levelMQL"></param>
         /// <returns></returns>
-        public static List<string> GetTacticStageTitleActual(int tacticId,int tStagelevel,int levelMQL)
-        {           
-            List<string> lstStageTitle = new List<string>();           
-            int tacticStageLevel = Convert.ToInt32(tStagelevel); 
+        public static List<string> GetTacticStageTitleActual(int tacticId, int tStagelevel, int levelMQL)
+        {
+            List<string> lstStageTitle = new List<string>();
+            int tacticStageLevel = Convert.ToInt32(tStagelevel);
             if (tacticStageLevel < levelMQL)
             {
                 lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString());
@@ -6497,10 +6498,10 @@ namespace RevenuePlanner.Helpers
         /// <param name="tacticId">Plan Tactic Id.</param>
         /// <param name="userList">List of user object.</param>
         /// <param name="userList">List of lineitemActual object.</param>
-         /// <param name="userList">List of tactic Actual object.</param>
+        /// <param name="userList">List of tactic Actual object.</param>
         /// <returns>If any tactic actual or LineItem exist then it return string message else empty string </returns>
         public static string TacticModificationMessageActual(int tacticId, List<User> userList = null, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lineItemActList = null, List<Plan_Campaign_Program_Tactic_Actual> tacticActList = null)
-        {            
+        {
             string lastModifiedMessage = string.Empty;
             string createdBy = null;
             DateTime? modifiedDate = null;
@@ -7792,8 +7793,8 @@ namespace RevenuePlanner.Helpers
                 //}
                 var EntityValues = db.CustomField_Entity.Where(tac => tacticIds.Contains(tac.EntityId)).Select(val => new
                 {
-                  CustomFieldid = val.CustomFieldId,
-                  TacticId = val.EntityId
+                    CustomFieldid = val.CustomFieldId,
+                    TacticId = val.EntityId
                 }).ToList();
                 var AllTacticIDs = tacticIds;
                 for (int i = 0; i < lstCustomFieldIds.Count; i++)
@@ -7820,9 +7821,9 @@ namespace RevenuePlanner.Helpers
                     }
                     else if (optionvalue == "null" || optionvalue == null)
                     {
-                       var TacticIds = EntityValues.Where(entity => entity.CustomFieldid == lstCustomFieldIds[i]).Select(tac => tac.TacticId).Distinct().ToList();
-                       lstEntityIds = AllTacticIDs.Except(TacticIds).ToList();
-                       AllTacticIDs = lstEntityIds;
+                        var TacticIds = EntityValues.Where(entity => entity.CustomFieldid == lstCustomFieldIds[i]).Select(tac => tac.TacticId).Distinct().ToList();
+                        lstEntityIds = AllTacticIDs.Except(TacticIds).ToList();
+                        AllTacticIDs = lstEntityIds;
                     }
 
                 }
@@ -8692,7 +8693,7 @@ namespace RevenuePlanner.Helpers
                 {
                     HttpRuntime.Cache.Remove(names[i] + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
                 }
-            }            
+            }
         }
     }
     #endregion
@@ -9032,6 +9033,59 @@ namespace RevenuePlanner.Helpers
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        public string GetColumnValue(string Query)
+        {
+            SqlConnection DbConn = new SqlConnection();
+            SqlDataAdapter DbAdapter = new SqlDataAdapter();
+            SqlCommand DbCommand = new SqlCommand();
+            try
+            {
+                if (DbConn.State == 0)
+                {
+                    try
+                    {
+                        var efConnectionString = ConfigurationManager.ConnectionStrings["MRPEntities"].ToString();
+                        var builder = new EntityConnectionStringBuilder(efConnectionString);
+                        string regularConnectionString = builder.ProviderConnectionString;
+                        DbConn.ConnectionString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                        DbConn.Open();
+                    }
+                    catch (Exception exp)
+                    {
+                        throw exp;
+                    }
+                }
+                DbCommand.CommandTimeout = 120;
+                DbCommand.Connection = DbConn;
+                DbCommand.CommandType = CommandType.Text;
+                DbCommand.CommandText = Query;
+
+
+                object objResult = DbCommand.ExecuteScalar();
+                if (objResult == null)
+                {
+                    return "";
+                }
+                if (objResult == System.DBNull.Value)
+                {
+                    return "";
+                }
+                else
+                {
+                    return Convert.ToString(objResult);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                DbAdapter.Dispose();
+                DbConn.Close();
             }
         }
     }

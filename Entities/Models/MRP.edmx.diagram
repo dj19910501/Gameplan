@@ -185,6 +185,7 @@
         <AssociationConnector Association="MRPModel.FK_EntityIntegration_Attribute_IntegrationInstance" />
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontProgram_Mapping" Width="1.5" PointX="2.3431068800124839" PointY="4.0886457134451" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontProgram_Mapping_IntegrationWorkFrontPortfolios" />
+        <EntityTypeShape EntityType="MRPModel.AggregationStatu" Width="1.5" PointX="0.75" PointY="13.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

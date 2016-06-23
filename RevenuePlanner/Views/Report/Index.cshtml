@@ -583,8 +583,9 @@
     </div>
     <div class="timecolbox">
         <div>
-            <p class="timecol">as of 05/20/2015</p>
-            <p class="timecol">2:25PM IST</p>
+            @Html.Raw(@Html.GetLastLogDate())
+            @*<p class="timecol">as of 05/20/2015</p>
+            <p class="timecol">2:25PM IST</p>*@
         </div>
     </div>
 </div>

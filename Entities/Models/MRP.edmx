@@ -5,6 +5,14 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="MRPModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="AggregationStatus">
+          <Key>
+            <PropertyRef Name="StatusCode" />
+          </Key>
+          <Property Name="StatusCode" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
         <EntityType Name="BestInClass">
           <Key>
             <PropertyRef Name="BestInClassId" />
@@ -2213,6 +2221,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Program_PortfolioTableId">
+          <End Role="IntegrationWorkFrontPortfolios" Type="Self.IntegrationWorkFrontPortfolios" Multiplicity="1" />
+          <End Role="IntegrationWorkFrontProgram_Mapping" Type="Self.IntegrationWorkFrontProgram_Mapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationWorkFrontPortfolios">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontProgram_Mapping">
+              <PropertyRef Name="PortfolioTableId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SyncFrequency_IntegrationInstance">
           <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
           <End Role="SyncFrequency" Type="Self.SyncFrequency" Multiplicity="0..1" />
@@ -2411,6 +2431,11 @@
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AggregationStatus" EntityType="Self.AggregationStatus" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[AggregationStatus].[StatusCode] AS [StatusCode]
+FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="BudgetID_FK" Association="Self.BudgetID_FK">
             <End Role="Budget_Detail" EntitySet="Budget_Detail" />
             <End Role="Budget_Permission" EntitySet="Budget_Permission" />
@@ -2766,6 +2791,10 @@
           <AssociationSet Name="FK_PortfolioTableId" Association="Self.FK_PortfolioTableId">
             <End Role="IntegrationWorkFrontPortfolios" EntitySet="IntegrationWorkFrontPortfolios" />
             <End Role="IntegrationWorkFrontPortfolio_Mapping" EntitySet="IntegrationWorkFrontPortfolio_Mapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Program_PortfolioTableId" Association="Self.FK_Program_PortfolioTableId">
+            <End Role="IntegrationWorkFrontPortfolios" EntitySet="IntegrationWorkFrontPortfolios" />
+            <End Role="IntegrationWorkFrontProgram_Mapping" EntitySet="IntegrationWorkFrontProgram_Mapping" />
           </AssociationSet>
           <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="Self.FK_SyncFrequency_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
@@ -3323,6 +3352,7 @@
           </AssociationSet>
           <EntitySet Name="Dimensions" EntityType="MRPModel.Dimension" />
           <EntitySet Name="DimensionValues" EntityType="MRPModel.DimensionValue" />
+          <EntitySet Name="AggregationStatus" EntityType="MRPModel.AggregationStatu" />
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -5883,6 +5913,12 @@
           <Property Name="DisplayValue" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Name="OrderValue" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="AggregationStatu">
+          <Key>
+            <PropertyRef Name="StatusCode" />
+          </Key>
+          <Property Name="StatusCode" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7120,6 +7156,13 @@
                 <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="DimensionID" ColumnName="DimensionID" />
                 <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AggregationStatus">
+            <EntityTypeMapping TypeName="MRPModel.AggregationStatu">
+              <MappingFragment StoreEntitySet="AggregationStatus">
+                <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

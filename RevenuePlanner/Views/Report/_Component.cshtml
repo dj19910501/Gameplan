@@ -94,6 +94,13 @@
     function LoadReport(obj, ViewBy) {
         var id = $(obj).attr('ReportGraphId');
         var PlanDate = $('#lstYearActive').html();
+        if (PlanDate == 'All') {
+            PlanDate = $('#ulSelectedYear li').first().attr('yearvalue');
+            PlanDate = PlanDate + "," + $('#ulSelectedYear li').last().attr('yearvalue');
+        }
+        else if (PlanDate == 'None') {
+            PlanDate = '1900,2100';
+        }
         var ArrPlanDt = [];
         ArrPlanDt = PlanDate.split(',');
         ArrPlanDt.sort(function (a, b) { return a - b });

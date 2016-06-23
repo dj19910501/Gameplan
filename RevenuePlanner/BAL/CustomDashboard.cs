@@ -78,6 +78,14 @@ namespace RevenuePlanner.BAL
 
             return tmp;
         }
+
+        public string GetLatestLog()
+        {
+            StoredProcedure sp = new StoredProcedure();
+            string strReportGraph = "SELECT EndDate = CONVERT(NVARCHAR,ISNULL(EndDate,GETDATE()), 101) + '#' + LTRIM(RIGHT(CONVERT(VARCHAR(20), ISNULL(EndDate,GETDATE()), 100), 7))+ '#' + RIGHT(CAST(SYSDATETIMEOFFSET() AS NVARCHAR(50)),6) FROM AggregationProcessLog WHERE Status = 'SUCCESS' ORDER BY CreatedDate Desc";
+            string EndDate = sp.GetColumnValue(strReportGraph);
+            return EndDate;
+        }
     }
 
 

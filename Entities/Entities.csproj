@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\AggregationStatu.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\BestInClass.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

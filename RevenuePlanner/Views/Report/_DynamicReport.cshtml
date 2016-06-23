@@ -2,9 +2,33 @@
 @model RevenuePlanner.Models.Custom_Dashboard
 
 @Scripts.Render("~/bundles/GetJSReport")
-<div class="error-box data_error_box source-sans-proregular" id="divAggregationStatus" style="display: block;">The data in the application is currently being updated, performance may be degraded during this process.<span><i style="cursor: pointer;" class="fa fa-times aggregationmsg"></i></span></div>
+<div class="error-box data_error_box source-sans-proregular" id="divAggregationStatus">The data in the application is currently being updated, performance may be degraded during this process.<span><i style="cursor: pointer;" class="fa fa-times aggregationmsg"></i></span></div>
 <div class="col-sm-9  col-md-9 col-lg-10 main report-main">
     <div id="mainContent" class="col-md-12 content">
         @Html.Partial("_Component", Model)
     </div>
 </div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    GetAggrtegationStatus();
+});
+$('.aggregationmsg').click(function () {
+        $('#divAggregationStatus').hide();
+});
+function GetAggrtegationStatus() {
+    $.ajax({
+        url: '@Url.Content("~/Report/LoadAgrigationStatus/")',
+        type: 'post',
+        dataType: 'json',
+        success: function (data) {
+            if (data != 'undefined' && data != null) {
+                data = data.toLowerCase();
+                if (data == 'running') {
+                    $('#divAggregationStatus').show();
+                }
+            }
+        }
+    });
+}
+</script>

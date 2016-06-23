@@ -4517,6 +4517,16 @@ namespace RevenuePlanner.Controllers
             return PartialView("_DynamicReport", model);
         }
 
+        public JsonResult LoadAgrigationStatus()
+        {
+            var result = db.AggregationStatus.Select(AS => AS.StatusCode).ToList();
+            if (result != null && result.Count > 0 && result[0] != null)
+            {
+                return Json(result[0], JsonRequestBehavior.AllowGet);
+            }
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
+
         #region "Common Methods"
         /// <summary>
         /// Get list of CustomFieldOption mapping.

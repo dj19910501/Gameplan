@@ -5,6 +5,8 @@ using System.Web.Mvc;
 using System.Linq;
 using System;
 using System.Net;
+using RevenuePlanner.BAL;
+using System.Collections.ObjectModel;
 
 namespace RevenuePlanner.Helpers
 {
@@ -6662,7 +6664,141 @@ namespace RevenuePlanner.Helpers
         }
         #endregion
 
+        public static string GetLastLogDate(this HtmlHelper helper)
+        {
+            string ZoneName = string.Empty;
 
+            //DateTime eastern = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Eastern Standard Time");
+            CustomDashboard obj = new CustomDashboard();
+            string retValue = obj.GetLatestLog();
+            if (!string.IsNullOrEmpty(retValue))
+            {
+                string GMTOffSet = "(UTC" + retValue.Split('#')[2] + ")";
+                ReadOnlyCollection<TimeZoneInfo> timeZones = TimeZoneInfo.GetSystemTimeZones();
+                foreach (TimeZoneInfo timeZoneInfo in timeZones)
+                {
+                    if (timeZoneInfo.DisplayName.Contains(GMTOffSet))
+                    {
+                        ZoneName = timeZoneInfo.StandardName;
+                        break;
+                    }
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("<p class=\"timecol grey\">as of " + retValue.Split('#')[0] + "</p>");
+                sb.AppendLine("<p class=\"timecol grey\">" + retValue.Split('#')[1] + " " + GetAbbrivatedZoneName(ZoneName) + "</p>");
+                return sb.ToString();
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        private static string GetAbbrivatedZoneName(string StandandName)
+        {
+            if (StandandName.ToLower() == "dateline standard time") return "DST";
+            else if (StandandName.ToLower() == "utc-11" || StandandName.ToLower() == "utc-02") return "UTC";
+            else if (StandandName.ToLower() == "hawaiian standard time") return "HST";
+            else if (StandandName.ToLower() == "alaskan standard time") return "AST";
+            else if (StandandName.ToLower() == "pacific standard time (mexico)" || StandandName.ToLower() == "Pacific Standard time") return "PST";
+            else if (StandandName.ToLower() == "us mountain standard time") return "MST";
+            else if (StandandName.ToLower() == "mountain standard time (sexico)") return "MST";
+            else if (StandandName.ToLower() == "mountain standard time") return "MST";
+            else if (StandandName.ToLower() == "central america standard time") return "CST";
+            else if (StandandName.ToLower() == "central standard time") return "CST";
+            else if (StandandName.ToLower() == "central standard time (mexico)") return "CST";
+            else if (StandandName.ToLower() == "canada Central Standard time") return "CST";
+            else if (StandandName.ToLower() == "sa Pacific Standard time") return "PST";
+            else if (StandandName.ToLower() == "eastern Standard time") return "EST";
+            else if (StandandName.ToLower() == "us eastern standard time") return "EST";
+            else if (StandandName.ToLower() == "venezuela standard time") return "VST";
+            else if (StandandName.ToLower() == "paraguay standard time") return "PST";
+            else if (StandandName.ToLower() == "atlantic standard time") return "AST";
+            else if (StandandName.ToLower() == "central brazilian standard time") return "CST";
+            else if (StandandName.ToLower() == "sa western standard time") return "WST";
+            else if (StandandName.ToLower() == "pacific sa standard time") return "PST";
+            else if (StandandName.ToLower() == "newfoundland standard time") return "NST";
+            else if (StandandName.ToLower() == "e. south america standard time") return "AST";
+            else if (StandandName.ToLower() == "argentina standard time") return "AST";
+            else if (StandandName.ToLower() == "sa eastern standard time") return "EST";
+            else if (StandandName.ToLower() == "greenland standard time") return "GST";
+            else if (StandandName.ToLower() == "montevideo standard time") return "MST";
+            else if (StandandName.ToLower() == "bahia standard time") return "BST";
+            else if (StandandName.ToLower() == "mid-atlantic standard time") return "AST";
+            else if (StandandName.ToLower() == "azores standard time") return "AST";
+            else if (StandandName.ToLower() == "cape verde standard time") return "";
+            else if (StandandName.ToLower() == "morocco standard time") return "";
+            else if (StandandName.ToLower() == "coordinated universal time") return "";
+            else if (StandandName.ToLower() == "gmt standard time") return "GMT";
+            else if (StandandName.ToLower() == "greenwich standard time") return "GMT";
+            else if (StandandName.ToLower() == "w. europe standard time") return "EST";
+            else if (StandandName.ToLower() == "central europe standard time") return "EST";
+            else if (StandandName.ToLower() == "romance standard time") return "RST";
+            else if (StandandName.ToLower() == "central european standard time") return "CST";
+            else if (StandandName.ToLower() == "w. central africa standard time") return "CST";
+            else if (StandandName.ToLower() == "namibia standard time") return "NST";
+            else if (StandandName.ToLower() == "jordan standard time") return "JST";
+            else if (StandandName.ToLower() == "gtb standard time") return "GTB";
+            else if (StandandName.ToLower() == "middle East standard time") return "EST";
+            else if (StandandName.ToLower() == "egypt standard time") return "EST";
+            else if (StandandName.ToLower() == "syria standard time") return "SST";
+            else if (StandandName.ToLower() == "e. europe standard time") return "EST";
+            else if (StandandName.ToLower() == "South Africa standard time") return "";
+            else if (StandandName.ToLower() == "FLE standard time") return "FST";
+            else if (StandandName.ToLower() == "turkey standard time") return "TST";
+            else if (StandandName.ToLower() == "jerusalem standard time") return "JST";
+            else if (StandandName.ToLower() == "libya standard time") return "LST";
+            else if (StandandName.ToLower() == "arabic standard time") return "AST";
+            else if (StandandName.ToLower() == "kaliningrad standard time") return "KST";
+            else if (StandandName.ToLower() == "arab standard time") return "AST";
+            else if (StandandName.ToLower() == "e. africa standard time") return "EST";
+            else if (StandandName.ToLower() == "iran standard time") return "IST";
+            else if (StandandName.ToLower() == "arabian standard time") return "AST";
+            else if (StandandName.ToLower() == "caucasus standard time") return "CST";
+            else if (StandandName.ToLower() == "georgian standard time") return "GST";
+            else if (StandandName.ToLower() == "mauritius standard time") return "MST";
+            else if (StandandName.ToLower() == "russian standard time") return "RST";
+            else if (StandandName.ToLower() == "azerbaijan standard time") return "AST";
+            else if (StandandName.ToLower() == "nepal standard time") return "NST";
+            else if (StandandName.ToLower() == "sri lanka standard time") return "IST";
+            else if (StandandName.ToLower() == "india standard time") return "IST";
+            else if (StandandName.ToLower() == "pakistan standard time") return "PST";
+            else if (StandandName.ToLower() == "central asia standard time") return "AST";
+            else if (StandandName.ToLower() == "ekaterinburg standard time") return "EST";
+            else if (StandandName.ToLower() == "myanmar standard time") return "MST";
+            else if (StandandName.ToLower() == "se asia standard time") return "AST";
+            else if (StandandName.ToLower() == "n. central Asia standard time") return "AST";
+            else if (StandandName.ToLower() == "china standard time") return "CST";
+            else if (StandandName.ToLower() == "bangladesh standard time") return "BST";
+            else if (StandandName.ToLower() == "afghanistan standard time") return "AST";
+            else if (StandandName.ToLower() == "west Asia standard time") return "WST";
+            else if (StandandName.ToLower() == "north asia standard time") return "AST";
+            else if (StandandName.ToLower() == "malay peninsula standard time") return "MST";
+            else if (StandandName.ToLower() == "w. australia standard time") return "AST";
+            else if (StandandName.ToLower() == "taipei standard time") return "TST";
+            else if (StandandName.ToLower() == "ulaanbaatar standard time") return "UST";
+            else if (StandandName.ToLower() == "north asia east standard time") return "EST";
+            else if (StandandName.ToLower() == "tokyo standard time") return "TST";
+            else if (StandandName.ToLower() == "korea standard time") return "KST";
+            else if (StandandName.ToLower() == "cen. australia standard time") return "AST";
+            else if (StandandName.ToLower() == "aus central standard time") return "CST";
+            else if (StandandName.ToLower() == "e. australia standard time") return "AST";
+            else if (StandandName.ToLower() == "aus eastern standard time") return "EST";
+            else if (StandandName.ToLower() == "west Pacific standard time") return "PST";
+            else if (StandandName.ToLower() == "tasmania standard time") return "TST";
+            else if (StandandName.ToLower() == "yakutsk standard time") return "YST";
+            else if (StandandName.ToLower() == "central Pacific standard time") return "PST";
+            else if (StandandName.ToLower() == "vladivostok standard time") return "VST";
+            else if (StandandName.ToLower() == "new zealand standard time") return "NST";
+            else if (StandandName.ToLower() == "utc+12") return "UTC";
+            else if (StandandName.ToLower() == "fiji standard time") return "FST";
+            else if (StandandName.ToLower() == "magadan standard time") return "MST";
+            else if (StandandName.ToLower() == "kamchatka standard time") return "KST";
+            else if (StandandName.ToLower() == "tonga standard time") return "TST";
+            else if (StandandName.ToLower() == "samoa standard time") return "SST";
+            else if (StandandName.ToLower() == "line islands standard time") return "LST";
+            else return "";
+        }
     }
 
 
