@@ -5776,7 +5776,7 @@ span.left-arrow {
         margin-left: 100px;
         width: 120px !important;
         height: 17px !important;
-        background: url(../images/btn-login.jpg) repeat-x #3b9de4 !important;
+        /*background: url(../images/btn-login.jpg) repeat-x #3b9de4 !important;*/
         border: none !important;
         border-top: none !important;
         font-size: 18px !important;

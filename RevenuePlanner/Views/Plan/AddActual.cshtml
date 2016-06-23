@@ -432,13 +432,14 @@
         GetLastSetofViews($('#FilterName').val());
         CallAjax();
        
+       
     });//document ready
     // Add By Nishant Sheth
     // Desc :: Toggle for tactic name
     function anchorclick(obj)
     {
         $(".glass-icon").css({ "visibility": "hidden" });   
-        $(".table-titles-actual-left").css({ "color": "#ffffff" });
+        $(".table-titles-actual-left").css({ "color": "#F0F0F0" });
         
         var that = obj,
             mask = $(that).next().find(".table-actual-mask"),
@@ -479,7 +480,7 @@
         /*set left titles from header if toogle  is open*/
         $(".accordion-actuals .accordion-group .in").prev().
                                                 find(".table-titles-actual-left")
-                                                        .css({ "color": "#ffffff" });
+                                                        .css({ "color": "#F0F0F0" });
         /*set glass icon from header if toogle  is open*/
         $(".accordion-actuals .accordion-group .in").prev().
                                                         find(".glass-icon")
@@ -1191,6 +1192,7 @@
                     $('.accordion-actuals').empty();
                     LoadPage();
                     AssignDefaultValue(); // added by dharmraj, #547
+                    $(".table-titles-actual-left").css({ "color": "#F0F0F0" });
                 }
             }
         });
@@ -1202,7 +1204,7 @@
         NumberFormatterTipsyTitle(".actualtipsyclassTitle", 24);
         maskWidht();
         $(".glass-icon").css({ "visibility": "hidden" });   
-        $(".table-titles-actual-left").css({ "color": "#ffffff" });
+        $(".table-titles-actual-left").css({ "color": "#F0F0F0" });
         /*if a toogle is open the first time page loads, change css of mask*/
         
         //$(".accordion-actuals .accordion-group .in").prev()
@@ -1680,7 +1682,7 @@ function LoadPage() {
         /*set left titles from header if toogle  is open*/
         $(".accordion-actuals .accordion-group .in").prev().
                                                 find(".table-titles-actual-left")
-                                                        .css({ "color": "#ffffff" });
+                                                        .css({ "color": "#F0F0F0" });
         /*set glass icon from header if toogle  is open*/
         $(".accordion-actuals .accordion-group .in").prev().
                                                         find(".glass-icon")

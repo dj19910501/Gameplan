@@ -1553,7 +1553,7 @@
                 if (UpdateColumn == "" || UpdateColumn == null)
                     UpdateColumn = HomeGrid.getColLabel(Colind, 0);
                 if(UpdateColumn == "Task Name"){
-                    if (CheckHtmlTag(NewValue) == false) {
+                    if (CheckHtmlTag(nValue) == false) {
                         alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
                         return false;
 
