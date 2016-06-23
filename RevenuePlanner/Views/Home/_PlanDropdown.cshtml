@@ -1,6 +1,9 @@
 ﻿@model RevenuePlanner.Models.HomePlan
 @using RevenuePlanner.Helpers;
-
+@{
+    var nameOnly = "Name Only";
+    var externalName = "External Name";
+}
 <ul class="nav nav-tabs home-content-header" style="margin-left:24px;">
     <li class="title-header source-sans-proregular bold font-size25px" style="padding-top:5px;">
       @* @if (Model.plans != null && Model.plans.Count > 0)
@@ -48,45 +51,24 @@
                 <div class="input-group ExpInput">
                     <div class="input-group-btn">
                         
-                        <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="Name Only">
-                            N
+                        <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value='@nameOnly'>
+                            @nameOnly.First()
                         </button>                        
                         <div class="dropdown-menu ">
                             <ul role="menu" aria-labelledby="dropdownMenu">
                                 @*<li><a tabindex="-1" href="#">All</a></li>*@
-                                <li><a tabindex="-1" href="#">Name Only</a></li>
-                                <li><a tabindex="-1" href="#">Machine Name</a></li>
+                                <li><a tabindex="-1" href="#">@nameOnly</a></li>
+                                <li><a tabindex="-1" href="#">@externalName</a></li>
                                 
                             </ul>
                         </div>
                     </div>
-                    <input id="txtGlobalSearch" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Name Only">
+                    <input id="txtGlobalSearch" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder='@nameOnly'>
                 </div>
 
 
             </div>
 
-                @*<div class="input-group">
-                        <div class="input-group-btn">
-                            @*<button class="btn">Please Select From List</button> @
-                            <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="All">All
-                                <span class="caret"></span>
-                            </button>
-                            <div class="dropdown-menu">
-                                <ul role="menu" aria-labelledby="dropdownMenu">
-                                    <li><a tabindex="-1" href="#">All</a></li>
-                                    <li><a tabindex="-1" href="#">Name Only</a></li>
-                                    <li><a tabindex="-1" href="#">Machine Name</a></li>
-                                    <li class="divider"></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <input id="txtSearch" type="text" class="form-control" aria-label="Text input with dropdown button">
-
-                    </div>
-                <button id="btnSearch" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="onSearchCal()" style="min-width:5%">
-                    search
-                </button>*@
         </div>
 
     </li>
@@ -244,12 +226,12 @@
         $("#RequestTab").show();
         if ($('#IsGridView').val() == "True") {            
             $('#txtGlobalSearch').val("");
-            $('#searchCriteria').val("Name Only");
-            $('#searchCriteria').text("N");
-            $("#txtGlobalSearch").attr('Placeholder', "Name Only")
+            $('#searchCriteria').val('@nameOnly');
+            $('#searchCriteria').text('@nameOnly.First()');
+            $("#txtGlobalSearch").attr('Placeholder', '@nameOnly')
             $('.Exp-serach').removeClass('Exp-serach-open');
             $('#ExpClose').css('display', 'none');
-            $('.ExpIcon').css('display', 'block');
+            $('#ExpSearch').css('display', 'block');
             isOpen = false;
             
             ChangeTabView(CalendarId);
@@ -348,17 +330,7 @@
                 $('#btngrid').removeClass('request-btn-active');
             }
             $('.request').removeClass('request-btn-active');
-          
-            //if ($('#IsGridView').val() == "True") {
-            //    alert(10);
-            //    $('#txtGlobalSearch').val("");
-            //    $('#searchCriteria').val("Name Only");
-            //    $('#searchCriteria').text("N");
-            //    $('.Exp-serach').removeClass('Exp-serach-open');
-            //    $('#ExpClose').css('display', 'none');
-            //    $('.ExpIcon').css('display', 'block');
-            //    isOpen = false;
-            //}
+                     
         }
     }
     //Added by Komal Rawal for 2013 Home/Plan Layout changes
@@ -380,12 +352,12 @@
         }
       
         $('#txtGlobalSearch').val("");
-        $('#searchCriteria').val("Name Only");
-        $('#searchCriteria').text("N");
-        $("#txtGlobalSearch").attr('Placeholder', "Name Only");
+        $('#searchCriteria').val('@nameOnly');
+        $('#searchCriteria').text('@nameOnly.First()');
+        $("#txtGlobalSearch").attr('Placeholder', '@nameOnly');
         $('.Exp-serach').removeClass('Exp-serach-open');
         $('#ExpClose').css('display', 'none');
-        $('.ExpIcon').css('display', 'block');
+        $('#ExpSearch').css('display', 'block');
         isOpen = false;
     });
     $(".dropdown-menu li a").click(function () {
@@ -416,21 +388,12 @@
     });
     $('#ExpClose').click(function () {
         
-        $('#txtGlobalSearch').val("");
-        $('#searchCriteria').val("Name Only");
-        $('#searchCriteria').text("N");
-        $("#txtGlobalSearch").attr('Placeholder', "Name Only");
+        $('#txtGlobalSearch').val("");        
         $('#ExpClose').css('display', 'none');
         GlobalSearch();
-        $('.ExpIcon').css('display', 'block');
+        $('#ExpSearch').css('display', 'block');
         
-    });
-    //$("#txtGlobalSearch").focusout(function () {     
-    //    if ($("#txtGlobalSearch").val().length <= 0) {
-    //        $('#ExpClose').css('display', 'none');
-    //        $('.ExpIcon').css('display', 'block');
-    //    }
-    //});
+    });   
     $('#txtGlobalSearch').on('keypress', function (event) {
         if (event.which === 13) {
             $('#ExpSearch').click();            

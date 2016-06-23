@@ -1187,6 +1187,10 @@
 
         //});
         if (isCopyTacticHomeGrid != 0) {
+            // Modified by Rahul Shah for PL #2307 on 23/06/2016 to display data without search when user add/copy tactic,program,campaign for gridview.
+            $('#txtGlobalSearch').val("");
+            $('#ExpClose').css('display', 'none');                
+            $('#ExpSearch').css('display', 'block');
             var selectedcell = HomeGrid.findCell(isCopyTacticHomeGrid, 3, true);
             var id = selectedcell[0];
             var rowid;
@@ -2492,7 +2496,7 @@
         if (columnName.toLowerCase().toString() == '@RevenuePlanner.Helpers.Enums.GlobalSearch.NameOnly.ToString().ToLower()'){            
             colindex = HomeGrid.getColIndexById('taskname');           
         }
-        else if(columnName.toLowerCase().toString() == '@RevenuePlanner.Helpers.Enums.GlobalSearch.MachineName.ToString().ToLower()'){
+        else if(columnName.toLowerCase().toString() == '@RevenuePlanner.Helpers.Enums.GlobalSearch.ExternalName.ToString().ToLower()'){
             colindex = HomeGrid.getColIndexById('machinename');
            
         }

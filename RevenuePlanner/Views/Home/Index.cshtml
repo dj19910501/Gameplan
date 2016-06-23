@@ -3581,7 +3581,7 @@
                         }
 
                     }
-                    if ($('#searchCriteria').val().replace(" ", "").toUpperCase() == '@Enums.GlobalSearch.MachineName.ToString().ToUpper()') {
+                    if ($('#searchCriteria').val().replace(" ", "").toUpperCase() == '@Enums.GlobalSearch.ExternalName.ToString().ToUpper()') {                        
                         if (this.machineName.toLowerCase().indexOf($('#txtGlobalSearch').val().trim().toLowerCase()) > -1) {
                             ExportSelectedIdsafterSearch.TaskID.push(this.id);
                         }
@@ -3590,6 +3590,7 @@
                 });
                 CallPdfHoneyComb();
                 ExportSelectedIdsafterSearch.TaskID = [];
+                RemoveAllHoneyCombData();
             }
             else {
             $.each(GanttTaskData.data, function () {
@@ -6336,8 +6337,14 @@
             $("#modal-container-186470").addClass("transition-close");
             $("#modal-container-186470").removeClass("transition_y");
             addDefaultModalPopupBackgroungColor();
-            $('body').removeClass('bodyOverflow');           
-            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            $('body').removeClass('bodyOverflow');
+            // Modified by Rahul Shah for PL #2307 on 23/06/2016 to display data without search when user add/copy tactic,program,campaign for calendar.
+            if (isDataModified) {
+                $('#txtGlobalSearch').val("");
+                $('#ExpClose').css('display', 'none');                
+                $('#ExpSearch').css('display', 'block');
+            }
+            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {                              
                 if ($('#IsGridView').val().toLowerCase() == "true") {
 
                     if (isDataModified) {
@@ -8304,7 +8311,7 @@
                     if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
                         window.location = '@Url.Content("~/Login/Index")';
                     }
-                    else if (data.IsSuccess) {
+                    else if (data.IsSuccess) {                        
                         RefershPlanHeaderCalc();   //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic.
                         isCopyTactic = data.Id;
                         isCopyTacticHomeGrid = isCopyTactic;
@@ -8899,7 +8906,14 @@ function () {
     var SearchTextforcal = ""
     function GlobalSearch() {
         $('#ExpLoading').css('display', 'block');
-        
+        // Modified by Rahul Shah for PL #2307 on 23/06/2016 to display data without search when user add/copy tactic,program,campaign for calendar.
+        if (isCopyTactic > 0) {
+            $('#txtGlobalSearch').val("");
+            $('#ExpClose').css('display', 'none');
+            $('#ExpSearch').css('display', 'block');
+            isCopyTactic = 0;
+        }
+       
         if ($('#divPlanButton').children().hasClass("request-btn-active") || $('#RequestTab').children().hasClass("request-btn-active")) {
                 gantt.refreshData();
                 function contains(haystack, needle) {
@@ -8913,7 +8927,7 @@ function () {
                     if (value == "") {
                         return true;
                     }
-                    if (searchcriteria == '@Enums.GlobalSearch.MachineName.ToString().ToUpper()') {
+                    if (searchcriteria == '@Enums.GlobalSearch.ExternalName.ToString().ToUpper()') {
                         if (contains(htmlDecode(gantt.getTask(parent).machineName), value))
                         return true;
                     }
@@ -8929,7 +8943,7 @@ function () {
                     }
                     return false;
                 }              
-            gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
+            gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {    
                 if (hasValue(id, $('#txtGlobalSearch').val().trim(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
                     return true;
                 } else {
