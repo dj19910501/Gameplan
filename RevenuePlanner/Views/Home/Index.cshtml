@@ -387,17 +387,20 @@
         $('.toggleStatus').click(function () {
             $(this).hide();
             $('.toggle-status div').show();
-            showTacticStatus = true;
-            RefreshCurrentTab();
+            showTacticStatus = true;            
+            //RefreshCurrentTab();
             gantt.refreshData();
+            GlobalSearch();
+            
         });
 
         $('.toggleStatusHide').click(function () {
             $('.toggleStatus').show();
             $('.toggle-status div').hide();
             showTacticStatus = false;
-            RefreshCurrentTab();
+            //RefreshCurrentTab();
             gantt.refreshData();
+            GlobalSearch();
         });
         //// End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
 
@@ -3588,6 +3591,9 @@
 
                     }
                 });
+               
+            }
+            if (ExportSelectedIdsafterSearch.TaskID.length > 0) {
                 CallPdfHoneyComb();
                 ExportSelectedIdsafterSearch.TaskID = [];
                 RemoveAllHoneyCombData();
@@ -3911,6 +3917,7 @@
                     end: dateend
 
                 });
+                GlobalSearch();
             }
         }
         else {
@@ -4553,7 +4560,7 @@
     //// Function to refresh current tab.
     function RefreshCurrentTab() {
         type = $('#ddlTabViewBy').val();
-        AjaxRequest();
+        AjaxRequest();      
     }
     /// Script End
     /// Added By: Maninder Singh Wadhva.
@@ -6806,7 +6813,7 @@
         $(".gantt_ver_scroll").scroll(function () {
             $('#popupType').css('display', 'none');
         });
-
+        GlobalSearch();
     });
 
     //// Added by :- Sohel Pathan on 11/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
@@ -7144,6 +7151,7 @@
         $(".gantt_ver_scroll").scroll(function () {
             $('#popupType').css('display', 'none');
         });
+        GlobalSearch();
 
     });
 
