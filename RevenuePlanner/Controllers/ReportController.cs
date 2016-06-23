@@ -4503,8 +4503,11 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    ViewBag.ClientDimensionId = ClientIdValCnt[0].DimensionID;
-                    ViewBag.ClientDimensionValueId = "0";
+                    if (ClientIdCnt != null && ClientIdCnt.Count > 0 && ClientIdCnt[0] != null)
+                    {
+                        ViewBag.ClientDimensionId = ClientIdCnt[0].id;
+                        ViewBag.ClientDimensionValueId = "0";   
+                    }                    
                 }                
             }
             else
