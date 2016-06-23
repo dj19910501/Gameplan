@@ -71,6 +71,7 @@ namespace RevenuePlanner.BAL
                     tmp.Height = dr["CalculatedHeight"] == DBNull.Value ? 0 : Convert.ToInt32(dr["CalculatedHeight"]);
                     tmp.Width = dr["CalculatedWidth"] == DBNull.Value ? Convert.ToDecimal(0) : Convert.ToDecimal(dr["CalculatedWidth"]);
                     tmp.ReportID = dr["ReportGraphId"] == DBNull.Value ? 0 : Convert.ToInt32(dr["ReportGraphId"]);
+                    tmp.DisplayName = dr["DisplayName"] == DBNull.Value ? "" : Convert.ToString(dr["DisplayName"]);
                     tmp.DashboardId = DashboardId;
                 }
             }

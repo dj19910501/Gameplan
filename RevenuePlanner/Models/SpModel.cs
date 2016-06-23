@@ -208,5 +208,6 @@ namespace RevenuePlanner.Models
         { }
         public int Height { get; set; }
         public decimal Width { get; set; }
+        public string DisplayName { get; set; }
     }
 }

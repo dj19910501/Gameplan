@@ -76,33 +76,7 @@
         margin-bottom:0 !important;
     }
 
-     /* Breadcrum */
-     .breadcrum-wrap {float: left;margin-top:20px; margin-left:15px;}
-    .breadcrum-wrap  .breadcrumb {
-        font-size: inherit;
-        border-radius: 0;
-        background-color: transparent;
-        padding: 0;
-        margin: 0;
-    }
-    .breadcrum-wrap .breadcrumb>li {
-    display: inline-block;
-}
 
-    .breadcrum-wrap .breadcrumb > li > span {
-    color: #f8710e;
-}
-    .breadcrum-wrap .breadcrumb > li:before {
-    padding: 0 5px;
-    color: #ccc;
-    content: "/\00a0";
-}
-        .breadcrum-wrap .breadcrumb > li:first-child:before {
-            content:no-open-quote;
-        }
-     .breadcrum-wrap .breadcrumb>.active {
-    color: #777;
-}
 </style>
 
 @section Sidebar
@@ -601,10 +575,17 @@
             <li class="active" id="dashboardpagetext"></li>
         </ol>
     </div>
-    <div style="float: right;margin-top:20px; margin-right:15px;">
+    
+    <div style="float: right;margin-right:15px;">
         <span class="selectBox" id="ddlCustomAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
             @Html.DropDownList("ddlCustomAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport hide" })
         </span>
+    </div>
+    <div class="timecolbox">
+        <div>
+            <p class="timecol">as of 05/20/2015</p>
+            <p class="timecol">2:25PM IST</p>
+        </div>
     </div>
 </div>
 

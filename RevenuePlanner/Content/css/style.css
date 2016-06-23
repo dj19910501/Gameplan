@@ -12070,7 +12070,7 @@ div.clue-bottom-default .cluetip-arrows {
     text-align:left;
     font-size:13px;
 }
-.report-heder-tab ul li.dropdown ul.dropdown-menu a .fa{margin-right:4px}
+.report-heder-tab ul li.dropdown ul.dropdown-menu a .fa{margin-right:4px;  font-size: 14px;} /* #2264 */
 .report-heder-tab .dropdown-menu > li.selected a,
 .report-heder-tab .dropdown-menu > li > a:hover,
 .report-heder-tab .dropdown-menu > li > a:focus {
@@ -15384,6 +15384,7 @@ input[type="search"].ExpInput {
     display: inline-block;
     margin: 15px;
     width: 47.8% !important; 
+    padding-bottom: 40px; /* #2264 */
 }
 .report-wrap .main-row .component .highcharts-container{width:100% !important}
 
@@ -15404,32 +15405,107 @@ a:focus, a:hover{outline:0 none !important}
         z-index: 9999;
         position: fixed;
     }
-    #ImportModal ul {list-style-type: number; margin-bottom:0}
+#ImportModal ul {list-style-type: number; margin-bottom:5px}
     #ImportModal ul li {line-height: 15px;padding-bottom: 5px;}
     #ImportModal ul li:last-child{padding-bottom: 0;}
     #ImportModal ul li span{font-size:12px}
     .btn-primary.btn-file {
-        background-color: #f8710e;
         float: right;
+}
+.btn-primary.fileinput-upload,
+.btn-primary.btn-file,
+.btn-primary.btn-file:focus,
+.btn-primary.fileinput-upload:focus {
+    background-color: #f8710e;
     }
     #ImportModal {width: 400px;}
     #ImportModal .modal-header {padding: 2px 15px;}
-    /*#ImportModal.fade.in {
-        top: 40%; margin-left:-500px;
-    }*/
+#ImportModal.fade.in {
+    top: 34%; /*margin-left:-500px;*/
+}
     #ImportBtn{width: 65px;margin-right:10px}
-    .btn-primary.btn-file:hover, .btn-primary.btn-file:focus{ background-color: #e2502d;}
+.btn-primary.btn-file:hover,.btn-primary.fileinput-upload:hover { background-color: #e2502d;}
     #kvFileinputModal {display: none;}
+.fileinput-remove-button, .fileinput-remove-button:hover{color:#3e3f37}
 
+/* Breadcrum For custome report page style  #2264 */
+.breadcrum-wrap {float: left; margin-left:15px;}
+.breadcrum-wrap  .breadcrumb {
+        font-size: inherit;
+        border-radius: 0;
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+    }
+.breadcrum-wrap .breadcrumb>li {
+    display: inline-block;
+    text-shadow: none;
+}
+
+.breadcrum-wrap .breadcrumb > li > span {
+    color: #f8710e;
+}
+.breadcrum-wrap .breadcrumb > li:before {
+    padding: 0 5px;
+    color: #ccc;
+    content: "/\00a0";
+}
+.breadcrum-wrap .breadcrumb > li:first-child:before {
+    content:no-open-quote;
+}
+.breadcrum-wrap .breadcrumb>.active {
+    color: #777;
+}
+.tab-head {
+    color: #333;
+    font-family: "ProximaNova-Regular";
+    font-size: 17px;
+    font-weight: 300;
+    height: 37px;
+    line-height: 37px;
+    padding-left: 15px;
+    border-bottom: 1px solid #CCC;
+}
+.ddlQuarter{
+    margin-top:20px;
+}
+.error-box {
+    display: none;
+    background: #f6d87f none repeat scroll 0 0;
+    border: 2px solid #ffab4e;
+    border-radius: 3px;
+    font-weight: normal;
+    margin: 0 auto;
+    padding: 10px;
+    float: left;
+    height: auto;
+    margin-left: 18px;
+    width: 95%;
+}
+.error-box span {
+    float: right;
+    padding: 0 7px 0 0;
+}
+.timecolbox {
+    float: right;
+    font-size: 13px;
+    line-height: 17px;
+    width: 150px;
+}
+.timecol {
+    font-size: 13px;
+    line-height: 17px;
+    margin-bottom: 0;
+}
 /* new feature Searchbox style #2259 End */
 
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
 /************************************************ Responsive css start here **********************************************************/
-@media (max-width: 1820px) { /* #2264 */
+@media screen and (max-width: 1820px) { /* #2264 */
     .component {
-        width: 46.8% !important;
+        width: 46.5% !important;
     }
 }
 @media (max-width: 1600px) {
