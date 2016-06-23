@@ -136,6 +136,7 @@
     }
 
     function GetHealderData(selectedPlanIds,Cid, OId,Tacticids,StatusId,Tabid,IsHeaderActuals) {
+      
         // Modified By Nishant Sheth add tab id as argument:  Desc header value wrong with plan tab
         var CustomId = "";
         var OwnerIds = "";
@@ -154,7 +155,8 @@
             newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
             selectedPlanIds = selectedPlanIds.toString()   //Modified By Komal Rawal on 22-02-16 to get proper value in header according to filter on add or copy tactic
         }
-        else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
+        // Modified by Rushil Bhuptani on 23/06/2016 to solved the issue of header data not shown due to change of menu in budget.
+        else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()" || $('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Finance.ToString().ToLower()") {
             // var ligridclass=$("#liGrid").attr("class");
             newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
             @*newUrl = '@Url.Action("GetPlanByPlanIDPerformance", "Plan")';// Change By Nishant Sheth // Desc :: Get records from cache memory*@ 
