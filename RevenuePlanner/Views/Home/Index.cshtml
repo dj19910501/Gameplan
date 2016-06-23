@@ -8535,7 +8535,7 @@ function () {
     $('.sidebar-toogle a').html(">>").css('letter-spacing', '-1px');
 
     $(".wraper-btns").css("display", "none");
-    $("#content_wraper").css('width', 'calc(100% - 50px)');
+    $("#content_wraper").css('width', 'calc(100% - 51px)');
     $('#sidebar.sidebar').css({ 'width': '50px', 'background': 'transparent', });
     $('.sidebar-toogle').css('border-bottom-width', '0');
 
@@ -8913,7 +8913,7 @@ function () {
     //Added by Rahul Shah for PL #2270. perform Global Search on calendar.
     var SearchTextforcal = ""
     function GlobalSearch() {
-        $('#ExpLoading').css('display', 'block');
+        //$('#ExpLoading').css('display', 'block');
         // Modified by Rahul Shah for PL #2307 on 23/06/2016 to display data without search when user add/copy tactic,program,campaign for calendar.
         if (isCopyTactic > 0) {
             $('#txtGlobalSearch').val("");
@@ -8979,7 +8979,7 @@ function () {
             var SearchText = $('#txtGlobalSearch').val();
             GlobalSearchonGrid(SearchText, SearchDDLValue);
         }
-        $('#ExpLoading').css('display', 'none');
+        //$('#ExpLoading').css('display', 'none');
     }
 
 </script>

@@ -49,24 +49,25 @@
 </nav>
 
 <script>
-    $(document).ready(function () {        
+    $(document).ready(function () {
         //$('.dropdown-menu').toggleClass('dropdown-menu');
         ////Modified by Akashdeep Kadia for Ticket #2275 on 16-June-2016
         $('.dropdown').click(
               function () {
-
-                  if ($('.dropdown.open').length > 0) {
-                      if ($(this).hasClass('open')) {
-                          $(this).toggleClass('open');
+                  if ($(this).hasClass('finance') || $(this).hasClass('settings')) {
+                      if ($('.dropdown.open').length > 0) {
+                          if ($(this).hasClass('open')) {
+                              $(this).toggleClass('open');
+                          } else {
+                              $('.dropdown.open').removeClass('open');
+                              $(this).toggleClass('open');
+                          }
                       } else {
-                          $('.dropdown.open').removeClass('open');
                           $(this).toggleClass('open');
                       }
-                  } else {
-                      $(this).toggleClass('open');
                   }
               });
-        
     });
 
 </script>
+

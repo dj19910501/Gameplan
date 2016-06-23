@@ -762,7 +762,7 @@ span.info-icon {
 }
 
 .nav-gray-plan li a:hover {
-    color: #1a638a !important;
+    color: #f8710e !important;
 }
 
 .nav-gray-plan li a.inputs:hover span {
@@ -810,7 +810,7 @@ span.info-icon {
     text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
     border-bottom: 1px solid #fff;
     border-top: 1px solid #fff;
-    color: #1a638a !important;
+    color: #f8710e !important;
 }
 
 .nav-gray-plan > .active + li a {
@@ -4716,7 +4716,7 @@ table.myteam {
         }
 
 a.link-gray {
-    color: #d4d4d4;
+    color: #908d88;
     padding-left: 20px;
 }
 
@@ -4758,6 +4758,8 @@ a.link-gray {
 .row-fluid .hierarchy_wrapper {
     overflow: auto;
     width: 1366px; /* #2219 */
+    background: #fff none repeat scroll 0 0;
+    margin-left: 11px;
 }
 
 .hierarchy_wrapper li > ul li ul li,
@@ -7562,8 +7564,12 @@ input.icon-check-blue {
     display: none;
 }
  /*#2015 Bhumika Start*/
-.toggle-status a {text-decoration:underline; color: #F8710E; font-size:14px} /* #005580 Edited for #2219, #2227 - Bhumika */
-.toggle-status a:hover{color: #F8710E;}
+.toggle-status a,.goals-wrapper .export-link {text-decoration:underline; color: #F8710E; font-size:14px} /* #005580 Edited for #2219, #2227 - Bhumika */
+.toggle-status a:hover, .goals-wrapper .export-link:hover{color: #F8710E;}
+.goals-wrapper .export-link{float:right}
+.goals-wrapper  .export-link > span {
+    padding: 0 15px 0 0;
+}
 .pdfExport{padding-left:10px}
 .pdfExport .fa.fa-external-link, .export-link  .fa.fa-external-link{
     position: relative;
@@ -10300,17 +10306,17 @@ color: #3e3f37; /* Edited for #2219 - Bhumika */
             background-image: url(../images/add-new-icon.png);
         }
 
-            .btn-dropdwn ul li.new-prog:hover {
+            /*.btn-dropdwn ul li.new-prog:hover {
                 background-image: url(../images/add-new-icon-white.png);
-            }
+            }*/
 
         .btn-dropdwn ul li.copy-camp {
             background-image: url(../images/Copy-icon.png);
         }
 
-            .btn-dropdwn ul li.copy-camp:hover {
+            /*.btn-dropdwn ul li.copy-camp:hover {
                 background-image: url(../images/Copy-icon-white.png);
-            }
+            }*/
 
 .successMessage-InspectPopUpSections {
     margin-bottom: 0 !important;
@@ -15318,11 +15324,11 @@ input[type="search"].ExpInput {
     display: none;
 }
 .btn-h9p2 {
-    background-color: #89cede;
+    background-color: #f8710e ;
     color: #f4f5ed;
 } 
 .btn-h9p2:hover {
-    background-color: #70BBCC;
+    background-color: #e2502d;
     color: #fff;
 }
 .btn-link{color:inherit !important}
@@ -15400,7 +15406,7 @@ a:focus, a:hover{outline:0 none !important}
         padding: 0 20px;
         width: 25%;
     }
-    .export-link, #ImportBtn{line-height: 34px; float:left; display:inline-block;}
+    .budget-export-link, #ImportBtn{line-height: 34px; float:left; display:inline-block;}
     .import-popover {
         z-index: 9999;
         position: fixed;
@@ -15498,6 +15504,25 @@ a:focus, a:hover{outline:0 none !important}
     margin-bottom: 0;
 }
 /* new feature Searchbox style #2259 End */
+				  
+
+.subheader a
+{
+    color: #f8710e;
+}
+
+.note-modal-form >
+.modal-body >
+.row-fluid >
+.checkbox
+{
+    width:auto;
+}
+
+
+ 
+.note-editor .note-link-text.span12,
+.note-editor .note-link-url.span12 {width:95%} 
 
 /* ********************  new styles  - End ******************** */
 

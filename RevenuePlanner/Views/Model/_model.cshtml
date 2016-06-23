@@ -57,7 +57,7 @@
             </div>
         </div>
         <div class="span6">
-            <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" id="publish">@Html.Raw("Publish")</button>
+            <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" id="publish" disabled="disabled">@Html.Raw("Publish")</button>
             @if (ViewBag.PageTitle == "Create")
             {
                 <button id="publishModel" style="display: none" class="btn btn-blue text-shadow-blue source-sans-proregular" href="@Url.Content("~/Model/ModelZero")" type="button">@Html.Raw("Publish")</button>
