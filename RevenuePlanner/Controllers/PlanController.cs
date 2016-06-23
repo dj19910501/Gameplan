@@ -17881,7 +17881,8 @@ namespace RevenuePlanner.Controllers
                         string fileLocation = Server.MapPath("~/Content/") + Request.Files[0].FileName;
                         if (System.IO.File.Exists(fileLocation))
                         {
-
+                            GC.Collect();
+                            //GC.WaitForPendingFinalizers(); 
                             System.IO.File.Delete(fileLocation);
                         }
                         Request.Files[0].SaveAs(fileLocation);
@@ -17915,7 +17916,7 @@ namespace RevenuePlanner.Controllers
 
                         if (Convert.ToInt32(dt.Rows[0][0]) != Sessions.PlanId)
                         {
-                            return Json(new { msg = "error", error = "Data in excel does not match actual data." }, JsonRequestBehavior.AllowGet);
+                            return Json(new { msg = "error", error = "Data getting uploaded does not relate to specific plan." }, JsonRequestBehavior.AllowGet);
                         }
 
                         foreach (DataRow row in dt.Rows)
@@ -17928,9 +17929,13 @@ namespace RevenuePlanner.Controllers
                         var dsOrigninal = new DataSet();
                         StoredProcedure objSp = new StoredProcedure();
 
-
                         dt.Columns.RemoveAt(dt.Columns.Count - 1);
-                        dt.Rows.RemoveAt(dt.Rows.Count - 1);
+                        if (dt.Rows[dt.Rows.Count - 1][0].ToString().Trim() ==
+                            "This document was made with dhtmlx library. http://dhtmlx.com")
+                        {
+                            dt.Rows.RemoveAt(dt.Rows.Count - 1);
+                        }
+                      
                         for (int i = 0; i < dt.Columns.Count; i++)
                         {
                             for (int j = 0; j < dt.Rows.Count; j++)
@@ -17961,9 +17966,17 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                if (ex.Message.Contains("process"))
+                {
+                      return Json(new { msg = "error", error = "File is being used by another process." }, JsonRequestBehavior.AllowGet); 
+                }
+                else
+                {
+                     return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                }
+               
             }
 
             return new EmptyResult();
@@ -17980,9 +17993,9 @@ namespace RevenuePlanner.Controllers
         private DataSet GetXLS(string excelConnectionString)
         {
             DataSet ds = new DataSet();
+            OleDbConnection excelConnection = new OleDbConnection(excelConnectionString);
             try
             {
-                OleDbConnection excelConnection = new OleDbConnection(excelConnectionString);
                 excelConnection.Open();
                 DataTable dt = new DataTable();
 
@@ -18007,13 +18020,12 @@ namespace RevenuePlanner.Controllers
                 {
                     dataAdapter.Fill(ds);
                 }
+
             }
             catch (Exception)
             {
-
                 return null;
             }
-
 
             return ds;
         }

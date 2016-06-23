@@ -108,6 +108,9 @@
         color: #000 !important;
         cursor: pointer;
     }
+   .kv-upload-progress {
+        display: none;
+    }
 </style>
 <div class="tab-content all-height cf" style="position:relative">
     
@@ -221,7 +224,7 @@
 <span>Note:The file name must match grid.xls</span>
 </li>
         </ul>
-        <input id="input-43" name="input43[]" type="file" multiple class="file-loading select-file">
+        <input id="input-43" name="input43[]" type="file" class="file-loading select-file">
         <div id="errorBlock" class="help-block"></div>
     </div>
 
@@ -261,6 +264,9 @@
         $('#ImportModal').on('hidden.bs.modal', function() {
             $('#input-43').fileinput('clear');
         });
+        $('#input-43').on('fileclear', function (event) {
+            $('.fileinput-upload-button').hide();
+        });
 
         // Added by Rushil Bhuptani on 14/06/2016 for #2227 for initializing file input plugin
         $("#input-43").fileinput({
@@ -290,18 +296,20 @@
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 ExpandItems();
+                myApp.hidePleaseWait();
             });
             $("#DivloadPlan").removeClass('margin-top-50');
             // Added by Rushil Bhuptani on 22/06/2016 for #2227 to close popup on successful import of data.
             $('#ImportModal').modal('hide');
-            myApp.hidePleaseWait();
+           
         });
 
-        $('#input-43').on('fileselect', function (event, numFiles, label) {
-            debugger;
-            alert(3);
+        $('#input-43').on('fileloaded', function (event, file, previewId, index, reader) {
+            $('.fileinput-upload-button').show();
         });
-
+        $('#input-43').on('fileuploaderror', function (event, data, msg) {
+            $('.fileinput-upload-button').hide();
+        });
         $('#errorMessageDuplicatePlan').slideUp(400);
         //The object CurrentTab is initiate in parent of this view
         var TacCustomTitle = "@Common.TacticCustomTitle";
