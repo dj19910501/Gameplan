@@ -661,7 +661,6 @@
     // Desc :: Display chart with quartely/monthly
     $("#ddlCustomAllocatedBySelectBox select").selectbox();
     $("#ddlCustomAllocate").change(function () {
-        debugger;
         LoadAllReports();
     });
     $("#ddlAllocate").change(function () {
@@ -1516,6 +1515,9 @@
                     else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
                         LoadBudgetView();
                     }
+                    else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Custom.ToString()') {
+                        LoadAllReports();
+                    }
                 }
 
                 //SaveLastSetofViews();
@@ -2219,6 +2221,9 @@
                 }
                 else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
                     LoadBudgetView();
+                }
+                else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Custom.ToString()') {
+                    LoadAllReports();
                 }
             }
 
@@ -3482,6 +3487,7 @@ function () {
     $('li[id^="CustomReportli"]').click(function () {
         // Add By Nishant Sheth
         // #2257 : set selected custom report tab and it's option
+        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Custom.ToString()'
         RemoveAllActiveItem();
         $('#liCustomReport').addClass('active');
         $.each($('li[id^="CustomReportli"]'), function () {

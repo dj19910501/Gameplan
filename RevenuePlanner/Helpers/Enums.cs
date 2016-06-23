@@ -701,7 +701,8 @@ namespace RevenuePlanner.Helpers
             Revenue = 1,
             Conversion = 2,
             Budget = 3,
-            Waterfall = 4 //PL 1562 Dashrath Prajpati
+            Waterfall = 4, //PL 1562 Dashrath Prajpati
+            Custom = 5 // #2262 Add By Nishant Sheth
         }
 
         /// <summary>
