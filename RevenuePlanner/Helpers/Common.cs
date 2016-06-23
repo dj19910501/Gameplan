@@ -9047,10 +9047,8 @@ namespace RevenuePlanner.Helpers
                 {
                     try
                     {
-                        var efConnectionString = ConfigurationManager.ConnectionStrings["MRPEntities"].ToString();
-                        var builder = new EntityConnectionStringBuilder(efConnectionString);
-                        string regularConnectionString = builder.ProviderConnectionString;
-                        DbConn.ConnectionString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                        MRPEntities mp = new MRPEntities();
+                        DbConn.ConnectionString = mp.Database.Connection.ConnectionString;
                         DbConn.Open();
                     }
                     catch (Exception exp)
