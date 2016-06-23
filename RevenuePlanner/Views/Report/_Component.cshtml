@@ -17,7 +17,7 @@
     else
     {
         ClientDimensionId = Convert.ToString(ViewBag.ClientDimensionId);
-    }    
+    }
 }
 @* Edited for #2264 - Bhumika Report Design *@
 <div class="report-wrap clearfix">
@@ -61,16 +61,23 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        if ('@ClientDimensionId' != "@RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet") {
-            var ViewBy = $('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html();
+        LoadAllReports();
+    });
 
-            if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Yearly') {
+    // Add By Nishant Sheth
+    // Crearte Common function for load reports
+    var ViewBy;
+    function LoadAllReports() {
+        if ('@ClientDimensionId' != "@RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet") {
+            ViewBy = $('#ddlCustomAllocatedBySelectBox .sbHolder .sbSelector').html();
+
+            if ($('#ddlCustomAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Yearly') {
                 ViewBy = 'Y';
             }
-            else if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Quarterly') {
+            else if ($('#ddlCustomAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Quarterly') {
                 ViewBy = 'Q';
             }
-            else if ($('#ddlAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Monthly') {
+            else if ($('#ddlCustomAllocatedBySelectBox .sbHolder .sbSelector').html() == 'Monthly') {
                 ViewBy = 'M';
             }
 
@@ -81,7 +88,7 @@
         else {
             $('#mainContent').html("@RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet");
         }
-    });
+    }
 
     function LoadReport(obj, ViewBy) {
         var id = $(obj).attr('ReportGraphId');
@@ -159,7 +166,7 @@
                     }
                 }
             });
-
+            debugger;
             var params = {};
             params.Id = id;
             params.ConnectionString = '@ReportDBConnString';

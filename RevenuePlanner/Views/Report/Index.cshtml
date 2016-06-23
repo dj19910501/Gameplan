@@ -75,6 +75,34 @@
     {
         margin-bottom:0 !important;
     }
+
+     /* Breadcrum */
+     .breadcrum-wrap {float: left;margin-top:20px; margin-left:15px;}
+    .breadcrum-wrap  .breadcrumb {
+        font-size: inherit;
+        border-radius: 0;
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+    }
+    .breadcrum-wrap .breadcrumb>li {
+    display: inline-block;
+}
+
+    .breadcrum-wrap .breadcrumb > li > span {
+    color: #f8710e;
+}
+    .breadcrum-wrap .breadcrumb > li:before {
+    padding: 0 5px;
+    color: #ccc;
+    content: "/\00a0";
+}
+        .breadcrum-wrap .breadcrumb > li:first-child:before {
+            content:no-open-quote;
+        }
+     .breadcrum-wrap .breadcrumb>.active {
+    color: #777;
+}
 </style>
 
 @section Sidebar
@@ -538,9 +566,14 @@
                @foreach (var Dashboard in DashboardList)
                {
                    string liid = "CustomReportli" + Dashboard.Id;
+                   string CustomCSS = "fa fa-caret-right";
+                   if (!string.IsNullOrEmpty(Dashboard.CustomCSS))
+                   {
+                       CustomCSS = Dashboard.CustomCSS; 
+                   }
                 <li id='@liid'>
                     <a class="budget">
-                        <span class="fa fa-caret-right"></span>@Dashboard.DisplayName.ToUpper()
+                        <span class="@CustomCSS"></span>@Dashboard.DisplayName.ToUpper()
 </a>
                 </li>
                
@@ -559,6 +592,20 @@
                     @Html.DropDownList("ddlAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport hide" })
                </span>
      </div>
+</div>
+<div style="height:40px;display:none;" id="ddlCustomTimeFrame" class="ddlQuarter">
+    <div style="" class="breadcrum-wrap">
+        
+        <ol class="breadcrumb">
+            <li><span>Custom</a></span></li>
+            <li class="active" id="dashboardpagetext"></li>
+        </ol>
+    </div>
+    <div style="float: right;margin-top:20px; margin-right:15px;">
+        <span class="selectBox" id="ddlCustomAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
+            @Html.DropDownList("ddlCustomAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport hide" })
+        </span>
+    </div>
 </div>
 
 <div id="budgetHeader" class="budgetColums budgetReporting" style="display: none">
@@ -628,7 +675,13 @@
 
     //Added for #1296
     $("#ddlAllocatedBySelectBox select").selectbox();
-
+    // Add By Nishant Sheth
+    // Desc :: Display chart with quartely/monthly
+    $("#ddlCustomAllocatedBySelectBox select").selectbox();
+    $("#ddlCustomAllocate").change(function () {
+        debugger;
+        LoadAllReports();
+    });
     $("#ddlAllocate").change(function () {
 
         AllocatedBy = $('#ddlAllocate option:selected').text();
@@ -1078,6 +1131,7 @@
 
     $(document).ready(function () {
         myApp.showPleaseWait();// add by nishant sheth
+        $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
         $("#ddlYearSpan select").selectbox();
         $('.sbHolder').click(function () {
             $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
@@ -2345,8 +2399,11 @@
         }
 
         $("#ulTacticType li input[type=checkbox]:checked").each(function () {
-
+            var objtactictypetitle = $(this).attr('tactictypetitle');
+            if (objtactictypetitle != null && objtactictypetitle != undefined && objtactictypetitle != 'undefined')
+            {
             selectedFilters.tacticTypeTitle.push($(this).attr('tactictypetitle').toString());
+            }
         });
         if (selectedFilters.tacticTypeTitle.length == 0) {
             $('#lstTType').text(FiltersNone);
@@ -2525,6 +2582,7 @@
             RemoveAllActiveItem();
             $(this).addClass('active');
             $('#ddlsection').show(); //Modified for #1296
+            $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
             //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
             GetselectionFilter();
         }
@@ -2546,6 +2604,7 @@
             RemoveAllActiveItem();
             $(this).addClass('active');
             $('#ddlsection').hide(); //Modified for #1296
+            $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
             LoadRevenueView();
             //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
             GetselectionFilter();
@@ -2568,6 +2627,7 @@
             RemoveAllActiveItem();
             $(this).addClass('active');
             $('#ddlsection').hide(); //Modified for #1296
+            $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
             LoadConversionView();
             //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
             GetselectionFilter();
@@ -2591,6 +2651,7 @@
             RemoveAllActiveItem();
             $(this).addClass('active');
             $('#ddlsection').hide(); //Modified for #1296
+            $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
             GetselectionFilter();
             //LoadBudgetView();
         }
@@ -3446,7 +3507,17 @@ function () {
                 $(this).removeClass('selected');
             }
         });
+        document.title = "Custom";
         $(this).addClass('selected');
+        $('#ddlsection').hide(); 
+        $('#ddlCustomTimeFrame').show(); 
+        var DashboardLink = $(this).find('a');
+        if (DashboardLink != null && DashboardLink != undefined && DashboardLink != 'undefined')
+        {
+            var CustomUrlLink = $(DashboardLink).text().trim();
+            $("#dashboardpagetext").text(CustomUrlLink);
+        }
+        
         // End By Nishant Sheth
         var DashboardID = $(this).attr('id').replace('CustomReportli', '');
         var url = '@Url.Content("~/Report/GetCustomReport/")';
