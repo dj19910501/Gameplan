@@ -36,7 +36,8 @@ namespace Integration.Helper
         // enums for integration attributes
         public enum EntityIntegrationAttribute
         {
-            MarketoUrl
+            MarketoUrl,
+            EloquaBaseUrl
         }
 
         public enum PullCWActualField

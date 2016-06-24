@@ -3227,6 +3227,23 @@ namespace RevenuePlanner.Controllers
                 {
                     string append = "/" + pcpt.IntegrationInstanceEloquaId;
                     url = string.Concat(url, append);
+                    #region get base url from EntityIntegration_Attribute table
+                    //insertation start #2310 Kausha 23/06/2013 following is added to get eloqua base url from    EntityIntegration_Attribute
+                    //if it will not be availbale in table then it will be work as previously.
+                    string strentityType = Convert.ToString(Integration.Helper.Enums.EntityType.IntegrationInstance);
+                    var instanceData = db.EntityIntegration_Attribute.Where(data => data.EntityId == instance.IntegrationInstanceId && data.IntegrationinstanceId == instance.IntegrationInstanceId && data.EntityType.ToLower() == strentityType.ToLower()).FirstOrDefault();
+                    if(instanceData!=null)
+                    {
+                        string baseurlvalue = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["EloquaUrl"]);
+                        if (!string.IsNullOrEmpty(baseurlvalue))
+                        {
+                            baseurlvalue = baseurlvalue.ToLower().Replace("#andpercent#", "&");
+                            url = instanceData.AttrValue + baseurlvalue + pcpt.IntegrationInstanceEloquaId;
+                        }
+
+                    }
+                    #endregion
+                    //insertation end #2310 Kausha 23/06/2013
                 }
                 else if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.Marketo.ToString())
                 {

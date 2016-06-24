@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Text;
 using System.Transactions;
 using System.Data.Common;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -130,7 +131,7 @@ namespace Integration.Eloqua
         private void InitEloqua()
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-            campaignMetadata = new Dictionary<string,string>();
+            campaignMetadata = new Dictionary<string, string>();
             campaignMetadata.Add("name", "string,text");
             campaignMetadata.Add("description", "string,text");
             campaignMetadata.Add("startAt", "date,datetime");
@@ -174,7 +175,7 @@ namespace Integration.Eloqua
                 Resource = string.Format("/assets/campaign/fields?search={0}&depth=complete",
                                   "*")
             };
-            request.AddParameter("Authorization", "Bearer " + _AccessToken,ParameterType.HttpHeader);
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
 
             IRestResponse response = _client.Execute(request);
 
@@ -228,7 +229,7 @@ namespace Integration.Eloqua
         public List<string> GetTargetDataType()
         {
             List<string> targetDataTypeList = customFields.Select(customField => customField.Value).ToList();
-            targetDataTypeList.AddRange(campaignMetadata.Select(target=>target.Key).ToList());
+            targetDataTypeList.AddRange(campaignMetadata.Select(target => target.Key).ToList());
             return targetDataTypeList.OrderBy(targetDataType => targetDataType).ToList();
         }
 
@@ -243,7 +244,7 @@ namespace Integration.Eloqua
                      TargetField = rs.name,
                      TargetDatatype = rs.dataType,
                  }).ToList();
-            EloquaObjectFieldDetails objEloquafield ;
+            EloquaObjectFieldDetails objEloquafield;
             campaignMetadata.ToList().ForEach(fixTarget =>
                                                 {
                                                     objEloquafield = new EloquaObjectFieldDetails();
@@ -614,7 +615,7 @@ namespace Integration.Eloqua
                 List<Plan_Improvement_Campaign_Program_Tactic> IMPtacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
                 if (tacticList.Count > 0 || IMPtacticList.Count > 0)
                 {
-                    _isResultError=  SetMappingDetails();
+                    _isResultError = SetMappingDetails();
                     if (_isResultError)
                     {
                         return;
@@ -1194,7 +1195,7 @@ namespace Integration.Eloqua
                     planTactic.ModifiedBy = _userId;
                     instanceLogTactic.Status = StatusResult.Success.ToString();
                     Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
-                    
+
                     #region "Add synced Tactic comment to Plan_Campaign_Program_Tactic_Comment table"
                     //Modified by Rahul Shah on 02/03/2016 for PL #1978 . 
                     if (!Common.IsAutoSync)
@@ -1378,7 +1379,7 @@ namespace Integration.Eloqua
                 titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = (planTactic.TacticCustomName == null) ? (Common.GenerateCustomName(planTactic,SequencialOrderedTableList,_mappingCustomFields)) : (planTactic.TacticCustomName);
+                    tactic[titleMappedValue] = (planTactic.TacticCustomName == null) ? (Common.GenerateCustomName(planTactic, SequencialOrderedTableList, _mappingCustomFields)) : (planTactic.TacticCustomName);
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                 }
             }
@@ -2050,12 +2051,14 @@ namespace Integration.Eloqua
         /// <returns>Returns standard url.</returns>
         private string GetInstanceURL()
         {
+
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             int entityId = _integrationInstanceId;
             if (_entityType.Equals(EntityType.Tactic) || _entityType.Equals(EntityType.ImprovementTactic))
                 entityId = _id;
             Common.SaveIntegrationInstanceLogDetails(entityId, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get instance URL");
             RestClient baseClient = AuthenticateBase();
+
 
             RestRequest request = new RestRequest(Method.GET)
             {
@@ -2107,15 +2110,57 @@ namespace Integration.Eloqua
                 RestClient restClient = new RestClient(_apiURL);
                 restClient.Authenticator = new HttpBasicAuthenticator(_eloquaClientID, _ClientSecret);
                 RestRequest request = new RestRequest("/auth/oauth2/token?grant_type=password&scope=full&username=" + _companyName + "\\" + _username + "&password=" + _password);
+                // RestRequest request = new RestRequest("/auth/oauth2/token?grant_type=password&scope=full&username=" + "ZebraTechnologiesCorp" + "\\" + "Bulldog.Gameplan" + "&password=" + "tew@U4RapheS");
                 request.Method = Method.POST;
                 IRestResponse response = restClient.Post(request);
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     _isAuthenticated = true;
-                    Eloqua_RefreshToken objOAuthTokens= JsonConvert.DeserializeObject<Eloqua_RefreshToken>(response.Content);
+                    Eloqua_RefreshToken objOAuthTokens = JsonConvert.DeserializeObject<Eloqua_RefreshToken>(response.Content);
                     _AccessToken = objOAuthTokens.access_token;
                     restClient.BaseUrl = GetInstanceURL();
+                    //insertation start #2310 Kausha 23/06/2013 Following is added to Save/Update eloqua base url.
+                    #region save base url in to EntityIntegration_Attribute table
+                    if (!string.IsNullOrEmpty(restClient.BaseUrl))
+                    {
+                        //string[] baseArray=restClient.BaseUrl.ToLower().Split(',');
+                        string[] baseArray = Regex.Split(restClient.BaseUrl.ToLower(), "api");
+                        if (baseArray != null)
+                        {
+                            if (baseArray.Count() > 0)
+                            {
+                                //  Common.Save_EditEloquaBaseUrl(_entityType,_integrationInstanceId);   
+
+                                MRPEntities ent = new MRPEntities();
+                                string entityType = Convert.ToString(Helper.Enums.EntityType.IntegrationInstance);
+                                var instanceData = ent.EntityIntegration_Attribute.Where(data => data.EntityId == _integrationInstanceId && data.IntegrationinstanceId==_integrationInstanceId && data.EntityType.ToLower() == entityType.ToLower()).FirstOrDefault();
+                                using (MRPEntities db = new MRPEntities())
+                                {
+                                    EntityIntegration_Attribute objLogDetails = new EntityIntegration_Attribute();
+                                    objLogDetails.EntityId = _integrationInstanceId;
+                                    objLogDetails.EntityType = entityType;
+                                    objLogDetails.IntegrationinstanceId = _integrationInstanceId;
+                                    objLogDetails.AttrType = Convert.ToString(Helper.Enums.EntityIntegrationAttribute.EloquaBaseUrl);
+                                    objLogDetails.AttrValue = baseArray[0];
+                                    objLogDetails.CreatedDate = DateTime.Now;
+                                    if (instanceData == null)
+                                        db.Entry(objLogDetails).State = System.Data.EntityState.Added;
+                                    else
+                                    {
+                                        objLogDetails.ID = instanceData.ID;
+
+                                        db.Entry(objLogDetails).State = System.Data.EntityState.Modified;
+                                    }
+
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
+                    }
+
+                    #endregion
+                    //insertation end #2310
                 }
                 else
                     _isAuthenticated = false;
