@@ -12708,8 +12708,10 @@ GO
 --BudgetDataMonthly
 /****** Object:  UserDefinedTableType [dbo].[ImportExcelBudgetMonthData]    Script Date: 06/22/2016 20:43:03 ******/
 IF EXISTS (SELECT * FROM sys.types WHERE is_table_type = 1 AND name ='ImportExcelBudgetMonthData')
-	DROP PROCEDURE [dbo].[Sp_GetPlanBudgetDataMonthly]
-    DROP TYPE [dbo].[ImportExcelBudgetMonthData]    
+	BEGIN
+		DROP PROCEDURE [dbo].[Sp_GetPlanBudgetDataMonthly]
+		DROP TYPE [dbo].[ImportExcelBudgetMonthData]    
+	END
 GO
 
 /****** Object:  UserDefinedTableType [dbo].[ImportExcelBudgetMonthData]    Script Date: 06/22/2016 20:43:03 ******/
@@ -13497,8 +13499,10 @@ GO
 --DataQuarterly
 /****** Object:  UserDefinedTableType [dbo].[ImportExcelBudgetQuarterData]    Script Date: 06/22/2016 20:49:12 ******/
 IF EXISTS (SELECT * FROM sys.types WHERE is_table_type = 1 AND name ='ImportExcelBudgetQuarterData')
-	DROP PROCEDURE [dbo].[Sp_GetPlanBudgetDataQuarterly]
-    DROP TYPE [dbo].[ImportExcelBudgetQuarterData]    	
+	BEGIN
+		DROP PROCEDURE [dbo].[Sp_GetPlanBudgetDataQuarterly]
+		DROP TYPE [dbo].[ImportExcelBudgetQuarterData]    	
+	END
 GO
 
 /****** Object:  UserDefinedTableType [dbo].[ImportExcelBudgetQuarterData]    Script Date: 06/22/2016 20:49:12 ******/
