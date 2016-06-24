@@ -3497,7 +3497,9 @@ function () {
         });
         document.title = "Custom";
         $(this).addClass('selected');
-        $('#ddlsection').hide(); 
+        $('#ddlsection').hide();
+        $("#BtnShareReport").hide();
+        $('#budgetHeader').css('display', 'none');
         $('#ddlCustomTimeFrame').show(); 
         var DashboardLink = $(this).find('a');
         if (DashboardLink != null && DashboardLink != undefined && DashboardLink != 'undefined')
