@@ -37,7 +37,7 @@ namespace Integration.Eloqua
         public string _apiURL { get; set; }
         public string _apiVersion { get; set; }
         private bool _isAuthenticated { get; set; }
-        private int _integrationInstanceId { get; set; }
+        public int _integrationInstanceId { get; set; }
         private int _id { get; set; }
         private Guid _userId { get; set; }
         private int _integrationInstanceLogId { get; set; }

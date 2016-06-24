@@ -1471,6 +1471,7 @@ namespace RevenuePlanner.Controllers
                         {
                             //// Check Credentials whether Authenticate or not for Eloqua Client.
                             IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient();
+                            integrationEloquaClient._integrationInstanceId = form.IntegrationInstanceId;
                             integrationEloquaClient._companyName = companyname;// "TechnologyPartnerBulldog";
                             integrationEloquaClient._username = form.Username;// "Brij.Bhavsar";
                             integrationEloquaClient._password = form.Password;//"Brij1234";
