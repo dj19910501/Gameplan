@@ -389,7 +389,8 @@
     // Added by Arpita Soni on 05/26/2016 to resolve issue in copy tactic in inspect popup
     function RefershPlanHeaderCalc() {
         var _planId = $('#PlanId').val();
-        GetHealderData(_planId,"","","","","",true);
+       // Modified by Rushil Bhuptani on 24/06/2016 for #2314 to remove header data.
+      //  GetHealderData(_planId,"","","","","",true);
         GetNumberOfActivityPerMonByPlanId(_planId, "", "", "", "", "", true);
     }
 
@@ -457,6 +458,8 @@
     }
     var hideAllMessages = false;
     $(document).ready(function () {
+        // Added by Rushil Bhuptani on 24/06/2016 for #2314 to remove header data.
+        $(".plancart-box").hide();
         $("#lblMarkringActivitiesTitle").hide();
         $("#errorMessageDuplicatePlan").slideUp(300);
         $(".selectBox select").selectbox();
@@ -707,8 +710,9 @@ function LoadPlan() {
     var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
    populateNF(plans, "dropdown-plan-title");
     var nlform = new NLForm(document.getElementById('nl-form2'));
-    TabLoad(currentTab);   
-    GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
+    TabLoad(currentTab);
+    // Modified by Rushil Bhuptani on 24/06/2016 for #2314 to remove header data.
+   // GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
     GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
     hideAllMessages = true;
 }
@@ -762,7 +766,8 @@ function onClickPlanTitle() {
         HideMessages();
         isQuater = "";
         if (CurrentPlanId > 0) {  //Modified by komal rawal for new homepage UI
-            GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
+           // Modified by Rushil Bhuptani on 24/06/2016 for #2314 to remove header data.
+          //  GetHealderData(CurrentPlanId, "", "", "", "", "", IsHeaderActuals);
             GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater, "", "", "", "", "", IsHeaderActuals);
         }
     });
