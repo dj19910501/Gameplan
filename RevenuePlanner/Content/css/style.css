@@ -1698,10 +1698,10 @@ span.requests-logo-icon {
 .btn-blue-disable,
 .btn-blue-disable:focus,
 .btn-blue-disable:hover {
-    background: #ccc none repeat scroll 0 0;
-    color: inherit;
+    /*background: #ccc none repeat scroll 0 0;*/
+    color: inherit !important;
     cursor: default;
-    opacity: 0.4;
+    /*opacity: 0.4;*/
 }
 
 .width-dropown-sidebar {
@@ -14302,7 +14302,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 
 .finance_link {
     cursor: pointer;
-    color: #F8710E; /* #005580 Edited for #2219 - Bhumika */
+    color: #005580;
 }
 
 .finance_lineItemlink {
@@ -15343,12 +15343,12 @@ input[type="search"].ExpInput {
     display: none;
 }
 .btn-h9p2 {
-    background-color: #f8710e ;
-    color: #f4f5ed;
+    background-color: #89CEDE ;
+    color:inherit;
 } 
 .btn-h9p2:hover {
-    background-color: #e2502d;
-    color: #fff;
+    background-color: #70BBCC;
+    color:inherit;
 }
 .btn-link{color:inherit !important}
 .link-btn .btn-link{color:#F8710E !important}
@@ -15578,7 +15578,7 @@ a:focus, a:hover{outline:0 none !important}
  @media (max-width: 1440px) {
 .row-fluid .hierarchy_wrapper {
  overflow: auto;
- width: 887px;
+ width: 871px;
 }
  .pop-body-wraper {
  /*height: 500px;/*by bheru 18-11-2015 #1619*/
