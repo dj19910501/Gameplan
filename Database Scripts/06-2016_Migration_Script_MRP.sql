@@ -17791,4 +17791,9 @@ END
 
 GO
 
-
+IF NOT EXISTS(SELECT * FROM GameplanDataType WHERE ActualFieldName='ProgramName' AND IntegrationTypeId=(SELECT IntegrationTypeId FROM IntegrationType WHERE Code='workfront'))
+BEGIN
+	INSERT INTO GameplanDataType 
+	SELECT (SELECT IntegrationTypeId FROM IntegrationType WHERE Code='workfront'),'Plan_Campaign_Program','ProgramName','Program Name',0,0,0
+END
+GO
