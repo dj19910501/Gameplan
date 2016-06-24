@@ -15387,6 +15387,13 @@ input[type="search"].ExpInput {
 }
 
 /* #2229 */
+#mainContent {
+    background: #f2f2f2 none repeat scroll 0 0;
+    clear: both;
+}
+#mainContent.content, #mainContent.col-md-12 {
+    padding: 20px 20px 0;
+}
 .inte-id-txt{
     text-align: center;
     font-size: 15px;
@@ -15404,11 +15411,15 @@ input[type="search"].ExpInput {
     width: 100%;
 }
 .component {
+    margin-bottom: 19px;
+    margin-right: 19px;
+}
+.component {
     background: #fff none repeat scroll 0 0;
     border: 1px solid #ccc;
     display: inline-block;
-    margin: 15px;
-    width: 47.8% !important; 
+    /*margin: 15px;*/
+    /*width: 47.8% !important;*/ 
     padding-bottom: 40px; /* #2264 */
 }
 .report-wrap .main-row .component .highcharts-container{width:100% !important}
@@ -15547,11 +15558,11 @@ a:focus, a:hover{outline:0 none !important}
 
 /* To set orange corner on Grid Table End  */
 /************************************************ Responsive css start here **********************************************************/
-@media screen and (max-width: 1820px) { /* #2264 */
+/*@media screen and (max-width: 1820px) { /* #2264 
     .component {
         width: 46.5% !important;
     }
-}
+}*/
 @media (max-width: 1600px) {
 
     .grid_Delete{margin-right:0;} /*by bheru 1678 05-11-2015*/

@@ -39,7 +39,7 @@
             string cssClass = "component";
             string RepdivId = "divChart" + @ReportGraph.DashboardContentId;
 
-            <div class="@cssClass" style="height:@cssHeight; width:calc(@cssWidth - @cssWidthMinus); ">
+            <div class="@cssClass" style="height:@cssHeight; width:calc(@cssWidth - @cssWidthMinus); float:left; ">
                 <div class="tab-head">@ReportGraph.DisplayName</div>
                 <div id=@RepdivId style="width: 100%; height:100%" reportgraphid='@ReportGraph.ReportID' dashboardcontentid='@ReportGraph.DashboardContentId'></div>
             </div>
