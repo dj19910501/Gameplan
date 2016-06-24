@@ -6820,7 +6820,7 @@ namespace RevenuePlanner.Controllers
                 int planTacticId = !string.IsNullOrEmpty(Id) ? Convert.ToInt32(Id) : 0;
                 Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
                 objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId.Equals(planTacticId) && tac.IsDeleted == false).FirstOrDefault();
-                if (objTactic != null)
+                if (objTactic != null && Sessions.User != null) //Added by komal to check session is null for #2299
                 {
                     IsDeployToIntegration = !string.IsNullOrEmpty(isDeployToIntegration) ? bool.Parse(isDeployToIntegration) : false; // Parse isDeployToIntegration value.
                     IsSyncSF = !string.IsNullOrEmpty(isSyncSF) ? bool.Parse(isSyncSF) : false;                                        // Parse isSyncSF value
@@ -11368,170 +11368,173 @@ namespace RevenuePlanner.Controllers
             string strPlanEntity = string.Empty;
             try
             {
-                if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                if (Sessions.User != null && Sessions.ApplicationId != null) //Added by komal to check session is null for #2299
                 {
-                    //Start - Added by Viral Kadiya for PL ticket #2002 - Save integration settings on "Sync" button click.
-                    #region "Save integration settings"
-                    #region "Declare local variables"
-                    bool IsDeployedToIntegration = false, IsSyncSF = false, IsSyncEloqua = false, IsSyncWorkFront = false, IsSyncMarketo = false;
-                    #endregion
-                    var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(_tactic => _tactic.PlanTacticId == id);
-                    if (objTactic != null && objTactic.PlanTacticId > 0)
-                    {
-                        if (!string.IsNullOrEmpty(isDeployToIntegration))
-                            IsDeployedToIntegration = Convert.ToBoolean(isDeployToIntegration);
-                        if (!string.IsNullOrEmpty(isSyncSF))
-                            IsSyncSF = Convert.ToBoolean(isSyncSF);
-                        if (!string.IsNullOrEmpty(isSyncEloqua))
-                            IsSyncEloqua = Convert.ToBoolean(isSyncEloqua);
-                        if (!string.IsNullOrEmpty(isSyncWorkFront))
-                            IsSyncWorkFront = Convert.ToBoolean(isSyncWorkFront);
-                        if (!string.IsNullOrEmpty(isSyncMarketo))
-                            IsSyncMarketo = Convert.ToBoolean(isSyncMarketo);
-                        if (IsSyncWorkFront)
-                        {
-                            SaveWorkFrontTacticReviewSettings(objTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
-                        }
-
-                        objTactic.IsDeployedToIntegration = IsDeployedToIntegration;
-                        objTactic.IsSyncSalesForce = IsSyncSF;
-                        objTactic.IsSyncEloqua = IsSyncEloqua;
-                        objTactic.IsSyncWorkFront = IsSyncWorkFront;
-                        objTactic.IsSyncMarketo = IsSyncMarketo;
-                        db.Entry(objTactic).State = EntityState.Modified;
-
-
-                        #region "Update settings for linked tactic"
-                        var LinkedTacticId = objTactic.LinkedTacticId;
-                        if (LinkedTacticId.HasValue && LinkedTacticId.Value > 0)
-                        {
-                            Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(tacid => tacid.PlanTacticId == LinkedTacticId.Value).FirstOrDefault();
-                            objLinkedTactic.IsDeployedToIntegration = IsDeployedToIntegration;
-                            objLinkedTactic.IsSyncEloqua = IsSyncEloqua;
-                            objLinkedTactic.IsSyncSalesForce = IsSyncSF;
-                            objLinkedTactic.IsSyncWorkFront = IsSyncWorkFront;
-                            objTactic.IsSyncMarketo = IsSyncMarketo;
-                            objLinkedTactic.ModifiedBy = Sessions.User.UserId;
-                            objLinkedTactic.ModifiedDate = DateTime.Now;
-
-                            if (IsSyncWorkFront)
-                            {
-                                SaveWorkFrontTacticReviewSettings(objLinkedTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
-                            }
-
-                            db.Entry(objLinkedTactic).State = EntityState.Modified;
-                        }
-                        #endregion
-
-                        db.SaveChanges();
-                    }
-                    #endregion
-                    //End - Added by Viral Kadiya for PL ticket #2002 - Save integration settings on "Sync" button click.
-
-                    #region "Sync Tactic to respective Integration Instance"
-                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic); //Modified 1/17/2016 PL#1907 Brad Gray
-                    externalIntegration.Sync();
-                    #endregion
-                    returnValue = true;
-                    strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]; // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                }
-                else if (section == Convert.ToString(Enums.Section.Program).ToLower())
-                {
-                    //var objProgram = db.Plan_Campaign_Program.FirstOrDefault(_program => _program.PlanProgramId == id);
-                    //objProgram.IsDeployedToIntegration = IsDeployedToIntegration;
-                    //db.Entry(objProgram).State = EntityState.Modified;
-                    //db.SaveChanges();
-
-                    #region "Sync Tactic to respective Integration Instance"
-                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Program);
-                    externalIntegration.Sync();
-                    #endregion
-
-                    returnValue = true;
-                    strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()];    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                }
-                else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
-                {
-                    //var objCampaign = db.Plan_Campaign.FirstOrDefault(_campaign => _campaign.PlanCampaignId == id);
-                    //objCampaign.IsDeployedToIntegration = IsDeployedToIntegration;
-                    //db.Entry(objCampaign).State = EntityState.Modified;
-                    //db.SaveChanges();
-
-                    #region "Sync Tactic to respective Integration Instance"
-                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Campaign);
-                    externalIntegration.Sync();
-                    #endregion
-
-                    returnValue = true;
-                    strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()];   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                }
-                else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
-                {
-                    //var objITactic = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(_imprvTactic => _imprvTactic.ImprovementPlanTacticId == id);
-                    //objITactic.IsDeployedToIntegration = IsDeployedToIntegration;
-                    //db.Entry(objITactic).State = EntityState.Modified;
-                    //db.SaveChanges();
-
-                    #region "Sync Tactic to respective Integration Instance"
-                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.ImprovementTactic);
-                    externalIntegration.Sync();
-                    #endregion
-
-                    returnValue = true;
-                    strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()];  // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                }
-
-                #region "Save synced comment to Plan_Campaign_Program_Tactic_Comment table - 1468"
-                string syncComment = string.Empty;
-
-                if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
-                {
-                    //// Save Comment for Improvement Tactic.
-                    Plan_Improvement_Campaign_Program_Tactic_Comment pcptc = new Plan_Improvement_Campaign_Program_Tactic_Comment();
-                    syncComment = Convert.ToString(Enums.Section.ImprovementTactic) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                    pcptc.ImprovementPlanTacticId = id;
-                    pcptc.Comment = syncComment;
-                    DateTime currentdate = DateTime.Now;
-                    pcptc.CreatedDate = currentdate;
-                    string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
-                    pcptc.CreatedBy = Sessions.User.UserId;
-                    db.Entry(pcptc).State = EntityState.Added;
-                    db.Plan_Improvement_Campaign_Program_Tactic_Comment.Add(pcptc);
-                }
-                else
-                {
-
-                    //// Save Comment for Tactic,Program,Campaign.
-                    Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
-
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
-                        pcptc.PlanTacticId = id;
-                        syncComment = Convert.ToString(Enums.Section.Tactic) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                        //Start - Added by Viral Kadiya for PL ticket #2002 - Save integration settings on "Sync" button click.
+                        #region "Save integration settings"
+                        #region "Declare local variables"
+                        bool IsDeployedToIntegration = false, IsSyncSF = false, IsSyncEloqua = false, IsSyncWorkFront = false, IsSyncMarketo = false;
+                        #endregion
+                        var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(_tactic => _tactic.PlanTacticId == id);
+                        if (objTactic != null && objTactic.PlanTacticId > 0)
+                        {
+                            if (!string.IsNullOrEmpty(isDeployToIntegration))
+                                IsDeployedToIntegration = Convert.ToBoolean(isDeployToIntegration);
+                            if (!string.IsNullOrEmpty(isSyncSF))
+                                IsSyncSF = Convert.ToBoolean(isSyncSF);
+                            if (!string.IsNullOrEmpty(isSyncEloqua))
+                                IsSyncEloqua = Convert.ToBoolean(isSyncEloqua);
+                            if (!string.IsNullOrEmpty(isSyncWorkFront))
+                                IsSyncWorkFront = Convert.ToBoolean(isSyncWorkFront);
+                            if (!string.IsNullOrEmpty(isSyncMarketo))
+                                IsSyncMarketo = Convert.ToBoolean(isSyncMarketo);
+                            if (IsSyncWorkFront)
+                            {
+                                SaveWorkFrontTacticReviewSettings(objTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+                            }
+
+                            objTactic.IsDeployedToIntegration = IsDeployedToIntegration;
+                            objTactic.IsSyncSalesForce = IsSyncSF;
+                            objTactic.IsSyncEloqua = IsSyncEloqua;
+                            objTactic.IsSyncWorkFront = IsSyncWorkFront;
+                            objTactic.IsSyncMarketo = IsSyncMarketo;
+                            db.Entry(objTactic).State = EntityState.Modified;
+
+
+                            #region "Update settings for linked tactic"
+                            var LinkedTacticId = objTactic.LinkedTacticId;
+                            if (LinkedTacticId.HasValue && LinkedTacticId.Value > 0)
+                            {
+                                Plan_Campaign_Program_Tactic objLinkedTactic = db.Plan_Campaign_Program_Tactic.Where(tacid => tacid.PlanTacticId == LinkedTacticId.Value).FirstOrDefault();
+                                objLinkedTactic.IsDeployedToIntegration = IsDeployedToIntegration;
+                                objLinkedTactic.IsSyncEloqua = IsSyncEloqua;
+                                objLinkedTactic.IsSyncSalesForce = IsSyncSF;
+                                objLinkedTactic.IsSyncWorkFront = IsSyncWorkFront;
+                                objTactic.IsSyncMarketo = IsSyncMarketo;
+                                objLinkedTactic.ModifiedBy = Sessions.User.UserId;
+                                objLinkedTactic.ModifiedDate = DateTime.Now;
+
+                                if (IsSyncWorkFront)
+                                {
+                                    SaveWorkFrontTacticReviewSettings(objLinkedTactic, approvalBehaviorWorkFront, requestQueueWF, assigneeWF);  //If integrated to WF, update the IntegrationWorkFrontTactic Settings - added 24 Jan 2016 by Brad Gray
+                                }
+
+                                db.Entry(objLinkedTactic).State = EntityState.Modified;
+                            }
+                            #endregion
+
+                            db.SaveChanges();
+                        }
+                        #endregion
+                        //End - Added by Viral Kadiya for PL ticket #2002 - Save integration settings on "Sync" button click.
+
+                        #region "Sync Tactic to respective Integration Instance"
+                        ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic); //Modified 1/17/2016 PL#1907 Brad Gray
+                        externalIntegration.Sync();
+                        #endregion
+                        returnValue = true;
+                        strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]; // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                     }
                     else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                     {
+                        //var objProgram = db.Plan_Campaign_Program.FirstOrDefault(_program => _program.PlanProgramId == id);
+                        //objProgram.IsDeployedToIntegration = IsDeployedToIntegration;
+                        //db.Entry(objProgram).State = EntityState.Modified;
+                        //db.SaveChanges();
 
-                        pcptc.PlanProgramId = id;
-                        syncComment = Convert.ToString(Enums.Section.Program) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                        #region "Sync Tactic to respective Integration Instance"
+                        ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Program);
+                        externalIntegration.Sync();
+                        #endregion
+
+                        returnValue = true;
+                        strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()];    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                     }
                     else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
+                        //var objCampaign = db.Plan_Campaign.FirstOrDefault(_campaign => _campaign.PlanCampaignId == id);
+                        //objCampaign.IsDeployedToIntegration = IsDeployedToIntegration;
+                        //db.Entry(objCampaign).State = EntityState.Modified;
+                        //db.SaveChanges();
 
-                        pcptc.PlanCampaignId = id;
-                        syncComment = Convert.ToString(Enums.Section.Campaign) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                        #region "Sync Tactic to respective Integration Instance"
+                        ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Campaign);
+                        externalIntegration.Sync();
+                        #endregion
+
+                        returnValue = true;
+                        strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()];   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                     }
-                    pcptc.Comment = syncComment;
-                    DateTime currentdate = DateTime.Now;
-                    pcptc.CreatedDate = currentdate;
-                    string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
-                    pcptc.CreatedBy = Sessions.User.UserId;
-                    db.Entry(pcptc).State = EntityState.Added;
-                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
-                }
-                db.SaveChanges();
-                #endregion
+                    else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    {
+                        //var objITactic = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(_imprvTactic => _imprvTactic.ImprovementPlanTacticId == id);
+                        //objITactic.IsDeployedToIntegration = IsDeployedToIntegration;
+                        //db.Entry(objITactic).State = EntityState.Modified;
+                        //db.SaveChanges();
 
+                        #region "Sync Tactic to respective Integration Instance"
+                        ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId, EntityType.ImprovementTactic);
+                        externalIntegration.Sync();
+                        #endregion
+
+                        returnValue = true;
+                        strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()];  // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                    }
+
+                    #region "Save synced comment to Plan_Campaign_Program_Tactic_Comment table - 1468"
+                    string syncComment = string.Empty;
+
+                    if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    {
+                        //// Save Comment for Improvement Tactic.
+                        Plan_Improvement_Campaign_Program_Tactic_Comment pcptc = new Plan_Improvement_Campaign_Program_Tactic_Comment();
+                        syncComment = Convert.ToString(Enums.Section.ImprovementTactic) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                        pcptc.ImprovementPlanTacticId = id;
+                        pcptc.Comment = syncComment;
+                        DateTime currentdate = DateTime.Now;
+                        pcptc.CreatedDate = currentdate;
+                        string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
+                        pcptc.CreatedBy = Sessions.User.UserId;
+                        db.Entry(pcptc).State = EntityState.Added;
+                        db.Plan_Improvement_Campaign_Program_Tactic_Comment.Add(pcptc);
+                    }
+                    else
+                    {
+
+                        //// Save Comment for Tactic,Program,Campaign.
+                        Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
+
+                        if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                        {
+                            pcptc.PlanTacticId = id;
+                            syncComment = Convert.ToString(Enums.Section.Tactic) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                        }
+                        else if (section == Convert.ToString(Enums.Section.Program).ToLower())
+                        {
+
+                            pcptc.PlanProgramId = id;
+                            syncComment = Convert.ToString(Enums.Section.Program) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                        }
+                        else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                        {
+
+                            pcptc.PlanCampaignId = id;
+                            syncComment = Convert.ToString(Enums.Section.Campaign) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                        }
+                        pcptc.Comment = syncComment;
+                        DateTime currentdate = DateTime.Now;
+                        pcptc.CreatedDate = currentdate;
+                        string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
+                        pcptc.CreatedBy = Sessions.User.UserId;
+                        db.Entry(pcptc).State = EntityState.Added;
+                        db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                    }
+                    db.SaveChanges();
+                    #endregion
+
+                }
             }
             catch (Exception e)
             {
@@ -12722,7 +12725,12 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsServiceUnavailable = false;
 
                 BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-                var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+
+                var individuals = new List<RevenuePlanner.BDSService.User>();
+                if (Sessions.User != null && Sessions.User.ClientId != null && Sessions.ApplicationId != null && Sessions.User.UserId != null) //Added by komal to check session is null for #2299
+                {
+                 individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+                }
                 if (individuals.Count != 0)
                 {
                     ViewBag.EmailIds = individuals.Select(member => member.Email).ToList<string>();
