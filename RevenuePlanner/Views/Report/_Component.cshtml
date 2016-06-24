@@ -131,50 +131,140 @@
                 '@ClientDimensionId' + ":" + '@ClientDimensionValueId'
             );
 
-            $("#divCustomFieldsFilter").find("input[type=checkbox]").each(function () {
-                if ($(this).is(":checked")) {
-                    if ($(this).attr('dimensionid')) {
-                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
-                        var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
-                        _ElqFieldMapping.push(
-                            DimId + ":" + DimValId
-                        );
+            //$("#divCustomFieldsFilter").find("input[type=checkbox]").each(function () {
+            $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+                if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                    var CheckedCounter = 0, AllCounter = 0, UncheckedCounter = 0;
+                    AllCounter = $(this).find("input[type=checkbox]").length;
+                    CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                    UncheckedCounter = AllCounter - CheckedCounter;
+                    if (UncheckedCounter == AllCounter) {
+                        $(this).find("input[type=checkbox]").each(function () {
+                            if ($(this).attr('dimensionid')) {
+                                var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                                var DimValId = '0';
+                                _ElqFieldMapping.push(
+                                    DimId + ":" + DimValId
+                                );
+                                return false;
+                            }
+                        });
+                    }
+                    else {
+                        $(this).find("input[type=checkbox]").each(function () {
+                            if ($(this).is(":checked")) {
+                                if ($(this).attr('dimensionid')) {
+                                    var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                                    var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
+                                    _ElqFieldMapping.push(
+                                        DimId + ":" + DimValId
+                                    );
+                                }
+                            }
+                        });
                     }
                 }
             });
-            $("#accordion-Owner").find("input[type=checkbox]").each(function () {
-                if ($(this).is(":checked")) {
-                    if ($(this).attr('dimensionid')) {
-                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
-                        var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
-                        _ElqFieldMapping.push(
-                            DimId + ":" + DimValId
-                        );
+
+            var CheckedCounterOwner = 0, AllCounterOwner = 0, UncheckedCounterOwner = 0;
+            AllCounterOwner = $("#accordion-element-Owner ul li").find("input[type=checkbox]").length;
+            CheckedCounterOwner = $("#accordion-element-Owner ul li").find("input[type=checkbox]:checked").length;
+            UncheckedCounterOwner = AllCounterOwner - CheckedCounterOwner;
+            if (UncheckedCounterOwner == AllCounterOwner) {
+                $("#accordion-Owner").find("input[type=checkbox]").each(function () {
+                    if ($(this).is(":checked")) {
+                        if ($(this).attr('dimensionid')) {
+                            var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                            var DimValId = '0';
+                            _ElqFieldMapping.push(
+                                DimId + ":" + DimValId
+                            );
+                            return false;
+                        }
                     }
-                }
-            });
-            $("#accordion-TacticType").find("input[type=checkbox]").each(function () {
-                if ($(this).is(":checked")) {
-                    if ($(this).attr('dimensionid')) {
-                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
-                        var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
-                        _ElqFieldMapping.push(
-                            DimId + ":" + DimValId
-                        );
+                });
+            }
+            else {
+                $("#accordion-Owner").find("input[type=checkbox]").each(function () {
+                    if ($(this).is(":checked")) {
+                        if ($(this).attr('dimensionid')) {
+                            var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                            var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
+                            _ElqFieldMapping.push(
+                                DimId + ":" + DimValId
+                            );
+                        }
                     }
-                }
-            });
-            $("#accordion-element-Plan").find("input[type=checkbox]").each(function () {
-                if ($(this).is(":checked")) {
-                    if ($(this).attr('dimensionid')) {
-                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
-                        var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
-                        _ElqFieldMapping.push(
-                            DimId + ":" + DimValId
-                        );
+                });
+            }
+            
+
+            var CheckedCounterTacTyp = 0, AllCounterTacTyp = 0, UncheckedCounterTacTypn = 0;
+            AllCounterTacTyp = $("#accordion-element-TacticType ul li").find("input[type=checkbox]").length;
+            CheckedCounterTacTyp = $("#accordion-element-TacticType ul li").find("input[type=checkbox]:checked").length;
+            UncheckedCounterTacTypn = AllCounterTacTyp - CheckedCounterTacTyp;
+            if (UncheckedCounterTacTypn == AllCounterTacTyp) {
+                $("#accordion-TacticType").find("input[type=checkbox]").each(function () {
+                    if ($(this).is(":checked")) {
+                        if ($(this).attr('dimensionid')) {
+                            var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                            var DimValId = '0';
+                            _ElqFieldMapping.push(
+                                DimId + ":" + DimValId
+                            );
+                            return false;
+                        }
                     }
-                }
-            });
+                });
+            }
+            else {
+                $("#accordion-TacticType").find("input[type=checkbox]").each(function () {
+                    if ($(this).is(":checked")) {
+                        if ($(this).attr('dimensionid')) {
+                            var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                            var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
+                            _ElqFieldMapping.push(
+                                DimId + ":" + DimValId
+                            );
+                        }
+                    }
+                });
+            }
+
+
+
+            var CheckedCounterPlan = 0, AllCounterPlan = 0, UncheckedCounterPlan = 0;
+            AllCounterPlan = $("#accordion-element-Plan ul li").find("input[type=checkbox]").length;
+            CheckedCounterPlan = $("#accordion-element-Plan ul li").find("input[type=checkbox]:checked").length;
+            UncheckedCounterPlan = AllCounterPlan - CheckedCounterPlan;
+            if (UncheckedCounterPlan == AllCounterPlan) {
+                $("#accordion-element-Plan").find("input[type=checkbox]").each(function () {
+                    if ($(this).is(":checked")) {
+                        if ($(this).attr('dimensionid')) {
+                            var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                            var DimValId = '0';
+                            _ElqFieldMapping.push(
+                                DimId + ":" + DimValId
+                            );
+                            return false;
+                        }
+                    }
+                });
+            }
+            else {
+                $("#accordion-element-Plan").find("input[type=checkbox]").each(function () {
+                    if ($(this).is(":checked")) {
+                        if ($(this).attr('dimensionid')) {
+                            var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                            var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
+                            _ElqFieldMapping.push(
+                                DimId + ":" + DimValId
+                            );
+                        }
+                    }
+                });
+            }
+
             var params = {};
             params.Id = id;
             params.ConnectionString = '@ReportDBConnString';
