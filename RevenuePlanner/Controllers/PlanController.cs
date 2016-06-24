@@ -17895,7 +17895,7 @@ namespace RevenuePlanner.Controllers
                             ds = GetXLS(excelConnectionString);
                             if (ds == null)
                             {
-                                return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                                return Json(new { msg = "error", error = "Invalid data1." }, JsonRequestBehavior.AllowGet);
                             }
                             dt = ds.Tables[0];
                         }
@@ -17904,14 +17904,14 @@ namespace RevenuePlanner.Controllers
                             dt = GetXLSX(fileLocation);
                             if (dt == null)
                             {
-                                return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                                return Json(new { msg = "error", error = "Invalid data2." }, JsonRequestBehavior.AllowGet);
                             }
 
                         }
 
                         if (dt.Rows.Count == 0 || dt.Rows[0][0] == DBNull.Value)
                         {
-                            return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                            return Json(new { msg = "error", error = "Invalid data3." }, JsonRequestBehavior.AllowGet);
                         }
 
                         if (Convert.ToInt32(dt.Rows[0][0]) != Sessions.PlanId)
@@ -17955,7 +17955,7 @@ namespace RevenuePlanner.Controllers
 
                         if (dataResponse == null)
                         {
-                            return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                            return Json(new { msg = "error", error = "Invalid data4." }, JsonRequestBehavior.AllowGet);
                         }
 
                         // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
@@ -17968,14 +17968,14 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("process"))
-                {
-                      return Json(new { msg = "error", error = "File is being used by another process." }, JsonRequestBehavior.AllowGet); 
-                }
-                else
-                {
-                     return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
-                }
+                //if (ex.Message.Contains("process"))
+                //{
+                //      return Json(new { msg = "error", error = "File is being used by another process." }, JsonRequestBehavior.AllowGet); 
+                //}
+                //else
+                //{
+                     return Json(new { msg = "error", error = ex.Message }, JsonRequestBehavior.AllowGet);
+                //}
                
             }
 
