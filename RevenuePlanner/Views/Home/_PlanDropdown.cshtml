@@ -1,7 +1,7 @@
 ﻿@model RevenuePlanner.Models.HomePlan
 @using RevenuePlanner.Helpers;
 @{
-    var nameOnly = "Name Only";
+    var activityName = "Activity Name";
     var externalName = "External Name";
 }
 <ul class="nav nav-tabs home-content-header" style="margin-left:24px;">
@@ -51,19 +51,19 @@
                 <div class="input-group ExpInput">
                     <div class="input-group-btn">
                         
-                        <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value='@nameOnly'>
-                            @nameOnly.First()
+                        <button id="searchCriteria" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value='@activityName'>
+                            @activityName.First()
                         </button>                        
                         <div class="dropdown-menu ">
                             <ul role="menu" aria-labelledby="dropdownMenu">
                                 @*<li><a tabindex="-1" href="#">All</a></li>*@
-                                <li><a tabindex="-1" href="#">@nameOnly</a></li>
+                                <li><a tabindex="-1" href="#">@activityName</a></li>
                                 <li><a tabindex="-1" href="#">@externalName</a></li>
                                 
                             </ul>
                         </div>
                     </div>
-                    <input id="txtGlobalSearch" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder='@nameOnly'>
+                    <input id="txtGlobalSearch" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder='@activityName'>
                 </div>
 
 
@@ -226,9 +226,9 @@
         $("#RequestTab").show();
         if ($('#IsGridView').val() == "True") {            
             $('#txtGlobalSearch').val("");
-            $('#searchCriteria').val('@nameOnly');
-            $('#searchCriteria').text('@nameOnly.First()');
-            $("#txtGlobalSearch").attr('Placeholder', '@nameOnly')
+            $('#searchCriteria').val('@activityName');
+            $('#searchCriteria').text('@activityName.First()');
+            $("#txtGlobalSearch").attr('Placeholder', '@activityName')
             $('.Exp-serach').removeClass('Exp-serach-open');
             $('#ExpClose').css('display', 'none');
             $('#ExpSearch').css('display', 'block');
@@ -352,15 +352,16 @@
         }
       
         $('#txtGlobalSearch').val("");
-        $('#searchCriteria').val('@nameOnly');
-        $('#searchCriteria').text('@nameOnly.First()');
-        $("#txtGlobalSearch").attr('Placeholder', '@nameOnly');
+        $('#searchCriteria').val('@activityName');
+        $('#searchCriteria').text('@activityName.First()');
+        $("#txtGlobalSearch").attr('Placeholder', '@activityName');
         $('.Exp-serach').removeClass('Exp-serach-open');
         $('#ExpClose').css('display', 'none');
         $('#ExpSearch').css('display', 'block');
         isOpen = false;
     });
     $(".dropdown-menu li a").click(function () {
+        $("#txtGlobalSearch").val("");
         $("#searchCriteria").text($(this).text()[0]);
         $("#searchCriteria").val($(this).text());
         $("#txtGlobalSearch").attr('Placeholder', $(this).text())
@@ -404,6 +405,8 @@
         if ($("#txtGlobalSearch").val().length <= 0) {            
             $('#ExpClose').click();            
         }
+        $('#ExpClose').css('display', 'none');
+        $('#ExpSearch').css('display', 'block');
     });
 </script>
 

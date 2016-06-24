@@ -2493,7 +2493,7 @@
         var text = node;
         HomeGrid.setFiltrationLevel(-2);
 
-        if (columnName.toLowerCase().toString() == '@RevenuePlanner.Helpers.Enums.GlobalSearch.NameOnly.ToString().ToLower()'){            
+        if (columnName.toLowerCase().toString() == '@RevenuePlanner.Helpers.Enums.GlobalSearch.ActivityName.ToString().ToLower()'){            
             colindex = HomeGrid.getColIndexById('taskname');           
         }
         else if(columnName.toLowerCase().toString() == '@RevenuePlanner.Helpers.Enums.GlobalSearch.ExternalName.ToString().ToLower()'){
@@ -2504,13 +2504,14 @@
             // true - show the related row, false - hide the related row
             return  htmlDecode(data).toLowerCase().toString().indexOf(text.toLowerCase())!=-1;
         });        
-        if(HomeGrid.rowsBuffer.length <= 0){ 
+        if(HomeGrid.rowsBuffer.length <= 0){            
             $('#txtGlobalSearch').val("");
             BindHomeGrid();
             $('#txtGlobalSearch').val(node.trim());
             $("#errorMsg").css("display", "block");
             $("#spanMsgError").empty();
-            $("#spanMsgError").text("No data found specified filter/search text");
+            $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+            $(window).scrollTop(0);
         }
         else{
             if($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null){

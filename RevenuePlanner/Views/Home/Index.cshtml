@@ -3578,7 +3578,7 @@
                 //});
 
                 $(GanttTaskData.data).each(function () {
-                    if ($('#searchCriteria').val().replace(" ", "").toUpperCase() == '@Enums.GlobalSearch.NameOnly.ToString().ToUpper()') {
+                    if ($('#searchCriteria').val().replace(" ", "").toUpperCase() == '@Enums.GlobalSearch.ActivityName.ToString().ToUpper()') {
                         if (this.text.toLowerCase().indexOf($('#txtGlobalSearch').val().trim().toLowerCase()) > -1) {
                             ExportSelectedIdsafterSearch.TaskID.push(this.id);
                         }
@@ -5432,7 +5432,7 @@
                                 $("#table_activities").hide();
                                 $(".shadow-scroll-gantt").hide();
                             }
-                            gantt.refreshData();
+                            //gantt.refreshData();
 
                             // Commented By Nishant Sheth
                             // Desc:: To resolve the #2056 unresponsive javascript error in Firefox
@@ -8913,6 +8913,7 @@ function () {
     //Added by Rahul Shah for PL #2270. perform Global Search on calendar.
     var SearchTextforcal = ""
     function GlobalSearch() {
+        debugger;
         //$('#ExpLoading').css('display', 'block');
         // Modified by Rahul Shah for PL #2307 on 23/06/2016 to display data without search when user add/copy tactic,program,campaign for calendar.
         if (isCopyTactic > 0) {
@@ -8939,7 +8940,7 @@ function () {
                         if (contains(htmlDecode(gantt.getTask(parent).machineName), value))
                         return true;
                     }
-                    if (searchcriteria == '@Enums.GlobalSearch.NameOnly.ToString().ToUpper()') {
+                    if (searchcriteria == '@Enums.GlobalSearch.ActivityName.ToString().ToUpper()') {
                         if (contains(htmlDecode(gantt.getTask(parent).text), value))
                             return true;
                     }
@@ -8958,20 +8959,23 @@ function () {
                     return false;
                 }               
             });            
-            if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {                
+            if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
+               
                 if ($('#txtGlobalSearch').val().length > 0) {
                 SearchTextforcal = $('#txtGlobalSearch').val().trim();
                 $('#txtGlobalSearch').val("");
                 GlobalSearch();
                 $('#txtGlobalSearch').val(SearchTextforcal);
+                $('#SuccessMsg').css('display', 'none');
+                $("#spanMsgSuccess").empty();
                 $("#errorMsg").css("display", "block");
                 $("#spanMsgError").empty();
-                $("#spanMsgError").text("No data found specified filter/search text");
+                $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
             }
             }
             else {
                 $("#errorMsg").css("display", "none");
-                $("#spanMsgError").empty();
+                $("#spanMsgError").empty();                
             }            
         }
         else {

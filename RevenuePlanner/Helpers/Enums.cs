@@ -1425,7 +1425,7 @@ namespace RevenuePlanner.Helpers
 
         public enum GlobalSearch
         {
-            NameOnly,
+            ActivityName,
             ExternalName,// Modified by Rahul Shah for PL #2307 on 23/06/2016 to change name from machine name to external name.
         }
     }
