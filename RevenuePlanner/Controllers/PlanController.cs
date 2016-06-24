@@ -18022,8 +18022,9 @@ namespace RevenuePlanner.Controllers
                 }
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
                 return null;
             }
 
@@ -18077,8 +18078,9 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
                 return null;
             }
             return dt;
