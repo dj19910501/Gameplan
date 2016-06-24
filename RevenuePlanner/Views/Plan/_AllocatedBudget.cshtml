@@ -217,7 +217,7 @@
     </div>
     <div class="modal-body">
         <ul>
-            <li><strong>Download file format <a onclick="downloadFile()">here</a></strong></li>
+            <li><strong>Download file format <a href="~/Content/Common/grid sample.xls">here</a></strong></li>
             <li><strong>Make any necessary changes</strong><br />
                 <span>Note: Any additional rows or columns added will not appear after imported</span></li>
             <li><strong>Import the file</strong><br />
@@ -235,12 +235,7 @@
 </div>
 
 <script type="text/javascript">
-    
-    // Added by Rushil Bhuptani on 22/06/2016 for #2227 to download sample excel file.
-    function downloadFile() {
-        window.location = '/Plan/DownloadSampleExcelFile';
-    }
-
+   
     // Added by Rushil Bhuptani on 22/06/2016 for #2227 to show popup.
     function showModal() {
         $('#ImportModal').modal('show');
