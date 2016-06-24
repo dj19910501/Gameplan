@@ -771,5 +771,11 @@ else {
             }
         }
     }
-    
+
+    //Added by Rahul Shah for PL #2296 
+    $(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
+        var $checkbox = $(this).find('input[type=checkbox]')
+        $checkbox.bootstrapToggle('toggle')
+        e.preventDefault()
+    });
 </script>
