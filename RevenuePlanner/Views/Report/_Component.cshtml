@@ -35,7 +35,7 @@
             }
             string cssHeight = @ReportGraph.Height.ToString() + "px";
             string cssWidth = @ReportGraph.Width.ToString() + "%";
-            string cssWidthMinus = "19px";
+            string cssWidthMinus = "21px";
             string cssClass = "component";
             string RepdivId = "divChart" + @ReportGraph.DashboardContentId;
 
@@ -100,7 +100,7 @@
             PlanDate = PlanDate + "," + $('#ulSelectedYear li').last().attr('yearvalue');
         }
         else if (PlanDate == 'None') {
-            PlanDate = '1900,2100';
+            PlanDate = '2100';
         }
         var ArrPlanDt = [];
         ArrPlanDt = PlanDate.split(',');
