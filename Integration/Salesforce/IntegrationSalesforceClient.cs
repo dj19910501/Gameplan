@@ -7544,27 +7544,23 @@ namespace Integration.Salesforce
                 string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
                 List<SFDCWithMarketoList> lstSFDCMarketoModels = new List<SFDCWithMarketoList>();
                 // Desc ::  Get model list which are configure like salesforce integration instance as pull for marketo and same instance for another model to push salesforce.
-                lstSFDCMarketoModels = db.Models.Where(model => model.IsDeleted == false &&
-                   (model.IntegrationInstanceIdINQ == _integrationInstanceId || model.IntegrationInstanceIdMQL == _integrationInstanceId
-                   || model.IntegrationInstanceIdCW == _integrationInstanceId || model.IntegrationInstanceId == _integrationInstanceId)
-                   && (model.IntegrationInstanceMarketoID != _integrationInstanceId || model.IntegrationInstanceMarketoID == null))
-                   .Select(model => new SFDCWithMarketoList
+                if (_entityType == EntityType.IntegrationInstance)
                 {
-                       ModelId = model.ModelId,
-                       IntegrationInstanceMarketoID = model.IntegrationInstanceMarketoID,
-                       IntegrationInstanceId = model.IntegrationInstanceId
-                   }).ToList();
+                    lstSFDCMarketoModels = db.Models.Where(model => model.IsDeleted == false &&
+                               (model.IntegrationInstanceIdINQ == _integrationInstanceId || model.IntegrationInstanceIdMQL == _integrationInstanceId
+                               || model.IntegrationInstanceIdCW == _integrationInstanceId || model.IntegrationInstanceId == _integrationInstanceId)
+                               && (model.IntegrationInstanceMarketoID != _integrationInstanceId || model.IntegrationInstanceMarketoID == null))
+                               .Select(model => new SFDCWithMarketoList
+                            {
+                                ModelId = model.ModelId,
+                                IntegrationInstanceMarketoID = model.IntegrationInstanceMarketoID,
+                                IntegrationInstanceId = model.IntegrationInstanceId
+                            }).ToList(); 
+                }
 
                 if (lstSFDCMarketoModels.Count > 0 && lstSFDCMarketoModels.Any(model => model.IntegrationInstanceMarketoID != null))
                     _IsSFDCWithMarketo = true;
 
-                //if (db.Models.Any(model => model.IsDeleted == false &&
-                //       (model.IntegrationInstanceIdINQ == _integrationInstanceId || model.IntegrationInstanceIdMQL == _integrationInstanceId
-                //       || model.IntegrationInstanceIdCW == _integrationInstanceId || model.IntegrationInstanceId == _integrationInstanceId)
-                //       && (model.IntegrationInstanceMarketoID != _integrationInstanceId || model.IntegrationInstanceMarketoID == null)))
-                //{
-                //    _IsSFDCWithMarketo = true;
-                //}
                 #endregion
 
                 #region "Get Field Mappinglist"
@@ -7636,6 +7632,11 @@ namespace Integration.Salesforce
                 objSPParams.name = "isClientAllowCustomName";
                 lstparams.Add(objSPParams);
 
+                objSPParams = new SpParameters();
+                objSPParams.parameterValue = _IsSFDCWithMarketo;
+                objSPParams.name = "isSyncSFDCWithMarketo";
+                lstparams.Add(objSPParams);
+
                 #endregion
 
                 #region "Make SFDC Credential Dictionary"
@@ -7660,10 +7661,11 @@ namespace Integration.Salesforce
                 #endregion
                 
                 // Pass SP based on sync process whether it's 3-way between SFDC & Marketo or not
-                if (_IsSFDCWithMarketo)
-                    spSFDCPUshDataName = "spGetSalesforceMarketo3WayData";
-                else
+                //if (_IsSFDCWithMarketo)
+                //    spSFDCPUshDataName = "spGetSalesforceMarketo3WayData";
+                //else
                     spSFDCPUshDataName = "spGetSalesforceData";
+                    //spSFDCPUshDataName = "spGetSalesforceData";
 
                 #region "Call SFDC Integration API"
                 HttpResponseMessage response = new HttpResponseMessage();
@@ -7697,6 +7699,7 @@ namespace Integration.Salesforce
 
                 #region "Declare local variables"
                 string crtMode = Operation.Create.ToString();
+                string updMode = Operation.Update.ToString();
                 IntegrationInstancePlanEntityLog instanceEntity = new IntegrationInstancePlanEntityLog();
                 IntegrationInstanceLogDetail instanceLogDetail = new IntegrationInstanceLogDetail();
                 Dictionary<int, string> TacticMarketoProgMappingIds = new Dictionary<int, string>();
@@ -8108,8 +8111,8 @@ namespace Integration.Salesforce
                 #region "Update new created Tactic's SFDC Id"
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Update Tactic's SFDC Id start.");
                 List<int> lstCreatedTacIds = new List<int>();
-                Dictionary<int, string> lstTactSFDCIdMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == tacObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.CampaignId.ToString());
-                Dictionary<int, DateTime> lstTactSyncMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == tacObjType && ent.Mode.ToUpper() == crtMode.ToUpper()).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.EndTimeStamp);
+                Dictionary<int, string> lstTactSFDCIdMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == tacObjType && ((ent.Mode.ToUpper() == crtMode.ToUpper()) || (ent.Mode.ToUpper() == updMode.ToUpper()))).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.CampaignId.ToString());
+                Dictionary<int, DateTime> lstTactSyncMapping = lstCampaigndata.Where(ent => ent.ObjectType.ToUpper() == tacObjType && ((ent.Mode.ToUpper() == crtMode.ToUpper()) || (ent.Mode.ToUpper() == updMode.ToUpper()))).ToDictionary(ent => Convert.ToInt32(ent.SourceId), ent => ent.EndTimeStamp);
 
                 if (lstTactSFDCIdMapping != null && lstTactSFDCIdMapping.Count > 0)
                 {
