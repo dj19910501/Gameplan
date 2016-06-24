@@ -799,6 +799,7 @@
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
+                    var DimensionOwnerId = "";
                     if (data.isSuccess == true) {
                         var LoggedInOwner = data.LoggedInUser.OwnerId;
                         if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
@@ -813,7 +814,7 @@
                                 $.each(data.AllowedOwner, function (i, OwnerItem) {
                                     var checked = "";
                                     var checkedclass = "";
-                                    var DimensionOwnerId = "";
+                                   
                                     
                                     $.each(OwnerDimensionList, function () {
                                         var OwnerValue = this;
@@ -862,7 +863,7 @@
                                     checked = "checked"
                                     checkedclass = "close-list"
                                     //}
-                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + ' dimensionid=' + DimensionOwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" dimensionid=' + DimensionOwnerId + ' onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + ' dimensionid="' + DimensionOwnerId + '""><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" dimensionid="' + DimensionOwnerId + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                 }
                                 //Commented By Maitri Gandhi on 24/2/2016 For #2014
                                 //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
@@ -1001,6 +1002,7 @@
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
+                    var TacticTypeDimensionId = "";
                     if (data.isSuccess == true) {
                         if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
                             TactictypeCount = data.TacticTypelist.length;
@@ -1011,7 +1013,6 @@
                                     var checked = "";
                                     var checkedclass = "";
 
-                                    var TacticTypeDimensionId = "";
                                     $.each(TacticTypeDimensionList, function () {
                                         var TacticTypeValue = this;
                                         if (TacticTypeValue.Value == TactictypeItem.TacticTypeId.toString()) {
