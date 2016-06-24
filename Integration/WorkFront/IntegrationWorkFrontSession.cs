@@ -1065,22 +1065,24 @@ namespace Integration.WorkFront
                 tactic.ModifiedDate = DateTime.Now;
                 tactic.ModifiedBy = _userId;
                 db.Entry(tactic).State = EntityState.Modified;
-
+                // Modified by Arpita Soni for Ticket #2304 on 06/24/2016
                 if (!tacticError)
                 {
                     instanceLogTactic.Status = StatusResult.Success.ToString();
                     //add success message to IntegrationInstanceLogDetails
                     Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, null, Enums.MessageOperation.Start, "Sync Tactic", Enums.MessageLabel.Success, "Sync success on Tactic " + tactic.Title);
+                    //update errorlist with success 
+                    //added 14 March 2016 by Brad Gray - PL#1941
+                    syncResult.Message = "In tactic " + tactic.Title + " : Success";
+                    syncResult.SyncStatus = Enums.SyncStatus.Success;
                 }
                 else
                 {
                     instanceLogTactic.Status = StatusResult.Error.ToString();
+                    //update errorlist with error
+                    syncResult.Message = "In tactic " + tactic.Title + " : Error";
+                    syncResult.SyncStatus = Enums.SyncStatus.Error;
                 }
-
-                //update errorlist with success 
-                //added 14 March 2016 by Brad Gray - PL#1941
-                syncResult.Message = "In tactic " + tactic.Title + " : Success";
-                syncResult.SyncStatus = Enums.SyncStatus.Success;
             }
             catch(Exception ex)
             {
@@ -1097,7 +1099,10 @@ namespace Integration.WorkFront
             {
                 db.Entry(instanceLogTactic).State = EntityState.Added;
                 //moved from catch block 14 March 2016 by Brad Gray - PL#1941 
-                SyncErrors.Add(syncResult);
+                if (!tacticError)
+                {
+                    SyncErrors.Add(syncResult);
+                }
             }
             return tacticError;
         }
@@ -1650,14 +1655,14 @@ namespace Integration.WorkFront
             StringBuilder updateList = new StringBuilder();
             foreach (KeyValuePair<String, String> tacticField in _mappingTacticPushData) //create JSON for editing
             {
-
+                // Modified by Arpita Soni for Ticket #2304 on 06/24/2016
                 if (tacticField.Key == Fields.GameplanField.TITLE.ToString())
                 {
-                    updateList.Append(tacticField.Value + ":'" + tactic.Title + "'");
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(tactic.Title))) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.DESCRIPTION.ToString())
                 {
-                    updateList.Append(tacticField.Value + ":'" + tactic.Description + "'");
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(tactic.Description) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.START_DATE.ToAPIString())
                 {
@@ -1669,11 +1674,11 @@ namespace Integration.WorkFront
                 }
                 else if (tacticField.Key == Fields.GameplanField.PARENT_PROGRAM.ToAPIString())
                 {
-                    updateList.Append(tacticField.Value + ":'" + tactic.Plan_Campaign_Program.Title + "'");
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(tactic.Plan_Campaign_Program.Title))) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.PARENT_CAMPAIGN.ToAPIString())
                 {
-                    updateList.Append(tacticField.Value + ":'" + tactic.Plan_Campaign_Program.Plan_Campaign.Title + "'");
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(tactic.Plan_Campaign_Program.Plan_Campaign.Title) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.PROGRAM_END.ToAPIString())
                 {
@@ -1683,7 +1688,7 @@ namespace Integration.WorkFront
                 {
                     BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                     BDSService.User user = objBDSServiceClient.GetTeamMemberDetails(tactic.Plan_Campaign_Program.Plan_Campaign.CreatedBy, _applicationId);
-                    updateList.Append(tacticField.Value + ":'" + user.Email + "'");
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(user.Email) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.PROGRAM_START.ToAPIString())
                 {
@@ -1697,7 +1702,7 @@ namespace Integration.WorkFront
                 {
                     BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                     BDSService.User user = objBDSServiceClient.GetTeamMemberDetails(tactic.Plan_Campaign_Program.Plan_Campaign.CreatedBy, _applicationId);
-                    updateList.Append(tacticField.Value + ":'" + user.Email + "'");
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(user.Email) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.CAMPAIGN_START.ToAPIString())
                 {
@@ -1710,14 +1715,14 @@ namespace Integration.WorkFront
                     CustomField_Entity cfe = db.CustomField_Entity.Where(field => field.CustomFieldId == keyAsInt && tactic.PlanTacticId == field.EntityId && field.CustomField.IsGet == false).FirstOrDefault();
                     if (!(cfe == null))
                     {
-                        updateList.Append(tacticField.Value + ":'" + cfe.Value + "'");
+                        updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(cfe.Value) + "'");
                     }
                     // else { notUsedFieldCount++; }
                 }
                 else if (tacticField.Key == Fields.GameplanField.PROGRAM_NAME.ToAPIString() && isPlanToPortfolio)
                 {
                     // Push plan program to attribute of the WF project
-                    updateList.Append(tacticField.Value + ":'" + tactic.Plan_Campaign_Program.Title + "'");
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(tactic.Plan_Campaign_Program.Title))) + "'");
                 }
                 else { continue; }
                 updateList.Append(",");
