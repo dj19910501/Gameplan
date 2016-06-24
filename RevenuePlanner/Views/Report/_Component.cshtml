@@ -55,7 +55,7 @@
 </div>
 @if (Model.DashboardContent.Count == 0)
 {
-    <div class="noreportsfound">
+    <div class="noreportsfound" style="padding:25px">
         <p>"@RevenuePlanner.Helpers.Common.objCached.ReportNotConfigured"</p>
     </div>
 }
@@ -88,6 +88,7 @@
         }
         else {
             $('#mainContent').html("@RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet");
+            $('#mainContent').css('padding-left', '25px', 'padding-top', '25px');
         }
     }
 

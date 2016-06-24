@@ -12085,7 +12085,17 @@ div.clue-bottom-default .cluetip-arrows {
     text-align:left;
     font-size:13px;
 }
-.report-heder-tab ul li.dropdown ul.dropdown-menu a .fa{margin-right:4px;  font-size: 14px;} /* #2264 */
+.report-heder-tab  ul.dropdown-menu a .fa-report-icon{/* #2257 */
+    margin:1px 4px 0 0;  
+    font-size: 14px;
+    display: inline-block;
+    float: left; 
+} 
+.report-heder-tab ul li.dropdown ul.dropdown-menu a .nameText { /* Added for #2257 */
+    display: inline-block;
+    float: left;
+    width: calc(100% - 21px);    
+} 
 .report-heder-tab .dropdown-menu > li.selected a,
 .report-heder-tab .dropdown-menu > li > a:hover,
 .report-heder-tab .dropdown-menu > li > a:focus {
