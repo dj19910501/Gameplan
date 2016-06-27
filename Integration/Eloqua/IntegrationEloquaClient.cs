@@ -2131,30 +2131,33 @@ namespace Integration.Eloqua
                             if (baseArray.Count() > 0)
                             {
                                 //  Common.Save_EditEloquaBaseUrl(_entityType,_integrationInstanceId);   
-
-                                MRPEntities ent = new MRPEntities();
-                                string entityType = Convert.ToString(Helper.Enums.EntityType.IntegrationInstance);
-                                var instanceData = ent.EntityIntegration_Attribute.Where(data => data.EntityId == _integrationInstanceId && data.IntegrationinstanceId==_integrationInstanceId && data.EntityType.ToLower() == entityType.ToLower()).FirstOrDefault();
-                                using (MRPEntities db = new MRPEntities())
+                                if(_integrationInstanceId>0)
                                 {
-                                    EntityIntegration_Attribute objLogDetails = new EntityIntegration_Attribute();
-                                    objLogDetails.EntityId = _integrationInstanceId;
-                                    objLogDetails.EntityType = entityType;
-                                    objLogDetails.IntegrationinstanceId = _integrationInstanceId;
-                                    objLogDetails.AttrType = Convert.ToString(Helper.Enums.EntityIntegrationAttribute.EloquaBaseUrl);
-                                    objLogDetails.AttrValue = baseArray[0];
-                                    objLogDetails.CreatedDate = DateTime.Now;
-                                    if (instanceData == null)
-                                        db.Entry(objLogDetails).State = System.Data.EntityState.Added;
-                                    else
+                                    MRPEntities ent = new MRPEntities();
+                                    string entityType = Convert.ToString(Helper.Enums.EntityType.IntegrationInstance);
+                                    var instanceData = ent.EntityIntegration_Attribute.Where(data => data.EntityId == _integrationInstanceId && data.IntegrationinstanceId == _integrationInstanceId && data.EntityType.ToLower() == entityType.ToLower()).FirstOrDefault();
+                                    using (MRPEntities db = new MRPEntities())
                                     {
-                                        objLogDetails.ID = instanceData.ID;
+                                        EntityIntegration_Attribute objLogDetails = new EntityIntegration_Attribute();
+                                        objLogDetails.EntityId = _integrationInstanceId;
+                                        objLogDetails.EntityType = entityType;
+                                        objLogDetails.IntegrationinstanceId = _integrationInstanceId;
+                                        objLogDetails.AttrType = Convert.ToString(Helper.Enums.EntityIntegrationAttribute.EloquaBaseUrl);
+                                        objLogDetails.AttrValue = baseArray[0];
+                                        objLogDetails.CreatedDate = DateTime.Now;
+                                        if (instanceData == null)
+                                            db.Entry(objLogDetails).State = System.Data.EntityState.Added;
+                                        else
+                                        {
+                                            objLogDetails.ID = instanceData.ID;
 
-                                        db.Entry(objLogDetails).State = System.Data.EntityState.Modified;
+                                            db.Entry(objLogDetails).State = System.Data.EntityState.Modified;
+                                        }
+
+                                        db.SaveChanges();
                                     }
-
-                                    db.SaveChanges();
                                 }
+                               
                             }
                         }
                     }
