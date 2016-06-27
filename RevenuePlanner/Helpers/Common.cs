@@ -9030,7 +9030,7 @@ namespace RevenuePlanner.Helpers
                 }
                 return dataset;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
