@@ -17797,3 +17797,10 @@ BEGIN
 	SELECT (SELECT IntegrationTypeId FROM IntegrationType WHERE Code='workfront'),'Plan_Campaign_Program','ProgramName','Program Name',0,0,0
 END
 GO
+
+GO
+IF NOT EXISTS (SELECT * FROM AggregationStatus)
+BEGIN
+	INSERT INTO AggregationStatus VALUES ('NOTRUNNING')
+END
+GO
