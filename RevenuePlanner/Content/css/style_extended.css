@@ -771,7 +771,7 @@ span.setbackground {
 
     .nav-gray-planc > .active + li a:hover {
         border-top: 1px solid #eeeeee;
-        color:#89cede !important; /*Change color from #f8710e to #89CEDE by devanshi for #2312*/
+      
     }
 
 .nav-gray-planc > li:nth-last-child(2).active a {

@@ -762,7 +762,7 @@ span.info-icon {
 }
 
 .nav-gray-plan li a:hover {
-    color: #f8710e !important;
+    color: #89cede!important; /*Change color from #f8710e to #89CEDE by devanshi for #2312*/
 }
 
 .nav-gray-plan li a.inputs:hover span {
@@ -810,7 +810,7 @@ span.info-icon {
     text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
     border-bottom: 1px solid #fff;
     border-top: 1px solid #fff;
-    color: #f8710e !important;
+    color: #89cede !important;
 }
 
 .nav-gray-plan > .active + li a {
