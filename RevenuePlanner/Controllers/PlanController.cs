@@ -12993,12 +12993,6 @@ namespace RevenuePlanner.Controllers
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
-                        plandataobj.value = "";
-                        plandataobj.locked = IsPlanEditable ? lockedstatezero : lockedstateone;
-                        plandataobj.style = cellTextColor;
-                        plandataobjlist.Add(plandataobj);
-
-                        plandataobj = new Plandataobj();
                         //#1780
                         //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=add_Remove_Entity onclick=javascript:AddRemoveEntity(this) id=PlanAdd altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() +"></div>";
                         //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd TacticType= '" + doubledesh + "' OwnerName= '" + GetOwnerName(planitem.CreatedBy.ToString()) + "' TaskName='" + (HttpUtility.HtmlEncode(planitem.Title).Replace("'", "&#39;")) + "' ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>";
@@ -13062,6 +13056,13 @@ namespace RevenuePlanner.Controllers
                         plandataobj = new Plandataobj();
                         plandataobj.value = dollarsymbol + ConvertNumberToRoundFormate(totalrevenue).ToString();
                         plandataobj.actval = totalrevenue.ToString();
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        //Add External Name Column as a last column of gridview
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = "";
+                        plandataobj.locked = IsPlanEditable ? lockedstatezero : lockedstateone;
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
@@ -13162,13 +13163,7 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj.value = HttpUtility.HtmlEncode(Campaignitem.Title);
                                     campaigndataobj.locked = IsEditable;
                                     campaigndataobj.style = cellTextColor;
-                                    campaigndataobjlist.Add(campaigndataobj);
-
-                                    campaigndataobj = new Plandataobj();
-                                    campaigndataobj.value = "";
-                                    campaigndataobj.locked = IsEditable;
-                                    campaigndataobj.style = cellTextColor;
-                                    campaigndataobjlist.Add(campaigndataobj);
+                                    campaigndataobjlist.Add(campaigndataobj);                                 
 
                                     campaigndataobj = new Plandataobj();
                                     //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") +  "<div class=add_Remove_Entity id=CampaignAdd onclick=javascript:AddRemoveEntity(this) altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
@@ -13224,6 +13219,13 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj = new Plandataobj();
                                     campaigndataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Campaignitem.totalrevenue).ToString();
                                     campaigndataobj.actval = Campaignitem.totalrevenue.ToString();
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    //Add External Name Column as a last column of gridview
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = "";
+                                    campaigndataobj.locked = IsEditable;
                                     campaigndataobj.style = cellTextColor;
                                     campaigndataobjlist.Add(campaigndataobj);
 
@@ -13323,13 +13325,7 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj.locked = IsEditable;
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
-
-                                                programdataobj = new Plandataobj();
-                                                programdataobj.value = "";
-                                                programdataobj.locked = IsEditable;
-                                                programdataobj.style = cellTextColor;
-                                                programdataobjlist.Add(programdataobj);
-
+                                              
                                                 programdataobj = new Plandataobj();
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=add_Remove_Entity id=ProgramAdd onclick=javascript:AddRemoveEntity(this); altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
@@ -13384,6 +13380,13 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj = new Plandataobj();
                                                 programdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Programitem.totalrevenue).ToString();
                                                 programdataobj.actval = Programitem.totalrevenue.ToString();
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                //Add External Name Column as a last column of gridview
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = "";
+                                                programdataobj.locked = IsEditable;
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
@@ -13477,16 +13480,8 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
+                                                       
                                                         tacticdataobj = new Plandataobj();
-                                                        tacticdataobj.value = HttpUtility.HtmlEncode(tactic.machineName);
-                                                        tacticdataobj.locked = tactic.IstactEditable;
-                                                        tacticdataobj.style = cellTextColor;
-                                                        tacticdataobjlist.Add(tacticdataobj);
-
-                                                        tacticdataobj = new Plandataobj();
-
-
-
                                                         //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                         tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "' tacticaddId='" + tactic.PlanTacticId + "'></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + " csvId=Tactic_" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                         tacticdataobjlist.Add(tacticdataobj);
@@ -13546,6 +13541,13 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
+                                                        //Add External Name Column as a last column of gridview
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = HttpUtility.HtmlEncode(tactic.machineName);
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
                                                         tacticrowsobj.data = tacticdataobjlist;
 
                                                         Planuserdatagrid tacticuserdata = new Planuserdatagrid();
@@ -13591,13 +13593,7 @@ namespace RevenuePlanner.Controllers
                                                                 lineitemdataobj.locked = lineitem.IstactEditable;
                                                                 lineitemdataobj.style = cellTextColor;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
-
-                                                                lineitemdataobj = new Plandataobj();
-                                                                lineitemdataobj.value = "";
-                                                                lineitemdataobj.locked = lineitem.IstactEditable;
-                                                                lineitemdataobj.style = cellTextColor;
-                                                                lineitemdataobjlist.Add(lineitemdataobj);
-
+                                                              
                                                                 lineitemdataobj = new Plandataobj();
                                                                 lineitemdataobj.value = "<div class=grid_Search id=LP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
@@ -13651,6 +13647,14 @@ namespace RevenuePlanner.Controllers
                                                                 lineitemdataobj.style = cellTextColor;// Add By Nishant Sheth #1987
                                                                 lineitemdataobj.type = typero;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                //Add External Name Column as a last column of gridview
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = "";
+                                                                lineitemdataobj.locked = lineitem.IstactEditable;
+                                                                lineitemdataobj.style = cellTextColor;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
 
                                                                 lineitemrowsobj.data = lineitemdataobjlist;
 
@@ -13768,14 +13772,14 @@ namespace RevenuePlanner.Controllers
                 if (IsNotLineItemListing)
                 {
                     // Third Column : Empty
-                    headobj = new PlanHead();
-                    headobj.type = "ro";
-                    //headobj.align = "left";
-                    headobj.id = "machinename";
-                    headobj.sort = "str";
-                    headobj.width = 0;
-                    headobj.value = "Machine Name";
-                    headobjlist.Add(headobj);
+                    //headobj = new PlanHead();
+                    //headobj.type = "ro";
+                    ////headobj.align = "left";
+                    //headobj.id = "machinename";
+                    //headobj.sort = "str";
+                    //headobj.width = 0;
+                    //headobj.value = "Machine Name";
+                    //headobjlist.Add(headobj);
 
                     // Third Column : Empty
                     headobj = new PlanHead();
@@ -13893,6 +13897,17 @@ namespace RevenuePlanner.Controllers
                     headobj.width = 150;
                     headobj.value = "Revenue";
                     headobjlist.Add(headobj);
+                    //Add External Name Column as a last column of gridview
+                     //Thirteenth Column : Empty
+                    headobj = new PlanHead();
+                    headobj.type = "ro";
+                    //headobj.align = "left";
+                    headobj.id = "machinename";
+                    headobj.sort = "str";
+                    headobj.width = 0;
+                    headobj.value = "Machine Name";
+                    headobjlist.Add(headobj);
+
                 }
             }
             catch (Exception objException)
