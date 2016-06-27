@@ -265,6 +265,7 @@
         if ('@ModelStatus' == "Draft" && ('@IsOwner.ToString().ToLower()' == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true"))) {
             $("#publish").removeClass('btn-blue-disable');
             $("#publish").addClass('btn-blue');
+            $("#publish").removeAttr('disabled'); //Added by Rahul Shah to make editable publish model button
         }
 
         $('#publish').click(function (e) {

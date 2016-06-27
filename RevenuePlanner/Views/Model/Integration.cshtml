@@ -134,6 +134,7 @@
             if ($('#hdnStatus').val() == "Draft" && ($('#IsOwner').val().toLowerCase() == 'true')) {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 $("#publish").removeClass('btn-blue-disable');
                 $("#publish").addClass('btn-blue');
+                $("#publish").removeAttr('disabled');//Added by Rahul Shah to make editable publish model button
             }
         }
 
@@ -212,15 +213,18 @@
                 if ($('#hdnStatus').val() == "Draft" && ($('#IsOwner').val().toLowerCase() == 'true')) {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                     $("#publish").removeClass('btn-blue-disable');
                     $("#publish").addClass('btn-blue');
+                    $("#publish").removeAttr('disabled'); //Added by Rahul Shah to make editable publish model button
                 }
                 else {
                     $("#publish").removeClass('btn-blue');
                     $("#publish").addClass('btn-blue-disable');
+                    $("#publish").attr('disabled', 'disabled'); //Added by Rahul Shah to make disable publish model button
                 }
             }
             else {
                 $("#publish").removeClass('btn-blue');
                 $("#publish").addClass('btn-blue-disable');
+                $("#publish").attr('disabled', 'disabled');//Added by Rahul Shah to make disable publish model button
 
             }
             $('#ver_' + id).removeClass('disabled pull-right');

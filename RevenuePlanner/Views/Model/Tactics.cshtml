@@ -147,10 +147,11 @@
             window.location.href = "@Url.Action("Create", "Model")";
         });
 
-        if ($('#hdnModelId').val() == $("#latestModelId").val()) {
+        if ($('#hdnModelId').val() == $("#latestModelId").val()) {            
             if ($('#hdnStatus').val() == "Draft" && ($('#IsOwner').val().toLowerCase() == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true"))) {   // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
                 $("#publish").removeClass('btn-blue-disable');
                 $("#publish").addClass('btn-blue');
+                $("#publish").removeAttr('disabled'); //Added by Rahul Shah to make editable publish model button
             }
         }
 
@@ -227,7 +228,7 @@
             $('#successMessage').slideUp();
             $('#errorMessage').slideUp();
             var latest = $("#latestModelId").val();
-            var id = $(this).attr("id");
+            var id = $(this).attr("id");          
             if (id == latest) {
                 if ($('#IsOwner').val().toLowerCase() == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true")) {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
                     $("#create_new_tactic").show();
@@ -236,15 +237,17 @@
                 $("#save_tactic").show();
                 $("#CreateTactic").show();
                 $("#NewModel").removeClass('btn-blue-disable');
-                $("#NewModel").addClass('btn-blue');
-                $("#mode").val(latest);
+                $("#NewModel").addClass('btn-blue');                
+                $("#mode").val(latest);              
                 if ($('#hdnStatus').val() == "Draft" && ($('#IsOwner').val().toLowerCase() == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true"))) {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
                     $("#publish").removeClass('btn-blue-disable');
                     $("#publish").addClass('btn-blue');
+                    $("#publish").removeAttr('disabled'); //Added by Rahul Shah to make editable publish model button
                 }
                 else {
                     $("#publish").removeClass('btn-blue');
                     $("#publish").addClass('btn-blue-disable');
+                    $("#publish").attr('disabled', 'disabled'); //Added by Rahul Shah to make disable publish model button
                 }
                 $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
                 $("#liDuplicate").show();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
@@ -259,6 +262,7 @@
                 $("#mode").val(id);
                 $("#publish").removeClass('btn-blue');
                 $("#publish").addClass('btn-blue-disable');
+                $("#publish").attr('disabled', 'disabled'); //Added by Rahul Shah to make disable publish model button
                 $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
                 $("#liDuplicate").hide();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
             }
@@ -298,17 +302,19 @@
                                     $("#CreateTactic").show();
                                     $("#NewModel").removeClass('btn-blue-disable');
                                     $("#NewModel").addClass('btn-blue');
-                                    $("#mode").val(latest);
+                                    $("#mode").val(latest);                                    
                                     if (r[i].Status == "Draft" && ($('#IsOwner').val().toLowerCase() == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true"))) { // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
                                        
                                         $("#publish").removeClass('btn-blue-disable');
                                         $("#publish").addClass('btn-blue');
+                                        $("#publish").removeAttr('disabled');  //Added by Rahul Shah to make editable publish model button
                                         $('#hdnStatus').val(r[i].Status);
                                         $('#PublisheStatus').val('true')
                                     }
                                     else {
                                         $("#publish").removeClass('btn-blue');
                                         $("#publish").addClass('btn-blue-disable');
+                                        $("#publish").attr('disabled', 'disabled'); //Added by Rahul Shah to make disable publish model button
                                     }
                                 }
                                 else {
@@ -321,6 +327,7 @@
                                     $("#mode").val(id);
                                     $("#publish").removeClass('btn-blue');
                                     $("#publish").addClass('btn-blue-disable');
+                                    $("#publish").attr('disabled', 'disabled'); //Added by Rahul Shah to make disable publish model button
 
                                 }
                             }
