@@ -52,19 +52,35 @@
   .toggle.integrationToggle {min-height: 20px;}
 
   /* Add to solve Chrome Browser issue of on/off button radius #2296 - Bhumika*/
-  .toggle-on, .toggle-off{background:transparent !important; box-shadow:none !important; }
-  .toggle-handle{height: 71%; background: #DBDBDB; padding: 4px 10px;}
-  .btn-success .toggle-handle{    
-        position: absolute;
-        right: 54px;
-        border-radius: 0 20px 20px 0 !important;
+  .btn.btn-success, .btn.toggle-off, .btn.toggle-handle, .btn.off{
+      backface-visibility: visible;
+       box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+       border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+       text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);   
   }
-  .btn-default.off .toggle-handle{
-      position:absolute;  
-      left: 55px;
-       border-radius: 20px 0 0 20px!important;
+  .btn.integrationToggle{ border-style: solid;
+        border-width: 1px;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);}
+  .btn.btn-success {
+    background-image: linear-gradient(to bottom, #62c462, #51a351);   
+    background-color: #5bb75b; 
+}
+  .btn.toggle-off{
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+    background-color: #e6e6e6;
+    background-image: none;
   }
-
+  .btn.toggle-off:hover{color:#333}
+  .btn.toggle-handle{
+    background-color: #f5f5f5;
+    background-image: linear-gradient(to bottom, #fff, #e6e6e6);    
+  }
+  .btn.toggle-handle:hover, .btn.toggle-handle:focus {
+    background-position: 0 -15px;
+    color: #333;
+    text-decoration: none;
+    transition: background-position 0.1s linear 0s;
+}
 </style>
 
 <style type="text/css">

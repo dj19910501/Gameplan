@@ -4757,7 +4757,7 @@ a.link-gray {
 
 .row-fluid .hierarchy_wrapper {
     overflow: auto;
-    width: 1366px; /* #2219 */
+    width: 1355px; /* #2219 */
     background: #fff none repeat scroll 0 0;
     margin-left: 11px;
 }
@@ -15564,13 +15564,12 @@ a:focus, a:hover{outline:0 none !important}
     }
 }*/
 @media (max-width: 1600px) {
-
     .grid_Delete{margin-right:0;} /*by bheru 1678 05-11-2015*/
 } 
 @media (max-width: 1600px) {
 .row-fluid .hierarchy_wrapper {
  overflow: auto;
- width: 1045px;
+ width: 1005px;
 }
  .treeview {
  margin-left: 55px;
