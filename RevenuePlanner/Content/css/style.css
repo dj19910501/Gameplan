@@ -661,7 +661,7 @@ span.info-icon {
     }
 
 .nav-gray li a:hover {
-    color: #f8710e  !important; /* Edited for #2219 - Bhumika */
+    color: #89cede  !important; /* Edited for #2219 - Bhumika *//*Change color from #f8710e to #89CEDE by devanshi for #2312*/
 }
 
 .nav-gray li a.inputs:hover span {
@@ -713,7 +713,7 @@ span.info-icon {
     text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
     border-bottom: 1px solid #fff;
     border-top: 1px solid #fff;
-    color: #F8710E !important;/* Edited for #2219 - Bhumika */
+    color: #89cede !important;/* Edited for #2219 - Bhumika *//*Change color from #f8710e to #89CEDE by devanshi for #2312*/
 }
 
 .nav-gray > .active + li a {
@@ -1806,13 +1806,13 @@ span.requests-logo-icon {
         color: #D4D4D4 !important;
     }
 .myaccount-colum .nav-pills a, 
-#internalLink .nav-pills a{color:#f8710e } /* Added for #2219 - Bhumika */
+#internalLink .nav-pills a{color:#89CEDE } /* Added for #2219 - Bhumika *//*Change color from #f8710e to #89CEDE by devanshi for #2312*/
 .nav-pills > .active > a,
 .nav-pills > .active > a:focus,
 .nav-pills > .active > a:hover,
 .nav-pills > li > a:focus,
 .nav-pills > li > a:hover {
-    background-color: #F8710E !important;/* Edited for #2219 - Bhumika */
+    background-color: #89CEDE !important;/* Edited for #2219 - Bhumika *//*Change color from #f8710e to #89CEDE by devanshi for #2312*/
     color: #FFF !important;
 }
 
@@ -15538,7 +15538,7 @@ a:focus, a:hover{outline:0 none !important}
 
 .subheader a
 {
-    color: #f8710e;
+    color: #89cede; /*Change color from #f8710e to #89CEDE by devanshi for #2312*/
 }
 
 .note-modal-form >

@@ -762,7 +762,7 @@ span.setbackground {
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
     border-bottom: 1px solid #fff;
     border-top: 1px solid #fff;
-    color: #1a638a !important;
+    color: #89cede !important; /*Change color from #f8710e to #89CEDE by devanshi for #2312*/
 }
 
 .nav-gray-planc > .active + li a {
@@ -771,6 +771,7 @@ span.setbackground {
 
     .nav-gray-planc > .active + li a:hover {
         border-top: 1px solid #eeeeee;
+        color:#89cede !important; /*Change color from #f8710e to #89CEDE by devanshi for #2312*/
     }
 
 .nav-gray-planc > li:nth-last-child(2).active a {
