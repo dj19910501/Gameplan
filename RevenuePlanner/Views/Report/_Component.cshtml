@@ -172,15 +172,13 @@
             UncheckedCounterOwner = AllCounterOwner - CheckedCounterOwner;
             if (UncheckedCounterOwner == AllCounterOwner) {
                 $("#accordion-Owner").find("input[type=checkbox]").each(function () {
-                    if ($(this).is(":checked")) {
-                        if ($(this).attr('dimensionid')) {
-                            var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
-                            var DimValId = '0';
-                            _ElqFieldMapping.push(
-                                DimId + ":" + DimValId
-                            );
-                            return false;
-                        }
+                    if ($(this).attr('dimensionid')) {
+                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                        var DimValId = '0';
+                        _ElqFieldMapping.push(
+                            DimId + ":" + DimValId
+                        );
+                        return false;
                     }
                 });
             }
@@ -205,15 +203,13 @@
             UncheckedCounterTacTypn = AllCounterTacTyp - CheckedCounterTacTyp;
             if (UncheckedCounterTacTypn == AllCounterTacTyp) {
                 $("#accordion-TacticType").find("input[type=checkbox]").each(function () {
-                    if ($(this).is(":checked")) {
-                        if ($(this).attr('dimensionid')) {
-                            var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
-                            var DimValId = '0';
-                            _ElqFieldMapping.push(
-                                DimId + ":" + DimValId
-                            );
-                            return false;
-                        }
+                    if ($(this).attr('dimensionid')) {
+                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                        var DimValId = '0';
+                        _ElqFieldMapping.push(
+                            DimId + ":" + DimValId
+                        );
+                        return false;
                     }
                 });
             }
@@ -239,15 +235,13 @@
             UncheckedCounterPlan = AllCounterPlan - CheckedCounterPlan;
             if (UncheckedCounterPlan == AllCounterPlan) {
                 $("#accordion-element-Plan").find("input[type=checkbox]").each(function () {
-                    if ($(this).is(":checked")) {
-                        if ($(this).attr('dimensionid')) {
-                            var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
-                            var DimValId = '0';
-                            _ElqFieldMapping.push(
-                                DimId + ":" + DimValId
-                            );
-                            return false;
-                        }
+                    if ($(this).attr('dimensionid')) {
+                        var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
+                        var DimValId = '0';
+                        _ElqFieldMapping.push(
+                            DimId + ":" + DimValId
+                        );
+                        return false;
                     }
                 });
             }
