@@ -7730,7 +7730,7 @@ namespace Integration.Salesforce
 
                 #region "Get all pushed Campaigns data"
                 if (logDetailsList.Count > 0 && logDetailsList != null)
-                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == campObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType != null && log.ObjectType.ToUpper() == campObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
                 if (lstCampaigndata != null && lstCampaigndata.Count > 0)
                     lstpshOthrEntIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == campObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
                 lstallOthrEntIds.AddRange(lstpshOthrEntIds);
@@ -7742,7 +7742,7 @@ namespace Integration.Salesforce
                 lstpshOthrEntIds = new List<int>(); // reset variables.
 
                 if (logDetailsList.Count > 0 && logDetailsList != null)
-                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == progObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType != null && log.ObjectType.ToUpper() == progObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
                 if (lstCampaigndata != null && lstCampaigndata.Count > 0)
                     lstpshOthrEntIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == progObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
                 lstallOthrEntIds.AddRange(lstpshOthrEntIds);
@@ -7751,7 +7751,7 @@ namespace Integration.Salesforce
 
                 #region "Get all pushed tactic data"
                 if (logDetailsList.Count > 0 && logDetailsList != null)
-                    lstallTacIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == tacObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                    lstallTacIds = logDetailsList.Where(log => log.ObjectType != null && log.ObjectType.ToUpper() == tacObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
                 if (lstCampaigndata != null && lstCampaigndata.Count > 0)
                     lstpshTacIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == tacObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
                 lstallTacIds.AddRange(lstpshTacIds);
@@ -7763,7 +7763,7 @@ namespace Integration.Salesforce
                 lstpshOthrEntIds = new List<int>(); // reset variables.
 
                 if (logDetailsList.Count > 0 && logDetailsList != null)
-                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == ImprvCampObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType != null && log.ObjectType.ToUpper() == ImprvCampObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
                 if (lstCampaigndata != null && lstCampaigndata.Count > 0)
                     lstpshOthrEntIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == ImprvCampObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
                 lstallOthrEntIds.AddRange(lstpshOthrEntIds);
@@ -7776,7 +7776,7 @@ namespace Integration.Salesforce
                 lstpshOthrEntIds = new List<int>(); // reset variables.
 
                 if (logDetailsList.Count > 0 && logDetailsList != null)
-                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == ImprvProgObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType != null && log.ObjectType.ToUpper() == ImprvProgObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
                 if (lstCampaigndata != null && lstCampaigndata.Count > 0)
                     lstpshOthrEntIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == ImprvProgObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
                 lstallOthrEntIds.AddRange(lstpshOthrEntIds);
@@ -7789,7 +7789,7 @@ namespace Integration.Salesforce
                 lstpshOthrEntIds = new List<int>(); // reset variables.
 
                 if (logDetailsList.Count > 0 && logDetailsList != null)
-                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType.ToUpper() == ImprvtacObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
+                    lstallOthrEntIds = logDetailsList.Where(log => log.ObjectType != null && log.ObjectType.ToUpper() == ImprvtacObjType && log.SourceId.HasValue).Select(log => log.SourceId.Value).ToList();
                 if (lstCampaigndata != null && lstCampaigndata.Count > 0)
                     lstpshOthrEntIds = lstCampaigndata.Where(tac => tac.ObjectType.ToUpper() == ImprvtacObjType).Select(tac => Convert.ToInt32(tac.SourceId)).ToList();
                 lstallOthrEntIds.AddRange(lstpshOthrEntIds);
