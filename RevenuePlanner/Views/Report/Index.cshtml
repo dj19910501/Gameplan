@@ -848,10 +848,7 @@
                                     //}
 
                                     $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + ' dimensionid="' + DimensionOwnerId + '""><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" dimensionid="' + DimensionOwnerId + '" id="' + OwnerItem.OwnerId + '"' + checked + ' ></input></li>'); /*<span class="chkbx-icon"></span>*/
-
-
-
-
+                                    DimensionOwnerId = ""; // Add BY Nishant Sheth // #2284 Observation when aggrgation process is not done then entity dimension value take previous existing entity dimension value
                                 });
 
 
@@ -864,6 +861,7 @@
                                     checkedclass = "close-list"
                                     //}
                                     $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + ' dimensionid="' + DimensionOwnerId + '""><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" dimensionid="' + DimensionOwnerId + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
+                                    DimensionOwnerId = ""; // Add BY Nishant Sheth // #2284 Observation when aggrgation process is not done then entity dimension value take previous existing entity dimension value
                                 }
                                 //Commented By Maitri Gandhi on 24/2/2016 For #2014
                                 //Added By Komal Rawal for #1984 to resolve issue of owner deselection on plan change.
@@ -1012,7 +1010,7 @@
                                 $.each(data.TacticTypelist, function (i, TactictypeItem) {
                                     var checked = "";
                                     var checkedclass = "";
-
+                                    
                                     $.each(TacticTypeDimensionList, function () {
                                         var TacticTypeValue = this;
                                         if (TacticTypeValue.Value == TactictypeItem.TacticTypeId.toString()) {
@@ -1032,6 +1030,7 @@
                                     //}
                                     //}
                                     $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + ' dimensionid="' + TacticTypeDimensionId + '""><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" dimensionid="' + TacticTypeDimensionId + '" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                                    TacticTypeDimensionId = ""; // Add BY Nishant Sheth // #2284 Observation when aggrgation process is not done then entity dimension value take previous existing entity dimension value
                                 });
                             }
                             else {
