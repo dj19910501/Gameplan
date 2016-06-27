@@ -134,15 +134,15 @@ namespace Integration.Salesforce
             Dictionary<string, string> sfdcCredentials = new Dictionary<string, string>();
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             #region "Commented code: SFDC authenticate through Integration Web API"
-            ///// Added by Bhavesh
-            ///// Date: 28/7/2015
-            ///// Ticket : #1385	Enable TLS 1.1 or higher Encryption for Salesforce
-            ///// Start : #1385
-            //if (Common.EnableTLS1AndHigher == "true")
-            //{
-            //    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-            //}
-            ///// End : #1385
+            /// Added by Bhavesh
+            /// Date: 28/7/2015
+            /// Ticket : #1385	Enable TLS 1.1 or higher Encryption for Salesforce
+            /// Start : #1385
+            if (Common.EnableTLS1AndHigher == "true")
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            }
+            /// End : #1385
 
             _client = new SalesforceClient();
             var authFlow = new UsernamePasswordAuthenticationFlow(_consumerKey, _consumerSecret, _username, _password + _securityToken); 
