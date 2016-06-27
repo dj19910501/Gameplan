@@ -159,7 +159,7 @@
             <p>Tactic Planned Cost 
             @if (IsTackticAddEdit && !isCreated)
             {
-                <a href="#" class="allocatecost" style="float:right;text-decoration:underline;">Allocate cost</a>
+                <a href="#" class="allocatecost" style="float:right;text-decoration:underline;">Allocate Cost</a>
             }
         </p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
