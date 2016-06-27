@@ -660,7 +660,7 @@ textarea[readonly] {
 }
 
 .button-contact-support {/* Edited for #2219 - Bhumika */
-    background: #f8710e;
+    background:#89CEDE; /* Edited for #2312- Komal */
     border: medium none !important;
     float: left;
     color: #FFFFFF;
@@ -672,7 +672,7 @@ textarea[readonly] {
 }
 .button-contact-support:focus,
 .button-contact-support:hover {/* Added for #2219 - Bhumika */
-    background:#e2502d;
+    background:#70BBCC;/* Edited for #2312 - Komal */
     color:#fff;
 }
 .contact-support-message-position-popup {

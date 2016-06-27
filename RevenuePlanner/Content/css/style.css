@@ -1676,7 +1676,7 @@ span.requests-logo-icon {
     margin-bottom: 18px;
     padding-bottom: 0;
     padding-top: 0;
-    background:#f8710e none repeat scroll 0 0;
+    background:#89CEDE none repeat scroll 0 0;  /* Edited for #2312- Komal */
     transition: background 0.5s ease-out;
     box-shadow: 0 2px 1px rgba(0, 0, 0, 0.25);
 }
@@ -1691,7 +1691,7 @@ span.requests-logo-icon {
 /*by bheru 1-11-2015 ticket 1718*/
 .btn-blue:focus,
 .btn-blue:hover {
-    background:#e2502d;
+    background:#70BBCC;  /* Edited for #2312- Komal */
     color: #fff;
 }
 
@@ -1952,7 +1952,7 @@ input.error {
         width: 120px !important;
         height: 17px !important;
         margin-top: 10px !important;
-    background:  #F8710E ;
+    background:  #89CEDE ;  /* Edited for #2312- Komal */
         border: none !important;
         border-top: none !important;
     text-shadow: none;
@@ -2074,13 +2074,13 @@ span.link-blue:hover {
     width: 120px !important;
     height: 17px !important;
     margin-top: 10px !important;
-    background: #f8710e;
+    background:#89CEDE;  /* Edited for #2312- Komal */
 }
 .form-forgot-password button:focus,
 .form-forgot-password button:hover,
 .form-signin button:focus,
-.form-signin button:hover {/* Added for #2219 - Bhumika */
-    background:#e2502d;
+.form-signin button:hover {/* Edited for #2312- Komal */
+    background:#70BBCC;
     color:#fff;
 }
 .form-forgot-password #result {
@@ -5722,11 +5722,11 @@ span.left-arrow {
     float: left;
     width: 120px !important;
     height: 17px !important;
-    background: #F8710E ; /* Edited for #2219 - Bhumika */
+    background: #89CEDE ; /* Edited for #2312- Komal */
     border: none !important;
     border-top: none !important;
 }
-.form-inspect-share-button:hover, .form-inspect-share-button:focus{background: #e2502d}
+.form-inspect-share-button:hover, .form-inspect-share-button:focus{background: #70BBCC} /* Edited for #2312- Komal */
 .form-inspect-share label {
     font-size: 21px;
     font-family: Conv_HelveticaLTStd-Light, Arial, sans-serif;
@@ -14302,7 +14302,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 
 .finance_link {
     cursor: pointer;
-    color: #005580;
+    color: #5F91B3; /* Edited for #2312- Komal */
 }
 
 .finance_lineItemlink {
@@ -14466,7 +14466,7 @@ box-shadow: 1px 0 0 rgba(255, 255, 255, 0.125) inset, 0 1px 0 rgba(255, 255, 255
     padding-right: 8px;
 }
 .wraper-btns  .btn-group .btn-blue:hover, 
-.wraper-btns  .btn-group .btn-blue:focus{background-color:#f8710e !important;}  /* Added for #2219 - Bhumika */
+.wraper-btns  .btn-group .btn-blue:focus{background-color:#70BBCC !important;}  /* Added for #2219 - Bhumika */ /* Edited for #2312- Komal */
 .btn-group .dropdown-menu > li > a:hover, 
 .btn-group .dropdown-menu > li > a:focus{background-color:#f5f5f5 !important;color: inherit; background-image: none; } /* Added for #2219 - Bhumika */
 
