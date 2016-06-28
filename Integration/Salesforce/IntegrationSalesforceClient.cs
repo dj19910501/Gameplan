@@ -7808,17 +7808,17 @@ namespace Integration.Salesforce
                 #region "Check log for integration instance section"
                 string strSalesforcePush = "SalesforcePush";
                 //isExist = logDetailsList.Where(log => (log.EventName.Equals(strSalesforcePush)) && log.Status.ToUpper().Equals("FAILURE")).Any();
-                if (logDetailsList.Any(log => (log.EventName.ToUpper() == strSalesforcePush.ToUpper()) && log.Status.ToUpper() == strFailure))
+                if (logDetailsList.Any(log => (log.EventName != null && log.EventName.ToUpper() == strSalesforcePush.ToUpper()) && log.Status.ToUpper() == strFailure))
                 {
                     _isResultError = true;
-                    _ErrorMessage = logDetailsList.Where(log => (log.EventName.ToUpper() == strSalesforcePush.ToUpper()) && log.Status.ToUpper() == strFailure).Select(err => err.Description).FirstOrDefault();//"Error in getting data from source, to push to marketo";
+                    _ErrorMessage = logDetailsList.Where(log => (log.EventName != null && log.EventName.ToUpper() == strSalesforcePush.ToUpper()) && log.Status.ToUpper() == strFailure).Select(err => err.Description).FirstOrDefault();//"Error in getting data from source, to push to marketo";
                 }
                 #endregion
 
                 #region "Original Log for Push SFDC"
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Insert Log detail into IntegrationInstanceLogDetails start.");
                 //Insert Failure error log to IntegrationInstanceLogDetails table 
-                foreach (var logdetail in logDetailsList.Where(log => log.Status.ToUpper() == strFailure))
+                foreach (var logdetail in logDetailsList.Where(log =>log.Status != null && log.Status.ToUpper() == strFailure))
                 {
                     //if (logdetail.Status.ToUpper().Equals("FAILURE"))
                     //{
@@ -7837,7 +7837,7 @@ namespace Integration.Salesforce
                
                 #region "Entity Logs for each tactic"
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Insert Log detail into IntegrationInstancePlanEntityLog start.");
-                List<Integration.LogDetails> logDetailsList1 = logDetailsList.Where(log => (log.EventName.ToUpper() == strSalesforcePush.ToUpper()) && log.Status.ToUpper() == strFailure && log.SourceId.HasValue && log.SourceId.Value > 0).ToList();
+                List<Integration.LogDetails> logDetailsList1 = logDetailsList.Where(log => (log.EventName != null && log.EventName.ToUpper() == strSalesforcePush.ToUpper()) && log.Status.ToUpper() == strFailure && log.SourceId.HasValue && log.SourceId.Value > 0).ToList();
                 int pushCntr = 0;
                 try
                 {
