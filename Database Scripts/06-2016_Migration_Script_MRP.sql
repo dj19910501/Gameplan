@@ -12908,6 +12908,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y1', (SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -12919,6 +12920,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y2', (SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -12930,6 +12932,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y3', (SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -12941,6 +12944,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT APR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y4', (SELECT APR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -12954,6 +12958,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y5', (SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -12965,6 +12970,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y6', (SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -12976,6 +12982,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y7', (SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -12987,6 +12994,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y8', (SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -12998,6 +13006,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y9', (SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13009,6 +13018,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y10', (SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13020,6 +13030,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y11', (SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13031,6 +13042,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y12', (SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13056,6 +13068,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y1', (SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13067,6 +13080,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y2', (SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13078,6 +13092,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y3', (SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13089,6 +13104,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT APR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y4', (SELECT APR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13102,6 +13118,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y5', (SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13113,6 +13130,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y6', (SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13124,6 +13142,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y7', (SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13135,6 +13154,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y8', (SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13146,6 +13166,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y9', (SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13157,6 +13178,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y10', (SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13168,6 +13190,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y11', (SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13179,6 +13202,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y12', (SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13204,6 +13228,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y1', (SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13215,6 +13240,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y2', (SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13226,6 +13252,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y3', (SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13237,6 +13264,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT APR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y4', (SELECT APR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13250,6 +13278,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y5', (SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13261,6 +13290,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y6', (SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13272,6 +13302,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y7', (SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13283,6 +13314,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y8', (SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13294,6 +13326,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y9', (SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13305,6 +13338,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y10', (SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13316,6 +13350,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y11', (SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13327,6 +13362,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y12', (SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13352,6 +13388,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y1', (SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13363,6 +13400,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y2', (SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13374,6 +13412,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y3', (SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13385,6 +13424,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT APR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y4', (SELECT APR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13398,6 +13438,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y5', (SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13409,6 +13450,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y6', (SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13420,6 +13462,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y7', (SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13431,6 +13474,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y8', (SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13442,6 +13486,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y9', (SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13453,6 +13498,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y10', (SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13464,6 +13510,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y11', (SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13475,6 +13522,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y12', (SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13493,6 +13541,8 @@ End
 select ActivityId from @ImportData  EXCEPT select ActivityId from #Temp
 
 END
+
+
 
 GO
 
@@ -13677,6 +13727,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y1', (SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13688,6 +13739,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y4', (SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13699,6 +13751,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y7', (SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13711,6 +13764,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y10', (SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13732,13 +13786,13 @@ IF ( @Type='Campaign')
 
 			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y1')
 				BEGIN
-					UPDATE P SET P.Value = CASE WHEN T.Q1 != '' THEN T.Q1 ELSE P.Value END
+					UPDATE P SET P.Value =  CASE WHEN T.Q1 != '' THEN T.Q1 ELSE P.Value END
 			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y1'
 				END
 		    ELSE
 				BEGIN
+				IF ((SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y1', (SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
-					
 				END
 
 			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y4')
@@ -13748,6 +13802,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y4', (SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13759,6 +13814,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y7', (SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13771,6 +13827,7 @@ IF ( @Type='Campaign')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y10', (SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13797,6 +13854,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y1', (SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13808,6 +13866,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y4', (SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13819,6 +13878,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y7', (SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13831,6 +13891,7 @@ IF ( @Type='Program')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y10', (SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13857,6 +13918,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y1', (SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13868,6 +13930,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y4', (SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13879,6 +13942,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y7', (SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13891,6 +13955,7 @@ IF ( @Type='Tactic')
 				END
 		    ELSE
 				BEGIN
+					IF ((SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
 				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y10', (SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
@@ -13908,6 +13973,8 @@ End
 
 select ActivityId from @ImportData  EXCEPT select ActivityId from #Temp
 END
+
+
 
 GO
 
