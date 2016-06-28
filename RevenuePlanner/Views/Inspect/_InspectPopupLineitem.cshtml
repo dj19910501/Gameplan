@@ -351,6 +351,11 @@
 
     $(document).ready(
      function () {
+
+         //Bhumika - #2236 For equal width of li
+         var evenWidth = ($("#InspectTab").width() / $("#InspectTab li").length) - 2;
+         $("#InspectTab li").css("width", evenWidth);
+         evenWidth = 0;
          //// Call function to redirect on service unavailibility.
          //// Added By: Maninder Singh Wadhva on 11/24/2014.
          //// Ticket: 942 Exception handeling in Gameplan.

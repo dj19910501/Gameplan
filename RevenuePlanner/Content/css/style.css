@@ -329,6 +329,8 @@ ul.drop-down-menu {
     -moz-border-radius: 20px;
     height: 35px;
     line-height: 35px;
+     color: #f8710e; /* #2312 */
+     font-weight: bold;
 }
 .white-chart .graph {
     width: 146px;
@@ -10962,9 +10964,9 @@ font-size: 20px;
     vertical-align: middle;
     margin-right: 6px;
 }
-.link-icon:hover i{
+/*.link-icon:hover i{
     color:#fff;
-}
+}*/   /*#2312 */
 /*By Bheru mehta 30-12-2015 for #1843 end*/
 
 /*By Bheru mehta 04-01-2016 for #1850 start*/
@@ -11459,9 +11461,9 @@ font-size: 20px;
 
 #InspectTab li {
     background: #f2f2f2;
-    display: table-cell;
+    /*display: table-cell;*/   /*#2236 */
     line-height: 30px;
-    float:none;
+    /*float:none;*/
 }
 
     #InspectTab li a {
@@ -11534,14 +11536,16 @@ font-size: 20px;
 }
 #InspectTab {
     border-bottom: 0 !important;
-     width: 100% !important;
-    display: table !important;
+     width: 1048px !important;	 /*#2236 */
+    /*display: table !important;*/
+    display:block !important;
 }
 
     #InspectTab li {
         border: 1px solid #dcdcdc;
         border-right: 0 !important;
-        float:none !important;
+        float:left !important;
+        display: inline-block;
     }
 
 
@@ -14806,9 +14810,11 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 }
 .nav-tabs a.request-btn-active .fa.fa-thumbs-o-up, .nav-tabs a.request-btn-active .badge{color:#ffffff }
 
+
 .nav-tabs {
     border-bottom:0px solid #ddd;
 }
+
 /*#exportcsv {
     margin: 0 10px 0 0; float:right;cursor:pointer;
 }
@@ -15502,7 +15508,7 @@ a:focus, a:hover{outline:0 none !important}
     top: 34%; /*margin-left:-500px;*/
 }
     #ImportBtn{width: 65px;margin-right:10px}
-.btn-primary.btn-file:hover,.btn-primary.fileinput-upload:hover { background-color: #70bbcc ;}
+.btn-primary.btn-file:hover,.btn-primary.fileinput-upload:hover { background-color: #70bbcc !important;}
     #kvFileinputModal {display: none;}
 .fileinput-remove-button, .fileinput-remove-button:hover{color:#3e3f37}
 
@@ -15612,6 +15618,8 @@ a:focus, a:hover{outline:0 none !important}
 #change-log .changes .type , #change-log .changes .action,#change-log .changes .author {
    text-transform:capitalize;
 }
+
+
 /*End*/
 /* ********************  new styles  - End ******************** */
 
