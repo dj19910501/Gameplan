@@ -1777,6 +1777,7 @@ span.requests-logo-icon {
 
 .wraper-btns {
     width: 100%;
+    margin-bottom:18px;
 }
 
     .wraper-btns .span6 {
@@ -5646,7 +5647,7 @@ span.left-arrow {
     margin: 0;
     font-family: source_sans_proregular, Arial, sans-serif !important;
     font-size: 14px !important;
-    color: grey !important;
+    color: #5F91B3 !important;
     border: 0;
     font-weight: 400;
     text-transform: none;
@@ -13342,7 +13343,7 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
     }
 
     .paging ul .active {
-        background-color: #F8710E; /* Edited for #2219 - Bhumika */
+        background-color: #89cede; /* Edited for #2219 - #2312 Bhumika */
     }
 
         .paging ul .active a {
@@ -14494,13 +14495,13 @@ span.filter-count{float:right;}
 /*by bheru mehta 1686 09-1-2016 end*/
 
 .btn-group.open .btn.dropdown-toggle.newModelhover{
-    background-color:#f8710e !important; /* Edited for #2219 - Bhumika */
+    background-color:#89cede !important; /* Edited for #2219 - Bhumika */
 box-shadow: 1px 0 0 rgba(255, 255, 255, 0.125) inset, 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
     padding-left: 8px;
     padding-right: 8px;
 }
 .wraper-btns  .btn-group .btn-blue:hover, 
-.wraper-btns  .btn-group .btn-blue:focus{background-color:#70BBCC !important;}  /* Added for #2219 - Bhumika */ /* Edited for #2312- Komal */
+.wraper-btns  .btn-group .btn-blue:focus{background-color:#89cede !important;}  /* Added for #2219 - Bhumika */ /* Edited for #2312- Komal */
 .btn-group .dropdown-menu > li > a:hover, 
 .btn-group .dropdown-menu > li > a:focus{background-color:#f5f5f5 !important;color: inherit; background-image: none; } /* Added for #2219 - Bhumika */
 
@@ -15598,7 +15599,20 @@ a:focus, a:hover{outline:0 none !important}
 #headerValue {
     margin-bottom: 15px;
 }
+/*changes regarding #2312*/
+#BtnGroup{box-shadow: none !important;}
+.padding-content  .wraper-btns .span6 button{
+    margin-bottom:0 !important;
+}
 
+#divPlanButton a:hover,
+#divPlanEditButtonHome a:hover,
+#BudgetIcon a:hover{background-color: #f0f0f0 !important;}
+
+#change-log .changes .type , #change-log .changes .action,#change-log .changes .author {
+   text-transform:capitalize;
+}
+/*End*/
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
@@ -17182,7 +17196,7 @@ tbody.column2 {
 .user-permissions label {
  width: 89% !important;
 }
-#BtnGroup{box-shadow: none !important;}
+
 /*End by Mukesh CSS 28-9-2015*/
 
 }
