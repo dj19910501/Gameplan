@@ -17955,7 +17955,7 @@ namespace RevenuePlanner.Controllers
                         {
                             for (int j = 0; j < dt.Rows.Count; j++)
                             {
-                                if (i > 1)
+                                if (i > 1 && dt.Rows[j][i].ToString().Trim() != "")
                                 {
                                     dt.Rows[j][i] = dt.Rows[j][i].ToString().Replace(",", "").Replace("---", "");
                                 }
