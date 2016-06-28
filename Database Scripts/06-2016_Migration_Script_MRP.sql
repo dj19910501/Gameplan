@@ -13532,6 +13532,7 @@ GO
 -- =============================================
 -- Author:		Rushil Bhuptani
 -- Create date: 06/08/2016
+-- Modified date: 06/28/2016
 -- Description:	Procedure to get formatted data of Plan Budget.
 -- Exec spGetPlanBudgetData  17314
 -- =============================================
@@ -13676,7 +13677,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
-				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y1', (SELECT Q1 from #TempDiffer WHERE PlanId = @EntityId), GETDATE(),@UserId)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y1', (SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
 
@@ -13687,7 +13688,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
-				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y4', (SELECT Q2 from #TempDiffer WHERE PlanId = @EntityId), GETDATE(),@UserId)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y4', (SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
 
@@ -13698,7 +13699,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
-				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y7', (SELECT Q3 from #TempDiffer WHERE PlanId = @EntityId), GETDATE(),@UserId)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y7', (SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
 
@@ -13710,7 +13711,7 @@ Begin
 				END
 		    ELSE
 				BEGIN
-				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y10', (SELECT Q4 from #TempDiffer WHERE PlanId = @EntityId), GETDATE(),@UserId)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y10', (SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
 					
 				END
 
