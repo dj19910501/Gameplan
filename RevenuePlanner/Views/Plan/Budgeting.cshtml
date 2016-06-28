@@ -39,14 +39,14 @@
    string ItemType = Request.QueryString["ItemType"] != null ? Convert.ToString(Request.QueryString["ItemType"]) : "";
 
 }
-
-@section PlanHeader{
+@* #2312 *@
+@*@section PlanHeader{  
 
     <div class="light-blue-chart cf full-width-header" id="planHeader">
         @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
     </div>
 
-}
+}*@
 
 @section Sidebar
 {
@@ -106,6 +106,10 @@
 <div id="errorMessageDuplicatePlan" class="alert hide alert-error message-position-small">
     <a class="close">×</a>
     <div id="cErrorDuplicatePlan"></div>
+</div>
+@* Added for #2312  *@
+<div class="light-blue-chart cf full-width-header" id="planHeader">
+    @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
 </div>
 
 <div class=" budgetColums budgetReporting remove_btm_pdng ">

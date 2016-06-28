@@ -122,7 +122,7 @@ a{cursor:pointer !important}
 }
 /* 27-10-2015 for ticket 1713 by bheru end*/
 #content_wraper {
-    /*background: #fff;*/ /* Commented for #2219 - Bhumika */
+    background: #fff;  /*for #2312 - Bhumika*/ 
     /*min-height: 100%;*/
     height: 100% !important;
     width: calc(100% - 281px);
@@ -287,24 +287,32 @@ ul.drop-down-menu {
 }*/ /* Commented for #2219 - Bhumika */
 /* Edited for #2219 - Bhumika */
 #planHeader.light-blue-chart { 
-    padding: 0;
+    padding: 15px 0 0;
 }
-
-.plancart-box {
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    display:block;
-}
-.light-blue-chart .white-chart {
-    width: 150px;
-    height: 92px;
+#planHeader .planheader-title { /* #2312 */
     float: left;
-    text-align: center;
-    padding: 5px 10px 10px;
-    border-right:1px solid #ccc;
+    width:32%;
+    padding-top: 30px;
+    display: inline-block;  
+} 
+.plancart-box {/* #2312 */
+    /*border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;*/
+    display: inline-block;
+    float: right; 
 }
-.white-chart {
-    
+.light-blue-chart .white-chart { /* #2312 */
+    border: 1px solid #ccc;
+    float: right;
+    height: 92px;
+    margin-right: 8px;
+    padding: 5px 10px 10px;
+    text-align: center;
+    width: 115px;
+}
+.white-chart.activity-distribute{
+    width:140px;
+    margin-right:18px;
 }
 .white-chart p {
     color: inherit;
@@ -7813,7 +7821,9 @@ input.icon-check-blue {
     text-decoration: none !important;
     cursor: pointer !important;
 }
-
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover { /* #2312 */
+    background-color: #89cede;
+}
 .btn-gray,
 .btn-gray:hover {
     text-decoration: none;
@@ -9986,10 +9996,11 @@ li.close-list {
     display: inline;
     margin-left: 5px;
     margin-bottom: 5px;
-    background: #ff931e;
+    background: #E2B22C ; /* #2213 */
     font-size: 12px;
     padding-top: 2px;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #fff !important;
 }
 
 .new-btn-plan.plan-new-req {
@@ -11464,7 +11475,7 @@ font-size: 20px;
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
-    background-color: #F8710E; /*#3fa9f5 Edited for #2219 - Bhumika */
+    background-color: #89CEDE; /*#3fa9f5 Edited for #2219 - Bhumika */
     border-color: #ddd #ddd transparent;
     border-image: none;
     border-style: solid;
@@ -11657,7 +11668,7 @@ font-size: 20px;
     .new-btn-plan.request-btn-active,
     .request.request-btn-active {
         background-color: #F8710E !important; /* Edited for #2219 - Bhumika */
-        border: 1px solid #F8710E;
+        /*border: 1px solid #F8710E;*/
         color: #fff !important;
     }
 .nav-tabs li .new-btn-plan:hover{color:#000 !important}
@@ -14361,8 +14372,13 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 
 
 .brandlogo { float:left;}
-.planheader-title { width:auto; padding: 0 0 3px 15px;} /* Edited for #2219 - Bhumika - Homepage */
-.planheader-title h5 {margin:6px 0 7px;}
+.planheader-title { width:auto; padding: 0 0 3px 20px;} /* Edited for #2219 - Bhumika - Homepage - #2312 */
+.planheader-title h5 {
+    margin:6px 0 7px;  
+    font-size: 28px;
+    font-weight: normal;
+    line-height: 30px;
+}
 /*.plancart-box { display:inline;}*//* Commented for #2219 - Bhumika - Homepage */
 
 /* Changes Added By Bhumika #618*/
@@ -14766,8 +14782,8 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     border-radius: 0 ;border-left:0; border-right:0
 }
 .nav-tabs li .request-icon-block a.request-btn-active {
-    background-color: #F8710E !important;  /* Edited for #2219 - Bhumika */
-    color:#fff !important;
+    background-color: #f0f0f0 !important;  /* Edited for #2312 - Bhumika */
+    color:inherit !important;
 }
 .nav-tabs a.request-btn-active .fa.fa-thumbs-o-up, .nav-tabs a.request-btn-active .badge{color:#ffffff }
 
@@ -15060,6 +15076,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     background: transparent none repeat scroll 0 0;
     color: #333;
 }
+.menu-content li a:focus{color: #333;}
 .menu-content li a:focus{background: transparent none repeat scroll 0 0;}
 .menu-content li i {
     font-size: 14px;
@@ -15093,7 +15110,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .menu-content li.open > a:hover,
 .menu-content li.open > a:focus,
 .menu-content li.active > a {
-    background: #f2f2f2;
+    background: #89CEDE; /* #2312 */
     color: #333;
 }
 .menu-content li.dropdown .dropdown-menu, .menu-content .dropdown .dropdown-menu {
@@ -15173,7 +15190,13 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     width: 36px;
 }
 #planHeader #nl-form2{margin: 10px 0 0 0;}
-#planHeader #nl-form2 a.nl-field-toggle{font-size:16px}
+#planHeader #nl-form2 a.nl-field-toggle{/* #2312 */
+    /*font-size:16px;*/  
+    line-height: 35px; 
+    background-position: right center;
+    font-family: proximanova-regular;
+    font-size: 28px;
+} 
 
 /* ******************** Please add new styles here - Start ******************** */
 .password-requirement-box {
@@ -15553,6 +15576,10 @@ a:focus, a:hover{outline:0 none !important}
  
 .note-editor .note-link-text.span12,
 .note-editor .note-link-url.span12 {width:95%} 
+ 
+#headerValue {
+    margin-bottom: 15px;
+}
 
 /* ********************  new styles  - End ******************** */
 
@@ -17142,3 +17169,4 @@ tbody.column2 {
 }
 /*End by Device 320 Mukesh 25-9-2015*/
 /************************************************ Responsive css End here **********************************************************/
+#BtnGroup{box-shadow: none !important;}

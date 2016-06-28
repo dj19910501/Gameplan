@@ -37,13 +37,15 @@
 
 @Html.Hidden("hdnPlanId", strPlanId, new { id = "hdnPlanId" })
 @Html.HiddenFor(model => model.GoalType) @*Modified by Komal Rawal for 1903 goals not showing as per plan defination*@
-@section PlanHeader{
+
+@* commented for #2312  *@
+@*@section PlanHeader{
 
     <div class="light-blue-chart cf full-width-header" id="planHeader">
         @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
     </div>
 
-}
+}*@
 @section Sidebar
 {
     <div class="padding-content padding-bottom0 ">
@@ -87,7 +89,10 @@
         <strong>Error! </strong><span>@Common.objCached.ErrMsgLessPlanBudget</span>
     </div>*@
 
-
+@* Added for #2312  *@
+<div class="light-blue-chart cf full-width-header" id="planHeader">
+    @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
+</div>
 
 @using (Html.BeginForm("SavePlanDefination", "Plan", FormMethod.Post, new { @name = "SavePlanForm", @class = "create-plan-form" }))
 {
