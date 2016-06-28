@@ -1206,16 +1206,14 @@
                         $('#ulSelectedFilter').find("li #CustomFields .sidebarliwidthSelected-right").text(FiltersAll);
 
                     }
-
-                    if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined) {
+                    //Modified by komal rawal for #2301 on 28-06-2016
+                    if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined && data.OwnerNames != "All") {
 
                         filters.OwnerIds = [];
                         $("#ulSelectedOwner li input[type=checkbox]").removeAttr('checked');
                         $("#ulSelectedOwner li ").removeClass("close-list");
                         for (i = 0 ; i < data.OwnerNames.length; i++) {
-
                             $("#ulSelectedOwner li input[type=checkbox]").each(function () {
-
                                 var Value = $(this).attr("id");
                                 if (Value == data.OwnerNames[i]) {
 
@@ -1226,9 +1224,20 @@
                             });
                         }
                     }
+                    else if(data.OwnerNames == "All")
+                    {
+                        $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+
+                            var Value = $(this).attr("id");
+                                filters.OwnerIds.push(Value);
+                                $(this).attr('checked', 'checked');
+                                $(this).parent().addClass("close-list");
+                        });
+
+                    }
 
                     if (data.TTList != null) {
-                        if (data.TTList.length != 0 && data.TTList.length != undefined) {
+                        if (data.TTList.length != 0 && data.TTList.length != undefined && data.TTList != "All") {
                             filters.TacticTypeids = [];
                             $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
                             $("#ulTacticType li ").removeClass("close-list");
@@ -1244,6 +1253,16 @@
                                     }
                                 });
                             }
+                        }
+                        else if (data.TTList == "All")
+                        {
+                            $("#ulTacticType li input[type=checkbox]").each(function () {
+                                var Value = $(this).attr("id").replace("CbTT", "");
+                                    filters.TacticTypeids.push(Value);
+                                    $(this).attr('checked', 'checked');
+                                    $(this).parent().addClass("close-list");
+                            });
+
                         }
                     }
                     else {
@@ -1358,6 +1377,16 @@
         var TacticTypeids = filters.TacticTypeids;
         var GetSelectedPlanNo = filters.SelectedPlans.length;
         var ParentCustomFieldsIds = filters.parentCustomFieldsIds;
+
+        //Modified by komal rawal for #2301 on 28-06-2016
+        if ($("#ulTacticType li input[type=checkbox]").length == filters.TacticTypeids.length) {
+            TacticTypeids = 'All';
+
+        }
+        if ($("#ulSelectedOwner li input[type=checkbox]").length == filters.OwnerIds.length) {
+            OwnerIds = 'All';
+
+        }
 
         $.ajax({
             type: "POST",//Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.

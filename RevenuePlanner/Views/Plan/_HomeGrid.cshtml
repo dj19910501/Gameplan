@@ -1793,7 +1793,6 @@
                             data: { UpdateType: GetItemType(updatetype), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
                             dataType: 'json',
                             success: function (states) {
-                                debugger;
                                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                                 var TaskID = HomeGrid.cells(rowId,3).getValue();
                                 var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');

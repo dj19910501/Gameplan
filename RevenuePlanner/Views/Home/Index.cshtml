@@ -2613,7 +2613,7 @@
         if (years != null && years != "") {
             filters.SelectedYears.push(years);
         }
-
+     
         //Add by Nishant For "if all selected then no record inserted for user default view"
         // Modified By Nishant Sheth
         // Desc:: To resolve the #1790 observation
@@ -2665,7 +2665,13 @@
         var GetSelectedPlanNo = filters.SelectedPlans.length;
         var StatusIds = filters.StatusIds;
         var ParentCustomFieldsIds = filters.parentCustomFieldsIds;
-
+        //Modified by komal rawal for #2301 on 28-06-2016
+        if ($("#ulTacticType li input[type=checkbox]").length == filters.TacticTypeids.length) {
+            TacticTypeids = 'All';
+        }
+        if ($("#ulSelectedOwner li input[type=checkbox]").length == filters.OwnerIds.length) {
+            OwnerIds = 'All';
+        }
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             // #838 Showing Multiple Plans on Plan Page : Kalpesh Sharma
             Planid = CurrentPlanId;
@@ -7634,9 +7640,8 @@
                         $('#ulSelectedFilter').find("li #CustomFields .sidebarliwidthSelected-right").text(FiltersAll);
 
                     }
-
-
-                    if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined) {
+                    //Modified by komal rawal for #2301 on 28-06-2016
+                    if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined && data.OwnerNames != "All") {
                         filters.OwnerIds = [];
                         $("#ulSelectedOwner li input[type=checkbox]").removeAttr('checked');
                         $("#ulSelectedOwner li ").removeClass("close-list");
@@ -7652,11 +7657,21 @@
                             });
                         }
                     }
+                    else if (data.OwnerNames == "All")
+                    {
+                        $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+                            var Value = $(this).attr("id");
+                                filters.OwnerIds.push(Value);
+                                $(this).attr('checked', 'checked');
+                                $(this).parent().addClass("close-list");
+                        });
+
+                    }
 
 
 
                     if (data.TTList != null) {
-                        if (data.TTList.length != 0 && data.TTList.length != undefined) {
+                        if (data.TTList.length != 0 && data.TTList.length != undefined && data.TTList != "All") {
                             filters.TacticTypeids = [];
                             $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
                             $("#ulTacticType li ").removeClass("close-list");
@@ -7672,6 +7687,15 @@
                                 });
 
                             }
+                    
+                        }
+                        else if (data.TTList == "All") {
+                            $("#ulTacticType li input[type=checkbox]").each(function () {
+                                var Value = $(this).attr("id").replace("CbTT", "");
+                                filters.TacticTypeids.push(Value);
+                                $(this).attr('checked', 'checked');
+                                $(this).parent().addClass("close-list");
+                            });
 
                         }
                         else {
@@ -8977,11 +9001,11 @@ function () {
                 $("#spanMsgError").empty();                
             }            
         }
-        else {
-            var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
-            var SearchText = $('#txtGlobalSearch').val();
-            GlobalSearchonGrid(SearchText, SearchDDLValue);
-        }
+        else if ($('#divPlanEditButtonHome').children().hasClass("request-btn-active")) {
+                var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
+                var SearchText = $('#txtGlobalSearch').val();
+                GlobalSearchonGrid(SearchText, SearchDDLValue);
+            }
         //$('#ExpLoading').css('display', 'none');
     }
 
