@@ -125,13 +125,11 @@
             $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured");
         }
         else {
-            //var URL = 'http://localhost:54371/api/Report/Chart';
-            var _ElqFieldMapping = [];
-            _ElqFieldMapping.push(
+            var _ReportFilters = [];
+            _ReportFilters.push(
                 '@ClientDimensionId' + ":" + '@ClientDimensionValueId'
             );
 
-            //$("#divCustomFieldsFilter").find("input[type=checkbox]").each(function () {
             $("#divCustomFieldsFilter").find("div.accordion").each(function () {
                 if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
                     var CheckedCounter = 0, AllCounter = 0, UncheckedCounter = 0;
@@ -143,7 +141,7 @@
                             if ($(this).attr('dimensionid')) {
                                 var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
                                 var DimValId = '0';
-                                _ElqFieldMapping.push(
+                                _ReportFilters.push(
                                     DimId + ":" + DimValId
                                 );
                                 return false;
@@ -156,7 +154,7 @@
                                 if ($(this).attr('dimensionid')) {
                                     var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
                                     var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
-                                    _ElqFieldMapping.push(
+                                    _ReportFilters.push(
                                         DimId + ":" + DimValId
                                     );
                                 }
@@ -175,7 +173,7 @@
                     if ($(this).attr('dimensionid')) {
                         var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
                         var DimValId = '0';
-                        _ElqFieldMapping.push(
+                        _ReportFilters.push(
                             DimId + ":" + DimValId
                         );
                         return false;
@@ -188,7 +186,7 @@
                         if ($(this).attr('dimensionid')) {
                             var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
                             var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
-                            _ElqFieldMapping.push(
+                            _ReportFilters.push(
                                 DimId + ":" + DimValId
                             );
                         }
@@ -206,7 +204,7 @@
                     if ($(this).attr('dimensionid')) {
                         var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
                         var DimValId = '0';
-                        _ElqFieldMapping.push(
+                        _ReportFilters.push(
                             DimId + ":" + DimValId
                         );
                         return false;
@@ -219,7 +217,7 @@
                         if ($(this).attr('dimensionid')) {
                             var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
                             var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
-                            _ElqFieldMapping.push(
+                            _ReportFilters.push(
                                 DimId + ":" + DimValId
                             );
                         }
@@ -238,7 +236,7 @@
                     if ($(this).attr('dimensionid')) {
                         var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
                         var DimValId = '0';
-                        _ElqFieldMapping.push(
+                        _ReportFilters.push(
                             DimId + ":" + DimValId
                         );
                         return false;
@@ -251,19 +249,21 @@
                         if ($(this).attr('dimensionid')) {
                             var DimId = $(this).attr('dimensionid').substr(0, $(this).attr('dimensionid').indexOf('_'));
                             var DimValId = $(this).attr('dimensionid').substr($(this).attr('dimensionid').indexOf('_') + 1);
-                            _ElqFieldMapping.push(
+                            _ReportFilters.push(
                                 DimId + ":" + DimValId
                             );
                         }
                     }
                 });
             }
-
+            var DistArr = _ReportFilters.filter(function (itm, i, _ReportFilters) {
+                return i == _ReportFilters.indexOf(itm);
+            });
             var params = {};
             params.Id = id;
             params.ConnectionString = '@ReportDBConnString';
             params.Container = $(obj).attr('id');
-            params.SDV = _ElqFieldMapping;
+            params.SDV = DistArr;
             params.TopOnly = 'True';
             params.ViewBy = ViewBy;
             params.StartDate = StartDate;
