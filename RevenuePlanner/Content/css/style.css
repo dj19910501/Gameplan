@@ -1993,7 +1993,25 @@ span.link-blue:hover {
     color: #3e3f37;
     font-size: 25px;
 }
-
+.support-icon .fa { 
+        display: inline-block;
+        font-family: FontAwesome;
+        font-feature-settings: normal;
+        font-kerning: auto;
+        font-language-override: normal;
+        font-size: inherit;
+        font-size-adjust: none;
+        font-stretch: normal;
+        font-style: normal;
+        font-synthesis: weight style;
+        font-variant: normal;
+        font-weight: normal;
+        line-height: 1;
+        text-rendering: auto;
+    }
+.support-icon  .fa-question-circle::before {
+    content: "\f059";
+}
 .icon-info-support {
     width: 110px;
     display: block;
@@ -7821,7 +7839,7 @@ input.icon-check-blue {
     text-decoration: none !important;
     cursor: pointer !important;
 }
-.nav-tabs > .active > a, .nav-tabs > .active > a:hover { /* #2312 */
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus { /* #2312 */
     background-color: #89cede;
 }
 .btn-gray,
@@ -8678,7 +8696,7 @@ div.sub {
 
         .integrationAccordion .accordion-toggle span {
             float: right;
-    color: #F8710E;/* Edited for #2219 - Bhumika */
+    color: #89CEDE;/* Edited for #2219 - Bhumika */
             text-decoration: underline;
             font-weight: 400;
         }
@@ -11667,7 +11685,7 @@ font-size: 20px;
 
     .new-btn-plan.request-btn-active,
     .request.request-btn-active {
-        background-color: #F8710E !important; /* Edited for #2219 - Bhumika */
+        background-color: #89cede !important; /* Edited for #2219 - #2312 - Bhumika */
         /*border: 1px solid #F8710E;*/
         color: #fff !important;
     }
@@ -12825,7 +12843,7 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
 .sidebar-section .dropdown-menu li{margin: 2px 0;}
 .sidebar-section .dropdown-menu > li > a:hover, 
 .sidebar-section .dropdown-menu > li > a:focus{/* Added for #2219 - Bhumika */
-    background-color: #f8710e;
+    background-color: #89CEDE;
     background-image: none;
 }
 
@@ -15339,7 +15357,7 @@ input[type="search"].ExpInput {
 }
 .Exp-serach.Exp-serach-open .ExpInput{display:block}
 #searchCriteria{margin-bottom:0; box-shadow:none; border-radius: 5px 0 0 5px;  padding: 0; width:34px} 
-.open  #searchCriteria{background:#f8710e}
+.open  #searchCriteria{background:#89CEDE}
 #searchCriteria span{color:#fff}
 #searchCriteria::after {
     content: "\f0d7";
@@ -15475,7 +15493,7 @@ a:focus, a:hover{outline:0 none !important}
 .btn-primary.btn-file,
 .btn-primary.btn-file:focus,
 .btn-primary.fileinput-upload:focus {
-    background-color: #f8710e;
+    background-color: #89cede; /* #2312 */
     }
     #ImportModal {width: 400px;}
     #ImportModal .modal-header {padding: 2px 15px;}
@@ -15483,7 +15501,7 @@ a:focus, a:hover{outline:0 none !important}
     top: 34%; /*margin-left:-500px;*/
 }
     #ImportBtn{width: 65px;margin-right:10px}
-.btn-primary.btn-file:hover,.btn-primary.fileinput-upload:hover { background-color: #e2502d;}
+.btn-primary.btn-file:hover,.btn-primary.fileinput-upload:hover { background-color: #70bbcc ;}
     #kvFileinputModal {display: none;}
 .fileinput-remove-button, .fileinput-remove-button:hover{color:#3e3f37}
 
@@ -17164,9 +17182,9 @@ tbody.column2 {
 .user-permissions label {
  width: 89% !important;
 }
+#BtnGroup{box-shadow: none !important;}
 /*End by Mukesh CSS 28-9-2015*/
 
 }
 /*End by Device 320 Mukesh 25-9-2015*/
 /************************************************ Responsive css End here **********************************************************/
-#BtnGroup{box-shadow: none !important;}
