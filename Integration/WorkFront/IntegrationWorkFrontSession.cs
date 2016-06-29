@@ -1658,7 +1658,8 @@ namespace Integration.WorkFront
                 // Modified by Arpita Soni for Ticket #2304 on 06/27/2016
                 if (tacticField.Key == Fields.GameplanField.TITLE.ToString())
                 {
-                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(tactic.Title.Replace("'", "\\'"))) + "'");
+                    // Modified by Arpita Soni for Ticket #2320 on 06/29/2016
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(tactic.Title.Replace(@"\",@"\\").Replace("'", "\\'"))) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.DESCRIPTION.ToString())
                 {
@@ -1674,11 +1675,13 @@ namespace Integration.WorkFront
                 }
                 else if (tacticField.Key == Fields.GameplanField.PARENT_PROGRAM.ToAPIString())
                 {
-                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(tactic.Plan_Campaign_Program.Title.Replace("'", "\\'"))) + "'");
+                    // Modified by Arpita Soni for Ticket #2320 on 06/29/2016
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(tactic.Plan_Campaign_Program.Title.Replace(@"\", @"\\").Replace("'", "\\'"))) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.PARENT_CAMPAIGN.ToAPIString())
                 {
-                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(tactic.Plan_Campaign_Program.Plan_Campaign.Title.Replace("'","\\'"))) + "'");
+                    // Modified by Arpita Soni for Ticket #2320 on 06/29/2016
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(tactic.Plan_Campaign_Program.Plan_Campaign.Title.Replace(@"\", @"\\").Replace("'", "\\'"))) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.PROGRAM_END.ToAPIString())
                 {
@@ -1721,8 +1724,9 @@ namespace Integration.WorkFront
                 }
                 else if (tacticField.Key == Fields.GameplanField.PROGRAM_NAME.ToAPIString() && isPlanToPortfolio)
                 {
+                    // Modified by Arpita Soni for Ticket #2320 on 06/29/2016
                     // Push plan program to attribute of the WF project
-                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(tactic.Plan_Campaign_Program.Title.Replace("'", "\\'"))) + "'");
+                    updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(tactic.Plan_Campaign_Program.Title.Replace(@"\", @"\\").Replace("'", "\\'"))) + "'");
                 }
                 else { continue; }
                 updateList.Append(",");
