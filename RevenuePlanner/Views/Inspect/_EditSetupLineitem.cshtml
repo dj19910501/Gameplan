@@ -226,7 +226,7 @@
 
 
         </div>
-        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width: 24%;">
             @*Modified By Komal Rawal for #1974
                 Desc: To Enable edit owner feature from Lineitem popup*@
             <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>
@@ -249,12 +249,12 @@
                 <a href="#" class="allocatecost" style="float:right;text-decoration:underline;">Allocate Cost</a>
             }
              </p>
-                @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate input-setup", id = "txtLineItemCost" });
+                @Html.TextBoxFor(model => model.Cost, new { @class = " input-small currency_dollar truncate input-setup", id = "txtLineItemCost" });
             }
             else
             {
                 <p>@Html.Raw("Line Item Cost")</p>
-                @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate", id = "txtLineItemCost", @readonly = "true" });
+                @Html.TextBoxFor(model => model.Cost, new { @class = " input-small currency_dollar truncate", id = "txtLineItemCost", @readonly = "true" });
             }
         </div>
     </div>
