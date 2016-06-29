@@ -37,7 +37,7 @@
                 </div>
             </div>
         </div>
-        <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left:10px;">
+        <div class="span3 no_margin_top" id="inspect-modal-left-column2"> 
             <p>Tactic Type <span class="required-asterisk">*</span></p>
             @Html.TextBox("txtTacticTypeTitle", TacticTypeTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTypeTitle", @readonly = "true", @title=TacticTypeTitle })
             <p>Tactic Planned Cost</p>
@@ -47,7 +47,7 @@
             <p>End Date</p>
             @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small truncate", @readonly = "true", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat)  })
         </div>
-        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width: 24%;">@* #2324 - alignment issue *@
             <p>Owner <span class="required-asterisk">*</span></p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
             @*<p style="width: 110%;">Deployed to Integration</p>

@@ -9947,6 +9947,7 @@ li.close-list {
     width: 90%;
     margin-left: 10px;
     text-align: left;
+    font-family: "source_sans_proregular",Arial,"sans-serif" !important;/* #2324 */
 }
 
     .ui-multiselect.ui-widget.ui-state-default.ui-corner-all span[class] {
@@ -11536,7 +11537,7 @@ font-size: 20px;
 }
 #InspectTab {
     border-bottom: 0 !important;
-     width: 1048px !important;	 /*#2236 */
+     width: 1034px !important;	 /*#2236 */
     /*display: table !important;*/
     display:block !important;
 }
@@ -14808,8 +14809,6 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     background-color: #f0f0f0 !important;  /* Edited for #2312 - Bhumika */
     color:inherit !important;
 }
-.nav-tabs a.request-btn-active .fa.fa-thumbs-o-up, .nav-tabs a.request-btn-active .badge{color:#ffffff }
-
 
 .nav-tabs {
     border-bottom:0px solid #ddd;
@@ -15613,14 +15612,15 @@ a:focus, a:hover{outline:0 none !important}
 
 #divPlanButton a:hover,
 #divPlanEditButtonHome a:hover,
-#BudgetIcon a:hover{background-color: #f0f0f0 !important;}
+#BudgetIcon a:hover,
+#RequestTab a:hover{background-color: #f0f0f0 !important;}
 
 #change-log .changes .type , #change-log .changes .action,#change-log .changes .author {
    text-transform:capitalize;
 }
-
-
 /*End*/
+.PopupDiv .modal-popup-title .title-simple input{width:95.6% !important}
+
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

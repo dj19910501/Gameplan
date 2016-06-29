@@ -1379,11 +1379,11 @@
         var ParentCustomFieldsIds = filters.parentCustomFieldsIds;
 
         //Modified by komal rawal for #2301 on 28-06-2016
-        if ($("#ulTacticType li input[type=checkbox]").length == filters.TacticTypeids.length) {
+        if (filters.TacticTypeids.length != 0 && $("#ulTacticType li input[type=checkbox]").length == filters.TacticTypeids.length) {
             TacticTypeids = 'All';
 
         }
-        if ($("#ulSelectedOwner li input[type=checkbox]").length == filters.OwnerIds.length) {
+        if (filters.OwnerIds.length != 0 && $("#ulSelectedOwner li input[type=checkbox]").length == filters.OwnerIds.length) {
             OwnerIds = 'All';
 
         }

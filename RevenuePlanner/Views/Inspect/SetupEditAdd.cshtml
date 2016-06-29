@@ -120,7 +120,8 @@
 
             <div class="cf width100">
                 <div style="width: 47%; position: relative;" class="margin-right10 pull-left">
-                    <label class="stage-title inspect-bolder-label" title="SUS">Parent Campaign &nbsp;</label>
+                    @*<label class="stage-title inspect-bolder-label" title="SUS">Parent Campaign &nbsp;</label>*@  @* #2324 - Bhumika *@
+                    <p class="stage-title inspect-bolder-label" title="SUS">Parent Campaign &nbsp;</p>
                     @if (IsTackticAddEdit && !isCreated)
                     {
 
@@ -134,7 +135,8 @@
                 </div>
 
                 <div style="width: 47%; position: relative" class="pull-right-assortment reports-button-group pull-left">
-                    <label class="inspect-bolder-label" title="Qualified Leads">Parent Program</label>
+                    @*<label class="inspect-bolder-label" title="Qualified Leads">Parent Program</label>*@ @* #2324 - Bhumika *@
+                    <p class="inspect-bolder-label" title="Qualified Leads">Parent Program</p>
                     @if (IsTackticAddEdit && !isCreated)
                     {
                         <span style="min-width: 100%; position: relative; display: block;">
@@ -148,10 +150,11 @@
                     }
                 </div>
             </div>
-            <p class="margin-top-10">Description</p>
+            @*<p class="margin-top-10">Description</p>*@ @* #2324 - Bhumika *@
+            <p>Description</p>
             @Html.TextArea("Description", Model.Description, new { placeholder = "Optional", @class = "span12 text-area-size input-setup", id = "Description" })   @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
         </div>
-        <div class="span3 no_margin_top calendar_div" id="inspect-modal-left-column2">  @*Added By Maitri Gandhi for #2109*@
+        <div class="span3 no_margin_top calendar_div" id="inspect-modal-left-column2" style="padding-left: 2%;">  @*Added By Maitri Gandhi for #2109*@
             <p>Tactic Type <span class="required-asterisk">*</span></p>
             <span style="min-width: 100%; position: relative; display: block;">
                 @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)Model.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
@@ -196,7 +199,7 @@
                 </div>
             </span>
         </div>
-        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width: 24%;"> @* #2324 - alignment issue *@
             <p>Owner <span class="required-asterisk">*</span></p>
             @if (IsTackticAddEdit)
             {
