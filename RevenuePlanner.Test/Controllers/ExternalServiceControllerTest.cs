@@ -1300,27 +1300,31 @@ namespace RevenuePlanner.Test.Controllers
 
         /// <summary>
         /// To sync data into work front from the review tab 
-        /// of tactic inspect popup
+        /// of tactic inspect popup for use case - program to portfolio
         /// <author>Arpita Soni</author>
-        /// <createddate>22Jun2016</createddate>
+        /// <createddate>29Jun2016</createddate>
         /// </summary>
         [TestMethod]
-        public void Sync_Interation_Instance_WorkFront_From_Review_Tab()
+        public void Sync_Interation_Instance_WorkFront_From_Review_Tab_For_Program_As_Portfolio()
         {
             Console.WriteLine("To check sync method of work front intrgration.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             MRPEntities db = new MRPEntities();
-
+            List<string> statusList = Common.GetStatusListAfterApproved();
             // Set Parameter IntegrationInstancesId
             int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.WorkFront.ToString());
-
-            int planTacticId = db.Plan_Campaign_Program_Tactic.
+            List<int> lstTacIds = new List<int>();
+            lstTacIds = db.Plan_Campaign_Program_Tactic.
                                 Where(tac => tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt == IntegrationInstanceId
-                                && tac.IntegrationWorkFrontProjectID != null).
-                                Select(t => t.PlanTacticId).FirstOrDefault();
+                                && tac.IntegrationWorkFrontProjectID != null
+                                && statusList.Contains(tac.Status) && tac.IsDeployedToIntegration && !tac.IsDeleted).Select(t => t.PlanTacticId).ToList();
+                                
+            int planTacticId = db.IntegrationWorkFrontTacticSettings.Where(x => lstTacIds.Contains(x.TacticId) &&
+                                x.TacticApprovalObject.Equals("Project")).Select(t => t.TacticId).FirstOrDefault();
             ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
 
             externalIntegration.Sync();
+
             var result = externalIntegration;
 
             if (result != null)
@@ -1345,6 +1349,113 @@ namespace RevenuePlanner.Test.Controllers
             }
 
         }
+
+
+        /// <summary>
+        /// To sync data into work front from the review tab 
+        /// of tactic inspect popup for use case - request
+        /// <author>Arpita Soni</author>
+        /// <createddate>29Jun2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Sync_Interation_Instance_WorkFront_From_Review_Tab_For_Request()
+        {
+            Console.WriteLine("To check sync method of work front intrgration.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            MRPEntities db = new MRPEntities();
+            List<string> statusList = Common.GetStatusListAfterApproved();
+            // Set Parameter IntegrationInstancesId
+            int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.WorkFront.ToString());
+            List<int> lstTacIds = new List<int>();
+            lstTacIds = db.Plan_Campaign_Program_Tactic.
+                                Where(tac => tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt == IntegrationInstanceId
+                                && tac.IntegrationWorkFrontProjectID == null
+                                && statusList.Contains(tac.Status) && tac.IsDeployedToIntegration && !tac.IsDeleted).Select(t => t.PlanTacticId).ToList();
+
+            int planTacticId = db.IntegrationWorkFrontRequests.Where(x => lstTacIds.Contains(x.PlanTacticId)).
+                                    Select(t => t.PlanTacticId).FirstOrDefault();
+            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
+
+            externalIntegration.Sync();
+
+            var result = externalIntegration;
+
+            if (result != null)
+            {
+                // Check Json result data object is null or not
+                Assert.IsNotNull(result);
+
+                // Check sync status is success or not
+                if (result._isResultError)
+                {
+                    Assert.AreEqual("true", result._isResultError.ToString(), true);
+                }
+                else
+                {
+                    Assert.AreEqual("false", result._isResultError.ToString(), true);
+                }
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result._isResultError);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+
+
+        /// <summary>
+        /// To sync data into work front from the review tab 
+        /// of tactic inspect popup for use case - plan to portfolio
+        /// <author>Arpita Soni</author>
+        /// <createddate>29Jun2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Sync_Interation_Instance_WorkFront_From_Review_Tab_For_Plan_As_Portfolio()
+        {
+            Console.WriteLine("To check sync method of work front intrgration.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            MRPEntities db = new MRPEntities();
+            List<string> statusList = Common.GetStatusListAfterApproved();
+            // Set Parameter IntegrationInstancesId
+            int IntegrationInstanceId = DataHelper.GetIntegrationInstanceId(Enums.IntegrationType.WorkFront.ToString());
+            List<int> lstTacIds = new List<int>();
+            lstTacIds = db.Plan_Campaign_Program_Tactic.
+                                Where(tac => tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt == IntegrationInstanceId
+                                && tac.IntegrationWorkFrontProjectID != null
+                                && statusList.Contains(tac.Status) && tac.IsDeployedToIntegration && !tac.IsDeleted).Select(t => t.PlanTacticId).ToList();
+
+            int planTacticId = db.IntegrationWorkFrontTacticSettings.Where(x => lstTacIds.Contains(x.TacticId) &&
+                                x.TacticApprovalObject.Equals("Project2")).Select(t => t.TacticId).FirstOrDefault();
+            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
+
+            externalIntegration.Sync();
+
+            var result = externalIntegration;
+
+            if (result != null)
+            {
+                // Check Json result data object is null or not
+                Assert.IsNotNull(result);
+
+                // Check sync status is success or not
+                if (result._isResultError)
+                {
+                    Assert.AreEqual("true", result._isResultError.ToString(), true);
+                }
+                else
+                {
+                    Assert.AreEqual("false", result._isResultError.ToString(), true);
+                }
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result._isResultError);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+
         #endregion
     }
 }
