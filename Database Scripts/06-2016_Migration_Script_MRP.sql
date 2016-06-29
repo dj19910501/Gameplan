@@ -17461,12 +17461,26 @@ END
 
 GO
 
-IF NOT EXISTS(SELECT * FROM GameplanDataType WHERE ActualFieldName='ProgramName' AND IntegrationTypeId=(SELECT IntegrationTypeId FROM IntegrationType WHERE Code='workfront'))
+/* Start- Added by Arpita Soni for Ticket #2304 - Workfront Integration */
+DECLARE @ID INT = 1
+DECLARE @TmpTable TABLE(
+	Id INT IDENTITY,
+	IntegrationTypeId INT
+)
+INSERT INTO @TmpTable
+SELECT IntegrationTypeId FROM IntegrationType WHERE Code='workfront'
+
+WHILE (@ID<=(SELECT MAX(ID) FROM @TmpTable))
 BEGIN
-	INSERT INTO GameplanDataType 
-	SELECT (SELECT IntegrationTypeId FROM IntegrationType WHERE Code='workfront'),'Plan_Campaign_Program','ProgramName','Program Name',0,0,0
-END
+	IF NOT EXISTS(SELECT * FROM GameplanDataType WHERE ActualFieldName='ProgramName' AND IntegrationTypeId = (SELECT IntegrationTypeId FROM @TmpTable WHERE Id = @ID))
+	BEGIN
+		INSERT INTO GameplanDataType 
+		SELECT (SELECT IntegrationTypeId FROM @TmpTable WHERE Id = @ID),'Plan_Campaign_Program','ProgramName','Program Name',0,0,0
+	END
+	SET @ID = @ID+1
+END 
 GO
+/* End - Added by Arpita Soni for Ticket #2304 - Workfront Integration */
 
 GO
 IF NOT EXISTS (SELECT * FROM AggregationStatus)
