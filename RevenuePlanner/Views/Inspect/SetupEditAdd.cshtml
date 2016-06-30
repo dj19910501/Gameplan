@@ -30,16 +30,16 @@
         left:auto !important;
         min-width:220px;
     }
-   }*/sd
+   }*/
     #btnCancel
     {
         color: gray;
     }
-     .stage-title {
+     .inspect-column-parent .span3 .stage-title { 
     float: left;
     width: auto;
     /*Added for #2324 */
-    max-width: 106px;
+    max-width: 99px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;   
@@ -237,7 +237,7 @@
 
                     @if (Model.IsDiffrentStageType == true)
                     {
-                        <span style="position:absolute">
+                        <span style="float: right;">
                             <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" />
                         </span>
 

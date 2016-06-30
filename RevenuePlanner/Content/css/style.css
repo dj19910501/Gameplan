@@ -9892,8 +9892,24 @@ li.close-list {
 .inspect-column-parent .span3 textarea,
 .inspect-column-parent .span6 input,
 .inspect-column-parent .span6 textarea {
-    color: #666867 !important;
+    color: #666867 !important; /*#2324 */
     Font-family: "source_sans_proregular", Arial, "sans-serif" !important;
+}
+.inspect-column-parent textarea::-webkit-input-placeholder {
+color: #666867 !important;
+opacity:1;
+}
+ 
+.inspect-column-parent textarea:-moz-placeholder { /* Firefox 18- */
+color: #666867 !important; opacity:1;
+}
+ 
+.inspect-column-parent .inspect-column-parent textarea::-moz-placeholder {  /* Firefox 19+ */
+color: #666867 !important;  opacity:1;
+}
+ 
+.inspect-column-parent textarea:-ms-input-placeholder {  
+color: #666867 !important;opacity:1;
 }
 
 .inspect-column-parent div .selectBox .sbHolder {
@@ -11062,8 +11078,8 @@ font-size: 20px;
 
 .dropdown_new_btn > p,
 .market-activity-main .gantt_tree_content {
-    /*font-family: source_sans_prolight, Arial, sans-serif !important;*/
-    font-family: source_sans_proregular,Arial,sans-serif !important; /* #2324 */
+    font-family: source_sans_prolight, Arial, sans-serif !important;
+    /*font-family: source_sans_proregular,Arial,sans-serif !important;*/ /* #2324 */
 }
 
 .error-wrapper > img {
@@ -15622,6 +15638,7 @@ a:focus, a:hover{outline:0 none !important}
 }
 /*End*/
 .PopupDiv .modal-popup-title .title-simple input{width:95.7% !important} /* #2324*/
+.inspect-column-parent .dropdown_new_btn > p{font-family: source_sans_proregular,Arial,sans-serif !important; color: #6c6c6c;} /* #2324*/
 
 /* ********************  new styles  - End ******************** */
 
