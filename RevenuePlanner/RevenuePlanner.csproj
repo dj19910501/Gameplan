@@ -56,6 +56,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\evohtmltopdf.dll</HintPath>
     </Reference>
+    <Reference Include="Excel, Version=2.0.1.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLLs\Excel.dll</HintPath>
+    </Reference>
     <Reference Include="HelperSharp, Version=1.0.5120.16113, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\HelperSharp.dll</HintPath>
@@ -575,6 +579,7 @@
     <Content Include="Content\images\volumeup.png" />
     <Content Include="DLLs\Elmah.dll" />
     <Content Include="DLLs\evohtmltopdf.dll" />
+    <Content Include="DLLs\Excel.dll" />
     <Content Include="DLLs\HelperSharp.dll" />
     <Content Include="DLLs\Newtonsoft.Json.dll" />
     <Content Include="DLLs\RestSharp.dll" />
