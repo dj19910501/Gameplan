@@ -112,7 +112,7 @@
                                                                                             <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div class="span3 calendar_div" id="inspect-modal-left-column2" style="margin-left: 10px;">
+                                                                                    <div class="span3 calendar_div" id="inspect-modal-left-column2" style="padding-left:1.9%;">
                                                                                         <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>                                                                                        
                                                                                         @if (IsCampaignEdit)
                                                                                         {
@@ -157,7 +157,7 @@
                                                                                             </div>
                                                                                         </span>
                                                                                     </div>
-                                                                                    <div class="span3" id="inspect-modal-left-column3">
+                                                                                    <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width:24%">
                                                                                         <p>@Html.Raw("Campaign Budget")</p>
                                                                                         @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate input-setup", id = "txtCampaignBudget", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                                                                         <p>Remaining Plan Budget</p>
@@ -166,18 +166,18 @@
                                                                                             @if (!(bool)ViewBag.IsCreated)
                                                                                             {
                                                                                                 <div class="cf width100">
-                                                                                                    <div class="width65px margin-right20 pull-left" style="width: 45%;">
+                                                                                                    <div class="width65px margin-right10 pull-left" style="width: 48%;">
                                                                                                         <p>@Html.LabelForMQL("MQL")</p>
                                                                                                         @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
                                                                                                     </div>
 
-                                                                                                    <div class="width65px pull-left" style="width: 45%;">
+                                                                                                    <div class="width65px pull-left" style="width: 48%;">
                                                                                                         <p>Cost</p>
                                                                                                         @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="cf width100">
-                                                                                                    <div class="width65px pull-left" style="width: 45%;">
+                                                                                                    <div class="width65px pull-left" style="width: 48%;">
                                                                                                         <p>Revenue</p>
                                                                                                         @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
                                                                                                     </div>

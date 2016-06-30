@@ -125,7 +125,7 @@ a{cursor:pointer !important}
     background: #fff;  /*for #2312 - Bhumika*/ 
     /*min-height: 100%;*/
     height: 100% !important;
-    width: calc(100% - 281px);
+    width: calc(100% - 282px);/*for #2331 - Bhumika*/ 
     margin: 0 !important;
     height: 100%; /* Added for #2219 - Bhumika */
     vertical-align: top;
@@ -308,10 +308,10 @@ ul.drop-down-menu {
     margin-right: 8px;
     padding: 5px 10px 10px;
     text-align: center;
-    width: 115px;
+    width: 125px;
 }
 .white-chart.activity-distribute{
-    width:140px;
+    width:150px;
     margin-right:18px;
 }
 .white-chart p {
@@ -11062,7 +11062,8 @@ font-size: 20px;
 
 .dropdown_new_btn > p,
 .market-activity-main .gantt_tree_content {
-    font-family: source_sans_prolight, Arial, sans-serif !important;
+    /*font-family: source_sans_prolight, Arial, sans-serif !important;*/
+    font-family: source_sans_proregular,Arial,sans-serif !important; /* #2324 */
 }
 
 .error-wrapper > img {
@@ -15602,7 +15603,8 @@ a:focus, a:hover{outline:0 none !important}
 .note-editor .note-link-url.span12 {width:95%} 
  
 #headerValue {
-    margin-bottom: 15px;
+    /*margin-bottom: 15px;*/ /*#2324 */
+    background: #fff;
 }
 /*changes regarding #2312*/
 #BtnGroup{box-shadow: none !important;}
@@ -15619,7 +15621,7 @@ a:focus, a:hover{outline:0 none !important}
    text-transform:capitalize;
 }
 /*End*/
-.PopupDiv .modal-popup-title .title-simple input{width:95.6% !important}
+.PopupDiv .modal-popup-title .title-simple input{width:95.7% !important} /* #2324*/
 
 /* ********************  new styles  - End ******************** */
 
@@ -15782,6 +15784,15 @@ a:focus, a:hover{outline:0 none !important}
  
 }
  @media screen and (max-width: 1366px) {
+#planHeader .planheader-title {
+    width: 24%;
+}
+.planheader-title h5,
+#planHeader #nl-form2 a.nl-field-toggle {
+    font-size: 25px;
+}
+.full-width-header .plantitle .nl-field-toggle{max-width: 185px;} /* #2324 */
+
 .report-btn-group {
  padding: 1% 0 0 2%;
 }

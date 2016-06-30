@@ -196,6 +196,9 @@
     {
     padding: 4px 0px;
     }
+    .inspect-column-parent input{
+    width: calc(100% - 14px);
+}
 </style>
 @using (Html.BeginForm())
 {
@@ -219,7 +222,7 @@
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
         </div>
-        <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left: 10px;">
+        <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="padding-left: 2%;">
             <p>@Html.Raw("Parent Tactic")</p>
             @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticTitle })
             @if (!isOtherLineitem)
@@ -909,7 +912,7 @@
             CustomName: '@Common.CustomTitle'
         }).multiselectfilter();
 
-        $('#ddlOwner').next().css('width', '95%');
+        $('#ddlOwner').next().css('width', '95.2%');
         $('#ddlOwner').next().css('min-height', '30px');
         var spanOwner = $('#multipleselect_ddlOwner');
         $('#btnMultiselect_ddlOwner').after(spanOwner);

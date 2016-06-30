@@ -36,9 +36,14 @@
         color: gray;
     }
      .stage-title {
-         width: auto;
-         float: left;
-     }
+    float: left;
+    width: auto;
+    /*Added for #2324 */
+    max-width: 106px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;   
+}
     #divTab .simpleSelectBox .sbHolder {
             background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
             box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
@@ -227,12 +232,12 @@
             }*@
 
             <div class="cf width100">
-                <div class="margin-right10 pull-left" style="width: 47%">
-                    <label id="lblStageTitle" title="@Model.StageTitle" class="stage-title inspect-bolder-label">@Model.StageTitle &nbsp;</label>
+                <div class="margin-right10 pull-left" style="width: 47.5%">
+                    <p id="lblStageTitle" title="@Model.StageTitle" class="stage-title inspect-bolder-label">@Model.StageTitle &nbsp;</p> @* <label> coverted into <p> = for #2324*@ 
 
                     @if (Model.IsDiffrentStageType == true)
                     {
-                        <span>
+                        <span style="position:absolute">
                             <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" />
                         </span>
 
@@ -240,13 +245,13 @@
                     @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue input-setup", label = @Model.StageTitle, maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
-                <div class="pull-left" style="width: 47%">
-                    <label title="@Html.LabelForMQL("MQL")" class="inspect-bolder-label">@Html.LabelForMQL("MQL")</label>
+                <div class="pull-left" style="width: 47.5%">
+                    <p title="@Html.LabelForMQL("MQL")" class="inspect-bolder-label">@Html.LabelForMQL("MQL")</p>
                     <input type="text" value="@Model.MQLs" readonly="true" id="txtmql" />
                 </div>
 
-                <div class="pull-left" style="width: 47%">
-                    <label title="Revenue" class="inspect-bolder-label">Revenue</label>
+                <div class="pull-left" style="width: 47.5%">
+                    <p title="Revenue" class="inspect-bolder-label">Revenue</p>
                     @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </div>
             </div>
