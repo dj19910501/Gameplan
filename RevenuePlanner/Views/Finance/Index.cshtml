@@ -203,10 +203,10 @@
         Name: []
     };
     var ValidOldValue = "";
-    var IsClickOnAddNew = false; 
+    var IsClickOnAddNew = false;
     var backlineBudgetDetailId = 0;     // this variable utilize when user click on back button in LineItem screen.
     var objAllColumns=[];
-    var objCustomColumns = [];		
+    var objCustomColumns = [];
     var objTimeFrameColumns = [];
     var objTimeFrameColumns = [];
     var GlobalEditPermission="";
@@ -246,7 +246,7 @@
         //});
         var Columnsetval = $("#ddlColumnSet").val();
         BindColumnsfilter(Columnsetval);
-        
+
         objAllColumns= @Html.Raw(JsonConvert.SerializeObject(AllColumns.Split(',')));
         objCustomColumns = @Html.Raw(JsonConvert.SerializeObject(CustomColumns.Split(',')));
         objTimeFrameColumns = @Html.Raw(JsonConvert.SerializeObject(TimeFrameColumns.Split(',')));
@@ -644,11 +644,11 @@
                                 $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","normal");
                             }
                         }
-                    } 
+                    }
                     else {
                         if (IsChecked == "false" || IsChecked == undefined) {
                             myTreeGrid.setColumnHidden(Count, true);
-                            
+
                         }
                         if (IsChecked == "true") {
                             myTreeGrid.setColumnHidden(Count, false);
@@ -812,7 +812,7 @@
                     GetColName = false;
                 }
             }else{
-                
+
                 var spanval = $(this).find("span");
                 var checkboxval = $(this).find("input");
                 var colName = spanval.attr("title");
@@ -1090,7 +1090,7 @@
         valueTimeFrame = $("#ddlRevenueTimeFrame").val();
         $("#ddlRevenueTimeFrame").val(valueTimeFrame);
         var url = '@Url.Content("~/Finance/EditPermission/")';
-        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel + '&FlagCondition=' + _flagCondition + '&rowid=' + RowID); 
+        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel + '&FlagCondition=' + _flagCondition + '&rowid=' + RowID);
     }
     function EditBudget(BudgetId, childChange, level,EditPermission) {
         myTreeGrid.editStop();
@@ -1179,7 +1179,27 @@
         $("#gridbox").find("table").css("width", GridWidth);
     }
     function ShowHideColumns(chekbox) {
-        
+        $('#errorMsg').css('display', 'none');
+        $('#SuccessMsg').css('display', 'none');
+        var checkName = chekbox.value;
+        var IsChecked = chekbox.checked;
+        if (IsChecked) {
+            $('#gridbox').find('.xhdr').find('table').find('tr:eq(2)').find('td').each(function (ind, row) {
+                if (checkName.toLowerCase() == $(this).find('.hdrcell').val().toLowerCase()) {
+                    myTreeGrid.setColumnHidden(ind, false);
+                }
+            });
+        }
+        if (!IsChecked) {
+            $('#gridbox').find('.xhdr').find('table').find('tr:eq(2)').find('td').each(function (ind, row) {
+                if (checkName.toLowerCase() == $(this).find('.hdrcell').val().toLowerCase()) {
+                    myTreeGrid.setColumnHidden(ind, true);
+                }
+            });
+        }
+        $("#gridbox").find("table").css("width", "100%");
+    }
+    @*function ShowHideColumns(chekbox) {
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
         var GridWidth = $("#gridbox").width();
@@ -1210,14 +1230,6 @@
             Count = 6;
         }
         var visibility = "false,";
-        //mygrid.setColumnsVisibility("true,false,false,false,false");
-        //for (var s = 1; s <= 24; s++) {
-        //    myTreeGrid.setColumnHidden(s, false);
-        //}
-
-        //
-
-
 
         if (IsChecked) {
             for (var i = 0; i < LoopLength; i++) {
@@ -1232,72 +1244,8 @@
                 Count = Count + 4;
             }
         }
-        //visibility += visibility.slice(0, -1);
-        // myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
         $("#gridbox").find("table").css("width", "100%");
-
-        //var BorderLength = 4;
-        //var ChkPlan = $("#chkPlan");
-        //var ChkBudget = $("#chkBudget");
-        //var ChkForeCast = $("#chkForeCast");
-        //var ChkActual = $("#chkActual");
-
-        //if (!ChkBudget[0].checked) {
-        //    BorderLength = BorderLength - 1;
-        //}
-        //if (!ChkForeCast[0].checked) {
-        //    BorderLength = BorderLength - 1;
-        //}
-        //if (!ChkPlan[0].checked) {
-        //    BorderLength = BorderLength - 1;
-        //}
-        //if (!ChkActual[0].checked) {
-        //    BorderLength = BorderLength - 1;
-        //}
-        ////$('.gridbox .xhdr .hdr td').css('border-color', '#e7f1ff #a4bed4 #a4bed4 #e7f1ff');
-        ////$('.gridbox .xhdr .hdr td').css('border-width', '1px 1px 1px 1px');
-
-        //var BorderCount = 3;
-        //var loopChange = 0;
-        //$('.gridbox .xhdr .hdr td').css("border-right", "");
-        //$('.gridbox .objbox td').css("border-right", "");
-        //for (var j = 1; j <= 23; j++) {
-        //    if (BorderCount == j) {
-        //        var check = $('.gridbox .xhdr .hdr td:nth-child(' + j + ')').css("display");
-        //        if (check == "none") {
-        //            if (BorderLength == 2) {
-        //                if (ChkBudget[0].checked && ChkActual[0].checked) {
-        //                    BorderCount = BorderCount + 2;
-        //                }
-        //                else {
-        //                    BorderCount = BorderCount + 1;
-        //                }
-        //            }
-        //            else {
-        //                BorderCount = BorderCount + 1;
-        //            }
-        //        }
-        //        $('.gridbox .xhdr .hdr td:nth-child(' + parseInt(BorderCount) + ')').css("border-right", "2px Solid #808080");
-        //        $('.gridbox .objbox td:nth-child(' + parseInt(BorderCount) + ')').css("border-right", "2px Solid #808080");
-        //    BorderCount += BorderLength;
-
-        //    } else {
-        //        var check = $('.gridbox .xhdr .hdr td:nth-child(' + j + ')').css("display");
-        //        if (check == "none") {
-        //            if (BorderLength == 2) {
-        //                if (ChkBudget[0].checked && ChkActual[0].checked) {
-        //                } else {
-        //                    BorderCount = BorderCount + 1;
-        //                }
-        //            } else {
-        //                BorderCount = BorderCount + 1;
-        //            }
-        //        }
-        //    }
-        //}
-        //myTreeGrid.setColumnsVisibility(visibility);
-        //myTreeGrid.init();
-    }
+    }*@
     function ShowHideControls(Page) {
         if (Page == "MainGrid") {
             $("#drpParentMain").css("display", "block");
@@ -1310,10 +1258,10 @@
             $("#divFinanceBack").css("display", "none");
             $("#divAddnew").css("display", "block");
             $("#dvBudgetHeader").css("display", "block");   // Show Budget Header
-            $("#ddlColumnSetFrameBox").css("display","block"); 
-            $("#ddlColumnsFrameBox").css("display","inline-block"); 
+            $("#ddlColumnSetFrameBox").css("display","block");
+            $("#ddlColumnsFrameBox").css("display","inline-block");
             // Added by Rushil Bhuptani on 06/06/2015 for ticket #2247 to address issue of exporting previous data.
-            $("#dvExportToExcel").css("display","block"); 
+            $("#dvExportToExcel").css("display","block");
         }
         if (Page == "EditBudget") {
             $("#drpParentMain").css("display", "none");
@@ -1327,10 +1275,10 @@
             $("#divAddnew").css("display", "none");
             $("#divBudget").css("display", "block");        // Show Budget checkbox
             $("#dvBudgetHeader").css("display", "block");   // Show Budget Header
-            $("#ddlColumnSetFrameBox").css("display","block"); 
-            $("#ddlColumnsFrameBox").css("display","inline-block"); 
+            $("#ddlColumnSetFrameBox").css("display","block");
+            $("#ddlColumnsFrameBox").css("display","inline-block");
             // Added by Rushil Bhuptani on 06/06/2015 for ticket #2247 to address issue of exporting previous data.
-            $("#dvExportToExcel").css("display","block"); 
+            $("#dvExportToExcel").css("display","block");
         }
         if (Page == "LineItemGrid") {
             $("#divBudget").css("display", "none");         // Hide Budget checkbox
@@ -1344,10 +1292,10 @@
             $("#drpChild").css("display", "block");
             $("#divFinanceBack").css("display", "block");
             $("#divAddnew").css("display", "none");
-            $("#ddlColumnSetFrameBox").css("display","none"); 
-            $("#ddlColumnsFrameBox").css("display","none"); 
+            $("#ddlColumnSetFrameBox").css("display","none");
+            $("#ddlColumnsFrameBox").css("display","none");
             // Added by Rushil Bhuptani on 06/06/2015 for ticket #2247 to address issue of exporting previous data.
-            $("#dvExportToExcel").css("display","none"); 
+            $("#dvExportToExcel").css("display","none");
         }
     }
 
@@ -1604,8 +1552,8 @@
     });
 
     $("#chkBudget, #chkForeCast, #chkPlan, #chkActual").change(function () {
-        
-       if (pageName == 'LineItemGrid') {
+
+        if (pageName == 'LineItemGrid') {
             ShowHideLineItemsColumns(this);
         }
     });
@@ -1656,7 +1604,7 @@
                 }
             }
         });
-        
+
         //var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
         $("#ddlParentFinance").val(parentBudgetDetailId);
         $("#hdn_BudgetDetailId").val(parentBudgetDetailId);
@@ -1703,7 +1651,7 @@
 
     }
     function BindChildLineItemDropdown(childBudgetDetailId) {
-        
+
         var parentId = $("#hdn_BudgetDetailId").val();
         var ChildID = 0;
         var budgetDetailId = 0;
@@ -1715,7 +1663,7 @@
             data: { BudgetDetailId: parentId },
             success: function (data) {
                 $("#ddlChildFinance").html("");
-                
+
                 if (data == null || data.length == 0) {
                     $('#ddlChildFinance').append($('<option></option>').attr('value', '0').text('Please Select'));
 
@@ -1735,7 +1683,7 @@
                 }
                 $("#ddlChildFinance").val(ChildID);
                 //var ChildID = $('#nl-formChildFinance .nl-dd-checked ').attr('value');
-                
+
                 if (ChildID > 0) {
                     budgetDetailId = ChildID;
                     $("#ddlChildFinance option[value='" + ChildID + "']").attr("selected", "selected");
@@ -1821,7 +1769,7 @@
             }
 
         });
-    } 
+    }
     $("#selectAll_budget-select").click(function(){
         var ListOfColName=[];
         var Coldrp=$("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("span");
@@ -1899,7 +1847,7 @@
     function ExportToExcel() {
         if (pageName == "MainGrid") {
             ExportToExcelMainGrid();
-           
+
         }
         else if (pageName == "EditBudget") {
             ExportToExcelEditBudget();
