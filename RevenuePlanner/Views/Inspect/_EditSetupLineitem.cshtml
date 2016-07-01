@@ -598,7 +598,7 @@
 
         TreeViewDdl.attachEvent("onFilterEnd", FilterEnd);
         TreeViewDdl.collapseAll();
-        OpenSelectedValues();
+        //OpenSelectedValues();
       }
     // Add By Nishant Sheth
     // Desc :: Call function when collapsed budget are expand to call chekbox events
@@ -743,6 +743,8 @@
     // Desc :: load data after distribute parsing of dhtmlx grid
     function LoadAfterParsing() {
 
+        OpenSelectedValues();
+
         if ('@Model.PlanLineItemId' != 0 && !ValueChanged) {
             ListOfItmeCheck = {
                 Ids: [],
@@ -773,6 +775,7 @@
             $("#" + Weights.txtId[i]).val(Weights.values[i]);
             $("#" + Weights.ChkId[i]).attr('checked', 'checked');
         }
+
     }
     // Add By Nishant Sheth
     // Desc :: Get Budget drodowns data only , reg #2128 performance issue
