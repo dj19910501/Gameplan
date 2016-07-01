@@ -62,6 +62,13 @@ namespace RevenuePlanner.Models
 
     //    public IEnumerable<FinanceParentChildModel> Children { get; set; }
     //}
+    public class BudgetCheckedItem
+    {
+        public string Id { get; set; }
+        public string Title { get; set; }
+        public string Values { get; set; }
+    }
+
     public class DhtmlXGridRowModel
     {
         public List<DhtmlxGridRowDataModel> rows { get; set; }

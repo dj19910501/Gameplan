@@ -53,6 +53,7 @@ namespace RevenuePlanner.Controllers
         private string PeriodChar = "Y";
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
+        List<BudgetCheckedItem> ListbudgetCheckedItem = new List<BudgetCheckedItem>();
         #endregion
 
         #region "Inspect Index"
@@ -3232,7 +3233,7 @@ namespace RevenuePlanner.Controllers
                     //if it will not be availbale in table then it will be work as previously.
                     string strentityType = Convert.ToString(Integration.Helper.Enums.EntityType.IntegrationInstance);
                     var instanceData = db.EntityIntegration_Attribute.Where(data => data.EntityId == instance.IntegrationInstanceId && data.IntegrationinstanceId == instance.IntegrationInstanceId && data.EntityType.ToLower() == strentityType.ToLower()).FirstOrDefault();
-                    if(instanceData!=null)
+                    if (instanceData != null)
                     {
                         string baseurlvalue = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["EloquaUrl"]);
                         if (!string.IsNullOrEmpty(baseurlvalue))
@@ -4128,7 +4129,7 @@ namespace RevenuePlanner.Controllers
                              orderby tacType.Title
                              select tacType).ToList();
 
-            
+
             // Check whether current TacticId related TacticType exist or not.
             if (!lstTactic.Any(tacType => tacType.TacticTypeId == pcpt.TacticTypeId))
             {
@@ -6900,7 +6901,7 @@ namespace RevenuePlanner.Controllers
                 IntegrationWorkFrontTacticSetting wfSetting = db.IntegrationWorkFrontTacticSettings.Where(set => set.TacticId == objTactic.PlanTacticId && set.IsDeleted == false).FirstOrDefault();
 
                 //verify we have the information we need
-                if (approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString() 
+                if (approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString()
                     && approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()
                     && approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project2.ToString())
                 {
@@ -12729,7 +12730,7 @@ namespace RevenuePlanner.Controllers
                 var individuals = new List<RevenuePlanner.BDSService.User>();
                 if (Sessions.User != null && Sessions.User.ClientId != null && Sessions.ApplicationId != null && Sessions.User.UserId != null) //Added by komal to check session is null for #2299
                 {
-                 individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+                    individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
                 }
                 if (individuals.Count != 0)
                 {
@@ -13507,6 +13508,7 @@ namespace RevenuePlanner.Controllers
         {
             MRPEntities db = new MRPEntities();
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
+
             var MinParentid = 0;
 
             var dataTableMain = new DataTable();
@@ -13552,7 +13554,7 @@ namespace RevenuePlanner.Controllers
                         .ToList();
 
             budgetMain.rows = items;
-            return Json(new { data = budgetMain }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = budgetMain, ListOfCheckedItem = ListbudgetCheckedItem }, JsonRequestBehavior.AllowGet);
         }
 
         IEnumerable<DataRow> GetTopLevelRows(DataTable dataTable, int minParentId = 0)
@@ -13579,6 +13581,7 @@ namespace RevenuePlanner.Controllers
             List<LineItem_Budget> SelectedLineItemBudget = db.LineItem_Budget.Where(a => a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a).ToList();
             int SelectedID = SelectedLineItemBudget.Select(a => a.BudgetDetailId).FirstOrDefault();
             var SelectedWeightage = SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
+
             if (id == SelectedID)
             {
                 enableCheck = "checked=\"checked\"";
@@ -13617,18 +13620,22 @@ namespace RevenuePlanner.Controllers
             _SelectedLineItemBudget = SelectedLineItemBudget.Where(a => a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a).ToList();
             int SelectedID = _SelectedLineItemBudget.Select(a => a.BudgetDetailId).FirstOrDefault();
             var SelectedWeightage = _SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
+            string textboxclass = string.Empty;
             if (id == SelectedID)
             {
                 enableCheck = "checked=\"checked\"";
                 value = SelectedWeightage.ToString();
+                textboxclass = "class=\"mappingtextboxblue\"";
+                ListbudgetCheckedItem.Add(new BudgetCheckedItem { Id = Convert.ToString(SelectedID), Title = name, Values = value });
             }
             else
             {
                 enableCheck = string.Empty;
                 value = string.Empty;
+                textboxclass = string.Empty;
             }
             var temp = "<input id=" + id + " title='" + name + "' " + enableCheck + "  type=checkbox  />" + name;
-            var AddWeightage = " <input value='" + value + "' type='text' alt_id = 'txtweight'  id= wt_" + id + " align='center' style='margin-top:9px; padding-right:4px;'>";
+            var AddWeightage = " <input value='" + value + "' type='text' alt_id = 'txtweight'  id= wt_" + id + " align='center' style='margin-top:9px; padding-right:4px;' " + textboxclass + ">";
 
             List<string> datalist = new List<string>();
 
