@@ -102,7 +102,7 @@
                 <p>Description</p>
                 @Html.TextArea("Description", Model.Description, new { id = "Description", @class = "span12 text-area-size input-setup", placeholder = "Optional", rows = "3" })  @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
             </div>
-        <div class="span3 no_margin_top calendar_div" id="inspect-modal-left-column2" style="margin-left: 10px;"> @*Added By Maitri Gandhi foe #2109*@
+        <div class="span3 no_margin_top calendar_div" id="inspect-modal-left-column2" style="padding-left: 1.9%;"> @*Added By Maitri Gandhi foe #2109*@
                 <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>         
 
                 @if (IsProgramEdit)
@@ -162,7 +162,7 @@
 
 
 
-        <div class="span3" id="inspect-modal-left-column3">
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width:24%">
                 <p>Program Budget</p>
                 @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar input-setup", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 <p>Remaining Campaign Budget</p>
@@ -171,18 +171,18 @@
                     @if (!(bool)ViewBag.IsCreated)
                     {
                         <div class="cf width100">
-                            <div class="width65px margin-right20 pull-left" style="width: 45%;">
+                            <div class="width65px margin-right10 pull-left" style="width: 48%;">
                                 <p title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</p>
                                 @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                             </div>
 
-                            <div class="width65px pull-left" style="width: 45%;">
+                            <div class="width65px pull-left" style="width: 48%;">
                                 <p title="Cost">Cost</p>
                                 @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                             </div>
                         </div>
                         <div class="cf width100">
-                            <div class="width65px pull-left" style="width: 45%;">
+                            <div class="width65px pull-left" style="width: 48%;">
                                 <p title="Revenue">Revenue</p>
                                 @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                             </div>

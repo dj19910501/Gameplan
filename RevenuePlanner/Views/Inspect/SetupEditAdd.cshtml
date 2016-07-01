@@ -19,7 +19,7 @@
 
 }
 <style type="text/css">
-     /*@@media screen and (-webkit-min-device-pixel-ratio:0) {
+     /* @@media screen and (-webkit-min-device-pixel-ratio:0) {
     #dp_start .datepicker{
         top: 32px !important;
         left:auto !important;
@@ -30,14 +30,20 @@
         left:auto !important;
         min-width:220px;
     }
-   }*/sd
+   }*/
     #btnCancel
     {
         color: gray;
     }
-     .stage-title {
-         width: auto;
+     .stage-title { 
          float: left;
+        width: auto;
+    }
+    .inspect-column-parent .span3 .stage-title{/*Added for #2324 */
+        max-width: 99px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;   
      }
     #divTab .simpleSelectBox .sbHolder {
             background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
@@ -120,7 +126,8 @@
 
             <div class="cf width100">
                 <div style="width: 47%; position: relative;" class="margin-right10 pull-left">
-                    <label class="stage-title inspect-bolder-label" title="SUS">Parent Campaign &nbsp;</label>
+                    @*<label class="stage-title inspect-bolder-label" title="SUS">Parent Campaign &nbsp;</label>*@  @* #2324 - Bhumika *@
+                    <p class="stage-title inspect-bolder-label" title="SUS">Parent Campaign &nbsp;</p>
                     @if (IsTackticAddEdit && !isCreated)
                     {
 
@@ -134,7 +141,8 @@
                 </div>
 
                 <div style="width: 47%; position: relative" class="pull-right-assortment reports-button-group pull-left">
-                    <label class="inspect-bolder-label" title="Qualified Leads">Parent Program</label>
+                    @*<label class="inspect-bolder-label" title="Qualified Leads">Parent Program</label>*@ @* #2324 - Bhumika *@
+                    <p class="inspect-bolder-label" title="Qualified Leads">Parent Program</p>
                     @if (IsTackticAddEdit && !isCreated)
                     {
                         <span style="min-width: 100%; position: relative; display: block;">
@@ -148,10 +156,11 @@
                     }
                 </div>
             </div>
-            <p class="margin-top-10">Description</p>
+            @*<p class="margin-top-10">Description</p>*@ @* #2324 - Bhumika *@
+            <p>Description</p>
             @Html.TextArea("Description", Model.Description, new { placeholder = "Optional", @class = "span12 text-area-size input-setup", id = "Description" })   @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
         </div>
-        <div class="span3 no_margin_top calendar_div" id="inspect-modal-left-column2">  @*Added By Maitri Gandhi for #2109*@
+        <div class="span3 no_margin_top calendar_div" id="inspect-modal-left-column2" style="padding-left: 2%;">  @*Added By Maitri Gandhi for #2109*@
             <p>Tactic Type <span class="required-asterisk">*</span></p>
             <span style="min-width: 100%; position: relative; display: block;">
                 @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)Model.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
@@ -196,7 +205,7 @@
                 </div>
             </span>
         </div>
-        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width: 24%;"> @* #2324 - alignment issue *@
             <p>Owner <span class="required-asterisk">*</span></p>
             @if (IsTackticAddEdit)
             {
@@ -224,12 +233,12 @@
             }*@
 
             <div class="cf width100">
-                <div class="margin-right10 pull-left" style="width: 47%">
-                    <label id="lblStageTitle" title="@Model.StageTitle" class="stage-title inspect-bolder-label">@Model.StageTitle &nbsp;</label>
+                <div class="margin-right10 pull-left" style="width: 47.5%">
+                    <p id="lblStageTitle" title="@Model.StageTitle" class="stage-title inspect-bolder-label">@Model.StageTitle &nbsp;</p> @* <label> coverted into <p> = for #2324*@ 
 
                     @if (Model.IsDiffrentStageType == true)
                     {
-                        <span>
+                        <span style="float: right;">
                             <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" />
                         </span>
 
@@ -237,13 +246,13 @@
                     @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue input-setup", label = @Model.StageTitle, maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
-                <div class="pull-left" style="width: 47%">
-                    <label title="@Html.LabelForMQL("MQL")" class="inspect-bolder-label">@Html.LabelForMQL("MQL")</label>
+                <div class="pull-left" style="width: 47.5%">
+                    <p title="@Html.LabelForMQL("MQL")" class="inspect-bolder-label">@Html.LabelForMQL("MQL")</p>
                     <input type="text" value="@Model.MQLs" readonly="true" id="txtmql" />
                 </div>
 
-                <div class="pull-left" style="width: 47%">
-                    <label title="Revenue" class="inspect-bolder-label">Revenue</label>
+                <div class="pull-left" style="width: 47.5%">
+                    <p title="Revenue" class="inspect-bolder-label">Revenue</p>
                     @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </div>
             </div>

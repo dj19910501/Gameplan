@@ -190,6 +190,15 @@
      border-right: none !important;
     }
     /*by bheru 19-10-2015*/
+
+    /* Add By Nishant Sheth #2324 line item custom field text box overwrite on div*/
+    .span12.input-small.input-setup.light-blue-background
+    {
+    padding: 4px 0px;
+    }
+    .inspect-column-parent input{/*#2324 */
+    width: calc(100% - 14px);
+} 
 </style>
 @using (Html.BeginForm())
 {
@@ -213,7 +222,7 @@
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
         </div>
-        <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left: 10px;">
+        <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="padding-left: 2%;"> @*/*#2324 */*@
             <p>@Html.Raw("Parent Tactic")</p>
             @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticTitle })
             @if (!isOtherLineitem)
@@ -226,7 +235,7 @@
 
 
         </div>
-        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width: 24%;"> @*/*#2324 */*@
             @*Modified By Komal Rawal for #1974
                 Desc: To Enable edit owner feature from Lineitem popup*@
             <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>
@@ -249,12 +258,12 @@
                 <a href="#" class="allocatecost" style="float:right;text-decoration:underline;">Allocate Cost</a>
             }
              </p>
-                @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate input-setup", id = "txtLineItemCost" });
+                @Html.TextBoxFor(model => model.Cost, new { @class = " input-small currency_dollar truncate input-setup", id = "txtLineItemCost" });@*/*#2324 Remove class "span12" */*@
             }
             else
             {
                 <p>@Html.Raw("Line Item Cost")</p>
-                @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate", id = "txtLineItemCost", @readonly = "true" });
+                @Html.TextBoxFor(model => model.Cost, new { @class = " input-small currency_dollar truncate", id = "txtLineItemCost", @readonly = "true" });@*/*#2324 */*@
             }
         </div>
     </div>
@@ -903,7 +912,7 @@
             CustomName: '@Common.CustomTitle'
         }).multiselectfilter();
 
-        $('#ddlOwner').next().css('width', '95%');
+        $('#ddlOwner').next().css('width', '95.2%'); //#2324
         $('#ddlOwner').next().css('min-height', '30px');
         var spanOwner = $('#multipleselect_ddlOwner');
         $('#btnMultiselect_ddlOwner').after(spanOwner);
