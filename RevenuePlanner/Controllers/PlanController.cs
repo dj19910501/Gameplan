@@ -29,6 +29,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Data.OleDb;
+using Excel;
 
 /*
  * Added By :
@@ -17907,7 +17908,10 @@ namespace RevenuePlanner.Controllers
                         {
                             excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
                                                     fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
-                            ds = GetXLS(excelConnectionString);
+                            IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(Request.Files[0].InputStream);
+                            excelReader.IsFirstRowAsColumnNames = true;
+                            //ds = GetXLS(excelConnectionString);
+                            ds = excelReader.AsDataSet();
                             if (ds == null)
                             {
                                 return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
