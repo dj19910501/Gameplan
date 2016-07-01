@@ -137,12 +137,39 @@ namespace RevenuePlanner.Test.MockHelpers
             return objTactic;
         }
 
+        public static Plan_Campaign_Program_Tactic_LineItem GetPlanLineItem(Guid clientId)
+        {
+            var objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            return objLineItem;
+        }
+
+        public static Plan_Campaign_Program GetPlanProgram(Guid clientId)
+        {
+            var objProgram = db.Plan_Campaign_Program.Where(a => a.Plan_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            return objProgram;
+        }
+
+        public static Plan GetPlan(Guid clientId)
+        {
+            var objPlan = db.Plans.Where(a => a.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            return objPlan;
+        }
         public static Plan_Campaign GetPlanCampaign(Guid clientId)
         {
             var objCampaign = db.Plan_Campaign.Where(a => a.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             return objCampaign;
         }
+        public static List <Plan_Improvement_Campaign_Program_Tactic> GetPlanImprovementTacticList(Guid clientId)
+        {
+            var objImprovementtactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).Take(10).ToList();
+            return objImprovementtactic;
+        }
 
+        public static Plan_Improvement_Campaign_Program_Tactic GetPlanImprovementTactic(Guid clientId)
+        {
+            var objImprovementtactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            return objImprovementtactic;
+        }
         /// <summary>
         /// Get single published multiple plan id.
         /// </summary>
