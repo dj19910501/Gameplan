@@ -72,7 +72,7 @@
     <div class="row">
         @Html.Partial("~/Views/Model/_modelIntegration.cshtml")
 
-        <div class="span10 content-colum-info-user">
+        <div class="span10 content-colum-info-user dd-zIndex">
             @using (Html.BeginForm("SaveIntegration", "Model", new { id = @modelId }, FormMethod.Post))
             {
                 <h4 style="display: block; margin-left: 180px; margin-bottom: 20px;">Instance Selection</h4> 
@@ -84,6 +84,7 @@
                     </div>
 
                 </div>
+                
                 <div class="cf inputs-aligned-horizontal">
                     <label>Push Tactic Data - Eloqua</label>
 

@@ -52,7 +52,8 @@
     $(document).ready(function () {
         //$('.dropdown-menu').toggleClass('dropdown-menu');
         ////Modified by Akashdeep Kadia for Ticket #2275 on 16-June-2016
-        $('.dropdown').click(
+        //$('.dropdown').click(
+        $('.dropdown').hover( // Method changed by Bhumika #2312
               function () {
                   if ($(this).hasClass('finance') || $(this).hasClass('settings')) {
                       if ($('.dropdown.open').length > 0) {

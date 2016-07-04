@@ -15102,6 +15102,16 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     vertical-align: baseline;
      white-space: normal;   
 }
+.menu-content .dd-arrow {
+    cursor: pointer;
+    line-height: 45px;
+    position: absolute;
+    right: -2px;
+    width: 20px;
+    z-index: 999;   
+    color: #777;
+}
+
 .menu-content > li > a { /* spacing without dropdown arrow */
     margin: 0 1px;
     padding: 0 15px 0 13px;
@@ -15112,7 +15122,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     margin: 0 1px;
     padding: 0 22px 0 13px;
 }
-.menu-content li a:hover{
+.menu-content li a:hover, .menu-content li a:hover span{ /* #2312 New change*/
     background: transparent none repeat scroll 0 0;
     color: #333;
 }
@@ -15146,13 +15156,16 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     background-color: #F2F2F2;
 }*/
 
-.menu-content li.open > a ,
+
+.menu-content li.open > a,
 .menu-content li.open > a:hover,
 .menu-content li.open > a:focus,
+.menu-content li:hover > a,
 .menu-content li.active > a {
-    background: #89CEDE; /* #2312 */
+    background: #89CEDE; /* #2312  new Tckt */
     color: #333;
 }
+.menu-content li:hover > a span{color: #333;}
 .menu-content li.dropdown .dropdown-menu, .menu-content .dropdown .dropdown-menu {
     border-radius: 0 0 4px 4px !important;
     margin: 0;
@@ -15171,7 +15184,9 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     min-width: 210px;
     white-space:normal;
 }
-
+.menu-content li.dropdown:hover > .dropdown-menu{ /* #2312 New change*/
+    display:block !important;
+}
 .menu-content .dropdown-menu > li {
     margin:  0;
 }
@@ -15186,15 +15201,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     background: #e6e6e6 none repeat scroll 0 0;
 }
 
-.menu-content .dd-arrow {
-    cursor: pointer;
-    line-height: 45px;
-    position: absolute;
-    right: -2px;
-    width: 20px;
-    z-index: 999;   
-    color: #777;
-}
+
 .menu-content li.active .dd-arrow, .menu-content .dd-arrow:hover{color:#333}
 
 /* ================= New navigation Style End ================= */
@@ -15640,6 +15647,10 @@ a:focus, a:hover{outline:0 none !important}
 /*End*/
 .PopupDiv .modal-popup-title .title-simple input{width:95.7% !important} /* #2324*/
 .inspect-column-parent .dropdown_new_btn > p{font-family: source_sans_proregular,Arial,sans-serif !important; color: #6c6c6c;} /* #2324*/
+
+.content-colum-info-user.dd-zIndex .selectBox .sbHolder, .content-colum-info-user.dd-zIndex .selectBox .sbHolder > a{
+    z-index:initial;
+}
 
 /* ********************  new styles  - End ******************** */
 
