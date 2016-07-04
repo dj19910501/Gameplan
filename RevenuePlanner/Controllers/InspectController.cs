@@ -53,6 +53,7 @@ namespace RevenuePlanner.Controllers
         private string PeriodChar = "Y";
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
+        List<BudgetCheckedItem> ListbudgetCheckedItem = new List<BudgetCheckedItem>(); // Add By Nishant Sheth #2325
         #endregion
 
         #region "Inspect Index"
@@ -5429,6 +5430,7 @@ namespace RevenuePlanner.Controllers
 
 
                                 Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
+
                                 if (objOtherLineItem == null)
                                 {
                                     Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
@@ -13552,7 +13554,7 @@ namespace RevenuePlanner.Controllers
                         .ToList();
 
             budgetMain.rows = items;
-            return Json(new { data = budgetMain }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = budgetMain, ListOfCheckedItem = ListbudgetCheckedItem }, JsonRequestBehavior.AllowGet);
         }
 
         IEnumerable<DataRow> GetTopLevelRows(DataTable dataTable, int minParentId = 0)
@@ -13579,6 +13581,7 @@ namespace RevenuePlanner.Controllers
             List<LineItem_Budget> SelectedLineItemBudget = db.LineItem_Budget.Where(a => a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a).ToList();
             int SelectedID = SelectedLineItemBudget.Select(a => a.BudgetDetailId).FirstOrDefault();
             var SelectedWeightage = SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
+
             if (id == SelectedID)
             {
                 enableCheck = "checked=\"checked\"";
@@ -13617,18 +13620,24 @@ namespace RevenuePlanner.Controllers
             _SelectedLineItemBudget = SelectedLineItemBudget.Where(a => a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a).ToList();
             int SelectedID = _SelectedLineItemBudget.Select(a => a.BudgetDetailId).FirstOrDefault();
             var SelectedWeightage = _SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
+            string textboxclass = string.Empty;
             if (id == SelectedID)
             {
                 enableCheck = "checked=\"checked\"";
                 value = SelectedWeightage.ToString();
+                // Add By Nishant Sheth
+                // #2325 :: to add class on textbox for highlight
+                textboxclass = "class=\"mappingtextboxblue\"";
+                ListbudgetCheckedItem.Add(new BudgetCheckedItem { Id = Convert.ToString(SelectedID), Title = name, Values = value });
             }
             else
             {
                 enableCheck = string.Empty;
                 value = string.Empty;
+                textboxclass = string.Empty;
             }
             var temp = "<input id=" + id + " title='" + name + "' " + enableCheck + "  type=checkbox  />" + name;
-            var AddWeightage = " <input value='" + value + "' type='text' alt_id = 'txtweight'  id= wt_" + id + " align='center' style='margin-top:9px; padding-right:4px;'>";
+            var AddWeightage = " <input value='" + value + "' type='text' alt_id = 'txtweight'  id= wt_" + id + " align='center' style='margin-top:9px; padding-right:4px;' " + textboxclass + ">";
 
             List<string> datalist = new List<string>();
 

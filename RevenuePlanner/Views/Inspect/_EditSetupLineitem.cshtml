@@ -380,7 +380,8 @@
 
                     var items = TreeViewDdl.getSubItems(id).split(',');
                     SubItems.values = items;
-                    for (i = 0; i < SubItems.values.length - 1; i++) {
+                    for (var i = 0; i < SubItems.values.length - 1; i++) {
+
                         var cell = TreeViewDdl.cells(SubItems.values[i], 0);
                         var hascheckbox = cell.getInput();
                         //alert(hascheckbox);
@@ -394,16 +395,16 @@
                     }
 
 
-                    for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
+                    for (var j = 0; j < ListOfItmeCheck.Ids.length; j++) {
 
-                        $('#' + Weights.txtId[i]).val(Weights.values[i]);
-                        var optionId = ListOfItmeCheck.Ids[i];
+                        $('#' + Weights.txtId[i]).val(Weights.values[j]);
+                        var optionId = ListOfItmeCheck.Ids[j];
                         if (totalWeightage != 100) {
-                            $('#' + 'wt_' + ListOfItmeCheck.Ids[i]).addClass('error');
+                            $('#' + 'wt_' + ListOfItmeCheck.Ids[j]).addClass('error');
                         }
                         else {
-                            if ($('#' + 'wt_' + ListOfItmeCheck.Ids[i]).hasClass('error')) {
-                                $('#' + 'wt_' + ListOfItmeCheck.Ids[i]).removeClass('error')
+                            if ($('#' + 'wt_' + ListOfItmeCheck.Ids[j]).hasClass('error')) {
+                                $('#' + 'wt_' + ListOfItmeCheck.Ids[j]).removeClass('error')
                             }
                         }
                     }
@@ -428,6 +429,7 @@
             };
             totalWeightage = 0;
             $('#treeviewddl').find('input:checkbox:checked').each(function () {
+                if (!(ListOfItmeCheck.Ids.indexOf($(this).attr('id')) > 0)) {
                 ListOfItmeCheck.Ids.push($(this).attr('id'));
                 ListOfItmeCheck.values.push($(this).attr('title'));
                 totalWeightage += parseInt($('#' + 'wt_' + $(this).attr('id')).val());
@@ -436,6 +438,7 @@
                 Weights.txtId.push('wt_' + $(this).attr('id'));
                 $('#' + 'wt_' + $(this).attr('id')).addClass('mappingtextboxblue');
                 $('#' + $(this).attr('id')).addClass('Spancheck');
+                }
             });
             if (totalWeightage != 100) {
                 DivideEqualInputValueForMapping();
@@ -463,10 +466,12 @@
             }
 
             if ($('#' + id).attr('checked') == 'checked') {
+                if (!(ListOfItmeCheck.Ids.indexOf(id) > 0)) {
                 ListOfItmeCheck.Ids.push(id);
                 ListOfItmeCheck.values.push($('#' + id).attr('title'));
                 DivideEqualInputValueForMapping();
                 $('#' + 'wt_' + id).addClass('mappingtextboxblue');
+                }
 
             }
             else {
@@ -502,9 +507,9 @@
         });
 
         TreeViewDdl.collapseAll();
-
-        OpenSelectedValues();
         TreeViewDdl.stopFastOperations();
+        OpenSelectedValues();
+        
 
     }
 
@@ -535,6 +540,9 @@
 
         TreeViewDdl.enableDistributedParsing(true, 10, 0.1);
         TreeViewDdl.parse(GridData, "json");
+        TreeViewDdl.attachEvent("onDistributedEnd", function () {
+            LoadAfterParsing();
+        });
 
         TreeViewDdl.attachEvent("onOpenEnd", function (id, state) {
 
@@ -545,8 +553,9 @@
 
             var items = TreeViewDdl.getSubItems(id).split(',');
             SubItems.values = items;
-            for (i = 0; i < SubItems.values.length - 1; i++) {
+            for (var i = 0; i < SubItems.values.length; i++) {
 
+               BudgetExpandChekBoxClick(SubItems.values[i]);
                 var cell = TreeViewDdl.cells(SubItems.values[i], 0);
                 var hascheckbox = cell.getInput();
                 if (hascheckbox != undefined) {
@@ -556,15 +565,15 @@
                 }
             }
 
-            for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
-                $('#' + Weights.txtId[i]).val(Weights.values[i]);
-                var optionId = ListOfItmeCheck.Ids[i];
+            for (var j = 0; j < ListOfItmeCheck.Ids.length; j++) {
+                $('#' + Weights.txtId[j]).val(Weights.values[j]);
+                var optionId = ListOfItmeCheck.Ids[j];
                 if (totalWeightage != 100) {
-                    $('#' + 'wt_' + ListOfItmeCheck.Ids[i]).addClass('error');
+                    $('#' + 'wt_' + ListOfItmeCheck.Ids[j]).addClass('error');
                 }
                 else {
-                    if ($('#' + 'wt_' + ListOfItmeCheck.Ids[i]).hasClass('error')) {
-                        $('#' + 'wt_' + ListOfItmeCheck.Ids[i]).removeClass('error')
+                    if ($('#' + 'wt_' + ListOfItmeCheck.Ids[j]).hasClass('error')) {
+                        $('#' + 'wt_' + ListOfItmeCheck.Ids[j]).removeClass('error')
                     }
                 }
             }
@@ -572,13 +581,78 @@
 
         TreeViewDdl.attachEvent("onFilterEnd", FilterEnd);
         TreeViewDdl.collapseAll();
-        OpenSelectedValues();
+        //OpenSelectedValues();
       }
+    // Add By Nishant Sheth
+    // Desc :: Call function when collapsed budget are expand to call chekbox events
+    function BudgetExpandChekBoxClick(checkboxid)
+    {
+        $('input[type=checkbox][id="' + checkboxid + '"]').parent().off('click').on("click", function (e) {
+            var id = $(this).find('input').attr('id');
+            ValueChanged = true;
+            $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text("");
+
+            if ($('#' + id).hasClass('Spancheck')) {
+                $(this).find('input').removeAttr('checked');
+                $('#' + id).removeClass('Spancheck');
+            }
+            else {
+                if ($('#' + id).attr('checked') == 'checked' && $('#' + 'wt_' + id).attr('class') == 'mappingtextboxblue') {
+                    $(this).find('input').removeAttr('checked');
+                    $('#' + id).removeClass('Spancheck');
+                }
+                else {
+                    $('#' + id).addClass('Spancheck');
+                    $(this).find('input').attr('checked', 'checked');
+                }
+            }
+
+            if ($('#' + id).attr('checked') == 'checked') {
+                if (!(ListOfItmeCheck.Ids.indexOf(id) > 0)) {
+                    ListOfItmeCheck.Ids.push(id);
+                    ListOfItmeCheck.values.push($('#' + id).attr('title'));
+                    DivideEqualInputValueForMapping();
+                    $('#' + 'wt_' + id).addClass('mappingtextboxblue');
+                }
+            }
+            else {
+                var index = ListOfItmeCheck.Ids.indexOf(id);
+                if (index >= 0) {
+                    ListOfItmeCheck.Ids.splice(index, 1);
+                    ListOfItmeCheck.values.splice(index, 1);
+                    $('#' + 'wt_' + id).val("");
+                    if ($('#' + 'wt_' + id).hasClass('error')) {
+                        $('#' + 'wt_' + id).removeClass('error')
+                    }
+                    if ($('#' + 'wt_' + id).hasClass('mappingtextboxblue')) {
+                        $('#' + 'wt_' + id).removeClass('mappingtextboxblue')
+                    }
+                    DivideEqualInputValueForMapping();
+                }
+            }
+            var Selectedvalue = "";
+            for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
+                Selectedvalue += ListOfItmeCheck.values[i] + ', ';
+            }
+
+            if (Selectedvalue.indexOf(',') > 0) {
+                Selectedvalue = Selectedvalue.slice(0, -2);
+                $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text(Selectedvalue);
+                $('.span3').find('#dropdown_new_btn_FieldMapping p:first').attr('title', Selectedvalue);
+            }
+            else {
+                $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text('Please Select');
+            }
+
+        });
+    }
+
     // Add By Nishant Sheth
     // Desc :: call function on budget dropdown click
     function BudgetDropDownClick() {
+        
         LoadAfterParsing();
-        $('#treeviewddl').find('span').on("click", function (e) {
+        $('#treeviewddl').find('span').off('click').on("click", function (e) {
 
             var id = $(this).find('input').attr('id');
             ValueChanged = true;
@@ -589,17 +663,23 @@
                 $('#' + id).removeClass('Spancheck');
             }
             else {
+                if ($('#' + id).attr('checked') == 'checked' && $('#' + 'wt_' + id).attr('class') == 'mappingtextboxblue') {
+                    $(this).find('input').removeAttr('checked');
+                    $('#' + id).removeClass('Spancheck');
+                }
+                else {
                 $('#' + id).addClass('Spancheck');
                 $(this).find('input').attr('checked', 'checked');
-
+                }
             }
 
             if ($('#' + id).attr('checked') == 'checked') {
+                if (!(ListOfItmeCheck.Ids.indexOf(id) > 0)) {
                 ListOfItmeCheck.Ids.push(id);
                 ListOfItmeCheck.values.push($('#' + id).attr('title'));
                 DivideEqualInputValueForMapping();
                 $('#' + 'wt_' + id).addClass('mappingtextboxblue');
-
+                }
             }
             else {
 
@@ -646,6 +726,8 @@
     // Desc :: load data after distribute parsing of dhtmlx grid
     function LoadAfterParsing() {
 
+        OpenSelectedValues();
+
         if ('@Model.PlanLineItemId' != 0 && !ValueChanged) {
             ListOfItmeCheck = {
                 Ids: [],
@@ -658,6 +740,7 @@
             };
             totalWeightage = 0;
             $('#treeviewddl').find('input:checkbox:checked').each(function () {
+                if (!(ListOfItmeCheck.Ids.indexOf($(this).attr('id')) > 0)) {
                 ListOfItmeCheck.Ids.push($(this).attr('id'));
                 ListOfItmeCheck.values.push($(this).attr('title'));
                 totalWeightage += parseInt($('#' + 'wt_' + $(this).attr('id')).val());
@@ -666,10 +749,8 @@
                 Weights.txtId.push('wt_' + $(this).attr('id'));
                 $('#' + 'wt_' + $(this).attr('id')).addClass('mappingtextboxblue');
                 $('#' + $(this).attr('id')).addClass('Spancheck');
-            });
-            if (totalWeightage != 100) {
-                DivideEqualInputValueForMapping();
             }
+            });
 
         }
         for (var i = 0; i < Weights.txtId.length; i++) {
@@ -677,6 +758,7 @@
             $("#" + Weights.txtId[i]).val(Weights.values[i]);
             $("#" + Weights.ChkId[i]).attr('checked', 'checked');
         }
+
     }
     // Add By Nishant Sheth
     // Desc :: Get Budget drodowns data only , reg #2128 performance issue
@@ -690,6 +772,18 @@
             async: true,
             success: function (data) {
                 GridData = data.data;
+                $.each(data.ListOfCheckedItem, function () {
+                    // Add By Nishant Sheth
+                    // Desc :: #2325 add checked budget item in array
+                    if (!(ListOfItmeCheck.Ids.indexOf(this.Id) > 0)) {
+                        ListOfItmeCheck.Ids.push(this.Id);
+                        ListOfItmeCheck.values.push(this.Title);
+                        totalWeightage += parseInt(this.Values);
+                        Weights.values.push(this.Values);
+                        Weights.ChkId.push(this.Id);
+                        Weights.txtId.push('wt_' + this.Id);
+                    }
+                });
             }
         });
     }
@@ -708,6 +802,16 @@
         var filterValue = $('#treeviewddl').find('.hdrcell').find('input[type=text]').val();
         if (filterValue != "" && filterValue != undefined) {
             TreeViewDdl.expandAll();
+            // Add By Nishant Sheth
+            // Desc :: #2325 set click event for collapsed entity
+            var numofrows = TreeViewDdl.getAllRowIds();
+            if (numofrows != null && numofrows != '' && numofrows!=undefined)
+            {
+                var arrofrows = numofrows.split(',');
+                $.each(arrofrows, function () {
+                    BudgetExpandChekBoxClick(this);
+                });
+            }
         }
         else {
             //Modified BY Komal for #2098 not able to check checkboxes after filter
