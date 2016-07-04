@@ -3233,7 +3233,7 @@ namespace RevenuePlanner.Controllers
                     //if it will not be availbale in table then it will be work as previously.
                     string strentityType = Convert.ToString(Integration.Helper.Enums.EntityType.IntegrationInstance);
                     var instanceData = db.EntityIntegration_Attribute.Where(data => data.EntityId == instance.IntegrationInstanceId && data.IntegrationinstanceId == instance.IntegrationInstanceId && data.EntityType.ToLower() == strentityType.ToLower()).FirstOrDefault();
-                    if(instanceData!=null)
+                    if (instanceData != null)
                     {
                         string baseurlvalue = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["EloquaUrl"]);
                         if (!string.IsNullOrEmpty(baseurlvalue))
@@ -4129,7 +4129,7 @@ namespace RevenuePlanner.Controllers
                              orderby tacType.Title
                              select tacType).ToList();
 
-            
+
             // Check whether current TacticId related TacticType exist or not.
             if (!lstTactic.Any(tacType => tacType.TacticTypeId == pcpt.TacticTypeId))
             {
@@ -5433,38 +5433,41 @@ namespace RevenuePlanner.Controllers
 
                                 if (objOtherLineItem == null)
                                 {
-                                    Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                    objNewLineitem.PlanTacticId = pcpobj.PlanTacticId;
-                                    objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
-                                    if (pcpobj.Cost > totalLineitemCost)
+                                    if (pcpobj.Cost > 0)// Add condition by Nishant sheth // desc :: To restrict other line item is not created when tactic planned cost is 0
                                     {
-                                        objNewLineitem.Cost = pcpobj.Cost - totalLineitemCost;
-                                    }
-                                    else
-                                    {
-                                        objNewLineitem.Cost = 0;
-                                    }
-                                    objNewLineitem.Description = string.Empty;
-                                    objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                    objNewLineitem.CreatedDate = DateTime.Now;
-                                    db.Entry(objNewLineitem).State = EntityState.Added;
+                                        Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                        objNewLineitem.PlanTacticId = pcpobj.PlanTacticId;
+                                        objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
+                                        if (pcpobj.Cost > totalLineitemCost)
+                                        {
+                                            objNewLineitem.Cost = pcpobj.Cost - totalLineitemCost;
+                                        }
+                                        else
+                                        {
+                                            objNewLineitem.Cost = 0;
+                                        }
+                                        objNewLineitem.Description = string.Empty;
+                                        objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                        objNewLineitem.CreatedDate = DateTime.Now;
+                                        db.Entry(objNewLineitem).State = EntityState.Added;
 
-                                    if (linkedTacticId > 0)
-                                    {
-                                        Plan_Campaign_Program_Tactic_LineItem objNewLinkedLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                        objNewLinkedLineitem.PlanTacticId = linkedTacticId;
-                                        objNewLinkedLineitem.Title = objNewLineitem.Title;
-                                        objNewLinkedLineitem.Cost = objNewLineitem.Cost;
-                                        objNewLinkedLineitem.Description = string.Empty;
-                                        objNewLinkedLineitem.CreatedBy = Sessions.User.UserId;
-                                        objNewLinkedLineitem.CreatedDate = DateTime.Now;
-                                        objNewLinkedLineitem.LinkedLineItemId = objNewLineitem.PlanLineItemId;
-                                        db.Entry(objNewLinkedLineitem).State = EntityState.Added;
-                                        db.SaveChanges();
+                                        if (linkedTacticId > 0)
+                                        {
+                                            Plan_Campaign_Program_Tactic_LineItem objNewLinkedLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                            objNewLinkedLineitem.PlanTacticId = linkedTacticId;
+                                            objNewLinkedLineitem.Title = objNewLineitem.Title;
+                                            objNewLinkedLineitem.Cost = objNewLineitem.Cost;
+                                            objNewLinkedLineitem.Description = string.Empty;
+                                            objNewLinkedLineitem.CreatedBy = Sessions.User.UserId;
+                                            objNewLinkedLineitem.CreatedDate = DateTime.Now;
+                                            objNewLinkedLineitem.LinkedLineItemId = objNewLineitem.PlanLineItemId;
+                                            db.Entry(objNewLinkedLineitem).State = EntityState.Added;
+                                            db.SaveChanges();
 
-                                        objNewLineitem.LinkedLineItemId = objNewLinkedLineitem.PlanLineItemId;
-                                        db.Entry(objNewLineitem).State = EntityState.Modified;
-                                        db.SaveChanges();
+                                            objNewLineitem.LinkedLineItemId = objNewLinkedLineitem.PlanLineItemId;
+                                            db.Entry(objNewLineitem).State = EntityState.Modified;
+                                            db.SaveChanges();
+                                        }
                                     }
                                 }
                                 else
@@ -6902,7 +6905,7 @@ namespace RevenuePlanner.Controllers
                 IntegrationWorkFrontTacticSetting wfSetting = db.IntegrationWorkFrontTacticSettings.Where(set => set.TacticId == objTactic.PlanTacticId && set.IsDeleted == false).FirstOrDefault();
 
                 //verify we have the information we need
-                if (approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString() 
+                if (approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project.ToString()
                     && approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Request.ToString()
                     && approvalBehaviorWorkFront != Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project2.ToString())
                 {
@@ -12731,7 +12734,7 @@ namespace RevenuePlanner.Controllers
                 var individuals = new List<RevenuePlanner.BDSService.User>();
                 if (Sessions.User != null && Sessions.User.ClientId != null && Sessions.ApplicationId != null && Sessions.User.UserId != null) //Added by komal to check session is null for #2299
                 {
-                 individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+                    individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
                 }
                 if (individuals.Count != 0)
                 {
