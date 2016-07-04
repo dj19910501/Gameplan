@@ -13624,6 +13624,7 @@ namespace RevenuePlanner.Controllers
             int SelectedID = _SelectedLineItemBudget.Select(a => a.BudgetDetailId).FirstOrDefault();
             var SelectedWeightage = _SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
             string textboxclass = string.Empty;
+
             if (id == SelectedID)
             {
                 enableCheck = "checked=\"checked\"";
@@ -13639,7 +13640,9 @@ namespace RevenuePlanner.Controllers
                 value = string.Empty;
                 textboxclass = string.Empty;
             }
-            var temp = "<input id=" + id + " title='" + name + "' " + enableCheck + "  type=checkbox  />" + name;
+            // Modified By Nishant Sheth
+            // #2325 :: add on click event for check uncheck box of budget dropdown
+            var temp = "<input id=" + id + " title='" + name + "' " + enableCheck + "  type=checkbox  onclick='" + string.Format("BudgetChekBoxClick({0})", Convert.ToString(id)) + "'/>" + name; 
             var AddWeightage = " <input value='" + value + "' type='text' alt_id = 'txtweight'  id= wt_" + id + " align='center' style='margin-top:9px; padding-right:4px;' " + textboxclass + ">";
 
             List<string> datalist = new List<string>();

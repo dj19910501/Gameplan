@@ -341,178 +341,8 @@
     //    }
     //    DropdownTop = DropdownToPos;
     //});
-        var GridData;
-    function LoadBudgetDropdown() {
-        TreeViewDdl = new dhtmlXGridObject('treeviewddl');
-        $.ajax({
-            beforeSend: function (x) { //Called before every request
-                //myApp.hidePleaseWait();
-            },
-            dataType: 'json',
-            url: '@Url.Content("~/Inspect/LoadBudgetDropdown/")',
-            data: {
-                PlanLineItemID: '@Model.PlanLineItemId'
-            },
-            async: false,
-            success: function (data) {
-                GridData = data.data;
-                var imgpath = '@Url.Content("~/codebase/imgs/")';
-                TreeViewDdl.setImagePath(imgpath);
-                TreeViewDdl.attachHeader("#text_filter,"); //Added by Rahul Shah to Apply search on budget filter
-                TreeViewDdl.setFiltrationLevel(-2);  //Modified BY Komal for #2098 not able to filter the root nodes
-                TreeViewDdl.setHeader("Item Name,Weight%");
-                TreeViewDdl.enableAutoHeight(true, 400, true);
-                TreeViewDdl.enableAutoWidth(true);
-                TreeViewDdl.enableTreeCellEdit(false)
-                TreeViewDdl.setImageSize(1, 1);
-                TreeViewDdl.setColTypes("tree,ro");
-                TreeViewDdl.setInitWidths("200,100");
-                TreeViewDdl.init();
-                TreeViewDdl.startFastOperations();
-                //  TreeViewDdl.insertColumn(1, '', 'ro');
-                //TreeViewDdl.setSkin("");
-                TreeViewDdl.parse(GridData, "json");
-                TreeViewDdl.attachEvent("onOpenEnd", function (id, state) {
-                    TreeViewDdl.adjustColumnSize(0);
-                    var SubItems = {
-                        values: []
-                    };
-
-                    var items = TreeViewDdl.getSubItems(id).split(',');
-                    SubItems.values = items;
-                    for (var i = 0; i < SubItems.values.length - 1; i++) {
-
-                        var cell = TreeViewDdl.cells(SubItems.values[i], 0);
-                        var hascheckbox = cell.getInput();
-                        //alert(hascheckbox);
-                        if (hascheckbox != undefined) {
-
-
-                            TreeViewDdl.forEachCell(SubItems.values[i], function (cellobj, ind) {
-                                TreeViewDdl.setCellTextStyle(SubItems.values[i], ind, "border:none;");
-                            });
-                        }
-                    }
-
-
-                    for (var j = 0; j < ListOfItmeCheck.Ids.length; j++) {
-
-                        $('#' + Weights.txtId[i]).val(Weights.values[j]);
-                        var optionId = ListOfItmeCheck.Ids[j];
-                        if (totalWeightage != 100) {
-                            $('#' + 'wt_' + ListOfItmeCheck.Ids[j]).addClass('error');
-                        }
-                        else {
-                            if ($('#' + 'wt_' + ListOfItmeCheck.Ids[j]).hasClass('error')) {
-                                $('#' + 'wt_' + ListOfItmeCheck.Ids[j]).removeClass('error')
-                            }
-                        }
-                    }
-
-                });
-
-                TreeViewDdl.attachEvent("onFilterEnd", FilterEnd);
-            }
-        });
-
-        TreeViewDdl.expandAll();
-
-        if ('@Model.PlanLineItemId' != 0 && !ValueChanged) {
-            ListOfItmeCheck = {
-                Ids: [],
-                values: []
-            };
-            Weights = {
-                ChkId: [],
-                txtId: [],
-                values: []
-            };
-            totalWeightage = 0;
-            $('#treeviewddl').find('input:checkbox:checked').each(function () {
-                if (!(ListOfItmeCheck.Ids.indexOf($(this).attr('id')) > 0)) {
-                ListOfItmeCheck.Ids.push($(this).attr('id'));
-                ListOfItmeCheck.values.push($(this).attr('title'));
-                totalWeightage += parseInt($('#' + 'wt_' + $(this).attr('id')).val());
-                Weights.values.push($('#' + 'wt_' + $(this).attr('id')).val());
-                Weights.ChkId.push($(this).attr('id'));
-                Weights.txtId.push('wt_' + $(this).attr('id'));
-                $('#' + 'wt_' + $(this).attr('id')).addClass('mappingtextboxblue');
-                $('#' + $(this).attr('id')).addClass('Spancheck');
-                }
-            });
-            if (totalWeightage != 100) {
-                DivideEqualInputValueForMapping();
-            }
-
-        }
-        for (var i = 0; i < Weights.txtId.length; i++) {
-            $("#" + Weights.txtId[i]).val(Weights.values[i]);
-            $("#" + Weights.ChkId[i]).attr('checked', 'checked');
-        }
-
-        $('#treeviewddl').find('span').on("click", function (e) {
-            var id = $(this).find('input').attr('id');
-            ValueChanged = true;
-            $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text("");
-
-            if ($('#' + id).hasClass('Spancheck')) {
-                $(this).find('input').removeAttr('checked');
-                $('#' + id).removeClass('Spancheck');
-            }
-            else {
-                $('#' + id).addClass('Spancheck');
-                $(this).find('input').attr('checked', 'checked');
-
-            }
-
-            if ($('#' + id).attr('checked') == 'checked') {
-                if (!(ListOfItmeCheck.Ids.indexOf(id) > 0)) {
-                ListOfItmeCheck.Ids.push(id);
-                ListOfItmeCheck.values.push($('#' + id).attr('title'));
-                DivideEqualInputValueForMapping();
-                $('#' + 'wt_' + id).addClass('mappingtextboxblue');
-                }
-
-            }
-            else {
-
-                var index = ListOfItmeCheck.Ids.indexOf(id);
-                if (index >= 0) {
-                    ListOfItmeCheck.Ids.splice(index, 1);
-                    ListOfItmeCheck.values.splice(index, 1);
-                    $('#' + 'wt_' + id).val("");
-                    if ($('#' + 'wt_' + id).hasClass('error')) {
-                        $('#' + 'wt_' + id).removeClass('error')
-                    }
-                    if ($('#' + 'wt_' + id).hasClass('mappingtextboxblue')) {
-                        $('#' + 'wt_' + id).removeClass('mappingtextboxblue')
-                    }
-                    DivideEqualInputValueForMapping();
-                }
-            }
-            var Selectedvalue = "";
-            for (var i = 0; i < ListOfItmeCheck.Ids.length; i++) {
-                Selectedvalue += ListOfItmeCheck.values[i] + ', ';
-            }
-
-            if (Selectedvalue.indexOf(',') > 0) {
-                Selectedvalue = Selectedvalue.slice(0, -2);
-                $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text(Selectedvalue);
-                $('.span3').find('#dropdown_new_btn_FieldMapping p:first').attr('title', Selectedvalue);
-            }
-            else {
-                $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text('Please Select');
-            }
-
-        });
-
-        TreeViewDdl.collapseAll();
-        TreeViewDdl.stopFastOperations();
-        OpenSelectedValues();
-        
-
-    }
-
+   var GridData;
+   
     // Add By Nishant Sheth
     // Desc :: Render budget dropdown after get all data from load budget dropdown method
     // reg #2128 performance issue
@@ -540,52 +370,15 @@
 
         TreeViewDdl.enableDistributedParsing(true, 10, 0.1);
         TreeViewDdl.parse(GridData, "json");
-        TreeViewDdl.attachEvent("onDistributedEnd", function () {
-            LoadAfterParsing();
-        });
-
-        TreeViewDdl.attachEvent("onOpenEnd", function (id, state) {
-
-            TreeViewDdl.adjustColumnSize(0);
-            var SubItems = {
-                values: []
-            };
-
-            var items = TreeViewDdl.getSubItems(id).split(',');
-            SubItems.values = items;
-            for (var i = 0; i < SubItems.values.length; i++) {
-
-               BudgetExpandChekBoxClick(SubItems.values[i]);
-                var cell = TreeViewDdl.cells(SubItems.values[i], 0);
-                var hascheckbox = cell.getInput();
-                if (hascheckbox != undefined) {
-                    TreeViewDdl.forEachCell(SubItems.values[i], function (cellobj, ind) {
-                        TreeViewDdl.setCellTextStyle(SubItems.values[i], ind, "border:none;");
-                    });
-                }
-            }
-
-            for (var j = 0; j < ListOfItmeCheck.Ids.length; j++) {
-                $('#' + Weights.txtId[j]).val(Weights.values[j]);
-                var optionId = ListOfItmeCheck.Ids[j];
-                if (totalWeightage != 100) {
-                    $('#' + 'wt_' + ListOfItmeCheck.Ids[j]).addClass('error');
-                }
-                else {
-                    if ($('#' + 'wt_' + ListOfItmeCheck.Ids[j]).hasClass('error')) {
-                        $('#' + 'wt_' + ListOfItmeCheck.Ids[j]).removeClass('error')
-                    }
-                }
-            }
-        });
+        
 
         TreeViewDdl.attachEvent("onFilterEnd", FilterEnd);
         TreeViewDdl.collapseAll();
         //OpenSelectedValues();
       }
     // Add By Nishant Sheth
-    // Desc :: Call function when collapsed budget are expand to call chekbox events
-    function BudgetExpandChekBoxClick(checkboxid)
+    // Desc :: Call function to onclick chekbox 
+    function BudgetChekBoxClick(checkboxid)
     {
         $('input[type=checkbox][id="' + checkboxid + '"]').parent().off('click').on("click", function (e) {
             var id = $(this).find('input').attr('id');
@@ -802,16 +595,6 @@
         var filterValue = $('#treeviewddl').find('.hdrcell').find('input[type=text]').val();
         if (filterValue != "" && filterValue != undefined) {
             TreeViewDdl.expandAll();
-            // Add By Nishant Sheth
-            // Desc :: #2325 set click event for collapsed entity
-            var numofrows = TreeViewDdl.getAllRowIds();
-            if (numofrows != null && numofrows != '' && numofrows!=undefined)
-            {
-                var arrofrows = numofrows.split(',');
-                $.each(arrofrows, function () {
-                    BudgetExpandChekBoxClick(this);
-                });
-            }
         }
         else {
             //Modified BY Komal for #2098 not able to check checkboxes after filter
@@ -975,7 +758,7 @@
         // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
         $('#btnEditlineItem').removeClass('SpanDisable');
         $('#InspectTab').removeClass('SpanDisable');
-        //LoadBudgetDropdown();
+        
         LoadBudgetDropDownData();
         $(document).click(function () {
             $("#treeviewddl").css("display", "none");
@@ -1032,7 +815,7 @@
                     // Desc :: #2240 Opening of Multiple Drop Down
                     //$('.dropdown-wrapper').css("display", "block");
                     $('#treeviewddl').css("display", "block");
-                //LoadBudgetDropdown();
+                
             }
             else {               
                     // Modfied By Nishant Sheth
@@ -1118,7 +901,7 @@
         $('.input-setup').addClass('light-blue-background');
         $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
         //End - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
-        // LoadBudgetDropdown();
+        
         //$('.dropdown_new_btn').click();
         //$("#treeviewddl").css("width","0px");
         //$("#treeviewddl").css("display","none");
