@@ -2558,7 +2558,6 @@ namespace Integration.Salesforce
 
             if (ListOfMarketoTactic.Count > 0)
             {
-
                 var ListOfMarketoWithoutSFDC = ListOfMarketoTactic.Where(tac => tac.IntegrationInstanceTacticId == null).ToList();
                 if (ListOfMarketoWithoutSFDC.Count > 0)
                 {
@@ -2596,42 +2595,14 @@ namespace Integration.Salesforce
                             string exMessage = Common.GetInnermostException(e);
                             _ErrorMessage = exMessage;
                             int TacticId = ListOfMarketoWithoutSFDC.Where(tac => tac.Title == Convert.ToString(jobj["Name"])).Select(tac => tac.PlanTacticId).FirstOrDefault();
-
-                            IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                            instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;// To do : Need to change wtih IntegrationInstanceSectionId
-                            instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-                            instanceTactic.EntityId = TacticId;
-                            instanceTactic.EntityType = EntityType.Tactic.ToString();
-                            instanceTactic.Status = StatusResult.Error.ToString();
-                            instanceTactic.Operation = Operation.Get_SFDCID_For_Marketo.ToString();
-                            instanceTactic.SyncTimeStamp = DateTime.Now;
-                            instanceTactic.CreatedDate = DateTime.Now;
-                            instanceTactic.ErrorDescription = exMessage;
-                            instanceTactic.CreatedBy = _userId;
-                            db.Entry(instanceTactic).State = EntityState.Added;
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign Id from Salesforce. Exception - " + exMessage);
-
                         }
                         catch (Exception e)
                         {
                             string exMessage = Common.GetInnermostException(e);
                             _ErrorMessage = exMessage;
                             int TacticId = ListOfMarketoWithoutSFDC.Where(tac => tac.Title == Convert.ToString(jobj["Name"])).Select(tac => tac.PlanTacticId).FirstOrDefault();
-
-                            IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                            instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;// To do : Need to change wtih IntegrationInstanceSectionId
-                            instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-                            instanceTactic.EntityId = TacticId;
-                            instanceTactic.EntityType = EntityType.Tactic.ToString();
-                            instanceTactic.Status = StatusResult.Error.ToString();
-                            instanceTactic.Operation = Operation.Get_SFDCID_For_Marketo.ToString();
-                            instanceTactic.SyncTimeStamp = DateTime.Now;
-                            instanceTactic.CreatedDate = DateTime.Now;
-                            instanceTactic.ErrorDescription = exMessage;
-                            instanceTactic.CreatedBy = _userId;
-                            db.Entry(instanceTactic).State = EntityState.Added;
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign Id from Salesforce. Exception - " + exMessage);
-
                         }
                     }
 
@@ -2641,28 +2612,23 @@ namespace Integration.Salesforce
                     StoredProcedure objSp = new StoredProcedure();
                     // Call stored procedure for update salesforce ids of marketo tactic
                     objSp.ExecuteStoreProcedure(db, "UpdateSalesforceIdForMarketoTactic", SalesForce);
-                    List<TacticLinkedTacMapping> lstTac_LinkTacMapping = new List<TacticLinkedTacMapping>();
+                    //List<TacticLinkedTacMapping> lstTac_LinkTacMapping = new List<TacticLinkedTacMapping>();
                     List<int> tacticIdList = new List<int>();
                     List<int> lstProcessTacIds = new List<int>();
                     List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
                     List<Plan_Campaign_Program> programList = new List<Plan_Campaign_Program>();
                     List<int> MarketoTacticIds = ListOfMarketoWithoutSFDC.Select(a => a.PlanTacticId).ToList();
-                    // ListOfMarketoTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => MarketoTacticIds.Contains(tactic.PlanTacticId)).ToList();
                     _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
                     #region "Create Tactic-Linked Tactic mapping list:- Push latest year plan tactic as Plan Tactic and other as linked"
                     if (ListOfMarketoWithoutSFDC != null && ListOfMarketoWithoutSFDC.Count > 0 && DtTable.Rows.Count > 0)
                     {
                         string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
-                        List<Plan> lstPlan = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
-                        List<int> planIds = new List<int>();
+                        List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).Select(p => p.PlanId).ToList();
                         List<Plan_Campaign_Program_Tactic> tblTactic = new List<Plan_Campaign_Program_Tactic>();
-                        if (lstPlan != null && lstPlan.Count > 0)
+                        if (planIds != null && planIds.Count > 0)
                         {
-                            planIds = lstPlan.Select(p => p.PlanId).ToList();
-                            campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && !campaign.IsDeleted).ToList();
-                            List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
-                            programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
-                            List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
+                            List<int> campaignIdList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && !campaign.IsDeleted).Select(c => c.PlanCampaignId).ToList();
+                            List<int> programIdList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).Select(c => c.PlanProgramId).ToList();
                             tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
                             ListOfMarketoWithoutSFDC = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
                         }
@@ -2740,27 +2706,31 @@ namespace Integration.Salesforce
                                     }
                                     #endregion
 
-                                    lstTac_LinkTacMapping.Add(objTacLinkMapping);
                                 }
                             }
                         }
-                        tacticIdList = ListOfMarketoWithoutSFDC.Select(tac => tac.PlanTacticId).ToList();
-                        #region "Validate Mappings with SFDC fields"
-                        if (campaignList.Count > 0 || programList.Count > 0 || ListOfMarketoWithoutSFDC.Count > 0)
-                        {
+                        //tacticIdList = ListOfMarketoWithoutSFDC.Select(tac => tac.PlanTacticId).ToList();
+                        // Commented By Nishant Sheth
+                        // Desc ::#2289 - Not need to update tactic while pulling process working, becuase of this process in email counts are wrong.
 
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                            _isResultError = SetMappingDetails();
-                            if (!_isResultError)
-                            {
-                                SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), ListOfMarketoWithoutSFDC, tacticIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
-                            }
-                            else
-                            {
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
-                            }
-                        }
+                        #region "Old Code"
+                        //#region "Validate Mappings with SFDC fields"
+                        //if (campaignList.Count > 0 || programList.Count > 0 || ListOfMarketoWithoutSFDC.Count > 0)
+                        //{
+
+                        //    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        //    _isResultError = SetMappingDetails();
+                        //    if (!_isResultError)
+                        //    {
+                        //        SyncEntityData<Plan_Campaign_Program_Tactic>(EntityType.Tactic.ToString(), ListOfMarketoWithoutSFDC, tacticIdList, ref lstProcessTacIds, lstTac_LinkTacMapping);
+                        //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Mapping details.");
+                        //    }
+                        //    else
+                        //    {
+                        //        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Error, "Set Mapping details.");
+                        //    }
+                        //}
+                        //#endregion 
                         #endregion
 
                     }
