@@ -8804,6 +8804,42 @@ namespace RevenuePlanner.Helpers
             return dataset;
         }
 
+        /// <summary>
+        /// Added by Mitesh Vaishnav reg. PL ticket 1646
+        /// This function returns datatable which contains details reg. plan, campaign, program, tactic and line item's planned cost and actual 
+        /// </summary>
+        /// <param name="PlanId">int unique planid of plan which data will be return</param>
+        /// <param name="budgetTab">string which contains value like Planned or Actual</param>
+        /// <returns></returns>
+        public DataTable GetPlannedActualDetail(int PlanId, string budgetTab)
+        {
+            DataTable dtPlanHirarchy = new DataTable();
+
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+
+            command = new SqlCommand("Plan_Budget_Cost_Actual_Detail", Connection);
+
+            using (command)
+            {
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@PlanId", PlanId);
+                command.Parameters.AddWithValue("@UserId", Sessions.User.UserId.ToString());
+                command.Parameters.AddWithValue("@SelectedTab", budgetTab);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(dtPlanHirarchy);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+
+            return dtPlanHirarchy;
+        }
+
         // Get Tactic line ite,
         public List<Plan_Campaign_Program_Tactic_LineItem> GetTacticLineItemList(string tacticId)
         {

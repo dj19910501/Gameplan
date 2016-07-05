@@ -1,14 +1,4 @@
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Plan_Budget_Cost_Actual_Detail]') AND type in (N'P', N'PC'))
-BEGIN
-EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[Plan_Budget_Cost_Actual_Detail] AS' 
-END
-GO
--- =============================================
--- Author:		Mitesh Vaishnav
--- Create date: 29th Jun 2016
--- Description:	Sp return datatable which contains plan,Campaign,Program,tactic and line item details with respective budget, cost and actual valus 
--- =============================================
-ALTER PROCEDURE [dbo].[Plan_Budget_Cost_Actual_Detail]
+CREATE PROCEDURE [dbo].[Plan_Budget_Cost_Actual_Detail]
 ( 
 @PlanId INT ,
 @UserId NVARCHAR(36),
@@ -474,40 +464,3 @@ For Period in ([CY1], [CY2], [CY3], [CY4],[CY5], [CY6], [CY7], [CY8],[CY9], [CY1
 
 
 END
-
-GO
-
-
-
-
-
-
--- ===========================Please put your script above this script=============================
--- Added By : Maitri Gandhi
--- Added Date : 2/22/2016
--- Description :Ensure versioning table exists & Update versioning table with script version
--- ======================================================================================
-
-IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Versioning'))
-BEGIN
-CREATE TABLE [dbo].[Versioning](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Release Name] [nvarchar](255) NOT NULL,
-	[Date Applied] [datetime] NOT NULL,
-	[Version] [nvarchar](255) NOT NULL
-) ON [PRIMARY]
-END
-GO
-
-declare @version nvarchar(255)
-declare @release nvarchar(255)
-set @release = 'July.2016'
-set @version = 'July.2016.1'
-declare @date as datetime
-set @date = getutcdate()
-
-if (NOT EXISTS(SELECT * FROM [dbo].[Versioning]  WHERE Version = @version))
-BEGIN
-insert into [dbo].[Versioning] values (@release, @date, @version)
-END
-GO

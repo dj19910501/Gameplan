@@ -8034,6 +8034,16 @@ namespace RevenuePlanner.Controllers
             return PartialView("_BudgetingPlanList", objHomePlan);
         }
 
+
+        //Added by Mitesh Vaishnav
+        //Function passed value if its convertable then return otherwise return 0
+        public Double ParseDoubleValue(string val)
+        {
+            Double OutVal = 0;
+            Double.TryParse(val, out OutVal);
+            return OutVal;
+        }
+
         /// <summary>
         /// Set the model for planned and actuals
         /// </summary>
@@ -8056,167 +8066,79 @@ namespace RevenuePlanner.Controllers
             List<BudgetModel> model = new List<BudgetModel>();
             BudgetModel obj;
 
-            //// Set Campaign data to Create Model.
-            var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
-            var campaignobj = campaign.Select(p => new
-            {
-                id = "c_" + p.PlanCampaignId.ToString(),
-                title = p.Title,
-                description = p.Description,
-                isOwner = Sessions.User.UserId == p.CreatedBy ? 0 : 1,
-                Budget = p.Plan_Campaign_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
-                BudgetMonth = p.Plan_Campaign_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
-                MainBudgeted = p.CampaignBudget,
-                createdBy = p.CreatedBy,
-                programs = (db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId.Equals(p.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pcpj => new
+           
+            //Added Sp part by mitesh
+            List<BudgetModel> model1 = new List<BudgetModel>();
+            DataTable dt = objSp.GetPlannedActualDetail(PlanId, budgetTab.ToString());
+            model = dt.AsEnumerable().Select(row => new BudgetModel
                 {
-                    id = "cp_" + pcpj.PlanProgramId.ToString(),
-                    title = pcpj.Title,
-                    description = pcpj.Description,
-                    isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
-                    Budget = pcpj.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
-                    BudgetMonth = pcpj.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
-                    MainBudgeted = pcpj.ProgramBudget,
-                    createdBy = pcpj.CreatedBy,
-                    tactic = (db.Plan_Campaign_Program_Tactic.Where(pcp => pcp.PlanProgramId.Equals(pcpj.PlanProgramId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pctj => new
+                    Id = row["Id"].ToString(),
+                    ActivityId = row["ActivityId"].ToString(),
+                    ActivityName = row["ActivityName"].ToString(),
+                    ParentActivityId = row["ParentActivityId"].ToString(),
+                    Budgeted = ParseDoubleValue(row["Cost"].ToString()),
+                    IsOwner = Convert.ToBoolean(row["IsOwner"]),
+                    BudgetMonth = new BudgetMonth()
                     {
-                        id = "cpt_" + pctj.PlanTacticId.ToString(),
-                        title = pctj.Title,
-                        description = pctj.Description,
-                        isOwner = Sessions.User.UserId == pctj.CreatedBy ? 0 : 1,
-                        Cost = pctj.Cost,
-                        Budget = budgetTab == Enums.BudgetTab.Planned ? pctj.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList()
-                                                                  : pctj.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(),
-                        BudgetMonth = pctj.Plan_Campaign_Program_Tactic_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
-                        CustomFieldEntities = db.CustomField_Entity.Where(entity => entity.EntityId.Equals(pctj.PlanTacticId) && entity.CustomField.EntityType.Equals(entTacticType)).ToList(),
-                        MainBudgeted = pctj.TacticBudget,
-                        createdBy = pctj.CreatedBy,
-                        isAfterApproved = Common.CheckAfterApprovedStatus(pctj.Status),
-                        lineitems = (db.Plan_Campaign_Program_Tactic_LineItem.Where(pcp => pcp.PlanTacticId.Equals(pctj.PlanTacticId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pclj => new
-                        {
-                            id = "cptl_" + pclj.PlanLineItemId.ToString(),
-                            title = pclj.Title,
-                            description = pclj.Description,
-                            isOwner = Sessions.User.UserId == pclj.CreatedBy ? 0 : 1,
-                            Cost = pclj.Cost,
-                            createdBy = pclj.CreatedBy,
-                            lineitemtype = pclj.LineItemTypeId,
-                            Budget = budgetTab == Enums.BudgetTab.Planned ? pclj.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList()
-                                                                     : pclj.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
-                        }).Select(pclj => pclj).Distinct().OrderBy(pclj => pclj.id)
-                    }).Select(pctj => pctj).Distinct().OrderBy(pctj => pctj.id)
-                }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
-            }).Select(p => p).Distinct().OrderBy(p => p.id);
-            //// Create BudgetModel based on PlanId.
-            Plan objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId.Equals(PlanId));
-            string parentPlanId = "0", parentCampaignId = "0", parentProgramId = "0", parentTacticId = "0", parentCustomId = "0";
-            if (objPlan != null)
-            {
-                AllocatedBy = objPlan.AllocatedBy;
-                List<BudgetedValue> lst = (from _bdgt in objPlan.Plan_Budget
-                                           select new BudgetedValue
-                                           {
-                                               Period = _bdgt.Period,
-                                               Value = _bdgt.Value
-                                           }).ToList();
+                        Jan = ParseDoubleValue(row["Y1"].ToString()),
+                        Feb = ParseDoubleValue(row["Y2"].ToString()),
+                        Mar = ParseDoubleValue(row["Y3"].ToString()),
+                        Apr = ParseDoubleValue(row["Y4"].ToString()),
+                        May = ParseDoubleValue(row["Y5"].ToString()),
+                        Jun = ParseDoubleValue(row["Y6"].ToString()),
+                        Jul = ParseDoubleValue(row["Y7"].ToString()),
+                        Aug = ParseDoubleValue(row["Y8"].ToString()),
+                        Sep = ParseDoubleValue(row["Y9"].ToString()),
+                        Oct = ParseDoubleValue(row["Y10"].ToString()),
+                        Nov = ParseDoubleValue(row["Y11"].ToString()),
+                        Dec = ParseDoubleValue(row["Y12"].ToString())
+                    },
+                    Allocated = ParseDoubleValue(row["TotalBudgetSum"].ToString()),
+                    Month = new BudgetMonth()
+                    {
+                        Jan = ParseDoubleValue(row["CY1"].ToString()),
+                        Feb = ParseDoubleValue(row["CY2"].ToString()),
+                        Mar = ParseDoubleValue(row["CY3"].ToString()),
+                        Apr = ParseDoubleValue(row["CY4"].ToString()),
+                        May = ParseDoubleValue(row["CY5"].ToString()),
+                        Jun = ParseDoubleValue(row["CY6"].ToString()),
+                        Jul = ParseDoubleValue(row["CY7"].ToString()),
+                        Aug = ParseDoubleValue(row["CY8"].ToString()),
+                        Sep = ParseDoubleValue(row["CY9"].ToString()),
+                        Oct = ParseDoubleValue(row["CY10"].ToString()),
+                        Nov = ParseDoubleValue(row["CY11"].ToString()),
+                        Dec = ParseDoubleValue(row["CY12"].ToString())
+                    },
+                    MainBudgeted = ParseDoubleValue(row["MainBudgeted"].ToString()),
+                    CreatedBy = new Guid(row["CreatedBy"].ToString()),
+                    isAfterApproved = Convert.ToBoolean(row["IsAfterApproved"]),
+                    isEditable = Convert.ToBoolean(row["IsEditable"]),
+                    ActivityType = row["ActivityType"].ToString(),
+                    ParentMonth = row["ActivityType"].ToString() == ActivityType.ActivityLineItem.ToString() ? new BudgetMonth()
+                    {
+                        Jan = ParseDoubleValue(row["CY1"].ToString()),
+                        Feb = ParseDoubleValue(row["CY2"].ToString()),
+                        Mar = ParseDoubleValue(row["CY3"].ToString()),
+                        Apr = ParseDoubleValue(row["CY4"].ToString()),
+                        May = ParseDoubleValue(row["CY5"].ToString()),
+                        Jun = ParseDoubleValue(row["CY6"].ToString()),
+                        Jul = ParseDoubleValue(row["CY7"].ToString()),
+                        Aug = ParseDoubleValue(row["CY8"].ToString()),
+                        Sep = ParseDoubleValue(row["CY9"].ToString()),
+                        Oct = ParseDoubleValue(row["CY10"].ToString()),
+                        Nov = ParseDoubleValue(row["CY11"].ToString()),
+                        Dec = ParseDoubleValue(row["CY12"].ToString())
+                    } : null
 
-                //// Set Plan data to BudgetModel.
-                obj = new BudgetModel();
-                obj.Id = objPlan.PlanId.ToString();
-                obj.ActivityId = "plan_" + objPlan.PlanId.ToString();
-                obj.ActivityName = objPlan.Title;
-                obj.ActivityType = ActivityType.ActivityPlan;
-                obj.ParentActivityId = "0";
-                obj.Budgeted = objPlan.Budget;
-                obj.IsOwner = true;
-                obj = GetMonthWiseData(obj, lst);
-                obj = GetMonthWiseDataForBudget(obj, lst);
-                obj.MainBudgeted = objPlan.Budget;
-                obj.CreatedBy = objPlan.CreatedBy;
-                obj.isAfterApproved = false;
-                obj.isEditable = false;
-                model.Add(obj);
-                parentPlanId = "plan_" + objPlan.PlanId.ToString();
-                foreach (var c in campaignobj)
-                {
-                    //// Set Campaign data to BudgetModel.
-                    obj = new BudgetModel();
-                    obj.Id = c.id.Replace("c_", "");
-                    obj.ActivityId = c.id;
-                    obj.ActivityName = c.title;
-                    obj.ActivityType = ActivityType.ActivityCampaign;
-                    obj.ParentActivityId = parentPlanId;
-                    obj.IsOwner = Convert.ToBoolean(c.isOwner);
-                    obj = GetMonthWiseData(obj, c.Budget);
-                    obj = GetMonthWiseDataForBudget(obj, c.BudgetMonth);
-                    obj.MainBudgeted = c.MainBudgeted;
-                    obj.CreatedBy = c.createdBy;
-                    obj.isEditable = false;
-                    obj.isAfterApproved = false;
-                    model.Add(obj);
-                    parentCampaignId = c.id;
-                    foreach (var p in c.programs)
-                    {
-                        //// Set Program data to BudgetModel.
-                        obj = new BudgetModel();
-                        obj.Id = p.id.Replace("cp_", "");
-                        obj.ActivityId = p.id;
-                        obj.ActivityName = p.title;
-                        obj.ActivityType = ActivityType.ActivityProgram;
-                        obj.ParentActivityId = parentCampaignId;
-                        obj.IsOwner = Convert.ToBoolean(p.isOwner);
-                        obj = GetMonthWiseData(obj, p.Budget);
-                        obj = GetMonthWiseDataForBudget(obj, p.BudgetMonth);
-                        obj.MainBudgeted = p.MainBudgeted;
-                        obj.CreatedBy = p.createdBy;
-                        obj.isEditable = false;
-                        obj.isAfterApproved = false;
-                        model.Add(obj);
-                        parentProgramId = p.id;
-                        foreach (var t in p.tactic)
-                        {
-                            //// Set Tactic data to BudgetModel.
-                            obj = new BudgetModel();
-                            obj.Id = t.id.Replace("cpt_", "");
-                            obj.ActivityId = t.id;
-                            obj.ActivityName = t.title;
-                            obj.ActivityType = ActivityType.ActivityTactic;
-                            obj.ParentActivityId = parentProgramId;
-                            obj.IsOwner = Convert.ToBoolean(t.isOwner);
-                            obj.Budgeted = t.Cost;
-                            obj = GetMonthWiseData(obj, t.Budget);
-                            obj = GetMonthWiseDataForBudget(obj, t.BudgetMonth);
-                            obj.CustomFieldEntities = t.CustomFieldEntities;
-                            obj.MainBudgeted = t.MainBudgeted;
-                            obj.CreatedBy = t.createdBy;
-                            obj.isEditable = false;
-                            obj.isAfterApproved = t.isAfterApproved;
-                            model.Add(obj);
-                            parentTacticId = t.id;
-                            foreach (var l in t.lineitems)
-                            {
-                                //// Set line item data to BudgetModel.
-                                obj = new BudgetModel();
-                                obj.Id = l.id.Replace("cptl_", "");
-                                obj.ActivityId = l.id;
-                                obj.ActivityName = l.title;
-                                obj.ActivityType = ActivityType.ActivityLineItem;
-                                obj.ParentActivityId = parentTacticId;
-                                obj.Budgeted = l.Cost;
-                                obj.IsOwner = Convert.ToBoolean(l.isOwner);
-                                obj = GetMonthWiseData(obj, l.Budget);
-                                obj.ParentMonth = obj.Month;
-                                obj.CreatedBy = l.createdBy;
-                                obj.isEditable = false;
-                                obj.isAfterApproved = t.isAfterApproved;
-                                obj.LineItemTypeId = l.lineitemtype;
-                                obj.BudgetMonth = new BudgetMonth();
-                                model.Add(obj);
-                            }
-                        }
-                    }
-                }
-            }
+                }).ToList();
+            //End Sp part by mitesh
+
+          
+            
+
+            Plan objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId.Equals(PlanId));
+            AllocatedBy = objPlan.AllocatedBy;
+            string parentPlanId = "0", parentCampaignId = "0", parentProgramId = "0", parentTacticId = "0", parentCustomId = "0";
 
             //Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
@@ -9274,12 +9196,12 @@ namespace RevenuePlanner.Controllers
             }
 
 
-            BudgetModel plan = model.SingleOrDefault(p => p.ActivityType == ActivityType.ActivityPlan);
-            string activityId = plan.ActivityId;
-            BudgetMonth obj = plan.Month;
-            BudgetMonth parent = plan.ParentMonth;
+            //BudgetModel plan = model.SingleOrDefault(p => p.ActivityType == ActivityType.ActivityPlan);
+            //string activityId = plan.ActivityId;
+            //BudgetMonth obj = plan.Month;
+            //BudgetMonth parent = plan.ParentMonth;
 
-            bool isEditable = model.Where(p => p.ActivityType == ActivityType.ActivityPlan.ToString()).Select(p => p.isEditable).FirstOrDefault();
+            //bool isEditable = model.Where(p => p.ActivityType == ActivityType.ActivityPlan.ToString()).Select(p => p.isEditable).FirstOrDefault();
 
             if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
