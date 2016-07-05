@@ -2975,27 +2975,7 @@ namespace RevenuePlanner.Controllers
                 return Json(new { }, JsonRequestBehavior.AllowGet);
             }
         }
-        #endregion
-
-        #region Prepare ViewBy List for Dropdown
-        /// <summary>
-        /// Added By : Sohel Pathan
-        /// Added Date : 28/10/2014
-        /// Description : Prepare a list for ViewBy Dropdown.
-        /// </summary>
-        /// <param name="getViewByList">flag that indicates whether to prepare new ViewBy list based on tactic list or not.</param>
-        /// <param name="tacticForAllTabs">List of all tactic of selected plan</param>
-        /// <returns>List of ViewBy options</returns>
-        private List<ViewByModel> prepareViewByList(bool getViewByList, List<Plan_Tactic> tacticForAllTabs)
-        {
-            List<ViewByModel> lstViewById = new List<ViewByModel>();
-            if (getViewByList)
-            {
-                lstViewById = Common.GetDefaultGanttTypes(tacticForAllTabs.ToList());
-            }
-            return lstViewById;
-        }
-        #endregion
+        #endregion        
 
         /// <summary>
         /// //Function to get current plan edit permission, PL #538
@@ -3924,47 +3904,7 @@ namespace RevenuePlanner.Controllers
             }
             return result;
         }
-
-        /// <summary>
-        /// Function to get program progress. Ticket #394 Apply styling on improvement activity in calendar
-        /// Added By: Dharmraj mangukiya.
-        /// Date: 2nd april, 2013
-        /// <param name="lstTactic">list of tactics of selected program</param>
-        /// <param name="planCampaignProgram">program object</param>
-        /// <param name="lstImprovementTactic">list of improvement tactics of selected plan</param>
-        /// <param name="PlanId">planId of selected program</param>
-        /// <returns>returns progress between 0 and 1</returns>
-        public double GetProgramProgressViewBy(List<Plan_Tactic> lstTactic, Plan_Campaign_Program planCampaignProgram, DateTime effectiveMinDate)
-        {
-            double result = 0;
-            //List<DateTime> EffectiveDateTimeList = new List<DateTime>();
-            //if (lstImprovementTactic != null && lstImprovementTactic.Count > 0)
-            //    EffectiveDateTimeList = lstImprovementTactic.Where(_date => _date.PlanId == PlanId).Select(_date => _date.EffectiveDate).ToList();
-
-            if (effectiveMinDate != null && effectiveMinDate != new DateTime())
-            {
-                //// Minimun date of improvement tactic
-                DateTime minDate = effectiveMinDate;
-
-                //// Start date of program
-                DateTime programStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaignProgram.StartDate));
-
-                //// List of all tactics that are affected by improvement tactic
-                var lstAffectedTactic = lstTactic.Where(tactic => tactic.objPlanTactic.PlanProgramId == planCampaignProgram.PlanProgramId && (tactic.objPlanTactic.StartDate >= minDate).Equals(true)
-                                                        )
-                                               .Select(tactic => tactic.objPlanTactic.StartDate)
-                                                .ToList();
-                if (lstAffectedTactic.Count > 0)
-                {
-                    //// minimum start Date of tactics
-                    DateTime tacticMinStartDate = lstAffectedTactic.Min();
-                    tacticMinStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, tacticMinStartDate));
-                    result = (tacticMinStartDate >= minDate) ? GetProgressResult(tacticMinStartDate, minDate, programStartDate, planCampaignProgram.StartDate, planCampaignProgram.EndDate) : 0;
-                }
-            }
-            return result;
-        }
-
+            
         public double GetProgramProgressViewByPerformance(List<Custom_Plan_Campaign_Program_Tactic> lstTactic, Custom_Plan_Campaign_Program planCampaignProgram, DateTime effectiveMinDate)
         {
             double result = 0;
@@ -4037,49 +3977,7 @@ namespace RevenuePlanner.Controllers
             }
             return result;
         }
-
-        /// <summary>
-        /// Function to get campaign progress. Ticket #394 Apply styling on improvement activity in calendar
-        /// Added By: Dharmraj mangukiya.
-        /// Date: 2nd april, 2013
-        /// </summary>
-        /// <param name="lstTactic">list of tactics of selected program</param>
-        /// <param name="planCampaign">campaign object</param>
-        /// <param name="lstImprovementTactic">list of improvement tactics of selected plan</param>
-        /// <param name="PlanId">planId of selected program</param>
-        /// <returns>returns progress between 0 and 1</returns>
-        public double GetCampaignProgressViewBy(List<Plan_Tactic> lstTactic, Plan_Campaign planCampaign, DateTime effectiveMinDate)
-        {
-            double result = 0;
-            //List<DateTime> EffectiveDateList = new List<DateTime>();
-            //EffectiveDateList = lstImprovementTactic.Where(_date => _date.PlanId == PlanId).Select(_date => _date.EffectiveDate).ToList();
-            if (effectiveMinDate != null && effectiveMinDate != new DateTime())
-            {
-                //// Minimun date of improvement tactic
-                DateTime minDate = effectiveMinDate;
-
-                //// Start date of Campaign
-                DateTime campaignStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaign.StartDate));
-
-                //// List of all tactics
-                var lstAllTactic = lstTactic.Where(tactic => (tactic.objPlanTactic.EndDate < CalendarStartDate || tactic.objPlanTactic.StartDate > CalendarEndDate).Equals(false));
-
-                //// List of all tactics that are affected by improvement tactic
-                var lstAffectedTactic = lstAllTactic.Where(tactic => (tactic.objPlanTactic.StartDate >= minDate).Equals(true) && tactic.PlanCampaignId == planCampaign.PlanCampaignId)
-                                                     .Select(tactic => tactic.objPlanTactic.StartDate)
-                                                     .ToList();
-
-                if (lstAffectedTactic != null && lstAffectedTactic.Count > 0)
-                {
-                    //// minimum start Date of tactics
-                    DateTime tacticMinStartDate = lstAffectedTactic.Min();
-                    tacticMinStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, tacticMinStartDate));
-                    result = (tacticMinStartDate >= minDate) ? GetProgressResult(tacticMinStartDate, minDate, campaignStartDate, planCampaign.StartDate, planCampaign.EndDate) : 0;
-                }
-            }
-            return result;
-        }
-
+       
         public double GetCampaignProgressViewByPerformance(List<Custom_Plan_Campaign_Program_Tactic> lstTactic, Plan_Campaign planCampaign, DateTime effectiveMinDate)
         {
             double result = 0;
@@ -4107,57 +4005,6 @@ namespace RevenuePlanner.Controllers
                     DateTime tacticMinStartDate = lstAffectedTactic.Min();
                     tacticMinStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, tacticMinStartDate));
                     result = (tacticMinStartDate >= minDate) ? GetProgressResult(tacticMinStartDate, minDate, campaignStartDate, planCampaign.StartDate, planCampaign.EndDate) : 0;
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Function to get progress. Ticket #394 Apply styling on improvement activity in calendar
-        /// Added By: Dharmraj mangukiya.
-        /// Date: 3rd april, 2013
-        /// </summary>
-        /// <param name="StartDate">start date of task</param>
-        /// <param name="Duration">duration of task</param>
-        /// <param name="lstTactic">list of tactics</param>
-        /// <param name="lstImprovementTactic">list of improvement tactics</param>
-        /// <returns>return progress between 0 and 1</returns>
-        public double GetProgress(string taskStartDate, double taskDuration, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, int PlanId)
-        {
-            double result = 0;
-            List<DateTime> EffectiveDateList = new List<DateTime>();
-            if (lstImprovementTactic != null && lstImprovementTactic.Count > 0)
-                EffectiveDateList = lstImprovementTactic.Where(improvementTactic => improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == PlanId).Select(improvementTactic => improvementTactic.EffectiveDate).ToList();
-            if (EffectiveDateList != null && EffectiveDateList.Count > 0)
-            {
-                //// Minimun date of improvement tactic
-                DateTime minDate = EffectiveDateList.Min();
-
-                //// List of all tactics that are affected by improvement tactic
-                var lstAffectedTactic = lstTactic.Where(tactic => (tactic.objPlanTactic.StartDate >= minDate).Equals(true) && tactic.PlanId == PlanId)
-                                               .Select(tactic => tactic.objPlanTactic.StartDate)
-                                                 .ToList();
-                if (lstAffectedTactic.Count > 0)
-                {
-                    //// Minimum start Date of tactics
-                    DateTime tacticMinStartDate = lstAffectedTactic.Min();
-                    tacticMinStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, tacticMinStartDate));
-                    //// If any tactic affected by at least one improvement tactic
-                    if (tacticMinStartDate >= minDate)
-                    {
-                        //// Difference between task start date and tactic minimum date
-                        double daysDifference = (tacticMinStartDate - Convert.ToDateTime(taskStartDate)).TotalDays;
-
-                        //// If no. of days are more then zero then it will return progress
-                        if (daysDifference > 0)
-                        {
-                            result = (daysDifference / taskDuration);
-                        }
-                        else
-                        {
-                            result = 1;
-                        }
-                    }
                 }
             }
             return result;
@@ -4243,46 +4090,7 @@ namespace RevenuePlanner.Controllers
             }
             return result;
         }
-
-        /// <summary>
-        /// Added By :- Sohel Pathan
-        /// Date :- 09/10/2014
-        /// Description :- Function to get minimum start date for custom field
-        /// </summary>
-        /// <param name="currentGanttTab">Selected Plan Gantt Type (Tactic and so on)</param>
-        /// <param name="typeId">Selected Id as per selected GanttTab</param>
-        /// <param name="lstCampaign">List of campaign</param>
-        /// <param name="lstProgram">List of Program</param>
-        /// <param name="lstTactic">List of Tactic</param>
-        /// <param name="IsCampaign">flag to indicate campaign</param>
-        /// <param name="IsProgram">flag to indicate program</param>
-        /// <returns>Returns the min start date for program and Campaign</returns>
-        public DateTime GetMinStartDateForCustomField(PlanGanttTypes currentGanttTab, int typeId, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, bool IsCampaign = false, bool IsProgram = false)
-        {
-            List<int> queryPlanProgramId = new List<int>();
-            DateTime minDateTactic = DateTime.Now;
-
-            //// Check the case with selected plan gantt type and if it's match then extract the min date from tactic list 
-            switch (currentGanttTab)
-            {
-                //// If selected plan Gantt type is Custom at that time we will extract tactic based on Custom id
-                case PlanGanttTypes.Custom:
-                    queryPlanProgramId = lstTactic.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == typeId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    minDateTactic = lstTactic.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == typeId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
-                    break;
-                default:
-                    break;
-            }
-
-            //// Get the min start date of Program and Campaign.
-            List<int> queryPlanCampaignId = lstProgram.Where(program => queryPlanProgramId.Contains(program.PlanProgramId)).Select(program => program.PlanCampaignId).ToList<int>();
-            DateTime minDateProgram = lstProgram.Where(program => queryPlanProgramId.Contains(program.PlanProgramId)).Select(program => program.StartDate).Min();
-            DateTime minDateCampaign = lstCampaign.Where(campaign => queryPlanCampaignId.Contains(campaign.PlanCampaignId)).Select(campaign => campaign.StartDate).Min();
-
-            //// return min date among tactic program and campaign
-            return new[] { minDateTactic, minDateProgram, minDateCampaign }.Min();
-        }
-
+               
         /// <summary>
         /// Function to get min start date using planID
         /// </summary>
@@ -4386,46 +4194,7 @@ namespace RevenuePlanner.Controllers
             //// return min date among tactic program and campaign
             return new[] { minDateTactic, minDateProgram, minDateCampaign }.Min();
         }
-
-        /// <summary>
-        /// Added By :- Sohel Pathan
-        /// Date :- 09/10/2014
-        /// Description :- Function to get maximum end date for custom field
-        /// </summary>
-        /// <param name="currentGanttTab">Selected Plan Gantt Type (Tactic and so on)</param>
-        /// <param name="typeId">Selected Id as per selected GanttTab</param>
-        /// <param name="planid">Planid of selected plan</param>
-        /// <param name="lstCampaign">List of campaign </param>
-        /// <param name="lstProgram">List of Program</param>
-        /// <param name="lstTactic">List of Tactic</param>
-        /// <param name="IsCampaign">flag to indicate campaign</param>
-        /// <param name="IsProgram">flag to indicate program</param>
-        /// <returns>Return the max end date for program and Campaign</returns>
-        public DateTime GetMaxEndDateForCustomField(PlanGanttTypes currentGanttTab, int typeId, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, bool IsCampaign = false, bool IsProgram = false)
-        {
-            List<int> queryPlanProgramId = new List<int>();
-            DateTime maxDateTactic = DateTime.Now;
-
-            //// Check the case with selected plan gantt type and if it's match then extract the max date from tactic list
-            switch (currentGanttTab)
-            {
-                case PlanGanttTypes.Custom:
-                    queryPlanProgramId = lstTactic.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == typeId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    maxDateTactic = lstTactic.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == typeId).Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                    break;
-                default:
-                    break;
-            }
-
-            //// Get the max end start date of Program and Campaign.
-            List<int> queryPlanCampaignId = lstProgram.Where(program => queryPlanProgramId.Contains(program.PlanProgramId)).Select(program => program.PlanCampaignId).ToList<int>();
-            DateTime maxDateProgram = lstProgram.Where(program => queryPlanProgramId.Contains(program.PlanProgramId)).Select(program => program.EndDate).Max();
-            DateTime maxDateCampaign = lstCampaign.Where(campaign => queryPlanCampaignId.Contains(campaign.PlanCampaignId)).Select(campaign => campaign.EndDate).Max();
-
-            //// return max date among tactic program and campaign
-            return new[] { maxDateTactic, maxDateProgram, maxDateCampaign }.Max();
-        }
-
+               
         /// <summary>
         /// Function to get max end date using planID
         /// </summary>
@@ -4529,100 +4298,7 @@ namespace RevenuePlanner.Controllers
             //// return max date among tactic program and campaign
             return new[] { maxDateTactic, maxDateProgram, maxDateCampaign }.Max();
         }
-
-        /// <summary>
-        /// Created By : Sohel Pathan
-        /// Created Date : 19/09/2014
-        /// Description : Function to get upper border for plan and campaign, if plan does have improvement tactic
-        /// </summary>
-        /// <param name="lstImprovementTactics">list of improvement tactics of one or more plans</param>
-        /// <param name="planId">plan id of selected plan</param>
-        /// <returns>name of upper border class</returns>
-        public string GetColorBasedOnImprovementActivity(List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactics, int planId)
-        {
-            if (lstImprovementTactics.Count > 0)
-            {
-                if (lstImprovementTactics.Select(improvementTactic => improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Contains(planId))
-                {
-                    return Common.COLORC6EBF3_WITH_BORDER;
-                }
-                else
-                {
-                    return string.Empty;
-                }
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Date: 11/19/2013
-        /// Function to get minimum date for stage and businessUnit task.
-        /// </summary>
-        /// <param name="lstCampaign">list od campaigns</param>
-        /// <param name="lstProgram">list of programs</param>
-        /// <param name="lstTactic">list of tactics</param>
-        /// <returns>returns minimum date of stage or businessUnit task for GANNT CHART.</returns>
-        public DateTime GetMinStartDateStageAndBusinessUnit(List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic)
-        {
-            //// Get list of program ids
-            List<int> queryPlanProgramId = lstTactic.Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-            //// Get list of campaign ids
-            List<int> queryPlanCampaignId = lstProgram.Where(program => queryPlanProgramId.Contains(program.PlanProgramId)).Select(program => program.PlanCampaignId).ToList<int>();
-
-            //// Get minimum start date from tactic list
-            DateTime minDateTactic = lstTactic.Select(tactic => tactic.objPlanTactic.StartDate).Min();
-            //// Get minimum start date from program list
-            DateTime minDateProgram = lstProgram.Where(program => queryPlanProgramId.Contains(program.PlanProgramId)).Select(program => program.StartDate).Min();
-            //// Get minimum start date from campaign list
-            DateTime minDateCampaign = lstCampaign.Where(campaign => queryPlanCampaignId.Contains(campaign.PlanCampaignId)).Select(campaign => campaign.StartDate).Min();
-
-            //// return min date among tactic program and campaign
-            return new[] { minDateTactic, minDateProgram, minDateCampaign }.Min();
-        }
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Date: 11/19/2013
-        /// Function to get maximum date for stage and businessUnit task.
-        /// Modfied By: Maninder Singh Wadhva.
-        /// Reason: To show task whose either start or end date or both date are outside current view.
-        /// </summary>
-        /// <param name="lstCampaign">list od campaigns</param>
-        /// <param name="lstProgram">list of programs</param>
-        /// <param name="lstTactic">list of tactics</param>
-        /// <returns>returns maximum date for stage or businessUnit  task for GANNT CHART.</returns>
-        public DateTime GetMaxEndDateStageAndBusinessUnit(List<Plan_Campaign> lstCampaign, List<Custom_Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic)
-        {
-            //// Get list of program ids
-            List<int> queryPlanProgramId = lstTactic.Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-            //// Get list of campaign ids
-            List<int> queryPlanCampaignId = lstProgram.Where(program => queryPlanProgramId.Contains(program.PlanProgramId)).Select(program => program.PlanCampaignId).ToList<int>();
-            DateTime maxDateTactic, maxDateProgram, maxDateCampaign;
-            maxDateTactic = maxDateProgram = maxDateCampaign = DateTime.Now;
-            //// Get maximmum end date from tactic list
-            if (lstTactic.Count > 0)
-            {
-                maxDateTactic = lstTactic.Select(tactic => tactic.objPlanTactic.EndDate).Max();
-            }
-            //// Get maximmum end date from program list
-            if (lstProgram.Count > 0)
-            {
-                maxDateProgram = lstProgram.Where(program => queryPlanProgramId.Contains(program.PlanProgramId)).Select(program => program.EndDate).Max();
-            }
-            //// Get maximmum end date from campaign list
-            if (lstCampaign.Count > 0)
-            {
-                maxDateCampaign = lstCampaign.Where(campaign => queryPlanCampaignId.Contains(campaign.PlanCampaignId)).Select(campaign => campaign.EndDate).Max();
-            }
-
-            //// return max date among tactic program and campaigns
-            return new[] { maxDateTactic, maxDateProgram, maxDateCampaign }.Max();
-        }
-
+     
         public DateTime GetMaxEndDateStageAndBusinessUnitPerformance(List<Plan_Campaign> lstCampaign, List<Custom_Plan_Campaign_Program> lstProgram, List<Custom_Plan_Campaign_Program_Tactic> lstTactic)
         {
             //// Get list of program ids
@@ -4688,231 +4364,6 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #region GetNumberOfActivityPerMonthByPlanId
-        /// <summary>
-        /// Get Number of Activity Per Month for Activity Distribution Chart for Home/Plan header.
-        /// </summary>
-        /// <param name="planid">plan id of selected plan</param>
-        /// <param name="strparam">Upcoming Activity dropdown selected option e.g. planyear, thisyear</param>
-        /// <returns>returns Activity Chart object as jsonresult</returns>
-        public JsonResult GetNumberOfActivityPerMonthByPlanId(int planid, string strparam, bool isSingle)
-        {
-            //// Get planyear of the selected Plan
-            string planYear = objDbMrpEntities.Plans.Single(plan => plan.PlanId.Equals(planid)).Year;
-
-            /// if strparam value null then set planYear as default value.
-            if (string.IsNullOrEmpty(strparam))
-                strparam = planYear;
-
-            CalendarStartDate = DateTime.Now;
-            CalendarEndDate = DateTime.Now;
-            //// Set start and end date for calender
-            Common.GetPlanGanttStartEndDate(planYear, strparam, ref CalendarStartDate, ref CalendarEndDate);
-
-            //// Start Maninder Singh Wadhva : 11/15/2013 - Getting list of tactic for view control for plan version id.
-            //// Select campaign(s) of plan whose IsDelete=false.
-            var lstCampaign = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.PlanId.Equals(planid) && campaign.IsDeleted.Equals(false)).ToList()
-                                                            .Where(campaign => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate, CalendarEndDate, campaign.StartDate, campaign.EndDate).Equals(false));
-
-            //// Select campaignIds.
-            List<int> lstCampaignId = lstCampaign.Select(campaign => campaign.PlanCampaignId).ToList<int>();
-
-            //// Select program(s) of campaignIds whose IsDelete=false.
-            var lstProgram = objDbMrpEntities.Plan_Campaign_Program.Where(program => lstCampaignId.Contains(program.PlanCampaignId) && program.IsDeleted.Equals(false))
-                                                  .Select(program => program)
-                                                  .ToList()
-                                                  .Where(program => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
-                                                                                                            CalendarEndDate,
-                                                                                                            program.StartDate,
-                                                                                                            program.EndDate).Equals(false));
-
-            //// Select programIds.
-            List<int> lstProgramId = lstProgram.Select(program => program.PlanProgramId).ToList<int>();
-
-            //// Selecte tactic(s) from selected programs
-            List<Plan_Campaign_Program_Tactic> objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
-                                                                                                                                    lstProgramId.Contains(tactic.PlanProgramId)).ToList()
-                                                                                                                                .Where(tactic =>
-                                                                                                                                    //// Checking start and end date
-                                                                                                                                Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
-                                                                                                                                                CalendarEndDate,
-                                                                                                                                                tactic.StartDate,
-                                                                                                                                                tactic.EndDate).Equals(false)).ToList();
-
-            //// Prepare an array of month as per selected dropdown paramter
-            int[] monthArray = new int[12];
-
-            if (objPlan_Campaign_Program_Tactic != null && objPlan_Campaign_Program_Tactic.Count() > 0)
-            {
-                IEnumerable<string> differenceItems;
-                int year = 0;
-                if (strparam != null)
-                {
-                    int tempYear;
-                    bool isNumeric = int.TryParse(strparam, out tempYear);
-
-                    if (isNumeric)
-                    {
-                        year = tempYear;
-                    }
-                }
-                DateTime startDate, endDate;
-                int monthNo = 0;
-                foreach (Plan_Campaign_Program_Tactic tactic in objPlan_Campaign_Program_Tactic)
-                {
-                    startDate = endDate = new DateTime();
-                    startDate = Convert.ToDateTime(tactic.StartDate);
-                    endDate = Convert.ToDateTime(tactic.EndDate);
-
-                    if (year != 0)
-                    {
-                        if (startDate.Year == year)
-                        {
-                            if (startDate.Year == endDate.Year)
-                            {
-                                endDate = new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month));
-                            }
-                            else
-                            {
-                                endDate = new DateTime(startDate.Year, 12, 31);
-                            }
-
-                            differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
-
-                            foreach (string objDifference in differenceItems)
-                            {
-                                monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
-                                if (monthNo == 1)
-                                {
-                                    monthArray[0] = monthArray[0] + 1;
-                                }
-                                else
-                                {
-                                    monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
-                                }
-                            }
-                        }
-                        else if (endDate.Year == year)
-                        {
-                            if (startDate.Year != year)
-                            {
-                                startDate = new DateTime(endDate.Year, 01, 01);
-                                differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
-                                foreach (string objDifference in differenceItems)
-                                {
-                                    monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
-                                    if (monthNo == 1)
-                                    {
-                                        monthArray[0] = monthArray[0] + 1;
-                                    }
-                                    else
-                                    {
-                                        monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (strparam.Equals(Enums.UpcomingActivities.thismonth.ToString(), StringComparison.OrdinalIgnoreCase))
-                    {
-                        differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
-
-                        foreach (string objDifference in differenceItems)
-                        {
-                            monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
-                            if (monthNo == DateTime.Now.Month)
-                            {
-                                if (monthNo == 1)
-                                {
-                                    monthArray[0] = monthArray[0] + 1;
-                                }
-                                else
-                                {
-                                    monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
-                                }
-                            }
-                        }
-                    }
-                    else if (strparam.Equals(Enums.UpcomingActivities.thisquarter.ToString(), StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (DateTime.Now.Month == 1 || DateTime.Now.Month == 2 || DateTime.Now.Month == 3)
-                        {
-                            if (startDate.Month == 1 || startDate.Month == 2 || startDate.Month == 3 || endDate.Month == 1 || endDate.Month == 2 || endDate.Month == 3)
-                            {
-                                monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q1), startDate, endDate, monthArray);
-                            }
-                        }
-                        else if (DateTime.Now.Month == 4 || DateTime.Now.Month == 5 || DateTime.Now.Month == 6)
-                        {
-                            if (startDate.Month == 4 || startDate.Month == 5 || startDate.Month == 6 || endDate.Month == 4 || endDate.Month == 5 || endDate.Month == 6)
-                            {
-                                monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q2), startDate, endDate, monthArray);
-                            }
-                        }
-                        else if (DateTime.Now.Month == 7 || DateTime.Now.Month == 8 || DateTime.Now.Month == 9)
-                        {
-                            if (startDate.Month == 7 || startDate.Month == 8 || startDate.Month == 9 || endDate.Month == 7 || endDate.Month == 8 || endDate.Month == 9)
-                            {
-                                monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q3), startDate, endDate, monthArray);
-                            }
-                        }
-                        else if (DateTime.Now.Month == 10 || DateTime.Now.Month == 11 || DateTime.Now.Month == 12)
-                        {
-                            if (startDate.Month == 10 || startDate.Month == 11 || startDate.Month == 12 || endDate.Month == 10 || endDate.Month == 11 || endDate.Month == 12)
-                            {
-                                monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q4), startDate, endDate, monthArray);
-                            }
-                        }
-                    }
-                }
-            }
-
-            ActivityChart objActivityChart;
-            string strMonthName;
-            //// Prepare Activity Chart list
-            List<ActivityChart> lstActivityChart = new List<ActivityChart>();
-            for (int month = 0; month < monthArray.Count(); month++)
-            {
-                objActivityChart = new ActivityChart();
-                strMonthName = string.Empty;
-                strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month + 1);
-
-                if (month == 0)
-                {
-                    objActivityChart.Month = strMonthName[0].ToString();
-                }
-                else
-                {
-                    if (month % 3 == 0)
-                    {
-                        objActivityChart.Month = strMonthName[0].ToString();
-                    }
-                    else
-                    {
-                        objActivityChart.Month = string.Empty;
-                    }
-                    if (month == 11)
-                    {
-                        objActivityChart.Month = strMonthName[0].ToString();
-                    }
-                }
-                if (monthArray[month] == 0)
-                {
-                    objActivityChart.NoOfActivity = string.Empty;
-                }
-                else
-                {
-                    objActivityChart.NoOfActivity = monthArray[month].ToString();
-                }
-
-                objActivityChart.Color = Common.ActivityChartColor;
-                lstActivityChart.Add(objActivityChart);
-            }
-
-            //// return Activity Chart list as Json Result object
-            return Json(new { lstchart = lstActivityChart.ToList() }, JsonRequestBehavior.AllowGet);
-        }
-        #endregion
 
         #region GetNumberOfActivityPerMonthByMultiplePlanId
         /// <summary>
@@ -7071,8 +6522,11 @@ namespace RevenuePlanner.Controllers
                 //    Status = Convert.ToString(row["Status"]),
                 //    Title = Convert.ToString(row["Title"])
                 //}).ToList();
-
-                List<Plan_Campaign> campaignList = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
+                List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
+                if ( dsPlanCampProgTac != null && dsPlanCampProgTac.Tables[1] != null)
+                {
+                    campaignList = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
+                }
 
                 objCache.AddCache(Enums.CacheObject.Campaign.ToString(), campaignList);
 
@@ -7101,7 +6555,11 @@ namespace RevenuePlanner.Controllers
                 //    Status = Convert.ToString(row["Status"]),
                 //    Title = Convert.ToString(row["Title"])
                 //}).ToList();
-                List<Plan_Campaign_Program> programList = Common.GetSpProgramList(dsPlanCampProgTac.Tables[2]);
+                List<Plan_Campaign_Program> programList = new List<Plan_Campaign_Program>();
+                if (dsPlanCampProgTac != null && dsPlanCampProgTac.Tables[2] != null)
+                {
+                    programList = Common.GetSpProgramList(dsPlanCampProgTac.Tables[2]);
+                }
 
                 objCache.AddCache(Enums.CacheObject.Program.ToString(), programList);
 
@@ -7152,22 +6610,22 @@ namespace RevenuePlanner.Controllers
                 //    }
                 //}
                 for (int i = 0; i < PlanIds.Count; i++)
-                {
-                    List<int> planTacticIds = customtacticList.Where(tact => tact.PlanId == PlanIds[i]).Select(tact => tact.PlanTacticId).ToList();
-                    List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
-                                                                join lst in planTacticIds on tbl.EntityId equals lst
-                                                                select new CustomField_Entity
-                                                                {
-                                                                    EntityId = tbl.EntityId,
-                                                                    CustomFieldId = tbl.CustomFieldId,
-                                                                    Value = tbl.Value
-                                                                }).ToList();
+                {                 
+                        List<int> planTacticIds = customtacticList.Where(tact => tact.PlanId == PlanIds[i]).Select(tact => tact.PlanTacticId).ToList();
+                        List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
+                                                                    join lst in planTacticIds on tbl.EntityId equals lst
+                                                                    select new CustomField_Entity
+                                                                    {
+                                                                        EntityId = tbl.EntityId,
+                                                                        CustomFieldId = tbl.CustomFieldId,
+                                                                        Value = tbl.Value
+                                                                    }).ToList();
 
-                    List<int> AllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false, customfieldlist);
-                    if (AllowedEntityIds.Count > 0)
-                    {
-                        lstAllowedEntityIds.AddRange(AllowedEntityIds);
-                    }
+                        List<int> AllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false, customfieldlist);
+                        if (AllowedEntityIds.Count > 0)
+                        {
+                            lstAllowedEntityIds.AddRange(AllowedEntityIds);
+                        }                  
 
                 }
 

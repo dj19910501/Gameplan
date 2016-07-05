@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace RevenuePlanner.Test.Controllers
 {
@@ -1938,6 +1939,500 @@ namespace RevenuePlanner.Test.Controllers
             }
         }
 
+        #endregion
+
+        #region Get TacticType List For Filter
+        /// <summary>
+        /// To check to Get TacticType List For Filter
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_TacticType_List_For_Filter()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get TacticType List For Filter.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objHomeController.Url = new UrlHelper(
+    new RequestContext(
+        objHomeController.HttpContext, new RouteData()
+    ),
+    routes
+);
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+          
+            var result = objHomeController.GetTacticTypeListForFilter(PlanId.ToString()) as Task<JsonResult>;
+
+            if (result.Result != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Set Session For Plan
+        /// <summary>
+        /// To check to Set Session For Plan
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Set_Session_For_Plan()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Set Session For Plan.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objHomeController.Url = new UrlHelper(
+    new RequestContext(
+        objHomeController.HttpContext, new RouteData()
+    ),
+    routes
+);
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+
+            var result = objHomeController.SetSessionPlan(PlanId.ToString()) as JsonResult;
+
+            if (result.Data != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Bind Upcoming Activites Values
+        /// <summary>
+        /// To check to Bind Upcoming Activites Values
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Bind_Upcoming_Activites_Values()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Bind Upcoming Activites Values.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objHomeController.Url = new UrlHelper(
+    new RequestContext(
+        objHomeController.HttpContext, new RouteData()
+    ),
+    routes
+);
+            var TaskData  = DataHelper.GetPlan(Sessions.User.ClientId);
+            int PlanId = TaskData.PlanId;
+            Sessions.PlanId = PlanId;
+            string Year = TaskData.Year;
+            var result = objHomeController.BindUpcomingActivitesValues(PlanId.ToString(),Year) as JsonResult;
+
+            if (result.Data != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Get Custom Attributes for Plan
+        /// <summary>
+        /// To check to Get Custom Attributes for Plan
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_Custom_Attributes()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Custom Attributes for Plan.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+
+
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+           
+            var result = objHomeController.GetCustomAttributes() as JsonResult;
+
+            if (result.Data != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Get Plans
+        /// <summary>
+        /// To check to Get Plans for Home Screen.
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_Plans_Home()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Plans for Home Screen.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+
+
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+            string ActiveMenu = Enums.ActiveMenu.Home.ToString();
+            var result = objHomeController.GetPlans(ActiveMenu) as JsonResult;
+
+            if (result.Data != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+
+        /// <summary>
+        /// To check to Get Plans for Plan Screen.
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_Plans_Plan()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Plans for Plan Screen.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+
+
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+            string ActiveMenu = Enums.ActiveMenu.Plan.ToString();
+            var result = objHomeController.GetPlans(ActiveMenu) as JsonResult;
+
+            if (result.Data != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+
+        /// <summary>
+        /// To check to Get Plans for Report Screen.
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_Plans_Report()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Plans for Report Screen.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+
+
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+            string ActiveMenu = Enums.ActiveMenu.Report.ToString();
+            var result = objHomeController.GetPlans(ActiveMenu) as JsonResult;
+
+            if (result.Data != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Check User Id
+        /// <summary>
+        /// To check User Id
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Check_UserId()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Check User Id.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+
+
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+            string UserId = Sessions.User.UserId.ToString();
+            var result = objHomeController.CheckUserId(UserId) as JsonResult;
+
+            if (result.Data != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Get Owner List For Filter
+        /// <summary>
+        /// To Get Owner List For Filter
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_Owner_List_For_Filter()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Owner List For Filter.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+
+
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+            string UserId = Sessions.User.UserId.ToString();
+            string ActiveMenu = Enums.ActiveMenu.Home.ToString();
+            string viewBy = Enums.EntityType.Tactic.ToString();
+            var result = objHomeController.GetOwnerListForFilter(PlanId.ToString(),viewBy,ActiveMenu) as Task<JsonResult>;
+
+            if (result != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Load Change Log
+        /// <summary>
+        /// To Get Load Change Log
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Load_Change_Log()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To Get Load Change Log.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+
+
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+            
+            var result = objHomeController.LoadChangeLog(PlanId) as PartialViewResult;
+
+            if (result != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Get Number Of Activity Per Month
+        /// <summary>
+        /// To Get Number Of Activity Per Month.
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_Number_Of_Activity_Per_Month()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To Get Number Of Activity Per Month.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+
+            var TaskData = DataHelper.GetPlan(Sessions.User.ClientId);
+            int PlanId = TaskData.PlanId;
+            Sessions.PlanId = PlanId;
+            string strParam = TaskData.Year.ToString();
+            bool isMultiyear = false;
+
+            var result = objHomeController.GetNumberOfActivityPerMonthPer(PlanId.ToString(),strParam,isMultiyear) as Task<JsonResult>;
+
+            if (result != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Get Default URL
+        /// <summary>
+        /// To Get Default URL.
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_default_URL()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To Get Default URL.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+            
+            var result = objHomeController.Homezero() as ViewResult;
+
+            if (result != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewData.Values);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Get Current Plan Permission Detail
+        /// <summary>
+        /// To Get Current Plan Permission Detail.
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_Current_Plan_Permission_Detail()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Current Plan Permission Detail.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.PlanId = PlanId;
+
+            var result = objHomeController.GetCurrentPlanPermissionDetail(PlanId) as JsonResult;
+
+            if (result.Data != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
+        #endregion
+
+        #region Get Plan Data for Home Screen
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Home_Plan()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Plan Data for Home Screen.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            var TaskData = DataHelper.GetPlan(Sessions.User.ClientId);
+            int PlanId = TaskData.PlanId;
+            Sessions.PlanId = PlanId;
+            string Year = TaskData.Year;
+
+            var result = objHomeController.HomePlan(PlanId.ToString(),Year) as PartialViewResult;
+
+            if (result != null)
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+
+        }
         #endregion
     }
 }
