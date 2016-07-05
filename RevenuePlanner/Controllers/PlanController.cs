@@ -1027,7 +1027,7 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { }, JsonRequestBehavior.AllowGet);
 
-        }     
+        }
         #endregion
 
         #region Get Multiple plans data
@@ -2601,7 +2601,7 @@ namespace RevenuePlanner.Controllers
                 projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue
             }, JsonRequestBehavior.AllowGet);
         }
-    
+
         /// <summary>
         /// Added By Mitesh
         /// Action to delete line item
@@ -6594,18 +6594,18 @@ namespace RevenuePlanner.Controllers
         /// View fro the initial render page 
         /// </summary>
         /// <returns></returns>
-        public ActionResult Budgeting(int PlanId = 0, bool isGridView = false, int selectedid=0) // Added by Komal Rawal for 2013 to identify grid view // add selectedid by devanshi for pl #2213
+        public ActionResult Budgeting(int PlanId = 0, bool isGridView = false, int selectedid = 0) // Added by Komal Rawal for 2013 to identify grid view // add selectedid by devanshi for pl #2213
         {
             // Added by Arpita Soni for Ticket #2202 on 05/24/2016 
             if (PlanId == 0)
             {
                 //Modified By Komal rawal for #2283 if session plan id is 0 then get plan from last view data or the first plan of the year.
-                if(Sessions.PlanId == 0)
+                if (Sessions.PlanId == 0)
                 {
                     var Label = Enums.FilterLabel.Plan.ToString();
                     var FinalSetOfPlanSelected = "";
                     var LastSetOfPlanSelected = new List<string>();
-                    var SetOFLastViews  = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
+                    var SetOFLastViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
                     var SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.UserId).ToList();
 
                     FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.IsDefaultPreset == true).Select(listview => listview.FilterValues).FirstOrDefault();
@@ -6621,29 +6621,29 @@ namespace RevenuePlanner.Controllers
                     {
                         PlanId = Convert.ToInt32(LastSetOfPlanSelected.FirstOrDefault());
                     }
-                    if(PlanId == 0)
+                    if (PlanId == 0)
                     {
-                        List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false  && plan.Model.ClientId == Sessions.User.ClientId).ToList();
-                      
+                        List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId).ToList();
+
                         string year = Convert.ToString(DateTime.Now.Year);
-                        var checkcurrentplan = tblPlan.Where(plan =>!plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault();
+                        var checkcurrentplan = tblPlan.Where(plan => !plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault();
                         if (checkcurrentplan != null)
                         {
                             PlanId = tblPlan.OrderBy(p => p.Title).FirstOrDefault().PlanId;
                         }
                         else
                         {
-                            PlanId = tblPlan.OrderByDescending(p => Convert.ToInt32(p.Year)).OrderBy(p => p.Title).ToList().FirstOrDefault().PlanId; 
+                            PlanId = tblPlan.OrderByDescending(p => Convert.ToInt32(p.Year)).OrderBy(p => p.Title).ToList().FirstOrDefault().PlanId;
                         }
                     }
-                   
+
                 }
                 else
                 {
                     PlanId = Sessions.PlanId;
                 }
                 //End
-               
+
             }
             ViewBag.ActiveMenu = Enums.ActiveMenu.Finance;
             HomePlanModel planmodel = new Models.HomePlanModel();
@@ -6713,8 +6713,8 @@ namespace RevenuePlanner.Controllers
 
                 planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(PlanId, onlyplan: true);
                 ViewBag.IsPlanCreateAll = IsPlanCreateAll;
-                ViewBag.IsQuarter = IsQuarter;	
-//added by devanshi for PL #2213
+                ViewBag.IsQuarter = IsQuarter;
+                //added by devanshi for PL #2213
                 ViewBag.SelectedId = selectedid.ToString();
                 #endregion
             }
@@ -11277,8 +11277,8 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return model;
-        }            
-   
+        }
+
         /// <summary>
         /// Calculate the LineItem cost value based on it's parent Tactic weightage.
         /// </summary>
@@ -11790,7 +11790,7 @@ namespace RevenuePlanner.Controllers
 
             return View("AddActual", planmodel);
         }
-      
+
         /// <summary>
         /// Function to prepare list of custom fields and customfield options
         /// </summary>
@@ -12561,7 +12561,7 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj.value = HttpUtility.HtmlEncode(Campaignitem.Title);
                                     campaigndataobj.locked = IsEditable;
                                     campaigndataobj.style = cellTextColor;
-                                    campaigndataobjlist.Add(campaigndataobj);                                 
+                                    campaigndataobjlist.Add(campaigndataobj);
 
                                     campaigndataobj = new Plandataobj();
                                     //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") +  "<div class=add_Remove_Entity id=CampaignAdd onclick=javascript:AddRemoveEntity(this) altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
@@ -12723,7 +12723,7 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj.locked = IsEditable;
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
-                                              
+
                                                 programdataobj = new Plandataobj();
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=add_Remove_Entity id=ProgramAdd onclick=javascript:AddRemoveEntity(this); altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
@@ -12878,7 +12878,7 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
-                                                       
+
                                                         tacticdataobj = new Plandataobj();
                                                         //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                         tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "' tacticaddId='" + tactic.PlanTacticId + "'></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + " csvId=Tactic_" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
@@ -12991,7 +12991,7 @@ namespace RevenuePlanner.Controllers
                                                                 lineitemdataobj.locked = lineitem.IstactEditable;
                                                                 lineitemdataobj.style = cellTextColor;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
-                                                              
+
                                                                 lineitemdataobj = new Plandataobj();
                                                                 lineitemdataobj.value = "<div class=grid_Search id=LP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
@@ -13296,7 +13296,7 @@ namespace RevenuePlanner.Controllers
                     headobj.value = "Revenue";
                     headobjlist.Add(headobj);
                     //Add External Name Column as a last column of gridview
-                     //Thirteenth Column : Empty
+                    //Thirteenth Column : Empty
                     headobj = new PlanHead();
                     headobj.type = "ro";
                     //headobj.align = "left";
@@ -17038,7 +17038,8 @@ namespace RevenuePlanner.Controllers
                 DataRow row = dt.NewRow();
                 for (int j = 0; j < columns.Count; j++)
                 {
-                    if (dr[i].Table.Columns.Contains(columns[j].ToString()))
+                    // Modified Condition By Nishant Sheth //#2345 :: TQL/Qualified Leads Values are not display in exported csv file
+                    if (dr[i].Table.Columns.Contains(columns[j].ToString()) || dr[i].Table.Columns.Contains(Enums.DownloadCSV.MQL.ToString()))
                     {
                         string MqlColName = Convert.ToString(ViewBag.MQLTitle);
                         ViewBag.MQLTitle = MqlColName;
@@ -17270,7 +17271,7 @@ namespace RevenuePlanner.Controllers
                                 return Json(new { msg = "error", error = "ActivityId must have a proper value." }, JsonRequestBehavior.AllowGet);
                             }
                         }
-                      
+
                         StoredProcedure objSp = new StoredProcedure();
 
                         dt.Columns.RemoveAt(dt.Columns.Count - 1);
@@ -17279,7 +17280,7 @@ namespace RevenuePlanner.Controllers
                         {
                             dt.Rows.RemoveAt(dt.Rows.Count - 1);
                         }
-                      
+
                         for (int i = 0; i < dt.Columns.Count; i++)
                         {
                             for (int j = 0; j < dt.Rows.Count; j++)
@@ -17314,7 +17315,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (ex.Message.Contains("process"))
                 {
-                      return Json(new { msg = "error", error = "File is being used by another process." }, JsonRequestBehavior.AllowGet); 
+                    return Json(new { msg = "error", error = "File is being used by another process." }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
