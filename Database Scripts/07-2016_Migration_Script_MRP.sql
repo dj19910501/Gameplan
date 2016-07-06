@@ -57,7 +57,7 @@ IF (@SelectedTab='Planned')
 					
 			  FROM [Plan] P
 			  LEFT JOIN  plan_budget PB on P.PlanId=PB.PlanId
-			  WHERE PB.PlanId = @PlanId
+			  WHERE P.PlanId = @PlanId
 			) Plan_Main
 pivot
 (
@@ -283,7 +283,7 @@ ELSE
 					
 			  FROM [Plan] P
 			  LEFT JOIN  plan_budget PB on P.PlanId=PB.PlanId
-			  WHERE PB.PlanId = @PlanId
+			  WHERE P.PlanId = @PlanId
 			) Plan_Main
 pivot
 (
