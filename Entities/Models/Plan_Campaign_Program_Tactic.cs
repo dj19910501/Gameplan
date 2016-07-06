@@ -22,8 +22,8 @@ namespace RevenuePlanner.Models
             this.Plan_Campaign_Program_Tactic_Cost = new HashSet<Plan_Campaign_Program_Tactic_Cost>();
             this.Plan_Campaign_Program_Tactic_Budget = new HashSet<Plan_Campaign_Program_Tactic_Budget>();
             this.Plan_Campaign_Program_Tactic_Comment = new HashSet<Plan_Campaign_Program_Tactic_Comment>();
-            this.Plan_Campaign_Program_Tactic_LineItem = new HashSet<Plan_Campaign_Program_Tactic_LineItem>();
             this.Tactic_Share = new HashSet<Tactic_Share>();
+            this.Plan_Campaign_Program_Tactic_LineItem = new HashSet<Plan_Campaign_Program_Tactic_LineItem>();
         }
     
         public int PlanTacticId { get; set; }
@@ -64,11 +64,11 @@ namespace RevenuePlanner.Models
         public virtual ICollection<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Budget> Plan_Campaign_Program_Tactic_Budget { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
-        public virtual ICollection<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic1 { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic2 { get; set; }
         public virtual Stage Stage { get; set; }
         public virtual TacticType TacticType { get; set; }
         public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }
+        public virtual ICollection<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
     }
 }

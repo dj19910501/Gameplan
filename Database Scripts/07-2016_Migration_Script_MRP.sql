@@ -477,7 +477,20 @@ END
 
 GO
 
+-- =============================================
+-- Author: Rahul Shah
+-- Create date: 06th July 2016
+-- Description:	increase the size of Title column of Plan_Campaign_Program_Tactic_LineItem Table
+-- =============================================
+GO
+DECLARE @TableName nvarchar (200) = 'Plan_Campaign_Program_Tactic_LineItem'
+DECLARE @ColumnName nvarchar (200) = 'Title'
+IF EXISTS (SELECT column_name FROM INFORMATION_SCHEMA.columns WHERE table_name = @TableName and column_name = @ColumnName)
+BEGIN
+ALTER TABLE Plan_Campaign_Program_Tactic_LineItem ALTER COLUMN Title NVARCHAR(512)
+END
 
+GO
 
 
 
