@@ -1460,36 +1460,36 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Status);
             }
         }
+        // As we have deleted method from Plancontroller
+        //[TestMethod]
+        //public void Get_HeaderData_With_MultiplePlanIds()
+        //{
+        //    Console.WriteLine("To check to retrieve Header Data with multiple planids.\n");
+        //    MRPEntities db = new MRPEntities();
+        //    //// Set session value
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
 
-        [TestMethod]
-        public void Get_HeaderData_With_MultiplePlanIds()
-        {
-            Console.WriteLine("To check to retrieve Header Data with multiple planids.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    //// Call index method
+        //    PlanController objPlanController = new PlanController();
+        //    string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+        //    string Year = DataHelper.GetYear();
+        //    int planId = DataHelper.GetPlanId();
+        //    Sessions.User.ClientId = DataHelper.GetClientId(planId);
+        //    Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
+        //    var result = objPlanController.GetPlanByMultiplePlanIDs(CommaSeparatedPlanId, Enums.ActiveMenu.Home.ToString(), Year) as JsonResult;
 
-            //// Call index method
-            PlanController objPlanController = new PlanController();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            string Year = DataHelper.GetYear();
-            int planId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(planId);
-            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
-            var result = objPlanController.GetPlanByMultiplePlanIDs(CommaSeparatedPlanId, Enums.ActiveMenu.Home.ToString(), Year) as JsonResult;
+        //    if (result != null)
+        //    {
+        //        //// Json result data should not be null
+        //        Assert.IsNotNull(result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //    }
+        //    else
+        //    {
 
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-        }
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+        //    }
+        //}
         #endregion
 
         #region Get ActivityDistribution Data
@@ -1965,7 +1965,7 @@ namespace RevenuePlanner.Test.Controllers
 );
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-          
+
             var result = objHomeController.GetTacticTypeListForFilter(PlanId.ToString()) as Task<JsonResult>;
 
             if (result.Result != null)
@@ -2041,11 +2041,11 @@ namespace RevenuePlanner.Test.Controllers
     ),
     routes
 );
-            var TaskData  = DataHelper.GetPlan(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlan(Sessions.User.ClientId);
             int PlanId = TaskData.PlanId;
             Sessions.PlanId = PlanId;
             string Year = TaskData.Year;
-            var result = objHomeController.BindUpcomingActivitesValues(PlanId.ToString(),Year) as JsonResult;
+            var result = objHomeController.BindUpcomingActivitesValues(PlanId.ToString(), Year) as JsonResult;
 
             if (result.Data != null)
             {
@@ -2078,7 +2078,7 @@ namespace RevenuePlanner.Test.Controllers
 
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-           
+
             var result = objHomeController.GetCustomAttributes() as JsonResult;
 
             if (result.Data != null)
@@ -2247,7 +2247,7 @@ namespace RevenuePlanner.Test.Controllers
             string UserId = Sessions.User.UserId.ToString();
             string ActiveMenu = Enums.ActiveMenu.Home.ToString();
             string viewBy = Enums.EntityType.Tactic.ToString();
-            var result = objHomeController.GetOwnerListForFilter(PlanId.ToString(),viewBy,ActiveMenu) as Task<JsonResult>;
+            var result = objHomeController.GetOwnerListForFilter(PlanId.ToString(), viewBy, ActiveMenu) as Task<JsonResult>;
 
             if (result != null)
             {
@@ -2280,7 +2280,7 @@ namespace RevenuePlanner.Test.Controllers
 
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            
+
             var result = objHomeController.LoadChangeLog(PlanId) as PartialViewResult;
 
             if (result != null)
@@ -2317,7 +2317,7 @@ namespace RevenuePlanner.Test.Controllers
             string strParam = TaskData.Year.ToString();
             bool isMultiyear = false;
 
-            var result = objHomeController.GetNumberOfActivityPerMonthPer(PlanId.ToString(),strParam,isMultiyear) as Task<JsonResult>;
+            var result = objHomeController.GetNumberOfActivityPerMonthPer(PlanId.ToString(), strParam, isMultiyear) as Task<JsonResult>;
 
             if (result != null)
             {
@@ -2350,7 +2350,7 @@ namespace RevenuePlanner.Test.Controllers
 
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            
+
             var result = objHomeController.Homezero() as ViewResult;
 
             if (result != null)
@@ -2421,7 +2421,7 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
             string Year = TaskData.Year;
 
-            var result = objHomeController.HomePlan(PlanId.ToString(),Year) as PartialViewResult;
+            var result = objHomeController.HomePlan(PlanId.ToString(), Year) as PartialViewResult;
 
             if (result != null)
             {

@@ -417,7 +417,7 @@ namespace RevenuePlanner.Test.Controllers
                 CampaignId = campaign.PlanCampaignId;
             }
             var result = objPlanController.GetBudgetAllocationCampaignData(CampaignId);
-            
+
             if (result != null)
             {
                 var serializedData = new RouteValueDictionary(result.Data);
@@ -664,7 +664,7 @@ namespace RevenuePlanner.Test.Controllers
             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
 
             string Status = string.Join(",", lststatus);
-            
+
 
             string honeyCombId = null;
 
@@ -952,7 +952,7 @@ namespace RevenuePlanner.Test.Controllers
 
         }
         #endregion
-        
+
         #region Get Gantt Data
         /// <summary>
         /// To check to get Gantt Data
@@ -1805,6 +1805,8 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
+            int plan_Id = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
             int EntityId = TaskData.ImprovementPlanProgramId;
             int TacticTypeId = TaskData.ImprovementTacticTypeId;
@@ -1908,6 +1910,8 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
+            int plan_Id = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
             int EntityId = TaskData.ImprovementPlanTacticId;
             int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
@@ -1980,7 +1984,8 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-
+            int plan_Id = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
             int EntityId = TaskData.ImprovementPlanTacticId;
@@ -2016,7 +2021,8 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-
+            int plan_Id = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
             int EntityId = TaskData.ImprovementPlanTacticId;
@@ -2334,7 +2340,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
         }
-        #endregion        
+        #endregion
 
         #region "Plan Selector"
         ///<summary>
@@ -2667,7 +2673,7 @@ namespace RevenuePlanner.Test.Controllers
             int EntityId = TaskData.PlanTacticId;
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            string CampaignId = TaskData.Plan_Campaign_Program.PlanCampaignId.ToString();            
+            string CampaignId = TaskData.Plan_Campaign_Program.PlanCampaignId.ToString();
             var result = controller.Clone(Enums.EntityType.Tactic.ToString(), EntityId, Title) as JsonResult;
             if (result.Data != null)
             {
