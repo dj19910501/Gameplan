@@ -28,6 +28,7 @@ using System.Web.Caching;
 using System.Data.SqlClient;
 using System.Reflection;
 using System.Data.EntityClient;
+using System.Runtime.CompilerServices;
 
 namespace RevenuePlanner.Helpers
 {
@@ -1226,6 +1227,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="calendarStartDate">Calendar start date.</param>
         /// <param name="startDate">Start date.</param>
         /// <returns>Returns start date as per calendar.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetStartDateAsPerCalendar(DateTime calendarStartDate, DateTime startDate)
         {
             return startDate < calendarStartDate ? string.Format("{0}", calendarStartDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)) : string.Format("{0}", startDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture));
@@ -1253,6 +1255,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="startDate">Start date.</param>
         /// <param name="endDate">End date.</param>
         /// <returns>Return days between start and end date.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetEndDateAsPerCalendar(DateTime calendarStartDate, DateTime calendarEndDate, DateTime startDate, DateTime endDate)
         {
             startDate = startDate < calendarStartDate ? calendarStartDate : startDate;

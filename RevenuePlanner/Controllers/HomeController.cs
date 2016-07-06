@@ -16,6 +16,8 @@ using Integration;
 using System.Threading.Tasks;
 using System.Web.Caching;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+
 /*
  *  Author: Manoj Limbachiya
  *  Created Date: 10/22/2013
@@ -33,7 +35,7 @@ namespace RevenuePlanner.Controllers
         private BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
         private DateTime CalendarStartDate;
         private DateTime CalendarEndDate;
-        List<User> lstUsers = new List<User>();
+        Dictionary<Guid, User> lstUsers = new Dictionary<Guid, BDSService.User>();
         List<TacticType> TacticTypeList = new List<TacticType>();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
@@ -617,7 +619,7 @@ namespace RevenuePlanner.Controllers
         {
             //Added By Komal Rawal to get all the user names for honeycomb feature
             //TacticTypeList = objDbMrpEntities.TacticTypes.Where(tt => tt.IsDeleted == false).Select(tt => tt).ToList();
-            lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+            objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId).ForEach(u => lstUsers.Add(u.UserId, u));
             //End
             //// Create plan list based on PlanIds of search filter
 
@@ -2633,7 +2635,7 @@ namespace RevenuePlanner.Controllers
                 planid = taskdata.planid,
                 type = "Plan",
                 TacticType = doubledesh,
-                OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
+                OwnerName = GetOwnerName(taskdata.CreatedBy),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
                 Status = taskdata.Status //added by Rahul Shah on 16/12/2015 for PL #1782
 
@@ -2673,7 +2675,7 @@ namespace RevenuePlanner.Controllers
                 Status = taskdata.Status,
                 type = "Campaign",
                 TacticType = doubledesh,
-                OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
+                OwnerName = GetOwnerName(taskdata.CreatedBy),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).Select(taskdata => taskdata).Distinct().ToList();
             #endregion
@@ -2711,7 +2713,7 @@ namespace RevenuePlanner.Controllers
                 Status = taskdata.Status,
                 type = "Program",
                 TacticType = doubledesh,
-                OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
+                OwnerName = GetOwnerName(taskdata.CreatedBy),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).ToList().Distinct().ToList();
             #endregion
@@ -2729,16 +2731,16 @@ namespace RevenuePlanner.Controllers
             // Desc :: to avoid db trip for linked plan tactic's plan name
             // Modidfied By Komal Rawal for wrong data
 
-            var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
+            Dictionary<int, string> PlanNames = new Dictionary<int, string>();
+            objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList().ForEach(p => PlanNames.Add(p.PlanId, p.Title));
 
             var ListOfLinkedTactics = LinkedTacticList.Select(list =>
-                new
-                {
-                    TacticId = list.LinkedTacticId,
-                    PlanName = ListOfLinkedPlans.Where(l => l.PlanId == list.LinkedPlanId).Select(l => l.Title).FirstOrDefault()
-                    //  PlanName = lstTactic.Where(l => l.PlanId == list.objPlanTactic.LinkedPlanId).Select(l => l.objPlanTacticCampaignPlan.Title).FirstOrDefault()// Modified by nishant sheth
-                });
-
+                    new
+                    {
+                        TacticId = list.LinkedTacticId,
+                        PlanName = list.LinkedPlanId == null ? null: PlanNames[(int)list.LinkedPlanId]
+                    }
+                );
             //End
             List<int> _PlanIds = lstTaskDetails.Select(_task => _task.PlanId).Distinct().ToList();
             List<ProgressModel> _EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => _PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
@@ -2780,7 +2782,7 @@ namespace RevenuePlanner.Controllers
                 Status = taskdata.Status,
                 type = "Tactic",
                 TacticType = GettactictypeName(taskdata.TacticTypeId),
-                OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
+                OwnerName = GetOwnerName(taskdata.CreatedBy),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
                 LinkTacticPermission = taskdata.LinkTacticPermission,
                 LinkedTacticId = taskdata.LinkedTacticId,
@@ -3188,13 +3190,15 @@ namespace RevenuePlanner.Controllers
 
             var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
 
-            var ListOfLinkedTactics = LinkedTacticList.Select(list =>
-                new
-                {
-                    TacticId = list.LinkedTacticId,
-                    PlanName = ListOfLinkedPlans.Where(l => l.PlanId == list.LinkedPlanId).Select(l => l.Title).FirstOrDefault()
+            Dictionary<int, string> PlanNames = new Dictionary<int, string>();
+            objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList().ForEach(p => PlanNames.Add(p.PlanId, p.Title));
 
-                }
+            var ListOfLinkedTactics = LinkedTacticList.Select(list =>
+                    new
+                    {
+                        TacticId = list.LinkedTacticId,
+                        PlanName = list.LinkedPlanId == null ? null : PlanNames[(int)list.LinkedPlanId]
+                    }
                 );
             //End
 
@@ -3245,7 +3249,7 @@ namespace RevenuePlanner.Controllers
                     type = "Plan",
                     TacticType = doubledesh,
                     Status = plan.Status,
-                    OwnerName = GetOwnerName(plan.CreatedBy.ToString()),
+                    OwnerName = GetOwnerName(plan.CreatedBy),
                     Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 }).ToList();
                 #endregion
@@ -3417,7 +3421,7 @@ namespace RevenuePlanner.Controllers
                     Status = tactic.Status,
                     type = "Tactic",
                     TacticType = GettactictypeName(tactic.TacticTypeId),
-                    OwnerName = GetOwnerName(tactic.CreatedBy.ToString()),
+                    OwnerName = GetOwnerName(tactic.CreatedBy),
                     Permission = IsPlanCreateAllAuthorized == false ? (tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
                     LinkTacticPermission = tactic.LinkTacticPermission,
                     LinkedTacticId = tactic.LinkedTacticId,
@@ -3461,7 +3465,7 @@ namespace RevenuePlanner.Controllers
                     Status = program.Status,
                     type = "Program",
                     TacticType = doubledesh,
-                    OwnerName = GetOwnerName(program.CreatedBy.ToString()),
+                    OwnerName = GetOwnerName(program.CreatedBy),
                     Permission = IsPlanCreateAllAuthorized == false ? (program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(program.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -3500,7 +3504,7 @@ namespace RevenuePlanner.Controllers
                     Status = campaign.Status,
                     type = "Campaign",
                     TacticType = doubledesh,
-                    OwnerName = GetOwnerName(campaign.CreatedBy.ToString()),
+                    OwnerName = GetOwnerName(campaign.CreatedBy),
                     Permission = IsPlanCreateAllAuthorized == false ? (campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(campaign.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -3524,7 +3528,7 @@ namespace RevenuePlanner.Controllers
                                                                                                                             CalendarEndDate,
                                                                                                                             _tac.StartDate,
                                                                                                                             _tac.EndDate).Equals(false) && (((filterOwner.Count > 0 ? filterOwner.Contains(_tac.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(_tac.Status) : true)) || OwnerFilterTacticIds.Contains(_tac.PlanTacticId))).ToList();
-                var taskDataTacticforPlan = taskDataTacticforPlanMain.Select(_tac => new
+               var taskDataTacticforPlan = taskDataTacticforPlanMain.Select(_tac => new
                 {
                     id = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", _tac.PlanId, _tac.PlanCampaignId, _tac.PlanProgramId, _tac.PlanTacticId, _tac.TacticTypeId),
                     text = _tac.Title,
@@ -3532,8 +3536,8 @@ namespace RevenuePlanner.Controllers
                     start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, _tac.StartDate),
                     duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
                                                               CalendarEndDate,
-                                                                                                                  _tac.StartDate,
-                                                                                                                  _tac.EndDate),
+                                                                _tac.StartDate,
+                                                                _tac.EndDate),
                     //   progress = GetTacticProgress( _tac, ImprovementTacticForTaskData),
                     progress = GetTacticProgress((_tac.StartDate != null ? _tac.StartDate : new DateTime()), EffectiveDateListByPlanIds, _tac.PlanId),
                     // progress = 0,
@@ -3584,7 +3588,7 @@ namespace RevenuePlanner.Controllers
                     Status = task.Status,
                     type = "Tactic",
                     TacticType = GettactictypeName(task.TacticTypeId),
-                    OwnerName = GetOwnerName(task.CreatedBy.ToString()),
+                    OwnerName = GetOwnerName(task.CreatedBy),
                     Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
                     LinkTacticPermission = task.LinkTacticPermission,
                     LinkedTacticId = task.LinkedTacticId,
@@ -3637,7 +3641,7 @@ namespace RevenuePlanner.Controllers
                     Status = task.Status,
                     type = "Program",
                     TacticType = doubledesh,
-                    OwnerName = GetOwnerName(task.CreatedBy.ToString()),
+                    OwnerName = GetOwnerName(task.CreatedBy),
                     Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -3685,7 +3689,7 @@ namespace RevenuePlanner.Controllers
                     Status = _campgn.Status,
                     type = "Campaign",
                     TacticType = doubledesh,
-                    OwnerName = GetOwnerName(_campgn.CreatedBy.ToString()),
+                    OwnerName = GetOwnerName(_campgn.CreatedBy),
                     Permission = IsPlanCreateAllAuthorized == false ? (_campgn.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(_campgn.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
 
@@ -3816,7 +3820,7 @@ namespace RevenuePlanner.Controllers
                     type = "Plan",
                     TacticType = doubledesh,
                     Status = plan.Status,
-                    OwnerName = GetOwnerName(plan.CreatedBy.ToString()),
+                    OwnerName = GetOwnerName(plan.CreatedBy),
                     Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
 
@@ -3841,6 +3845,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="lstImprovementTactic">list of improvement tactics of selected plan</param>
         /// <param name="PlanId">planId of selected tactic</param>
         /// <returns>returns progress between 0 and 1</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double GetTacticProgress(DateTime tacStartDate, List<ProgressModel> lstEffectiveDate, int PlanId)
         {
             double result = 0;
@@ -8804,27 +8809,24 @@ namespace RevenuePlanner.Controllers
             return TacticType;
         }
 
-        public string GetOwnerName(string UserGuid)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string GetOwnerName(Guid UserGuid)
         {
             var OwnerName = "";
             if (lstUsers.Count == 0 || lstUsers == null)
             {
-                lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId).ForEach(u => lstUsers.Add(u.UserId, u));
             }
-            if (UserGuid != "")
+            if (UserGuid != null)
             {
 
 
-                var userName = lstUsers.Where(user => user.UserId.ToString() == UserGuid).Select(user => new
-                {
-                    FirstName = user.FirstName,
-                    Lastname = user.LastName
-                }).FirstOrDefault();
+                var userName = lstUsers[UserGuid];
 
 
                 if (userName != null)
                 {
-                    OwnerName = userName.FirstName + " " + userName.Lastname;
+                    OwnerName = userName.FirstName + " " + userName.LastName;
                 }
 
             }
