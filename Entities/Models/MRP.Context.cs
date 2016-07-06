@@ -79,7 +79,6 @@ namespace RevenuePlanner.Models
         public DbSet<Stage> Stages { get; set; }
         public DbSet<SyncFrequency> SyncFrequencies { get; set; }
         public DbSet<Tactic_Share> Tactic_Share { get; set; }
-        public DbSet<TacticType> TacticTypes { get; set; }
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<EntityTypeColor> EntityTypeColors { get; set; }
@@ -111,6 +110,7 @@ namespace RevenuePlanner.Models
         public DbSet<DimensionValue> DimensionValues { get; set; }
         public DbSet<AggregationStatu> AggregationStatus { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
+        public DbSet<TacticType> TacticTypes { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

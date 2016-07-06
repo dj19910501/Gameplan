@@ -38,9 +38,9 @@ namespace RevenuePlanner.Models
         public string Abbreviation { get; set; }
         public Nullable<int> WorkFrontTemplateId { get; set; }
     
-        public virtual Model Model { get; set; }
-        public virtual Stage Stage { get; set; }
         public virtual IntegrationWorkFrontTemplate IntegrationWorkFrontTemplate { get; set; }
+        public virtual Model Model { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
+        public virtual Stage Stage { get; set; }
     }
 }

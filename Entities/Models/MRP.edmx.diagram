@@ -57,7 +57,6 @@
         <EntityTypeShape EntityType="MRPModel.Stage" Width="1.5" PointX="1.0566773084256227" PointY="5.3101546491077887" />
         <EntityTypeShape EntityType="MRPModel.SyncFrequency" Width="1.5" PointX="10.435042127238141" PointY="20.691225702264916" />
         <EntityTypeShape EntityType="MRPModel.Tactic_Share" Width="1.5" PointX="10.030433501131103" PointY="12.379689937634248" />
-        <EntityTypeShape EntityType="MRPModel.TacticType" Width="1.5" PointX="4.9263523746870241" PointY="0.57984393862068839" />
         <EntityTypeShape EntityType="MRPModel.User_Filter" Width="1.5" PointX="2.1182437809734806" PointY="4.4662030956084857" />
         <EntityTypeShape EntityType="MRPModel.User_Notification" Width="1.5" PointX="10.819454233543693" PointY="31.500246807700137" />
         <AssociationConnector Association="MRPModel.FK_BestInClass_Stage" />
@@ -97,7 +96,6 @@
         <AssociationConnector Association="MRPModel.FK_Model_Model" />
         <AssociationConnector Association="MRPModel.FK_Model_Stage_Model" />
         <AssociationConnector Association="MRPModel.FK_Plan_Plan" />
-        <AssociationConnector Association="MRPModel.fk_TacticType_Model" />
         <AssociationConnector Association="MRPModel.FK_Model_Category_Stage_Stage" />
         <AssociationConnector Association="MRPModel.FK_User_Notification_Notification" />
         <AssociationConnector Association="MRPModel.FK_Plan_Budget_Plan" />
@@ -117,7 +115,6 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" />
-        <AssociationConnector Association="MRPModel.fk_TacticType_Stage" />
         <EntityTypeShape EntityType="MRPModel.EntityTypeColor" Width="1.5" PointX="6.1199587779678222" PointY="19.462151357653621" />
         <EntityTypeShape EntityType="MRPModel.ELMAH_Error" Width="1.5" PointX="13.375" PointY="0.75" />
         <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_ImprovementTacticType" />
@@ -155,7 +152,6 @@
         <AssociationConnector Association="MRPModel.FK_Budget_Columns_CustomField" />
         <AssociationConnector Association="MRPModel.BudgetID_FK" />
         <EntityTypeShape EntityType="MRPModel.Plan_UserSavedViews" Width="1.5" PointX="16.375" PointY="3.75" />
-        <AssociationConnector Association="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId" />
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontRequestQueue" Width="1.5" PointX="7.25" PointY="45.75" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequestQueues_IntegrationInstanceId" />
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontUser" Width="1.5" PointX="7.5" PointY="0.75" />
@@ -176,7 +172,6 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" />
         <AssociationConnector Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceMarketo" />
         <EntityTypeShape EntityType="MRPModel.MarketoEntityValueMapping" Width="1.5" PointX="7.25" PointY="48.875" />
@@ -186,6 +181,11 @@
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontProgram_Mapping" Width="1.5" PointX="2.3431068800124839" PointY="4.0886457134451" />
         <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontProgram_Mapping_IntegrationWorkFrontPortfolios" />
         <EntityTypeShape EntityType="MRPModel.AggregationStatu" Width="1.5" PointX="0.75" PointY="13.75" />
+        <EntityTypeShape EntityType="MRPModel.TacticType" Width="1.5" PointX="5.375" PointY="0.75" />
+        <AssociationConnector Association="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId" />
+        <AssociationConnector Association="MRPModel.fk_TacticType_Model" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" />
+        <AssociationConnector Association="MRPModel.fk_TacticType_Stage" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -56,11 +56,11 @@ namespace RevenuePlanner.Models
         public virtual Model Model2 { get; set; }
         public virtual ICollection<Model_Stage> Model_Stage { get; set; }
         public virtual ICollection<Plan> Plans { get; set; }
-        public virtual ICollection<TacticType> TacticTypes { get; set; }
         public virtual IntegrationInstance IntegrationInstance4 { get; set; }
         public virtual Model Model11 { get; set; }
         public virtual Model Model3 { get; set; }
         public virtual IntegrationInstance IntegrationInstance11 { get; set; }
         public virtual IntegrationInstance IntegrationInstance41 { get; set; }
+        public virtual ICollection<TacticType> TacticTypes { get; set; }
     }
 }
