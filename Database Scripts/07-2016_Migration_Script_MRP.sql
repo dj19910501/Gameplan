@@ -1,4 +1,10 @@
-
+-- Add By Nishant Sheth
+-- Created Date : 07-Jul-2016 
+-- Desc :: Check [spViewByDropDownList] stored procedure is exist or not exist.
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spViewByDropDownList]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[spViewByDropDownList] AS' 
+END
 /****** Object:  StoredProcedure [dbo].[spViewByDropDownList]    Script Date: 7/5/2016 2:11:36 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -227,7 +233,7 @@ FROM
 		,PT.TacticBudget AS MainBudgeted
 		,PT.CreatedBy 
 		,0 as IsEditable
-		,CASE WHEN PT.[Status] in ('Approved','InProgress','Complete') THEN 1 ELSE 0 END IsAfterApproved
+		,CASE WHEN PT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
 		,PTB.Value
 		,PTB.Period
 		,PT.Cost
@@ -281,7 +287,7 @@ SELECT
 		,CASE WHEN PL.CreatedBy=@UserId THEN 1 ELSE 0 END IsOwner
 		,PL.CreatedBy
 		,0 as IsEditable
-		,CASE WHEN PT.[Status] in ('Approved','InProgress','Complete') THEN 1 ELSE 0 END IsAfterApproved
+		,CASE WHEN PT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
 		,PLC.Value
 		,'C'+PLC.period as period 
 	FROM Plan_Campaign_Program_Tactic_LineItem PL
@@ -453,7 +459,7 @@ FROM
 		,PT.TacticBudget AS MainBudgeted
 		,PT.CreatedBy 
 		,0 as IsEditable
-		,CASE WHEN PT.[Status] in ('Approved','InProgress','Complete') THEN 1 ELSE 0 END IsAfterApproved
+		,CASE WHEN PT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
 		,PTB.Value
 		,PTB.Period
 		,PT.Cost
@@ -507,7 +513,7 @@ SELECT
 		,CASE WHEN PL.CreatedBy=@UserId THEN 1 ELSE 0 END IsOwner
 		,PL.CreatedBy
 		,0 as IsEditable
-		,CASE WHEN PT.[Status] in ('Approved','InProgress','Complete') THEN 1 ELSE 0 END IsAfterApproved
+		,CASE WHEN PT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
 		,PLC.Value
 		,'C'+PLC.period as period 
 	FROM Plan_Campaign_Program_Tactic_LineItem PL

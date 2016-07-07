@@ -42,10 +42,13 @@
 @if (modelExists)
 {
     @Html.Hidden("Confirmationmessage", @strConfirmationmessage)
-    <ul class="nav nav-tabs">
-        <li class="title-header source-sans-proregular">
+    <div class="title-header source-sans-proregular">
             <h2>Baseline Models</h2>
-        </li>
+        </div>
+    <ul class="nav nav-tabs">
+        @*<li class="title-header source-sans-proregular"> #2312
+            <h2>Baseline Models</h2>
+        </li>*@
         <li class="pull-right">@* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to show by default, the Active Models tab not All Models. *@
             <a id="ModelAll" href="#">All</a>
         </li>
@@ -73,10 +76,13 @@
 }
 else
 {
+    <div class="title-header source-sans-proregular">
+        <h2>Baseline Models</h2>
+    </div>
     <ul class="nav nav-tabs">
-        <li class="title-header source-sans-proregular">
+        @*<li class="title-header source-sans-proregular">
             <h2>Model v1.0</h2>
-        </li>
+        </li>*@
         <li class="active pull-right">
             <a href="#">N/A</a>
         </li>

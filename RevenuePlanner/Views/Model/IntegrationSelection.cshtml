@@ -63,10 +63,10 @@
 </div>
 @Html.Partial("~/Views/Model/_publishmodel.cshtml")
 <div class="padding-content cf source-sans-proregular">
-    <ul class="nav nav-tabs" style="margin-bottom: 20px; padding-bottom: 10px;">
+    <ul class="nav nav-tabs" style="margin-bottom: 20px; padding-bottom: 10px;margin-left:0; margin-right:0">
         <input type="hidden" value="@ViewBag.ModelId" id="latestModelId" />
         <li class="title-header source-sans-proregular" title="@ViewBag.ModelTitle">
-            <h2 id="lblTitle">@ViewBag.ModelTitle <span class="gray source-sans-prolight" title="Published">@ViewBag.ModelStatus</span></h2>
+            <h2 id="lblTitle" style="margin-left:0">@ViewBag.ModelTitle <span class="gray source-sans-prolight" title="Published">@ViewBag.ModelStatus</span></h2>
         </li>
     </ul>
     <div class="row">

@@ -8133,8 +8133,18 @@ namespace RevenuePlanner.Controllers
                 }).ToList();
             //End Sp part by mitesh
 
-          
             
+            List<string> tacIds = model.Where(t => t.ActivityType == ActivityType.ActivityTactic).Select(t => t.ActivityId).ToList();
+             tacIds = tacIds.Select(t => t.Replace("cpt_", "")).ToList();
+            List<int> intList = tacIds.ConvertAll(s => Int32.Parse(s));
+            var CstFields=db.CustomField_Entity.Where(entity => intList.Contains( entity.EntityId) && entity.CustomField.EntityType.Equals(entTacticType)).ToList();
+            //Assign respective customfields to tactic
+            foreach (var Tactic in model.Where(m=>m.ActivityType==ActivityType.ActivityTactic).ToList())
+            {
+                int tempTacticId=Convert.ToInt32( Tactic.Id);
+                Tactic.CustomFieldEntities = CstFields.Where(entity => entity.EntityId == tempTacticId).ToList();
+            }
+
 
             Plan objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId.Equals(PlanId));
             AllocatedBy = objPlan.AllocatedBy;
@@ -8148,9 +8158,8 @@ namespace RevenuePlanner.Controllers
             var CustomFieldexists = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.EntityType.Equals(EntityTypeTactic) &&
                                                                         (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
                                                                          ).Any();
-            List<string> tacIds = model.Where(t => t.ActivityType == EntityTypeTactic).Select(t => t.ActivityId).ToList();
-            tacIds = tacIds.Select(t => t.Replace("cpt_", "")).ToList();
-            List<int> intList = tacIds.ConvertAll(s => Int32.Parse(s));
+            
+           
             var Entities = db.CustomField_Entity.Where(entityid => intList.Contains(entityid.EntityId)).Select(entityid => entityid).ToList();
 
             var lstAllTacticCustomFieldEntities = db.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == Sessions.User.ClientId &&
@@ -9430,7 +9439,7 @@ namespace RevenuePlanner.Controllers
                     //TagBuilder td = new TagBuilder("td");
                     //td.AddCssClass("campaign-row");
 
-                    TagBuilder div = new TagBuilder("div");
+                   // TagBuilder div = new TagBuilder("div");
                     // div.Attributes.Add("id", activityType + c.ActivityId);
                     division = "<div id=" + activityType + c.ActivityId;
                     TagBuilder span = new TagBuilder("span");
@@ -9777,13 +9786,36 @@ namespace RevenuePlanner.Controllers
                         }
                         //division = division + "style=position:relative ";
                     }
-                    div.AddCssClass(className);
+                    else if (strTab == "2")
+                    {
+                        if (activityType == "plan")
+                        {
+                            division = division + " class='planLevel clueactual topCorner'";
+                        }
+                        else if (activityType == "campaign")
+                        {
+                            division = division + " class='campaignLevel clueactual topCorner'";
+                        }
+                        else if (activityType == "program")
+                        {
+                            division = division + " class='programLevel clueactual topCorner'";
+                        }
+                        else if (activityType == "tactic")
+                        {
+                            division = division + " class='tacticLevel clueactual topCorner'";
+                        }
+                        else if (activityType == "lineitem")
+                        {
+                            division = division + " class='lineitemLevel clueactual topCorner'";
+                        }
+                    }
+                 //   div.AddCssClass(className);
                     //if (strTab == "1")
                     //{
                     //    div.AddCssClass("clueplanned");
                     //    division = division + " class=clueplanned";
                     //}
-                    div.InnerHtml += span.ToString();
+                   // div.InnerHtml += span.ToString();
                     //  BudgetDataObj.value = div.ToString();
                     BudgetDataObj = new Budgetdataobj();
                     BudgetDataObj.value = HttpUtility.HtmlEncode(division + ">" + divInnerHtml + Span + "</div>");

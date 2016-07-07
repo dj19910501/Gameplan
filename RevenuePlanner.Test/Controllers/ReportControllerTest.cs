@@ -592,9 +592,12 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("Retrieve data to render view by ParentLabel as Campaign Custom.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
+            string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
+            //int planId = DataHelper.GetPlanId();
+            int planId = 126;
             List<int> lst = new List<int>();
             lst.Add(planId);
+            Sessions.User.ClientId = DataHelper.GetClientId(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             string StrParentLabel = Enums.PlanEntity.Campaign.ToString();
             string Isquater = Enums.ViewByAllocated.Quarterly.ToString();
@@ -635,7 +638,8 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("Retrieve data to render view by Child as Campaign Custom.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
+            //int planId = DataHelper.GetPlanId();
+            int planId = 126;
             List<int> lst = new List<int>();
             lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
@@ -675,7 +679,8 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("Retrieve data to render view by Empty Quater.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
+            //int planId = DataHelper.GetPlanId();
+            int planId = 126;
             List<int> lst = new List<int>();
             lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
@@ -715,7 +720,8 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("Retrieve data to render view by Invalid Quater.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
+            //int planId = DataHelper.GetPlanId();
+            int planId = 126;
             List<int> lst = new List<int>();
             lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
@@ -755,7 +761,8 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("Retrieve data to render view by  Empty BackHeadTitle,DrpChange,marsterCustomField,masterCustomFieldOptionId.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
+            //int planId = DataHelper.GetPlanId();
+            int planId = 126;
             List<int> lst = new List<int>();
             lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;

@@ -335,7 +335,7 @@
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_asc.gif" />
     <Content Include="Content\css\fileinput.css" />
     <Content Include="Content\css\jquery.mCustomScrollbar-new.css" />
-    <Content Include="Content\css\style_extended_min_Oct1.css" />
+    <Content Include="Content\css\style_extended_min_Oct2.css" />
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_desc.gif" />
     <Content Include="Content\css\JquryUI\images\ui-bg_glass_85_dfeffc_1x400.png" />
     <Content Include="Content\css\JquryUI\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" />
@@ -361,7 +361,7 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
-    <Content Include="Content\css\style_min_July_02.css" />
+    <Content Include="Content\css\style_min_July_03_1.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -382,6 +382,7 @@
     <Content Include="Content\images\add-icon-blue.png" />
     <Content Include="Content\images\add-icon-white.png" />
     <Content Include="Content\images\add-large.png" />
+    <Content Include="Content\images\add-new-icon-hover.png" />
     <Content Include="Content\images\add-new-icon-white.png" />
     <Content Include="Content\images\add-new-icon.png" />
     <Content Include="Content\images\add-small.png" />
@@ -434,6 +435,7 @@
     <Content Include="Content\images\close-icon-list.png" />
     <Content Include="Content\images\close-x-big.png" />
     <Content Include="Content\images\close-x.png" />
+    <Content Include="Content\images\Copy-icon-hover.png" />
     <Content Include="Content\images\Copy-icon-white.png" />
     <Content Include="Content\images\Copy-icon.png" />
     <Content Include="Content\images\d.png" />
@@ -474,6 +476,7 @@
     <Content Include="Content\images\duplicate-icon-sidebar.png" />
     <Content Include="Content\images\duplicate_icon.png" />
     <Content Include="Content\images\edit-icon-dark.png" />
+    <Content Include="Content\images\edit-icon-hover.png" />
     <Content Include="Content\images\edit-icon-white.png" />
     <Content Include="Content\images\edit-icon.png" />
     <Content Include="Content\images\error-image.png" />
@@ -545,6 +548,7 @@
     <Content Include="Content\images\plan-icon.png" />
     <Content Include="Content\images\r.png" />
     <Content Include="Content\images\Remove-icon-blue.png" />
+    <Content Include="Content\images\Remove-icon-hover.png" />
     <Content Include="Content\images\Remove-icon-white.png" />
     <Content Include="Content\images\Remove-icon.png" />
     <Content Include="Content\images\requests-logo.png" />

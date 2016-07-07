@@ -149,7 +149,8 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         public static List<string> ColorcodeList = new List<string> { "27a4e5", "6ae11f", "bbb748", "bf6a4b", "ca3cce", "7c4bbf", "1af3c9", "f1eb13", "c7893b", "e42233", "a636d6", "2940e2", "0b3d58", "244c0a", "414018", "472519", "4b134d", "2c1947", "055e4d", "555305", "452f14", "520a10", "3e1152", "0c1556", "73c4ee", "9ceb6a", "d2cf86", "d59e89", "dc80df", "a989d5", "6bf7dc", "f6f263", "dab17d", "eb6e7a", "c57de4", "7483ec", "1472a3", "479714", "7f7c2f", "86472f", "8e2590", "542f86", "09af8f", "a6a10a", "875c26", "9e1320", "741f98", "1627a0" };
         public static string ActivityNextYearChartColor = "#407B22";
-        public static string ActivityChartColor = "#c633c9";
+        //public static string ActivityChartColor = "#c633c9";// Bg color of chart changed #2312 - Bhumika 
+        public static string ActivityChartColor = "#5F91B3";
         public static string Campaign_InspectPopup_Flag_Color = "C6EBF3";
         public static string Plan_InspectPopup_Flag_Color = "C6EBF3";
         public static string Program_InspectPopup_Flag_Color = "3DB9D3";

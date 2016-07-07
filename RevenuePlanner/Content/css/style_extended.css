@@ -657,8 +657,9 @@ textarea[readonly] {
     top: 13%;/*changed 4m 20 to 13 by uday 7-7-14 #453s*/
     width: 354px;
     z-index: 2002;
+     box-sizing: content-box !important; /* #2312 */
 }
-
+.form-contact-support input{box-sizing: content-box !important;} /* #2312 */ 
 .button-contact-support {/* Edited for #2219 - Bhumika */
     background:#89CEDE; /* Edited for #2312- Komal */
     border: medium none !important;
@@ -669,6 +670,7 @@ textarea[readonly] {
     margin-left: 13px;
     margin-top: 25px !important;
     width: 120px !important;
+    box-sizing: content-box !important;
 }
 .button-contact-support:focus,
 .button-contact-support:hover {/* Added for #2219 - Bhumika */
@@ -950,7 +952,7 @@ a {
 .sbSelector {
     display: block;
     left: 0;
-    line-height: 26px;
+    line-height: 22px; /*26px;*/
     outline: none;
     overflow: hidden;
     position: absolute;
@@ -1449,7 +1451,7 @@ a {
     color: #fff;
     text-align: center;
     width: 41px !important;
-    height: 14px !important;
+    height: 18px !important; /* #2312*/
     font-size: 15px;
     line-height: 15px;
     padding: 2px 3px;
@@ -1466,7 +1468,7 @@ a {
     }
 
     .improve-trget.active {
-        background: #5693b3;
+        background: #5f91b3 ; /*#5693b3; #2312 */
     }
 
 /* Sidebar accordion */
@@ -2397,8 +2399,8 @@ label {
     }
 
 .color-box {
-    width: 36px;
-    height: 18px;
+    /*width: 36px;
+    height: 18px;*/ /*#2312*/
     padding: 5px 3px 5px 6px;
     border: 1px solid #e6e6e6;
     float: left;
@@ -2424,7 +2426,7 @@ label {
 }
 
 .color-theme {
-    width: 28px;
+    /*width: 28px;*//*#2312*/
     padding: 9px;
     padding-bottom: 1px;
     border: 1px solid #e6e6e6;

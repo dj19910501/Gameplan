@@ -58,7 +58,7 @@
         <input type="hidden" value="@v.ModelId" id="latestModelId" />
     
         <li class="title-header source-sans-proregular" title="@v.Title">
-            <h2 id="lblTitle">@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
+            <h2 id="lblTitle" style="margin-left:0">@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
 
         </li>
         <li id="ver_@v.ModelId" class="pull-right"  title="@v.Version">
@@ -77,7 +77,7 @@
         if (Model.Versions.Count == 0)
         {
         <li class="title-header source-sans-proregular" title="Title">
-            <h2>@Html.Raw("Title") <span class="gray source-sans-prolight" title="Draft">@Html.Raw("Draft")</span></h2>
+            <h2 style="margin-left:0">@Html.Raw("Title") <span class="gray source-sans-prolight" title="Draft">@Html.Raw("Draft")</span></h2>
         </li>
         <li class="active pull-right" title="1.0">
             <a href="#">@Html.Raw("v")1.0</a>

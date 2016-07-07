@@ -1,12 +1,26 @@
 @import url(font.css);
 
-*,
+/**,
 :after,
 :before {
     -webkit-box-sizing: content-box !important;
     -moz-box-sizing: content-box !important;
     box-sizing: content-box !important;
+}*/ /* Commented to resolve issue of including padding in width but it affects too much then uncomment it */
+/**,*/
+
+*,*::after,
+*::before {
+    -webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
 }
+.hierarchy_wrapper *, .hierarchy_wrapper *::after, .hierarchy_wrapper *::before, .hierarchy_wrapper,
+.pop-body-wraper *, .pop-body-wraper *::after, .pop-body-wraper *::before,
+.create-plan-form #accordion2 *,.create-plan-form #accordion2 *::after, .create-plan-form #accordion2 *::before,
+#modal-container-186470 .partial_wrapper *, #modal-container-186470 .partial_wrapper *::after, #modal-container-186470 .partial_wrapper *::before{
+    box-sizing: content-box !important;
+} 
 
 body,
 html {
@@ -89,6 +103,8 @@ body {
 a{cursor:pointer !important}
 .dropdown-menu > li > a{color:inherit}
 .btn.btn-large{font-size:18px}
+.no-btm-bdr{border-bottom:0 !important}
+
 /*  ============ End General style ============ */
 #header {
     background: #3e3f37  ; /* #2384b8 Edited for #2219 - Bhumika */
@@ -301,7 +317,7 @@ ul.drop-down-menu {
     display: inline-block;
     float: right; 
 }
-.light-blue-chart .white-chart { /* #2312 */
+.light-blue-chart .white-chart { 
     border: 1px solid #ccc;
     float: right;
     height: 92px;
@@ -309,6 +325,7 @@ ul.drop-down-menu {
     padding: 5px 10px 10px;
     text-align: center;
     width: 125px;
+    box-sizing: content-box !important;/* #2312 */
 }
 .white-chart.activity-distribute{
     width:150px;
@@ -363,7 +380,9 @@ h3.source-sans-prolight a {
 .nav-gray-reports > li > a {
     line-height: 40px;
 }
-
+.title-header h2{
+    font-size: 30px;
+}
 h2.title-header {
     font-size: 30px;
     float: left;
@@ -630,7 +649,7 @@ span.info-icon {
 
 /* ======== #2202 End ======== */
 .nav-gray > li > a {
-    height: 40px;
+    /*height: 40px;*/ /* #2312 */
     background: #ddd;
     border-top: 1px solid #c7c7c7;
     color: #908d88 !important;
@@ -1680,7 +1699,7 @@ span.requests-logo-icon {
 }
 .btn-blue, .btn-blue-disable { /* Edited for #2219 - Bhumika */
     display: block;
-    max-width: 220px !important;
+    max-width: 220px ;
     height: 35px !important;
     border: none !important;
     margin-bottom: 18px;
@@ -1694,6 +1713,7 @@ span.requests-logo-icon {
 .btn.btn-blue.text-shadow-blue.source-sans-proregular.margin-top23.popup_button_save {
     padding: 0 43px;
 }
+#sidebar .btn-blue{width:100%; max-width:100%;} /* Added for #2312 */
 
 .close-form.btn-link.source-sans-proregular.popup_button_cancel {
     margin-left: 60px;
@@ -1933,51 +1953,54 @@ input.error {
     -webkit-box-shadow: 2px 5px 5px #a4a4a4;
     -moz-box-shadow: 2px 5px 5px #a4a4a4;
     box-shadow: 2px 5px 5px #a4a4a4, -3px -16px 4px -13px #262626 inset;
+    box-sizing: content-box !important; /* #2312 */
 }
 
-    .form-signin input {
-        font-size: 18px;
-        width: 310px;
-        padding-left: 20px;
-        vertical-align: middle;
-        display: block;
-    }
+.form-signin input {
+    font-size: 18px;
+    width: 310px;
+    padding-left: 20px;
+    vertical-align: middle;
+    display: block;
+    box-sizing: content-box !important;
+}
 
-        .form-signin input::-webkit-input-placeholder {
-            color: #393937;
-        }
+.form-signin input::-webkit-input-placeholder {
+    color: #393937;
+}
 
-        .form-signin input:-moz-placeholder {
-            color: #393937;
-        }
+.form-signin input:-moz-placeholder {
+    color: #393937;
+}
 
-        .form-signin input::-moz-placeholder {
-            color: #393937;
-        }
+.form-signin input::-moz-placeholder {
+    color: #393937;
+}
 
-        .form-signin input:-ms-input-placeholder {
-            color: #393937;
-        }
+.form-signin input:-ms-input-placeholder {
+    color: #393937;
+}
 
-    .form-signin button {
-        width: 120px !important;
-        height: 17px !important;
-        margin-top: 10px !important;
+.form-signin button {
+    width: 120px !important;
+    height: 17px !important;
+    margin-top: 10px !important;
     background:  #89CEDE ;  /* Edited for #2312- Komal */
-        border: none !important;
-        border-top: none !important;
+    border: none !important;
+    border-top: none !important;
     text-shadow: none;
-        float: left;
-    }
+    float: left;
+    box-sizing: content-box !important;
+}
 
-    .form-signin #ForgotPassword {
-        color: #FFF;
-        float: left;
-        font-size: 17.5px;
-        margin-left: 30px;
-        margin-top: 22px !important;
-        text-shadow: 0 1px 1px #235D86 !important;
-    }
+.form-signin #ForgotPassword {
+    color: #FFF;
+    float: left;
+    font-size: 17.5px;
+    margin-left: 30px;
+    margin-top: 22px !important;
+    text-shadow: 0 1px 1px #235D86 !important;
+}
 
 .sidebar-form .head .close-form:hover,
 .to-scroll .nl-field-toggle,
@@ -2046,6 +2069,7 @@ span.link-blue:hover {
     -webkit-box-shadow: 2px 5px 5px #a4a4a4;
     -moz-box-shadow: 2px 5px 5px #a4a4a4;
     box-shadow: 2px 5px 5px #a4a4a4, -3px -16px 4px -13px #262626 inset;
+    box-sizing: content-box !important; /* #2312 */
 }
 
 .dark-shadow {
@@ -2059,6 +2083,7 @@ span.link-blue:hover {
     vertical-align: middle !important;
     float: none !important;
     margin-left: 0 !important;
+    box-sizing: content-box !important; /* #2312 */
 }
 
 .form-forgot-password #match,
@@ -2104,6 +2129,7 @@ span.link-blue:hover {
     height: 17px !important;
     margin-top: 10px !important;
     background:#89CEDE;  /* Edited for #2312- Komal */
+    box-sizing: content-box !important; /* #2312 */
 }
 .form-forgot-password button:focus,
 .form-forgot-password button:hover,
@@ -3083,6 +3109,7 @@ button, button:hover, button:focus{outline:0 none !important} /*added by bhumika
 
 .title-header h2 {
     line-height: 0;
+    margin-left: 20px;/* #2312 */
 }
 
 #table_activities tbody tr td,
@@ -3102,12 +3129,13 @@ button, button:hover, button:focus{outline:0 none !important} /*added by bhumika
     color: #908d88 !important;
 }
 
-    #table_activities tbody tr,
-    #table_baseline tbody tr {
-        cursor: pointer;
-        font-size: 22px;
-        border-bottom: 1px solid #c7ced1;
-    }
+#table_activities tbody tr,
+#table_baseline tbody tr {
+    cursor: pointer;
+    font-size: 22px;
+    border-bottom: 1px solid #c7ced1;
+}
+#table_baseline tbody tr{font-size: 16px;}
 #table_baseline.tbl-external-service tbody tr{
         font-size: 16px; /* Added by Bhumika #1449*/
 }
@@ -3171,13 +3199,15 @@ span.circle-check-icon-integration-blue {
 #table_baseline tbody tr td span.title-baseline-model {
     margin-right: 10px;
     float: left;
+    font-size: 22px; /* #2312 - 2nd screen 8th comment*/
 }
 
-#table_baseline.table-striped tbody > tr:nth-child(2n+1) > td,
 .table-striped tbody > tr:nth-child(2n+1) > th {
     background-color: #f2f2f2;
 }
-
+#table_baseline.table-striped tbody > tr:nth-child(2n+1) > td{
+    background-color: transparent;
+} /* #2312 2nd screen 9th comment */
 #table_baseline td.gray {
     background-color: #f7f7f7 !important;
 }
@@ -3186,13 +3216,16 @@ span.circle-check-icon-integration-blue {
     color: #ccc;
 }
 
-#table_baseline tbody tr:hover > td,
-#table_baseline tbody tr:hover > th,
-#table_baseline.table-striped tbody > tr:nth-child(2n+1):hover > td,
 .table-striped tbody > tr:nth-child(2n+1):hover > th {
     background-color: #e9f6fd;
 }
 
+#table_baseline tbody tr:hover > td,
+#table_baseline tbody tr:hover > th,
+#table_baseline.table-striped tbody > tr:nth-child(2n+1):hover > td{ 
+    background-color: #f0f0f0; /* #2312 2nd screen 9th comment */
+
+}
 #table_baseline tbody tr td span.search-icon {
     visibility: hidden;
     background: url(../images/magnifying_glass.png) no-repeat;
@@ -3988,47 +4021,47 @@ span.delete-tactic {
 }
 
 #table_baseline tbody tr td span.duplicate-icon:hover {
-    background-color: #F8710E; /* Edited for #2219 - Bhumika */
-    background-image: url(../images/Copy-icon-white.png);
-    background-position: 5px 5px !important;
+    /*background-color: #F8710E;*/ /* Edited for #2219 + #2312 - Bhumika */
+    background-image: url(../images/Copy-icon-hover.png);
+    /*background-position: 5px 5px !important;
     background-size: 14px auto;
     border-radius: 19px;
     height: 24px;
     margin: 2px 4px 4px 0;
-    width: 24px;
+    width: 24px;*/
 }
 
 #table_baseline tbody tr td span.add-icon:hover {
-    background-color: #F8710E;/* Edited for #2219 - Bhumika */
-    background-image: url(../images/add-new-icon-white.png);
-    background-position: 6px 4px !important;
+    /*background-color: #F8710E;*//* Edited for #2219 + #2312 - Bhumika */
+    background-image: url(../images/add-new-icon-hover.png);
+    /*background-position: 6px 4px !important;
     background-size: auto auto;
     border-radius: 19px;
     height: 23px;
     margin: 3px 11px 0 -4px;
-    width: 24px;
+    width: 24px;*/
 }
 
 #table_baseline tbody tr td span.delete-temp-program:hover {
-    background-color: #c1272d;
-    background-image: url(../images/Remove-icon-white.png);
-    background-position: 6px 6px !important;
-    background-size: 12px auto;
+    /*background-color: #c1272d;*//* Edited for #2312 - Bhumika */
+    background-image: url(../images/Remove-icon-hover.png);
+    background-position: 0 0 !important;
+    /*background-size: 12px auto;
     border-radius: 19px;
     height: 24px;
     margin: 2px 3px 1px;
-    width: 25px;
+    width: 25px;*/
 }
 
 .add-icon:hover {
-    background-color: #F8710E; /* Edited for #2219 - Bhumika */
-    background-image: url(../images/add-new-icon-white.png);
-    background-position: 6px 4px !important;
+    /*background-color: #F8710E;*/ /* Edited for #2219 + #2312 - Bhumika */
+    background-image: url(../images/add-new-icon-hover.png);
+    /*background-position: 6px 4px !important;
     background-size: 14px auto;
     border-radius: 19px;
     height: 23px;
     margin: 10px 28px 0 0;
-    width: 22px;
+    width: 22px;*/
 }
 
 #campaignAccordion span.duplicate-icon-ProgramCopy:hover,
@@ -4606,6 +4639,7 @@ input::-moz-placeholder {
         float: left;
         margin-left: 20px;
         margin-bottom: 15px;
+        box-sizing: content-box !important; /*#2312*/
     }
 
         .inputs-aligned-horizontal > input[disabled] {
@@ -4786,7 +4820,8 @@ a.link-gray {
 
 .row-fluid .hierarchy_wrapper {
     overflow: auto;
-    width: 1355px; /* #2219 */
+    /*width: 1355px;*/ /* #2219 */
+    width: 70%; /* #2312 */
     background: #fff none repeat scroll 0 0;
     margin-left: 11px;
 }
@@ -5746,7 +5781,12 @@ span.left-arrow {
         text-shadow: none;
         font-family:inherit;
     }
-
+.form-inspect-share,
+.form-inspect-share input,
+.form-inspect-share textarea,
+.form-inspect-share button{
+    box-sizing: content-box !important; /* #2312 added */
+} 
 .form-inspect-share-button {
     float: left;
     width: 120px !important;
@@ -6286,14 +6326,14 @@ span.delete-tactic:hover {
 }
 
     #table_baseline tbody tr td .edit-temp-program:hover {
-        background-color: #F8710E;/* Edited for #2219 - Bhumika */
-        background-image: url(../images/edit-icon-white.png);
-        background-position: 6px 4px !important;
+        /*background-color: #F8710E;*//* Edited for #2219 + #2312  - Bhumika */ 
+        background-image: url(../images/edit-icon-hover.png);
+        /*background-position: 6px 4px !important;
         background-size: auto auto;
         border-radius: 19px;
         height: 23px;
         margin: 3px 11px 0 -7px;
-        width: 24px;
+        width: 24px;*/
     }
 
 .edit-icon-dark {
@@ -7864,6 +7904,7 @@ input.icon-check-blue {
 
 .myteam .sbHolder {
     z-index: auto !important;
+    min-height:28px; /* #2312 */
 }
 
 #table_baseline tbody tr td span.duplicate-icon {
@@ -9531,7 +9572,8 @@ li.close-list {
     top: 0;
     transform: translateY(5%) translateX(5%);
     padding-top: 40px;
-    width: calc(100% - 40px);
+    /*width: calc(100% - 40px);*/ /* due to box-sizing property change*/
+    width: 100%;
 }
 
 .bodyOverflow,
@@ -9827,7 +9869,9 @@ li.close-list {
 .margin-bottom20 {
     margin-bottom: 20px !important;
 }
-
+.margin-bottom25 {
+    margin-bottom: 25px !important;
+}
 .commentedby-color {
     color: #333;
     font-size: 13px;
@@ -10258,7 +10302,7 @@ color: #666867 !important;opacity:1;
     color: #fff;
     height: 37px;
     padding-left: 20px;
-    width: 70px;
+    width: 70px; 
     margin-top: -5px;
     outline: 0;
     font-family: source_sans_prolight;
@@ -10282,7 +10326,7 @@ color: #666867 !important;opacity:1;
 
 .add-icon-white {
     padding-left: 2px;
-    width: 55px;
+    /*width: 55px;*/ /* due to box-sizing property change*/
     float: right;
 }
 
@@ -10554,6 +10598,7 @@ color: #3e3f37; /* Edited for #2219 - Bhumika */
 .task-tbl div.gridbox  table
         {
     border-collapse:separate;
+    box-sizing: content-box !important; /* #2312 */
         }
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td,.task-tbl div.gridbox_dhx_skyblue table.obj.row20px tr td{
  border-left:none;   
@@ -11491,6 +11536,7 @@ font-size: 20px;
         border-width: 0;
         border-radius: 0;
         margin-right: 0;
+        margin-left: 0;/* #2312 */
     }
 
 .label-toooltip,
@@ -12190,7 +12236,10 @@ div.clue-bottom-default .cluetip-arrows {
     display: inline-block;
     margin-left: 0;
     padding: 10px 0 0 24px;
-    width: 98%;
+    width: 100%;
+    -webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
 }
 
     .report-btn-group .report-grey-btn {
@@ -12702,8 +12751,10 @@ div.clue-bottom-default .cluetip-arrows {
     }
 
 #sidebar h4 {
-    color: #000 !important;
+    /*color: #000 !important;*/
     font-size: 25px !important;
+    color: inherit;
+    font-family: inherit;/*#2312*/
 }
 
 .sidebar-section span {
@@ -14825,11 +14876,14 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     background-color: #f0f0f0 !important;  /* Edited for #2312 - Bhumika */
     color:inherit !important;
 }
-
 .nav-tabs {
-    border-bottom:0px solid #ddd;
+    border-bottom: 1px solid #89cede;
 }
-
+.nav-tabs > li > a{margin-left: 2px;margin-left: 2px;} /* #2312 */
+.nav-tabs > li > a:hover, .nav-tabs > li > a:focus{border-bottom: 1px solid transparent ;}
+#DivloadPlan .nav-tabs {
+    border-bottom: 0;
+}
 /*#exportcsv {
     margin: 0 10px 0 0; float:right;cursor:pointer;
 }
@@ -15071,6 +15125,9 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     border-left: 1px solid #999999;
     padding-left: 17px;
 }
+.header-right span a:hover {
+    color: #F8700E;
+}
 .navigation {
     background: #e6e6e6 none repeat scroll 0 0;
     display: block;
@@ -15192,7 +15249,11 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 }
 .menu-content .dropdown-menu > li a {
     padding: 6px 15px;
-    width:85.5%;
+    /*width:85.5%;*/
+    width: 100%;
+    -webkit-box-sizing: border-box !important;/* #2312 */
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
 }
 
 .menu-content .dropdown-menu > li a:hover,
@@ -15315,14 +15376,14 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     color: #a0b58d;
     font-family: inherit;
     font-size: 14px;
-    height: 35px;
+    /*height: 35px;*/
     left: 0;
     margin: 0;
     outline: medium none;
     padding: 0 10% 0 0;
     position: absolute;
-    top: 0;
-    width: 90%;
+    top: -1px;
+    width: 91%; /*#2312*/
     z-index: 10;
     display:none;
 } 
@@ -15335,8 +15396,8 @@ input[type="search"].ExpInput {
     width: 35px;
     display: block;
     position: absolute;
-    left: 5px;
-    top: 6px;
+    left: 1px;
+    top: 5px; /* #2312 */
     padding: 0;
     margin: 0;
     text-align: center;
@@ -15397,7 +15458,7 @@ input[type="search"].ExpInput {
 #txtGlobalSearch{
     border: 0 none;
     border-radius: 0;
-    height: 27px;
+    height: 34px;
     margin: 0;
     background: transparent;
     outline: 0 !important;
@@ -15407,7 +15468,7 @@ input[type="search"].ExpInput {
     font-size: 12px;
 }
 .Exp-serach, .ExpIcon,
-.Expbtn , .ExpIconClose, #searchCriteria  {height: 34px;} 
+.Expbtn , .ExpIconClose {height: 35px;} /*#2312 */
 #txtGlobalSearch:focus{box-shadow:none}
 #txtGlobalSearch::-ms-clear {/* For IE only */
     display: none;
@@ -15665,10 +15726,10 @@ a:focus, a:hover{outline:0 none !important}
     .grid_Delete{margin-right:0;} /*by bheru 1678 05-11-2015*/
 } 
 @media (max-width: 1600px) {
-.row-fluid .hierarchy_wrapper {
+/*.row-fluid .hierarchy_wrapper {
  overflow: auto;
  width: 1005px;
-}
+}*/ /*#2312*/
  .treeview {
  margin-left: 55px;
 }
@@ -15684,10 +15745,10 @@ a:focus, a:hover{outline:0 none !important}
 }
 }
  @media (max-width: 1440px) {
-.row-fluid .hierarchy_wrapper {
- overflow: auto;
- width: 871px;
-}
+    /*.row-fluid .hierarchy_wrapper {
+     overflow: auto;
+     width: 871px;
+    }*/
  .pop-body-wraper {
  /*height: 500px;/*by bheru 18-11-2015 #1619*/
 

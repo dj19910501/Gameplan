@@ -159,7 +159,7 @@ namespace RevenuePlanner.Test.MockHelpers
             var objCampaign = db.Plan_Campaign.Where(a => a.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             return objCampaign;
         }
-        public static List <Plan_Improvement_Campaign_Program_Tactic> GetPlanImprovementTacticList(Guid clientId)
+        public static List<Plan_Improvement_Campaign_Program_Tactic> GetPlanImprovementTacticList(Guid clientId)
         {
             var objImprovementtactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).Take(10).ToList();
             return objImprovementtactic;
@@ -378,6 +378,11 @@ namespace RevenuePlanner.Test.MockHelpers
             return Convert.ToString(DashboardId);
         }
         #endregion
+        public static string GetPlanIdListClientWise(Guid clientId)
+        {
+            var planIds = db.Plans.Where(p => p.IsDeleted == false && p.Model.ClientId == clientId).Select(p => p.PlanId).Take(10).ToList();
+            return string.Join(",", planIds.Select(plan => plan.ToString()));
+        }
 
     }
 }
