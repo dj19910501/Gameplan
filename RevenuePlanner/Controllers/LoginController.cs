@@ -247,15 +247,9 @@ namespace RevenuePlanner.Controllers
                     Sessions.User = obj;
 
                     //Start Manoj Limbachiya : 11/23/2013 - Menu filling and Role Permission
-                    if (Sessions.AppMenus == null)
-                    {
-                        Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);
-                    }
+                    Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);
 
-                    if (Sessions.RolePermission == null)
-                    {
-                        Sessions.RolePermission = objBDSServiceClient.GetPermission(Sessions.ApplicationId, Sessions.User.RoleId);
-                    }
+                    Sessions.RolePermission = objBDSServiceClient.GetPermission(Sessions.ApplicationId, Sessions.User.RoleId);
                     //End Manoj Limbachiya : 11/23/2013 - Menu filling  and Role Permission
 
                     //// Set user activity permission session.
