@@ -233,7 +233,7 @@ FROM
 		,PT.TacticBudget AS MainBudgeted
 		,PT.CreatedBy 
 		,0 as IsEditable
-		,CASE WHEN PT.[Status] in ('Approved','InProgress','Complete') THEN 1 ELSE 0 END IsAfterApproved
+		,CASE WHEN PT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
 		,PTB.Value
 		,PTB.Period
 		,PT.Cost
@@ -287,7 +287,7 @@ SELECT
 		,CASE WHEN PL.CreatedBy=@UserId THEN 1 ELSE 0 END IsOwner
 		,PL.CreatedBy
 		,0 as IsEditable
-		,CASE WHEN PT.[Status] in ('Approved','InProgress','Complete') THEN 1 ELSE 0 END IsAfterApproved
+		,CASE WHEN PT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
 		,PLC.Value
 		,'C'+PLC.period as period 
 	FROM Plan_Campaign_Program_Tactic_LineItem PL
@@ -459,7 +459,7 @@ FROM
 		,PT.TacticBudget AS MainBudgeted
 		,PT.CreatedBy 
 		,0 as IsEditable
-		,CASE WHEN PT.[Status] in ('Approved','InProgress','Complete') THEN 1 ELSE 0 END IsAfterApproved
+		,CASE WHEN PT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
 		,PTB.Value
 		,PTB.Period
 		,PT.Cost
@@ -513,7 +513,7 @@ SELECT
 		,CASE WHEN PL.CreatedBy=@UserId THEN 1 ELSE 0 END IsOwner
 		,PL.CreatedBy
 		,0 as IsEditable
-		,CASE WHEN PT.[Status] in ('Approved','InProgress','Complete') THEN 1 ELSE 0 END IsAfterApproved
+		,CASE WHEN PT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
 		,PLC.Value
 		,'C'+PLC.period as period 
 	FROM Plan_Campaign_Program_Tactic_LineItem PL
