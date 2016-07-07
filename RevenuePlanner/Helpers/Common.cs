@@ -26,8 +26,6 @@ using System.Text.RegularExpressions;
 using Integration;
 using System.Web.Caching;
 using System.Data.SqlClient;
-using System.Reflection;
-using System.Data.EntityClient;
 using System.Runtime.CompilerServices;
 
 namespace RevenuePlanner.Helpers
