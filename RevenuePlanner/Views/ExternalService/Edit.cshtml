@@ -53,221 +53,307 @@
     <div id="cErrorPermission"></div>
 </div>
 @* End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716. *@
-<ul class="nav nav-tabs margin-bottom0">
+@*<ul class="nav nav-tabs margin-bottom0">
     <li class="source-sans-proregular">
         <h2 class="title-header">@( Model.IntegrationInstanceId == 0 ? "Create" : "Edit") External Service Integrations</h2>
     </li>
-</ul>
-<a class="link-gray" href="@Url.Action("Index", "ExternalService")">« BACK TO LIST</a>
+</ul>*@ @*#2312*@
 
-<div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom: 0px !important">
-    <div class="row">
-        @Html.Partial("~/Views/ExternalService/_integration.cshtml")
-        @*Added By : Kalpesh Sharma Integration Type Settings - 682 *@
-        <div class="integrationAccordion span10">
-            <div id="accordion" class="accordion">
-                @Html.Partial("~/Views/ExternalService/_GeneralSettings.cshtml", Model)
-                @* Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681*@
-                @if (Model.IntegrationInstanceId > 0)
-                { 
-                    @Html.Partial("~/Views/ExternalService/_DataMapping.cshtml", Model.GameplanDataTypeModelList)
-                    @* Added by Brad Gray on 26 March 2016 for PL#2084*@
-                    if (Model.IntegrationType.Code == Enums.IntegrationType.WorkFront.ToString() && Model.CustomReadOnlyDataModelList.Count > 0)
+<div class="title-header source-sans-proregular margin-bottom25 clearfix">
+    <h2>@( Model.IntegrationInstanceId == 0 ? "Create" : "Edit") External Service Integrations</h2>
+</div> @*#2312*@
+    <a class="link-gray" href="@Url.Action("Index", "ExternalService")">« BACK TO LIST</a>
+
+    <div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom: 0px !important">
+        <div class="row">
+            @Html.Partial("~/Views/ExternalService/_integration.cshtml")
+            @*Added By : Kalpesh Sharma Integration Type Settings - 682 *@
+            <div class="integrationAccordion span10">
+                <div id="accordion" class="accordion">
+                    @Html.Partial("~/Views/ExternalService/_GeneralSettings.cshtml", Model)
+                    @* Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681*@
+                    @if (Model.IntegrationInstanceId > 0)
                     {
-                        @Html.Partial("~/Views/ExternalService/_DataMapping-PullData.cshtml", Model.CustomReadOnlyDataModelList)
-                    }
-@* Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681*@
-                    if (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString())
-                    {
-                    @Html.Partial("~/Views/ExternalService/_ExternalServer.cshtml", Model.ExternalServer)
-                    if (IsMQLShow)
-                    {
-                     @Html.Partial("~/Views/ExternalService/_PullEloquaMQL.cshtml", Model.GameplanDataTypePullMQLModelList)
-                    }
-                    }
-                    else if (Model.IntegrationType.Code == Enums.IntegrationType.Salesforce.ToString())
-                    {
-                    @Html.Partial("~/Views/ExternalService/_Responses.cshtml", Model.GameplanDataTypePullRevenueModelList)
-                        if (IsMQLShow)
+                        @Html.Partial("~/Views/ExternalService/_DataMapping.cshtml", Model.GameplanDataTypeModelList)
+                        @* Added by Brad Gray on 26 March 2016 for PL#2084*@
+                        if (Model.IntegrationType.Code == Enums.IntegrationType.WorkFront.ToString() && Model.CustomReadOnlyDataModelList.Count > 0)
                         {
-                            @Html.Partial("~/Views/ExternalService/_PullSalesforceMQL.cshtml", Model.GameplanDataTypePullMQLModelList)
+                            @Html.Partial("~/Views/ExternalService/_DataMapping-PullData.cshtml", Model.CustomReadOnlyDataModelList)
+                        }
+                        @* Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681*@
+                        if (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString())
+                        {
+                            @Html.Partial("~/Views/ExternalService/_ExternalServer.cshtml", Model.ExternalServer)
+                            if (IsMQLShow)
+                            {
+                                @Html.Partial("~/Views/ExternalService/_PullEloquaMQL.cshtml", Model.GameplanDataTypePullMQLModelList)
+                            }
+                        }
+                        else if (Model.IntegrationType.Code == Enums.IntegrationType.Salesforce.ToString())
+                        {
+                            @Html.Partial("~/Views/ExternalService/_Responses.cshtml", Model.GameplanDataTypePullRevenueModelList)
+                            if (IsMQLShow)
+                            {
+                                @Html.Partial("~/Views/ExternalService/_PullSalesforceMQL.cshtml", Model.GameplanDataTypePullMQLModelList)
+                            }
+                        }
+
+                        @* Modified by Brad Gray on 07/22/2015 for PL ticket #1453*@
+                        if (Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
+                        {
+                            @Html.Partial("~/Views/ExternalService/_ClosedDeals.cshtml", Model.GameplanDataTypePullModelList)@* Added by Dharmraj on 06/08/2014 for PL ticket #658*@
                         }
                     }
-
-                    @* Modified by Brad Gray on 07/22/2015 for PL ticket #1453*@
-                    if (Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
+                    else
                     {
-                       @Html.Partial("~/Views/ExternalService/_ClosedDeals.cshtml", Model.GameplanDataTypePullModelList)@* Added by Dharmraj on 06/08/2014 for PL ticket #658*@
-                    }
-                }   
-                else
-                {
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <div class="accordion-toggle CreateMode">Push Tactic Data</div>
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <div class="accordion-toggle CreateMode">Push Tactic Data</div>
+                            </div>
                         </div>
-                    </div>
-                    if (Model != null && Model.IntegrationType != null && Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
-                    {
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <a class="accordion-toggle CreateMode" data-parent="#accordion" style="position: static;">Pull Responses</a>
-                        </div>
-                    </div>
+                        if (Model != null && Model.IntegrationType != null && Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
+                        {
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle CreateMode" data-parent="#accordion" style="position: static;">Pull Responses</a>
+                                </div>
+                            </div>
+                        }
+                        if (Model != null && Model.IntegrationType != null && (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString() || Model.IntegrationType.Code == Enums.IntegrationType.Salesforce.ToString())) //modified by Rahul Shah on 29/02/2016 for PL #2017. display "Pull MQL" section when add new integration for SFDC.
+                        {
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle CreateMode" data-parent="#accordion">Pull MQL</a>
+                                </div>
+                            </div>
+                        }
+                        if (Model != null && Model.IntegrationType != null && Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
+                        {
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle CreateMode no-bottom-border" data-parent="#accordion">Pull Closed Deals</a>
+                                </div>
+                            </div>
+                        }
                     }
-                    if (Model != null && Model.IntegrationType != null && (Model.IntegrationType.Code == Enums.IntegrationType.Eloqua.ToString() || Model.IntegrationType.Code == Enums.IntegrationType.Salesforce.ToString())) //modified by Rahul Shah on 29/02/2016 for PL #2017. display "Pull MQL" section when add new integration for SFDC.
-                    {
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <a class="accordion-toggle CreateMode" data-parent="#accordion">Pull MQL</a>
-                        </div>
-                    </div>
-                    }
-                    if (Model != null && Model.IntegrationType != null && Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString() && Model.IntegrationType.Code != Enums.IntegrationType.Marketo.ToString())
-                    { 
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <a class="accordion-toggle CreateMode no-bottom-border" data-parent="#accordion">Pull Closed Deals</a>
-                        </div>
-                    </div>
-                    }
-                }
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    $(document).ready(function () {
-        var IsPermission = '@ViewBag.IntegrationPermission';
-        var InstanceType = null;
-        if (IsPermission != null && IsPermission != '') {
-            $('#content').css('display', 'none');
-            $('#cErrorPermission').html("<strong>Error! </strong> " + IsPermission);
-            $("#errorMessagePermission").slideDown(400);
-            $("html, body").animate({ scrollTop: 0 }, 1000);
-        }
-        else {
-            if ('@Model' != null) {
-                @if (Model.IntegrationType != null) {
+        $(document).ready(function () {
+            var IsPermission = '@ViewBag.IntegrationPermission';
+            var InstanceType = null;
+            if (IsPermission != null && IsPermission != '') {
+                $('#content').css('display', 'none');
+                $('#cErrorPermission').html("<strong>Error! </strong> " + IsPermission);
+                $("#errorMessagePermission").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+            }
+            else {
+                if ('@Model' != null) {
+                    @if (Model.IntegrationType != null) {
                     @: InstanceType = '@Model.IntegrationType.Code';
+                                    }
                 }
             }
-        }
 
-        var InstanceMarketo = '@Enums.IntegrationType.Marketo.ToString()';
-        /* Start - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
-        $('.sbSelector').click(function () {
-            if ($('.integrationAccordion').find('.collapse.in').css('overflow') != 'visible') {
-                $('.integrationAccordion').find('.collapse.in').css('overflow', 'visible');
-            }
-        });
-        /* End - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
-        $('#integrationForm').find('#Instance').focus();
-        /* Start - Added by Sohel Pathan on 26/08/2014 for Internal Review Points */
-        $('.accordion').on('shown', function () {
-            var expandedTab = $('.integrationAccordion').find('.collapse.in');
-            if ($(expandedTab).attr('id') == 'collapseGrp1') {
-                $('#integrationForm').find('#Instance').focus();
-            }
-            else if ($(expandedTab).attr('id') == 'collapseGrpDataMapping') {
-                $("#frmDataMapping #0").next().find('.sbSelector').focus();
-            }
-            else if ($(expandedTab).attr('id') == 'collapseGrpServer') {
-                $('#extServer').find('#SFTPServerName').focus();
-            }
-            else if ($(expandedTab).attr('id') == 'collapseRevenue') {
-                $("#frmRevenueDataMapping #0").next().find('.sbSelector').focus();
-            }
-            else if ($(expandedTab).attr('id') == 'collapseMQL') {
-                $("#frmMQLDataMapping #0").next().find('.sbSelector').focus();
-            }
-            else if ($(expandedTab).attr('id') == 'collapseCloseDeal') {
-                $("#frmClosedDealDataMapping #0").next().find('.sbSelector').focus();
-            }
-        });
-        /* End - Added by Sohel Pathan on 26/08/2014 for Internal Review Points */
-
-        //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
-        $('.integrationAccordion .accordion-toggle').not('.CreateMode').click(function () {
-            $('.accordion-toggle span').text('+ Expand');
-            $('.integrationAccordion').find('.collapse.in').css('overflow', '');    // Added by Sohel Pathan on 25/08/2014 for PL ticket #728
-            // Start - Added by Sohel Pathan on 25/08/2014 for Internal Review Points
-            $('.accordion-toggle').each(function () {
-                if ($(this).attr("href") == '#collapseCloseDeal') {
-                    $(this).css('border-bottom', 'none');
+            var InstanceMarketo = '@Enums.IntegrationType.Marketo.ToString()';
+            /* Start - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
+            $('.sbSelector').click(function () {
+                if ($('.integrationAccordion').find('.collapse.in').css('overflow') != 'visible') {
+                    $('.integrationAccordion').find('.collapse.in').css('overflow', 'visible');
                 }
             });
-            // End - Added by Sohel Pathan on 25/08/2014 for Internal Review Points
-            if ($(this).parent().next('.accordion-body').hasClass('in')) {
-                $(this).children('span').text('+ Expand');
+            /* End - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
+            $('#integrationForm').find('#Instance').focus();
+            /* Start - Added by Sohel Pathan on 26/08/2014 for Internal Review Points */
+            $('.accordion').on('shown', function () {
+                var expandedTab = $('.integrationAccordion').find('.collapse.in');
+                if ($(expandedTab).attr('id') == 'collapseGrp1') {
+                    $('#integrationForm').find('#Instance').focus();
+                }
+                else if ($(expandedTab).attr('id') == 'collapseGrpDataMapping') {
+                    $("#frmDataMapping #0").next().find('.sbSelector').focus();
+                }
+                else if ($(expandedTab).attr('id') == 'collapseGrpServer') {
+                    $('#extServer').find('#SFTPServerName').focus();
+                }
+                else if ($(expandedTab).attr('id') == 'collapseRevenue') {
+                    $("#frmRevenueDataMapping #0").next().find('.sbSelector').focus();
+                }
+                else if ($(expandedTab).attr('id') == 'collapseMQL') {
+                    $("#frmMQLDataMapping #0").next().find('.sbSelector').focus();
+                }
+                else if ($(expandedTab).attr('id') == 'collapseCloseDeal') {
+                    $("#frmClosedDealDataMapping #0").next().find('.sbSelector').focus();
+                }
+            });
+            /* End - Added by Sohel Pathan on 26/08/2014 for Internal Review Points */
+
+            //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
+            $('.integrationAccordion .accordion-toggle').not('.CreateMode').click(function () {
+                $('.accordion-toggle span').text('+ Expand');
+                $('.integrationAccordion').find('.collapse.in').css('overflow', '');    // Added by Sohel Pathan on 25/08/2014 for PL ticket #728
+                // Start - Added by Sohel Pathan on 25/08/2014 for Internal Review Points
+                $('.accordion-toggle').each(function () {
+                    if ($(this).attr("href") == '#collapseCloseDeal') {
+                        $(this).css('border-bottom', 'none');
+                    }
+                });
+                // End - Added by Sohel Pathan on 25/08/2014 for Internal Review Points
+                if ($(this).parent().next('.accordion-body').hasClass('in')) {
+                    $(this).children('span').text('+ Expand');
+                } else {
+                    $(this).children('span').text('- Collapse');
+                    if ($(this).attr("href") == '#collapseCloseDeal') {
+                        $(this).css('border-bottom', '1px solid #cccccc');  // Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681
+                    }
+                }
+            });
+            $('.integrationAccordion .accordion-group:last-child').addClass('last');
+            //End By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
+
+            $("#Instance").focus();
+            $(".selectBox select").selectbox();
+
+            if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+                $("#successMessage").slideUp(400);
+            }
+            else {
+                $("#successMessage").slideDown(1200);
+            }
+            if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+                $("#errorMessage").slideUp(400);
+            }
+            else {
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+            }
+
+            $('#hdnIsActiveIntact').val($('#IsActive').val());
+
+            var selectedSpan = $('#ddlSyncFrequency').val();
+            if (selectedSpan != "") {
+                if (selectedSpan == "Hourly") {
+                    $("#divTimeOptions").hide();
+                    $("#divDayOptions").hide();
+                    $("#divDateOptions").hide();
+                }
+                else if (selectedSpan == "Daily") {
+                    $("#divTimeOptions").show();
+                    $("#divDayOptions").hide();
+                    $("#divDateOptions").hide();
+                }
+                else if (selectedSpan == "Weekly") {
+                    $("#divTimeOptions").show();
+                    $("#divDayOptions").show();
+                    $("#divDateOptions").hide();
+                }
+                else if (selectedSpan == "Monthly") {
+                    $("#divTimeOptions").show();
+                    $("#divDayOptions").hide();
+                    $("#divDateOptions").show();
+                }
+            }
+
+            if ($('#IsActive').val().toString().toLowerCase() == "false") {
+                $(this).val("Inactive");
+                $('#IsActive').val(false);
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
             } else {
-                $(this).children('span').text('- Collapse');
-                if ($(this).attr("href") == '#collapseCloseDeal') {
-                    $(this).css('border-bottom', '1px solid #cccccc');  // Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681
+                $(this).val("Active");
+                $('#IsActive').val(true);
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+            }
+            if (InstanceType != null && InstanceType != InstanceMarketo) {
+                if ($('#IsImportActuals').val().toString().toLowerCase() == "false") {
+                    $(this).val("Inactive");
+                    $('#IsImportActuals').val(false);
+                    $(this).addClass("icon-check-gray");
+                    $(this).removeClass("icon-check-blue");
+                } else {
+                    $(this).val("Active");
+                    $('#IsImportActuals').val(true);
+                    $(this).addClass("icon-check-blue");
+                    $(this).removeClass("icon-check-gray");
+                }
+            }
+
+            $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+        });
+
+        // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
+        closeDataLoseConfirmationMsg();
+        // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
+
+        $("#ddlSyncFrequency").change(function () {
+            var selectedSpan = $(this).val();
+            if (selectedSpan != "") {
+                if (selectedSpan == "Hourly") {
+                    $("#divTimeOptions").hide();
+                    $("#divDayOptions").hide();
+                    $("#divDateOptions").hide();
+                    $("#SyncFrequency_Day").val('');    // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                    $("#timeOptions").val($("#timeOptions").attr('myvalue'));   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                }
+                else if (selectedSpan == "Daily") {
+                    $("#divTimeOptions").show();
+                    $("#divDayOptions").hide();
+                    $("#divDateOptions").hide();
+                    populateTimeOptions();
+                    $("#divTimeOptions").focus();
+                    $("#SyncFrequency_Day").val('');    // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                }
+                else if (selectedSpan == "Weekly") {
+                    $("#divTimeOptions").show();
+                    $("#divDayOptions").show();
+                    $("#divDateOptions").hide();
+                    populateTimeOptions();
+                    populateWeekDayOptions();
+                    $("#divTimeOptions").focus();
+                    $("#SyncFrequency_Day").val('');    // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                }
+                else if (selectedSpan == "Monthly") {
+                    $("#divTimeOptions").show();
+                    $("#divDayOptions").hide();
+                    $("#divDateOptions").show();
+                    populateTimeOptions();
+                    $("#divTimeOptions").focus();
+                    $("#SyncFrequency_Day").val('');
                 }
             }
         });
-        $('.integrationAccordion .accordion-group:last-child').addClass('last');
-        //End By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
 
-        $("#Instance").focus();
-        $(".selectBox select").selectbox();
-
-        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
-            $("#successMessage").slideUp(400);
-        }
-        else {
-            $("#successMessage").slideDown(1200);
-        }
-        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
-            $("#errorMessage").slideUp(400);
-        }
-        else {
-            $("#errorMessage").slideDown(400);
-            $("html, body").animate({ scrollTop: 0 }, 1000);
-        }
-
-        $('#hdnIsActiveIntact').val($('#IsActive').val());
-
-        var selectedSpan = $('#ddlSyncFrequency').val();
-        if (selectedSpan != "") {
-            if (selectedSpan == "Hourly") {
-                $("#divTimeOptions").hide();
-                $("#divDayOptions").hide();
-                $("#divDateOptions").hide();
+        $('select').blur(function () {
+            if ($(this).val() == '') {
+                $(this).addClass("error");
+            } else {
+                $(this).removeClass("error");
             }
-            else if (selectedSpan == "Daily") {
-                $("#divTimeOptions").show();
-                $("#divDayOptions").hide();
-                $("#divDateOptions").hide();
-            }
-            else if (selectedSpan == "Weekly") {
-                $("#divTimeOptions").show();
-                $("#divDayOptions").show();
-                $("#divDateOptions").hide();
-            }
-            else if (selectedSpan == "Monthly") {
-                $("#divTimeOptions").show();
-                $("#divDayOptions").hide();
-                $("#divDateOptions").show();
-            }
-        }
+        });
 
-        if ($('#IsActive').val().toString().toLowerCase() == "false") {
-            $(this).val("Inactive");
-            $('#IsActive').val(false);
-            $(this).addClass("icon-check-gray");
-            $(this).removeClass("icon-check-blue");
-        } else {
-            $(this).val("Active");
-            $('#IsActive').val(true);
-            $(this).addClass("icon-check-blue");
-            $(this).removeClass("icon-check-gray");
-        }
-        if (InstanceType != null && InstanceType != InstanceMarketo) {
-            if ($('#IsImportActuals').val().toString().toLowerCase() == "false") {
+        $("#integrationStatus").click(function () {
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Inactive");
+                $('#IsActive').val(false);
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+            } else {
+                $(this).val("Active");
+                $('#IsActive').val(true);
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+            }
+        });
+
+        $("#importActuals").click(function () {
+            if ($(this).hasClass("icon-check-blue")) {
                 $(this).val("Inactive");
                 $('#IsImportActuals').val(false);
                 $(this).addClass("icon-check-gray");
@@ -278,201 +364,119 @@
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
             }
-        }
-
-        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-
-    });
-
-    // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
-    closeDataLoseConfirmationMsg();
-    // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
-
-    $("#ddlSyncFrequency").change(function () {
-        var selectedSpan = $(this).val();
-        if (selectedSpan != "") {
-            if (selectedSpan == "Hourly") {
-                $("#divTimeOptions").hide();
-                $("#divDayOptions").hide();
-                $("#divDateOptions").hide();
-                $("#SyncFrequency_Day").val('');    // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
-                $("#timeOptions").val($("#timeOptions").attr('myvalue'));   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
-            }
-            else if (selectedSpan == "Daily") {
-                $("#divTimeOptions").show();
-                $("#divDayOptions").hide();
-                $("#divDateOptions").hide();
-                populateTimeOptions();
-                $("#divTimeOptions").focus();
-                $("#SyncFrequency_Day").val('');    // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
-            }
-            else if (selectedSpan == "Weekly") {
-                $("#divTimeOptions").show();
-                $("#divDayOptions").show();
-                $("#divDateOptions").hide();
-                populateTimeOptions();
-                populateWeekDayOptions();
-                $("#divTimeOptions").focus();
-                $("#SyncFrequency_Day").val('');    // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
-            }
-            else if (selectedSpan == "Monthly") {
-                $("#divTimeOptions").show();
-                $("#divDayOptions").hide();
-                $("#divDateOptions").show();
-                populateTimeOptions();
-                $("#divTimeOptions").focus();
-                $("#SyncFrequency_Day").val('');
-            }
-        }
-    });
-
-    $('select').blur(function () {
-        if ($(this).val() == '') {
-            $(this).addClass("error");
-        } else {
-            $(this).removeClass("error");
-        }
-    });
-
-    $("#integrationStatus").click(function () {
-        if ($(this).hasClass("icon-check-blue")) {
-            $(this).val("Inactive");
-            $('#IsActive').val(false);
-            $(this).addClass("icon-check-gray");
-            $(this).removeClass("icon-check-blue");
-        } else {
-            $(this).val("Active");
-            $('#IsActive').val(true);
-            $(this).addClass("icon-check-blue");
-            $(this).removeClass("icon-check-gray");
-        }
-    });
-
-    $("#importActuals").click(function () {
-        if ($(this).hasClass("icon-check-blue")) {
-            $(this).val("Inactive");
-            $('#IsImportActuals').val(false);
-            $(this).addClass("icon-check-gray");
-            $(this).removeClass("icon-check-blue");
-        } else {
-            $(this).val("Active");
-            $('#IsImportActuals').val(true);
-            $(this).addClass("icon-check-blue");
-            $(this).removeClass("icon-check-gray");
-        }
-    });
-
-
-    function populateTimeOptions() {
-        $.getJSON("@Url.Content("~/ExternalService/populateTimeOptions")",
-        function (TimeData) {
-            var select = $("#timeOptions");
-            select.empty();
-            $.each(TimeData, function (index, itemData) {
-                select.append($('<option/>', {
-                    value: itemData.Value,
-                    text: itemData.Text
-                }));
-            });
-
-            $(".selectBox select").selectbox('detach');
-            $(".selectBox select").selectbox("attach");
         });
-    }
 
-    function populateWeekDayOptions() {
-        $.getJSON("@Url.Content("~/ExternalService/populateWeekDayOptions")",
-        function (WeekData) {
-            var select = $("#dayOptions");
-            select.empty();
-            $.each(WeekData, function (index, itemData) {
-                select.append($('<option/>', {
-                    value: itemData.Value,
-                    text: itemData.Text
-                }));
+
+        function populateTimeOptions() {
+            $.getJSON("@Url.Content("~/ExternalService/populateTimeOptions")",
+            function (TimeData) {
+                var select = $("#timeOptions");
+                select.empty();
+                $.each(TimeData, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+
+                $(".selectBox select").selectbox('detach');
+                $(".selectBox select").selectbox("attach");
             });
+        }
 
-            $(".selectBox select").selectbox('detach');
-            $(".selectBox select").selectbox("attach");
+        function populateWeekDayOptions() {
+            $.getJSON("@Url.Content("~/ExternalService/populateWeekDayOptions")",
+            function (WeekData) {
+                var select = $("#dayOptions");
+                select.empty();
+                $.each(WeekData, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+
+                $(".selectBox select").selectbox('detach');
+                $(".selectBox select").selectbox("attach");
+            });
+        }
+
+        // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
+        var url = '';
+        url = '@Url.Action("Index", "ExternalService")';
+        ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
+
+        $('#integrationForm').find('#btnCancel').click(function () {
+            checkForDataLose('accordion', url, ErrorMessage);
         });
-    }
 
-    // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
-    var url = '';
-    url = '@Url.Action("Index", "ExternalService")';
-    ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
+        $('#btnCancelDataMappins').click(function () {
+            checkForDataLose('accordion', url, ErrorMessage);
+        });
 
-    $('#integrationForm').find('#btnCancel').click(function () {
-        checkForDataLose('accordion', url, ErrorMessage);
-    });
+        $('#btnExtServerCancel').click(function () {
+            checkForDataLose('accordion', url, ErrorMessage);
+        });
 
-    $('#btnCancelDataMappins').click(function () {
-        checkForDataLose('accordion', url, ErrorMessage);
-    });
-
-    $('#btnExtServerCancel').click(function () {
-        checkForDataLose('accordion', url, ErrorMessage);
-    });
-
-    $('#btnCancelRevenueMappins').click(function () {
-        checkForDataLose('accordion', url, ErrorMessage);
-    });
-    //Added by Rahul Shah on 26/02/2016 for PL #2017
-    $('#btnCancelSalesForceMQLMapping').click(function () {
-        $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLSuccessMessage").hide();
-        $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLErrorMessage").hide();
-        checkForDataLose('accordion', url, ErrorMessage);
-    });
-
-    $('#btnCancelCloseDealMappins').click(function () {
-        checkForDataLose('accordion', url, ErrorMessage);
-    });
-
-    $('#btnCancelMQLMappings').click(function () {
-        checkForDataLose('accordion', url, ErrorMessage);
-    });
-    // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
-
-    // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #863
-    $('.accordion-body').on('hide', function () {
-        clearAllMessages();
-    });
-
-    function clearAllMessages() {
-        $('#integrationForm').find("#cSuccessGeneralSettings").html('');
-        $('#integrationForm').find("#successMessageGeneralSettings").hide();
-        $('#integrationForm').find('#cErrorGeneralSettings').html('');
-        $('#integrationForm').find("#errorMessageGeneralSettings").hide();
-
-        $("#frmDataMapping").find('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
-        $("#frmDataMapping").find("#DataMappingSuccessMessage").hide();
-        $("#frmDataMapping").find('#DataMappingErrorMessage').find('#spanMessageError').html('');
-        $("#frmDataMapping").find("#DataMappingErrorMessage").hide();
-
-        $('#extServer').find("#sucExtSrv").hide();
-        $('#extServer').find('#cSucExtSrv').html('');
-        $('#extServer').find("#errExtSrv").hide();
-        $('#extServer').find('#cErrExtSrv').html('');
-
-        $("#frmRevenueDataMapping").find('#RevenueSuccessMessage').find('#spanMessageSuccess').html('');
-        $("#frmRevenueDataMapping").find("#RevenueSuccessMessage").hide();
-        $("#frmRevenueDataMapping").find('#RevenueErrorMessage').find('#spanMessageError').html('');
-        $("#frmRevenueDataMapping").find("#RevenueErrorMessage").hide();
+        $('#btnCancelRevenueMappins').click(function () {
+            checkForDataLose('accordion', url, ErrorMessage);
+        });
         //Added by Rahul Shah on 26/02/2016 for PL #2017
-        $("#frmSalesForceMQLDataMapping").find('#SalesForceMQLSuccessMessage').find('#spanMessageSuccess').html('');
-        $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLSuccessMessage").hide();
-        $("#frmSalesForceMQLDataMapping").find('#SalesForceMQLErrorMessage').find('#spanMessageError').html('');
-        $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLErrorMessage").hide();
+        $('#btnCancelSalesForceMQLMapping').click(function () {
+            $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLSuccessMessage").hide();
+            $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLErrorMessage").hide();
+            checkForDataLose('accordion', url, ErrorMessage);
+        });
 
-        $("#frmClosedDealDataMapping").find('#ClosedDealErrorMessage').find('#spanMessageError').html('');
-        $("#frmClosedDealDataMapping").find("#ClosedDealErrorMessage").hide();
-        $("#frmClosedDealDataMapping").find('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html('');
-        $("#frmClosedDealDataMapping").find("#ClosedDealSuccessMessage").hide();
+        $('#btnCancelCloseDealMappins').click(function () {
+            checkForDataLose('accordion', url, ErrorMessage);
+        });
 
-        $("#frmMQLDataMapping").find('#MQLErrorMessage').find('#spanMessageError').html('');
-        $("#frmMQLDataMapping").find("#MQLErrorMessage").hide();
-        $("#frmMQLDataMapping").find('#MQLSuccessMessage').find('#spanMessageSuccess').html('');
-        $("#frmMQLDataMapping").find("#MQLSuccessMessage").hide();
-    }
-    // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #863
-</script>
+        $('#btnCancelMQLMappings').click(function () {
+            checkForDataLose('accordion', url, ErrorMessage);
+        });
+        // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
+
+        // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #863
+        $('.accordion-body').on('hide', function () {
+            clearAllMessages();
+        });
+
+        function clearAllMessages() {
+            $('#integrationForm').find("#cSuccessGeneralSettings").html('');
+            $('#integrationForm').find("#successMessageGeneralSettings").hide();
+            $('#integrationForm').find('#cErrorGeneralSettings').html('');
+            $('#integrationForm').find("#errorMessageGeneralSettings").hide();
+
+            $("#frmDataMapping").find('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
+            $("#frmDataMapping").find("#DataMappingSuccessMessage").hide();
+            $("#frmDataMapping").find('#DataMappingErrorMessage').find('#spanMessageError').html('');
+            $("#frmDataMapping").find("#DataMappingErrorMessage").hide();
+
+            $('#extServer').find("#sucExtSrv").hide();
+            $('#extServer').find('#cSucExtSrv').html('');
+            $('#extServer').find("#errExtSrv").hide();
+            $('#extServer').find('#cErrExtSrv').html('');
+
+            $("#frmRevenueDataMapping").find('#RevenueSuccessMessage').find('#spanMessageSuccess').html('');
+            $("#frmRevenueDataMapping").find("#RevenueSuccessMessage").hide();
+            $("#frmRevenueDataMapping").find('#RevenueErrorMessage').find('#spanMessageError').html('');
+            $("#frmRevenueDataMapping").find("#RevenueErrorMessage").hide();
+            //Added by Rahul Shah on 26/02/2016 for PL #2017
+            $("#frmSalesForceMQLDataMapping").find('#SalesForceMQLSuccessMessage').find('#spanMessageSuccess').html('');
+            $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLSuccessMessage").hide();
+            $("#frmSalesForceMQLDataMapping").find('#SalesForceMQLErrorMessage').find('#spanMessageError').html('');
+            $("#frmSalesForceMQLDataMapping").find("#SalesForceMQLErrorMessage").hide();
+
+            $("#frmClosedDealDataMapping").find('#ClosedDealErrorMessage').find('#spanMessageError').html('');
+            $("#frmClosedDealDataMapping").find("#ClosedDealErrorMessage").hide();
+            $("#frmClosedDealDataMapping").find('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html('');
+            $("#frmClosedDealDataMapping").find("#ClosedDealSuccessMessage").hide();
+
+            $("#frmMQLDataMapping").find('#MQLErrorMessage').find('#spanMessageError').html('');
+            $("#frmMQLDataMapping").find("#MQLErrorMessage").hide();
+            $("#frmMQLDataMapping").find('#MQLSuccessMessage').find('#spanMessageSuccess').html('');
+            $("#frmMQLDataMapping").find("#MQLSuccessMessage").hide();
+        }
+        // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #863
+    </script>

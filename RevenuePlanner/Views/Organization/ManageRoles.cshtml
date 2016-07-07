@@ -25,11 +25,14 @@
     <div id="cSuccess"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
 </div>
 
-<ul class="nav nav-tabs">
+@*<ul class="nav nav-tabs">
     <li class="source-sans-proregular">
         <h2 class="title-header">Organization</h2>
     </li>
-</ul>
+</ul>*@ @*#2312*@
+<div class="title-header source-sans-proregular margin-bottom25">
+    <h2>Organization</h2>
+</div> @*#2312*@
 
 <div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom: 0px !important">
     <div class="row">

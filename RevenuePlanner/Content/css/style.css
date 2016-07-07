@@ -15,6 +15,13 @@
     -moz-box-sizing: border-box !important;
     box-sizing: border-box !important;
 }
+.hierarchy_wrapper *, .hierarchy_wrapper *::after, .hierarchy_wrapper *::before, .hierarchy_wrapper,
+.pop-body-wraper *, .pop-body-wraper *::after, .pop-body-wraper *::before,
+.create-plan-form #accordion2 *,.create-plan-form #accordion2 *::after, .create-plan-form #accordion2 *::before,
+#modal-container-186470 .partial_wrapper *, #modal-container-186470 .partial_wrapper *::after, #modal-container-186470 .partial_wrapper *::before{
+    box-sizing: content-box !important;
+} 
+
 body,
 html {
     height: 100% !important;
@@ -373,7 +380,9 @@ h3.source-sans-prolight a {
 .nav-gray-reports > li > a {
     line-height: 40px;
 }
-
+.title-header h2{
+    font-size: 30px;
+}
 h2.title-header {
     font-size: 30px;
     float: left;
@@ -4811,7 +4820,8 @@ a.link-gray {
 
 .row-fluid .hierarchy_wrapper {
     overflow: auto;
-    width: 1355px; /* #2219 */
+    /*width: 1355px;*/ /* #2219 */
+    width: 70%; /* #2312 */
     background: #fff none repeat scroll 0 0;
     margin-left: 11px;
 }
@@ -7894,6 +7904,7 @@ input.icon-check-blue {
 
 .myteam .sbHolder {
     z-index: auto !important;
+    min-height:28px; /* #2312 */
 }
 
 #table_baseline tbody tr td span.duplicate-icon {
@@ -9561,7 +9572,8 @@ li.close-list {
     top: 0;
     transform: translateY(5%) translateX(5%);
     padding-top: 40px;
-    width: calc(100% - 40px);
+    /*width: calc(100% - 40px);*/ /* due to box-sizing property change*/
+    width: 100%;
 }
 
 .bodyOverflow,
@@ -9857,7 +9869,9 @@ li.close-list {
 .margin-bottom20 {
     margin-bottom: 20px !important;
 }
-
+.margin-bottom25 {
+    margin-bottom: 25px !important;
+}
 .commentedby-color {
     color: #333;
     font-size: 13px;
@@ -10288,7 +10302,7 @@ color: #666867 !important;opacity:1;
     color: #fff;
     height: 37px;
     padding-left: 20px;
-    width: 70px;
+    width: 70px; 
     margin-top: -5px;
     outline: 0;
     font-family: source_sans_prolight;
@@ -10312,7 +10326,7 @@ color: #666867 !important;opacity:1;
 
 .add-icon-white {
     padding-left: 2px;
-    width: 55px;
+    /*width: 55px;*/ /* due to box-sizing property change*/
     float: right;
 }
 
@@ -11522,6 +11536,7 @@ font-size: 20px;
         border-width: 0;
         border-radius: 0;
         margin-right: 0;
+        margin-left: 0;/* #2312 */
     }
 
 .label-toooltip,
@@ -15711,10 +15726,10 @@ a:focus, a:hover{outline:0 none !important}
     .grid_Delete{margin-right:0;} /*by bheru 1678 05-11-2015*/
 } 
 @media (max-width: 1600px) {
-.row-fluid .hierarchy_wrapper {
+/*.row-fluid .hierarchy_wrapper {
  overflow: auto;
  width: 1005px;
-}
+}*/ /*#2312*/
  .treeview {
  margin-left: 55px;
 }
@@ -15730,10 +15745,10 @@ a:focus, a:hover{outline:0 none !important}
 }
 }
  @media (max-width: 1440px) {
-.row-fluid .hierarchy_wrapper {
- overflow: auto;
- width: 871px;
-}
+    /*.row-fluid .hierarchy_wrapper {
+     overflow: auto;
+     width: 871px;
+    }*/
  .pop-body-wraper {
  /*height: 500px;/*by bheru 18-11-2015 #1619*/
 

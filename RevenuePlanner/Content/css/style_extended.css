@@ -952,7 +952,7 @@ a {
 .sbSelector {
     display: block;
     left: 0;
-    line-height: 26px;
+    line-height: 22px; /*26px;*/
     outline: none;
     overflow: hidden;
     position: absolute;
@@ -1468,7 +1468,7 @@ a {
     }
 
     .improve-trget.active {
-        background: #5693b3;
+        background: #5f91b3 ; /*#5693b3; #2312 */
     }
 
 /* Sidebar accordion */
