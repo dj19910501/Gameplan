@@ -594,9 +594,9 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
             int planId = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(planId);
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList().ToString();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            var tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(t =>
+            //string CommaSeparatedPlanId = DataHelper.GetPlanIdList().ToString();
+            //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            var tactic = db.Plan_Campaign_Program_Tactic.Where(id => planId == id.Plan_Campaign_Program.Plan_Campaign.PlanId).Select(t =>
                 new
                 {
                     TacticId = t.PlanTacticId,
@@ -604,18 +604,24 @@ namespace RevenuePlanner.Test.Controllers
                     PlanId = t.Plan_Campaign_Program.Plan_Campaign.PlanId,
                     Title = t.Title
                 }).ToList();
-
-            var result = controller.ClonetoOtherPlan(Enums.Section.Tactic.ToString(), tactic[0].TacticId.ToString(), tactic[1].TacticId.ToString(), tactic[0].PlanId.ToString(), tactic[1].PlanId.ToString(), tactic[0].Title);
-            if (result != null)
+            if (tactic != null && tactic.Count > 1)
             {
-                Assert.IsNotNull(result.Data);
+                var result = controller.ClonetoOtherPlan(Enums.Section.Tactic.ToString(), tactic[0].TacticId.ToString(), tactic[1].PlanProgramId.ToString(), tactic[0].PlanId.ToString(), tactic[1].PlanId.ToString(), tactic[0].Title);
+                if (result != null)
+                {
+                    Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                }
             }
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + " Data not found.");
             }
         }
 
@@ -707,9 +713,17 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             List<int> honeyCombIds = new List<int>();
-            honeyCombIds.Add(DataHelper.GetPlanTactic(Sessions.User.ClientId).PlanTacticId);
-
-            string honeyCombId = string.Join(",", honeyCombIds);
+            var TaskData = DataHelper.GetPlanTactic(Sessions.User.ClientId);
+            string honeyCombId = string.Empty;
+            if (TaskData != null)
+            {
+                honeyCombIds.Add(TaskData.PlanTacticId);
+                honeyCombId = string.Join(",", honeyCombIds);
+            }
+            else
+            {
+                honeyCombId = null;
+            }
 
             var result = objPlanController.ExportToCsv(null, null, null, null, honeyCombId, PlanId) as JsonResult;
 
@@ -1022,49 +1036,56 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region "Link Entities from One Plan to Another Plan"
-        /// <summary>
-        /// To Link Tactic to Other Plan
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Link_Tactic_to_Other_Plan()
-        {
-            Console.WriteLine("To Link Tactic to Other Plan.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int planId = DataHelper.GetPlanId();
-            List<int> planIds = new List<int>();
-            Sessions.User.ClientId = DataHelper.GetClientId(planId);
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList().ToString();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            var tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(t =>
-                new
-                {
-                    TacticId = t.PlanTacticId,
-                    PlanProgramId = t.Plan_Campaign_Program.PlanProgramId,
-                    PlanId = t.Plan_Campaign_Program.Plan_Campaign.PlanId,
-                    Title = t.Title
-                }).ToList();
-            planIds.Add(tactic[0].PlanId);
-            Sessions.PlanPlanIds = planIds;
-            var result = controller.LinktoOtherPlan(Enums.Section.Tactic.ToString(), tactic[0].TacticId.ToString(), tactic[1].TacticId.ToString(), tactic[0].PlanId.ToString(), tactic[1].PlanId.ToString(), tactic[0].Title);
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Data);
+        //#region "Link Entities from One Plan to Another Plan"
+        ///// <summary>
+        ///// To Link Tactic to Other Plan
+        ///// <author>Rahul Shah</author>
+        ///// <createdDate>30Jun2016</createdDate>
+        ///// </summary>
+        //[TestMethod]
+        //public void Link_Tactic_to_Other_Plan()
+        //{
+        //    Console.WriteLine("To Link Tactic to Other Plan.\n");
+        //    MRPEntities db = new MRPEntities();
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    PlanController controller = new PlanController();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> planIds = new List<int>();
+        //    Sessions.User.ClientId = DataHelper.GetClientId(planId);
+        //    string CommaSeparatedPlanId = DataHelper.GetPlanIdListClientWise(Sessions.User.ClientId).ToString();
+        //    List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+        //    var tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(t =>
+        //        new
+        //        {
+        //            TacticId = t.PlanTacticId,
+        //            PlanProgramId = t.Plan_Campaign_Program.PlanProgramId,
+        //            PlanId = t.Plan_Campaign_Program.Plan_Campaign.PlanId,
+        //            Title = t.Title
+        //        }).ToList();
+        //    if (tactic != null && tactic.Count > 1)
+        //    {
+        //        planIds.Add(tactic[0].PlanId);
+        //        Sessions.PlanPlanIds = planIds;
+        //        var result = controller.LinktoOtherPlan(Enums.Section.Tactic.ToString(), tactic[0].TacticId.ToString(), tactic[1].TacticId.ToString(), tactic[0].PlanId.ToString(), tactic[1].PlanId.ToString(), tactic[0].Title);
+        //        if (result != null)
+        //        {
+        //            Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
+        //            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //        }
+        //        else
+        //        {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-        }
+        //            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found for link tactic.");
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
         #region "Check Permission By Owner for Entity owner upation"
         /// <summary>
@@ -1356,19 +1377,29 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
+
             int EntityId = DataHelper.GetPlanId();
-
-            var result = controller.LoadImprovementGrid(EntityId) as PartialViewResult;
-            if (result != null)
+            Sessions.User.ClientId = DataHelper.GetClientId(EntityId);
+            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result);
+                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
+                var result = controller.LoadImprovementGrid(PlanId) as PartialViewResult;
+                if (result != null)
+                {
+                    Assert.IsNotNull(result);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                }
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewName);
+                }
             }
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         #endregion
@@ -1703,21 +1734,27 @@ namespace RevenuePlanner.Test.Controllers
             int plan_Id = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId);
-            string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
-            int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
-            Sessions.PlanId = PlanId;
-            var result = controller.GetConversionImprovementTacticType(EntityId) as JsonResult;
-            if (result.Data != null)
+            if (TaskData != null && TaskData.Count > 0)
             {
-                Assert.IsNotNull(result.Data);
+                string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
+                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
+                Sessions.PlanId = PlanId;
+                var result = controller.GetConversionImprovementTacticType(EntityId) as JsonResult;
+                if (result.Data != null)
+                {
+                    Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                }
             }
-
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         #endregion
@@ -1738,22 +1775,30 @@ namespace RevenuePlanner.Test.Controllers
             int plan_Id = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId);
-            string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
-            int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
-            Sessions.PlanId = PlanId;
-            var result = controller.GetHeaderValueForSuggestedImprovement(EntityId) as JsonResult;
-            if (result.Data != null)
+            if (TaskData != null && TaskData.Count > 0)
             {
-                Assert.IsNotNull(result.Data);
+                string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
+                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
+                Sessions.PlanId = PlanId;
+                var result = controller.GetHeaderValueForSuggestedImprovement(EntityId) as JsonResult;
+                if (result.Data != null)
+                {
+                    Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                }
             }
-
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
+
         }
         #endregion
 
@@ -1773,21 +1818,27 @@ namespace RevenuePlanner.Test.Controllers
             int plan_Id = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId);
-            string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
-            int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
-            Sessions.PlanId = PlanId;
-            var result = controller.GetADSImprovementTacticType(EntityId) as JsonResult;
-            if (result.Data != null)
+            if (TaskData != null && TaskData.Count > 0)
             {
-                Assert.IsNotNull(result.Data);
+                string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
+                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
+                Sessions.PlanId = PlanId;
+                var result = controller.GetADSImprovementTacticType(EntityId) as JsonResult;
+                if (result.Data != null)
+                {
+                    Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+
+                else
+                {
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                }
             }
-
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         #endregion
@@ -1808,23 +1859,31 @@ namespace RevenuePlanner.Test.Controllers
             int plan_Id = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
-            int EntityId = TaskData.ImprovementPlanProgramId;
-            int TacticTypeId = TaskData.ImprovementTacticTypeId;
-            int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-            Sessions.PlanId = PlanId;
-            var result = controller.AddSuggestedImprovementTactic(EntityId, TacticTypeId) as JsonResult;
-            if (result.Data != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                int EntityId = TaskData.ImprovementPlanProgramId;
+                int TacticTypeId = TaskData.ImprovementTacticTypeId;
+                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
+                Sessions.PlanId = PlanId;
+                var result = controller.AddSuggestedImprovementTactic(EntityId, TacticTypeId) as JsonResult;
+                if (result.Data != null)
+                {
+                    Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                }
             }
-
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data Not Found");
             }
+
         }
         #endregion
 
@@ -1844,20 +1903,27 @@ namespace RevenuePlanner.Test.Controllers
             int plan_Id = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
-            int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-            Sessions.PlanId = PlanId;
-            var result = controller.GetRecommendedImprovementTacticType() as JsonResult;
-            if (result.Data != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
+                Sessions.PlanId = PlanId;
+                var result = controller.GetRecommendedImprovementTacticType() as JsonResult;
+                if (result.Data != null)
+                {
+                    Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                }
             }
-
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         #endregion
@@ -1878,20 +1944,27 @@ namespace RevenuePlanner.Test.Controllers
             int plan_Id = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
-            int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-            Sessions.PlanId = PlanId;
-            var result = controller.GetImprovementContainerValue() as JsonResult;
-            if (result.Data != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
+                Sessions.PlanId = PlanId;
+                var result = controller.GetImprovementContainerValue() as JsonResult;
+                if (result.Data != null)
+                {
+                    Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                }
             }
-
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         #endregion
@@ -1913,21 +1986,28 @@ namespace RevenuePlanner.Test.Controllers
             int plan_Id = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
-            int EntityId = TaskData.ImprovementPlanTacticId;
-            int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-            Sessions.PlanId = PlanId;
-            var result = controller.ShowDeleteImprovementTactic(EntityId) as PartialViewResult;
-            if (result != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result);
+                int EntityId = TaskData.ImprovementPlanTacticId;
+                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
+                Sessions.PlanId = PlanId;
+                var result = controller.ShowDeleteImprovementTactic(EntityId) as PartialViewResult;
+                if (result != null)
+                {
+                    Assert.IsNotNull(result);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                }
+
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewName);
+                }
             }
-
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         #endregion
@@ -1951,21 +2031,29 @@ namespace RevenuePlanner.Test.Controllers
             int plan_Id = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
-            int EntityId = TaskData.ImprovementPlanTacticId;
-            int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-            Sessions.PlanId = PlanId;
-            var result = controller.DeleteImprovementTacticFromGrid(EntityId) as JsonResult;
-            if (result.Data != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                int EntityId = TaskData.ImprovementPlanTacticId;
+                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
+                Sessions.PlanId = PlanId;
+                var result = controller.DeleteImprovementTacticFromGrid(EntityId) as JsonResult;
+                if (result.Data != null)
+                {
+                    Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                }
+
             }
-
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         #endregion
@@ -1988,21 +2076,28 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
-            int EntityId = TaskData.ImprovementPlanTacticId;
-            int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-            Sessions.PlanId = PlanId;
-            var result = controller.DeleteImprovementTactic(EntityId) as JsonResult;
-            if (result.Data != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                int EntityId = TaskData.ImprovementPlanTacticId;
+                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
+                Sessions.PlanId = PlanId;
+                var result = controller.DeleteImprovementTactic(EntityId) as JsonResult;
+                if (result.Data != null)
+                {
+                    Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                }
             }
-
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         #endregion
@@ -2025,223 +2120,34 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
-            int EntityId = TaskData.ImprovementPlanTacticId;
-            int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
-            Sessions.PlanId = PlanId;
-            string updatedDate = DateTime.Now.ToString();
-            var result = controller.UpdateEffectiveDateImprovement(EntityId, updatedDate) as JsonResult;
-            if (result.Data != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                int EntityId = TaskData.ImprovementPlanTacticId;
+                int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
+                Sessions.PlanId = PlanId;
+                string updatedDate = DateTime.Now.ToString();
+                var result = controller.UpdateEffectiveDateImprovement(EntityId, updatedDate) as JsonResult;
+                if (result.Data != null)
+                {
+                    Assert.IsNotNull(result.Data);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                }
             }
-
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         #endregion
 
-        #region "Delete Plan"
-        ///<summary>
-        /// To Check to Delete Plan without Passing user Id.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Delete_Plan_Without_UserId()
-        {
-            Console.WriteLine("Delete Plan without Passing user Id.\n");
 
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int EntityId = DataHelper.GetPlanId();
-
-            Sessions.PlanId = EntityId;
-            string updatedDate = DateTime.Now.ToString();
-            var result = controller.DeletePlan(EntityId) as JsonResult;
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-        }
-
-        ///<summary>
-        /// To Check to Delete Plan passing all parameter.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Delete_Plan()
-        {
-            Console.WriteLine("To Check to Delete Plan passing all parameter.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int EntityId = DataHelper.GetPlanId();
-            string UserId = Sessions.User.UserId.ToString();
-            Sessions.PlanId = EntityId;
-            string updatedDate = DateTime.Now.ToString();
-            var result = controller.DeletePlan(EntityId, UserId) as JsonResult;
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-        }
-        #endregion
-
-        #region "Delete Campaign"
-        ///<summary>
-        /// To Check to Delete Campaign without Passing all Parameter.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Delete_Campaign_Without_Passing_All_Parameter()
-        {
-            Console.WriteLine("Delete Campaign without Passing all Parameter.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int PlanId = DataHelper.GetPlanId();
-            int EntityId = DataHelper.GetPlanCampaign(Sessions.User.ClientId).PlanCampaignId;
-
-            Sessions.PlanId = EntityId;
-            string updatedDate = DateTime.Now.ToString();
-            var result = controller.DeleteCampaign(EntityId) as JsonResult;
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-        }
-
-        #endregion
-
-        #region "Delete Program"
-        ///<summary>
-        /// To Check to Delete Program without Passing all Parameter.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Delete_Program_Without_Passing_All_Parameter()
-        {
-            Console.WriteLine("Delete Program without Passing all Parameter.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int PlanId = DataHelper.GetPlanId();
-            int EntityId = DataHelper.GetPlanProgram(Sessions.User.ClientId).PlanProgramId;
-
-            Sessions.PlanId = EntityId;
-            string updatedDate = DateTime.Now.ToString();
-            var result = controller.DeleteProgram(EntityId) as JsonResult;
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-        }
-
-        #endregion
-
-        #region "Delete Tactic"
-        ///<summary>
-        /// To Check to Delete Tactic without Passing all Parameter.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Delete_Tactic_Without_Passing_All_Parameter()
-        {
-            Console.WriteLine("Delete Tactic without Passing all Parameter.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int PlanId = DataHelper.GetPlanId();
-            int EntityId = DataHelper.GetPlanTactic(Sessions.User.ClientId).PlanTacticId;
-
-            Sessions.PlanId = EntityId;
-            string updatedDate = DateTime.Now.ToString();
-            var result = controller.DeleteTactic(EntityId) as JsonResult;
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-        }
-
-        #endregion
-
-        #region "Delete LineItem"
-        ///<summary>
-        /// To Check to Delete LineItem without Passing all Parameter.
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Delete_LineItem_Without_Passing_All_Parameter()
-        {
-            Console.WriteLine("Delete LineItem without Passing all Parameter.\n");
-
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int PlanId = DataHelper.GetPlanId();
-            int EntityId = DataHelper.GetPlanLineItem(Sessions.User.ClientId).PlanLineItemId;
-
-            Sessions.PlanId = EntityId;
-            string updatedDate = DateTime.Now.ToString();
-            var result = controller.DeleteLineItem(EntityId) as JsonResult;
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-        }
-
-        #endregion
 
         #region "Get Years Tab for Plan"
         ///<summary>
