@@ -87,6 +87,14 @@
                 </button>
                 </div>*@
 
+
+            @*Modified by Rushil Bhuptani on 06/03/2016 for #2247*@
+            <div id="dvExportToExcel" class="finance-export-btn">
+                <a class="btn btn-h9p2 export-link" style="cursor: pointer; float:left; padding-bottom:5px" id="exportcsv" onclick=" return ExportToExcel(); ">
+                    Export
+                </a>
+            </div>
+
         </div>
 
         @*<div style="float:right;margin-top:10px;margin-bottom:10px;text-align: right;">
@@ -135,13 +143,13 @@
         </div>
 
         @*Modified by Rushil Bhuptani on 06/03/2016 for #2247*@
-        <div id="dvExportToExcel" class="finance-export-btn">
+        @*<div id="dvExportToExcel" class="finance-export-btn">
             <div id="goalwrapper" class="export-link" style="display: inline-block; float: right">
                 <a class="source-sans-proregular export-link" style="cursor: pointer" id="exportcsv" onclick=" return ExportToExcel(); ">
                     <i class="fa fa-external-link"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Export.xls</span>
                 </a>
             </div>
-        </div>
+        </div>*@
     </div>
 </div>
 @*<input type="button" id="btnRefreshMainGrid" name="btnRefreshMainGrid" value="Refresh MainGrid" />*@
