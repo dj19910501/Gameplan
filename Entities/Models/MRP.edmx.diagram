@@ -186,6 +186,9 @@
         <AssociationConnector Association="MRPModel.fk_TacticType_Model" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" />
         <AssociationConnector Association="MRPModel.fk_TacticType_Stage" />
+        <EntityTypeShape EntityType="MRPModel.ROI_PackageDetail" Width="1.5" PointX="10.375" PointY="35.625" />
+        <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic" />
+        <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

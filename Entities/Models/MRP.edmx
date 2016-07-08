@@ -1064,6 +1064,16 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
+        <EntityType Name="ROI_PackageDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AnchorTacticID" Type="int" Nullable="false" />
+          <Property Name="PlanTacticId" Type="int" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
         <EntityType Name="Stage">
           <Key>
             <PropertyRef Name="StageId" />
@@ -1131,6 +1141,7 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="IsDeployedToModel" Type="bit" Nullable="false" />
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
           <Property Name="WorkFrontTemplateId" Type="int" />
+          <Property Name="AssetType" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -2233,6 +2244,30 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_ROIPackageDetail_Plan_Campaign_Program_Tactic">
+          <End Role="Plan_Campaign_Program_Tactic" Type="Self.Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Role="ROI_PackageDetail" Type="Self.ROI_PackageDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="ROI_PackageDetail">
+              <PropertyRef Name="PlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1">
+          <End Role="Plan_Campaign_Program_Tactic" Type="Self.Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Role="ROI_PackageDetail" Type="Self.ROI_PackageDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="ROI_PackageDetail">
+              <PropertyRef Name="AnchorTacticID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SyncFrequency_IntegrationInstance">
           <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
           <End Role="SyncFrequency" Type="Self.SyncFrequency" Multiplicity="0..1" />
@@ -2425,6 +2460,7 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <EntitySet Name="Plan_Team" EntityType="Self.Plan_Team" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Plan_UserSavedViews" EntityType="Self.Plan_UserSavedViews" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Report_Share" EntityType="Self.Report_Share" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ROI_PackageDetail" EntityType="Self.ROI_PackageDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Stage" EntityType="Self.Stage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SyncFrequency" EntityType="Self.SyncFrequency" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tactic_Share" EntityType="Self.Tactic_Share" Schema="dbo" store:Type="Tables" />
@@ -2795,6 +2831,14 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
           <AssociationSet Name="FK_Program_PortfolioTableId" Association="Self.FK_Program_PortfolioTableId">
             <End Role="IntegrationWorkFrontPortfolios" EntitySet="IntegrationWorkFrontPortfolios" />
             <End Role="IntegrationWorkFrontProgram_Mapping" EntitySet="IntegrationWorkFrontProgram_Mapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ROIPackageDetail_Plan_Campaign_Program_Tactic" Association="Self.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="ROI_PackageDetail" EntitySet="ROI_PackageDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1" Association="Self.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="ROI_PackageDetail" EntitySet="ROI_PackageDetail" />
           </AssociationSet>
           <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="Self.FK_SyncFrequency_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
@@ -3352,6 +3396,15 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
           <AssociationSet Name="fk_TacticType_Stage" Association="MRPModel.fk_TacticType_Stage">
             <End Role="Stage" EntitySet="Stages" />
             <End Role="TacticType" EntitySet="TacticTypes" />
+          </AssociationSet>
+          <EntitySet Name="ROI_PackageDetail" EntityType="MRPModel.ROI_PackageDetail" />
+          <AssociationSet Name="FK_ROIPackageDetail_Plan_Campaign_Program_Tactic" Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="ROI_PackageDetail" EntitySet="ROI_PackageDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1" Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="ROI_PackageDetail" EntitySet="ROI_PackageDetail" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
@@ -5501,6 +5554,8 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
           <Property Name="IntegrationInstanceMarketoID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic_LineItem" />
           <NavigationProperty Name="TacticType" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="Plan_Campaign_Program_Tactic" ToRole="TacticType" />
+          <NavigationProperty Name="ROI_PackageDetail" Relationship="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="ROI_PackageDetail" />
+          <NavigationProperty Name="ROI_PackageDetail1" Relationship="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1" FromRole="Plan_Campaign_Program_Tactic" ToRole="ROI_PackageDetail" />
         </EntityType>
         <Association Name="FK_IntegrationWorkFrontRequests_TacticId">
           <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
@@ -5870,6 +5925,7 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
           <NavigationProperty Name="Model" Relationship="MRPModel.fk_TacticType_Model" FromRole="TacticType" ToRole="Model" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="TacticType" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.fk_TacticType_Stage" FromRole="TacticType" ToRole="Stage" />
+          <Property Name="AssetType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_TacticType_TacticType_WorkFrontTemplateId">
           <End Type="MRPModel.IntegrationWorkFrontTemplate" Role="IntegrationWorkFrontTemplate" Multiplicity="0..1" />
@@ -5916,6 +5972,42 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
             </Principal>
             <Dependent Role="TacticType">
               <PropertyRef Name="StageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ROI_PackageDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AnchorTacticID" Type="Int32" Nullable="false" />
+          <Property Name="PlanTacticId" Type="Int32" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic" FromRole="ROI_PackageDetail" ToRole="Plan_Campaign_Program_Tactic" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic1" Relationship="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1" FromRole="ROI_PackageDetail" ToRole="Plan_Campaign_Program_Tactic" />
+        </EntityType>
+        <Association Name="FK_ROIPackageDetail_Plan_Campaign_Program_Tactic">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Type="MRPModel.ROI_PackageDetail" Role="ROI_PackageDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="ROI_PackageDetail">
+              <PropertyRef Name="PlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Type="MRPModel.ROI_PackageDetail" Role="ROI_PackageDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="ROI_PackageDetail">
+              <PropertyRef Name="AnchorTacticID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7145,6 +7237,7 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
           <EntitySetMapping Name="TacticTypes">
             <EntityTypeMapping TypeName="MRPModel.TacticType">
               <MappingFragment StoreEntitySet="TacticType">
+                <ScalarProperty Name="AssetType" ColumnName="AssetType" />
                 <ScalarProperty Name="WorkFrontTemplateId" ColumnName="WorkFrontTemplateId" />
                 <ScalarProperty Name="Abbreviation" ColumnName="Abbreviation" />
                 <ScalarProperty Name="IsDeployedToModel" ColumnName="IsDeployedToModel" />
@@ -7163,6 +7256,17 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="TacticTypeId" ColumnName="TacticTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ROI_PackageDetail">
+            <EntityTypeMapping TypeName="MRPModel.ROI_PackageDetail">
+              <MappingFragment StoreEntitySet="ROI_PackageDetail">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
+                <ScalarProperty Name="AnchorTacticID" ColumnName="AnchorTacticID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

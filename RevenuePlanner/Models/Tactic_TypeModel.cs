@@ -28,5 +28,6 @@ namespace RevenuePlanner.Models
         public int? WorkFrontTemplateId { get; set; } //updated 1/7/2016 by Brad Gray PL#1856
         public string programType { get; set; }
         public string Channel { get; set; }
+        public string AssetType { get; set; }
     }
 }

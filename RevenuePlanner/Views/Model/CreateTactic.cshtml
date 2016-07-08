@@ -8,22 +8,22 @@
     bool IsModelIntegrated = ViewBag.IsModelIntegrated;
     //string ModelIntegrationType = ViewBag.ModelIntegrationType;
     //Start Manoj Limbachiya PL # 486
-    
+
     bool IsDeplyed = ViewBag.IsDeployed;
     bool IsWorkFront = ViewBag.isIntegratedWithWorkFront != null ? ViewBag.isIntegratedWithWorkFront : false; // Update by bhavesh #1727
-    bool IsMarketo = ViewBag.isIntegratedWithMarketo != null ? ViewBag.isIntegratedWithMarketo : false;         //Added By Komal RAwal 
+    bool IsMarketo = ViewBag.isIntegratedWithMarketo != null ? ViewBag.isIntegratedWithMarketo : false;         //Added By Komal RAwal
     //End Manoj Limbachiya PL # 486
     // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
     string ModelStatus = Convert.ToString(ViewBag.ModelStatus);
     int? stageid = Model.StageId;
-        @Html.Hidden("hdnModelStatus", ModelStatus);
-                                               string TacticTypeStageId = Convert.ToString(ViewBag.TacticTypeStageId);
+    @Html.Hidden("hdnModelStatus", ModelStatus);
+    string TacticTypeStageId = Convert.ToString(ViewBag.TacticTypeStageId);
     @Html.Hidden("hdnStageId", TacticTypeStageId);
-                                                 string ChangeTargetStageMsg = Convert.ToString(ViewBag.ChangeTargetStageMsg);
+    string ChangeTargetStageMsg = Convert.ToString(ViewBag.ChangeTargetStageMsg);
     @Html.Hidden("hdnChangeTargetStageMsg", ChangeTargetStageMsg);
 
-    
-            // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
+
+    // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
 }
 <div class="head">
     <span class="close-form source-sans-proregular">» CLOSE MENU</span>
@@ -39,7 +39,7 @@
             </div>
         }
     </div>
-   
+
 </div>
 
 <div id="validationMessage" class="alert alert-error hide message-position-small">
@@ -69,84 +69,87 @@
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional" })
 
             <label>Target Stages <span class="required-asterisk">*</span></label>
-           
-            <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId","Title" ), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
 
-            <label class="margin-top10">Status</label>
+            <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
             @{
-    //Start Manoj Limbachiya PL # 486
-    if (IsDeplyed)
-    {
-                <input id="t_model_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Model" maxlength="18" readonly />
-    }
-    else
-    {
-                <input id="t_model_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Model" maxlength="18" readonly />
-    }
-    //End Manoj Limbachiya PL # 486
+                <label>Asset Type<span class="required-asterisk">*</span></label>
 
-    if (IsModelIntegrated)
-    {
-        if (Model.IsDeployedToIntegration)
-        {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
-        }
-        else
-        {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
-        }
+                <span class="simpleSelectBox">@Html.DropDownListFor(model => model.AssetType, new SelectList((System.Collections.IEnumerable)ViewBag.BindAssetType, "ID", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
+                    <label class="margin-top10">Status</label>
 
-        //Start Brad Gray PL # 1374
-        if (IsWorkFront == true)
-        {
-            <label>WorkFront Template <span class="required-asterisk">*</span></label> //Modified by Komal Rawal to display asterik as required field
+                //Start Manoj Limbachiya PL # 486
+                if (IsDeplyed)
+                {
+                    <input id="t_model_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Model" maxlength="18" readonly />
+                }
+                else
+                {
+                    <input id="t_model_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Model" maxlength="18" readonly />
+                }
+                //End Manoj Limbachiya PL # 486
+
+                if (IsModelIntegrated)
+                {
+                    if (Model.IsDeployedToIntegration)
+                    {
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
+                    }
+                    else
+                    {
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
+                    }
+
+                    //Start Brad Gray PL # 1374
+                    if (IsWorkFront == true)
+                    {
+                        <label>WorkFront Template <span class="required-asterisk">*</span></label> //Modified by Komal Rawal to display asterik as required field
+                                                                                                <span class="simpleSelectBox">
+                                                                                                    @Html.DropDownListFor(m => m.WorkFrontTemplateId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontTemplates, "ID", "Template_Name"), "Please Select", new { @class = "ddlStyle hide", @id = "WorkFrontTemplateId", require = "true" })
+                                                                                                </span>
+                    }
+                    //End Brad Gray PL # 1374
+
+                    //Start Komal Rawal  PL #2216
+                    if (IsMarketo == true)
+                    {
+                        <label>Marketo Program Type <span class="required-asterisk">*</span></label>
+                        <span class="simpleSelectBox">
+                            @Html.DropDownListFor(m => m.programType, new SelectList(ViewBag.DDLProgramType, "Value", "Text"), "Please Select", new { @class = "ddlStyle", @id = "ddlprogramtype", require = "true" })
+                        </span>
+                    }
+
+                    if (IsMarketo == true)
+                    {
+                        <label>Marketo Channel <span class="required-asterisk">*</span></label>
+                        <span class="simpleSelectBox" id="Spanchannel">
+                            @Html.DropDownListFor(m => m.Channel, new SelectList((System.Collections.IEnumerable)ViewBag.DDLChannel, "ChannelName", "ChannelName"), "Please Select", new { @class = "ddlStyle", @id = "ddlchannel", require = "true" })
+                            <span style="display:none">
+                                @Html.DropDownList("ParentChannel", new SelectList((System.Collections.IEnumerable)ViewBag.DDLChannel, "Parentprogramid", "ChannelName"), "Please Select", new { @class = "ddlStyle hide", @id = "getchannelparent" })
+                            </span>
+                        </span>
+                    }
+
+
+                }
+
+
+
+            }
+        </div>
+        <!--End content-->
+
+        <div class="content dark">
+            <p>Add two or more projected or historical values for projection purposes.</p>
+
+            <label id="projectStage">Projected [Stage]</label>
+            @*//changes done by uday for #497*@
+            <label></label>
             <span class="simpleSelectBox">
-            @Html.DropDownListFor(m => m.WorkFrontTemplateId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontTemplates, "ID", "Template_Name"), "Please Select", new { @class = "ddlStyle hide", @id = "WorkFrontTemplateId", require = "true" })
             </span>
-        }
-        //End Brad Gray PL # 1374
-
-        //Start Komal Rawal  PL #2216
-        if (IsMarketo == true)
-        {
-            <label>Marketo Program Type <span class="required-asterisk">*</span></label>
-            <span class="simpleSelectBox">
-                @Html.DropDownListFor(m => m.programType, new SelectList(ViewBag.DDLProgramType, "Value", "Text"), "Please Select", new { @class = "ddlStyle", @id = "ddlprogramtype", require = "true" })
-            </span>
-        }
-
-        if (IsMarketo == true)
-        {
-            <label>Marketo Channel <span class="required-asterisk">*</span></label>
-            <span class="simpleSelectBox" id="Spanchannel">
-                @Html.DropDownListFor(m => m.Channel, new SelectList((System.Collections.IEnumerable)ViewBag.DDLChannel, "ChannelName", "ChannelName"), "Please Select", new { @class = "ddlStyle", @id = "ddlchannel", require = "true" })
-                <span style="display:none">
-                    @Html.DropDownList("ParentChannel", new SelectList((System.Collections.IEnumerable)ViewBag.DDLChannel, "Parentprogramid", "ChannelName"), "Please Select", new { @class = "ddlStyle hide", @id = "getchannelparent" })
-                </span>
-                </span>
-        }
-        
-        
-    }
-
-
-
-}
-                </div>
-                        <!--End content-->
-
-                        <div class="content dark">
-                            <p>Add two or more projected or historical values for projection purposes.</p>
-
-                            <label id="projectStage">Projected [Stage]</label>
-                            @*//changes done by uday for #497*@
-<label></label>
-<span class="simpleSelectBox">
-</span>
-<label></label>
+            <label></label>
             <span class="simpleSelectBox">
             </span>
-@Html.TextBoxFor(model => model.ProjectedStageValue, new { require = "true", id = "hdnProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+            @Html.TextBoxFor(model => model.ProjectedStageValue, new { require = "true", id = "hdnProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
 
             <label>Projected Cost</label>
             @Html.TextBoxFor(model => model.ProjectedRevenue, new { require = "true", id = "hdnProjectedRevenue", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
@@ -164,12 +167,28 @@
             </div>
         </div>
     </div>
-}
+                }
+
+ <div id="PackageListModal" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div>
+        <form>
+            <label style="text-align: center; width: 100%;" class="resubmission_content">Changing the Asset Type to promotion will delete all the associated packages</label>
+            <div style="color: white !important;margin:0 auto;" class="resubmission_list" id="BindpackageList">
+                <ul ></ul>
+            </div>
+            <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button-Package">Proceed</button>
+            <button id="cancel-button-Package" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button">Cancel</button>
+        </form>
+    </div>
+</div>
+
+
 
 <script type="text/javascript">
-  
+
     $(document).ready(function () {
         //Added By Komal Rawal for #2134 for channel and program type dropdown dependency
+        var DeleteAllPackage = false;
         var LiCount = 0;
         var Parentprogramtype = [];
         var Valuesinlist = [];
@@ -352,8 +371,9 @@
             });
         });
 
+        
         /*Modified by Mitesh Vaishnav on 05/06/2014 for remove two buttons of save tactics */
-        $("#CreateTactic").click(function () {
+        $("#CreateTactic").click(function (event, DeleteAllPackage) {
             var iserror = false;
             var isCreated = '@ViewBag.IsCreated';
             $('form').find('input[type=text], select, textarea').each(function () {
@@ -431,12 +451,13 @@
             //var Campainfoldervalue = "";
             //var ProgramType = "";
             //var Channel = "";
-          
+
             var ProgramType = $('#ddlprogramtype').attr('value');
             var Channel = $('#ddlchannel').attr('value');
 
+            var AssetType = $("#AssetType").val();
 
-          
+
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
             //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
             var ProjectedStageValue = ReplaceCC($("#hdnProjectedStageValue").val());
@@ -458,7 +479,22 @@
                     }
                 }
             }
+            if (AssetType == '@Enums.AssetType.Promotion.ToString()' && DeleteAllPackage != true) {
+                if ($('#BindpackageList').find('ul li').length != 0)
+                {
+                    $('#PackageListModal').modal('show');
+                    $('.modal-backdrop').css('display', 'none');
+                }
+                else
+                {
+                    DeleteAllPackage = true;
+                }
+            
+            }
+
             // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
+            if (AssetType == '@Enums.AssetType.Asset.ToString()' || DeleteAllPackage == true)
+            {
             //Modified by Brad Gray on 07/24/2015 for PL#1373,1374 WorkFront template integration
             $.ajax({
                 type: 'POST',
@@ -471,7 +507,7 @@
                             data: 'Title=' + escape(Title) + '&Description=' + escape(Description) + '&StageId=' + StageId + '&ProjectedStageValue=' + ProjectedStageValue
                             + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
                            + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
-                            + '&isDeployedToModel=' + isDeployedToModel + '&WorkFrontTemplate=' + TemplateId + '&ProgramType=' + ProgramType + '&Channel=' + Channel,
+                            + '&isDeployedToModel=' + isDeployedToModel + '&WorkFrontTemplate=' + TemplateId + '&ProgramType=' + ProgramType + '&Channel=' + Channel + '&AssetType=' + AssetType + '&DeleteAllPackage=' + DeleteAllPackage,
                             success: function (data) {
 
                                 if (data.redirect) {
@@ -500,6 +536,7 @@
                     }
                 }
             });
+            }
 
         });
         /*End: Modified by Mitesh Vaishnav on 05/06/2014 for remove two buttons of save tactics */
@@ -513,43 +550,43 @@
         }
 
         //Added By Komal Rawal for #2216 for channel and program type dropdown dependency
-            ProgramTypeValue = $('#ddlprogramtype').val();
-            LiCount = 0;
-            Parentprogramtype = [];
-            Valuesinlist = [];
-            $("#getchannelparent option[value = '" + ProgramTypeValue + "']").each(function () {
+        ProgramTypeValue = $('#ddlprogramtype').val();
+        LiCount = 0;
+        Parentprogramtype = [];
+        Valuesinlist = [];
+        $("#getchannelparent option[value = '" + ProgramTypeValue + "']").each(function () {
 
-                Parentprogramtype.push($(this).text().toLowerCase());
-            })
-            $("#Spanchannel div ul li").each(function () {
-                LiValue = $(this).find('a').text();
-                if (LiValue != undefined && LiValue != 'undefined') {
-                    if (Parentprogramtype.indexOf(LiValue.toLowerCase()) >= 0 || LiValue == "Please Select") {
-                        $(this).css('display', 'block');
-                        if (LiValue != "Please Select") {
-                            Valuesinlist.push(LiValue);
-                            LiCount++;
-                        }
-                    }
-                    else {
-                        $(this).css('display', 'none');
+            Parentprogramtype.push($(this).text().toLowerCase());
+        })
+        $("#Spanchannel div ul li").each(function () {
+            LiValue = $(this).find('a').text();
+            if (LiValue != undefined && LiValue != 'undefined') {
+                if (Parentprogramtype.indexOf(LiValue.toLowerCase()) >= 0 || LiValue == "Please Select") {
+                    $(this).css('display', 'block');
+                    if (LiValue != "Please Select") {
+                        Valuesinlist.push(LiValue);
+                        LiCount++;
                     }
                 }
-            });
-
-           
-            SelectedValue = $('#ddlchannel').val();
-            if (LiCount == 0 || Valuesinlist.indexOf(SelectedValue) < 0) {
-                $('#Spanchannel div .sbSelector').text("Please Select");
-                $("#ddlchannel").val("");
+                else {
+                    $(this).css('display', 'none');
+                }
             }
+        });
 
-      
+
+        SelectedValue = $('#ddlchannel').val();
+        if (LiCount == 0 || Valuesinlist.indexOf(SelectedValue) < 0) {
+            $('#Spanchannel div .sbSelector').text("Please Select");
+            $("#ddlchannel").val("");
+        }
+
+
 
     });
 
 
-  
+
     $('#ddlprogramtype').on('change', function () {
         ProgramTypeValue = $(this).val();
         LiCount = 0;
@@ -570,8 +607,8 @@
                     }
                 }
                 else {
-                      $(this).css('display', 'none');
-                     }
+                    $(this).css('display', 'none');
+                }
             }
         });
 
@@ -583,6 +620,50 @@
 
     });
     //End
+    var TacticTypeIdforpackage = $("#hdnTacticTypeId").val();
+    var PreviousValue = $('#AssetType').val();
+    $('#AssetType').on('change', function () {
+        var NewValue = $(this).val();
+        if (TacticTypeIdforpackage != 0)
+        {
+            if (PreviousValue != NewValue) {
+                if (NewValue == '@Enums.AssetType.Promotion.ToString()') {
+                    $.ajax({
+                        beforeSend: function (x) {
+                            myApp.hidePleaseWait();
+                        },
+                        type: 'Post',
+                        url: '@Url.Content("~/Model/GetListofAssociatedPackage/")',
+                        data: '&TacticTypeId=' + TacticTypeIdforpackage,
+                        success: function (data) {
+                            if (data.PackageList != null && data.PackageList != "") {
+                                $('#BindpackageList').find('ul li').remove();
+                                $.each(data.PackageList, function (i, Packageitem) {
+                                    $('#BindpackageList').find('ul').append('<li  style="padding-left: 0">' + Packageitem + '</li>')
+                                });
+                            
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+
+    });
+
+    $("#cancel-button-Package").click(function () {
+        $('#PackageListModal').css("display", "none");
+        $('#PackageListModal').modal("hide");
+    });
+
+    $('#proceed-button-Package').on("click", function () {
+        var Assetvalue = $('#AssetType').val();
+     //   DeleteAllPackage = true;
+        $('#CreateTactic').trigger('click',[true]);
+        $('#PackageListModal').css("display", "none");
+        $('#PackageListModal').modal("hide");
+    });
 
 </script>
 

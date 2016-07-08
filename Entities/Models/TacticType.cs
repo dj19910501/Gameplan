@@ -37,6 +37,7 @@ namespace RevenuePlanner.Models
         public bool IsDeployedToModel { get; set; }
         public string Abbreviation { get; set; }
         public Nullable<int> WorkFrontTemplateId { get; set; }
+        public string AssetType { get; set; }
     
         public virtual IntegrationWorkFrontTemplate IntegrationWorkFrontTemplate { get; set; }
         public virtual Model Model { get; set; }

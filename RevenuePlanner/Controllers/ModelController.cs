@@ -1283,7 +1283,8 @@ namespace RevenuePlanner.Controllers
                 IsDeployedToIntegration = tacticType.IsDeployedToIntegration,
                 IsTargetStageOfModel = (tacticType.StageId == null) ? true : stagesList.Contains(Convert.ToInt32(tacticType.StageId)),     //// Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                 IsDeployedToModel = tacticType.IsDeployedToModel, //// added by dharmraj for #592 : Tactic type data model
-                currentWorkFrontTemplate = tacticType.WorkFrontTemplateId //added by Brad Gray 7/28/2015 PL#1374, #1373 - updated by Brad Gray 1/7/2016 PL#1856
+                currentWorkFrontTemplate = tacticType.WorkFrontTemplateId, //added by Brad Gray 7/28/2015 PL#1374, #1373 - updated by Brad Gray 1/7/2016 PL#1856
+                AssetType = tacticType.AssetType
             }).Select(tacticType => tacticType).Distinct().OrderBy(tacticType => tacticType.title, new AlphaNumericComparer());
 
             return Json(allTacticTypes, JsonRequestBehavior.AllowGet);
@@ -1365,6 +1366,18 @@ namespace RevenuePlanner.Controllers
                                                                   modelFunnelStage.StageType == StageType).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level)
                                                       .Select(modelFunnelStage => new { modelFunnelStage.StageId, modelFunnelStage.Stage.Title }).Distinct().ToList();
                 ViewBag.IsCreated = false;
+
+                //Added By Komal rawal for #2356 add roi package tactic type selection
+                Dictionary<string, string> AssetType = new Dictionary<string, string>();
+                AssetType.Add(Enums.AssetType.Asset.ToString(), Enums.AssetType.Asset.ToString());
+                AssetType.Add(Enums.AssetType.Promotion.ToString(), Enums.AssetType.Promotion.ToString());
+
+                ViewBag.BindAssetType = AssetType.Select(list => new
+                {
+                    ID = list.Key,
+                    Title = list.Value
+                }).ToList();
+                //End
                 TacticType objTacticType = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.TacticTypeId.Equals(id)).FirstOrDefault();
                 objTacticTypeMdoel.TacticTypeId = objTacticType.TacticTypeId;
                 objTacticTypeMdoel.Title = System.Web.HttpUtility.HtmlDecode(objTacticType.Title);  /////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
@@ -1381,6 +1394,7 @@ namespace RevenuePlanner.Controllers
                 objTacticTypeMdoel.StageId = objTacticType.StageId;
                 objTacticTypeMdoel.ModelId = objTacticType.ModelId;
                 objTacticTypeMdoel.WorkFrontTemplateId = objTacticType.WorkFrontTemplateId; //updated 1/7/2016 by Brad Gray PL#1856
+                objTacticTypeMdoel.AssetType = objTacticType.AssetType;    //Added By Komal rawal for #2356 add roi package tactic type selection
 
                 //// added by Dharmraj, ticket #592 : Tactic type data model
                 ViewBag.IsDeployed = objTacticType.IsDeployedToModel;
@@ -1484,6 +1498,19 @@ namespace RevenuePlanner.Controllers
             string StageType = Enums.StageType.CR.ToString();
             ViewBag.Stages = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true && modelFunnelStage.StageType == StageType).Select(modelFunnelStage => new { modelFunnelStage.StageId, modelFunnelStage.Stage.Title }).Distinct().ToList();
             ViewBag.IsCreated = true;
+
+            //Added By Komal rawal for #2356 add roi package tactic type selection
+            Dictionary<string, string> AssetType = new Dictionary<string, string>();
+            AssetType.Add(Enums.AssetType.Asset.ToString(), Enums.AssetType.Asset.ToString());
+            AssetType.Add(Enums.AssetType.Promotion.ToString(), Enums.AssetType.Promotion.ToString());
+
+            ViewBag.BindAssetType = AssetType.Select(list => new
+            {
+                ID = list.Key,
+                Title = list.Value
+            });
+
+            //End
             Tactic_TypeModel objTacticType = new Tactic_TypeModel();
             //// changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014
             objTacticType.ProjectedStageValue = 0;
@@ -1591,7 +1618,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns json result object</returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult SaveTactic(string Title, string Description, int? StageId, double ProjectedStageValue, double ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel, string WorkFrontTemplate, string ProgramType = "", string Channel = "")
+        public ActionResult SaveTactic(string Title, string Description, int? StageId, double ProjectedStageValue, double ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel, string WorkFrontTemplate, string AssetType, string ProgramType = "", string Channel = "", bool DeleteAllPackage = false)
         {
             try
             {
@@ -1612,6 +1639,10 @@ namespace RevenuePlanner.Controllers
                 //// Start Manoj Limbachiya PL # 486
                 objtactic.ModelId = ModelId;
                 objtactic.IsDeployedToModel = isDeployedToModel;
+                objtactic.AssetType = AssetType;//Added By Komal rawal for #2356 add roi package tactic type selection
+
+              
+                
                 //begin added by Brad Gray 01/7/2016 PL#1856
                 int parsedTemplateId;
                 bool templateResult = Int32.TryParse(WorkFrontTemplate, out parsedTemplateId);
@@ -1678,7 +1709,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-
+                    UpdatePackageDetails(TacticTypeId, AssetType, DeleteAllPackage);     //Added By Komal rawal for #2356 add roi package tactic type selection
                     var existingTacticTypes = objDbMrpEntities.TacticTypes.Where(tacticType => (tacticType.ModelId == ModelId) && tacticType.Title.ToLower() == Title.ToLower() && tacticType.TacticTypeId != TacticTypeId && (tacticType.IsDeleted == null || tacticType.IsDeleted == false)).ToList();
 
                     //// TFS Bug - 179 : Improper behavior when editing Tactic in model 
@@ -3162,12 +3193,12 @@ namespace RevenuePlanner.Controllers
             //Modified by Rahul Shah on 26/02/2016 for PL #2017 
             List<lstInstance> lstInstance = objDbMrpEntities.IntegrationInstances.Where(instance => instance.ClientId == Sessions.User.ClientId && instance.IsDeleted == false)
                 .Select(instance => new lstInstance
-            {
-                InstanceName = instance.Instance,
-                InstanceId = instance.IntegrationInstanceId,
-                Type = instance.IntegrationType.Title,
-                Code = instance.IntegrationType.Code
-            }).OrderBy(ins => ins.InstanceName).ToList();
+                {
+                    InstanceName = instance.Instance,
+                    InstanceId = instance.IntegrationInstanceId,
+                    Type = instance.IntegrationType.Title,
+                    Code = instance.IntegrationType.Code
+                }).OrderBy(ins => ins.InstanceName).ToList();
 
 
             ViewData["IntegrationInstances"] = lstInstance;
@@ -3274,7 +3305,56 @@ namespace RevenuePlanner.Controllers
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
         }
+
+        //Added By Komal rawal for #2356 add roi package tactic type selection to get all associated packages
+        public JsonResult GetListofAssociatedPackage (int TacticTypeID)
+       {
+            var AssociatedTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(list => list.TacticTypeId == TacticTypeID && list.IsDeleted == false).Select(list => list.PlanTacticId).ToList();
+
+            var AssociatedPackageList = objDbMrpEntities.ROI_PackageDetail.Where(list => AssociatedTacticIds.Contains(list.PlanTacticId) && list.PlanTacticId == list.AnchorTacticID).Select(list => list.Plan_Campaign_Program_Tactic.Title).ToList();
+
+
+            return Json(new { PackageList  = AssociatedPackageList }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        //Added By Komal rawal for #2356 add roi package tactic type selection to update package detail on changinf of asset type
+        public void UpdatePackageDetails(int TacticTypeId, string AssetTypeValue, bool DeleteAllPackage)
+        {
+            try
+            {
+                var AssociatedTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(list => list.TacticTypeId == TacticTypeId && list.IsDeleted == false).Select(list => list.PlanTacticId).ToList();
+
+                List<ROI_PackageDetail> AssociatedPackageList = objDbMrpEntities.ROI_PackageDetail.Where(list => AssociatedTacticIds.Contains(list.PlanTacticId)).Select(list => list).ToList();
+                List<int> AnchorTacticIDs = AssociatedPackageList.Where(list => list.AnchorTacticID == list.PlanTacticId).Select(list => list.AnchorTacticID).ToList();
+                if(AssociatedPackageList.Count > 0)
+                {
+                    if (DeleteAllPackage == true)
+                    {
+                        List<ROI_PackageDetail> PackageDetail = objDbMrpEntities.ROI_PackageDetail.Where(list => AnchorTacticIDs.Contains(list.AnchorTacticID)).ToList();
+                        PackageDetail.ForEach(a => { objDbMrpEntities.Entry(a).State = EntityState.Deleted; });
+                    }
+                    else
+                    {
+                        List<ROI_PackageDetail> PackageDetail = AssociatedPackageList.Where(list => !AnchorTacticIDs.Contains(list.PlanTacticId)).ToList();
+                        PackageDetail.ForEach(list => { objDbMrpEntities.Entry(list).State = EntityState.Deleted; });
+                    }
+                }
+                
+
+                objDbMrpEntities.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+        }
+
+
     }
+
+
 
 }
 

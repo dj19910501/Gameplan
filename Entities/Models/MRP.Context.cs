@@ -111,6 +111,7 @@ namespace RevenuePlanner.Models
         public DbSet<AggregationStatu> AggregationStatus { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
         public DbSet<TacticType> TacticTypes { get; set; }
+        public DbSet<ROI_PackageDetail> ROI_PackageDetail { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

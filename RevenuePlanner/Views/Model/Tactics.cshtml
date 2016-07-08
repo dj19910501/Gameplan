@@ -98,6 +98,7 @@
             <tr>
                 <th class="border-r width390">Tactic Title</th>
                 <th class="border-r width86">Target Stage</th>
+                <th class="border-r width86">Asset Type</th>
                 <th class="border-r">Projected Responses</th> @* Modified by :- Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response *@
                 <th class="border-r">Projected Cost</th>
                 <th class="border-r width50px" style="text-align:center;">Deploy to Model</th>
@@ -381,7 +382,7 @@
                             Changed By : Nirav shah on 6 Feb 2014
                             Change : pass new parameter modelid
                         */
-                        addRowTactic(i, tactic[i].id, tactic[i].clientid, tactic[i].modelId, tactic[i].title, tactic[i].Stage,/* tactic[i].inquiries,*/ tactic[i].ProjectedStageValue, tactic[i].revenue, tactic[i].IsDeployedToIntegration, tactic[i].IsTargetStageOfModel, tactic[i].IsDeployedToModel); // parameter _IsTargetStageOfModel Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+                        addRowTactic(i, tactic[i].id, tactic[i].clientid, tactic[i].modelId, tactic[i].title, tactic[i].Stage, tactic[i].AssetType, tactic[i].ProjectedStageValue, tactic[i].revenue, tactic[i].IsDeployedToIntegration, tactic[i].IsTargetStageOfModel, tactic[i].IsDeployedToModel); // parameter _IsTargetStageOfModel Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                     }
 
                     //Fetch all the row values from the tables
@@ -397,7 +398,7 @@
             }
         }
         //add row in tactics table //changes done by uday for PL #497 changed mlqs to projectedstagevalue
-        function addRowTactic(_index, _id, _Clientid, _modelId, _title, Stage,/* _inquiries,*/ _ProjectedStageValue, _revenue, _IsDeployedToIntegration, _IsTargetStageOfModel, _IsDeployedToModel) { // parameter _IsTargetStageOfModel Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+        function addRowTactic(_index, _id, _Clientid, _modelId, _title, Stage,_AssetType, _ProjectedStageValue, _revenue, _IsDeployedToIntegration, _IsTargetStageOfModel, _IsDeployedToModel) { // parameter _IsTargetStageOfModel Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
             var $tableTactics = $('#table_tactics > tbody');
             var $table_activities = $('#table_activities > tbody');
             var $html = "";
@@ -414,6 +415,7 @@
                 $html += '<tr clientid="' + _Clientid + '" class="rejected" id="' + _id + '" data-index="' + _index + '" IsTargetStageOfModel="' + _IsTargetStageOfModel + '">' +   // Modified by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                           '<td  class="border-r sm" id="' + _id + '"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                           '<td   class="sm border-r" id="' + _id + '">' + Stage + '</td>' +
+                          '<td   class="sm border-r" id="' + _id + '">' + _AssetType + '</td>' +
                            //Modified by Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response
                           '<td   class="sm border-r" id="' + _id + '">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
                           '<td  class="border-r sm projectedcost" id="' + _id + '">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
@@ -431,6 +433,7 @@
                 $html += '<tr clientid="0" class="rejected" id="' + _id + '" data-index="' + _index + '" IsTargetStageOfModel="' + _IsTargetStageOfModel + '">' +   // Modified by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                             '<td id="' + _id + '" class="border-r sm"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                             '<td id="' + _id + '"  class="sm border-r">' + Stage + '</td>' +
+                            '<td id="' + _id + '"  class="sm border-r">' + _AssetType + '</td>' +
                              //Modified by Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response
                             '<td  id="' + _id + '" class="sm border-r">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
                             '<td id="' + _id + '" class="border-r sm projectedcost">$' + FormatCommas(_revenue.toString(), false) + '</td>' +

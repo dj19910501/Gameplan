@@ -24,6 +24,8 @@ namespace RevenuePlanner.Models
             this.Plan_Campaign_Program_Tactic_Comment = new HashSet<Plan_Campaign_Program_Tactic_Comment>();
             this.Tactic_Share = new HashSet<Tactic_Share>();
             this.Plan_Campaign_Program_Tactic_LineItem = new HashSet<Plan_Campaign_Program_Tactic_LineItem>();
+            this.ROI_PackageDetail = new HashSet<ROI_PackageDetail>();
+            this.ROI_PackageDetail1 = new HashSet<ROI_PackageDetail>();
         }
     
         public int PlanTacticId { get; set; }
@@ -70,5 +72,7 @@ namespace RevenuePlanner.Models
         public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
         public virtual TacticType TacticType { get; set; }
+        public virtual ICollection<ROI_PackageDetail> ROI_PackageDetail { get; set; }
+        public virtual ICollection<ROI_PackageDetail> ROI_PackageDetail1 { get; set; }
     }
 }
