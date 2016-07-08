@@ -42,9 +42,9 @@
     @*<a class="btn btn-blue-grid text-shadow-blue source-sans-proregular" id="exportcsv" onclick="return ExportToCSV();">
             <img src="~/Content/images/grid-export.png" /> Export .csv
         </a> Changed by bhumika #2015 *@
-    <a class="source-sans-proregular export-link" id="exportcsv" onclick="return ExportToCsvSp();">
+    @*<a class="source-sans-proregular export-link" id="exportcsv" onclick="return ExportToCsvSp();">
         <i class="fa fa-external-link"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Export.csv</span>
-    </a>
+    </a>*@ @*Export link hide and moved at _plandropdown.cshtml for #2312 - Bhumika*@
 </div>
 <div id="gridbox" style="background-color:white;width:100%;" class="gridViewGrid"></div>
 <div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>

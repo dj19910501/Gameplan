@@ -27,7 +27,7 @@
     </li>
    
     @*Modified by Komal Rawal for 2013 Home/Plan Layout changes*@
-    <li id="liplanrequest" style="padding-top:5px;width:50%">
+    <li id="liplanrequest" style="width:50%">
         <div class="request-icons hide" id="BtnTabIcons" style="display:inline-block">
 
             <div class="request-icon-block" id="divPlanButton" title="Calendar View"><a href="#" class="new-btn-plan request-btn-active"><i class="fa fa-calendar"></i></a></div>
@@ -36,14 +36,15 @@
 
             <div class="request-icon-block" id="RequestTab"><a href="#" class="request" title="Requests"><i class="fa fa-thumbs-o-up"></i><span class="counter badge"></a></span></div>
 
-
+            
             @*<div class="request-icon-block" id="RequestTab"><span>Search</span><input type="text"  name="filter" id="tSearch"/></div>
                 <div class="request-icon-block" id="divSearch" title="Serch Button" onclick="onSearchCal()"><a href=" #"><i class="fa fa-calendar"></i></a></div>*@
 	    </div>
+        @* Added for #2312 - Export button's position change - Bhumika (Hide from indexpage)*@
+        <div class="pull-left hm-btn-wrap"><button href="#" onclick='CallPDF()' class="pdfExport btn btn-blue">Export</button></div>
         @*  ==== Searchbox new feature start - #2269 ====  *@
-        <div class="search-wrap">
+        <div class="search-wrap">            
             <div id=" exp-serach" class="Exp-serach">
-
             <span class="ExpIcon" id="ExpSearch"><i class="fa fa-search"></i></span>
             <span class="ExpIconClose" id="ExpClose" style="display:none"><i class="fa fa-times-circle-o" aria-hidden="true"></i></span>
             @*<span class="search-loader" id="ExpLoading" style="display:none">
