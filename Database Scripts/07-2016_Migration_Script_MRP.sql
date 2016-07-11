@@ -1,3 +1,217 @@
+-- Add by Viral Kadiya
+-- Created Date: 07/11/2016
+-- Desc: Insert 'Media Codes' permission by client wise and for that insert 'Media Codes' activity to 'Application_Activity' table in BDSAuth database.
+
+------- NOTE: Please execute below script to BDSAuth database and get inserted ApplicationActivityId for the same record
+
+------- Start : PL ticket #2366: Insert 'Media Code' Application activity to Application_Activity table------- 
+
+-- Please set the below variable value as per requirement.
+Declare @ApplicationActivityId int=50	-- Add 1 to last ApplicationActivityId column value from Application_Activity table and assign it to @ApplicationActivityId variable
+
+-- Don't make any change to below variable values.
+Declare @appId uniqueidentifier
+Declare @MRPCode varchar(500)='MRP'
+Declare @MediaCodeActTitle varchar(500)='Media Codes'
+Declare @Code_MediaCode varchar(500)='MediaCodes'
+Declare @clientActivityType varchar(500)='Client'
+
+-- Insert 'Media Codes' activity to Application_Activity table
+SELECT TOP 1 @appId=ApplicationId from [Application] where Code=@MRPCode and IsDeleted='0'
+
+IF NOT EXISTS(Select ApplicationActivityId from Application_Activity where ApplicationId=@appId and IsNull(ParentId,'') = '' and ActivityTitle=@MediaCodeActTitle and Code=@Code_MediaCode and ActivityType=@clientActivityType)
+BEGIN
+	INSERT INTO Application_Activity(ApplicationActivityId,ApplicationId,ParentId,ActivityTitle,Code,CreatedDate,ActivityType) VALUES(@ApplicationActivityId,@appId,null,@MediaCodeActTitle,@Code_MediaCode,GETDATE(),@clientActivityType)
+END
+GO
+------- End : PL ticket #2366: Insert 'Media Code' Application activity to Application_Activity table------- 
+
+
+------ NOTE: Execute above script to BDSAuth database prior to execute below script and pick ApplicationActivityId by above BDSAuth script and refer to below script
+
+
+-- Add by Viral Kadiya
+-- Created Date: 07/11/2016
+-- Desc: Insert 'Media Codes' permission to Client_Activity table in Plan database.
+
+------ START: Please modify the below variable value as per requirement.
+Declare @clientId uniqueidentifier ='464EB808-AD1F-4481-9365-6AADA15023BD'
+Declare @applicationActivityId int = 50  -- Set 'Media Codes' application activity Id from Application_Activity table in BDSAuth db.
+Declare @createdBy uniqueidentifier ='D3238077-161A-405F-8F0E-10F4D6E50631'
+------------ END ------------ 
+
+IF NOT EXISTS(Select 1 from Client_Activity where ClientId=@clientId and ApplicationActivityId=@applicationActivityId)
+BEGIN
+	INSERT INTO Client_Activity(ClientId,ApplicationActivityId,CreatedBy,CreatedDate) VALUES(@clientId,@applicationActivityId,@createdBy,GETDATE())
+END
+GO
+
+
+-- Add by Viral Kadiya
+-- Created Date: 07/11/2016
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_MediaCodes_CustomField_Configuration_CustomField]') AND parent_object_id = OBJECT_ID(N'[dbo].[MediaCodes_CustomField_Configuration]'))
+ALTER TABLE [dbo].[MediaCodes_CustomField_Configuration] DROP CONSTRAINT [FK_MediaCodes_CustomField_Configuration_CustomField]
+GO
+/****** Object:  Table [dbo].[MediaCodes_CustomField_Configuration]    Script Date: 07/11/2016 1:30:33 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MediaCodes_CustomField_Configuration]') AND type in (N'U'))
+DROP TABLE [dbo].[MediaCodes_CustomField_Configuration]
+GO
+/****** Object:  Table [dbo].[MediaCodes_CustomField_Configuration]    Script Date: 07/11/2016 1:30:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MediaCodes_CustomField_Configuration]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[MediaCodes_CustomField_Configuration](
+	[MediaConfId] [int] IDENTITY(1,1) NOT NULL,
+	[CustomFieldId] [int] NOT NULL,
+	[ClientId] [uniqueidentifier] NOT NULL,
+	[Sequence] [int] NULL,
+	[Length] [int] NULL,
+	[CreatedDate] [datetime] NULL,
+ CONSTRAINT [PK_MediaCodes_CustomField_Configuration] PRIMARY KEY CLUSTERED 
+(
+	[MediaConfId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_MediaCodes_CustomField_Configuration_CustomField]') AND parent_object_id = OBJECT_ID(N'[dbo].[MediaCodes_CustomField_Configuration]'))
+ALTER TABLE [dbo].[MediaCodes_CustomField_Configuration]  WITH CHECK ADD  CONSTRAINT [FK_MediaCodes_CustomField_Configuration_CustomField] FOREIGN KEY([CustomFieldId])
+REFERENCES [dbo].[CustomField] ([CustomFieldId])
+GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_MediaCodes_CustomField_Configuration_CustomField]') AND parent_object_id = OBJECT_ID(N'[dbo].[MediaCodes_CustomField_Configuration]'))
+ALTER TABLE [dbo].[MediaCodes_CustomField_Configuration] CHECK CONSTRAINT [FK_MediaCodes_CustomField_Configuration_CustomField]
+GO
+
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Plan_Campaign_Program_Tactic_Actual_MediaCode_Tactic_MediaCodes]') AND parent_object_id = OBJECT_ID(N'[dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]'))
+ALTER TABLE [dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode] DROP CONSTRAINT [FK_Plan_Campaign_Program_Tactic_Actual_MediaCode_Tactic_MediaCodes]
+GO
+/****** Object:  Table [dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]    Script Date: 07/11/2016 1:30:33 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]') AND type in (N'U'))
+DROP TABLE [dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]
+GO
+/****** Object:  Table [dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]    Script Date: 07/11/2016 1:30:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode](
+	[MediaCodeId] [int] NOT NULL,
+	[StageTitle] [varchar](50) NOT NULL,
+	[Period] [varchar](5) NOT NULL,
+	[Actualvalue] [float] NOT NULL,
+	[CreatedDate] [datetime] NOT NULL,
+	[CreatedBy] [uniqueidentifier] NOT NULL,
+	[ModifiedDate] [datetime] NULL,
+	[ModifiedBy] [uniqueidentifier] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[MediaCodeId] ASC,
+	[StageTitle] ASC,
+	[Period] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_PADDING OFF
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Plan_Campaign_Program_Tactic_Actual_MediaCode_Tactic_MediaCodes]') AND parent_object_id = OBJECT_ID(N'[dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]'))
+ALTER TABLE [dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]  WITH CHECK ADD  CONSTRAINT [FK_Plan_Campaign_Program_Tactic_Actual_MediaCode_Tactic_MediaCodes] FOREIGN KEY([MediaCodeId])
+REFERENCES [dbo].[Tactic_MediaCodes] ([MediaCodeId])
+GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Plan_Campaign_Program_Tactic_Actual_MediaCode_Tactic_MediaCodes]') AND parent_object_id = OBJECT_ID(N'[dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]'))
+ALTER TABLE [dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode] CHECK CONSTRAINT [FK_Plan_Campaign_Program_Tactic_Actual_MediaCode_Tactic_MediaCodes]
+GO
+
+/****** Object:  Table [dbo].[Tactic_MediaCodes]    Script Date: 07/11/2016 1:30:33 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes]') AND type in (N'U'))
+DROP TABLE [dbo].[Tactic_MediaCodes]
+GO
+/****** Object:  Table [dbo].[Tactic_MediaCodes]    Script Date: 07/11/2016 1:30:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[Tactic_MediaCodes](
+	[MediaCodeId] [int] IDENTITY(1,1) NOT NULL,
+	[TacticId] [int] NOT NULL,
+	[MediaCode] [varchar](max) NULL,
+	[CreatedBy] [uniqueidentifier] NULL,
+	[CreatedDate] [datetime] NULL,
+	[LastModifiedBy] [uniqueidentifier] NULL,
+	[LastModifiedDate] [datetime] NULL,
+	[IsDeleted] [bit] NULL CONSTRAINT [DF_Tactic_MediaCodes_IsDeleted]  DEFAULT ((0)),
+ CONSTRAINT [PK_Tactic_MediaCodes] PRIMARY KEY CLUSTERED 
+(
+	[MediaCodeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+GO
+SET ANSI_PADDING OFF
+GO
+
+
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes]') AND parent_object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]'))
+ALTER TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping] DROP CONSTRAINT [FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes]
+GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Tactic_MediaCodes_CustomFieldMapping_CustomField]') AND parent_object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]'))
+ALTER TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping] DROP CONSTRAINT [FK_Tactic_MediaCodes_CustomFieldMapping_CustomField]
+GO
+/****** Object:  Table [dbo].[Tactic_MediaCodes_CustomFieldMapping]    Script Date: 07/11/2016 1:30:33 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]') AND type in (N'U'))
+DROP TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping]
+GO
+/****** Object:  Table [dbo].[Tactic_MediaCodes_CustomFieldMapping]    Script Date: 07/11/2016 1:30:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[TacticId] [int] NOT NULL,
+	[MediaCodeId] [int] NOT NULL,
+	[CustomFieldId] [int] NULL,
+	[CustomFieldValue] [varchar](max) NULL,
+ CONSTRAINT [PK_Tactic_MediaCodes_CustomFieldMapping] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+GO
+SET ANSI_PADDING OFF
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Tactic_MediaCodes_CustomFieldMapping_CustomField]') AND parent_object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]'))
+ALTER TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping]  WITH CHECK ADD  CONSTRAINT [FK_Tactic_MediaCodes_CustomFieldMapping_CustomField] FOREIGN KEY([CustomFieldId])
+REFERENCES [dbo].[CustomField] ([CustomFieldId])
+GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Tactic_MediaCodes_CustomFieldMapping_CustomField]') AND parent_object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]'))
+ALTER TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping] CHECK CONSTRAINT [FK_Tactic_MediaCodes_CustomFieldMapping_CustomField]
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes]') AND parent_object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]'))
+ALTER TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping]  WITH CHECK ADD  CONSTRAINT [FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes] FOREIGN KEY([MediaCodeId])
+REFERENCES [dbo].[Tactic_MediaCodes] ([MediaCodeId])
+GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes]') AND parent_object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]'))
+ALTER TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping] CHECK CONSTRAINT [FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes]
+GO
+
+
 -- Add By Nishant Sheth
 -- Created Date : 07-Jul-2016 
 -- Desc :: Check [spViewByDropDownList] stored procedure is exist or not exist.

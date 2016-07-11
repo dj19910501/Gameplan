@@ -69,6 +69,13 @@
             ProgramOpt = "Edit";
         }
         //End
+
+        // Added by Viral for #2366
+        bool _isClientMediaCodesPermission = false;
+        if (ViewBag.isClientMediaCodesPermission != null)
+        {
+            _isClientMediaCodesPermission = (bool)ViewBag.isClientMediaCodesPermission;
+        }
     }
 
 
@@ -227,9 +234,12 @@
                 <li class="pull-left" id="liLine_Items">
                     <a>Line Items</a>
                 </li>
-                <li class="pull-left" id="liMedia_Code">
-                    <a>Media Code</a>
-                </li>
+                @if (_isClientMediaCodesPermission)
+                {
+                    <li class="pull-left" id="liMedia_Code">
+                        <a>Media Code</a>
+                    </li>
+                }
             </ul>
             <div id="divTab">
             </div>

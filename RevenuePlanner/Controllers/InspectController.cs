@@ -10949,7 +10949,7 @@ namespace RevenuePlanner.Controllers
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         im.PlanProgramId = parentId;
-
+                        ViewBag.isClientMediaCodesPermission = IsClientMediaCodePermission();   // Added by Viral for PL ticket #2366.
                         ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
                         return PartialView("InspectPopup", im);
                     }
@@ -11037,6 +11037,8 @@ namespace RevenuePlanner.Controllers
                             db.Entry(objPlan_Campaign_Program_Tactic).State = EntityState.Modified;
                             int result = db.SaveChanges();
                         }
+
+                        ViewBag.isClientMediaCodesPermission = IsClientMediaCodePermission();   // Added by Viral for PL ticket #2366.
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                     {
@@ -13504,6 +13506,33 @@ namespace RevenuePlanner.Controllers
 
         }
 
+
+        // Added by Viral for #2366
+        public bool IsClientMediaCodePermission()
+        {
+            bool isMediaCodePermission = false;
+            try
+            {
+                if(Sessions.User.ClientId != null)
+                {
+                    int appActivityId=0;
+                    BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
+                    string strMediaCodeActivity = Enums.clientAcivityType.MediaCodes.ToString();
+                     var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(Sessions.ApplicationId);
+                    if(ApplicationActivityList != null && ApplicationActivityList.Count>0)
+                        appActivityId=  ApplicationActivityList.Where(act => act.Code == strMediaCodeActivity).Select(act => act.ApplicationActivityId).FirstOrDefault();
+                         //GetClientApplicationactivitylist(_applicationId);
+
+                    if (db.Client_Activity.Any(act => act.ClientId == Sessions.User.ClientId && act.ApplicationActivityId == appActivityId))
+                        isMediaCodePermission = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return isMediaCodePermission;
+        }
         #endregion
 
         #region TreeGridView for dropdown
