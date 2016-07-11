@@ -13959,7 +13959,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult GenerateMediaCode(string TacticId, List<CustomFieldValue> lstcustomfieldvalue)
         {
             string NewMediacode = string.Empty;
-          
+            bool IsValid = true;
             List<TacticMediaCodeModel> lstMediaCodeCustomField = new List<TacticMediaCodeModel>();
             try
             {
@@ -13994,7 +13994,9 @@ namespace RevenuePlanner.Controllers
                         lstMediaCodeCustomField.Add(objmediacodecustomField);
                     }
                     NewMediacode = NewMediacode.TrimEnd('_');
-                  
+                    IsValid = IsValidMediaCode(NewMediacode, Convert.ToInt32(TacticId));
+                    if (IsValid)
+                    {
                         Tactic_MediaCodes objMediaCode = new Tactic_MediaCodes();
                         objMediaCode.CreatedBy = Sessions.User.UserId;
                         objMediaCode.CreatedDate = DateTime.Now;
@@ -14026,7 +14028,9 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                             return Json(new { Success = false });
-                   
+                    }
+                    else
+                        return Json(new { Success = false, ErrorMessage = Common.objCached.DuplicateMediacode });
                 }
             }
             catch (Exception objException)
@@ -14037,7 +14041,58 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        
+        #region method to validate Media code with existing media code
+        public bool IsValidMediaCode(string MediaCode, int TacticId)
+        {
+            int result = 0;
+            try
+            {
+                DataTable dtLogDetails = new DataTable();
+                ///If connection is closed then it will be open
+                var Connection = db.Database.Connection as SqlConnection;
+                if (Connection.State == System.Data.ConnectionState.Closed)
+                    Connection.Open();
+
+                SqlCommand command = new SqlCommand("SP_CheckExisting_MediaCode", Connection);
+
+                try
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                    command.Parameters.AddWithValue("@MediaCode", MediaCode);
+                    //Add the output parameter to the command object
+                    SqlParameter outPutParameter = new SqlParameter();
+                    outPutParameter.ParameterName = "@IsExists";
+                    outPutParameter.SqlDbType = System.Data.SqlDbType.Int;
+                    outPutParameter.Direction = System.Data.ParameterDirection.Output;
+                    command.Parameters.Add(outPutParameter);
+
+                    command.ExecuteNonQuery();
+
+                    result = Convert.ToInt16(outPutParameter.Value.ToString());
+
+                    if (result == 0)
+                        return true;
+                    else
+                        return false;
+                }
+                catch (Exception ex)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(ex);
+                    return false;
+                }
+
+
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+                return false;
+            }
+
+
+        }
+        #endregion
 
         #region  Method to generate Media Code Header
         public List<PlanHead> GenerateHeader(List<TacticCustomfieldConfig> lstmediaCodeCustomfield, string Mode)

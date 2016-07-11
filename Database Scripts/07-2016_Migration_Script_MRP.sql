@@ -550,7 +550,77 @@ ALTER TABLE Plan_Campaign_Program_Tactic_LineItem ALTER COLUMN Title NVARCHAR(51
 END
 
 GO
+-- added by devanshi regarding PL ticket #2375 :add validation for media code on 11-7-2016
 
+
+/****** Object:  View [dbo].[vClientWise_Tactic]    Script Date: 07/08/2016 6:35:42 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[vClientWise_Tactic]') AND type in (N'P', N'PC',N'V'))
+BEGIN
+DROP VIEW [dbo].[vClientWise_Tactic]
+End
+GO
+
+/****** Object:  View [dbo].[vClientWise_Tactic]    Script Date: 07/08/2016 6:35:42 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[vClientWise_Tactic] AS
+SELECT  a.PlanTacticId, a.Title, me.*, e.ClientId from Plan_Campaign_Program_Tactic a
+left join Tactic_MediaCodes me on me.TacticId=a.PlanTacticId
+inner join Plan_Campaign_Program b on a.PlanProgramId=b.PlanProgramId
+inner join Plan_Campaign c on b.PlanCampaignId=c.PlanCampaignId
+inner join [Plan] d on c.PlanId=d.PlanId
+inner join Model e on d.ModelId=e.ModelId
+where a.IsDeleted=0  and b.IsDeleted=0 and c.IsDeleted=0 and e.IsDeleted=0
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].[SP_CheckExisting_MediaCode]    Script Date: 07/08/2016 6:34:02 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SP_CheckExisting_MediaCode]') AND type in (N'P', N'PC'))
+BEGIN
+DROP PROCEDURE [dbo].[SP_CheckExisting_MediaCode]
+END
+GO
+
+/****** Object:  StoredProcedure [dbo].[SP_CheckExisting_MediaCode]    Script Date: 07/08/2016 6:34:02 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		Devanshi gandhi
+-- Create date: 08-07-2016
+-- Description:	method to check whether the media code already exist or not
+-- =============================================
+CREATE PROCEDURE [dbo].[SP_CheckExisting_MediaCode]
+	-- Add the parameters for the stored procedure here
+	@ClientId uniqueidentifier ,
+	@MediaCode nvarchar(max),
+	@IsExists int Output
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	
+	set @IsExists=(Select count(*) from [vClientWise_Tactic] where ClientId=@ClientId
+	and MediaCode is not null and mediacode=@MediaCode and IsDeleted=0)
+
+END
+
+GO
+
+
+
+--end
 
 
 

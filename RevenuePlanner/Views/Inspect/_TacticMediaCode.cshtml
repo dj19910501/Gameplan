@@ -1,0 +1,299 @@
+﻿@using RevenuePlanner.Helpers;
+@model RevenuePlanner.Models.Plangrid
+@{
+    var countrows = Model.PlanDHTMLXGrid.rows != null ? Model.PlanDHTMLXGrid.rows.Count : 0;
+    var tacticId = Convert.ToString(ViewBag.TacticID);
+}
+@if (countrows > 0)
+{
+    <div id="MediaCodeGrid" style="background-color: white; width: 98.5%;" class="gridViewGrid"></div>
+}
+else
+{
+    <div>No records available.</div>
+
+}
+<div class="market-activity-main">
+    <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 11;" id="popupMediCode">
+
+    </div>
+</div>
+<script type="text/javascript">
+    var MediaCodeGrid;
+    var tacticId = 0;
+
+    $(document).ready(function () {
+
+        $('.nav').addClass('no-bottom-border');
+        if (parseInt(@countrows) > 0) {
+            BindMediaCodeGrid();
+
+            $(document).ajaxComplete(function () {
+                MediaCodeGrid.setSizes();
+            });
+        }
+
+
+        //$(".CodeNew").on( "click", function (e) {
+        //    OpenGridPopup(e);
+        //});
+    });
+
+    var $doc = $(document);
+    $doc.click(function () {
+        $('#popupMediCode').css('display', 'none');
+        $('#dhx_combo_select').css('display', 'none');
+    });
+
+    $(document).mouseup(function (e) {
+        $('#popupMediCode').css("display", "none");
+        $('#dhx_combo_select').css('display', 'none');
+    });
+    $(".grid_ver_scroll").scroll(function () {
+        $('#popupMediCode').css('display', 'none');
+    });
+
+    function OpenGridPopup(e) {
+        //var rowid = obj.attributes['rowid'].value;
+        var rowid = $(e.target).attr('rowid');
+        var ul = "<ul style='margin: 0;'>  <li class='new-prog' id='CreateMediaCode' currentRowId=" + rowid + ">Create New</li> <li class='new-prog' id='CopyMediacode' currentRowId=" + rowid + ">Copy</li>  </ul>";
+
+        $('#popupMediCode').html(ul);
+
+        if ($('#popupMediCode').css('display') == 'none') {
+            $('#popupMediCode').css('display', 'block')
+        }
+        else {
+            $('#popupMediCode').css('display', 'none')
+        }
+        var left = e.pageX - 10;
+        var target = $(e.target);
+        var targetOffset = target.offset().top - 35;
+        var scrollPosition = $(window).scrollTop();
+
+        if ($('#popupMediCode').css('display') != 'none') {
+            if (scrollPosition <= targetOffset) {
+                $('#popupMediCode').css({
+                    //'display': 'block',
+                    'top': targetOffset,
+                    'left': left,
+                });
+            }
+            else {
+                var targetHeight = target.height();
+                var contentHeight = $('#popupMediCode').outerHeight();
+                var targetBottomOffset = targetOffset + targetHeight - contentHeight;
+                $('#popupMediCode').css({
+                    // 'display': 'block',
+                    'top': targetBottomOffset,
+                    'left': left,
+                });
+            }
+        }
+        e.stopPropagation();
+        // $("button").unbind("click");
+        $("#CreateMediaCode").off("click");
+        $("#CopyMediacode").off("click");
+        $('#CreateMediaCode').click(function () {
+            AddCopyMediaCode(this);
+        });
+        $('#CopyMediacode').click(function () {
+            AddCopyMediaCode(this);
+        });
+    }
+    function BindMediaCodeGrid() {
+        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
+        var mainGridData = JsonModel;
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+
+        MediaCodeGrid = new dhtmlXGridObject('MediaCodeGrid');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        MediaCodeGrid.setImagePath(imgpath);
+        MediaCodeGrid.enableAutoHeight(true);
+        //MediaCodeGrid.enableAutoWidth(true);
+        MediaCodeGrid.setImageSize(1, 1);
+        //MediaCodeGrid.setCustomSorting(sort_Owner, 6);
+        //MediaCodeGrid.setCustomSorting(sort_TacticType, 5);
+        MediaCodeGrid.attachEvent("onEditCell", doOnEditCell);
+        // Added by Arpita Soni for Ticket #2237 on 06/23/2016
+        //MediaCodeGrid.setColumnHidden(0, true); // hide column activity type
+        //MediaCodeGrid.setColumnHidden(3, true); // hide column id
+        MediaCodeGrid.init();
+        MediaCodeGrid.splitAt(2);
+        MediaCodeGrid.parse(GridDataHomeGrid, "json");
+
+    }
+
+    function GenerateMediaCode(obj) {
+        var row_id = $(obj).attr('rowid');
+        var cusotmfieldValue = [];
+        var cnt = 0;
+        var isrequiredfield = 0;
+        MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
+            if (col_index > 1) {
+                var attributeName = MediaCodeGrid.getColLabel(col_index);
+                var attributeid = MediaCodeGrid.getColumnId(col_index);
+                var attributeValue = cellObj.getValue();
+                var attributeType = "";
+                if (cellObj.combo != null)
+                    attributeType = 'DropDownList';
+                else
+                    attributeType = 'TextBox';
+                var isrequired = MediaCodeGrid.cells(row_id, col_index).getAttribute("actval");
+                MediaCodeGrid.setCellTextStyle(row_id, col_index, "");
+                if (attributeValue != '' && attributeValue != '--') {
+
+                    cusotmfieldValue.push({
+                        CustomFieldId: (attributeid.split('_')[1]).toString(),
+                        CustomFieldName: attributeName.toString(),
+                        CustomFieldOptionValue: attributeValue.toString(),
+                        CustomFieldType: attributeType.toString()
+                    });
+                    cnt = cnt + 1;
+                }
+                else {
+                    if (isrequired.toString().toLowerCase() == "true") {
+                        MediaCodeGrid.setCellTextStyle(row_id, col_index, "border-bottom: 2px solid red;");
+                        isrequiredfield = isrequiredfield + 1;
+                    }
+                }
+
+            }
+        });
+        if (isrequiredfield > 0) {
+            // alert('@Common.objCached.RequiredMediacode');
+            $("#errorMessage").css("display", "block");
+            $("#spanMessageError").empty();
+            $("#spanMessageError").text('@Common.objCached.RequiredMediacode');
+            $("#successMessage").css("display", "none");
+            return false;
+        }
+        if (cnt == 0) {
+            //alert('@Common.objCached.AtLeastOneMediacode');
+            $("#errorMessage").css("display", "block");
+            $("#spanMessageError").empty();
+            $("#spanMessageError").text('@Common.objCached.AtLeastOneMediacode');
+            $("#successMessage").css("display", "none");
+            return false;
+        }
+
+        if (cusotmfieldValue != null) {
+            cusotmfieldValue = JSON.stringify(cusotmfieldValue);
+            $.ajax({
+
+                type: 'POST',
+
+                url: '@Url.Action("GenerateMediaCode", "Inspect")', // we are calling json method
+                dataType: 'json',
+                contentType: 'application/json',
+                //data: { TacticId: '@tacticId', lstcustomfieldvalue: a },
+                data: "{'TacticId':'" + ('@tacticId') + "','lstcustomfieldvalue':" + (cusotmfieldValue) + "}",
+                success: function (data) {
+                    if (data.Success == true) {
+                        var newmediacode = data.MediaCode;
+                        MediaCodeGrid.cells(row_id, 0).setValue(newmediacode);
+                        MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
+                            if (col_index > 1) {
+                                MediaCodeGrid.cells(row_id, col_index).setAttribute("locked", "1");
+                            }
+                        });
+                        if (data.SuccessMessage != null && data.SuccessMessage != "") {
+                            $("#successMessage").css("display", "block");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.SuccessMessage);
+                            $("#errorMessage").css("display", "none");
+                        }
+                    }
+                    else {
+                        if (data.ErrorMessage != null && data.ErrorMessage != '') {
+                            $("#errorMessage").css("display", "block");
+                            $("#spanMessageError").empty();
+                            $("#spanMessageError").text(data.ErrorMessage);
+                            $("#successMessage").css("display", "none");
+                            return false;
+                        }
+                    }
+                }
+            });
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+
+        if (stage == 0) {
+            var locked = MediaCodeGrid.cells(rowId, cellInd).getAttribute("locked");
+            if ((locked != null && locked != "") && locked == "1")
+                return false;
+        }
+        if (stage == 1) {
+            $('.dhx_combo_select').css('z-index', '99999');
+            var oldval = MediaCodeGrid.cells(rowId, cellInd).getValue();
+            var v1 = parseInt(oldval);
+
+            if (isNaN(v1)) {
+                $('.dhx_combo_select option[value="' + oldval + '"]').remove();
+                var v = $('.dhx_combo_select option:contains("' + oldval + '")').val();
+                if (v != null) {
+                    $('.dhx_combo_select').val(v);
+                }
+                else {
+                    v = "0";
+                    $('.dhx_combo_select').val(v);
+                }
+                if (oldval == '--')
+                    $('.dhx_combo_edit').val('');
+            }
+            else
+                $('.dhx_combo_select').val(oldval);
+
+        }
+        if (stage == 2) {
+            if (nValue != '' && nValue != oValue) {
+              
+                var isrequired = MediaCodeGrid.cells(rowId, cellInd).getAttribute("actval");
+                if (isrequired.toString().toLowerCase() == "true") {
+                    MediaCodeGrid.setCellTextStyle(rowId, cellInd, "");
+                }
+            }
+            else if (nValue == '')
+                MediaCodeGrid.cells(rowId, cellInd).setValue('--');
+        }
+        return true;
+    }
+
+    //$(document).on("click", '#CreateMediaCode,#CopyMediacode', function (event) {
+    //    event.stopPropagation();
+    function AddCopyMediaCode(obj) {
+        var currentRowID = $(obj).attr('currentRowId');
+        var newId = "newRow_" + MediaCodeGrid.getRowsNum();
+        var cnt = MediaCodeGrid.getColumnCount();
+        var i;
+        var columndata = "";
+        var mediacodeButton = "<input type='button' value='Generate'  class='GenerateMediaCode' rowid=" + newId + " onclick=GenerateMediaCode(this) />";
+        columndata = mediacodeButton + ",<span><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + "></i></span><span><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  onclick=OpenGridPopup(event)></i></span>";
+        for (i = 2; i < cnt  ; i++) {
+            columndata = columndata + ',--';
+        }
+        MediaCodeGrid.addRow(newId, columndata, MediaCodeGrid.getRowsNum());   //adds a new row
+        MediaCodeGrid.selectRowById(newId);
+
+        var task = $(obj).attr('id');
+        if (task == 'CopyMediacode') {
+            MediaCodeGrid.copyRowContent(currentRowID, newId);
+            MediaCodeGrid.cells(newId, 0).setValue(mediacodeButton);
+        }
+        MediaCodeGrid.forEachCell(currentRowID, function (cellObj, col_index) {
+            if (col_index > 1) {
+
+                var isrequired = MediaCodeGrid.cells(currentRowID, col_index).getAttribute("actval");
+                MediaCodeGrid.cells(newId, col_index).setAttribute("actval", isrequired);
+            }
+        });
+
+    }
+</script>
