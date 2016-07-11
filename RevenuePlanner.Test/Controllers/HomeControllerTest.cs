@@ -1871,7 +1871,7 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => PlanId == id.Plan_Campaign_Program.Plan_Campaign.PlanId).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
-            string year = db.Plans.Where(pl => pl.PlanId == PlanId).Select(pl => pl.Year.ToString()).FirstOrDefault();
+            string year = db.Plans.Where(pl => pl.PlanId == PlanId).Select(pl => pl.Year).FirstOrDefault();
             var result = objHomeController.GetHeaderDataforHoneycombPDF(tactictypeids, year);
             if (result != null)
             {
