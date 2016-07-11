@@ -1,34 +1,5 @@
--- Add by Viral Kadiya
--- Created Date: 07/11/2016
--- Desc: Insert 'Media Codes' permission by client wise and for that insert 'Media Codes' activity to 'Application_Activity' table in BDSAuth database.
 
-------- NOTE: Please execute below script to BDSAuth database and get inserted ApplicationActivityId for the same record
-
-------- Start : PL ticket #2366: Insert 'Media Code' Application activity to Application_Activity table------- 
-
--- Please set the below variable value as per requirement.
-Declare @ApplicationActivityId int=50	-- Add 1 to last ApplicationActivityId column value from Application_Activity table and assign it to @ApplicationActivityId variable
-
--- Don't make any change to below variable values.
-Declare @appId uniqueidentifier
-Declare @MRPCode varchar(500)='MRP'
-Declare @MediaCodeActTitle varchar(500)='Media Codes'
-Declare @Code_MediaCode varchar(500)='MediaCodes'
-Declare @clientActivityType varchar(500)='Client'
-
--- Insert 'Media Codes' activity to Application_Activity table
-SELECT TOP 1 @appId=ApplicationId from [Application] where Code=@MRPCode and IsDeleted='0'
-
-IF NOT EXISTS(Select ApplicationActivityId from Application_Activity where ApplicationId=@appId and IsNull(ParentId,'') = '' and ActivityTitle=@MediaCodeActTitle and Code=@Code_MediaCode and ActivityType=@clientActivityType)
-BEGIN
-	INSERT INTO Application_Activity(ApplicationActivityId,ApplicationId,ParentId,ActivityTitle,Code,CreatedDate,ActivityType) VALUES(@ApplicationActivityId,@appId,null,@MediaCodeActTitle,@Code_MediaCode,GETDATE(),@clientActivityType)
-END
-GO
-------- End : PL ticket #2366: Insert 'Media Code' Application activity to Application_Activity table------- 
-
-
------- NOTE: Execute above script to BDSAuth database prior to execute below script and pick ApplicationActivityId by above BDSAuth script and refer to below script
-
+------ NOTE: Execute 'MediaCodes' acitivity insert attached in BDSAuth DatabaseScript folder prior to execute below script and pick ApplicationActivityId by above BDSAuth script and replace @applicationActivityId variable value with picked value.
 
 -- Add by Viral Kadiya
 -- Created Date: 07/11/2016
