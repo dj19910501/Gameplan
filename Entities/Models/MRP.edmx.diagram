@@ -189,6 +189,12 @@
         <EntityTypeShape EntityType="MRPModel.ROI_PackageDetail" Width="1.5" PointX="10.375" PointY="35.625" />
         <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1" />
+        <EntityTypeShape EntityType="MRPModel.MediaCodes_CustomField_Configuration" Width="1.5" PointX="13.25" PointY="38.25" />
+        <EntityTypeShape EntityType="MRPModel.Tactic_MediaCodes" Width="1.5" PointX="16" PointY="26" />
+        <EntityTypeShape EntityType="MRPModel.Tactic_MediaCodes_CustomFieldMapping" Width="1.5" PointX="18.25" PointY="13.125" />
+        <AssociationConnector Association="MRPModel.FK_MediaCodes_CustomField_Configuration_CustomField" />
+        <AssociationConnector Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_CustomField" />
+        <AssociationConnector Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

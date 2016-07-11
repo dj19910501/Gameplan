@@ -227,7 +227,9 @@
                 <li class="pull-left" id="liLine_Items">
                     <a>Line Items</a>
                 </li>
-
+                <li class="pull-left" id="liMedia_Code">
+                    <a>Media Code</a>
+                </li>
             </ul>
             <div id="divTab">
             </div>
@@ -241,6 +243,7 @@
     var TabReview = "Review";
     var TabActual = "Actuals";
     var divTab = "#divTab";
+    var TabMediaCode="Media_Code"
     // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
     //var TabBudget = "Budget";
     // Added by Arpita Soni for Ticket #2237 on 06/09/2016
@@ -285,7 +288,7 @@
           // Click on Tab Partialview Refresh Based On Selected Tab
 
           // $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
-          $("#liSetup,#liReview,#liActuals,#liLine_Items").on("click", function () {
+          $("#liSetup,#liReview,#liActuals,#liLine_Items,#liMedia_Code").on("click", function () {
               //added by devanshi for PL ticket #2276
         if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
@@ -750,6 +753,19 @@
             }
             url = '@Url.Content("~/Inspect/LoadLineItemTabFromTacticPopup/")';
             $("#divTab").load(url + '?tacticId=' + id + '&isLocked='+isLocked +'&IsPlanCreateAll='+IsPlanCreateAll, function (response, status, xhr) {
+                $('#InspectTab').removeClass('SpanDisable');
+            });
+        }
+       //added by devanshi #2290
+        if(tabValue==TabMediaCode)
+        {
+            var InsepectMode=$("#hdnInspectMode").val();
+            if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+                $('#txtTacticTitle').css('display', 'block');
+                $('#lblTacticTitle').css('display', 'none');
+            }
+            url = '@Url.Content("~/Inspect/LoadMediaCodeFromTacticPopup/")';
+            $("#divTab").load(url + '?tacticId=' + id + '&InsepectMode='+InsepectMode+'&IsPlanCreateAll='+IsPlanCreateAll, function (response, status, xhr) {
                 $('#InspectTab').removeClass('SpanDisable');
             });
         }

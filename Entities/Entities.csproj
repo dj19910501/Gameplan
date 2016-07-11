@@ -208,6 +208,9 @@
     <Compile Include="Models\MasterTacticType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MediaCodes_CustomField_Configuration.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Model.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -308,6 +311,12 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TacticType.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Tactic_MediaCodes.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Tactic_MediaCodes_CustomFieldMapping.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Tactic_Share.cs">

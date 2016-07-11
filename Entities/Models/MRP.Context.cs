@@ -112,6 +112,9 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
         public DbSet<TacticType> TacticTypes { get; set; }
         public DbSet<ROI_PackageDetail> ROI_PackageDetail { get; set; }
+        public DbSet<MediaCodes_CustomField_Configuration> MediaCodes_CustomField_Configuration { get; set; }
+        public DbSet<Tactic_MediaCodes> Tactic_MediaCodes { get; set; }
+        public DbSet<Tactic_MediaCodes_CustomFieldMapping> Tactic_MediaCodes_CustomFieldMapping { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

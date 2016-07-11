@@ -2768,6 +2768,32 @@ namespace RevenuePlanner.Helpers
         }        
 
         //// End - Ticket #994, by Pratik chauhan
+        // added error and suucess message for media code generation #2375
+        private string _SuccessMediacode;
+        public string SuccessMediacode
+        {
+            get { return _SuccessMediacode; }
+            set { _SuccessMediacode = value; }
+        }
+        private string _DuplicateMediacode;
+        public string DuplicateMediacode
+        {
+            get { return _DuplicateMediacode; }
+            set { _DuplicateMediacode = value; }
+        }
+        private string _AtLeastOneMediacode;
+        public string AtLeastOneMediacode
+        {
+            get { return _AtLeastOneMediacode; }
+            set { _AtLeastOneMediacode = value; }
+        }
+        private string _RequiredMediacode;
+        public string RequiredMediacode
+        {
+            get { return _RequiredMediacode; }
+            set { _RequiredMediacode = value; }
+        }
+        //end #2375
         #endregion
 
         #region  Functions
@@ -3655,6 +3681,20 @@ namespace RevenuePlanner.Helpers
                                         case "ClientDimenisionNotSet":
                                             _ClientDimenisionNotSet = strMsgValue;
                                             break;
+                                            //added by devanshi for #2375 : validation for media code
+                                        case "DuplicateMediacode":
+                                            _DuplicateMediacode = strMsgValue;
+                                            break;
+                                        case "SuccessMediacode":
+                                            _SuccessMediacode = strMsgValue;
+                                            break;
+                                        case "AtLeastOneMediacode":
+                                            _AtLeastOneMediacode = strMsgValue;
+                                            break;
+                                        case "RequiredMediacode":
+                                            _RequiredMediacode = strMsgValue;
+                                            break;
+                                            //end
 
                                     }
                                 }

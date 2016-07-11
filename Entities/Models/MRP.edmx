@@ -673,6 +673,17 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
         </EntityType>
+        <EntityType Name="MediaCodes_CustomField_Configuration">
+          <Key>
+            <PropertyRef Name="MediaConfId" />
+          </Key>
+          <Property Name="MediaConfId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomFieldId" Type="int" Nullable="false" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Sequence" Type="int" />
+          <Property Name="Length" Type="int" />
+          <Property Name="CreatedDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="Model">
           <Key>
             <PropertyRef Name="ModelId" />
@@ -1105,6 +1116,29 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="NextSyncDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Tactic_MediaCodes">
+          <Key>
+            <PropertyRef Name="MediaCodeId" />
+          </Key>
+          <Property Name="MediaCodeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TacticId" Type="int" Nullable="false" />
+          <Property Name="MediaCode" Type="varchar(max)" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="LastModifiedBy" Type="uniqueidentifier" />
+          <Property Name="LastModifiedDate" Type="datetime" />
+          <Property Name="IsDeleted" Type="bit" />
+        </EntityType>
+        <EntityType Name="Tactic_MediaCodes_CustomFieldMapping">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TacticId" Type="int" Nullable="false" />
+          <Property Name="MediaCodeId" Type="int" Nullable="false" />
+          <Property Name="CustomFieldId" Type="int" />
+          <Property Name="CustomFieldValue" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="Tactic_Share">
           <Key>
@@ -1824,6 +1858,18 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_MediaCodes_CustomField_Configuration_CustomField">
+          <End Role="CustomField" Type="Self.CustomField" Multiplicity="1" />
+          <End Role="MediaCodes_CustomField_Configuration" Type="Self.MediaCodes_CustomField_Configuration" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="MediaCodes_CustomField_Configuration">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Model_Category_Stage_Stage">
           <End Role="Stage" Type="Self.Stage" Multiplicity="1" />
           <End Role="Model_Stage" Type="Self.Model_Stage" Multiplicity="*" />
@@ -2280,6 +2326,30 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Tactic_MediaCodes_CustomFieldMapping_CustomField">
+          <End Role="CustomField" Type="Self.CustomField" Multiplicity="0..1" />
+          <End Role="Tactic_MediaCodes_CustomFieldMapping" Type="Self.Tactic_MediaCodes_CustomFieldMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="Tactic_MediaCodes_CustomFieldMapping">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes">
+          <End Role="Tactic_MediaCodes" Type="Self.Tactic_MediaCodes" Multiplicity="1" />
+          <End Role="Tactic_MediaCodes_CustomFieldMapping" Type="Self.Tactic_MediaCodes_CustomFieldMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tactic_MediaCodes">
+              <PropertyRef Name="MediaCodeId" />
+            </Principal>
+            <Dependent Role="Tactic_MediaCodes_CustomFieldMapping">
+              <PropertyRef Name="MediaCodeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Tactic_Share_Plan_Campaign_Program_Tactic1">
           <End Role="Plan_Campaign_Program_Tactic" Type="Self.Plan_Campaign_Program_Tactic" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="Self.Tactic_Share" Multiplicity="*" />
@@ -2435,6 +2505,7 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <EntitySet Name="LineItemType" EntityType="Self.LineItemType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MarketoEntityValueMapping" EntityType="Self.MarketoEntityValueMapping" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MasterTacticType" EntityType="Self.MasterTacticType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MediaCodes_CustomField_Configuration" EntityType="Self.MediaCodes_CustomField_Configuration" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Model" EntityType="Self.Model" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Model_Stage" EntityType="Self.Model_Stage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Notification" EntityType="Self.Notification" Schema="dbo" store:Type="Tables" />
@@ -2463,6 +2534,8 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <EntitySet Name="ROI_PackageDetail" EntityType="Self.ROI_PackageDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Stage" EntityType="Self.Stage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SyncFrequency" EntityType="Self.SyncFrequency" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tactic_MediaCodes" EntityType="Self.Tactic_MediaCodes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tactic_MediaCodes_CustomFieldMapping" EntityType="Self.Tactic_MediaCodes_CustomFieldMapping" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tactic_Share" EntityType="Self.Tactic_Share" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
@@ -2692,6 +2765,10 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="MarketoEntityValueMapping" EntitySet="MarketoEntityValueMapping" />
           </AssociationSet>
+          <AssociationSet Name="FK_MediaCodes_CustomField_Configuration_CustomField" Association="Self.FK_MediaCodes_CustomField_Configuration_CustomField">
+            <End Role="CustomField" EntitySet="CustomField" />
+            <End Role="MediaCodes_CustomField_Configuration" EntitySet="MediaCodes_CustomField_Configuration" />
+          </AssociationSet>
           <AssociationSet Name="FK_Model_Category_Stage_Stage" Association="Self.FK_Model_Category_Stage_Stage">
             <End Role="Stage" EntitySet="Stage" />
             <End Role="Model_Stage" EntitySet="Model_Stage" />
@@ -2843,6 +2920,14 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
           <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="Self.FK_SyncFrequency_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="SyncFrequency" EntitySet="SyncFrequency" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tactic_MediaCodes_CustomFieldMapping_CustomField" Association="Self.FK_Tactic_MediaCodes_CustomFieldMapping_CustomField">
+            <End Role="CustomField" EntitySet="CustomField" />
+            <End Role="Tactic_MediaCodes_CustomFieldMapping" EntitySet="Tactic_MediaCodes_CustomFieldMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" Association="Self.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes">
+            <End Role="Tactic_MediaCodes" EntitySet="Tactic_MediaCodes" />
+            <End Role="Tactic_MediaCodes_CustomFieldMapping" EntitySet="Tactic_MediaCodes_CustomFieldMapping" />
           </AssociationSet>
           <AssociationSet Name="FK_Tactic_Share_Plan_Campaign_Program_Tactic1" Association="Self.FK_Tactic_Share_Plan_Campaign_Program_Tactic1">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
@@ -3406,6 +3491,21 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="ROI_PackageDetail" EntitySet="ROI_PackageDetail" />
           </AssociationSet>
+          <EntitySet Name="MediaCodes_CustomField_Configuration" EntityType="MRPModel.MediaCodes_CustomField_Configuration" />
+          <EntitySet Name="Tactic_MediaCodes" EntityType="MRPModel.Tactic_MediaCodes" />
+          <EntitySet Name="Tactic_MediaCodes_CustomFieldMapping" EntityType="MRPModel.Tactic_MediaCodes_CustomFieldMapping" />
+          <AssociationSet Name="FK_MediaCodes_CustomField_Configuration_CustomField" Association="MRPModel.FK_MediaCodes_CustomField_Configuration_CustomField">
+            <End Role="CustomField" EntitySet="CustomFields" />
+            <End Role="MediaCodes_CustomField_Configuration" EntitySet="MediaCodes_CustomField_Configuration" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tactic_MediaCodes_CustomFieldMapping_CustomField" Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_CustomField">
+            <End Role="CustomField" EntitySet="CustomFields" />
+            <End Role="Tactic_MediaCodes_CustomFieldMapping" EntitySet="Tactic_MediaCodes_CustomFieldMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes">
+            <End Role="Tactic_MediaCodes" EntitySet="Tactic_MediaCodes" />
+            <End Role="Tactic_MediaCodes_CustomFieldMapping" EntitySet="Tactic_MediaCodes_CustomFieldMapping" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -3523,6 +3623,8 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
           <NavigationProperty Name="CustomFieldDependencies" Relationship="MRPModel.FK_CustomFieldDependency_CustomField" FromRole="CustomField" ToRole="CustomFieldDependency" />
           <NavigationProperty Name="CustomFieldDependencies1" Relationship="MRPModel.FK_CustomFieldDependency_CustomField1" FromRole="CustomField" ToRole="CustomFieldDependency" />
           <NavigationProperty Name="Budget_Columns" Relationship="MRPModel.FK_Budget_Columns_CustomField" FromRole="CustomField" ToRole="Budget_Columns" />
+          <NavigationProperty Name="MediaCodes_CustomField_Configuration" Relationship="MRPModel.FK_MediaCodes_CustomField_Configuration_CustomField" FromRole="CustomField" ToRole="MediaCodes_CustomField_Configuration" />
+          <NavigationProperty Name="Tactic_MediaCodes_CustomFieldMapping" Relationship="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_CustomField" FromRole="CustomField" ToRole="Tactic_MediaCodes_CustomFieldMapping" />
           </EntityType>
         <EntityType Name="CustomFieldOption">
           <Key>
@@ -6011,6 +6113,80 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="MediaCodes_CustomField_Configuration">
+          <Key>
+            <PropertyRef Name="MediaConfId" />
+          </Key>
+          <Property Name="MediaConfId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomFieldId" Type="Int32" Nullable="false" />
+          <Property Name="ClientId" Type="Guid" Nullable="false" />
+          <Property Name="Sequence" Type="Int32" />
+          <Property Name="Length" Type="Int32" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_MediaCodes_CustomField_Configuration_CustomField" FromRole="MediaCodes_CustomField_Configuration" ToRole="CustomField" />
+        </EntityType>
+        <EntityType Name="Tactic_MediaCodes">
+          <Key>
+            <PropertyRef Name="MediaCodeId" />
+          </Key>
+          <Property Name="MediaCodeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TacticId" Type="Int32" Nullable="false" />
+          <Property Name="MediaCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="LastModifiedBy" Type="Guid" />
+          <Property Name="LastModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" />
+          <NavigationProperty Name="Tactic_MediaCodes_CustomFieldMapping" Relationship="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" FromRole="Tactic_MediaCodes" ToRole="Tactic_MediaCodes_CustomFieldMapping" />
+        </EntityType>
+        <EntityType Name="Tactic_MediaCodes_CustomFieldMapping">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TacticId" Type="Int32" Nullable="false" />
+          <Property Name="MediaCodeId" Type="Int32" Nullable="false" />
+          <Property Name="CustomFieldId" Type="Int32" />
+          <Property Name="CustomFieldValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_CustomField" FromRole="Tactic_MediaCodes_CustomFieldMapping" ToRole="CustomField" />
+          <NavigationProperty Name="Tactic_MediaCodes" Relationship="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" FromRole="Tactic_MediaCodes_CustomFieldMapping" ToRole="Tactic_MediaCodes" />
+        </EntityType>
+        <Association Name="FK_MediaCodes_CustomField_Configuration_CustomField">
+          <End Type="MRPModel.CustomField" Role="CustomField" Multiplicity="1" />
+          <End Type="MRPModel.MediaCodes_CustomField_Configuration" Role="MediaCodes_CustomField_Configuration" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="MediaCodes_CustomField_Configuration">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tactic_MediaCodes_CustomFieldMapping_CustomField">
+          <End Type="MRPModel.CustomField" Role="CustomField" Multiplicity="0..1" />
+          <End Type="MRPModel.Tactic_MediaCodes_CustomFieldMapping" Role="Tactic_MediaCodes_CustomFieldMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="Tactic_MediaCodes_CustomFieldMapping">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes">
+          <End Type="MRPModel.Tactic_MediaCodes" Role="Tactic_MediaCodes" Multiplicity="1" />
+          <End Type="MRPModel.Tactic_MediaCodes_CustomFieldMapping" Role="Tactic_MediaCodes_CustomFieldMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tactic_MediaCodes">
+              <PropertyRef Name="MediaCodeId" />
+            </Principal>
+            <Dependent Role="Tactic_MediaCodes_CustomFieldMapping">
+              <PropertyRef Name="MediaCodeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7266,6 +7442,43 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
                 <ScalarProperty Name="AnchorTacticID" ColumnName="AnchorTacticID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MediaCodes_CustomField_Configuration">
+            <EntityTypeMapping TypeName="MRPModel.MediaCodes_CustomField_Configuration">
+              <MappingFragment StoreEntitySet="MediaCodes_CustomField_Configuration">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Length" ColumnName="Length" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
+                <ScalarProperty Name="MediaConfId" ColumnName="MediaConfId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tactic_MediaCodes">
+            <EntityTypeMapping TypeName="MRPModel.Tactic_MediaCodes">
+              <MappingFragment StoreEntitySet="Tactic_MediaCodes">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="MediaCode" ColumnName="MediaCode" />
+                <ScalarProperty Name="TacticId" ColumnName="TacticId" />
+                <ScalarProperty Name="MediaCodeId" ColumnName="MediaCodeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tactic_MediaCodes_CustomFieldMapping">
+            <EntityTypeMapping TypeName="MRPModel.Tactic_MediaCodes_CustomFieldMapping">
+              <MappingFragment StoreEntitySet="Tactic_MediaCodes_CustomFieldMapping">
+                <ScalarProperty Name="CustomFieldValue" ColumnName="CustomFieldValue" />
+                <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
+                <ScalarProperty Name="MediaCodeId" ColumnName="MediaCodeId" />
+                <ScalarProperty Name="TacticId" ColumnName="TacticId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

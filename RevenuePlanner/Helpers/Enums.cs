@@ -936,7 +936,8 @@ namespace RevenuePlanner.Helpers
             Tactic,
             Plan,
             ImprovementTactic,
-            Lineitem
+            Lineitem,
+            MediaCode // added by devanshi for #2368
         }
 
         // Add By Nishant Sheth

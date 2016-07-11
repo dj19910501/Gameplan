@@ -252,6 +252,7 @@
     <Compile Include="Models\SpModel.cs" />
     <Compile Include="Models\SummaryReportModel.cs" />
     <Compile Include="Models\SyncFrequencyModel.cs" />
+    <Compile Include="Models\TacticMediaCodeModel.cs" />
     <Compile Include="Models\Tactic_TypeModel.cs" />
     <Compile Include="Models\UserActivityPermissionModel.cs" />
     <Compile Include="Models\UserModel.cs" />
@@ -957,6 +958,7 @@
     </Content>
     <Content Include="Views\Report\_DynamicReport.cshtml" />
     <Content Include="Views\Report\_Component.cshtml" />
+    <Content Include="Views\Inspect\_TacticMediaCode.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

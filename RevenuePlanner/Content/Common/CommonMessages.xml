@@ -1086,20 +1086,36 @@
 		<Name>TitleContainHTMLString</Name>
 		<value>Title contain HTML String, Please reset the Value.</value>
 	</Field>
-  <Field>
-    <Name>ReportNotConfigured</Name>
-    <value>Report for this dashboard have not been configured.</value>
-  </Field>
-  <Field>
-    <Name>ApiUrlNotConfigured</Name>
-    <value>API Url is not configured in config file, please configure it.</value>
-  </Field>
-  <Field>
-    <Name>ErrorInWebApi</Name>
-    <value>There is some error from Web API.</value>
-  </Field>
-  <Field>
-    <Name>ClientDimenisionNotSet</Name>
-    <value>ClientId dimension is not configured</value>
-  </Field>
+	<Field>
+		<Name>ReportNotConfigured</Name>
+		<value>Report for this dashboard have not been configured.</value>
+	</Field>
+	<Field>
+		<Name>ApiUrlNotConfigured</Name>
+		<value>API Url is not configured in config file, please configure it.</value>
+	</Field>
+	<Field>
+		<Name>ErrorInWebApi</Name>
+		<value>There is some error from Web API.</value>
+	</Field>
+	<Field>
+		<Name>ClientDimenisionNotSet</Name>
+		<value>ClientId dimension is not configured</value>
+	</Field>
+	<Field>
+		<Name>DuplicateMediacode</Name>
+		<value>A Media Code with Same attributes Already exists.</value>
+	</Field>
+	<Field>
+		<Name>SuccessMediacode</Name>
+		<value>Media code generated Successfully.</value>
+	</Field>
+	<Field>
+		<Name>AtLeastOneMediacode</Name>
+		<value>Please add atleast one value of Custom field to generate Media Code.</value>
+	</Field>
+	<Field>
+		<Name>RequiredMediacode</Name>
+		<value>Please fill Required fields to Generate Media Code.</value>
+	</Field>
 </Messages>
