@@ -2127,7 +2127,8 @@ div.gridbox_dhx_skyblue.gridbox table.hdr td {
 }
 
 div.gridbox_dhx_skyblue.gridbox {
-    border: 1px solid #a4bed4;
+    /*border: 1px solid #a4bed4;*/
+    border: 1px solid #ccc;/* Change table outline color #2312 */
 }
 
     div.gridbox_dhx_skyblue.gridbox table.obj {
@@ -2186,7 +2187,8 @@ div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected {
         color: black;
     }
 
-    div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td {
+    div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, 
+    div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td {
         background-color: #b5deff;
         border-top: 1px solid #a1ceed;
         border-bottom: 1px solid #a1ceed;
@@ -2204,7 +2206,8 @@ div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue {
 }
 
 div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue {
-    background: #ebf3ff;
+    /*background: #ebf3ff;*/  /* #2312 row highlight color change*/
+    background: #f0f0f0;
 }
 
 .dhx_combo_select, .gridbox_dhx_skyblue.gridbox .dhx_combo_edit, .gridbox_dhx_skyblue.gridbox .dhx_textarea, dhx_dragColDiv, div.gridbox div.ftr td, div.pagingBlock, span.recordsInfoBlock {
@@ -2742,3 +2745,11 @@ div.dhx_modal_cover {
 
 /* #1948 IE-11 only */
 .finance-tbl .gridbox.gridbox_dhx_skyblue.isIE div.objbox{padding-bottom:18px !important}
+
+/* #2312 change colors*/
+div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td {
+        background-color: #f0f0f0;
+        border-top: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f0f0f0;
+        border-right: 1px solid #d4d4d4;
+    }
