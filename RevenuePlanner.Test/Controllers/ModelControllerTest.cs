@@ -37,19 +37,27 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             TacticType objTacticType = db.TacticTypes.Where(Id => Id.Model.IntegrationInstanceMarketoID != null).Select(obj => obj).FirstOrDefault();
-            int? InstanceId = objTacticType.Model.IntegrationInstanceMarketoID; //get marketo instance id
-            int EntityID = objTacticType.TacticTypeId;
-            string EntityType = Enums.FilterLabel.TacticType.ToString();
-            ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Programtype.ToString(), InstanceId);
-            MarketoDataObject CampaignFolderList = ObjApiintegration.GetProgramChannellistData();
+            if (objTacticType != null)
+            {
+                int? InstanceId = objTacticType.Model.IntegrationInstanceMarketoID; //get marketo instance id
+                int EntityID = objTacticType.TacticTypeId;
+                string EntityType = Enums.FilterLabel.TacticType.ToString();
+                ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Programtype.ToString(), InstanceId);
+                MarketoDataObject CampaignFolderList = ObjApiintegration.GetProgramChannellistData();
 
-            string ProgramType = CampaignFolderList.program.Select(list => list.Key).FirstOrDefault();
-            string Channel = CampaignFolderList.channels.Select(list => list.name).FirstOrDefault();
+                string ProgramType = CampaignFolderList.program.Select(list => list.Key).FirstOrDefault();
+                string Channel = CampaignFolderList.channels.Select(list => list.name).FirstOrDefault();
 
-            ModelController objModelController = new ModelController();
-            objModelController.SaveMarketoSettings(EntityID, InstanceId, EntityType, ProgramType, Channel);
-            Assert.IsTrue(true);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + true);
+                ModelController objModelController = new ModelController();
+                objModelController.SaveMarketoSettings(EntityID, InstanceId, EntityType, ProgramType, Channel);
+                Assert.IsTrue(true);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + true);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "Marketo data not found.");
+            }
+
         }
 
 
@@ -67,7 +75,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             int ModelId = DataHelper.GetModelId();
             int MarketoInstanceTypeId = db.IntegrationTypes.Where(inst => inst.Title == "Marketo").Select(id => id.IntegrationTypeId).FirstOrDefault();
-            int? IntegrationInstanceId = db.IntegrationInstances.Where(id=>id.IntegrationTypeId == MarketoInstanceTypeId && id.IsDeleted == false).Select(id=>id.IntegrationInstanceId).FirstOrDefault();
+            int? IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == MarketoInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
             BaselineModel objBaselineModel = new BaselineModel();
             objBaselineModel.IntegrationInstanceMarketoID = IntegrationInstanceId;
             ModelController objModelController = new ModelController();

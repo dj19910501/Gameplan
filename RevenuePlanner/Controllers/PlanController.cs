@@ -16770,17 +16770,20 @@ namespace RevenuePlanner.Controllers
                                                             CustomFieldId = tbl.CustomFieldId,
                                                             Value = tbl.Value
                                                         }).ToList();
-            if (HoneycombIds == null)
+            if (dtCSV.Rows.Count > 0)
             {
-                CalculateTacticCostRevenue(modelId, TacticIds, progTactic, PlanId);
-            }
-            else
-            {
-                if (modelId == 0)
+                if (HoneycombIds == null)
                 {
-                    modelId = PlanTactics.Select(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).FirstOrDefault();
+                    CalculateTacticCostRevenue(modelId, TacticIds, progTactic, PlanId);
                 }
-                CalculateTacticCostRevenue(modelId, PlanTacticIds, PlanTactics, PlanId);
+                else
+                {
+                    if (modelId == 0)
+                    {
+                        modelId = PlanTactics.Select(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).FirstOrDefault();
+                    }
+                    CalculateTacticCostRevenue(modelId, PlanTacticIds, PlanTactics, PlanId);
+                }
             }
 
             //// Custom Field Filter Criteria.

@@ -653,42 +653,48 @@ namespace RevenuePlanner.Test.Controllers
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-            string Ownerids = string.Join(",", Owner);
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-            string CommaSeparatedCustomFields = "";
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-
-            string honeyCombId = null;
-
-            var result = objPlanController.ExportToCsv(Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, honeyCombId, PlanId) as JsonResult;
-
-
-
-            if (result != null)
+            var TaskData = db.Plan_Campaign_Program_Tactic.Where(id => PlanId == id.Plan_Campaign_Program.Plan_Campaign.PlanId).ToList();
+            if (TaskData != null && TaskData.Count > 0)
             {
-                var serializedData = new RouteValueDictionary(result.Data);
-                var fileName = serializedData["data"];
-                Assert.IsNotNull(fileName);
+                List<Guid> Owner = TaskData.Select(plan => plan.CreatedBy).ToList();
+                string Ownerids = string.Join(",", Owner);
+                List<int> tactic = TaskData.Select(tactictype => tactictype.TacticTypeId).ToList();
+                string tactictypeids = string.Join(",", tactic);
+                string CommaSeparatedCustomFields = "";
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + fileName);
+                List<string> lststatus = new List<string>();
+                lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+                lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+                lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+                lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+                lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+                                
+                string Status = string.Join(",", lststatus);
+                
+
+                string honeyCombId = null;
+
+                var result = objPlanController.ExportToCsv(Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, honeyCombId, PlanId) as JsonResult;
+
+
+
+                if (result != null)
+                {
+                    var serializedData = new RouteValueDictionary(result.Data);
+                    var fileName = serializedData["data"];
+                    Assert.IsNotNull(fileName);
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + fileName);
+                }
+                else
+                {
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                }
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "data not found.");
             }
 
         }
@@ -1223,22 +1229,31 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             var TaskData = DataHelper.GetPlanLineItem(Sessions.User.ClientId);
-            string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
-            int EntityId = TaskData.PlanLineItemId;
-            string updateColumnName = "Task Name";
-
-            var result = controller.SaveGridDetail(Enums.Section.LineItem.ToString(), updateColumnName, UpdateValue, EntityId) as JsonResult;
-            if (result != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
+                int EntityId = TaskData.PlanLineItemId;
+                string updateColumnName = "Task Name";
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                var result = controller.SaveGridDetail(Enums.Section.LineItem.ToString(), updateColumnName, UpdateValue, EntityId) as JsonResult;
+                if (result != null)
+                {
+                    Assert.IsNotNull(result.Data);
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                }
             }
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         /// <summary>
@@ -1253,22 +1268,31 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             var TaskData = DataHelper.GetPlanTactic(Sessions.User.ClientId);
-            string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
-            int EntityId = TaskData.PlanTacticId;
-            string updateColumnName = "Task Name";
-
-            var result = controller.SaveGridDetail(Enums.Section.Tactic.ToString(), updateColumnName, UpdateValue, EntityId) as JsonResult;
-            if (result != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
+                int EntityId = TaskData.PlanTacticId;
+                string updateColumnName = "Task Name";
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                var result = controller.SaveGridDetail(Enums.Section.Tactic.ToString(), updateColumnName, UpdateValue, EntityId) as JsonResult;
+                if (result != null)
+                {
+                    Assert.IsNotNull(result.Data);
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                }
             }
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         /// <summary>
@@ -1283,23 +1307,33 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             var TaskData = DataHelper.GetPlanProgram(Sessions.User.ClientId);
-            string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
-            int EntityId = TaskData.PlanProgramId;
-            string updateColumnName = "Task Name";
-
-            var result = controller.SaveGridDetail(Enums.Section.Program.ToString(), updateColumnName, UpdateValue, EntityId) as JsonResult;
-            if (result != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
+                int EntityId = TaskData.PlanProgramId;
+                string updateColumnName = "Task Name";
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                var result = controller.SaveGridDetail(Enums.Section.Program.ToString(), updateColumnName, UpdateValue, EntityId) as JsonResult;
+                if (result != null)
+                {
+                    Assert.IsNotNull(result.Data);
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                }
             }
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
+
         }
         /// <summary>
         /// To Check to Save the Grid Data for Campaign
@@ -1313,22 +1347,31 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             var TaskData = DataHelper.GetPlanCampaign(Sessions.User.ClientId);
-            string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
-            int EntityId = TaskData.PlanCampaignId;
-            string updateColumnName = "Task Name";
-
-            var result = controller.SaveGridDetail(Enums.Section.Campaign.ToString(), updateColumnName, UpdateValue, EntityId) as JsonResult;
-            if (result != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
+                int EntityId = TaskData.PlanCampaignId;
+                string updateColumnName = "Task Name";
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                var result = controller.SaveGridDetail(Enums.Section.Campaign.ToString(), updateColumnName, UpdateValue, EntityId) as JsonResult;
+                if (result != null)
+                {
+                    Assert.IsNotNull(result.Data);
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                }
             }
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
         /// <summary>
@@ -1343,22 +1386,31 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             var TaskData = DataHelper.GetPlan(Sessions.User.ClientId);
-            string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
-            int EntityId = TaskData.PlanId;
-            string updateColumnName = "Task Name";
-
-            var result = controller.SaveGridDetail(Enums.Section.Plan.ToString(), updateColumnName, UpdateValue, EntityId) as JsonResult;
-            if (result != null)
+            if (TaskData != null)
             {
-                Assert.IsNotNull(result.Data);
+                string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
+                int EntityId = TaskData.PlanId;
+                string updateColumnName = "Task Name";
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                var result = controller.SaveGridDetail(Enums.Section.Plan.ToString(), updateColumnName, UpdateValue, EntityId) as JsonResult;
+                if (result != null)
+                {
+                    Assert.IsNotNull(result.Data);
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+                else
+                {
+
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                }
             }
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
 
@@ -2224,13 +2276,14 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Load_TacticType_Value()
         {
-            Console.WriteLine("Get Campaign.\n");
+            Console.WriteLine("to Load TacticType Value.\n");
 
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            int TacticTypeId = DataHelper.GetPlanTactic(Sessions.User.ClientId).TacticTypeId;
             int PlanId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            int TacticTypeId = DataHelper.GetPlanTactic(Sessions.User.ClientId).TacticTypeId;
             Sessions.PlanId = PlanId;
             var result = controller.LoadTacticTypeValue(TacticTypeId) as JsonResult;
             if (result.Data != null)

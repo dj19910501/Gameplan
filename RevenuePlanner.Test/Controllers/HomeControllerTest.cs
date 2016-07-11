@@ -1867,12 +1867,12 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
 
-            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => PlanId == id.Plan_Campaign_Program.Plan_Campaign.PlanId).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
-
-            var result = objHomeController.GetHeaderDataforHoneycombPDF(tactictypeids, "2016");
+            string year = db.Plans.Where(pl => pl.PlanId == PlanId).Select(pl => pl.Year.ToString()).FirstOrDefault();
+            var result = objHomeController.GetHeaderDataforHoneycombPDF(tactictypeids, year);
             if (result != null)
             {
                 Assert.AreEqual(0, result.GetValue("TotalCount"));

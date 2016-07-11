@@ -534,8 +534,9 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             string UserID = (Sessions.User.UserId).ToString();
-            int ModelId = DataHelper.GetModelId();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            
+            int PlanID = DataHelper.GetPlanId();
+            int ModelId = db.Plans.Where(pl => pl.PlanId == PlanID).Select(pl => pl.ModelId).FirstOrDefault();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
             int TacticTypeId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.TacticTypeId).FirstOrDefault();
