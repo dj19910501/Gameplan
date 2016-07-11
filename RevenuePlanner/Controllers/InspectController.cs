@@ -13508,19 +13508,19 @@ namespace RevenuePlanner.Controllers
 
 
         // Added by Viral for #2366
-        public bool IsClientMediaCodePermission()
+        private bool IsClientMediaCodePermission()
         {
             bool isMediaCodePermission = false;
             try
             {
-                if(Sessions.User.ClientId != null)
+                if(Sessions.User.ClientId != Guid.Empty)
                 {
                     int appActivityId=0;
                     BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-                    string strMediaCodeActivity = Enums.clientAcivityType.MediaCodes.ToString();
+                    string strMediaCodeActivity = Enums.clientAcivityType.MediaCodes.ToString().ToLower();
                      var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(Sessions.ApplicationId);
                     if(ApplicationActivityList != null && ApplicationActivityList.Count>0)
-                        appActivityId=  ApplicationActivityList.Where(act => act.Code == strMediaCodeActivity).Select(act => act.ApplicationActivityId).FirstOrDefault();
+                        appActivityId=  ApplicationActivityList.Where(act => act.Code.ToLower() == strMediaCodeActivity).Select(act => act.ApplicationActivityId).FirstOrDefault();
                          //GetClientApplicationactivitylist(_applicationId);
 
                     if (db.Client_Activity.Any(act => act.ClientId == Sessions.User.ClientId && act.ApplicationActivityId == appActivityId))
