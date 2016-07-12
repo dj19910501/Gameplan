@@ -877,6 +877,64 @@ GO
 
 
 
+-- =============================================
+-- Author:		Arpita Soni
+-- Create date: 12-07-2016
+-- Ticket:      #2353
+-- Description:	Create table for ROI package details and some constraints 
+-- =============================================
+-- CREATE TABLE [dbo].[ROI_PackageDetail]
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ROI_PackageDetail]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [dbo].[ROI_PackageDetail](
+		[Id] [int] IDENTITY(1,1) NOT NULL,
+		[AnchorTacticID] [int] NOT NULL,
+		[PlanTacticId] [int] NOT NULL,
+		[CreatedDate] [datetime] NOT NULL,
+		[CreatedBy] [uniqueidentifier] NOT NULL,
+	 CONSTRAINT [PK_ROI_PackageDetail] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY]
+END
+GO
+
+-- CREATE FK ON [PlanTacticId] COLUMN
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_ROIPackageDetail_Plan_Campaign_Program_Tactic]') AND parent_object_id = OBJECT_ID(N'[dbo].[ROI_PackageDetail]'))
+ALTER TABLE [dbo].[ROI_PackageDetail]  WITH CHECK ADD  CONSTRAINT [FK_ROIPackageDetail_Plan_Campaign_Program_Tactic] FOREIGN KEY([PlanTacticId])
+REFERENCES [dbo].[Plan_Campaign_Program_Tactic] ([PlanTacticId])
+GO
+
+IF EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_ROIPackageDetail_Plan_Campaign_Program_Tactic]') AND parent_object_id = OBJECT_ID(N'[dbo].[ROI_PackageDetail]'))
+ALTER TABLE [dbo].[ROI_PackageDetail] CHECK CONSTRAINT [FK_ROIPackageDetail_Plan_Campaign_Program_Tactic]
+GO
+
+-- CREATE FK ON [AnchorTacticID] COLUMN
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1]') AND parent_object_id = OBJECT_ID(N'[dbo].[ROI_PackageDetail]'))
+ALTER TABLE [dbo].[ROI_PackageDetail]  WITH CHECK ADD  CONSTRAINT [FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1] FOREIGN KEY([AnchorTacticID])
+REFERENCES [dbo].[Plan_Campaign_Program_Tactic] ([PlanTacticId])
+GO
+
+IF EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1]') AND parent_object_id = OBJECT_ID(N'[dbo].[ROI_PackageDetail]'))
+ALTER TABLE [dbo].[ROI_PackageDetail] CHECK CONSTRAINT [FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1]
+GO
+
+-- CREATE UNIQUE CONSTRAINT ON TWO COLUMNS
+IF NOT EXISTS (SELECT * FROM sysconstraints WHERE OBJECT_NAME(constid) = 'UQ_AnchorTacticID_PlanTacticID' AND OBJECT_NAME(id) = 'ROI_PackageDetail')
+ALTER TABLE [ROI_PackageDetail] ADD CONSTRAINT UQ_AnchorTacticID_PlanTacticID UNIQUE(AnchortacticId, PlanTacticId)
+GO
+
+-- ADD COLUMN AssetType INTO TacticType TABLE
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = 'AssetType' AND [object_id] = OBJECT_ID(N'TacticType'))
+BEGIN
+	ALTER TABLE dbo.TacticType ADD AssetType NVARCHAR(50)
+END
+GO
+-- End 
+
+
+
 -- ===========================Please put your script above this script=============================
 -- Added By : Maitri Gandhi
 -- Added Date : 2/22/2016
