@@ -190,9 +190,9 @@ else
                 //data: { TacticId: '@tacticId', lstcustomfieldvalue: a },
                 data: "{'TacticId':'" + ('@tacticId') + "','lstcustomfieldvalue':" + (cusotmfieldValue) + "}",
                 success: function (data) {
-                    if (data.Success == true && data.ErrorMessage != null) {
+                    if (data.Success == true && data.ErrorMessage == null) {
                         var newmediacode = data.MediaCode;
-                        MediaCodeGrid.cells(row_id, 0).setValue(newmediacode);
+                        MediaCodeGrid.cells(row_id, 1).setValue(newmediacode);
                         MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
                             if (col_index > 2) {
                                 MediaCodeGrid.cells(row_id, col_index).setAttribute("locked", "1");
