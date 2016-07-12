@@ -13743,6 +13743,8 @@ namespace RevenuePlanner.Controllers
                         objPlanMainDHTMLXGrid = AddNewRow(lstmediaCodeCustomfield, tacticId);
                 objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
                     }
+                    else
+                        objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
                 }
 
             }

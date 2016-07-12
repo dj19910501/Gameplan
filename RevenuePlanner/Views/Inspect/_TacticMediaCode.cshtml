@@ -1,7 +1,11 @@
 ﻿@using RevenuePlanner.Helpers;
 @model RevenuePlanner.Models.Plangrid
 @{
-    var countrows = Model.PlanDHTMLXGrid.rows != null ? Model.PlanDHTMLXGrid.rows.Count : 0;
+    var countrows = 0;
+    if (Model.PlanDHTMLXGrid!=null)
+    { 
+        countrows= Model.PlanDHTMLXGrid.rows != null ? Model.PlanDHTMLXGrid.rows.Count : 0;
+    }
     var tacticId = Convert.ToString(ViewBag.TacticID);
 }
 @if (countrows > 0)
