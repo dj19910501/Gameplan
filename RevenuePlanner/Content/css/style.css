@@ -15545,7 +15545,7 @@ input[type="search"].ExpInput {
 
 /* #2229 */
 #mainContent {
-    background: #f2f2f2 none repeat scroll 0 0;
+    /*background: #f2f2f2 none repeat scroll 0 0;*//*#2312 */
     clear: both;
 }
 #mainContent.content, #mainContent.col-md-12 {
@@ -15755,7 +15755,11 @@ a:focus, a:hover{outline:0 none !important}
 }/* Added by Bhumika for Baseline Model */
 #headerValue .plancart-box{padding-right: 10px;}
 
-
+/* #2340 Measure report menu*/
+.overview .fa.fa-lightbulb-o{font-size:16px}
+.fa-report-icon {
+    margin-right: 3px;
+}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

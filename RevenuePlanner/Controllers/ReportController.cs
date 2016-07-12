@@ -52,6 +52,8 @@ namespace RevenuePlanner.Controllers
         private const double _constQuartPlotBandPadding = 0.4;
         private const double _lastQuarterValue = 4;
         private const double _PlotBandToValue = 5;
+        private BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+        private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         // Add By Nishant Sheth
         // Desc #1842
 
@@ -79,14 +81,47 @@ namespace RevenuePlanner.Controllers
         }
 
         #region Report Index
-
+        public ActionResult MeasureReport()
+        {
+            var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+            var MeasureAppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+            var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
+            Sessions.User.RoleId = RoleId;
+            var AppMenus = objBDSServiceClient.GetAllMenu(AppId, Sessions.User.RoleId);
+            Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
+            if (AppMenus.Where(o => o.Code == "REPORT").Any())
+            {
+                Sessions.AppMenus = objBDSServiceClient.GetMeasureMenuforPlan(MeasureAppId);
+            }
+            return Index(Enums.ActiveMenu.Overview);
+        }
+        public ActionResult ReportOverview()
+        {
+            return Index(Enums.ActiveMenu.Overview);
+        }
+        public ActionResult ReportRevenue()
+        {
+            return Index(Enums.ActiveMenu.Revenue);
+        }
+        public ActionResult ReportWaterfall()
+        {
+            return Index(Enums.ActiveMenu.Waterfall);
+        }
+        public ActionResult ReportFinance()
+        {
+            return Index(Enums.ActiveMenu.Finance);
+        }
+        public ActionResult ReportCustom()
+        {
+            return Index(Enums.ActiveMenu.Custom);
+        }
         /// <summary>
         /// Report Index : This action will return the Report index page
         /// </summary>
         /// <param name="activeMenu"></param>
         /// <returns>Return Index View</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Report)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Overview)
         {
             // Added by Sohel Pathan on 27/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.TacticActualsAddEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);

@@ -77,6 +77,54 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns view as per menu selected</returns>
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0)
         {
+            var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+            var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
+            Sessions.User.RoleId = RoleId;
+            Sessions.AppMenus = objBDSServiceClient.GetMenu(AppId, Sessions.User.RoleId);
+            Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
+            if (Sessions.AppMenus != null)
+            {
+                var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+                var item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Model.ToString().ToUpper());
+                if (item != null && !isAuthorized)
+                {
+                    Sessions.AppMenus.Remove(item);
+                }
+
+                isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit) ||
+                    AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit));
+                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Boost.ToString().ToUpper());
+                if (item != null && !isAuthorized)
+                {
+                    Sessions.AppMenus.Remove(item);
+                }
+
+                isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ReportView);
+                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Report.ToString().ToUpper());
+                if (item != null && !isAuthorized)
+                {
+                    Sessions.AppMenus.Remove(item);
+                }
+
+                isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
+                      AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView) ||
+                      AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
+                      AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView));
+
+                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.MarketingBudget.ToString().ToUpper());
+                if (item != null && !isAuthorized)
+                {
+                    Sessions.AppMenus.Remove(item);
+                }
+
+                isAuthorized = Sessions.AppMenus.Select(x => x.Code.ToLower()).Contains(Enums.ActiveMenu.Plan.ToString().ToLower());
+                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Finance.ToString().ToUpper());
+                if (item != null && !isAuthorized)
+                {
+                    Sessions.AppMenus.Remove(item);
+                }
+            }
+
             //// To get permission status for Plan create, By dharmraj PL #519
             ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             //// To get permission status for Add/Edit Actual, By dharmraj PL #519

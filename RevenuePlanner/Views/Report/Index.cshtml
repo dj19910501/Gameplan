@@ -23,6 +23,7 @@
     var OwnerDimensionList = ListDimensionVaule.Where(a => a.DimensionID == OwnerDimensionId).Select(a => new { Value= a.Value, Id = a.id.ToString() }).ToList();
     var TacticTypeDimensionId = ListDimension.Where(a => a.Name == Enums.Dimension.TacticTypeId.ToString()).Select(a => a.id).FirstOrDefault();
     var TacticTypeDimensionList = ListDimensionVaule.Where(a => a.DimensionID == TacticTypeDimensionId).Select(a => new { Value = a.Value, Id = a.id.ToString() }).ToList();
+    string ActiveReportMenu = Convert.ToString(ViewBag.ActiveMenu);
     // End By Nishant Sheth
 }
 @Html.Hidden("PageTitle", PageTitle)
@@ -525,42 +526,10 @@
     <!--End sidebar-->
 }
 
-<div class="report-heder-tab">
-   <ul id="ulLeftPane">
-       <li class="active" id="liSummary"><a class="overview"><span class="rMenu-icon"></span>OVERVIEW</a></li>
-       <li id="liRevenue"><a class="revenue" ><span class="rMenu-icon"></span>REVENUE</a></li>
-       @*<li id="liConversion"><a class="conversion" ><span></span>CONVERSION</a></li>*@
-       <li id="liConversion"><a class="conversion" ><span class="rMenu-icon"></span>WATERFALL</a></li> @*--title changed by dashrath prajapati*@
-       <li id="liBudgetreport"><a class="budget" ><span class="rMenu-icon"></span>FINANCE</a></li> @*PL#1545 Dashrath Prajapati*@
-       @if (DashboardList.Count > 0)
-       {
-       <li id="liCustomReport" class="dropdown">
-           <a class="custom dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-target="#"><span class="fa fa-bar-chart rMenu-iconFa" aria-hidden="true"></span>Custom</a>
-           <ul class="dropdown-menu">
-               @foreach (var Dashboard in DashboardList)
-               {
-                   string liid = "CustomReportli" + Dashboard.Id;
-                   string CustomCSS = "fa fa-caret-right";
-                   if (!string.IsNullOrEmpty(Dashboard.CustomCSS))
-                   {
-                       CustomCSS = Dashboard.CustomCSS; 
-                   }
-                <li id='@liid'>
-                    <a class="budget">
-                        <span class="fa-report-icon"><span class="@CustomCSS"></span></span><span class="nameText">@Dashboard.DisplayName.ToUpper()</span>
-</a>
-                </li>
-               
-               }
-           </ul>
 
-       </li> 
-       }  
-   </ul>
-</div>
 
 @*Added By komal Rawal for #1296*@
-<div style="height:40px" id="ddlsection" class="ddlQuarter">
+<div style="height:40px" id="ddlsection">
      <div style="float: right;margin-top:20px; margin-right:15px;">
       <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
                     @Html.DropDownList("ddlAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport hide" })
@@ -1111,6 +1080,9 @@
     var Qurt_Month = '@Enums.ViewByAllocated.Quarterly.ToString()';
 
     $(document).ready(function () {
+        $('#aMeasure').addClass('active');
+        $('#aPlan').removeClass('active');
+        if ('@ActiveReportMenu' == "Overview") {
         myApp.showPleaseWait();// add by nishant sheth
         $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
         $("#ddlYearSpan select").selectbox();
@@ -1152,7 +1124,21 @@
         $('.accordion').on('shown.bs.collapse', toggleChevron);
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
 
-        $('#ulLeftPane .dropdown-toggle').dropdown(); // Added for #2257 
+            $('#ulLeftPane .dropdown-toggle').dropdown(); // Added for #2257
+        }
+        else if ('@ActiveReportMenu' == "Revenue") {
+            $('.revenue').addClass('active');
+            RevenueDash();
+        }
+        else if ('@ActiveReportMenu' == "Waterfall") {
+            $('.waterfall').addClass('active');
+            WaterfallDash();
+        }
+        else if ('@ActiveReportMenu' == "Finance") {
+            $('.finance').addClass('active');
+            FinanceDash();
+        }
+
     });
 
     function GetLastSetofViews(presetName) {
@@ -2582,8 +2568,7 @@
         return _selected;
     }
 
-    //// summary click event
-    $('#liSummary').click(function () {
+    function OverviewDash() {
         if (isAllowClick) {
             document.title = "Summary";
             isAllowClick = false;
@@ -2596,16 +2581,15 @@
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
             LoadYearDropdown(leftPaneOption);
             RemoveAllActiveItem();
-            $(this).addClass('active');
+            //$(this).addClass('active');
             $('#ddlsection').show(); //Modified for #1296
             $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
             //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
             GetselectionFilter();
         }
-    });
+    }
 
-    //// revenue click event
-    $('#liRevenue').click(function () {
+    function RevenueDash() {
         if (isAllowClick) {
             document.title = "Revenue";
             isAllowClick = false;
@@ -2618,17 +2602,16 @@
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
             LoadYearDropdown(leftPaneOption);
             RemoveAllActiveItem();
-            $(this).addClass('active');
+            //$(this).addClass('active');
             $('#ddlsection').hide(); //Modified for #1296
             $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
             LoadRevenueView();
             //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
             GetselectionFilter();
         }
-    });
+    }
 
-    //// conversion click event
-    $('#liConversion').click(function () {
+    function WaterfallDash() {
         if (isAllowClick) {
             document.title = "Waterfall";
             isAllowClick = false;
@@ -2641,17 +2624,17 @@
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Waterfall.ToString()';  //PL 1562 Dashrath Prajpati
             LoadYearDropdown(leftPaneOption);
             RemoveAllActiveItem();
-            $(this).addClass('active');
+            //$(this).addClass('active');
             $('#ddlsection').hide(); //Modified for #1296
             $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
             LoadConversionView();
             //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
             GetselectionFilter();
         }
-    });
+    }
 
     //// budget click event
-    $('#liBudgetreport').click(function () {
+    function FinanceDash() {
         if (isAllowClick) {
             document.title = "Finance"; //PL#1545 Dashrath Prajapati
             isAllowClick = false;
@@ -2665,13 +2648,13 @@
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
             LoadYearDropdown(leftPaneOption);
             RemoveAllActiveItem();
-            $(this).addClass('active');
+            //$(this).addClass('active');
             $('#ddlsection').hide(); //Modified for #1296
             $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
             GetselectionFilter();
             //LoadBudgetView();
         }
-    });
+    }
 
     //// share report event
     $("#BtnShareReport").click(function () {
@@ -3518,6 +3501,10 @@ function () {
         // #2257 : set selected custom report tab and it's option
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Custom.ToString()'
         RemoveAllActiveItem();
+        //$('.menu-content li').each(function () {
+        //    $(this).removeClass('active');
+        //});
+        $('.menu-content li').removeClass('active');
         $('#liCustomReport').addClass('active');
         $.each($('li[id^="CustomReportli"]'), function () {
             if ($(this).hasClass('selected')) {
@@ -3529,7 +3516,8 @@ function () {
         $('#ddlsection').hide();
         $("#BtnShareReport").hide();
         $('#budgetHeader').css('display', 'none');
-        $('#ddlCustomTimeFrame').show(); 
+        $('#ddlCustomTimeFrame').show();
+        $('.custom').addClass('active');
         var DashboardLink = $(this).find('a');
         if (DashboardLink != null && DashboardLink != undefined && DashboardLink != 'undefined')
         {

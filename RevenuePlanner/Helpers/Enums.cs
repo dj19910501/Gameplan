@@ -29,6 +29,18 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
+        /// Enum for ApplicationCode.
+        /// Added By: Nandish Shah.
+        /// Date: 11/27/2013
+        /// </summary>
+        public enum ApplicationCode
+        {
+            OPT,
+            MRP,
+            RPC,
+        }
+
+        /// <summary>
         /// Data Dictionary to hold tactic status values.
         /// Added By: Maninder Singh Wadhva.
         /// Date: 11/27/2013
@@ -320,6 +332,10 @@ namespace RevenuePlanner.Helpers
             ExternalService,
             Organization,
             MarketingBudget,  // Added by Arpita Soni for Ticket #2202 on 05/23/2016 
+            Overview,
+            Revenue,
+            Waterfall,
+            Custom,
             None = 999
         }
 

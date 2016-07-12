@@ -157,7 +157,7 @@ namespace RevenuePlanner.Controllers
 
 
                     //Modified By komal rawal for password lockout feature #2107
-                    obj = objBDSServiceClient.Validate_User(applicationId, form.UserEmail.Trim(), singlehash);
+                    obj = objBDSServiceClient.Validate_UserOverAll(form.UserEmail.Trim(), singlehash);
 
                     if (obj == null)
                     {
@@ -244,12 +244,40 @@ namespace RevenuePlanner.Controllers
                     //Start  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
                     System.Web.Security.FormsAuthentication.SetAuthCookie(obj.UserId.ToString(), false);
                     //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
-                    Sessions.User = obj;
+                    Sessions.User = obj;                    
 
                     //Start Manoj Limbachiya : 11/23/2013 - Menu filling and Role Permission
-                    Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);
+                    //Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);
 
-                    Sessions.RolePermission = objBDSServiceClient.GetPermission(Sessions.ApplicationId, Sessions.User.RoleId);
+                    //Start Nandish Shah : 07/08/2016 - Condition Based Menu filling and Role Permission
+                    if (obj.UserApplicationId != null && obj.UserApplicationId.Count > 0)
+                    {
+                        if (obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Any())
+                        {
+                            var AppId = obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+                            var RoleId = obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
+                            Sessions.User.RoleId = RoleId;
+                            Sessions.AppMenus = objBDSServiceClient.GetMenu(AppId, Sessions.User.RoleId);
+                            Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
+                        }
+                        else if (obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Any())
+                        {
+                            var AppId = obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+                            var RoleId = obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
+                            Sessions.User.RoleId = RoleId;
+                            Sessions.AppMenus = objBDSServiceClient.GetMenu(AppId, Sessions.User.RoleId);
+                            Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
+                        }
+                        else if (obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.OPT.ToString()).Any())
+                        {
+                            var AppId = obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.OPT.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+                            var RoleId = obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.OPT.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
+                            Sessions.User.RoleId = RoleId;
+                            Sessions.AppMenus = objBDSServiceClient.GetMenu(AppId, Sessions.User.RoleId);
+                            Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
+                        }
+                    }
+
                     //End Manoj Limbachiya : 11/23/2013 - Menu filling  and Role Permission
 
                     //// Set user activity permission session.

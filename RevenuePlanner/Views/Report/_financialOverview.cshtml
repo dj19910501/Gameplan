@@ -279,7 +279,10 @@
     }
 
     function onFinancialDetailsClick() {
-        $('#liBudgetreport').click();
+        //$('#liBudgetreport').click();
+        $('.menu-content li').removeClass('active');
+        $('.finance').addClass('active');
+        FinanceDash();
     }
 
 </script>

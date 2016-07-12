@@ -239,7 +239,10 @@ td,tbody th {
     });
 
     function onRevenueDetailsClick() {
-        $('#liRevenue').click();
+        //$('#liRevenue').click();
+        $('.menu-content li').removeClass('active');
+        $('.revenue').addClass('active');
+        RevenueDash();
     }
 
     // Start:- Revenue_SparkLineChart script 

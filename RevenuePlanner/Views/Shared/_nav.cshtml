@@ -1,5 +1,10 @@
 ﻿@using RevenuePlanner.Helpers
 @using RevenuePlanner.BDSService
+@using RevenuePlanner.Models
+
+@{
+    List<Custom_Dashboard> DashboardList = ViewBag.DashboardList;
+}
 
 <!-- Added by Arpita Soni for Ticket #2202 on 05/23/2016 -->
 <nav class="main-nav">
@@ -11,42 +16,73 @@
                 string menuname = Convert.ToString(o.Name);
                 string hrefLink = "#";
 
-                if (!Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Any())
-                {
-                    hrefLink = Url.Action(Convert.ToString(o.ActionName), Convert.ToString(o.ControllerName));
-                }
-                string classname = Convert.ToString(o.Code.ToLower().Replace(" ", ""));
-                if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
-                {
-                    classname = classname + " dropdown";
-                }
-            <li class="@classname">
-                <a href="@hrefLink">
-                    <span class="@o.CustomCss"></span>@*Added by Akashdeep Kadia for Ticket #2275 on 10-June-2016*@
-                    <span class="nav-text">@menuname.ToUpper()</span>
-                    @if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
+                    if (o.Name.ToLower() == "custom")
                     {
-                        <span class="dd-arrow"><i class="fa fa-caret-down"></i></span>
+                        if (DashboardList != null && DashboardList.Count > 0)
+                        {
+                            string classname = Convert.ToString(o.Code.ToLower().Replace(" ", ""));
+                            classname = classname + " dropdown";
+                            <li class="@classname">
+                                <a href="@hrefLink">
+                                    <span class="@o.CustomCss"></span>
+                                    <span class="nav-text">@menuname.ToUpper()</span>
+                                    <span class="dd-arrow"><i class="fa fa-caret-down"></i></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    @foreach (var Dashboard in DashboardList)
+                                    {
+                                        string liid = "CustomReportli" + Dashboard.Id;
+                                        string CustomCSS = "fa fa-caret-right";
+                                        if (!string.IsNullOrEmpty(Dashboard.CustomCSS))
+                                        {
+                                            CustomCSS = Dashboard.CustomCSS;
+                                        }
+                                        <li id='@liid'>
+                                            <a class="budget">
+                                                <span class="fa-report-icon"><span class="@CustomCSS"></span></span><span class="nameText">@Dashboard.DisplayName.ToUpper()</span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
                     }
-                </a>
-
-
-                <ul class="dropdown-menu">
-                    @foreach (Menu submenu in Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId))
+                    else
                     {
-                        <li>
-                            <a href="@Url.Action(Convert.ToString(submenu.ActionName), Convert.ToString(submenu.ControllerName))">
-                                @submenu.Name
+                        if (!Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Any())
+                        {
+                            hrefLink = Url.Action(Convert.ToString(o.ActionName), Convert.ToString(o.ControllerName));
+                        }
+                        string classname = Convert.ToString(o.Code.ToLower().Replace(" ", ""));
+                        if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
+                        {
+                            classname = classname + " dropdown";
+                        }
+                        <li class="@classname">
+                            <a href="@hrefLink">
+                                <span class="@o.CustomCss"></span>@*Added by Akashdeep Kadia for Ticket #2275 on 10-June-2016*@
+                                <span class="nav-text">@menuname.ToUpper()</span>
+                                @if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
+                                {
+                                    <span class="dd-arrow"><i class="fa fa-caret-down"></i></span>
+                                }
                             </a>
-                        </li>                 
+                            <ul class="dropdown-menu">
+                                @foreach (Menu submenu in Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId))
+                                {
+                                    <li>
+                                        <a href="@Url.Action(Convert.ToString(submenu.ActionName), Convert.ToString(submenu.ControllerName))">
+                                            @submenu.Name
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
                     }
-                </ul>
-            </li>
-                    
+                }
             }
-        }
-    </ul>
-</nav>
+        </ul>
+    </nav>
 
 <script>
     $(document).ready(function () {

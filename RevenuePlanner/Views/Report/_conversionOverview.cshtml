@@ -386,6 +386,9 @@
 
     //Added by Dashrath Prajapati on 18/06/2015 for ticket #1362 to redirect conversion tab.
     function onConversionDetailsClick() {
-        $('#liConversion').click();
+        //$('#liConversion').click();
+        $('.menu-content li').removeClass('active');
+        $('.waterfall').addClass('active');
+        WaterfallDash();
     }
 </script>
