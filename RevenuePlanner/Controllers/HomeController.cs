@@ -2013,7 +2013,7 @@ namespace RevenuePlanner.Controllers
                                              }).Distinct().ToList();
             }
 
-             //// Prepare task tactic list for CustomFields tab(ViewBy)
+            //// Prepare task tactic list for CustomFields tab(ViewBy)
             else
             {
                 //// Get list of tactic ids from tactic list
@@ -2053,7 +2053,7 @@ namespace RevenuePlanner.Controllers
                 var filtercustomfieldoptionid = lstCustomFieldFilter.Where(custmlst => custmlst.CustomFieldId.Equals(CustomTypeId)).Select(custmlst => custmlst.OptionId).ToList();
                 bool isfilteroption = (lstCustomFieldFilter.Where(custmlst => custmlst.CustomFieldId.Equals(CustomTypeId)).Any());
                 var lstCustomFieldTactic = (from customfieldentity in cusomfieldEntity
-                                            //join tactic in lstTactic on customfieldentity.EntityId equals tactic.objPlanTactic.PlanTacticId   //Commenetd by Rahul Shah on 17/11/2015 for PL #1760. Bcz in this condition Campaign and Program data not displyed.
+                                                //join tactic in lstTactic on customfieldentity.EntityId equals tactic.objPlanTactic.PlanTacticId   //Commenetd by Rahul Shah on 17/11/2015 for PL #1760. Bcz in this condition Campaign and Program data not displyed.
                                             join tactic in lstTactic on customfieldentity.EntityId equals (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.PlanProgramId : tactic.PlanTacticId)) //Added by Rahul Shah on 17/11/2015 for PL #1760. It Will Check Campaign And Program Field data 
                                             select new
                                             {
@@ -3529,36 +3529,36 @@ namespace RevenuePlanner.Controllers
                                                                                                                             _tac.StartDate,
                                                                                                                             _tac.EndDate).Equals(false) && (((filterOwner.Count > 0 ? filterOwner.Contains(_tac.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(_tac.Status) : true)) || OwnerFilterTacticIds.Contains(_tac.PlanTacticId))).ToList();
                 var taskDataTacticforPlan = taskDataTacticforPlanMain.Select(_tac => new
-                 {
-                     id = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", _tac.PlanId, _tac.PlanCampaignId, _tac.PlanProgramId, _tac.PlanTacticId, _tac.TacticTypeId),
-                     text = _tac.Title,
-                     machineName = _tac.TacticCustomName,
-                     start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, _tac.StartDate),
-                     duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                {
+                    id = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", _tac.PlanId, _tac.PlanCampaignId, _tac.PlanProgramId, _tac.PlanTacticId, _tac.TacticTypeId),
+                    text = _tac.Title,
+                    machineName = _tac.TacticCustomName,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, _tac.StartDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
                                                                CalendarEndDate,
                                                                  _tac.StartDate,
                                                                  _tac.EndDate),
-                     //   progress = GetTacticProgress( _tac, ImprovementTacticForTaskData),
-                     progress = GetTacticProgress((_tac.StartDate != null ? _tac.StartDate : new DateTime()), EffectiveDateListByPlanIds, _tac.PlanId),
-                     // progress = 0,
-                     open = false,
-                     isSubmitted = _tac.Status == tacticStatusSubmitted,
-                     isDeclined = _tac.Status == tacticStatusDeclined,
-                     projectedStageValue = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == _tac.StageId).Level <= inqLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tm => tm.TacticObj.PlanTacticId == _tac.PlanTacticId).INQValue) : "N/A" : "0",
-                     mqls = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == _tac.StageId).Level <= mqlLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == _tac.PlanTacticId).MQLValue) : "N/A" : "0",
-                     cost = _tac.Cost,
-                     cws = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? _tac.Status == tacticStatusSubmitted || _tac.Status == tacticStatusDeclined ? Math.Round(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == _tac.PlanTacticId).RevenueValue, 1) : 0 : 0,
-                     parent = string.Format("L{0}_C{1}_P{2}", _tac.PlanId, _tac.PlanCampaignId, _tac.PlanProgramId),
-                     color = TacticColor,
-                     plantacticid = _tac.PlanTacticId,
-                     Status = _tac.Status,
-                     TacticTypeId = _tac.TacticTypeId,
-                     CreatedBy = _tac.CreatedBy,
-                     LinkTacticPermission = ((_tac.EndDate.Year - _tac.StartDate.Year) > 0) ? true : false,
-                     LinkedTacticId = _tac.LinkedTacticId,
-                     LinkedPlanName = ListOfLinkedTactics.Where(id => id.TacticId.Equals(_tac.LinkedTacticId)).Select(a => a.PlanName).FirstOrDefault()
+                    //   progress = GetTacticProgress( _tac, ImprovementTacticForTaskData),
+                    progress = GetTacticProgress((_tac.StartDate != null ? _tac.StartDate : new DateTime()), EffectiveDateListByPlanIds, _tac.PlanId),
+                    // progress = 0,
+                    open = false,
+                    isSubmitted = _tac.Status == tacticStatusSubmitted,
+                    isDeclined = _tac.Status == tacticStatusDeclined,
+                    projectedStageValue = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == _tac.StageId).Level <= inqLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tm => tm.TacticObj.PlanTacticId == _tac.PlanTacticId).INQValue) : "N/A" : "0",
+                    mqls = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == _tac.StageId).Level <= mqlLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == _tac.PlanTacticId).MQLValue) : "N/A" : "0",
+                    cost = _tac.Cost,
+                    cws = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? _tac.Status == tacticStatusSubmitted || _tac.Status == tacticStatusDeclined ? Math.Round(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == _tac.PlanTacticId).RevenueValue, 1) : 0 : 0,
+                    parent = string.Format("L{0}_C{1}_P{2}", _tac.PlanId, _tac.PlanCampaignId, _tac.PlanProgramId),
+                    color = TacticColor,
+                    plantacticid = _tac.PlanTacticId,
+                    Status = _tac.Status,
+                    TacticTypeId = _tac.TacticTypeId,
+                    CreatedBy = _tac.CreatedBy,
+                    LinkTacticPermission = ((_tac.EndDate.Year - _tac.StartDate.Year) > 0) ? true : false,
+                    LinkedTacticId = _tac.LinkedTacticId,
+                    LinkedPlanName = ListOfLinkedTactics.Where(id => id.TacticId.Equals(_tac.LinkedTacticId)).Select(a => a.PlanName).FirstOrDefault()
 
-                 }).OrderBy(_tac => _tac.text).ToList();
+                }).OrderBy(_tac => _tac.text).ToList();
 
                 List<int> lstAllowedEntityIds = new List<int>();
                 if (lstTactic.Count() > 0)
@@ -8829,6 +8829,95 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return Convert.ToString(OwnerName);
+        }
+
+        #endregion
+
+        #region ROI Packaging
+        /// <summary>
+        /// Create new ROI package
+        /// </summary>
+        /// <param name="AnchorTacticId"></param>
+        /// <param name="PromotionTacticIds"></param>
+        /// <returns></returns>
+        public JsonResult AddROIPackageDetails(int AnchorTacticId, string PromotionTacticIds = "")
+        {
+            string[] arrPromoTacticIds = null;
+            ROI_PackageDetail newPackage = null;
+
+            try
+            {
+                if (!string.IsNullOrEmpty(PromotionTacticIds))
+                {
+                    arrPromoTacticIds = PromotionTacticIds.Split(',');
+                }
+
+                // Delete existing tactics from package
+                List<ROI_PackageDetail> lstPkgDelete = new List<ROI_PackageDetail>();
+                lstPkgDelete = objDbMrpEntities.ROI_PackageDetail.Where(p => p.AnchorTacticID == AnchorTacticId).ToList();
+                if (lstPkgDelete != null && lstPkgDelete.Count > 0)
+                {
+                    lstPkgDelete.ForEach(x => objDbMrpEntities.Entry(x).State = EntityState.Deleted);
+                    objDbMrpEntities.SaveChanges();
+                }
+
+                // Create new package 
+                foreach (var tacticId in arrPromoTacticIds)
+                {
+                    newPackage = new ROI_PackageDetail();
+                    newPackage.AnchorTacticID = AnchorTacticId;
+                    newPackage.PlanTacticId = Convert.ToInt32(tacticId);
+                    newPackage.CreatedDate = DateTime.Now;
+                    newPackage.CreatedBy = Sessions.User.UserId;
+                    objDbMrpEntities.ROI_PackageDetail.Add(newPackage);
+                }
+                objDbMrpEntities.Entry(newPackage).State = EntityState.Added;
+                objDbMrpEntities.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(new { data = "Success" }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Delete tactics from package or
+        /// Delete entire package
+        /// </summary>
+        /// <param name="AnchorTacticId"></param>
+        /// <param name="IsPromotion"></param>
+        /// <returns></returns>
+        public JsonResult UnpackageTactics(int AnchorTacticId, bool IsPromotion = false)
+        {
+            List<int> remainItems = new List<int>();
+
+            try
+            {
+                List<ROI_PackageDetail> lstPkgDelete = new List<ROI_PackageDetail>();
+                if (IsPromotion)
+                {
+                    lstPkgDelete = objDbMrpEntities.ROI_PackageDetail.Where(p => p.PlanTacticId == AnchorTacticId).ToList();
+                    if (lstPkgDelete != null && lstPkgDelete.Count > 0)
+                    {
+                        int AncTacId = lstPkgDelete.FirstOrDefault().AnchorTacticID;
+                        remainItems = objDbMrpEntities.ROI_PackageDetail.Where(x => x.AnchorTacticID == AncTacId && x.PlanTacticId != AnchorTacticId).Select(y => y.PlanTacticId).ToList();
+                    }
+                }
+                else
+                {
+                    lstPkgDelete = objDbMrpEntities.ROI_PackageDetail.Where(p => p.AnchorTacticID == AnchorTacticId).ToList();
+                }
+                lstPkgDelete.ForEach(x => objDbMrpEntities.Entry(x).State = EntityState.Deleted);
+
+                objDbMrpEntities.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(new { remainItems = remainItems }, JsonRequestBehavior.AllowGet);
         }
 
         #endregion

@@ -930,6 +930,9 @@
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
                     ExportSelectedIds.CsvId.splice(index, 1);
+                    ExportSelectedIds.ROITacticType.splice(index, 1);
+                    ExportSelectedIds.DhtmlxRowId.splice(index, 1);
+                    ExportSelectedIds.AnchorTacticId.splice(index, 1);
                 }
 
                 $(item).removeClass("honeycombbox-icon-gantt-Active");
@@ -965,6 +968,9 @@
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
                 ExportSelectedIds.CsvId.push($(item).attr('csvid'));
+                ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
+                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
+                ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
                 // Loop for selecting Program on selecting Plan
                 //$($("div[altId^='" + $(item).attr('altId').split('_')[0] + "']")).each(function (index) {
                 //    var campid = $(this).attr('altId').split('_')[1];
@@ -1010,6 +1016,9 @@
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
                     ExportSelectedIds.CsvId.splice(index, 1);
+                    ExportSelectedIds.ROITacticType.splice(index, 1);
+                    ExportSelectedIds.DhtmlxRowId.splice(index, 1);
+                    ExportSelectedIds.AnchorTacticId.splice(index, 1);
                 }
                 $(item).removeClass("honeycombbox-icon-gantt-Active");
                 $(item).addClass("honeycombbox-icon-gantt");
@@ -1034,7 +1043,9 @@
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
                 ExportSelectedIds.CsvId.push($(item).attr('csvid'));
-
+                ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
+                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
+                ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
                 // Loop for selecting tactin on selecting Campaign
                 //$($("div[altId^='_" + $(item).attr('altId').split('_')[1] + "']")).each(function (index) {
                 //    var progid = $(this).attr('altId').split('_')[2];
@@ -1067,6 +1078,9 @@
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
                     ExportSelectedIds.CsvId.splice(index, 1);
+                    ExportSelectedIds.ROITacticType.splice(index, 1);
+                    ExportSelectedIds.DhtmlxRowId.splice(index, 1);
+                    ExportSelectedIds.AnchorTacticId.splice(index, 1);
                 }
                 $(item).addClass("honeycombbox-icon-gantt");
 
@@ -1081,6 +1095,9 @@
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
                 ExportSelectedIds.CsvId.push($(item).attr('csvid'));
+                ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
+                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
+                ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
 
             }
         }
@@ -1097,6 +1114,9 @@
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
                     ExportSelectedIds.CsvId.splice(index, 1);
+                    ExportSelectedIds.ROITacticType.splice(index, 1);
+                    ExportSelectedIds.DhtmlxRowId.splice(index, 1);
+                    ExportSelectedIds.AnchorTacticId.splice(index, 1);
                 }
                 $(item).addClass("honeycombbox-icon-gantt");
             }
@@ -1109,6 +1129,9 @@
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
                 ExportSelectedIds.CsvId.push($(item).attr('csvid'));
+                ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
+                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
+                ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
             }
         }
         if ($('.honeycombbox-icon-gantt-Active').length == 0) {
@@ -1448,10 +1471,15 @@
             var  newvalue = HomeGrid.cells(rowId, cellInd).getValue();
             if(newvalue.indexOf("</div>") > -1)
             {
-
-                value = newvalue.split("</div>")[0];
+                if (newvalue.split("</div>").length > 2) {
+                    value = newvalue.split("</div>")[0] + '</div>' + newvalue.split("</div>")[1] ;
+                    TacticName = newvalue.split("</div>")[2];
+                }
+                else {
+                    value = newvalue.split("</div>")[0];
+                    TacticName = newvalue.split("</div>")[1];
+                }
             }
-            TacticName = newvalue.split("</div>")[1];
         }
         else
         {
@@ -1866,13 +1894,13 @@
                                     {
 
                                         var getvalue = HomeGrid.cells(rowId, 1).getValue();
-                                        var Index = getvalue.indexOf("</div>");
+                                        var Index = getvalue.indexOf("unlink-icon");
                                         if(Index <= -1)
                                         {
                                             var UnLinkIconDiv ="<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
                                             HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
 
-                                            $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
+                                            $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True");
                                         }
 
                                     }
@@ -1918,7 +1946,7 @@
                                     {
 
                                         var getvalue = HomeGrid.cells(rowId, 1).getValue();
-                                        var Index = getvalue.indexOf("</div>");
+                                        var Index = getvalue.indexOf("unlink-icon");
                                         if(Index <= -1)
                                         {
                                             var UnLinkIconDiv ="<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
@@ -2019,7 +2047,7 @@
                     //Modified By Komal Rawal for #1848 Link To tactic feature
                     if(cellInd == 1)
                     {
-                        if(value != undefined && value != "undefined" && value != null)
+                        if(value.trim() != undefined && value.trim() != "undefined" && value.trim() != null)
                         {
                             HomeGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
                         }

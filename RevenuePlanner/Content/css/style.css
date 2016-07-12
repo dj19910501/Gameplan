@@ -10726,16 +10726,17 @@ color: #3e3f37; /* Edited for #2219 - Bhumika */
             border-radius: 5px;
             -webkit-border-radius: 5px;
         }
-
+            /* Modified for Ticket #2354 */
             .honeycombbox .hc-controls .btn {
-            width: 35px;
+                width: 50px;
                 height: 53px;
-                background: none transparent;
-                border: none;
+                background: transparent;
+                border:0 none !important;
                 color: #FFF;
-                box-shadow: 0 0 0;
-            font-size: 20px;
+                box-shadow: none;
+                font-size: 20px;
                 -webkit-box-shadow: 0 0 0;
+                margin: 3px;
             }
 
                 .honeycombbox .hc-controls .btn:hover,
@@ -10751,10 +10752,14 @@ color: #3e3f37; /* Edited for #2219 - Bhumika */
             }
 
         .honeycombbox .hc-block {
-            margin: 10px 0;
+            margin-bottom: 10px;
             border-bottom: 1px #CCC solid;
+            padding:10px 0 0 0;
         }
-
+        /* Ticket #2354 - Asset background in Honeycomb popup */
+        .asset-bg {
+            background:#F0F0F0;
+        }
             /*.honeycombbox .hc-block:hover {
                 background-color: #e2b22c;
             }*/
@@ -11013,9 +11018,21 @@ font-size: 20px;
     vertical-align: top;
         margin-right: -4px;
 }
-.unlink-icon-grid{
+/* Added by Arpita Soni for Ticket #2354 */
+.unlink-icon-grid {
        margin-right: 4px;
 }
+.package-icon {
+    font-size: 14px;
+    color: #3e3f37; /* Edited for #2219 - Bhumika */
+    display: inline-block;
+    vertical-align: top;
+        margin-right: -4px;
+}
+.package-icon-grid {
+       margin-right: 4px;
+}
+
 .btn-dropdwn ul .link-icon {
     padding-left: 10px;
 }
@@ -14611,7 +14628,8 @@ box-shadow: 1px 0 0 rgba(255, 255, 255, 0.125) inset, 0 1px 0 rgba(255, 255, 255
     bottom:-20px;   
    }
     .unlink-icon:hover .unlink-tooltip{display:block !important; }
-
+    /* Added by Arpita Soni for Ticket #2354 */
+    .package-icon:hover .package-icon-tooltip{display:block !important; }
 
 /*by Bheru Mehta 23-11-2015 #1748 start*/
     .modal-copytactic {

@@ -12249,8 +12249,8 @@ namespace RevenuePlanner.Controllers
 
                 var ListOfLinkedPlans = db.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
 
-
-
+                // Get list of packages
+                var lstPackages = db.ROI_PackageDetail.ToList();
                 var ListOfLinkedTactics = LinkedTacticList.Select(list =>
                     new
                     {
@@ -12373,6 +12373,13 @@ namespace RevenuePlanner.Controllers
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = doubledesh;
+                        plandataobj.type = typero;
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        // Added by Arpita Soni for Ticket #2354 on 07/12/2016
                         plandataobj = new Plandataobj();
                         plandataobj.value = doubledesh;
                         plandataobj.type = typero;
@@ -12515,7 +12522,7 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj.value = HttpUtility.HtmlEncode(Campaignitem.Title);
                                     campaigndataobj.locked = IsEditable;
                                     campaigndataobj.style = cellTextColor;
-                                    campaigndataobjlist.Add(campaigndataobj);
+                                    campaigndataobjlist.Add(campaigndataobj);                                 
 
                                     campaigndataobj = new Plandataobj();
                                     //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") +  "<div class=add_Remove_Entity id=CampaignAdd onclick=javascript:AddRemoveEntity(this) altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
@@ -12545,6 +12552,13 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj.style = cellTextColor;
                                     campaigndataobjlist.Add(campaigndataobj);
 
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = doubledesh;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobj.type = typero;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    // Added by Arpita Soni for Ticket #2354 on 07/12/2016
                                     campaigndataobj = new Plandataobj();
                                     campaigndataobj.value = doubledesh;
                                     campaigndataobj.style = cellTextColor;
@@ -12677,7 +12691,7 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj.locked = IsEditable;
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
-
+                                              
                                                 programdataobj = new Plandataobj();
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=add_Remove_Entity id=ProgramAdd onclick=javascript:AddRemoveEntity(this); altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
@@ -12706,6 +12720,13 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = doubledesh;
+                                                programdataobj.type = typero;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                // Added by Arpita Soni for Ticket #2354 on 07/12/2016
                                                 programdataobj = new Plandataobj();
                                                 programdataobj.value = doubledesh;
                                                 programdataobj.type = typero;
@@ -12794,7 +12815,9 @@ namespace RevenuePlanner.Controllers
                                                         IsRequiredfalse = false,//CheckTacticRequiredfieldFinal(taskdata,DependencyListFinal, customfieldlist)//// Commented by Bhavesh:  To False required flag display in grid view Date: 05/11/2015 Ticket : #1550
                                                         LinkTacticId = taskdata.LinkedTacticId,
                                                         LinkedPlanName = ListOfLinkedTactics.Where(id => id.TacticId.Equals(taskdata.LinkedTacticId)).Select(a => a.PlanName).FirstOrDefault(),
-                                                        machineName = taskdata.TacticCustomName
+                                                        machineName = taskdata.TacticCustomName,
+                                                        ROITacticType = taskdata.TacticType.AssetType,  // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                                                        AnchorTacticId = lstPackages.Where(p=>p.PlanTacticId == taskdata.PlanTacticId).Select(pkg=> pkg.AnchorTacticID).FirstOrDefault()    // Added by Arpita Soni for Ticket #2354 on 07/12/2016
                                                     });
 
                                                     List<PlanDHTMLXGridDataModel> tacticrowsobjlist = new List<PlanDHTMLXGridDataModel>();
@@ -12816,11 +12839,12 @@ namespace RevenuePlanner.Controllers
 
                                                         tacticdataobj = new Plandataobj();
                                                         //Modified By Komal Rawal for PL 1845 link tactic feature.
-
-
+                                                        // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                                                        string pkgTacticIds = string.Join(",", lstPackages.Where(p => p.AnchorTacticID == tactic.AnchorTacticId).Select(x => x.PlanTacticId));
                                                         //tacticdataobj.value = (LinkTacticPermission == true ? tactic.LinkTacticId == null ? "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" : "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + HttpUtility.HtmlEncode(tactic.LinkedPlanName).Replace("'", "&#39;") + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "") + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? "<span id='tacticIsRequired'></span>" : "");
                                                         //  tacticdataobj.value = (LinkTacticPermission == true ? tactic.LinkTacticId == null ? "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" : "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + (tactic.LinkedPlanName == null ? null : HttpUtility.HtmlEncode(tactic.LinkedPlanName).Replace("'", "&#39;")) + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "") + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? "<span id='tacticIsRequired'></span>" : "");
-                                                        tacticdataobj.value = ((LinkTacticPermission == true && tactic.LinkTacticId == null) ?
+                                                        tacticdataobj.value = ((tactic.AnchorTacticId == tactic.PlanTacticId) ?
+                                                        "<div class='package-icon package-icon-grid' id=pkgIcon onclick=OpenHoneyComb(this) pkgtacids=" + pkgTacticIds + "><i class='fa fa-object-group'></i></div>" : "") + ((LinkTacticPermission == true && tactic.LinkTacticId == null) ?
                                                         "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" :
                                                         ((LinkTacticPermission == true && tactic.LinkTacticId != null) || tactic.LinkTacticId != null) ? "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='"
                                                       + (tactic.LinkedPlanName == null ? null
@@ -12832,10 +12856,10 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
-
+                                                        // Modified by Arpita Soni for Ticket #2354 on 07/12/2016
                                                         tacticdataobj = new Plandataobj();
                                                         //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "' tacticaddId='" + tactic.PlanTacticId + "'></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + " csvId=Tactic_" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "' tacticaddId='" + tactic.PlanTacticId + "'></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) anchortacticid='" + tactic.AnchorTacticId + "' dhtmlxrowid='" + tacticrowsobj.id + "'  roitactictype='" + tactic.ROITacticType+"' TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + " csvId=Tactic_" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                         tacticdataobjlist.Add(tacticdataobj);
 
                                                         tacticdataobj = new Plandataobj();
@@ -12860,6 +12884,13 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj.locked = tactic.IstactEditable;
                                                         tacticdataobj.type = "edn";
                                                         tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.ROITacticType.ToString();
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobj.locked = "1";
                                                         tacticdataobjlist.Add(tacticdataobj);
 
                                                         tacticdataobj = new Plandataobj();
@@ -12945,7 +12976,7 @@ namespace RevenuePlanner.Controllers
                                                                 lineitemdataobj.locked = lineitem.IstactEditable;
                                                                 lineitemdataobj.style = cellTextColor;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
-
+                                                              
                                                                 lineitemdataobj = new Plandataobj();
                                                                 lineitemdataobj.value = "<div class=grid_Search id=LP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
@@ -13196,6 +13227,19 @@ namespace RevenuePlanner.Controllers
                 headobj.width = 160;
                 headobj.value = "Planned Cost";
                 headobjlist.Add(headobj);
+
+                // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                if (IsNotLineItemListing)
+                {
+                    headobj = new PlanHead();
+                    headobj.type = "ro";
+                    headobj.align = "center";
+                    headobj.id = "roitactictype";
+                    headobj.sort = "sort_ROITacticType";
+                    headobj.width = 150;
+                    headobj.value = "ROI Tactic Type";
+                    headobjlist.Add(headobj);
+                }
 
                 // Eight Column : Type
                 headobj = new PlanHead();

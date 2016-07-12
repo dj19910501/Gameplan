@@ -24,6 +24,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -362,7 +363,7 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
-    <Content Include="Content\css\style_min_July_05.css" />
+    <Content Include="Content\css\style_min_July_11.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
