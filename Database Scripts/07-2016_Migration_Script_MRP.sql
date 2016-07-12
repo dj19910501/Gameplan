@@ -928,7 +928,7 @@ GO
 -- ADD COLUMN AssetType INTO TacticType TABLE
 IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = 'AssetType' AND [object_id] = OBJECT_ID(N'TacticType'))
 BEGIN
-	ALTER TABLE dbo.TacticType ADD AssetType NVARCHAR(50)
+	ALTER TABLE dbo.TacticType ADD AssetType NVARCHAR(50) DEFAULT 'Promotion'
 END
 GO
 -- End 
