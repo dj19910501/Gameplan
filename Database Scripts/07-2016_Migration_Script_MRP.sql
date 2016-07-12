@@ -932,8 +932,65 @@ BEGIN
 END
 GO
 -- End 
+-- ======================================================================================
+-- Created By : Mitesh
+-- Created Date : 07/11/2014
+-- ======================================================================================
+
+--Plan color change in calender
+IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='EntityTypeColor')
+BEGIN
+        IF EXISTS(SELECT * FROM EntityTypeColor WHERE EntityType='Plan')
+                     BEGIN
+                       UPDATE EntityTypeColor SET ColorCode='3A585E' WHERE EntityType='Plan'
+                     END
+              ELSE
+                     BEGIN
+                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Plan','3A585E')
+                     END
+END
+
+--Campaign color change in calender
+IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='EntityTypeColor')
+BEGIN
+        IF EXISTS(SELECT * FROM EntityTypeColor WHERE EntityType='Campaign')
+                     BEGIN
+                       UPDATE EntityTypeColor SET ColorCode='62939E' WHERE EntityType='Campaign'
+                     END
+              ELSE
+                     BEGIN
+                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Campaign','62939E')
+                     END
+END
+
+--Program color change in calender
+IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='EntityTypeColor')
+BEGIN
+        IF EXISTS(SELECT * FROM EntityTypeColor WHERE EntityType='Program')
+                     BEGIN
+                       UPDATE EntityTypeColor SET ColorCode='79B6C4' WHERE EntityType='Program'
+                     END
+              ELSE
+                     BEGIN
+                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Program','79B6C4')
+                     END
+END
+
+--Tactic color change in calender
+IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='EntityTypeColor')
+BEGIN
+        IF EXISTS(SELECT * FROM EntityTypeColor WHERE EntityType='Tactic')
+                     BEGIN
+                       UPDATE EntityTypeColor SET ColorCode='727272' WHERE EntityType='Tactic'
+                     END
+              ELSE
+                     BEGIN
+                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Tactic','727272')
+                     END
+END
 
 
+GO
 
 -- ===========================Please put your script above this script=============================
 -- Added By : Maitri Gandhi

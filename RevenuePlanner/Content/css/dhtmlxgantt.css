@@ -1512,3 +1512,4 @@ div.dhx_modal_cover {
     font-weight: 700;
     border-width: 0;
 }
+.gantt_task_line.gantt_task_inline_color.improvement{border-color: #F8710E;}/* Added for #2312 */

@@ -7092,7 +7092,7 @@ namespace RevenuePlanner.Controllers
                 gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
                 gridjsonlistPlanObj.id = ActivityType.ActivityPlan + HttpUtility.HtmlEncode(bm.ActivityId);
                 gridjsonlistPlanObj.open = "1";
-                gridjsonlistPlanObj.bgColor = "#e6e6e6";
+                gridjsonlistPlanObj.bgColor = "#e2e6e7";
 
                 BudgetDataObjList = new List<Budgetdataobj>();
                 BudgetDataObj = new Budgetdataobj();
@@ -7128,7 +7128,7 @@ namespace RevenuePlanner.Controllers
                     CampaignRowsObj = new BudgetDHTMLXGridDataModel();
                     CampaignRowsObj.id = ActivityType.ActivityCampaign + HttpUtility.HtmlEncode(bmc.ActivityId);
                     CampaignRowsObj.open = null;
-                    CampaignRowsObj.bgColor = "#c6ebf3";
+                    CampaignRowsObj.bgColor = "#e8eff1";
 
                     List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
                     Budgetdataobj CampaignDataObj = new Budgetdataobj();
@@ -7156,7 +7156,7 @@ namespace RevenuePlanner.Controllers
                         ProgramRowsObj = new BudgetDHTMLXGridDataModel();
                         ProgramRowsObj.id = ActivityType.ActivityProgram + HttpUtility.HtmlEncode(bmp.ActivityId);
                         ProgramRowsObj.open = null;
-                        ProgramRowsObj.bgColor = "#dff0f8";
+                        ProgramRowsObj.bgColor = "#ebf4f6";
                         List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                         Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
@@ -7182,7 +7182,7 @@ namespace RevenuePlanner.Controllers
                             TacticRowsObj = new BudgetDHTMLXGridDataModel();
                             TacticRowsObj.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(bmt.ActivityId);
                             TacticRowsObj.open = null;
-                            TacticRowsObj.bgColor = "#e4f1e1";
+                            TacticRowsObj.bgColor = "#eaeaea";
                             List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                             Budgetdataobj TacticDataObj = new Budgetdataobj();
 
@@ -8579,7 +8579,7 @@ namespace RevenuePlanner.Controllers
                     gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
                     gridjsonlistPlanObj.id = ActivityType.ActivityPlan + HttpUtility.HtmlEncode(bm.ActivityId);
                     gridjsonlistPlanObj.open = Open;
-                    gridjsonlistPlanObj.bgColor = "#e6e6e6";
+                    gridjsonlistPlanObj.bgColor = "#e2e6e7";
 
                     BudgetDataObjList = new List<Budgetdataobj>();
                     BudgetDataObj = new Budgetdataobj();
@@ -8637,7 +8637,7 @@ namespace RevenuePlanner.Controllers
                         CustomFieldRowsObj = new BudgetDHTMLXGridDataModel();
                         CustomFieldRowsObj.id = ActivityType.ActivityCustomField + HttpUtility.HtmlEncode(bmcf.ActivityId);
                         CustomFieldRowsObj.open = null;
-                        CustomFieldRowsObj.bgColor = "#c6ebf3";
+                        CustomFieldRowsObj.bgColor = "#e8eff1";
 
                         List<Budgetdataobj> CustomFieldDataObjList = new List<Budgetdataobj>();
                         Budgetdataobj CustomFieldDataObj = new Budgetdataobj();
@@ -8692,7 +8692,7 @@ namespace RevenuePlanner.Controllers
                             CampaignRowsObj = new BudgetDHTMLXGridDataModel();
                             CampaignRowsObj.id = ActivityType.ActivityCampaign + HttpUtility.HtmlEncode(bmc.ActivityId);
                             CampaignRowsObj.open = null;
-                            CampaignRowsObj.bgColor = "#c6ebf3";
+                            CampaignRowsObj.bgColor = "#e8eff1";
 
                             List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
                             Budgetdataobj CampaignDataObj = new Budgetdataobj();
@@ -8745,7 +8745,7 @@ namespace RevenuePlanner.Controllers
                                 ProgramRowsObj = new BudgetDHTMLXGridDataModel();
                                 ProgramRowsObj.id = ActivityType.ActivityProgram + HttpUtility.HtmlEncode(bmp.ActivityId);
                                 ProgramRowsObj.open = null;
-                                ProgramRowsObj.bgColor = "#dff0f8";
+                                ProgramRowsObj.bgColor = "#ebf4f6";
                                 List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                                 Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
@@ -8797,7 +8797,7 @@ namespace RevenuePlanner.Controllers
                                     TacticRowsObj = new BudgetDHTMLXGridDataModel();
                                     TacticRowsObj.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(bmt.ActivityId);
                                     TacticRowsObj.open = null;
-                                    TacticRowsObj.bgColor = "#e4f1e1";
+                                    TacticRowsObj.bgColor = "#eaeaea";
                                     List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                                     Budgetdataobj TacticDataObj = new Budgetdataobj();
 
@@ -8981,7 +8981,7 @@ namespace RevenuePlanner.Controllers
                         CampaignRowsObj = new BudgetDHTMLXGridDataModel();
                         CampaignRowsObj.id = ActivityType.ActivityCampaign + HttpUtility.HtmlEncode(bmc.ActivityId);
                         CampaignRowsObj.open = null;
-                        CampaignRowsObj.bgColor = "#c6ebf3";
+                        CampaignRowsObj.bgColor = "#e8eff1";
 
                         List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
                         Budgetdataobj CampaignDataObj = new Budgetdataobj();
@@ -9029,7 +9029,7 @@ namespace RevenuePlanner.Controllers
                             ProgramRowsObj = new BudgetDHTMLXGridDataModel();
                             ProgramRowsObj.id = ActivityType.ActivityProgram + HttpUtility.HtmlEncode(bmp.ActivityId);
                             ProgramRowsObj.open = null;
-                            ProgramRowsObj.bgColor = "#dff0f8";
+                            ProgramRowsObj.bgColor = "#ebf4f6";
                             List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
                             Budgetdataobj ProgramDataObj = new Budgetdataobj();
 
@@ -9075,7 +9075,7 @@ namespace RevenuePlanner.Controllers
                                 TacticRowsObj = new BudgetDHTMLXGridDataModel();
                                 TacticRowsObj.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(bmt.ActivityId);
                                 TacticRowsObj.open = null;
-                                TacticRowsObj.bgColor = "#e4f1e1";
+                                TacticRowsObj.bgColor = "#eaeaea";
                                 List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
                                 Budgetdataobj TacticDataObj = new Budgetdataobj();
 
@@ -12264,10 +12264,10 @@ namespace RevenuePlanner.Controllers
                 PlanDHTMLXGridDataModel gridjsonlistplanobj = new PlanDHTMLXGridDataModel();
                 string openstateone = "1", lockedstateone = "1";
                 string lockedstatezero = "0";
-                string bgcolorPlan = "#E6E6E6";
-                string bgcolorCampaign = "#C6EBF3";
-                string bgcolorProgram = "#DFF0F8";
-                string bgcolorTactic = "#E4F1E1";
+                string bgcolorPlan = "#e2e6e7";
+                string bgcolorCampaign = "#e8eff1";
+                string bgcolorProgram = "#ebf4f6";
+                string bgcolorTactic = "#eaeaea";
                 string bgcolorLineItem = "#ffffff";
 
 
@@ -15171,7 +15171,7 @@ namespace RevenuePlanner.Controllers
                     if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.tactic.ToString())
                     {
                         CustomTacticids = new List<int>(updatedid);
-                        CellBackGroundcolor = "background-color:#E4F1E1;";
+                        CellBackGroundcolor = "background-color:#eaeaea;";
                     }
                     else if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.program.ToString())
                     {
