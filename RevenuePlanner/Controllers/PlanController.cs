@@ -12816,7 +12816,7 @@ namespace RevenuePlanner.Controllers
                                                         LinkTacticId = taskdata.LinkedTacticId,
                                                         LinkedPlanName = ListOfLinkedTactics.Where(id => id.TacticId.Equals(taskdata.LinkedTacticId)).Select(a => a.PlanName).FirstOrDefault(),
                                                         machineName = taskdata.TacticCustomName,
-                                                        ROITacticType = string.IsNullOrEmpty(taskdata.TacticType.AssetType) ? "Promotion" : "Asset",  // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                                                        ROITacticType = string.IsNullOrEmpty(taskdata.TacticType.AssetType) ? "Promotion" : taskdata.TacticType.AssetType,  // Added by Arpita Soni for Ticket #2354 on 07/12/2016
                                                         AnchorTacticId = lstPackages.Where(p=>p.PlanTacticId == taskdata.PlanTacticId).Select(pkg=> pkg.AnchorTacticID).FirstOrDefault()    // Added by Arpita Soni for Ticket #2354 on 07/12/2016
                                                     });
 
@@ -12998,6 +12998,12 @@ namespace RevenuePlanner.Controllers
                                                                 lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
                                                                 lineitemdataobj.type = "edn";
                                                                 lineitemdataobj.style = cellTextColor;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.style = cellTextColor;// Add By Nishant Sheth #1987
+                                                                lineitemdataobj.type = typero;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                                                 lineitemdataobj = new Plandataobj();
