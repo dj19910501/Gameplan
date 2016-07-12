@@ -11621,8 +11621,8 @@ namespace RevenuePlanner.Controllers
                                   StageTitle = pcpt.Stage.Title,
                                   StageLevel = pcpt.Stage.Level,
                                   ProjectedStageValue = pcpt.ProjectedStageValue,
-                                  TacticCustomName = pcpt.TacticCustomName
-
+                                  TacticCustomName = pcpt.TacticCustomName,
+                                  ROIType=pcpt.TacticType.AssetType
                               };
 
 
@@ -13691,20 +13691,13 @@ namespace RevenuePlanner.Controllers
 
         #region #Media code related Functions and methods
         #region Method to load mediacode for tactic
-        public PartialViewResult LoadMediaCodeFromTacticPopup(int tacticId, string InsepectMode, bool IsPlanCreateAll = false)
+        public PartialViewResult LoadMediaCodeFromTacticPopup(int tacticId, string InsepectMode, bool IsPlanCreateAll = false, bool IsUnarchive = false, string MediaCodeId = "0")
         {
           
-            string mode = InsepectMode;
-
-            List<PlanHead> headobjlist = new List<PlanHead>();
-            List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
-            PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
-            PlanController objPlanController = new PlanController();
             Plangrid objplangrid = new Plangrid();
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             ViewBag.TacticID = Convert.ToString(tacticId);
-            string customFieldEntityValue = string.Empty;
-            string DropdowList = Convert.ToString(Enums.CustomFieldType.DropDownList);
+
             try
             {
 
@@ -13725,8 +13718,7 @@ namespace RevenuePlanner.Controllers
                         }).ToList()
 
                     }).ToList();
-                //> lstmediaCodeCustomfield = new List<TacticCustomfieldConfig>();
-                var lst = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId).ToList();
+
                 var lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId).ToList().Select(a => new TacticCustomfieldConfig
                 {
                     CustomFieldId = a.CustomFieldId,
@@ -13740,114 +13732,18 @@ namespace RevenuePlanner.Controllers
                         CustomFieldOptionValue = opt.Value
                     }).ToList()
                 }).OrderBy(a=>a.Sequence).ToList();
-
-               
-
-                //fieldCounter variable for defining raw style
                 if (MediaCodecustomFieldList.Count != 0)
                 {
-
-                    bool isRequire=false;
-
-                    string Gridheder = string.Empty;
-                    string coltype = string.Empty;
-
-
-
-                    headobjlist = GenerateHeader(lstmediaCodeCustomfield, mode);
-
-                    foreach (var item in MediaCodecustomFieldList)
-                    {
-                        string RowID = "mediacode." + item.MediaCodeId;
-                        lineitemrowsobj = new PlanDHTMLXGridDataModel();
-                        List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
-
-
-                        lineitemrowsobj.id = RowID;
-                        //cnt = cnt + 1;
-                        //Gridheder = item.name;
-                        //initwidth = initwidth + ",100";
-
-
-                        Plandataobj lineitemdataobj = new Plandataobj();
-                        lineitemdataobj = new Plandataobj();
-                        lineitemdataobj.value = item.MediaCode;
-                        lineitemdataobjlist.Add(lineitemdataobj);
-
-                        lineitemdataobj = new Plandataobj();
-                        if (mode == Convert.ToString(Enums.InspectPopupMode.Edit))
-                            lineitemdataobj.value = "<span><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " ></i></span><span alt=" + Convert.ToString(tacticId) + " ><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " onclick='javascript:OpenGridPopup(event)'></i></span>";
-                        else
-                            lineitemdataobj.value = "<span><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " ></i></span><span alt=" + Convert.ToString(tacticId) + " ><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " ></i></span>";
-
-                        lineitemdataobjlist.Add(lineitemdataobj);
-
-                        // end
-                        foreach (var Cust in lstmediaCodeCustomfield)
-                        {
-                            if (Convert.ToString(Cust.CustomFieldTypeName) == Convert.ToString(Enums.CustomFieldType.TextBox))
-                            {
-                                if (mode == Convert.ToString(Enums.InspectPopupMode.Edit))
-                                {
-                                    coltype = "ed";
-                                }
-                                else
-                                {
-                                    coltype = "ro";
-                                }
-                              
-                                    isRequire = Cust.IsRequired;
-                                var optionValue = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).Select(o => o.CustomFieldValue).FirstOrDefault();
-                                customFieldEntityValue = (optionValue != null) ? optionValue.Replace("\"", "&quot;") : string.Empty;
-
-                            }
-                            else if (Convert.ToString(Cust.CustomFieldTypeName) == Convert.ToString(Enums.CustomFieldType.DropDownList))
-                            {
-                                if (mode == Convert.ToString(Enums.InspectPopupMode.Edit))
-                                {
-                                    coltype = "co";
-                                }
-                                else
-                                {
-                                    coltype = "coro";
-                                }
-
-                                var optionValue = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).Select(o => o.CustomFieldValue).FirstOrDefault();
-                                customFieldEntityValue = (optionValue != null) ? optionValue.Replace("\"", "&quot;") : string.Empty;
-
-                                
-                                    isRequire = Cust.IsRequired;
-                            }
-
-                            lineitemdataobj = new Plandataobj();
-                            if (!string.IsNullOrEmpty(customFieldEntityValue))
-                                lineitemdataobj.value = HttpUtility.HtmlEncode(customFieldEntityValue);
-                            else
-                                lineitemdataobj.value = "--";
-                            lineitemdataobj.locked = "1";
-                            lineitemdataobj.actval = Convert.ToString(isRequire);
-                            lineitemdataobjlist.Add(lineitemdataobj);
-                        }
-                        lineitemrowsobj.data = lineitemdataobjlist;
-                        lineitemrowsobjlist.Add(lineitemrowsobj);
-
-                    }
-
-
-                    objPlanMainDHTMLXGrid.head = headobjlist;
-                    objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
-
+                    objplangrid = LoadAllMediacodeGrid(tacticId, MediaCodecustomFieldList, lstmediaCodeCustomfield, InsepectMode, false);
                 }
-                else
+                        else
                 {
-                    if (mode == Convert.ToString(Enums.InspectPopupMode.Edit))
+                    if (InsepectMode == Convert.ToString(Enums.InspectPopupMode.Edit))
                     {
                         objPlanMainDHTMLXGrid = AddNewRow(lstmediaCodeCustomfield, tacticId);
+                objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
                     }
                 }
-                objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
-
-
 
             }
             catch (Exception objException)
@@ -13859,7 +13755,7 @@ namespace RevenuePlanner.Controllers
         #endregion
        
 
-        #region method to generate black/new row for media code
+        #region method to generate blank/new row for media code
 
         public PlanMainDHTMLXGrid AddNewRow(List<TacticCustomfieldConfig> customfieldlist, int TacticID)
         {
@@ -13883,6 +13779,16 @@ namespace RevenuePlanner.Controllers
 
                 // add other button
                 PlanHead headobjother = new PlanHead();
+                headobjother = new PlanHead();
+                headobjother.type = "ro";
+                headobjother.id = "MediacodeId";
+                headobjother.sort = "na";
+                headobjother.width = 0;
+                headobjother.value = "";
+
+                headobjlist.Add(headobjother);
+
+                headobjother = new PlanHead();
                 headobjother.type = "ro";
                 headobjother.id = "generateMediaCode";
                 headobjother.sort = "na";
@@ -13900,6 +13806,9 @@ namespace RevenuePlanner.Controllers
                // headobjother.value = "<input type='checkbox' title='Select All'/>";
 
                 headobjlist.Add(headobjother);
+                lineitemdataobj = new Plandataobj();
+                lineitemdataobj.value = "0";
+                lineitemdataobjlist.Add(lineitemdataobj);
 
                 lineitemdataobj = new Plandataobj();
                 lineitemdataobj.value = "<input type='button' value='Generate'  class='GenerateMediaCode' rowid='mediacode." + cnt + "' onclick='javascript:GenerateMediaCode(this)'/>";
@@ -13925,15 +13834,15 @@ namespace RevenuePlanner.Controllers
                     else if (item.CustomFieldTypeName == Convert.ToString(Enums.CustomFieldType.DropDownList))
                     {
 
-                        coltype = "co";
+                        coltype = "coro";
                         viewoptionlist = item.Option.Select(a => new PlanOptions
                        {
                            id = Convert.ToString(a.CustomFieldOptionId),
                            value = a.CustomFieldOptionValue
                        }).ToList();
 
+                        isRequire = item.IsRequired;
 
-                        isRequire = item.IsRequired; 
                     }
 
 
@@ -13993,16 +13902,16 @@ namespace RevenuePlanner.Controllers
                         var length = lstmediacodecustomfield.Where(a => a.CustomFieldId == item.CustomFieldId).Select(a => a.Length).FirstOrDefault();
                         if (item.CustomFieldType == Convert.ToString(Enums.CustomFieldType.TextBox))
                         {
-                            if (length != null && item.CustomFieldOptionValue.ToString().Trim().Length > length)
-                                NewMediacode = NewMediacode + item.CustomFieldOptionValue.ToString().Trim().Substring(0, Convert.ToInt32(length)) + '_';
+                            if (length != null && Convert.ToString(item.CustomFieldOptionValue).Trim().Length > length)
+                                NewMediacode = NewMediacode + Convert.ToString(item.CustomFieldOptionValue).Trim().Substring(0, Convert.ToInt32(length)) + '_';
                             else
-                                NewMediacode = NewMediacode + item.CustomFieldOptionValue.ToString().Trim() + '_';
+                                NewMediacode = NewMediacode + Convert.ToString(item.CustomFieldOptionValue).Trim() + '_';
                         }
-                        else if (item.CustomFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                        else if (item.CustomFieldType == Convert.ToString(Enums.CustomFieldType.DropDownList))
                         {
                             var customfieldvalue = Convert.ToInt32(item.CustomFieldOptionValue);
                             var optionvalue = lstCustomFieldOption.Where(a => a.CustomFieldOptionId == customfieldvalue).Select(a => a.Value).FirstOrDefault();
-                            if (length != null && item.CustomFieldOptionValue.ToString().Trim().Length > length)
+                            if (length != null && Convert.ToString(item.CustomFieldOptionValue).Trim().Length > length)
                                 NewMediacode = NewMediacode + optionvalue.ToString().Trim().Substring(0, Convert.ToInt32(length)) + '_';
                             else
                                 NewMediacode = NewMediacode + optionvalue.ToString().Trim() + '_';
@@ -14040,7 +13949,7 @@ namespace RevenuePlanner.Controllers
                             }
                             int finalresult = db.SaveChanges();
                             if (finalresult > 0)
-                                return Json(new { Success = true, MediaCode = Convert.ToString(NewMediacode), SuccessMessage = Common.objCached.SuccessMediacode });
+                                return Json(new { Success = true, MediaCode = NewMediacode.ToString(), SuccessMessage = Common.objCached.SuccessMediacode, NewMediaCodeId = MediaCodeId });
                             else
                                 return Json(new { Success = false });
 
@@ -14049,7 +13958,7 @@ namespace RevenuePlanner.Controllers
                             return Json(new { Success = false });
                     }
                     else
-                        return Json(new { Success = false, ErrorMessage = Common.objCached.DuplicateMediacode });
+                        return Json(new { Success = true, ErrorMessage = Common.objCached.DuplicateMediacode });
                 }
             }
             catch (Exception objException)
@@ -14114,7 +14023,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region  Method to generate Media Code Header
-        public List<PlanHead> GenerateHeader(List<TacticCustomfieldConfig> lstmediaCodeCustomfield, string Mode)
+        public List<PlanHead> GenerateHeader(List<TacticCustomfieldConfig> lstmediaCodeCustomfield, string Mode, bool IsArchive = false)
         {
             List<PlanHead> headobjlist = new List<PlanHead>();
             string coltype = string.Empty;
@@ -14123,6 +14032,16 @@ namespace RevenuePlanner.Controllers
             try
             {
                 PlanHead headobjother = new PlanHead();
+                headobjother = new PlanHead();
+                headobjother.type = "ro";
+                headobjother.id = "MediacodeId";
+                headobjother.sort = "na";
+                headobjother.width = 0;
+                headobjother.value = "";
+
+                headobjlist.Add(headobjother);
+
+                headobjother = new PlanHead();
                 headobjother.type = "ro";
                 headobjother.id = "generateMediaCode";
                 headobjother.sort = "na";
@@ -14147,33 +14066,37 @@ namespace RevenuePlanner.Controllers
                             coltype = "ed";
                         else
                             coltype = "ro";
-
+                        if (IsArchive)
+                            coltype = "ro";
 
                     }
                     else if (Convert.ToString(Cust.CustomFieldTypeName) == Convert.ToString(Enums.CustomFieldType.DropDownList))
                     {
-                        if (mode == Convert.ToString(Enums.InspectPopupMode.Edit))
+                        if (IsArchive == false)
                         {
 
-                            coltype = "co";
-
-                        }
-                        else
                             coltype = "coro";
+
+
                         if (Cust.Option != null && Cust.Option.Count > 0)
                             viewoptionlist = Cust.Option.Select(a => new PlanOptions
                             {
                                 id = Convert.ToString(a.CustomFieldOptionId),
                                 value = a.CustomFieldOptionValue
                             }).ToList();
+                        }
+                        else
+                        {
+                            coltype = "ro";
 
+                        }
                     }
 
 
                     PlanHead headobj = new PlanHead();
                     headobj.type = coltype;
                     headobj.id = "customfield_" + Cust.CustomFieldId;
-                    headobj.sort = "na";
+                    headobj.sort = "str";
                     headobj.width = 200;
                     headobj.value = Cust.CustomFieldName;
 
@@ -14188,6 +14111,157 @@ namespace RevenuePlanner.Controllers
             }
             return headobjlist;
 
+        }
+        #endregion
+
+        
+
+        
+
+        #region method to load all mediacode grid (i.e archive media code/active Media code)
+        public Plangrid LoadAllMediacodeGrid(int tacticId, List<TacticMediaCodeCustomField> MediaCodecustomFieldList, List<TacticCustomfieldConfig> lstmediaCodeCustomfield, string InsepectMode, bool IsArchive = false)
+        {
+            string mode = InsepectMode;
+            Plangrid objplangrid = new Plangrid();
+            List<PlanHead> headobjlist = new List<PlanHead>();
+            List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+            PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
+            PlanController objPlanController = new PlanController();
+            string customFieldEntityValue = string.Empty;
+            string DropdowList = Enums.CustomFieldType.DropDownList.ToString();
+            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+            try
+            {
+                if (MediaCodecustomFieldList.Count != 0)
+                {
+
+                    bool isRequire = false;
+
+                    string Gridheder = string.Empty;
+                    string coltype = string.Empty;
+
+                    if (IsArchive)
+                        headobjlist = GenerateHeader(lstmediaCodeCustomfield, mode, true);
+                    else
+                        headobjlist = GenerateHeader(lstmediaCodeCustomfield, mode);
+
+                    foreach (var item in MediaCodecustomFieldList)
+                    {
+                        string RowID = "mediacode." + item.MediaCodeId;
+                        lineitemrowsobj = new PlanDHTMLXGridDataModel();
+                        List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
+
+
+                        lineitemrowsobj.id = RowID;
+
+                        Plandataobj lineitemdataobj = new Plandataobj();
+                        lineitemdataobj = new Plandataobj();
+                        lineitemdataobj.value = item.MediaCodeId.ToString();
+                        lineitemdataobjlist.Add(lineitemdataobj);
+
+                        lineitemdataobj = new Plandataobj();
+                        lineitemdataobj.value = item.MediaCode;
+                        lineitemdataobjlist.Add(lineitemdataobj);
+
+                        if (IsArchive == false)
+                        {
+                            lineitemdataobj = new Plandataobj();
+                            if (mode == Convert.ToString(Enums.InspectPopupMode.Edit))
+                                lineitemdataobj.value = "<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " ></i></span><span alt=" + Convert.ToString(tacticId) + " class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " onclick='javascript:OpenGridPopup(event)'></i></span>";
+                            else
+                                lineitemdataobj.value = "<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " ></i></span><span alt=" + Convert.ToString(tacticId) + " class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " ></i></span>";
+
+                            lineitemdataobjlist.Add(lineitemdataobj);
+                        }
+                        else
+                        {
+                            lineitemdataobj = new Plandataobj();
+                            if (mode == Convert.ToString(Enums.InspectPopupMode.Edit))
+                                lineitemdataobj.value = "<input type='button' value='Unarchive'  class='UnarchiveMediaCode' rowid=" + RowID + " onclick='javascript:UnarchiveMediaCode(this)'/>";
+                            else
+                                lineitemdataobj.value = "<input type='button' value='Unarchive'  class='UnarchiveMediaCode' rowid=" + RowID + "/>";
+
+                            lineitemdataobjlist.Add(lineitemdataobj);
+                        }
+
+                        foreach (var Cust in lstmediaCodeCustomfield)
+                        {
+                            if (Cust.CustomFieldTypeName.ToString() == Convert.ToString(Enums.CustomFieldType.TextBox))
+                            {
+                                if (mode == Convert.ToString(Enums.InspectPopupMode.Edit))
+                                {
+                                    coltype = "ed";
+                                }
+                                else
+                                {
+                                    coltype = "ro";
+                                }
+
+                                isRequire = Cust.IsRequired;
+
+
+                                if (IsArchive)
+                                    coltype = "ro";
+
+                                var optionValue = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).Select(o => o.CustomFieldValue).FirstOrDefault();
+                                customFieldEntityValue = (optionValue != null) ? optionValue.Replace("\"", "&quot;") : string.Empty;
+
+                            }
+                            else if (Convert.ToString(Cust.CustomFieldTypeName) == Convert.ToString(Enums.CustomFieldType.DropDownList))
+                            {
+                                if (IsArchive == false)
+                                {
+
+                                    coltype = "coro";
+
+                                    var optionValue = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).Select(o => o.CustomFieldValue).FirstOrDefault();
+                                    customFieldEntityValue = (optionValue != null) ? optionValue.Replace("\"", "&quot;") : string.Empty;
+                                    isRequire = Cust.IsRequired;
+
+                                }
+                                else
+                                {
+                                    coltype = "ro";
+
+                                    var objoptionID = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).FirstOrDefault();
+                                    if (objoptionID != null)
+                                    {
+                                        int intoptionID = Convert.ToInt32(objoptionID.CustomFieldValue);
+                                        string OptionValue = Cust.Option.Where(a => a.CustomFieldOptionId == intoptionID).Select(a => a.CustomFieldOptionValue).FirstOrDefault();
+                                        customFieldEntityValue = (OptionValue != null) ? OptionValue.Replace("\"", "&quot;") : string.Empty;
+                                    }
+                                    else
+                                        customFieldEntityValue = string.Empty;
+                                }
+                            }
+
+                            lineitemdataobj = new Plandataobj();
+                            if (!string.IsNullOrEmpty(customFieldEntityValue))
+                                lineitemdataobj.value = HttpUtility.HtmlEncode(customFieldEntityValue);
+                            else
+                                lineitemdataobj.value = "--";
+                            lineitemdataobj.locked = "1";
+                            lineitemdataobj.actval = Convert.ToString(isRequire);
+                            lineitemdataobjlist.Add(lineitemdataobj);
+                        }
+                        lineitemrowsobj.data = lineitemdataobjlist;
+                        lineitemrowsobjlist.Add(lineitemrowsobj);
+
+                    }
+
+
+                    objPlanMainDHTMLXGrid.head = headobjlist;
+                    objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
+
+                }
+
+                objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+            }
+            return objplangrid;
         }
         #endregion
         #endregion

@@ -120,7 +120,7 @@ else
         //MediaCodeGrid.setColumnHidden(0, true); // hide column activity type
         //MediaCodeGrid.setColumnHidden(3, true); // hide column id
         MediaCodeGrid.init();
-        MediaCodeGrid.splitAt(2);
+        MediaCodeGrid.splitAt(3);
         MediaCodeGrid.parse(GridDataHomeGrid, "json");
 
     }
@@ -131,7 +131,7 @@ else
         var cnt = 0;
         var isrequiredfield = 0;
         MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
-            if (col_index > 1) {
+            if (col_index > 2) {
                 var attributeName = MediaCodeGrid.getColLabel(col_index);
                 var attributeid = MediaCodeGrid.getColumnId(col_index);
                 var attributeValue = cellObj.getValue();
@@ -190,11 +190,11 @@ else
                 //data: { TacticId: '@tacticId', lstcustomfieldvalue: a },
                 data: "{'TacticId':'" + ('@tacticId') + "','lstcustomfieldvalue':" + (cusotmfieldValue) + "}",
                 success: function (data) {
-                    if (data.Success == true) {
+                    if (data.Success == true && data.ErrorMessage != null) {
                         var newmediacode = data.MediaCode;
                         MediaCodeGrid.cells(row_id, 0).setValue(newmediacode);
                         MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
-                            if (col_index > 1) {
+                            if (col_index > 2) {
                                 MediaCodeGrid.cells(row_id, col_index).setAttribute("locked", "1");
                             }
                         });
@@ -204,6 +204,10 @@ else
                             $("#spanMessageSuccess").text(data.SuccessMessage);
                             $("#errorMessage").css("display", "none");
                         }
+                        if (data.NewMediaCodeId != null && data.NewMediaCodeId) {
+                            MediaCodeGrid.cells(row_id, 0).setValue(data.NewMediaCodeId.toString());
+                        }
+                       
                     }
                     else {
                         if (data.ErrorMessage != null && data.ErrorMessage != '') {
@@ -217,8 +221,7 @@ else
                 }
             });
         }
-        else
-        {
+        else {
             return false;
         }
     }
@@ -273,10 +276,10 @@ else
         var newId = "newRow_" + MediaCodeGrid.getRowsNum();
         var cnt = MediaCodeGrid.getColumnCount();
         var i;
-        var columndata = "";
+        var columndata = "0,";
         var mediacodeButton = "<input type='button' value='Generate'  class='GenerateMediaCode' rowid=" + newId + " onclick=GenerateMediaCode(this) />";
-        columndata = mediacodeButton + ",<span><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + "></i></span><span><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  onclick=OpenGridPopup(event)></i></span>";
-        for (i = 2; i < cnt  ; i++) {
+        columndata = columndata + mediacodeButton + ",<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " onclick=ArchiveMediaCode(event)></i></span><span class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  onclick=OpenGridPopup(event)></i></span>";
+        for (i = 3; i < cnt  ; i++) {
             columndata = columndata + ',--';
         }
         MediaCodeGrid.addRow(newId, columndata, MediaCodeGrid.getRowsNum());   //adds a new row
@@ -285,10 +288,10 @@ else
         var task = $(obj).attr('id');
         if (task == 'CopyMediacode') {
             MediaCodeGrid.copyRowContent(currentRowID, newId);
-            MediaCodeGrid.cells(newId, 0).setValue(mediacodeButton);
+            MediaCodeGrid.cells(newId, 1).setValue(mediacodeButton);
         }
         MediaCodeGrid.forEachCell(currentRowID, function (cellObj, col_index) {
-            if (col_index > 1) {
+            if (col_index > 2) {
 
                 var isrequired = MediaCodeGrid.cells(currentRowID, col_index).getAttribute("actval");
                 MediaCodeGrid.cells(newId, col_index).setAttribute("actval", isrequired);

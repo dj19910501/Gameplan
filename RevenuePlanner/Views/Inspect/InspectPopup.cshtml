@@ -28,6 +28,8 @@
         var popupvalue = "";
         var campaignId = "";
         string InspectMode = "";
+        //added by devanshi for validation for medai code if tactic is asset or promotion
+        bool IsAssetType = false;
         if (tacticMaster != null)
         {
             IsPlanEditable = (bool)tacticMaster.IsPlanEditable;
@@ -41,7 +43,7 @@
             IsPlanCreateAll = (bool)tacticMaster.IsPlanCreateAll;
             InspectMode = tacticMaster.InspectMode;
             PlanId = tacticMaster.PlanId;
-
+            IsAssetType = Convert.ToString(tacticMaster.ROIType) == Convert.ToString(Enums.AssetType.Asset) ? true : false;
         }
         else
         {
@@ -76,6 +78,7 @@
         {
             _isClientMediaCodesPermission = (bool)ViewBag.isClientMediaCodesPermission;
         }
+        
     }
 
 
@@ -234,7 +237,7 @@
                 <li class="pull-left" id="liLine_Items">
                     <a>Line Items</a>
                 </li>
-                @if (_isClientMediaCodesPermission)
+                @if (_isClientMediaCodesPermission && IsAssetType==false)
                 {
                     <li class="pull-left" id="liMedia_Code">
                         <a>Media Code</a>

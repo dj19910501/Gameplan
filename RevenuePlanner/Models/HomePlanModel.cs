@@ -188,6 +188,7 @@ namespace RevenuePlanner.Models
         public string CampaignfolderValue{get;set;}
         public string programType{get;set;}
         public string Channel{get;set;}
+        public string ROIType { get; set; }
     }
 
     public class InspectReviewModel
