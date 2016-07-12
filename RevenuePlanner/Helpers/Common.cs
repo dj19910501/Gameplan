@@ -7614,7 +7614,10 @@ namespace RevenuePlanner.Helpers
                     }
 
                     //For #774
-                    bool Entityid = Entities.Where(entityid => lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).Any();
+                    //bool Entityid = Entities.Where(entityid => lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).Any();
+                    bool Entityid = (from e in Entities
+                                     join t in lstTactic on e.EntityId equals t
+                                     select 1).Any();
                     //todo : able to move up
 
                     if (!Entityid)
@@ -7632,7 +7635,10 @@ namespace RevenuePlanner.Helpers
                     //                                                                                (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true) &&
                     //                                                                                lstTactic.Contains(customFieldEntity.EntityId))
                     //                                                                        .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
-                    lstAllTacticCustomFieldEntities = lstAllTacticCustomFieldEntities.Where(customFieldEntity => lstTactic.Contains(customFieldEntity.EntityId)).ToList();
+                    //lstAllTacticCustomFieldEntities = lstAllTacticCustomFieldEntities.Where(customFieldEntity => lstTactic.Contains(customFieldEntity.EntityId)).ToList();
+                    lstAllTacticCustomFieldEntities = (from c in lstAllTacticCustomFieldEntities
+                                                       join t in lstTactic on c.EntityId equals t
+                                                       select c).ToList();
                     var entityids = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).ToList();
                     List<int> othertacticIds = lstTactic.Where(tac => !entityids.Contains(tac)).Select(tac => tac).ToList();
                     if (lstAllTacticCustomFieldEntities.Count > 0)
@@ -7652,8 +7658,15 @@ namespace RevenuePlanner.Helpers
                             int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
                             int NonePermission = (int)Enums.CustomRestrictionPermission.None;
                             var viewnoneoptionid = userCustomRestrictionList.Where(restriction => restriction.Permission == ViewOnlyPermission || restriction.Permission == NonePermission).Select(res => res.CustomFieldOptionId).ToList();
-                            var onlyviewnonetacticids = lstAllTacticCustomFieldEntities.Where(tac => viewnoneoptionid.Contains(int.Parse(tac.Value))).Select(tac => tac.EntityId).ToList();
-                            var onlyedittactic = lstAllTacticCustomFieldEntities.Where(tac => !onlyviewnonetacticids.Contains(tac.EntityId)).Select(tac => tac.EntityId).Distinct().ToList();
+                            //var onlyviewnonetacticids = lstAllTacticCustomFieldEntities.Where(tac => viewnoneoptionid.Contains(int.Parse(tac.Value))).Select(tac => tac.EntityId).ToList();
+                            var onlyviewnonetacticids = (from c in lstAllTacticCustomFieldEntities
+                                                         join v in viewnoneoptionid on int.Parse(c.Value) equals v
+                                                         select c.EntityId).ToList();
+                            //var onlyedittactic = lstAllTacticCustomFieldEntities.Where(tac => !onlyviewnonetacticids.Contains(tac.EntityId)).Select(tac => tac.EntityId).Distinct().ToList();
+                            var onlyedittactic = (from c in lstAllTacticCustomFieldEntities
+                                                  join v in onlyviewnonetacticids on c.EntityId equals v into cv
+                                                  from f in cv.DefaultIfEmpty()
+                                                  select new { c.EntityId, cv }).Where(x=>x.cv == null).Select(x=>x.EntityId).Distinct().ToList();
                             if (isDefaultRestrictionsEditable)
                             {
                                 lstEditableEntityIds = onlyedittactic;

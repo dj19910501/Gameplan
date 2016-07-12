@@ -1,3 +1,17 @@
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX-ChangeLog-TableName-ClientID-IsDeleted' AND object_id = OBJECT_ID('[ChangeLog]'))
+
+/****** Object:  Index [NonClusteredIndex-20160711-140054]    Script Date: 7/11/2016 2:35:15 PM ******/
+DROP INDEX [IX-ChangeLog-TableName-ClientID-IsDeleted] ON [dbo].[ChangeLog]
+GO
+
+/****** Object:  Index [NonClusteredIndex-20160711-140054]    Script Date: 7/11/2016 2:35:15 PM ******/
+CREATE NONCLUSTERED INDEX [IX-ChangeLog-TableName-ClientID-IsDeleted] ON [dbo].[ChangeLog]
+(
+	[TableName] ASC,
+	[ClientId] ASC,
+	[IsDeleted] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+GO
 
 ------ NOTE: Execute 'MediaCodes' acitivity insert attached in BDSAuth DatabaseScript folder prior to execute below script and pick ApplicationActivityId by above BDSAuth script and replace @applicationActivityId variable value with picked value.
 
