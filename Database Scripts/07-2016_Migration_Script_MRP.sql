@@ -930,6 +930,12 @@ IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = 'AssetType' AND [object_i
 BEGIN
 	ALTER TABLE dbo.TacticType ADD AssetType NVARCHAR(50) DEFAULT 'Promotion'
 END
+
+-- UPDATE AssetType to "Promotion" TO ASSIGN DEFAULT VALUE
+IF EXISTS(SELECT * FROM sys.columns WHERE [name] = 'AssetType' AND [object_id] = OBJECT_ID(N'TacticType'))
+BEGIN
+	UPDATE dbo.TacticType SET AssetType = 'Promotion' WHERE AssetType IS NULL
+END
 GO
 -- End 
 -- ======================================================================================
