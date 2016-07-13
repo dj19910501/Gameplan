@@ -1347,5 +1347,107 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
+        #region Media code related Methods
+          #region Load Media Code
+        /// <summary>
+        /// To Load Media Code
+        /// </summary>
+        /// <auther>Devasnhi gandhi</auther>
+        /// <createddate>12July2016</createddate>
+        [TestMethod]
+        public void LoadActiveMediaCode()
+        {
+            Console.WriteLine("To Load Media Code for Promotion Tactic.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            string UserID = (Sessions.User.UserId).ToString();
+            Plan_Campaign_Program_Tactic objtactic = DataHelper.GetPlanTactic(Sessions.User.ClientId);
+                int tacticId=objtactic.PlanTacticId;
+                string mode = Enums.InspectPopupMode.Edit.ToString();
+                var result = objInspectController.LoadMediaCodeFromTacticPopup(tacticId, mode) as PartialViewResult;
+            if (result != null)
+            {
+                Assert.IsNotNull(result.Model);
+                Assert.AreEqual("_TacticMediaCode", result.ViewName);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+        }
+          #endregion
+
+        #region Generate Media Code
+        /// <summary>
+        /// To Load Media Code
+        /// </summary>
+        /// <auther>Devasnhi gandhi</auther>
+        /// <createddate>12July2016</createddate>
+        [TestMethod]
+        public void GenerateMediaCode()
+        {
+            Console.WriteLine("To Generate Media Code for Promotion Tactic.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+           
+            Plan_Campaign_Program_Tactic objtactic = DataHelper.GetPlanTactic(Sessions.User.ClientId);
+            string tacticId = Convert.ToString(objtactic.PlanTacticId);
+            var lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId).ToList().Select(a => new TacticCustomfieldConfig
+            {
+                CustomFieldId = a.CustomFieldId,
+                CustomFieldName = a.CustomField.Name,
+                CustomFieldTypeName = a.CustomField.CustomFieldType.Name,
+                IsRequired = a.CustomField.IsRequired,
+                Sequence = a.Sequence,
+                Option = a.CustomField.CustomFieldOptions.Select(opt => new CustomFieldOptionList
+                {
+                    CustomFieldOptionId = opt.CustomFieldOptionId,
+                    CustomFieldOptionValue = opt.Value
+                }).ToList()
+            }).OrderBy(a => a.Sequence).FirstOrDefault();
+            if (lstmediaCodeCustomfield !=null)
+            {
+                List<CustomFieldValue> lstcustomfieldvalue = new List<CustomFieldValue>();
+                CustomFieldValue objcustomfield = new CustomFieldValue();
+                objcustomfield.CustomFieldId = lstmediaCodeCustomfield.CustomFieldId;
+                objcustomfield.CustomFieldName = lstmediaCodeCustomfield.CustomFieldName;
+                objcustomfield.CustomFieldType = lstmediaCodeCustomfield.CustomFieldTypeName;
+                if(lstmediaCodeCustomfield.CustomFieldTypeName==Convert.ToString(Enums.CustomFieldType.TextBox))
+                    objcustomfield.CustomFieldOptionValue = "test1234";
+                else
+                {
+                    var optvalue = lstmediaCodeCustomfield.Option.Select(a => a.CustomFieldOptionId).FirstOrDefault();
+                    objcustomfield.CustomFieldOptionValue = optvalue.ToString();
+                }
+                lstcustomfieldvalue.Add(objcustomfield);
+                var result = objInspectController.GenerateMediaCode(tacticId, lstcustomfieldvalue) as JsonResult;
+                if (result != null)
+                {
+                    Assert.IsNotNull(result.Data);
+                    var serializedData = new RouteValueDictionary(result.Data);
+                    var resultvalue = serializedData["Success"];
+                    Assert.AreEqual("true", resultvalue.ToString(),true);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                }
+                else
+                {
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                }
+            }
+        }
+        #endregion
+        #endregion
+
     }
 }

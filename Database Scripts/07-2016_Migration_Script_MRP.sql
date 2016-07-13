@@ -38,38 +38,12 @@ GO
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SP_CheckExisting_MediaCode]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[SP_CheckExisting_MediaCode]
 GO
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes]') AND parent_object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]'))
-ALTER TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping] DROP CONSTRAINT [FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes]
-GO
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Tactic_MediaCodes_CustomFieldMapping_CustomField]') AND parent_object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]'))
-ALTER TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping] DROP CONSTRAINT [FK_Tactic_MediaCodes_CustomFieldMapping_CustomField]
-GO
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Plan_Campaign_Program_Tactic_Actual_MediaCode_Tactic_MediaCodes]') AND parent_object_id = OBJECT_ID(N'[dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]'))
-ALTER TABLE [dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode] DROP CONSTRAINT [FK_Plan_Campaign_Program_Tactic_Actual_MediaCode_Tactic_MediaCodes]
-GO
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_MediaCodes_CustomField_Configuration_CustomField]') AND parent_object_id = OBJECT_ID(N'[dbo].[MediaCodes_CustomField_Configuration]'))
-ALTER TABLE [dbo].[MediaCodes_CustomField_Configuration] DROP CONSTRAINT [FK_MediaCodes_CustomField_Configuration_CustomField]
-GO
+
 /****** Object:  View [dbo].[vClientWise_Tactic]    Script Date: 07/11/2016 2:20:05 PM ******/
 IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[vClientWise_Tactic]'))
 DROP VIEW [dbo].[vClientWise_Tactic]
 GO
-/****** Object:  Table [dbo].[Tactic_MediaCodes_CustomFieldMapping]    Script Date: 07/11/2016 2:20:05 PM ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes_CustomFieldMapping]') AND type in (N'U'))
-DROP TABLE [dbo].[Tactic_MediaCodes_CustomFieldMapping]
-GO
-/****** Object:  Table [dbo].[Tactic_MediaCodes]    Script Date: 07/11/2016 2:20:05 PM ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes]') AND type in (N'U'))
-DROP TABLE [dbo].[Tactic_MediaCodes]
-GO
-/****** Object:  Table [dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]    Script Date: 07/11/2016 2:20:05 PM ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]') AND type in (N'U'))
-DROP TABLE [dbo].[Plan_Campaign_Program_Tactic_Actual_MediaCode]
-GO
-/****** Object:  Table [dbo].[MediaCodes_CustomField_Configuration]    Script Date: 07/11/2016 2:20:05 PM ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MediaCodes_CustomField_Configuration]') AND type in (N'U'))
-DROP TABLE [dbo].[MediaCodes_CustomField_Configuration]
-GO
+
 /****** Object:  Table [dbo].[MediaCodes_CustomField_Configuration]    Script Date: 07/11/2016 2:20:05 PM ******/
 SET ANSI_NULLS ON
 GO
