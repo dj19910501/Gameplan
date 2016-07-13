@@ -697,13 +697,26 @@
     <Content Include="Content\fonts\ProximaNova-Regular.woff2" />
     <Content Include="Scripts\js\scripts_v2.js" />
     <Content Include="Scripts\moment.min.js" />
-    <Content Include="Service References\BDSService\BDSService.disco" />
-    <Content Include="Service References\BDSService\configuration91.svcinfo" />
-    <Content Include="Service References\BDSService\configuration.svcinfo" />
-    <Content Include="Service References\BDSService\Reference.svcmap">
+    <None Include="Service References\BDSService\BDSService1.wsdl" />
+    <None Include="Service References\BDSService\BDSService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService41.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService42.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService43.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\configuration91.svcinfo" />
+    <None Include="Service References\BDSService\configuration.svcinfo" />
+    <None Include="Service References\BDSService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
-    </Content>
+    </None>
+    <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -905,19 +918,6 @@
     <Content Include="Views\ExternalService\MarketoFolder.cshtml" />
     <Content Include="Views\ExternalService\_MarketoFolderPlanList.cshtml" />
     <Content Include="Views\Inspect\_TacticLineItemListing.cshtml" />
-    <Content Include="Service References\BDSService\BDSService.wsdl" />
-    <None Include="Service References\BDSService\BDSService.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService3.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.AppConfiguration.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
