@@ -5,6 +5,7 @@ using RevenuePlanner.Models;
 using RevenuePlanner.Test.MockHelpers;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,12 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To check to retrieve Home view with no parameters.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
+            string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
+            string singlehash = DataHelper.ComputeSingleHash(password);
+            RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
+            Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
 
             //// Call index method
             HomeController objHomeController = new HomeController();
@@ -77,7 +84,11 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             HomeController objHomeController = new HomeController();
             int planId = DataHelper.GetPlanId();
-
+            string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
+            string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
+            string singlehash = DataHelper.ComputeSingleHash(password);
+            RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
+            Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
             var result = objHomeController.Index(Enums.ActiveMenu.Home, planId) as ViewResult;
 
             if (result != null)
@@ -118,6 +129,12 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
+            string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
+            string singlehash = DataHelper.ComputeSingleHash(password);
+            RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
+            Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
 
             //// Call index method
             HomeController objHomeController = new HomeController();
