@@ -13732,19 +13732,21 @@ namespace RevenuePlanner.Controllers
                         CustomFieldOptionValue = opt.Value
                     }).ToList()
                 }).OrderBy(a=>a.Sequence).ToList();
-                if (MediaCodecustomFieldList.Count != 0)
+                if (MediaCodecustomFieldList.Count != 0 && lstmediaCodeCustomfield.Count!=0)
                 {
                     objplangrid = LoadAllMediacodeGrid(tacticId, MediaCodecustomFieldList, lstmediaCodeCustomfield, InsepectMode, false);
                 }
                         else
                 {
-                    if (InsepectMode == Convert.ToString(Enums.InspectPopupMode.Edit))
+                    if (InsepectMode == Convert.ToString(Enums.InspectPopupMode.Edit) && lstmediaCodeCustomfield.Count != 0)
                     {
                         objPlanMainDHTMLXGrid = AddNewRow(lstmediaCodeCustomfield, tacticId);
                 objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
                     }
                     else
                         objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
+                    if (lstmediaCodeCustomfield.Count == 0)
+                        ViewBag.NoCustomField = true;
                 }
 
             }

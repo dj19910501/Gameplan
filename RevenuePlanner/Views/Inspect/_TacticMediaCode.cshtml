@@ -2,11 +2,16 @@
 @model RevenuePlanner.Models.Plangrid
 @{
     var countrows = 0;
-    if (Model.PlanDHTMLXGrid!=null)
-    { 
-        countrows= Model.PlanDHTMLXGrid.rows != null ? Model.PlanDHTMLXGrid.rows.Count : 0;
+    if (Model.PlanDHTMLXGrid != null)
+    {
+        countrows = Model.PlanDHTMLXGrid.rows != null ? Model.PlanDHTMLXGrid.rows.Count : 0;
     }
     var tacticId = Convert.ToString(ViewBag.TacticID);
+    var NoCustomfieldConfig = false;
+    if (ViewBag.NoCustomField != null)
+    {
+        NoCustomfieldConfig = true;
+    }
 }
 @if (countrows > 0)
 {
@@ -14,7 +19,12 @@
 }
 else
 {
-    <div>No records available.</div>
+    if (NoCustomfieldConfig)
+    { <div>No MediaCode custom Fields Configuration available.</div>}
+    else
+    {
+        <div>No records available.</div>
+    }
 
 }
 <div class="market-activity-main">
@@ -211,7 +221,7 @@ else
                         if (data.NewMediaCodeId != null && data.NewMediaCodeId) {
                             MediaCodeGrid.cells(row_id, 0).setValue(data.NewMediaCodeId.toString());
                         }
-                       
+
                     }
                     else {
                         if (data.ErrorMessage != null && data.ErrorMessage != '') {
@@ -261,7 +271,7 @@ else
         }
         if (stage == 2) {
             if (nValue != '' && nValue != oValue) {
-              
+
                 var isrequired = MediaCodeGrid.cells(rowId, cellInd).getAttribute("actval");
                 if (isrequired.toString().toLowerCase() == "true") {
                     MediaCodeGrid.setCellTextStyle(rowId, cellInd, "");

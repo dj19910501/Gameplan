@@ -87,6 +87,11 @@ namespace RevenuePlanner
                        "~/Scripts/js/highcharts-funnel.js",
                        "~/Scripts/js/scripts_v2.js"
                        ));
+            //added by devanshi #2368
+            bundles.Add(new StyleBundle("~/Content/css/GetCSSBudget").Include(
+                "~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css",
+                "~/Content/css/fileinput.css"
+));
             BundleTable.EnableOptimizations = true;
 
         }
