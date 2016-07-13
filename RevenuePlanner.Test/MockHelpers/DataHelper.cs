@@ -384,5 +384,38 @@ namespace RevenuePlanner.Test.MockHelpers
             return string.Join(",", planIds.Select(plan => plan.ToString()));
         }
 
+        /// <summary>
+        /// Get single Deleted plan id.
+        /// </summary>
+        /// <returns></returns>
+        public static int GetDeletedPlanId()
+        {            
+            return db.Plans.Where(p => p.IsDeleted == true && p.CreatedBy != null).Select(p => p.PlanId).FirstOrDefault();
+        }
+        /// <summary>
+        /// Get a UserId for the given PlanId
+        /// Added by Akashdeep Kadia Date:- 12/05/2016 for PL Ticket #989 & 2129
+        /// </summary>
+        /// <param name="PlanId">PlanId</param>
+        /// <returns>returns an ClientId for given PlanId</returns>
+        public static Guid GetUserId(int PlanId)
+        {            
+            var UserId = db.Plans.Where(pl => pl.PlanId == PlanId && pl.CreatedBy != null).Select(pl => pl.CreatedBy).FirstOrDefault();
+            return UserId;
+        }
+        /// <summary>
+        /// Get a ClientId for the given deleted PlanId
+        /// Added by Akashdeep Kadia Date:- 12/05/2016 for PL Ticket #989 & 2129
+        /// </summary>
+        /// <param name="PlanId">PlanId</param>
+        /// <returns>returns an ClientId for given PlanId</returns>
+        public static Guid GetDeletedPlanClientId(int PlanId)
+        {
+            var ClientId = (from i in db.Models
+                            join t in db.Plans on i.ModelId equals t.ModelId
+                            where t.PlanId == PlanId
+                            select i.ClientId).FirstOrDefault();
+            return ClientId;
+        }
     }
 }

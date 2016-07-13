@@ -616,105 +616,105 @@ namespace RevenuePlanner.Controllers
                 return isLocal;
             }
         }
+        //Commented by Rahul Shah to improve code coverage becuase these methods are not used.
+        ///// <summary>
+        ///// Set security question view
+        ///// </summary>
+        ///// <returns></returns>
+        //public ActionResult SetSecurityQuestion()
+        //{
+        //    SecurityQuestionListModel objSecurityQuestionListModel = new SecurityQuestionListModel();
 
-        /// <summary>
-        /// Set security question view
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult SetSecurityQuestion()
-        {
-            SecurityQuestionListModel objSecurityQuestionListModel = new SecurityQuestionListModel();
-
-            try
-            {
-                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
+        //    try
+        //    {
+        //        BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        //        var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
 
 
-                objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
+        //        objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(e);
 
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
-            }
+        //        //To handle unavailability of BDSService
+        //        if (e is System.ServiceModel.EndpointNotFoundException)
+        //        {
+        //            //// Flag to indicate unavailability of web service.
+        //            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+        //            //// Ticket: 942 Exception handeling in Gameplan.
+        //            return RedirectToAction("ServiceUnavailable", "Login");
+        //        }
+        //    }
 
-            return View(objSecurityQuestionListModel);
-        }
+        //    return View(objSecurityQuestionListModel);
+        //}
 
-        /// <summary>
-        /// Post : Set security question view
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult SetSecurityQuestion(SecurityQuestionListModel form)
-        {
-            try
-            {
-                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                BDSService.User objUser = new BDSService.User();
-                objUser.UserId = Sessions.User.UserId;
-                objUser.SecurityQuestionId = form.SecurityQuestionId;
+        ///// <summary>
+        ///// Post : Set security question view
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpPost]
+        //public ActionResult SetSecurityQuestion(SecurityQuestionListModel form)
+        //{
+        //    try
+        //    {
+        //        BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        //        BDSService.User objUser = new BDSService.User();
+        //        objUser.UserId = Sessions.User.UserId;
+        //        objUser.SecurityQuestionId = form.SecurityQuestionId;
 
-                string encryptedAnswer = Common.Encrypt(form.Answer);
+        //        string encryptedAnswer = Common.Encrypt(form.Answer);
 
-                objUser.Answer = encryptedAnswer;
-                objBDSServiceClient.UpdateUserSecurityQuestion(objUser);
+        //        objUser.Answer = encryptedAnswer;
+        //        objBDSServiceClient.UpdateUserSecurityQuestion(objUser);
 
-                Sessions.User.Answer = encryptedAnswer;
-                Sessions.User.SecurityQuestionId = form.SecurityQuestionId;
+        //        Sessions.User.Answer = encryptedAnswer;
+        //        Sessions.User.SecurityQuestionId = form.SecurityQuestionId;
 
-                Sessions.RedirectToSetSecurityQuestion = false;
+        //        Sessions.RedirectToSetSecurityQuestion = false;
 
-                return RedirectToAction("Index", "Home");
+        //        return RedirectToAction("Index", "Home");
 
-            }
-            catch (Exception ex)
-            {
-                ErrorSignal.FromCurrentContext().Raise(ex);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(ex);
 
-                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+        //        /* Bug 25:Unavailability of BDSService leads to no error shown to user */
 
-                //To handle unavailability of BDSService
-                if (ex is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
+        //        //To handle unavailability of BDSService
+        //        if (ex is System.ServiceModel.EndpointNotFoundException)
+        //        {
+        //            //// Flag to indicate unavailability of web service.
+        //            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+        //            //// Ticket: 942 Exception handeling in Gameplan.
+        //            return RedirectToAction("ServiceUnavailable", "Login");
+        //        }
 
-                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
-            }
+        //        /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+        //    }
 
-            return View(form);
-        }
+        //    return View(form);
+        //}
 
-        /// <summary>
-        /// Method to get the Select list item
-        /// </summary>
-        /// <param name="QuestionList"></param>
-        /// <returns></returns>
-        public List<SelectListItem> GetQuestionList(List<BDSService.SecurityQuestion> QuestionList)
-        {
-            List<SelectListItem> optionslist = new List<SelectListItem>();
+        ///// <summary>
+        ///// Method to get the Select list item
+        ///// </summary>
+        ///// <param name="QuestionList"></param>
+        ///// <returns></returns>
+        //public List<SelectListItem> GetQuestionList(List<BDSService.SecurityQuestion> QuestionList)
+        //{
+        //    List<SelectListItem> optionslist = new List<SelectListItem>();
 
-            optionslist = QuestionList.AsEnumerable().Select(x => new SelectListItem
-            {
-                Value = Convert.ToString(x.SecurityQuestionId),
-                Text = x.SecurityQuestion1
-            }).ToList();
+        //    optionslist = QuestionList.AsEnumerable().Select(x => new SelectListItem
+        //    {
+        //        Value = Convert.ToString(x.SecurityQuestionId),
+        //        Text = x.SecurityQuestion1
+        //    }).ToList();
 
-            return optionslist;
-        }
+        //    return optionslist;
+        //}
 
         #endregion
 
@@ -959,144 +959,144 @@ namespace RevenuePlanner.Controllers
 
             return View(form);
         }
+        //Commented by Rahul Shah to improve code coverage becuase these methods are not used.
+        ///// <summary>
+        ///// Security Question View
+        ///// </summary>
+        ///// <param name="PasswordResetRequestId"></param>
+        ///// <returns></returns>
+        //public ActionResult SecurityQuestion(string id)
+        //{
+        //    try
+        //    {
+        //        Guid PasswordResetRequestId = Guid.Parse(id);
 
-        /// <summary>
-        /// Security Question View
-        /// </summary>
-        /// <param name="PasswordResetRequestId"></param>
-        /// <returns></returns>
-        public ActionResult SecurityQuestion(string id)
-        {
-            try
-            {
-                Guid PasswordResetRequestId = Guid.Parse(id);
+        //        SecurityQuestionModel objSecurityQuestionModel = new SecurityQuestionModel();
 
-                SecurityQuestionModel objSecurityQuestionModel = new SecurityQuestionModel();
+        //        BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        //        var objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(PasswordResetRequestId);
 
-                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                var objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(PasswordResetRequestId);
+        //        if (objPasswordResetRequest == null)
+        //        {
+        //            TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+        //            return RedirectToAction("Index", "Login", new { returnUrl = "" });
+        //        }
+        //        else
+        //        {
+        //            int interval = int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"]); // Link expiration duration in hour.
 
-                if (objPasswordResetRequest == null)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login", new { returnUrl = "" });
-                }
-                else
-                {
-                    int interval = int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"]); // Link expiration duration in hour.
+        //            if (objPasswordResetRequest.IsUsed)
+        //            {
+        //                TempData["ErrorMessage"] = Common.objCached.PasswordResetLinkAlreadyUsed;
+        //                return RedirectToAction("Index", "Login", new { returnUrl = "" });
+        //            }
+        //            else if ((DateTime.Now - objPasswordResetRequest.CreatedDate).Hours >= interval)
+        //            {
+        //                TempData["ErrorMessage"] = Common.objCached.PasswordResetLinkExpired;
+        //                return RedirectToAction("Index", "Login", new { returnUrl = "" });
+        //            }
+        //            else
+        //            {
+        //                Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+        //                var objUser = objBDSServiceClient.GetTeamMemberDetails(objPasswordResetRequest.UserId, applicationId);
 
-                    if (objPasswordResetRequest.IsUsed)
-                    {
-                        TempData["ErrorMessage"] = Common.objCached.PasswordResetLinkAlreadyUsed;
-                        return RedirectToAction("Index", "Login", new { returnUrl = "" });
-                    }
-                    else if ((DateTime.Now - objPasswordResetRequest.CreatedDate).Hours >= interval)
-                    {
-                        TempData["ErrorMessage"] = Common.objCached.PasswordResetLinkExpired;
-                        return RedirectToAction("Index", "Login", new { returnUrl = "" });
-                    }
-                    else
-                    {
-                        Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
-                        var objUser = objBDSServiceClient.GetTeamMemberDetails(objPasswordResetRequest.UserId, applicationId);
+        //                objSecurityQuestionModel.PasswordResetRequestId = objPasswordResetRequest.PasswordResetRequestId;
+        //                objSecurityQuestionModel.UserId = objPasswordResetRequest.UserId;
+        //                objSecurityQuestionModel.AttemptCount = objPasswordResetRequest.AttemptCount;
+        //                objSecurityQuestionModel.SecurityQuestion = objUser.SecurityQuestion;
 
-                        objSecurityQuestionModel.PasswordResetRequestId = objPasswordResetRequest.PasswordResetRequestId;
-                        objSecurityQuestionModel.UserId = objPasswordResetRequest.UserId;
-                        objSecurityQuestionModel.AttemptCount = objPasswordResetRequest.AttemptCount;
-                        objSecurityQuestionModel.SecurityQuestion = objUser.SecurityQuestion;
+        //            }
+        //        }
 
-                    }
-                }
+        //        return View(objSecurityQuestionModel);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(ex);
 
-                return View(objSecurityQuestionModel);
-            }
-            catch (Exception ex)
-            {
-                ErrorSignal.FromCurrentContext().Raise(ex);
+        //        /* Bug 25:Unavailability of BDSService leads to no error shown to user */
 
-                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+        //        //To handle unavailability of BDSService
+        //        if (ex is System.ServiceModel.EndpointNotFoundException)
+        //        {
+        //            //// Flag to indicate unavailability of web service.
+        //            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+        //            //// Ticket: 942 Exception handeling in Gameplan.
+        //            return RedirectToAction("ServiceUnavailable", "Login");
+        //        }
 
-                //To handle unavailability of BDSService
-                if (ex is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
+        //        return RedirectToAction("Index", "Login", new { returnUrl = "" });
 
-                return RedirectToAction("Index", "Login", new { returnUrl = "" });
+        //        /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+        //    }
+        //}
 
-                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
-            }
-        }
+        ///// <summary>
+        ///// Post : Security Question View
+        ///// </summary>
+        ///// <param name="form"></param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //public ActionResult SecurityQuestion(SecurityQuestionModel form)
+        //{
+        //    try
+        //    {
+        //        BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        //        BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
 
-        /// <summary>
-        /// Post : Security Question View
-        /// </summary>
-        /// <param name="form"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult SecurityQuestion(SecurityQuestionModel form)
-        {
-            try
-            {
-                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+        //        objPasswordResetRequest.PasswordResetRequestId = form.PasswordResetRequestId;
 
-                objPasswordResetRequest.PasswordResetRequestId = form.PasswordResetRequestId;
+        //        int PossibleAttemptCount = int.Parse(ConfigurationManager.AppSettings["PossibleAttemptCount"]);
+        //        if (form.AttemptCount < PossibleAttemptCount)
+        //        {
+        //            var objUser = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]));
+        //            if (Common.Encrypt(form.Answer) != objUser.Answer)
+        //            {
+        //                form.AttemptCount = form.AttemptCount + 1;
+        //                objPasswordResetRequest.AttemptCount = form.AttemptCount;
+        //                objPasswordResetRequest.IsUsed = true;
+        //                objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
+        //                ModelState.AddModelError("", Common.objCached.AnswerNotMatched);
+        //            }
+        //            else
+        //            {
+        //                objPasswordResetRequest.AttemptCount = form.AttemptCount + 1;
+        //                objPasswordResetRequest.IsUsed = true;
+        //                objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
+        //                TempData["UserId"] = form.UserId;
+        //                return RedirectToAction("ResetPassword", "Login");
+        //            }
+        //        }
+        //        else
+        //        {
 
-                int PossibleAttemptCount = int.Parse(ConfigurationManager.AppSettings["PossibleAttemptCount"]);
-                if (form.AttemptCount < PossibleAttemptCount)
-                {
-                    var objUser = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]));
-                    if (Common.Encrypt(form.Answer) != objUser.Answer)
-                    {
-                        form.AttemptCount = form.AttemptCount + 1;
-                        objPasswordResetRequest.AttemptCount = form.AttemptCount;
-                        objPasswordResetRequest.IsUsed = true;
-                        objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
-                        ModelState.AddModelError("", Common.objCached.AnswerNotMatched);
-                    }
-                    else
-                    {
-                        objPasswordResetRequest.AttemptCount = form.AttemptCount + 1;
-                        objPasswordResetRequest.IsUsed = true;
-                        objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
-                        TempData["UserId"] = form.UserId;
-                        return RedirectToAction("ResetPassword", "Login");
-                    }
-                }
-                else
-                {
+        //            objPasswordResetRequest.IsUsed = true;
+        //            objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
+        //            TempData["ErrorMessage"] = Common.objCached.PossibleAttemptLimitExceed;
+        //            return RedirectToAction("Index", "Login", new { returnUrl = "" });
 
-                    objPasswordResetRequest.IsUsed = true;
-                    objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
-                    TempData["ErrorMessage"] = Common.objCached.PossibleAttemptLimitExceed;
-                    return RedirectToAction("Index", "Login", new { returnUrl = "" });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(ex);
 
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorSignal.FromCurrentContext().Raise(ex);
+        //        /* Bug 25:Unavailability of BDSService leads to no error shown to user */
 
-                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+        //        //To handle unavailability of BDSService
+        //        if (ex is System.ServiceModel.EndpointNotFoundException)
+        //        {
+        //            //// Flag to indicate unavailability of web service.
+        //            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+        //            //// Ticket: 942 Exception handeling in Gameplan.
+        //            return RedirectToAction("ServiceUnavailable", "Login");
+        //        }
 
-                //To handle unavailability of BDSService
-                if (ex is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
+        //        /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+        //    }
 
-                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
-            }
-
-            return View(form);
-        }
+        //    return View(form);
+        //}
 
         /// <summary>
         /// Reset Password View

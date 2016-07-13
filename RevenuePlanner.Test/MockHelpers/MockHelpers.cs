@@ -59,7 +59,7 @@ namespace RevenuePlanner.Test.MockHelpers
             request.Setup(r => r.ApplicationPath).Returns("/");
             response.Setup(s => s.ApplyAppPathModifier(It.IsAny<string>())).Returns<string>(s => s);
             request.SetupGet(x => x.Url).Returns(new Uri("http://localhost:51115/", UriKind.Absolute));
-
+            request.Setup(r => r.UrlReferrer).Returns(new Uri("http://www.hive9.com"));
             context.Setup(ctx => ctx.Request).Returns(request.Object);
             context.Setup(ctx => ctx.Response).Returns(response.Object);
             context.Setup(ctx => ctx.Session).Returns(session.Object);

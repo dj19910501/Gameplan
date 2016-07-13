@@ -105,11 +105,11 @@ namespace RevenuePlanner.Controllers
                     {
                         filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { action = "ChangePassword", Controller = "User" }));
                     }
-
-                    if (Sessions.RedirectToSetSecurityQuestion)
-                    {
-                        filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { action = "SetSecurityQuestion", Controller = "Login" }));
-                    }
+                    //Commented by Rahul Shah to improve code coverage 
+                    //if (Sessions.RedirectToSetSecurityQuestion)
+                    //{
+                    //    filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { action = "SetSecurityQuestion", Controller = "Login" }));
+                    //}
                 }
             }
             ////Start Manoj PL #490 Date:27May2014

@@ -73,21 +73,27 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Controllers\CommonControllerTest.cs" />
+    <Compile Include="Controllers\ErrorControllerTest.cs" />
     <Compile Include="Controllers\ExternalServiceControllerTest.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controllers\FinanceControllerTest.cs" />
     <Compile Include="Controllers\HomeControllerTest.cs" />
     <Compile Include="Controllers\InspectControllerTest.cs" />
+    <Compile Include="Controllers\LoginControllerTest.cs" />
     <Compile Include="Controllers\ModelControllerTest.cs" />
     <Compile Include="Controllers\OrganizationControllerTest.cs" />
     <Compile Include="Controllers\PlanControllerTest.cs" />
     <Compile Include="Controllers\ReportControllerTest.cs" />
+    <Compile Include="Controllers\UserControllerTest.cs" />
     <Compile Include="Helper\CommonTest.cs" />
     <Compile Include="Helper\ClonehelperTest.cs" />
     <Compile Include="Integration\IntegrationEloquaClientTest.cs" />
@@ -104,7 +110,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="OrderedTest.orderedtest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
