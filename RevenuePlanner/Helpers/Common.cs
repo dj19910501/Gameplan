@@ -7705,16 +7705,11 @@ namespace RevenuePlanner.Helpers
                                                          join v in viewnoneoptionid on int.Parse(c.Value) equals v
                                                          select c.EntityId).ToList();
                             //var onlyedittactic = lstAllTacticCustomFieldEntities.Where(tac => !onlyviewnonetacticids.Contains(tac.EntityId)).Select(tac => tac.EntityId).Distinct().ToList();
-                            //Added By John
-                            //var onlyedittactic = (from c in lstAllTacticCustomFieldEntities
-                            //                      join v in onlyviewnonetacticids on c.EntityId equals v into cv
-                            //                      from f in cv.DefaultIfEmpty()
-                            //                      select new { c.EntityId, cv }).Where(x=>x.cv == null).Select(x=>x.EntityId).Distinct().ToList();
-                            //Added By Manoj
+                            //Added By Manoj & John 
                             var onlyedittactic = (from c in lstAllTacticCustomFieldEntities
                                                    join v in onlyviewnonetacticids on c.EntityId equals v into cv
-                                                   from f in cv.DefaultIfEmpty()
-                                                   select new { c.EntityId, cv }).Where(x => x.cv.Count() == 0).Select(x => x.EntityId).Distinct().ToList();
+                                                   from f in cv.DefaultIfEmpty(-1)
+                                                   select new { c.EntityId, f}).Where(x => x.f == -1).Select(x => x.EntityId).Distinct().ToList();
                             if (isDefaultRestrictionsEditable)
                             {
                                 lstEditableEntityIds = onlyedittactic;
