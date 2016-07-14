@@ -17193,7 +17193,10 @@ namespace RevenuePlanner.Controllers
             var TacticIds = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()).Select(x => x.Field<int>("EntityId")).ToList();
 
             var PlanTactics = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(PlanId) && _tactic.IsDeleted.Equals(false)).ToList();
-            string FileName = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => x.Field<string>("Plan")).FirstOrDefault();
+            string FileName = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+            || x.Field<string>("Section") == Enums.Section.Program.ToString()
+            || x.Field<string>("Section") == Enums.Section.Campaign.ToString()
+            || x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => x.Field<string>("Plan")).FirstOrDefault();
             ViewBag.CSVFileName = FileName;
             var PlanTacticIds = PlanTactics.Select(a => a.PlanTacticId).ToList();
             var progTactic = PlanTactics.Where(_tactic => TacticIds.Contains(_tactic.PlanTacticId) && _tactic.IsDeleted.Equals(false)).ToList();
@@ -17487,7 +17490,14 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
+                                if (dr[i].Table.Columns.Contains(columns[j].ToString()))
+                                {
                                 row[columns[j].ToString()] = Convert.ToString(dr[i][columns[j].ToString()]);
+                                }
+                                else
+                                {
+                                    row[columns[j].ToString()] = "--";
+                                }
                             }
                         }
                     }

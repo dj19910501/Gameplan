@@ -41,7 +41,7 @@
                 <div class="request-icon-block" id="divSearch" title="Serch Button" onclick="onSearchCal()"><a href=" #"><i class="fa fa-calendar"></i></a></div>*@
 	    </div>
         @* Added for #2312 - Export button's position change - Bhumika (Hide from indexpage)*@
-        <div class="pull-left hm-btn-wrap"><button href="#" onclick='CallPDF()' class="pdfExport btn btn-blue">Export</button></div>
+        <div class="pull-left hm-btn-wrap"><button href="#" id="ExportData" class="pdfExport btn btn-blue">Export</button></div>
         @*  ==== Searchbox new feature start - #2269 ====  *@
         <div class="search-wrap">            
             <div id=" exp-serach" class="Exp-serach">
@@ -417,6 +417,15 @@
             $('#ExpClose').css('display', 'none');
             $('#ExpSearch').css('display', 'block');
         }        
+    });
+
+    $('#ExportData').click(function () {
+        if ($('#IsGridView').val() == "True") {
+            return ExportToCsvSp();
+        }
+        else {
+            CallPDF();
+        }
     });
 </script>
 
