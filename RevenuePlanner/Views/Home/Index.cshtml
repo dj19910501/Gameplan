@@ -2030,7 +2030,7 @@
 
         <div class="hidden" id="honeycomb_content">
             <div id="errorMsgHoneyComb" class="alert alert-error hide message-position-small">
-                <a class="close" id="aclose">×</a>
+                <a class="close">×</a>
                 <strong>Unable to package.  </strong><span id="spanMsgErrorHoneyComb"></span>
             </div>
             <div class="hc-controls" id="hc-controlsdiv">
@@ -4892,6 +4892,10 @@
             if (time != 'undefined') {
                 $(".popover-content > #errorMsgHoneyComb").slideDown(time);
             }
+            //Modified By Komal to close message
+            $("#errorMsgHoneyComb").find(".close").click(function (e) {
+                $(this).closest(".alert").slideUp(400);
+            });
         }
 
 
@@ -9634,4 +9638,5 @@
             //$('#ExpLoading').css('display', 'none');
         }
 
+       
     </script>
