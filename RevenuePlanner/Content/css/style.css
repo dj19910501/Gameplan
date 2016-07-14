@@ -15760,6 +15760,104 @@ a:focus, a:hover{outline:0 none !important}
 .fa-report-icon {
     margin-right: 3px;
 }
+
+/* Media Code Grid style start */
+/*#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td:last-child{border-right:0}*/
+
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox{margin-bottom: 20px;}
+
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox,
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox{ border-left:0; border-right:0; border-top:0;}
+
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td{border-top:0;border-bottom: 1px solid #d4d4d4;}
+
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr td,
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td{border-left:0; border-right:0; }
+
+
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, 
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td;
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, 
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td{
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #d4d4d4;
+    border-right: 0px solid #d4d4d4; 
+    border-top: 0px solid #d4d4d4; 
+}
+
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+    text-align: left;
+}
+#MediaCodeGrid.gridbox_dhx_skyblue.isModern table.obj.row20px tr td,
+#divArchiveGrid.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
+    height: 28px !important;
+    line-height: 28px !important;
+}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr td,
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td{padding-left:4px; padding-right:4px}
+
+.GenerateMediaCode.btn,
+.UnarchiveMediaCode.btn {
+    background: #f8710e none repeat scroll 0 0;
+    display: block;
+    font-size: 12px;
+    line-height: 16px;
+    margin: 0;
+    padding: 2px 5px; 
+}
+.UnarchiveMediaCode.btn {
+    background: rgba(0, 0, 0, 0);
+}
+
+input.GenerateMediaCode[type="button"]:disabled  {
+    background: #aaa none repeat scroll 0 0;
+
+}
+input.GenerateMediaCode[type="button"]:disabled:hover,
+input.GenerateMediaCode[type="button"]:disabled:focus{color:#333}
+
+.archive, .plus-circle{font-size:15px; color:#5f91b3; float:left; margin:0; cursor:pointer;}
+.archive.disabled, .plus-circle.disabled, #MediaCodeGrid.gridbox_dhx_skyblue.gridbox .honeycombbox-icon-gantt.disabled{cursor:default}
+
+/*.archive:hover::before {
+    background: rgba(255, 255, 255, 0.4) none repeat scroll 0 0;
+    border: 1px solid #ccc;
+    color: black;
+    content: "Archive";
+    font-size: 10px;
+    line-height: 16px;
+    padding: 0 3px;
+    position: absolute;
+    top: 24px;
+}*/
+
+.pop-body-wraper #MediaCodeGrid.gridbox_dhx_skyblue.gridbox *, .pop-body-wraper #MediaCodeGrid.gridbox_dhx_skyblue.gridbox *::after,
+.pop-body-wraper #MediaCodeGrid.gridbox_dhx_skyblue.gridbox *::before{
+    -webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+}
+input.selectInput{
+    display: block;
+    margin-left: 22px !important;
+} 
+.selectall {
+    display: block;
+}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox .honeycombbox-icon-gantt{
+    margin: 5px 4px 0 4px;
+}
+.spnMediacode{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 130px;
+    float: left;
+    overflow: hidden; 
+}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
