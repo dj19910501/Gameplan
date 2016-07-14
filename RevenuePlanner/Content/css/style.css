@@ -8332,7 +8332,7 @@ a:hover {
     .progressPlanned .progress {
         width: 75%;
         display: block;
-        background: #3fa9f5;
+        background: #5F91B3; /* #3fa9f5;  *//* #2312 */
         border-radius: 0;
         height: 100%;
     }
@@ -8378,14 +8378,14 @@ a:hover {
     }
 
     .budgetMonth div span {
-        background: #3fa9f5;
+        background: #5F91B3;/*#3fa9f5*//*#2312*/
         display: block;
         height: 10px;
         max-width: 100%;
     }
 
         .budgetMonth div span.error {
-            background: red;
+            background: #E2502D;/*red*//*#2312*/
             border: none !important;
         }
 
