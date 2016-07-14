@@ -267,6 +267,7 @@ namespace RevenuePlanner.Controllers
                         //Modified by Rahul Shah on 09/03/2016 for PL #1939
                         Guid oldOwnerId = plan.CreatedBy;
                         plan.Title = objPlanModel.Title.Trim();
+                        plan.Budget = objPlanModel.Budget;
                         plan.ModifiedBy = Sessions.User.UserId;
                         plan.ModifiedDate = System.DateTime.Now;
 

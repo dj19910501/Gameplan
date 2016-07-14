@@ -81,11 +81,13 @@
          <div style="width:50%; float:left;">
             @if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
             {
-                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id = "txtPlanBudget", @class = "span5 input-small truncate width96px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })
+                @*@Html.TextBox("txtPlanBudget",planDetails.Budget, new { id = "txtPlanBudget",name = "Budget", @class = "span5 input-small truncate width96px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })*@
+                @Html.TextBoxFor(model => model.Budget,new {id = "txtPlanBudget",name = "Budget", @class = "span5 input-small truncate width96px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", title = planDetails.Budget })
             }
             else if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
             {
-                @Html.TextBox("txtPlanBudget", planDetails.Budget, new { id = "txtPlanBudget", @class = "span5 input-small truncate width96px currency_dollar light-blue-background", style = "", title = planDetails.Budget, require = "true", })
+                @Html.TextBoxFor(model => model.Budget, new { id = "txtPlanBudget",  name = "Budget", @class = "span5 input-small truncate width96px currency_dollar light-blue-background", style = "", title = planDetails.Budget, require = "true" })
+                 @*@Html.TextBox("txtPlanBudget", planDetails.Budget, new { id = "txtPlanBudget",name = "Budget", @class = "span5 input-small truncate width96px currency_dollar light-blue-background", style = "", title = planDetails.Budget, require = "true", })*@
             }
           </div>
      </div>
@@ -267,6 +269,7 @@
             document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
             $('#Title').val($('#txtTitle').val());
+            $('#txtPlanBudget').val($('#txtPlanBudget').val().replace(',', '').replace('$', ''));
             var formData = $("form").serialize();
             var RedirectType = "";
             var uId = $(window).attr('name');
