@@ -37,6 +37,7 @@ namespace RevenuePlanner.Controllers
         private DateTime CalendarEndDate;
         Dictionary<Guid, User> lstUsers = new Dictionary<Guid, BDSService.User>();
         List<TacticType> TacticTypeList = new List<TacticType>();
+        List<ROI_PackageDetail> ROIPackageAnchorTacticList = new List<ROI_PackageDetail>();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
@@ -669,6 +670,7 @@ namespace RevenuePlanner.Controllers
             //TacticTypeList = objDbMrpEntities.TacticTypes.Where(tt => tt.IsDeleted == false).Select(tt => tt).ToList();
             objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId).ForEach(u => lstUsers.Add(u.UserId, u));
             //End
+            ROIPackageAnchorTacticList = objDbMrpEntities.ROI_PackageDetail.ToList(); //Added By Komal Rawal for #2355 on 14-07-16
             //// Create plan list based on PlanIds of search filter
 
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
@@ -2814,6 +2816,7 @@ namespace RevenuePlanner.Controllers
             }).Distinct().OrderBy(t => t.text);
 
             //// Finalize Tactic task data to be render in gantt chart
+            //Modified By Komal Rawal for #2355 on 14-07-16
             var lstTacticTaskData = taskDataTactic.Select(taskdata => new
             {
                 id = taskdata.id,
@@ -2831,6 +2834,10 @@ namespace RevenuePlanner.Controllers
                 type = "Tactic",
                 TacticType = GettactictypeName(taskdata.TacticTypeId),
                 OwnerName = GetOwnerName(taskdata.CreatedBy),
+                ROITacticType = GettactictypeAssetValue(taskdata.TacticTypeId),
+                IsAnchorTacticId = AnchorTacticInPackage(taskdata.plantacticid),
+                PlanTacticId = taskdata.plantacticid,
+                CalendarHoneycombpackageIDs = PackageTacticIds(taskdata.plantacticid),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
                 LinkTacticPermission = taskdata.LinkTacticPermission,
                 LinkedTacticId = taskdata.LinkedTacticId,
@@ -3470,6 +3477,10 @@ namespace RevenuePlanner.Controllers
                     type = "Tactic",
                     TacticType = GettactictypeName(tactic.TacticTypeId),
                     OwnerName = GetOwnerName(tactic.CreatedBy),
+                    ROITacticType = GettactictypeAssetValue(tactic.TacticTypeId),
+                    IsAnchorTacticId = AnchorTacticInPackage(tactic.plantacticid),
+                    PlanTacticId = tactic.plantacticid,
+                    CalendarHoneycombpackageIDs = PackageTacticIds(tactic.plantacticid),
                     Permission = IsPlanCreateAllAuthorized == false ? (tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
                     LinkTacticPermission = tactic.LinkTacticPermission,
                     LinkedTacticId = tactic.LinkedTacticId,
@@ -3637,6 +3648,10 @@ namespace RevenuePlanner.Controllers
                     type = "Tactic",
                     TacticType = GettactictypeName(task.TacticTypeId),
                     OwnerName = GetOwnerName(task.CreatedBy),
+                    ROITacticType = GettactictypeAssetValue(task.TacticTypeId),
+                    IsAnchorTacticId = AnchorTacticInPackage(task.plantacticid),
+                    PlanTacticId = task.plantacticid,
+                    CalendarHoneycombpackageIDs = PackageTacticIds(task.plantacticid),
                     Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
                     LinkTacticPermission = task.LinkTacticPermission,
                     LinkedTacticId = task.LinkedTacticId,
@@ -8841,7 +8856,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #region GetOwnerName and TacticTypeName
+        #region GetOwnerName and TacticTypeName and AssetValue
         /// <summary>
         /// Added By: Komal Rawal.
         /// Action to get all UserNames and TacticType
@@ -8877,6 +8892,55 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return Convert.ToString(OwnerName);
+        }
+
+        /// <summary>
+        /// Added By: Komal Rawal.
+        /// Action to get all Assetvalue for tactics
+        /// Date : 14-07-16
+        /// </summary>
+        public string GettactictypeAssetValue(int TacticTypeID)
+        {
+            if (TacticTypeList.Count == 0 || TacticTypeList == null)
+            {
+                TacticTypeList = objDbMrpEntities.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt).ToList();
+            }
+            var AssetTacticType = TacticTypeList.Where(tt => tt.TacticTypeId == TacticTypeID).Select(tt => tt.AssetType).FirstOrDefault();
+
+            return AssetTacticType;
+        }
+
+        /// <summary>
+        /// Added By: Komal Rawal.
+        /// Action to get AnchorTacticId of each package
+        /// Date : 14-07-16
+        /// </summary>
+        public int AnchorTacticInPackage(int TacticId)
+        {
+            //bool IsAnchor = false;
+            if (ROIPackageAnchorTacticList.Count == 0 || ROIPackageAnchorTacticList == null)
+            {
+                ROIPackageAnchorTacticList = objDbMrpEntities.ROI_PackageDetail.ToList();
+            }
+            var AnchorTacticid = ROIPackageAnchorTacticList.Where(p => p.PlanTacticId == TacticId).Select(pkg => pkg.AnchorTacticID).FirstOrDefault();
+
+            return AnchorTacticid;
+        }
+
+        /// <summary>
+        /// Added By: Komal Rawal.
+        /// Action to get tactic ids of each package
+        /// Date : 14-07-16
+        /// </summary>
+        public string PackageTacticIds(int TacticId)
+        {
+            if (ROIPackageAnchorTacticList.Count == 0 || ROIPackageAnchorTacticList == null)
+            {
+                ROIPackageAnchorTacticList = objDbMrpEntities.ROI_PackageDetail.ToList();
+            }
+            var PackageTacticIDs = ROIPackageAnchorTacticList.Where(list => list.AnchorTacticID == TacticId).Select(list => list.PlanTacticId).ToList();
+            var CommaSeparatedPackageTacticIDs = String.Join(",", PackageTacticIDs);
+            return CommaSeparatedPackageTacticIDs;
         }
 
         #endregion

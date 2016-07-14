@@ -329,6 +329,7 @@ namespace RevenuePlanner.Controllers
                                             objTacticType.ModelId = intModelid;
                                             objTacticType.Title = clientTacticType.Title;
                                             objTacticType.Abbreviation = clientTacticType.Abbreviation;
+                                            objTacticType.AssetType = Enums.AssetType.Promotion.ToString();
                                             objDbMrpEntities.TacticTypes.Add(objTacticType);
                                         }
 
@@ -2020,6 +2021,7 @@ namespace RevenuePlanner.Controllers
                                 objtactic.ProjectedStageValue = tacticType.ProjectedStageValue;
                                 objtactic.ProjectedRevenue = tacticType.ProjectedRevenue;
                                 objtactic.Abbreviation = tacticType.Abbreviation;
+                                objtactic.AssetType = tacticType.AssetType;
 
                                 objStage = new Model_Stage();
                                 objStage = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.StageType == StageType && modelFunnelStage.ModelId == ModelId && modelFunnelStage.AllowedTargetStage == true).OrderBy(modelFunnelStage => modelFunnelStage.Stage.Level).Distinct().FirstOrDefault();

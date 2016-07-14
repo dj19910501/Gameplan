@@ -612,33 +612,59 @@ gantt._render_grid_item = function (item) {
         if (col.name == "add") {
             var _item = item.text.replace(/'/g, "&#39;");            
             if ("add" == col.name && i == columns.length - 1) {
-                if (item.type == "Plan" && item.Permission == true) {
-                    // #1780		        
-                    //value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='add_Remove_Entity' name1='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div>  ";
-                    value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                if (item.type == "Plan" ) {
+                    // #1780
+                    if (item.Permission == true)
+                    {
+                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                    }
+                    else
+                    {
+                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                    }
+                  
                     // #1780
                 }
 
-                else if (item.type == "Campaign" && item.Permission == true) {
+                else if (item.type == "Campaign") {
                     // #1780
-                    //value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='add_Remove_Entity' name1='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
-                    value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                    if (item.Permission == true)
+                    {
+                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                    }
+                    else
+                    {
+                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                    }
+                  
                     // #1780
 
                 }
 
-                else if (item.type == "Program" && item.Permission == true) {
+                else if (item.type == "Program" ) {
                     // #1780
-                    //value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='add_Remove_Entity' name1='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
-                    value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                    if (item.Permission == true)
+                    {
+                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                    }
+                    else
+                    {
+                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                    }
+                
                     // #1780
                 }
 
-                else if (item.type == "Tactic" && item.Permission == true) {
+                else if (item.type == "Tactic" ) {
                     // #1780
-                    //value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='add_Remove_Entity' name1='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
-                    value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' LinkTacticPermission='" + item.LinkTacticPermission + "' LinkedTacticId = '" + item.LinkedTacticId + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
-                    // #1780
+                    if (item.Permission == true) {
+                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' LinkTacticPermission='" + item.LinkTacticPermission + "' LinkedTacticId = '" + item.LinkedTacticId + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'>" + "</div>  ";
+                    }
+                    else
+                    {
+                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'></div>"
+                    }
+                        // #1780
                 }
 
                 else if (item.type == "Imp Tactic" && item.Permission == true) {
@@ -3074,6 +3100,38 @@ gantt._render_data = function () {
     }
    
     //#1780
+    //Added By Komal Rawal for #2355 on 14-07-16 to maintain package icon without refreshing page
+    if (AnchorTaskIdsList.Id != undefined && AnchorTaskIdsList.Id != 'undefined' && AnchorTaskIdsList.Id != null && AnchorTaskIdsList.Id != [] && AnchorTaskIdsList.Id != "") {
+        $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
+            var TaskHtml = $("div[task_id='" + AnchorID + "']")[0];
+            if (TaskHtml != undefined && TaskHtml != 'undefined' && TaskHtml != null) {
+                var LastChildNode = TaskHtml.firstChild.lastChild.outerHTML;
+                var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
+                var AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
+                if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
+                    var PackageNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                    AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                    AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
+                    TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                }
+                if (AnchorTaskIdsList.Value[index] != undefined && AnchorTaskIdsList.Value[index] != 'undefined' && AnchorTaskIdsList.Value[index] != null && AnchorTaskIdsList.Value[index] != [] && AnchorTaskIdsList.Value[index] != "") {
+                    AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
+                    AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                    AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                    TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                }
+
+
+
+            }
+        });
+
+
+
+    }
+
+    //End
    
     if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "") {
         if (ExportSelectedIds.TaskID.length > 0) {
@@ -9920,7 +9978,6 @@ if (!gantt.templates) gantt.templates = {};
             },
             grid_blank: function (item) {
                 if (item.type == "Tactic") {
-
                     if ((item.Permission == true && item.LinkTacticPermission == true) || (item.LinkedTacticId != null)) {
                         //"<div class='gantt_tree_icon gantt_blank'></div>";
                         //Added By Komal Rawal for PL 1845 link tactic feature.
@@ -9933,7 +9990,11 @@ if (!gantt.templates) gantt.templates = {};
                             Tooltip = "<span class='unlink-tooltip'>This tactic is linked to <U>" + htmlDecode(htmlEncode(item.LinkedPlanName).replace("'", "&#39;")) + " </U></span>";
                         }
 
-                        return "<div class='unlink-icon' id = '" + Id + "' LinkedPlanName = '" + htmlEncode(item.LinkedPlanName).replace("'", "&#39;") + "'>" + Tooltip + "<i class= '" + Class + "'></i></div>";
+                        return "<div class='unlink-icon' style='margin-right: 2px;' id = '" + Id + "' LinkedPlanName = '" + htmlEncode(item.LinkedPlanName).replace("'", "&#39;") + "'>" + Tooltip + "<i class= '" + Class + "'></i></div>";
+                    }
+                    else if (item.IsAnchorTacticId == item.PlanTacticId) {
+                        return "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + item.CalendarHoneycombpackageIDs + " ><i class='fa fa-object-group'></i></div>"
+
                     }
                     else {
                         return "<div class='gantt_tree_icon gantt_blank'></div>";

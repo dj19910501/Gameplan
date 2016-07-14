@@ -908,11 +908,13 @@
 
 
 
-
+  
     //Added by Rahul shah for Honeycomb selection in grid
     function AddRemoveEntity(item) {
         //Changes  to improve performance issue
-
+        if ($('#IsGridView').val().toLowerCase() != "true") {
+            return false;
+        }
         if ($(item).attr('id') == 'PlanAdd') {
             //var planid = $(item).attr('altId').split('_')[0];
             //if (planid != undefined) {
@@ -1134,6 +1136,7 @@
                 ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
             }
         }
+
         if ($('.honeycombbox-icon-gantt-Active').length == 0) {
             $(".honeycombbox").hide();
         }
