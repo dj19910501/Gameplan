@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'D:\Nandish\Hive9\GamePlan\June2016\Gameplan\Entities\Models\MRP.edmx'. 
+﻿// T4 code generation is enabled for model 'D:\Nandish\Hive9\GamePlan\July2016_Latest3\Gameplan\Entities\Models\MRP.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

@@ -972,6 +972,55 @@ END
 
 GO
 
+
+/****** Object:  Table [dbo].[Report_Intergration_Conf]    Script Date: 07/11/2016 2:20:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Report_Intergration_Conf]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[Report_Intergration_Conf](
+	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+	[TableName] [nvarchar](255) NOT NULL,
+	[IdentifierColumn] [nvarchar](255) NOT NULL,
+	[IdentifierValue] [nvarchar](1000) NOT NULL,
+	[ClientId] [uniqueidentifier] NOT NULL,
+ CONSTRAINT [PK_MeasureApiConfiguration] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [UQ_TableName_IdentifierColumn_IdentifierValue] UNIQUE NONCLUSTERED 
+(
+	[TableName] ASC,
+	[IdentifierColumn] ASC,
+	[IdentifierValue] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+
+Go
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE OBJECT_ID = OBJECT_ID(N'[dbo].[GetCustomDashboardsClientwise]') AND TYPE IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [dbo].[GetCustomDashboardsClientwise]
+END
+GO
+
+CREATE PROCEDURE [dbo].[GetCustomDashboardsClientwise] 
+(
+	@UserId UNIQUEIDENTIFIER, @ClientId UNIQUEIDENTIFIER
+)
+AS 
+BEGIN
+	SELECT dash.DisplayName,dash.id as DashboardId,ISNULL(up.PermissionType, '') as PermissionType
+	FROM Dashboard dash
+	INNER JOIN Report_Intergration_Conf ric ON (dash.id = ric.IdentifierValue AND ric.TableName = 'Dashboard' AND ric.IdentifierColumn = 'id' AND ric.ClientId = @ClientId)
+	LEFT JOIN User_Permission up ON (dash.id = up.DashboardId and up.UserId = @UserId)
+END
+GO
+
+
 -- ===========================Please put your script above this script=============================
 -- Added By : Maitri Gandhi
 -- Added Date : 2/22/2016

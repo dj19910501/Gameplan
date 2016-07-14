@@ -115,6 +115,7 @@ namespace RevenuePlanner.Models
         public DbSet<MediaCodes_CustomField_Configuration> MediaCodes_CustomField_Configuration { get; set; }
         public DbSet<Tactic_MediaCodes> Tactic_MediaCodes { get; set; }
         public DbSet<Tactic_MediaCodes_CustomFieldMapping> Tactic_MediaCodes_CustomFieldMapping { get; set; }
+        public DbSet<User_Permission> User_Permission { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

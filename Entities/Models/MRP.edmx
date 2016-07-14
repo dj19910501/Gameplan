@@ -1175,7 +1175,7 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="IsDeployedToModel" Type="bit" Nullable="false" />
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
           <Property Name="WorkFrontTemplateId" Type="int" />
-          <Property Name="AssetType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AssetType" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -1197,6 +1197,19 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="NotificationId" Type="int" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="User_Permission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DashboardId" Type="int" />
+          <Property Name="ApplicationActivityId" Type="int" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PermissionType" Type="nvarchar" MaxLength="255" />
+          <Property Name="HomePageId" Type="int" />
         </EntityType>
         <Association Name="BudgetID_FK">
           <End Role="Budget_Detail" Type="Self.Budget_Detail" Multiplicity="1" />
@@ -2540,6 +2553,7 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User_Permission" EntityType="Self.User_Permission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AggregationStatus" EntityType="Self.AggregationStatus" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
 [AggregationStatus].[StatusCode] AS [StatusCode]
@@ -3506,6 +3520,7 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
             <End Role="Tactic_MediaCodes" EntitySet="Tactic_MediaCodes" />
             <End Role="Tactic_MediaCodes_CustomFieldMapping" EntitySet="Tactic_MediaCodes_CustomFieldMapping" />
           </AssociationSet>
+          <EntitySet Name="User_Permission" EntityType="MRPModel.User_Permission" />
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -6027,7 +6042,7 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
           <NavigationProperty Name="Model" Relationship="MRPModel.fk_TacticType_Model" FromRole="TacticType" ToRole="Model" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="TacticType" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.fk_TacticType_Stage" FromRole="TacticType" ToRole="Stage" />
-          <Property Name="AssetType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AssetType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_TacticType_TacticType_WorkFrontTemplateId">
           <End Type="MRPModel.IntegrationWorkFrontTemplate" Role="IntegrationWorkFrontTemplate" Multiplicity="0..1" />
@@ -6187,6 +6202,19 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="User_Permission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DashboardId" Type="Int32" />
+          <Property Name="ApplicationActivityId" Type="Int32" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+          <Property Name="PermissionType" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="HomePageId" Type="Int32" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7479,6 +7507,20 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
                 <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
                 <ScalarProperty Name="MediaCodeId" ColumnName="MediaCodeId" />
                 <ScalarProperty Name="TacticId" ColumnName="TacticId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User_Permission">
+            <EntityTypeMapping TypeName="MRPModel.User_Permission">
+              <MappingFragment StoreEntitySet="User_Permission">
+                <ScalarProperty Name="HomePageId" ColumnName="HomePageId" />
+                <ScalarProperty Name="PermissionType" ColumnName="PermissionType" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ApplicationActivityId" ColumnName="ApplicationActivityId" />
+                <ScalarProperty Name="DashboardId" ColumnName="DashboardId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

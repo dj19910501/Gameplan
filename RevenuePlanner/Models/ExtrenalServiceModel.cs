@@ -56,4 +56,12 @@ namespace RevenuePlanner.Models
 
     }
     //Manoj End PL#579 Server Configuration
+    public class CustomDashboardModel
+    {
+        public string DisplayName { get; set; }
+
+        public string PermissionType { get; set; }
+
+        public int DashboardId { get; set; }
+    }
 }

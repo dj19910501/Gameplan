@@ -8,6 +8,7 @@ using Elmah;
 using RevenuePlanner.Helpers;
 using System.Data;
 using System.Transactions;
+using RevenuePlanner.BAL;
 
 namespace RevenuePlanner.Controllers
 {
@@ -705,6 +706,11 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
+                    List<CustomDashboardModel> lstCustomDashboardld = new List<CustomDashboardModel>();
+                    CustomDashboard cd = new CustomDashboard();
+                    lstCustomDashboardld = cd.GetCustomDashboardsClientwise(UserId, Sessions.User.ClientId);
+                    ViewData["CustomDashboardList"] = lstCustomDashboardld;
+
                     //// Set viewbag of Custom field list, to be used in view
                     ViewData["CustomFieldList"] = lstCustomField;
 
@@ -775,7 +781,7 @@ namespace RevenuePlanner.Controllers
                     }
 
                     //// Save user custom restrictions
-                    List<string> customRestrictionPermissions = arrPermissionId.Where(permission => !(permission.ToLower().Contains("yes") || permission.ToLower().Contains("no"))).ToList();
+                    List<string> customRestrictionPermissions = arrPermissionId.Where(permission => !(permission.ToLower().Contains("yes") || permission.ToLower().Contains("no") || permission.ToLower().Contains("custdash"))).ToList();
                     int customRestrictionResult = 0;
                     if (customRestrictionPermissions.Count > 0)
                     {
@@ -786,7 +792,18 @@ namespace RevenuePlanner.Controllers
                         customRestrictionResult = 1;
                     }
 
-                    if (activityPermissionsResult >= 1 && customRestrictionResult >= 1)
+                    List<string> CustDashPermissions = arrPermissionId.Where(permission => (permission.ToLower().Contains("custdash"))).ToList();
+                    int customDashResult = 0;
+                    if (CustDashPermissions.Count > 0)
+                    {
+                        customDashResult = AddUserCustomDashboard(UserId, CustDashPermissions);
+                    }
+                    else
+                    {
+                        customDashResult = 1;
+                    }
+
+                    if (activityPermissionsResult >= 1 && customRestrictionResult >= 1 && customDashResult >= 1)
                     {
                         return Json(new { status = true }, JsonRequestBehavior.AllowGet);   //// Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                     }
@@ -928,6 +945,74 @@ namespace RevenuePlanner.Controllers
             }
 
             return returnValue;
+        }
+        #endregion
+
+        #region Add user custom Dashboards.
+        /// <summary>
+        /// Function to Add user custom restrictions
+        /// Previous data will be deleted, if any exists, prior to adding new data
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <param name="customDashPermissions">string list of custom field permissions</param>
+        /// <returns>Return 1 if success otherwise 0</returns>
+        public int AddUserCustomDashboard(Guid userId, List<string> customDashPermissions)
+        {
+            int DashreturnValue = 0;
+            using (TransactionScope scope = new TransactionScope())
+            {
+                try
+                {
+                    //// Retrieve previous custom restrictions and delete it.
+                    List<Models.User_Permission> userCustomDashboardList = db.User_Permission.Where(usr => usr.UserId == userId).ToList();
+                    if (userCustomDashboardList.Count > 0)
+                    {
+                        foreach (var customDashboard in userCustomDashboardList)
+                        {
+                            db.Entry(customDashboard).State = EntityState.Deleted;
+                            db.User_Permission.Remove(customDashboard);
+                        }
+                    }
+                    else
+                    {
+                        DashreturnValue = 1;
+                    }
+                    string[] splitpermissions;
+                    Models.User_Permission objCustomDashboard;
+                    foreach (var permission in customDashPermissions)
+                    {
+                        splitpermissions = permission.Split('_');
+
+                        if (splitpermissions != null && splitpermissions.Length > 0 && splitpermissions[1] != "None")
+                        {
+                            objCustomDashboard = new Models.User_Permission();
+                            objCustomDashboard.DashboardId = Convert.ToInt16(splitpermissions[2]);
+                            objCustomDashboard.ApplicationActivityId = null;
+                            objCustomDashboard.UserId = userId;
+                            objCustomDashboard.CreatedDate = System.DateTime.Now;
+                            objCustomDashboard.CreatedBy = Sessions.User.UserId;
+                            objCustomDashboard.PermissionType = splitpermissions[1] == "None" ? null : splitpermissions[1];
+                            objCustomDashboard.HomePageId = null;
+                            db.Entry(objCustomDashboard).State = EntityState.Added;
+                            db.User_Permission.Add(objCustomDashboard);
+                        }
+                    }
+
+                    int result = db.SaveChanges();
+                    if (result > 0)
+                    {
+                        DashreturnValue = 1;
+                    }
+
+                    scope.Complete();
+                }
+                catch (Exception ex)
+                {
+                    DashreturnValue = 0;
+                    ErrorSignal.FromCurrentContext().Raise(ex);
+                }
+            }
+            return DashreturnValue;
         }
         #endregion
 

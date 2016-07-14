@@ -9143,6 +9143,29 @@ namespace RevenuePlanner.Helpers
                 DbConn.Close();
             }
         }
+
+        public List<CustomDashboardModel> GetCustomDashboardsClientwise(Guid UserId, Guid ClientId)
+        {
+            DataTable datatable = new DataTable();
+            MRPEntities db = new MRPEntities();
+
+            SqlParameter[] para = new SqlParameter[2];
+
+            para[0] = new SqlParameter
+            {
+                ParameterName = "UserId",
+                Value = UserId
+            };
+
+            para[1] = new SqlParameter
+            {
+                ParameterName = "ClientId",
+                Value = ClientId
+            };
+
+            var data = db.Database.SqlQuery<RevenuePlanner.Models.CustomDashboardModel>("GetCustomDashboardsClientwise @UserId,@ClientId", para).ToList();
+            return data;
+        }
     }
     #endregion
 

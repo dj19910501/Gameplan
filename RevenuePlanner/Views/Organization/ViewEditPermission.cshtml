@@ -10,6 +10,7 @@
     //// Start - Added by Sohel Pathan on 15/01/2015 for PL ticket #1139
     var customFieldList = ViewData["CustomFieldList"] != null ? ViewData["CustomFieldList"] as List<RevenuePlanner.Models.CustomField> : new List<RevenuePlanner.Models.CustomField>();
     //// End - Added by Sohel Pathan on 15/01/2015 for PL ticket #1139
+    var cDashboardList = ViewData["CustomDashboardList"] != null ? ViewData["CustomDashboardList"] as List<RevenuePlanner.Models.CustomDashboardModel> : new List<RevenuePlanner.Models.CustomDashboardModel>();
     string varUrl = Url.Action("vieweditpermission", "Organization");
     string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission"; 
     //Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
@@ -101,7 +102,24 @@
                             </dd>
                         </dl>
                     }
-                    
+
+                    @if (cDashboardList != null && cDashboardList.Count > 0)
+                    {
+                        <dl>
+                            <dt>Custom Dashboards</dt>
+                            <dd>
+                                @foreach (var item in cDashboardList)
+                                {
+                                    string PermissionType = @item.PermissionType == "" ? "None" : @item.PermissionType;
+                                    <div class="dd-row">
+                                        <label title="@item.DisplayName">@item.DisplayName</label>
+                                        <span>@PermissionType</span>
+                                    </div>
+                                }
+                            </dd>
+                        </dl>
+                    }
+
                     <div class="bottom-btns">
                         @if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString())
                         {
@@ -255,6 +273,56 @@ else
                                             <input type="radio" name="radio_@item.CustomField.ToString()_@item.CustomFieldId" id="2_@item.CustomField.ToString()_@item.CustomFieldId" autocomplete="off"  />
                                             }
                                             View/Edit
+                                            </span>
+                                        </span>
+                                    </div>
+                                }
+                            </dd>
+                        </dl>
+                    }
+
+                    @if (cDashboardList != null && cDashboardList.Count > 0)
+                    {
+                        <dl>
+                            <dt>Custom Dashboards</dt>
+                            <dd>
+                                @foreach (var item in cDashboardList)
+                                {
+                                    <div class="dd-row">
+                                        <label title="@item.DisplayName">@item.DisplayName</label>
+                                        <span class="radioGrp">
+                                            <span class="check_signup">
+                                                @if (@item.PermissionType == "")
+                                                {
+                                                    <input type="radio" name="radio_@item.DashboardId.ToString()" id="CustDash_None_@item.DashboardId.ToString()" checked="checked" autocomplete="off" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="radio_@item.DashboardId.ToString()" id="CustDash_None_@item.DashboardId.ToString()" autocomplete="off" />
+                                                }
+                                                None
+                                            </span>
+                                            <span class="check_signup">
+                                                @if (@item.PermissionType.ToLower() == "view")
+                                                {
+                                                    <input type="radio" name="radio_@item.DashboardId.ToString()" id="CustDash_View_@item.DashboardId.ToString()" checked="checked" autocomplete="off" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="radio_@item.DashboardId.ToString()" id="CustDash_View_@item.DashboardId.ToString()" autocomplete="off" />
+                                                }
+                                                View
+                                            </span>
+                                            <span class="check_signup">
+                                                @if (@item.PermissionType.ToLower() == "export")
+                                                {
+                                                    <input type="radio" name="radio_@item.DashboardId.ToString()" id="CustDash_Export_@item.DashboardId.ToString()" autocomplete="off" checked="checked" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="radio_@item.DashboardId.ToString()" id="CustDash_Export_@item.DashboardId.ToString()" autocomplete="off" />
+                                                }
+                                                Export
                                             </span>
                                         </span>
                                     </div>

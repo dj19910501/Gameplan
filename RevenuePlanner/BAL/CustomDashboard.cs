@@ -86,6 +86,15 @@ namespace RevenuePlanner.BAL
             string EndDate = sp.GetColumnValue(strReportGraph);
             return EndDate;
         }
+
+        public List<CustomDashboardModel> GetCustomDashboardsClientwise(Guid UserId, Guid ClientId)
+        {
+            List<CustomDashboardModel> model = new List<CustomDashboardModel>();
+
+            StoredProcedure sp = new StoredProcedure();
+            return sp.GetCustomDashboardsClientwise(UserId, ClientId);
+            
+        }
     }
 
 
