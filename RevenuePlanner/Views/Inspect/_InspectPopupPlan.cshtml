@@ -504,6 +504,10 @@
                     else {
                         if (data.IsSuccess && data.opt != 'undefined') {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+
+                                // Added by Arpita Soni for Ticket #2354 on 07/14/2016
+                                RemoveAllHoneyCombData();
+
                                 $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + data.msg);
                                 var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val();
                                 window.location.href = url;

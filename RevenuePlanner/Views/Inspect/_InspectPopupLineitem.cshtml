@@ -661,6 +661,10 @@
                          else {
                              if (data.IsSuccess && data.opt != 'undefined') {
                                  if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+
+                                     // Added by Arpita Soni for Ticket #2354 on 07/14/2016
+                                     RemoveAllHoneyCombData();
+
                                      SaveMessageOnParent(data.msg);
                                      if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                                          LoadPlanGrid();

@@ -1076,6 +1076,10 @@
                     else {
                         if (data.IsSuccess && data.opt != 'undefined') {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
+                                
+                                // Added by Arpita Soni for Ticket #2354 on 07/14/2016
+                                RemoveAllHoneyCombData();
+
                                 SaveMessageOnParent(data.msg);
                                 RefershPlanHeaderCalc();
                                 //Added By : Kalpesh Sharma Internal review points 18/11/2014

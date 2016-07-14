@@ -6158,6 +6158,8 @@ namespace RevenuePlanner.Helpers
                                 //  List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
 
                                 var tacticList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false && pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId).ToList();
+                                // Added by Arpita Soni for Ticket #2354 on 07/14/2016
+                                RemoveTacticsFromPackage(tacticList);
                                 tacticList.ForEach(pcpt => { pcpt.IsDeleted = true; pcpt.ModifiedDate = System.DateTime.Now; pcpt.ModifiedBy = Sessions.User.UserId; });
                                 var tacticIds = tacticList.Select(a => a.PlanTacticId).ToList();
 
@@ -6246,6 +6248,8 @@ namespace RevenuePlanner.Helpers
                                 //   List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
 
                                 var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == id && a.IsDeleted == false).ToList();
+                                // Added by Arpita Soni for Ticket #2354 on 07/14/2016
+                                RemoveTacticsFromPackage(Plan_Campaign_Program_TacticList);
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
 
@@ -6303,6 +6307,8 @@ namespace RevenuePlanner.Helpers
                                 // List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
 
                                 var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.PlanProgramId == id && a.IsDeleted == false).ToList();
+                                // Added by Arpita Soni for Ticket #2354 on 07/14/2016
+                                RemoveTacticsFromPackage(Plan_Campaign_Program_TacticList);
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                                 #region "Remove linked Tactic"
@@ -6355,6 +6361,8 @@ namespace RevenuePlanner.Helpers
 
                                 //  List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
                                 var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
+                                // Added by Arpita Soni for Ticket #2354 on 07/14/2016
+                                RemoveTacticsFromPackage(Plan_Campaign_Program_TacticList);
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                                 #region "Remove linked Tactic"
@@ -6404,6 +6412,40 @@ namespace RevenuePlanner.Helpers
             }
             return returnValue;
         }
+
+        #region ROI Package
+        /// <summary>
+        /// Delete tactics from package when tactic/program/campaign/plan
+        /// Added By : Arpita Soni 
+        /// Ticket : #2354
+        /// </summary>
+        /// <param name="lstTactics"></param>
+        /// <returns></returns>
+        public static void RemoveTacticsFromPackage(List<Plan_Campaign_Program_Tactic> lstTactics)
+        {
+            MRPEntities db = new MRPEntities();
+            List<ROI_PackageDetail> lstROIPackage = new List<ROI_PackageDetail>();
+            List<ROI_PackageDetail> delROIPackage = new List<ROI_PackageDetail>();
+
+            // Get list of packages for given tactic list
+            lstTactics.ForEach(x => lstROIPackage.AddRange(x.ROI_PackageDetail));
+
+            // Remove all tactics from the package when anchor tactic is deleted
+            delROIPackage.AddRange((from pkg in lstROIPackage
+                                        join package in db.ROI_PackageDetail on pkg.AnchorTacticID equals package.AnchorTacticID
+                                        where pkg.AnchorTacticID == pkg.PlanTacticId
+                                        select package).ToList());
+
+            // Remove only one tactic from the package when promotion tactic is deleted
+            delROIPackage.AddRange( (from pkg in lstROIPackage
+                                    join package in db.ROI_PackageDetail on pkg.PlanTacticId equals package.PlanTacticId
+                                    select package).ToList());
+
+            delROIPackage.ForEach(x => db.Entry(x).State = EntityState.Deleted);
+            db.SaveChanges();
+        }
+        
+        #endregion
 
         /// <summary>
         /// Function to generate message for modification of tactic.
