@@ -246,6 +246,9 @@
             </ul>
             <div id="divTab">
             </div>
+            <div id="divArchiveMediaCode" class="gridViewGrid">
+
+        </div>
         </div>
     </div>
 </div>
@@ -302,6 +305,7 @@
 
           // $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
           $("#liSetup,#liReview,#liActuals,#liLine_Items,#liMedia_Code").on("click", function () {
+              $("#divArchiveMediaCode").html("");
               //added by devanshi for PL ticket #2276
         if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
@@ -369,6 +373,7 @@
           //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
           $('#EditForm').on("click", function (e) {
+              $("#divArchiveMediaCode").html("");
               //added by devanshi for PL ticket #2276
               if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
                   ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
@@ -632,6 +637,7 @@
             /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
             var tabtext = ($("#li" + tabText).children('a').text().replace(" ","_"));
             var planTacticId = $("#hdnPlanTacticId").val();
+            $("#divArchiveMediaCode").html("");
             loadReview(planTacticId, tabtext);
         }
     }
@@ -655,6 +661,7 @@
     }
 
     function loadReview(id, tabValue) {
+        $("#divArchiveMediaCode").html("");
         $.ajaxSetup({ cache: false });
         var url;
         var ProgramOpt = $("#hdnTacticBudgetAllocationOpt").val();
@@ -777,6 +784,7 @@
                 $('#txtTacticTitle').css('display', 'block');
                 $('#lblTacticTitle').css('display', 'none');
             }
+            $("#divArchiveMediaCode").html("");
             url = '@Url.Content("~/Inspect/LoadMediaCodeFromTacticPopup/")';
             $("#divTab").load(url + '?tacticId=' + id + '&InsepectMode='+InsepectMode+'&IsPlanCreateAll='+IsPlanCreateAll, function (response, status, xhr) {
                 $('#InspectTab').removeClass('SpanDisable');

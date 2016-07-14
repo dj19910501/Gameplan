@@ -1,0 +1,75 @@
+﻿@using RevenuePlanner.Helpers;
+@model RevenuePlanner.Models.Plangrid
+@{
+    var countrows = 0;
+    if (Model.PlanDHTMLXGrid != null)
+    {
+        countrows = Model.PlanDHTMLXGrid.rows != null ? Model.PlanDHTMLXGrid.rows.Count : 0;
+    }
+}
+@if (countrows > 0)
+{ <h4>Archive Media Codes</h4>
+    <div id="divArchiveGrid" style="background-color: white; width: 98.5%;" class="gridViewGrid"></div>
+}
+<div id="divnorecord" style="display:none;">No records available.</div>
+<script type="text/javascript">
+    var ArchiveMediaCodeGrid;
+
+    $(document).ready(function () {
+
+        $('.nav').addClass('no-bottom-border');
+        if (parseInt(@countrows) > 0) {
+            BindArchiveMediaCodeGrid();
+
+            $(document).ajaxComplete(function () {
+                ArchiveMediaCodeGrid.setSizes();
+            });
+        }
+
+    });
+    function BindArchiveMediaCodeGrid() {
+        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
+        var mainGridData = JsonModel;
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+
+        ArchiveMediaCodeGrid = new dhtmlXGridObject('divArchiveGrid');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        ArchiveMediaCodeGrid.setImagePath(imgpath);
+        ArchiveMediaCodeGrid.enableAutoHeight(true);
+        ArchiveMediaCodeGrid.setImageSize(1, 1);
+        ArchiveMediaCodeGrid.setNoHeader(true);
+        ArchiveMediaCodeGrid.init();
+        ArchiveMediaCodeGrid.splitAt(3);
+        ArchiveMediaCodeGrid.parse(GridDataHomeGrid, "json");
+
+    }
+    function UnarchiveMediaCode(e) {
+        var archiverowid = $(e.target).attr('rowid');
+        var Aarchivemediacodeid = ArchiveMediaCodeGrid.cells(archiverowid, 0).getValue();
+        var tacticId = $("#hdnPlanTacticId").val();
+        var inspectmode = $("#hdnInspectMode").val();
+        if (Aarchivemediacodeid != '' && Aarchivemediacodeid != null && Aarchivemediacodeid != '0') {
+            var result = confirm('@Common.objCached.UndoMediacode');
+            if (result) {
+                url = '@Url.Content("~/Inspect/LoadMediaCodeFromTacticPopup/")';
+                // $("#divTab").html('');
+                $("#divTab").load(url + '?tacticId=' + tacticId + '&InsepectMode=' + inspectmode + '&IsUnarchive=true&MediaCodeId=' + Aarchivemediacodeid, function (response, status, xhr) {
+                    ArchiveMediaCodeGrid.deleteRow(archiverowid);
+                    var cnt = ArchiveMediaCodeGrid.getRowsNum();
+                    if (cnt == 0) {
+                        $("#divArchiveGrid").hide();
+                        $("#divnorecord").show();
+                    }
+                    else
+                    {
+                        $("#divArchiveGrid").show();
+                        $("#divnorecord").hide();
+                    }
+                });
+            }
+        }
+        else
+            return false;
+    }
+</script>

@@ -13689,7 +13689,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #region #Media code related Functions and methods
+        #region Media code related Functions and methods #2290
         #region Method to load mediacode for tactic
         public PartialViewResult LoadMediaCodeFromTacticPopup(int tacticId, string InsepectMode, bool IsPlanCreateAll = false, bool IsUnarchive = false, string MediaCodeId = "0")
         {
@@ -13697,9 +13697,14 @@ namespace RevenuePlanner.Controllers
             Plangrid objplangrid = new Plangrid();
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             ViewBag.TacticID = Convert.ToString(tacticId);
-
+            bool IsArchive = true;
             try
             {
+                if (IsUnarchive)
+                {
+                    IsArchive = ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, false);
+
+                }
 
                 //list of custom fields for particular Tactic
                 //  List<CustomFieldModel> customFieldList = Common.GetCustomFields(tacticId, section, Status);
@@ -13745,10 +13750,11 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                         objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
+                }
                     if (lstmediaCodeCustomfield.Count == 0)
                         ViewBag.NoCustomField = true;
-                }
-
+                else
+                    ViewBag.CustomFieldCount = lstmediaCodeCustomfield.Count;
             }
             catch (Exception objException)
             {
@@ -13792,34 +13798,35 @@ namespace RevenuePlanner.Controllers
 
                 headobjlist.Add(headobjother);
 
-                headobjother = new PlanHead();
-                headobjother.type = "ro";
-                headobjother.id = "generateMediaCode";
-                headobjother.sort = "na";
-                headobjother.width = 100;
-                headobjother.value = "Media Code";
-
-                headobjlist.Add(headobjother);
+               
 
                 headobjother = new PlanHead();
                 headobjother.type = "ro";
                 headobjother.id = "selectall";
                 headobjother.sort = "na";
                 headobjother.width = 100;
-                headobjother.value = "";
-               // headobjother.value = "<input type='checkbox' title='Select All'/>";
-
+                headobjother.value = "<input type='checkbox' value='SelectAll'  title='SelectAll' onchange='SelectAllHoneyComb();' class='selectInput'><span class='selectall'> Select All</span></input>";
+                // headobjother.value = "<input type='checkbox' title='Select All'/>";
                 headobjlist.Add(headobjother);
+
+                headobjother = new PlanHead();
+                headobjother.type = "ro";
+                headobjother.id = "generateMediaCode";
+                headobjother.sort = "na";
+                headobjother.width = 100;
+                headobjother.value = "Media Code";
+                headobjlist.Add(headobjother);
+
                 lineitemdataobj = new Plandataobj();
                 lineitemdataobj.value = "0";
                 lineitemdataobjlist.Add(lineitemdataobj);
 
                 lineitemdataobj = new Plandataobj();
-                lineitemdataobj.value = "<input type='button' value='Generate'  class='GenerateMediaCode' rowid='mediacode." + cnt + "' onclick='javascript:GenerateMediaCode(this)'/>";
+                lineitemdataobj.value = "<span alt=" + TacticID.ToString() + " class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' title='Add Media Code' aria-hidden='true' rowid=mediacode." + cnt + " onclick='javascript:OpenGridPopup(event)'></i></span><div class='honeycombbox-icon-gantt disabled' title='Select' rowid=mediacode." + cnt + " ></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' title='Archive' aria-hidden='true' rowid=mediacode." + cnt + " ></i></span>";
                 lineitemdataobjlist.Add(lineitemdataobj);
 
                 lineitemdataobj = new Plandataobj();
-                lineitemdataobj.value = "<span><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=mediacode." + cnt + " ></i></span><span alt=" + Convert.ToString(TacticID) + " ><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=mediacode." + cnt + " onclick='javascript:OpenGridPopup(event)'></i></span>";
+                lineitemdataobj.value = "<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid='mediacode." + cnt + "' onclick='javascript:GenerateMediaCode(this)' disabled='disabled'/>";
                 lineitemdataobjlist.Add(lineitemdataobj);
 
                 // end
@@ -14041,8 +14048,16 @@ namespace RevenuePlanner.Controllers
                 headobjother.id = "MediacodeId";
                 headobjother.sort = "na";
                 headobjother.width = 0;
-                headobjother.value = "";
+                headobjother.value = "Id";
+                headobjlist.Add(headobjother);
 
+               
+                headobjother = new PlanHead();
+                headobjother.type = "ro";
+                headobjother.id = "selectall";
+                headobjother.sort = "na";
+                headobjother.width = 100;
+                headobjother.value = "<input type='checkbox' value='SelectAll'  title='SelectAll' onchange='SelectAllHoneyComb();' class='selectInput'><span class='selectall'> Select All</span></input>";
                 headobjlist.Add(headobjother);
 
                 headobjother = new PlanHead();
@@ -14054,14 +14069,6 @@ namespace RevenuePlanner.Controllers
 
                 headobjlist.Add(headobjother);
 
-                headobjother = new PlanHead();
-                headobjother.type = "ro";
-                headobjother.id = "selectall";
-                headobjother.sort = "na";
-                headobjother.width = 200;
-                headobjother.value = "";
-
-                headobjlist.Add(headobjother);
                 foreach (var Cust in lstmediaCodeCustomfield)
                 {
                     if (Convert.ToString(Cust.CustomFieldTypeName) == Convert.ToString(Enums.CustomFieldType.TextBox))
@@ -14101,7 +14108,7 @@ namespace RevenuePlanner.Controllers
                     headobj.type = coltype;
                     headobj.id = "customfield_" + Cust.CustomFieldId;
                     headobj.sort = "str";
-                    headobj.width = 200;
+                    headobj.width = 150;
                     headobj.value = Cust.CustomFieldName;
 
                     if (viewoptionlist != null && viewoptionlist.Count > 0)
@@ -14118,9 +14125,124 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        
+        #region Method to archive mediacode and bind Archive media code list
+        public PartialViewResult ArchiveMediaCode(int tacticId, string MediaCodeId, string Mode)
+        {
+            List<PlanHead> headobjlist = new List<PlanHead>();
+            List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+            PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
+            PlanController objPlanController = new PlanController();
+            Plangrid objplangrid = new Plangrid();
+            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+            string mode = Enums.InspectPopupMode.ReadOnly.ToString();
+            string customFieldEntityValue = string.Empty;
+            string DropdowList = Enums.CustomFieldType.DropDownList.ToString();
+            try
+            {
 
-        
+                ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, true);
+                #region bind list archive mediacode
+                var mainlist = db.Tactic_MediaCodes.Where(a => a.TacticId == tacticId && a.IsDeleted == true).ToList();
+                List<TacticMediaCodeCustomField> MediaCodecustomFieldList = mainlist.Select(a => new TacticMediaCodeCustomField
+                {
+                    TacticId = a.TacticId,
+
+                    MediaCodeId = a.MediaCodeId,
+                    MediaCode = a.MediaCode,
+                    CustomFieldList = a.Tactic_MediaCodes_CustomFieldMapping.Where(aa => aa.TacticId == a.TacticId).Select(aa => new CustomeFieldList
+                    {
+                        CustomFieldId = aa.CustomFieldId != null ? Convert.ToInt32(aa.CustomFieldId) : 0,
+                        CustomFieldValue = aa.CustomFieldValue
+
+                    }).ToList()
+
+                }).ToList();
+
+
+                var lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId).ToList().Select(a => new TacticCustomfieldConfig
+                {
+                    CustomFieldId = a.CustomFieldId,
+                    CustomFieldName = a.CustomField.Name,
+                    CustomFieldTypeName = a.CustomField.CustomFieldType.Name,
+                    IsRequired = a.CustomField.IsRequired,
+                    Sequence = a.Sequence,
+                    Option = a.CustomField.CustomFieldOptions.Select(opt => new CustomFieldOptionList
+                    {
+                        CustomFieldOptionId = opt.CustomFieldOptionId,
+                        CustomFieldOptionValue = opt.Value
+                    }).ToList()
+                }).OrderBy(a => a.Sequence).ToList();
+
+                if (MediaCodecustomFieldList.Count != 0)
+                {
+                    objplangrid = LoadAllMediacodeGrid(tacticId, MediaCodecustomFieldList, lstmediaCodeCustomfield, Mode, true);
+                }
+
+
+                #endregion
+
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+            }
+            return PartialView("_ArchiveMediaCode", objplangrid);
+
+        }
+        #endregion
+
+        #region code for making active code to archive media code
+        public bool ArchiveUnarchiveMediaCode(string MediaCodeId, int tacticId, bool Isarchive)
+        {
+            bool isarchived = false;
+            try
+            {
+                if (MediaCodeId != null && MediaCodeId != "0" && MediaCodeId != "")
+                {
+                    int CodeId = Convert.ToInt32(MediaCodeId);
+                    var MediacodeObj = db.Tactic_MediaCodes.Where(a => a.TacticId == tacticId && a.MediaCodeId == CodeId).FirstOrDefault();
+                    if (MediacodeObj != null)
+                    {
+
+                        if (Isarchive)
+                            MediacodeObj.IsDeleted = true;
+                        else
+                        {
+                            string MediaCode = MediacodeObj.MediaCode;
+                            bool IsValid = IsValidMediaCode(MediaCode, tacticId);
+                            if (IsValid)
+                            {
+                                MediacodeObj.IsDeleted = false;
+                            }
+                            else
+                            {
+                                var obj = db.Tactic_MediaCodes.Where(a => a.MediaCode == MediaCode && a.TacticId == tacticId && a.IsDeleted == false).FirstOrDefault();
+                                var mediacodeid = obj.MediaCodeId;
+                                db.Entry(obj).State = EntityState.Deleted;
+                                var objmediacodecustomfield = db.Tactic_MediaCodes_CustomFieldMapping.Where(a => a.MediaCodeId == mediacodeid).ToList();
+                                foreach (var item in objmediacodecustomfield)
+                                    db.Entry(item).State = EntityState.Deleted;
+                                db.SaveChanges();
+                                if (Isarchive)
+                                    MediacodeObj.IsDeleted = false;
+                                else
+                                    MediacodeObj.IsDeleted = true;
+                            }
+                        }
+                        db.Entry(MediacodeObj).State = EntityState.Modified;
+                        int result = db.SaveChanges();
+                        if (result > 0)
+                            isarchived = true;
+                    }
+                }
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+            }
+            return isarchived;
+        }
+        #endregion
 
         #region method to load all mediacode grid (i.e archive media code/active Media code)
         public Plangrid LoadAllMediacodeGrid(int tacticId, List<TacticMediaCodeCustomField> MediaCodecustomFieldList, List<TacticCustomfieldConfig> lstmediaCodeCustomfield, string InsepectMode, bool IsArchive = false)
@@ -14163,17 +14285,14 @@ namespace RevenuePlanner.Controllers
                         lineitemdataobj.value = item.MediaCodeId.ToString();
                         lineitemdataobjlist.Add(lineitemdataobj);
 
-                        lineitemdataobj = new Plandataobj();
-                        lineitemdataobj.value = item.MediaCode;
-                        lineitemdataobjlist.Add(lineitemdataobj);
 
                         if (IsArchive == false)
                         {
                             lineitemdataobj = new Plandataobj();
                             if (mode == Convert.ToString(Enums.InspectPopupMode.Edit))
-                                lineitemdataobj.value = "<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " ></i></span><span alt=" + Convert.ToString(tacticId) + " class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " onclick='javascript:OpenGridPopup(event)'></i></span>";
+                                lineitemdataobj.value = "<span alt=" + Convert.ToString(tacticId) + " class='plus-circle' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " onclick='javascript:OpenGridPopup(event)' title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt' rowid=" + RowID + " onclick='javascript:AddRemoveMediaCode(this);' title='Select' altid=" + item.MediaCodeId.ToString() + "></div><span class='archive' title='Archive' ><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " onclick='javascript:ArchiveMediaCode(event)' title='Archive'></i></span>";
                             else
-                                lineitemdataobj.value = "<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " ></i></span><span alt=" + Convert.ToString(tacticId) + " class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " ></i></span>";
+                                lineitemdataobj.value = "<span alt=" + Convert.ToString(tacticId) + " class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt' rowid=" + RowID + " onclick='javascript:AddRemoveMediaCode(this);' title='Select' altid=" + item.MediaCodeId.ToString() + "></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " title='Archive'></i></span>";
 
                             lineitemdataobjlist.Add(lineitemdataobj);
                         }
@@ -14181,12 +14300,18 @@ namespace RevenuePlanner.Controllers
                         {
                             lineitemdataobj = new Plandataobj();
                             if (mode == Convert.ToString(Enums.InspectPopupMode.Edit))
-                                lineitemdataobj.value = "<input type='button' value='Unarchive'  class='UnarchiveMediaCode' rowid=" + RowID + " onclick='javascript:UnarchiveMediaCode(this)'/>";
+                                lineitemdataobj.value = "<span class='archive' title='Unarchive'><i class='fa fa-archive UnarchiveMediaCode' aria-hidden='true' rowid=" + RowID + " onclick='javascript:UnarchiveMediaCode(event)' title='Unarchive'></i></span>";
                             else
-                                lineitemdataobj.value = "<input type='button' value='Unarchive'  class='UnarchiveMediaCode' rowid=" + RowID + "/>";
+                                lineitemdataobj.value = "<span class='archive disabled' title='Unarchive'><i class='fa fa-archive UnarchiveMediaCode' aria-hidden='true' rowid=" + RowID + " title='Unarchive'/>";
 
                             lineitemdataobjlist.Add(lineitemdataobj);
                         }
+
+                        lineitemdataobj = new Plandataobj();
+                        lineitemdataobj.value = "<span class='spnMediacode'>"+item.MediaCode+"</span>";
+                        lineitemdataobj.actval = item.MediaCode;
+                        lineitemdataobjlist.Add(lineitemdataobj);
+                       
 
                         foreach (var Cust in lstmediaCodeCustomfield)
                         {

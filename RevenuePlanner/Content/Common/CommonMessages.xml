@@ -1118,4 +1118,8 @@
 		<Name>RequiredMediacode</Name>
 		<value>Please fill Required fields to Generate Media Code.</value>
 	</Field>
+	<Field>
+		<Name>UndoMediacode</Name>
+		<value>This undo will overwrite your existing code. Do you want to continue?</value>
+	</Field>
 </Messages>

@@ -15,7 +15,7 @@
 }
 @if (countrows > 0)
 {
-    <div id="MediaCodeGrid" style="background-color: white; width: 98.5%;" class="gridViewGrid"></div>
+    <div id="MediaCodeGrid" style="background-color: white; width: 98%;" class="gridViewGrid"></div>
 }
 else
 {
@@ -32,10 +32,115 @@ else
 
     </div>
 </div>
+<div class="honeycombbox" style="display:none" id="divhoneycombboxmediacode">
+    <span id="totalEntityMediacode" class="badge">0</span>
+    <!-- honeycomb svg -->
+    <svg id="honeycombmediacode" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+         viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve">
+    <style type="text/css">
+
+</style>
+    <g>
+    <g>
+	                       
+    <image style="overflow:visible;opacity:0.25;" width="84" height="84" xlink:href="data:image/png;base64,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
+	        YII=" transform="matrix(1 0 0 1 8 10)">
+	                        </image>
+    <g>
+    <circle class="st0" cx="50" cy="50" r="36" />
+	                        </g>
+	                </g>
+    <g>
+    <g>
+    <path class="st1" d="M54.7,58.2h-9.5L40.4,50l4.8-8.2h9.5l4.8,8.2L54.7,58.2z M46,56.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,50L46,56.8z
+	                                        " />
+	                        </g>
+    <g>
+    <path class="st1" d="M67.8,65.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L67.8,65.8z M59.1,64.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8
+	                                        L59.1,64.2z" />
+	                        </g>
+    <g>
+    <path class="st1" d="M67.8,50.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L67.8,50.8z M59.1,49.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8
+	                                        L59.1,49.2z" />
+                        </g>
+    <g>
+    <path class="st1" d="M54.7,43.2h-9.5L40.4,35l4.8-8.2h9.5l4.8,8.2L54.7,43.2z M46,41.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,35L46,41.8z
+	                                        " />
+	                        </g>
+    <g>
+    <path class="st1" d="M41.7,65.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L41.7,65.8z M33.1,64.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8
+	                                        L33.1,64.2z" />
+	                        </g>
+    <g>
+    <path class="st1" d="M41.7,50.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L41.7,50.8z M33.1,49.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8
+	                                        L33.1,49.2z" />
+	                        </g>
+    <g>
+    <path class="st1" d="M54.7,73.2h-9.5L40.4,65l4.8-8.2h9.5l4.8,8.2L54.7,73.2z M46,71.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,65L46,71.8z
+	                                        " />
+	                        </g>	                </g>
+	        </g>
+	        </svg>
+    <div class="hidden" id="honeycomb_content1">
+
+        <div class="hc-controls" id="hc-controlsdiv1">
+            <div class="dropup pull-left">
+                <button class="btn btn-lg dropdown-toggle" type="button" id="exportMenuMediaCode" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-external-link"></i></button>
+                <ul class="dropdown-menu" aria-labelledby="exportMenuMediaCode">
+
+                    <li><a href="#" id="ExportCSVHoneyCombMediacode" style="display:none" onclick="GenerateBulkMediacode()">Export .csv</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     var MediaCodeGrid;
     var tacticId = 0;
-
+    var MediacodeSelectedRowId = [];
+    var Mediacodes = [];
+    var ExportSelectedIdsMediaCode = {
+        MediacodeSelectedRowId: [],
+        Mediacodes: [],
+        MediacodeID: [],
+        AltId: []
+    };
     $(document).ready(function () {
 
         $('.nav').addClass('no-bottom-border');
@@ -144,6 +249,9 @@ else
         var cusotmfieldValue = [];
         var cnt = 0;
         var isrequiredfield = 0;
+        var MediaCodeIdcolIndex = MediaCodeGrid.getColIndexById("MediacodeId");
+        var GeneratecolIndex = MediaCodeGrid.getColIndexById("generateMediaCode");
+        var buttoncolIndex = MediaCodeGrid.getColIndexById("selectall");
         MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
             if (col_index > 2) {
                 var attributeName = MediaCodeGrid.getColLabel(col_index);
@@ -206,7 +314,9 @@ else
                 success: function (data) {
                     if (data.Success == true && data.ErrorMessage == null) {
                         var newmediacode = data.MediaCode;
-                        MediaCodeGrid.cells(row_id, 1).setValue(newmediacode);
+                        MediaCodeGrid.cells(row_id, GeneratecolIndex).setValue("<span class='spnMediacode'>" + newmediacode + "</span>");
+                        MediaCodeGrid.cells(row_id, buttoncolIndex).setValue("<span class='plus-circle'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + row_id + "  onclick=OpenGridPopup(event); title='Add Media Code'></i></span><div class=honeycombbox-icon-gantt rowid=" + row_id + " onclick=AddRemoveMediaCode(this); title='Select' altid=" + data.NewMediaCodeId.toString() + "></div><span class='archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + row_id + " onclick=ArchiveMediaCode(event); title='Archive'></i></span>");
+
                         MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
                             if (col_index > 2) {
                                 MediaCodeGrid.cells(row_id, col_index).setAttribute("locked", "1");
@@ -219,7 +329,7 @@ else
                             $("#errorMessage").css("display", "none");
                         }
                         if (data.NewMediaCodeId != null && data.NewMediaCodeId) {
-                            MediaCodeGrid.cells(row_id, 0).setValue(data.NewMediaCodeId.toString());
+                            MediaCodeGrid.cells(row_id, MediaCodeIdcolIndex).setValue(data.NewMediaCodeId.toString());
                         }
 
                     }
@@ -270,30 +380,48 @@ else
 
         }
         if (stage == 2) {
+
+            var GeneratecolIndex = MediaCodeGrid.getColIndexById("generateMediaCode");
+
+            var isrequired = MediaCodeGrid.cells(rowId, cellInd).getAttribute("actval");
             if (nValue != '' && nValue != oValue) {
 
-                var isrequired = MediaCodeGrid.cells(rowId, cellInd).getAttribute("actval");
                 if (isrequired.toString().toLowerCase() == "true") {
                     MediaCodeGrid.setCellTextStyle(rowId, cellInd, "");
+                    MediaCodeGrid.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + rowId + " onclick=GenerateMediaCode(this); />")
+
+                }
+
+                var generatebutton = MediaCodeGrid.cells(rowId, GeneratecolIndex).getValue();
+                var isdisable = $(generatebutton).attr('disabled');
+                if (isdisable == "disabled") {
+                    MediaCodeGrid.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + rowId + " onclick=GenerateMediaCode(this); />")
+
                 }
             }
-            else if (nValue == '')
+            else if (nValue == '') {
+                if (isrequired.toString().toLowerCase() == "true") {
+                    MediaCodeGrid.setCellTextStyle(rowId, cellInd, "border-bottom: 2px solid red;");
+                    MediaCodeGrid.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + rowId + " onclick=GenerateMediaCode(this); disabled='disabled' />");
+                }
                 MediaCodeGrid.cells(rowId, cellInd).setValue('--');
+            }
         }
         return true;
     }
 
-    //$(document).on("click", '#CreateMediaCode,#CopyMediacode', function (event) {
-    //    event.stopPropagation();
     function AddCopyMediaCode(obj) {
+        var GeneratecolIndex = MediaCodeGrid.getColIndexById("generateMediaCode");
         var currentRowID = $(obj).attr('currentRowId');
         var newId = "newRow_" + MediaCodeGrid.getRowsNum();
         var cnt = MediaCodeGrid.getColumnCount();
         var i;
-        var columndata = "0,";
-        var mediacodeButton = "<input type='button' value='Generate'  class='GenerateMediaCode' rowid=" + newId + " onclick=GenerateMediaCode(this) />";
-        columndata = columndata + mediacodeButton + ",<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " onclick=ArchiveMediaCode(event)></i></span><span class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  onclick=OpenGridPopup(event)></i></span>";
-        for (i = 3; i < cnt  ; i++) {
+        var columndata = "0";
+        //columndata = columndata + ",<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " onclick=ArchiveMediaCode(event)></i></span><span class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  onclick=OpenGridPopup(event)></i></span><div class=honeycombbox-icon-gantt rowid=" + newId + " onclick=AddRemoveMediaCode(this)></div>";
+        columndata = columndata + ",<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + " title='Add Media Code' ></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' ></i></span>";
+        var mediacodeButton = ",<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + newId + " onclick=GenerateMediaCode(this); disabled='disabled' />";
+        columndata = columndata + mediacodeButton;
+        for (i = 2; i < cnt  ; i++) {
             columndata = columndata + ',--';
         }
         MediaCodeGrid.addRow(newId, columndata, MediaCodeGrid.getRowsNum());   //adds a new row
@@ -302,7 +430,11 @@ else
         var task = $(obj).attr('id');
         if (task == 'CopyMediacode') {
             MediaCodeGrid.copyRowContent(currentRowID, newId);
-            MediaCodeGrid.cells(newId, 1).setValue(mediacodeButton);
+            MediaCodeGrid.cells(newId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + newId + " onclick=GenerateMediaCode(this); />");
+            //MediaCodeGrid.cells(newId, 1).setValue("<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " onclick=ArchiveMediaCode(event)></i></span><span class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  onclick=OpenGridPopup(event)></i></span><div class=honeycombbox-icon-gantt rowid=" + newId + " onclick=AddRemoveMediaCode(this)></div>");
+            MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive'></i></span>");
+
+            MediaCodeGrid.cells(newId, 0).setValue("0");
         }
         MediaCodeGrid.forEachCell(currentRowID, function (cellObj, col_index) {
             if (col_index > 2) {
@@ -311,6 +443,132 @@ else
                 MediaCodeGrid.cells(newId, col_index).setAttribute("actval", isrequired);
             }
         });
-
+        setTimeout(function () {
+            MediaCodeGrid.setSizes();
+        }, 200);
     }
+
+    function ArchiveMediaCode(e) {
+        var rowid = $(e.target).attr('rowid');
+        var inspectmode = $("#hdnInspectMode").val();
+        var mediacodeid = MediaCodeGrid.cells(rowid, 0).getValue();
+        if (mediacodeid != '' && mediacodeid != null && mediacodeid != '0') {
+            url = '@Url.Content("~/Inspect/ArchiveMediaCode/")';
+
+            $("#divArchiveMediaCode").load(url + '?tacticId=' + '@tacticId' + '&MediaCodeId=' + mediacodeid + '&Mode=' + inspectmode, function (response, status, xhr) {
+                MediaCodeGrid.deleteRow(rowid);
+
+            });
+        }
+        else
+            return false;
+    }
+    
+</script>
+<script>
+    function AddRemoveMediaCode(item) {
+        //var rowId = $(item).attr('rowid');
+        //if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
+        //    $(item).removeClass("honeycombbox-icon-gantt-Active");
+        //    var index = ExportSelectedIdsMediaCode.MediacodeSelectedRowId.indexOf($(item).attr('rowid'));
+        //    if (index >= 0) {
+
+        //        ExportSelectedIdsMediaCode.MediacodeSelectedRowId.splice(index, 1);
+        //        ExportSelectedIdsMediaCode.Mediacodes.splice(index, 1);
+        //        ExportSelectedIdsMediaCode.MediacodeID.splice(index, 1);
+        //        ExportSelectedIdsMediaCode.AltId.splice(index, 1);
+        //    }
+        //}
+        //else {
+        //    var mediacode = MediaCodeGrid.cells(rowId, 2).getAttribute("actval");
+        //    var mediacodeid = MediaCodeGrid.cells(rowId, 0).getValue();
+        //    ExportSelectedIdsMediaCode.MediacodeSelectedRowId.push(index);
+        //    ExportSelectedIdsMediaCode.Mediacodes.push(mediacode);
+        //    ExportSelectedIdsMediaCode.MediacodeID.push(mediacodeid);
+        //    ExportSelectedIdsMediaCode.AltId.push($(item).attr('altid'));
+        //    $(item).addClass("honeycombbox-icon-gantt-Active");
+        //}
+        //if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+        //    $("#divhoneycombboxmediacode").hide();
+        //}
+        //else {
+        //    $("#totalEntityMediacode").text($('.honeycombbox-icon-gantt-Active').length);
+        //    $("#divhoneycombboxmediacode").show();
+
+        //    $('.dropdown-menu').find('a#ExportCSVHoneyCombMediacode').css("display", "block");
+
+        //}
+    }
+    //$("#honeycombmediacode").popover({
+    //    title: 'HoneyComb',
+    //    html: true,
+    //    placement: 'top',
+    //    content: function () {
+    //        CloseClick = true;
+    //        $('#honeycomb_content1').find(".hc-block").remove();
+
+    //        var htmlstring1 = "";
+    //        var hccontrolsdiv1 = $('#honeycomb_content1').find("#hc-controlsdiv1").parent().html();
+    //        var Removefromlist1 = [];
+    //        if (ExportSelectedIdsMediaCode.MediacodeID.length > 0) {
+
+    //            $('#honeycomb_content1').html("");
+    //            for (i = 0; i < (ExportSelectedIdsMediaCode.MediacodeID.length) ; i++) {
+    //                var HasmediaActiveClass = false;
+    //                HasmediaActiveClass = $("div[altid='" + ExportSelectedIdsMediaCode.AltId[i] + "']").hasClass("honeycombbox-icon-gantt-Active");
+    //                if (HasmediaActiveClass == true) {
+    //                    htmlstring1 += '<div class="hc-block asset-bg" dhtmlxrowid="' + ExportSelectedIdsMediaCode.MediacodeSelectedRowId[i] + '"  csvid="' + ExportSelectedIdsMediaCode.MediacodeID[i] + '"> <div class="row-fluid"> ' +
+    //                                  ' <div  class="span8 pophover-left" > ' +
+    //                                  ' <h5 title="' + htmlEncode(ExportSelectedIdsMediaCode.Mediacodes[i]) + '">' + htmlEncode(ExportSelectedIdsMediaCode.Mediacodes[i]) + '</h5> ' +
+
+    //                                  ' <div class="span1 text-right pull-right"> ' +
+    //                                  ' <i taskid = "' + ExportSelectedIdsMediaCode.MediacodeID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i> ' +
+    //                                  ' </div></div></div>';
+    //                }
+    //                else {
+    //                    Removefromlist1.push(ExportSelectedIdsMediaCode.AltId[i]);
+    //                }
+    //            }
+    //        }
+
+    //        $('#honeycomb_content1').append(htmlstring1 + hccontrolsdiv1);
+
+
+    //        return $("#honeycomb_content1").html();
+
+
+    //    }
+
+    //});
+    //function CloseIcon(item) {
+    //    CloseClick = true;
+    //    var taskId = item.attributes.taskid.value;
+    //    var Totallength = $("#totalEntityMediacode").text();
+    //    var Height = $(".popover").css('top').replace("px", "");
+    //    var Blockheight = $('.popover-content').find(".hc-block").css('height').replace("px", "");
+    //    var Margin = $('.popover-content').find(".hc-block").css('margin').split(" ")[0].replace("px", "");
+    //    var Sum = parseInt(Number(Blockheight) + Number(Margin));
+    //    var removeFromHoneyComb = true;
+    //    $("div[altid='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
+    //    Totallength = Totallength - 1;
+    //    Height = Number(Height) + (Sum);
+
+    //    $("#totalEntityMediacode").text(Totallength);
+    //    $(".popover").css('top', Height + "px");
+    //    var index = ExportSelectedIdsMediaCode.AltId.indexOf(taskId);
+    //    if (index >= 0) {
+    //        ExportSelectedIdsMediaCode.AltId.splice(index, 1);
+    //        ExportSelectedIdsMediaCode.MediacodeID.splice(index, 1);
+    //        ExportSelectedIdsMediaCode.Mediacodes.splice(index, 1);
+    //        ExportSelectedIdsMediaCode.MediacodeSelectedRowId.splice(index, 1);
+
+    //    }
+
+    //    item.parentNode.parentNode.parentNode.remove();
+    //    var HoneyContent = $('.popover-content').find(".hc-block").length;
+    //    if (HoneyContent == 0) {
+    //        $(".popover ").hide();
+    //        $(".honeycombbox").hide();
+    //    }
+    //};
 </script>

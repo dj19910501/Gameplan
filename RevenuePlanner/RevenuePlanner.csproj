@@ -960,6 +960,7 @@
     <Content Include="Views\Report\_DynamicReport.cshtml" />
     <Content Include="Views\Report\_Component.cshtml" />
     <Content Include="Views\Inspect\_TacticMediaCode.cshtml" />
+    <Content Include="Views\Inspect\_ArchiveMediaCode.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>
