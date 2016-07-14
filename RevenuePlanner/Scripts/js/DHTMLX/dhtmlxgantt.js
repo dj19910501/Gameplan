@@ -9989,8 +9989,16 @@ if (!gantt.templates) gantt.templates = {};
                             Id = 'LinkIcon';
                             Tooltip = "<span class='unlink-tooltip'>This tactic is linked to <U>" + htmlDecode(htmlEncode(item.LinkedPlanName).replace("'", "&#39;")) + " </U></span>";
                         }
+                        if (item.IsAnchorTacticId == item.PlanTacticId)
+                        {
+                            return "<div class='unlink-icon' style='margin-right: 2px;' id = '" + Id + "' LinkedPlanName = '" + htmlEncode(item.LinkedPlanName).replace("'", "&#39;") + "'>" + Tooltip + "<i class= '" + Class + "'></i></div><div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + item.CalendarHoneycombpackageIDs + " ><i class='fa fa-object-group'></i></div>";
+                        }
+                        else
+                        {
+                            return "<div class='unlink-icon' style='margin-right: 2px;' id = '" + Id + "' LinkedPlanName = '" + htmlEncode(item.LinkedPlanName).replace("'", "&#39;") + "'>" + Tooltip + "<i class= '" + Class + "'></i></div>";
+                        }
 
-                        return "<div class='unlink-icon' style='margin-right: 2px;' id = '" + Id + "' LinkedPlanName = '" + htmlEncode(item.LinkedPlanName).replace("'", "&#39;") + "'>" + Tooltip + "<i class= '" + Class + "'></i></div>";
+                     
                     }
                     else if (item.IsAnchorTacticId == item.PlanTacticId) {
                         return "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + item.CalendarHoneycombpackageIDs + " ><i class='fa fa-object-group'></i></div>"

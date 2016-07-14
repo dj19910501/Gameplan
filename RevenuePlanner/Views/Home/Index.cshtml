@@ -2204,7 +2204,7 @@
                 ROITacticType: [],
                 CalendarEntityType: [],
                 DhtmlxRowId: [],
-                AnchorTacticId:[],
+                AnchorTacticId: [],
             };
             //#1780
 
@@ -4647,14 +4647,22 @@
                         var TacticId = 0;
                         if (EntityType.toLowerCase() == 'tactic') {
                             var TaskId = $(this).attr('EntityTaskId');
-                            TacticId = TaskId.split('_')[3].replace("T", "");
-                            var TacticPlanId = TaskId.split('_')[0].replace("L", "");
-                            var PlanIndex = PlanIds.indexOf(TacticPlanId);
-                            if (PlanIndex < 0)
-                            {
-                                PlanIds.push(TacticPlanId);
-                            }
-                          
+                            var ListIds = TaskId.split('_');
+                            $.each(ListIds, function (index, Id) {
+                                if (Id.contains('T')) {
+                                    TacticId = Id.replace("T", "");
+                                }
+                                else if(Id.contains('L'))
+                                {
+                                    var TacticPlanId = Id.replace("L", "");
+                                    var PlanIndex = PlanIds.indexOf(TacticPlanId);
+                                    if (PlanIndex < 0) {
+                                        PlanIds.push(TacticPlanId);
+                                    }
+
+                                }
+
+                            });
                         }
                         if (ROITacticType.toLowerCase() == '@Enums.AssetType.Asset.ToString().ToLower()') {
                             anchorTacticId = TacticId;
@@ -4779,10 +4787,15 @@
             if (PreventClick == false)
             {
                 var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]").attr('entitytaskid');
-                var anchorTacticId = CalendarTaskID.split('_')[3];
-                if (anchorTacticId != null)
+                var anchorTacticId = 0;
+                if (CalendarTaskID != null && CalendarTaskID != undefined && CalendarTaskID != 'undefined')
                 {
-                    anchorTacticId = anchorTacticId.replace("T", "");
+                var ListIds = CalendarTaskID.split('_');
+                $.each(ListIds, function (index, Id) {
+                    if (Id.contains('T')) {
+                        anchorTacticId = Id.replace("T", "");
+                    }
+                });
                 }
                 if ($('#IsGridView').val() == "True") {
                     anchorTacticId = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]").attr('csvid').split('_')[1];
@@ -5229,7 +5242,7 @@
                 CsvId: [],
                 ROITacticType: [],
                 DhtmlxRowId: [],
-                AnchorTacticId:[] ,
+                AnchorTacticId: [] ,
                 CalendarEntityType: [],
             };
 
@@ -5325,14 +5338,17 @@
 
         // Added by Komal Rawal for Ticket #2355 on 13/07/2016
         function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totallength, Height, Sum) {
-
             // If package is selected then apply validation as per selected asset or promotion
             var ROITacticType = $(item).parents('.hc-block').attr('roitactictype');
             var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]").attr('entitytaskid');
-            var anchorTacticId = taskId.split('_')[3];
-            if (anchorTacticId != null) {
-                anchorTacticId = anchorTacticId.replace("T", "");
-            }
+            var ListIds = taskId.split('_');
+            var anchorTacticId = 0;
+            $.each(ListIds, function (index, Id) {
+                if (Id.contains('T')) {
+                    anchorTacticId = Id.replace("T", "");
+                }
+
+            });
             var IsPromotion = true;
             var PromoID = 0;
 
@@ -5421,7 +5437,7 @@
         //End
 
         // Added by Arpita Soni for Ticket #2354 on 07/08/2016
-        function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength,Height,Sum) {
+        function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Height, Sum) {
             // If package is selected then apply validation as per selected asset or promotion
             var ROITacticType = $(item).parents('.hc-block').attr('roitactictype');
             var planTacticId = $(item).parents('.hc-block').attr('csvid').split('_')[1];
