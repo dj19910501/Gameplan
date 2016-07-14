@@ -605,7 +605,7 @@
                     //    $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
                     //    $(".honeycombbox").show();
                     //}
-                    if (ExportSelectedIds.TaskID.length == 0) {
+                    if (ExportSelectedIds.TaskID.length == 0 && task_id != undefined && task_id != 'undefined' && task_id != null) {
                         $(".honeycombbox").hide();
                         // Added by Arpita Soni for Ticket #2354 on 07/11/2016
                         IsPackageView = false;
