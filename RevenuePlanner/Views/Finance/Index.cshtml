@@ -106,24 +106,31 @@
                 </div>
             </div>*@
         <div class="fin-head-right" style="">
-            <div style="text-align: right;">
-                <div id="divCheckbox" style="width: 300px; float: left; line-height: 22px;">
-                    <div id="divBudget" style="float: left; margin-right: 10px;"><input type="checkbox" value="Budget" id="chkBudget" onchange=" ShowHideColumns(this) " checked="checked" style="display: inline-block; vertical-align: middle;"/><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Budget</label>
+            
+            <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: auto; margin-right: 0px; float: right;margin-left: 17px;">
+                @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
+            </span>
+            
+            <span class="selectBox quarter_selection" id="ddlMainTimeFrameSelectBox" style="">
+                @Html.DropDownList("ddlMainGridTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByMainGridAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
+            </span>
+           
+            <div style="text-align: right; float: right;">
+                <div id="divCheckbox" style=" float: left; line-height: 22px;">
+                    <div id="divBudget" style="float: left; margin-right: 10px;">
+                        <input type="checkbox" value="Budget" id="chkBudget" onchange=" ShowHideColumns(this) " checked="checked" style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Budget</label>
                     </div>
-                    <div id="divforecast" style="float: left; margin-right: 10px;"><input type="checkbox" value="ForeCast" id="chkForeCast" onchange=" ShowHideColumns(this) " checked="checked" style="display: inline-block; vertical-align: middle;"/><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Forecast</label>
+                    <div id="divforecast" style="float: left; margin-right: 10px;">
+                        <input type="checkbox" value="ForeCast" id="chkForeCast" onchange=" ShowHideColumns(this) " checked="checked" style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Forecast</label>
                     </div>
-                    <div id="divPlan" style="float: left; margin-right: 10px;"><input type="checkbox" value="Plan" id="chkPlan" onchange=" ShowHideColumns(this) " style="display: inline-block; vertical-align: middle;"/><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Planned</label>
+                    <div id="divPlan" style="float: left; margin-right: 10px;">
+                        <input type="checkbox" value="Plan" id="chkPlan" onchange=" ShowHideColumns(this) " style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Planned</label>
                     </div>
-                    <div id="divActual" style="float: left; margin-right: 10px;"><input type="checkbox" value="Actual" id="chkActual" onchange=" ShowHideColumns(this) " style="display: inline-block; vertical-align: middle;"/><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Actual</label>
+                    <div id="divActual" style="float: left; margin-right: 10px;">
+                        <input type="checkbox" value="Actual" id="chkActual" onchange=" ShowHideColumns(this) " style="display: inline-block; vertical-align: middle;" /><label style="display: inline-block; vertical-align: sub; padding-left: 4px;">Actual</label>
                     </div>
                 </div>
             </div>
-            <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: auto; margin-right: 0px; float: right;">
-                @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable) ViewBag.ViewByAllocated, "Value", "Text", (string) ViewBag.SelectedTimeFrame), new {@class = "ddlStyleReport hide quarterly_btn"})
-            </span>
-            <span class="selectBox quarter_selection" id="ddlColumnSetFrameBox" style="float: left;">
-                @Html.DropDownList("ddlColumnSet", new SelectList((System.Collections.IEnumerable) ViewBag.ColumnSet, "Value", "Text", (string) ViewBag.SelectedTimeFrame), new {@class = "ddlStyleReport hide quarterly_btn"})
-            </span>
             @*<div style="float:right;margin-top:10px;margin-bottom:10px;text-align: right;">
                     <div id="divCheckbox" style="width:300px;float:left;line-height: 22px;">
                         <div id="divBudget" style="float:left;margin-right:10px;"><input type="checkbox" value="Budget" id="chkBudget" onchange="ShowHideColumns(this)" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Budget</label></div>
@@ -132,14 +139,15 @@
                         <div id="divActual" style="float:left;margin-right:10px;"><input type="checkbox" value="Actual" id="chkActual" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Actual</label></div>
                     </div>
                 </div>*@
-            <div style="" id="ddlColumnsFrameBox" class="filter-columns">
+            <div id="ddlColumnsFrameBox" class="filter-columns" style="float:right;">
                 <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select">
 
                 </select>
             </div>
-            <span class="selectBox quarter_selection" id="ddlMainTimeFrameSelectBox" style="">
-                @Html.DropDownList("ddlMainGridTimeFrame", new SelectList((System.Collections.IEnumerable) ViewBag.ViewByMainGridAllocated, "Value", "Text", (string) ViewBag.SelectedTimeFrame), new {@class = "ddlStyleReport hide quarterly_btn"})
+            <span class="selectBox quarter_selection" id="ddlColumnSetFrameBox" style="float: right;">
+                @Html.DropDownList("ddlColumnSet", new SelectList((System.Collections.IEnumerable)ViewBag.ColumnSet, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
             </span>
+           
         </div>
 
         @*Modified by Rushil Bhuptani on 06/03/2016 for #2247*@
