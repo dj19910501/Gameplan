@@ -407,9 +407,15 @@ else
     }
 
     function AddCopyMediaCode(obj) {
-        var GeneratecolIndex = MediaCodeGrid.getColIndexById("generateMediaCode");
+       
         var currentRowID = $(obj).attr('currentRowId');
-        var newId = "newRow_" + MediaCodeGrid.getRowsNum()+3;
+        var task = $(obj).attr('id');
+        AddNewRow(currentRowID, task);
+    }
+    function AddNewRow(currentRowID, task)
+    {
+        var GeneratecolIndex = MediaCodeGrid.getColIndexById("generateMediaCode");
+        var newId = "newRow_" + MediaCodeGrid.getRowsNum() + 3;
         var cnt = MediaCodeGrid.getColumnCount();
         var i;
         var columndata = "0";
@@ -423,7 +429,7 @@ else
         MediaCodeGrid.addRow(newId, columndata, MediaCodeGrid.getRowsNum());   //adds a new row
         MediaCodeGrid.selectRowById(newId);
 
-        var task = $(obj).attr('id');
+
         if (task == 'CopyMediacode') {
             MediaCodeGrid.copyRowContent(currentRowID, newId);
             MediaCodeGrid.cells(newId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + newId + " onclick=GenerateMediaCode(this); />");
@@ -434,7 +440,6 @@ else
         }
         MediaCodeGrid.forEachCell(currentRowID, function (cellObj, col_index) {
             if (col_index > 2) {
-                debugger;
                 var isrequired = MediaCodeGrid.cells(currentRowID, col_index).getAttribute("actval");
                 MediaCodeGrid.cells(newId, col_index).setAttribute("actval", isrequired);
             }
@@ -443,7 +448,6 @@ else
             MediaCodeGrid.setSizes();
         }, 200);
     }
-
     function ArchiveMediaCode(e) {
         var rowid = $(e.target).attr('rowid');
         var inspectmode = $("#hdnInspectMode").val();
@@ -453,13 +457,20 @@ else
 
             $("#divArchiveMediaCode").load(url + '?tacticId=' + '@tacticId' + '&MediaCodeId=' + mediacodeid + '&Mode=' + inspectmode, function (response, status, xhr) {
                 MediaCodeGrid.deleteRow(rowid);
-
+                var gridrowconut = MediaCodeGrid.getRowsNum();
+                if(gridrowconut==0)
+                {
+                    AddNewRow('', 'CreateMediaCode');
+                }
             });
         }
         else {
-            setTimeout(function () {
-                MediaCodeGrid.deleteRow(rowid);
-            }, 200);
+            var gridrowconut = MediaCodeGrid.getRowsNum();
+            if (gridrowconut > 1) {
+                setTimeout(function () {
+                    MediaCodeGrid.deleteRow(rowid);
+                }, 200);
+            }
             return;
         }
     }

@@ -196,6 +196,7 @@
         <AssociationConnector Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_CustomField" />
         <AssociationConnector Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" />
         <EntityTypeShape EntityType="MRPModel.User_Permission" Width="1.5" PointX="18.875" PointY="0.75" />
+        <EntityTypeShape EntityType="MRPModel.vClientWise_Tactic" Width="1.5" PointX="18.375" PointY="4.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

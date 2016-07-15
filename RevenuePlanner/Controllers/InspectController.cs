@@ -13738,14 +13738,29 @@ namespace RevenuePlanner.Controllers
 
                     }).ToList();
                 var lstmediaCodeCustomfield =(List<TacticCustomfieldConfig>)objCache.Returncache(Enums.CacheObject.MediaCodeCustomfieldConfiguration.ToString());
-              
-                if (MediaCodecustomFieldList.Count != 0 && lstmediaCodeCustomfield.Count != 0)
+                if (lstmediaCodeCustomfield==null)
+                {
+                    lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId && a.CustomField.IsDeleted == false).ToList().Select(a => new TacticCustomfieldConfig
+                    {
+                        CustomFieldId = a.CustomFieldId,
+                        CustomFieldName = a.CustomField.Name,
+                        CustomFieldTypeName = a.CustomField.CustomFieldType.Name,
+                        IsRequired = a.CustomField.IsRequired,
+                        Sequence = a.Sequence,
+                        Option = a.CustomField.CustomFieldOptions.Select(opt => new CustomFieldOptionList
+                        {
+                            CustomFieldOptionId = opt.CustomFieldOptionId,
+                            CustomFieldOptionValue = opt.Value
+                        }).ToList()
+                    }).OrderBy(a => a.Sequence).ToList();
+                }
+                if (MediaCodecustomFieldList.Count != 0 && lstmediaCodeCustomfield!=null && lstmediaCodeCustomfield.Count != 0)
                 {
                     objplangrid = LoadAllMediacodeGrid(tacticId, MediaCodecustomFieldList, lstmediaCodeCustomfield, InsepectMode, false);
                 }
                 else
                 {
-                    if ((InsepectMode == Convert.ToString(Enums.InspectPopupMode.Edit) || InsepectMode == Convert.ToString(Enums.InspectPopupMode.Add)) && lstmediaCodeCustomfield.Count != 0)
+                    if ((InsepectMode == Convert.ToString(Enums.InspectPopupMode.Edit) || InsepectMode == Convert.ToString(Enums.InspectPopupMode.Add)) && lstmediaCodeCustomfield!=null && lstmediaCodeCustomfield.Count != 0)
                     {
                         objPlanMainDHTMLXGrid = AddNewRow(lstmediaCodeCustomfield, tacticId);
                         objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
@@ -13753,7 +13768,7 @@ namespace RevenuePlanner.Controllers
                     else
                         objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
                 }
-                if (lstmediaCodeCustomfield.Count == 0)
+                if (lstmediaCodeCustomfield!=null && lstmediaCodeCustomfield.Count == 0)
                     ViewBag.NoCustomField = true;
                 if (linkedTacticId != null)
                     ViewBag.LinkedTacticId = linkedTacticId;
@@ -13939,7 +13954,12 @@ namespace RevenuePlanner.Controllers
                         lstMediaCodeCustomField.Add(objmediacodecustomField);
                     }
                     NewMediacode = NewMediacode.TrimEnd('_');
-                    IsValid = IsValidMediaCode(NewMediacode, Convert.ToInt32(TacticId));
+                    var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == NewMediacode).FirstOrDefault();
+                    if (Result != null)
+                        IsValid = false;
+                    else
+                        IsValid = true;
+               
                     if (IsValid)
                     {
                         Tactic_MediaCodes objMediaCode = new Tactic_MediaCodes();
@@ -13988,59 +14008,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #region method to validate Media code with existing media code
-        public bool IsValidMediaCode(string MediaCode, int TacticId)
-        {
-            int result = 0;
-            try
-            {
-                DataTable dtLogDetails = new DataTable();
-                ///If connection is closed then it will be open
-                var Connection = db.Database.Connection as SqlConnection;
-                if (Connection.State == System.Data.ConnectionState.Closed)
-                    Connection.Open();
-
-                SqlCommand command = new SqlCommand("SP_CheckExisting_MediaCode", Connection);
-
-                try
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
-                    command.Parameters.AddWithValue("@MediaCode", MediaCode);
-                    //Add the output parameter to the command object
-                    SqlParameter outPutParameter = new SqlParameter();
-                    outPutParameter.ParameterName = "@IsExists";
-                    outPutParameter.SqlDbType = System.Data.SqlDbType.Int;
-                    outPutParameter.Direction = System.Data.ParameterDirection.Output;
-                    command.Parameters.Add(outPutParameter);
-
-                    command.ExecuteNonQuery();
-
-                    result = Convert.ToInt16(outPutParameter.Value.ToString());
-
-                    if (result == 0)
-                        return true;
-                    else
-                        return false;
-                }
-                catch (Exception ex)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(ex);
-                    return false;
-                }
-
-
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-                return false;
-            }
-
-
-        }
-        #endregion
-
+        
         #region  Method to generate Media Code Header
         public List<PlanHead> GenerateHeader(List<TacticCustomfieldConfig> lstmediaCodeCustomfield, string Mode, bool IsArchive = false)
         {
@@ -14168,7 +14136,22 @@ namespace RevenuePlanner.Controllers
                 }).ToList();
                 var lstmediaCodeCustomfield = (List<TacticCustomfieldConfig>)objCache.Returncache(Enums.CacheObject.MediaCodeCustomfieldConfiguration.ToString());
 
-
+                if (lstmediaCodeCustomfield == null)
+                {
+                    lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId && a.CustomField.IsDeleted == false).ToList().Select(a => new TacticCustomfieldConfig
+                    {
+                        CustomFieldId = a.CustomFieldId,
+                        CustomFieldName = a.CustomField.Name,
+                        CustomFieldTypeName = a.CustomField.CustomFieldType.Name,
+                        IsRequired = a.CustomField.IsRequired,
+                        Sequence = a.Sequence,
+                        Option = a.CustomField.CustomFieldOptions.Select(opt => new CustomFieldOptionList
+                        {
+                            CustomFieldOptionId = opt.CustomFieldOptionId,
+                            CustomFieldOptionValue = opt.Value
+                        }).ToList()
+                    }).OrderBy(a => a.Sequence).ToList();
+                }
 
                 if (MediaCodecustomFieldList.Count != 0)
                 {
@@ -14192,6 +14175,7 @@ namespace RevenuePlanner.Controllers
         public bool ArchiveUnarchiveMediaCode(string MediaCodeId, int tacticId, bool Isarchive)
         {
             bool isarchived = false;
+            bool IsValid = true;
             try
             {
                 if (!string.IsNullOrEmpty(MediaCodeId) && MediaCodeId != "0")
@@ -14206,7 +14190,12 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             string MediaCode = MediacodeObj.MediaCode;
-                            bool IsValid = IsValidMediaCode(MediaCode, tacticId);
+                            var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == MediaCode).FirstOrDefault();
+                            if (Result != null)
+                                IsValid= false;
+                            else
+                                IsValid= true;
+               
                             if (IsValid)
                             {
                                 MediacodeObj.IsDeleted = false;
@@ -14382,6 +14371,7 @@ namespace RevenuePlanner.Controllers
                     objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
 
                 }
+                
 
                 objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
             }

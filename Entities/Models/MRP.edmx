@@ -1198,9 +1198,14 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'MRPDev.dbo.User_Permission' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="User_Permission">
           <Key>
             <PropertyRef Name="Id" />
+            
+            
+            
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="DashboardId" Type="int" />
@@ -1210,6 +1215,28 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="PermissionType" Type="nvarchar" MaxLength="255" />
           <Property Name="HomePageId" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vClientWise_Tactic">
+          <Key>
+            <PropertyRef Name="PlanTacticId" />
+            <PropertyRef Name="Title" />
+            <PropertyRef Name="MediaCodeId" />
+            <PropertyRef Name="TacticId" />
+            <PropertyRef Name="ClientId" />
+          </Key>
+          <Property Name="PlanTacticId" Type="int" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="MediaCodeId" Type="int" Nullable="false" />
+          <Property Name="TacticId" Type="int" Nullable="false" />
+          <Property Name="MediaCode" Type="varchar(max)" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="LastModifiedBy" Type="uniqueidentifier" />
+          <Property Name="LastModifiedDate" Type="datetime" />
+          <Property Name="IsDeleted" Type="bit" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <Association Name="BudgetID_FK">
           <End Role="Budget_Detail" Type="Self.Budget_Detail" Multiplicity="1" />
@@ -2553,11 +2580,37 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="User_Permission" EntityType="Self.User_Permission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AggregationStatus" EntityType="Self.AggregationStatus" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
 [AggregationStatus].[StatusCode] AS [StatusCode]
 FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="User_Permission" EntityType="Self.User_Permission" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[User_Permission].[Id] AS [Id], 
+[User_Permission].[DashboardId] AS [DashboardId], 
+[User_Permission].[ApplicationActivityId] AS [ApplicationActivityId], 
+[User_Permission].[UserId] AS [UserId], 
+[User_Permission].[CreatedDate] AS [CreatedDate], 
+[User_Permission].[CreatedBy] AS [CreatedBy], 
+[User_Permission].[PermissionType] AS [PermissionType], 
+[User_Permission].[HomePageId] AS [HomePageId]
+FROM [dbo].[User_Permission] AS [User_Permission]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vClientWise_Tactic" EntityType="Self.vClientWise_Tactic" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[vClientWise_Tactic].[PlanTacticId] AS [PlanTacticId], 
+[vClientWise_Tactic].[Title] AS [Title], 
+[vClientWise_Tactic].[MediaCodeId] AS [MediaCodeId], 
+[vClientWise_Tactic].[TacticId] AS [TacticId], 
+[vClientWise_Tactic].[MediaCode] AS [MediaCode], 
+[vClientWise_Tactic].[CreatedBy] AS [CreatedBy], 
+[vClientWise_Tactic].[CreatedDate] AS [CreatedDate], 
+[vClientWise_Tactic].[LastModifiedBy] AS [LastModifiedBy], 
+[vClientWise_Tactic].[LastModifiedDate] AS [LastModifiedDate], 
+[vClientWise_Tactic].[IsDeleted] AS [IsDeleted], 
+[vClientWise_Tactic].[ClientId] AS [ClientId]
+FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="BudgetID_FK" Association="Self.BudgetID_FK">
             <End Role="Budget_Detail" EntitySet="Budget_Detail" />
@@ -3521,6 +3574,7 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
             <End Role="Tactic_MediaCodes_CustomFieldMapping" EntitySet="Tactic_MediaCodes_CustomFieldMapping" />
           </AssociationSet>
           <EntitySet Name="User_Permission" EntityType="MRPModel.User_Permission" />
+          <EntitySet Name="vClientWise_Tactic" EntityType="MRPModel.vClientWise_Tactic" />
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -6215,6 +6269,26 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
           <Property Name="PermissionType" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="HomePageId" Type="Int32" />
         </EntityType>
+        <EntityType Name="vClientWise_Tactic">
+          <Key>
+            <PropertyRef Name="PlanTacticId" />
+            <PropertyRef Name="Title" />
+            <PropertyRef Name="MediaCodeId" />
+            <PropertyRef Name="TacticId" />
+            <PropertyRef Name="ClientId" />
+          </Key>
+          <Property Name="PlanTacticId" Type="Int32" Nullable="false" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="MediaCodeId" Type="Int32" Nullable="false" />
+          <Property Name="TacticId" Type="Int32" Nullable="false" />
+          <Property Name="MediaCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="LastModifiedBy" Type="Guid" />
+          <Property Name="LastModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" />
+          <Property Name="ClientId" Type="Guid" Nullable="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7522,6 +7596,23 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
                 <ScalarProperty Name="ApplicationActivityId" ColumnName="ApplicationActivityId" />
                 <ScalarProperty Name="DashboardId" ColumnName="DashboardId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vClientWise_Tactic">
+            <EntityTypeMapping TypeName="MRPModel.vClientWise_Tactic">
+              <MappingFragment StoreEntitySet="vClientWise_Tactic">
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="MediaCode" ColumnName="MediaCode" />
+                <ScalarProperty Name="TacticId" ColumnName="TacticId" />
+                <ScalarProperty Name="MediaCodeId" ColumnName="MediaCodeId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
