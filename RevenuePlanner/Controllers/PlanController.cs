@@ -12,22 +12,15 @@ using System.Text;
 using RevenuePlanner.BDSService;
 using System.Globalization;
 using Integration;
-using System.Diagnostics;
-//using RestSharp.Contrib;
-using System.Xml.Linq;
-using System.Xml;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.Data.SqlClient;
 using System.Web;
 using System.IO;
 using System.Reflection;
 using System.Web.Caching;
 using System.Web.UI.WebControls;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
 using System.Data.OleDb;
 using Excel;
 
@@ -13635,7 +13628,7 @@ namespace RevenuePlanner.Controllers
                     headobj.id = "roitactictype";
                     headobj.sort = "sort_ROITacticType";
                     headobj.width = 150;
-                    headobj.value = "ROI Tactic Type";
+                    headobj.value = "Asset Type";
                     headobjlist.Add(headobj);
                 }
 

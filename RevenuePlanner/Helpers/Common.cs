@@ -6457,10 +6457,38 @@ namespace RevenuePlanner.Helpers
                                     join package in db.ROI_PackageDetail on pkg.PlanTacticId equals package.PlanTacticId
                                     select package).ToList());
 
+            // Update AnchorTacticId of tactics in cache
+            Dictionary<int, int> planTacAnchorTac = new Dictionary<int, int>();
+            delROIPackage.Distinct().ToList().ForEach(pkg => planTacAnchorTac.Add(pkg.PlanTacticId, 0));
+            Common.UpdateAnchorTacticInCache(planTacAnchorTac);
+
             delROIPackage.ForEach(x => db.Entry(x).State = EntityState.Deleted);
             db.SaveChanges();
         }
-        
+		
+        /// <summary>
+        /// Update package details in tactic list in cache
+        /// Added By : Arpita Soni 
+        /// Ticket : #2357
+        /// </summary>
+        /// <param name="dictPlanTacticAnchorTactic"></param>
+        public static void UpdateAnchorTacticInCache(Dictionary<int,int> dictPlanTacticAnchorTactic)
+        {
+            CacheObject objCache = new CacheObject();
+            List<Custom_Plan_Campaign_Program_Tactic> lstTacticPer = new List<Custom_Plan_Campaign_Program_Tactic>();
+            lstTacticPer = ((List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.CustomTactic.ToString()))
+                                                                               .Where(tactic => tactic.IsDeleted.Equals(false)).ToList();
+            
+            (from dict in dictPlanTacticAnchorTactic
+             join tactic in lstTacticPer on dict.Key equals tactic.PlanTacticId select tactic).ToList()
+             .ForEach(tac => {
+                                tac.AnchorTacticId = dictPlanTacticAnchorTactic[tac.PlanTacticId];
+                                tac.PackageTitle = lstTacticPer.Where(x => x.PlanTacticId == dictPlanTacticAnchorTactic[tac.PlanTacticId]).
+                                                                Select(t => t.Title).FirstOrDefault();
+                            });
+
+            objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), lstTacticPer);
+        }
         #endregion
 	 // added by devanshi #2386 Remove media codes
         #region remove MediaCode
@@ -8611,7 +8639,10 @@ namespace RevenuePlanner.Helpers
                     CampaignTitle = Convert.ToString(row["CampaignTitle"]),
                     ProgramTitle = Convert.ToString(row["ProgramTitle"]),
                     PlanTitle = Convert.ToString(row["PlanTitle"]),
-                    StageTitle = Convert.ToString(row["StageTitle"])
+                    StageTitle = Convert.ToString(row["StageTitle"]),
+                    // Added by Arpita Soni for Ticket #2357 on 07/14/2016
+                    AnchorTacticId = row["AnchorTacticId"] == DBNull.Value ? 0 : Convert.ToInt32(row["AnchorTacticId"]),
+                    PackageTitle = row["PackageTitle"] == DBNull.Value ? "" : Convert.ToString(row["PackageTitle"])
                 }).ToList();
             }
 
@@ -8969,6 +9000,8 @@ namespace RevenuePlanner.Helpers
             viewByListResult.Add(new ViewByModel { Text = PlanGanttTypes.Tactic.ToString(), Value = PlanGanttTypes.Tactic.ToString() });
             viewByListResult.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
             viewByListResult.Add(new ViewByModel { Text = PlanGanttTypes.Status.ToString(), Value = PlanGanttTypes.Status.ToString() });
+            // Added by Arpita Soni for Ticket #2357 on 07/12/2016
+            viewByListResult.Add(new ViewByModel { Text = Enums.DictPlanGanttTypes[PlanGanttTypes.ROIPackage.ToString()].ToString(), Value = Enums.DictPlanGanttTypes[PlanGanttTypes.ROIPackage.ToString()].ToString() });
 
             SqlParameter[] para = new SqlParameter[2];
 

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace RevenuePlanner.Models
 {
@@ -126,6 +124,9 @@ namespace RevenuePlanner.Models
         public string PlanTitle { get; set; }
         public string StageTitle { get; set; }
         public string PlanStatus { get; set; }
+        public int AnchorTacticId { get; set; } // Added by Arpita Soni for Ticket #2357 on 07/14/2016
+        public string PackageTitle { get; set; }  // Added by Arpita Soni for Ticket #2357 on 07/14/2016
+
     }
     // Add by Nishant Sheth
     // Desc :: For stroe customfield in cache memory

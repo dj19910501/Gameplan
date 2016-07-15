@@ -1821,7 +1821,7 @@
         @*// Add By Nishant Sheth
             // Desc:: #1818 display message with filter*@
         <div id="NodatawithfilterGrid" style="display:none;">
-            <span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters applied.</span>
+            <span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>
         </div>
     </div>
     @*Added by Komal Rawal for #1432
@@ -4602,6 +4602,12 @@
             Value : []
         };
         function CallPackageHoneyComb() {
+            var ViewBy = $('#ddlTabViewBy').val();
+            if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
+            {
+                return false;
+            }
+
             var countElements = $('.popover-content').find(".hc-block").length;
             var hasAnchorTactic = 0;
             var isOnlyTactics = true;
@@ -4782,9 +4788,9 @@
 
         // Added by Arpita Soni for Ticket #2354 on 07/06/2016
         //Modified By Komal Rawal for #2355 on 14-07-16
-        var PreventClick = true;
+        var PreventUnPackageClick = true;
         function CallUnPackageHoneyComb() {
-            if (PreventClick == false)
+            if (PreventUnPackageClick == false)
             {
                 var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]").attr('entitytaskid');
                 var anchorTacticId = 0;
@@ -4818,8 +4824,6 @@
                                 getvalue = getvalue.replace(newValue, '');
                                 HomeGrid.cells(rowId, 1).setValue(getvalue);
                             }
-                           
-
                         }
                         else {
                             var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
@@ -4836,18 +4840,30 @@
                                             AnchorTaskIdsList.Id.splice(index, 1);
                                             AnchorTaskIdsList.Value.splice(index, 1);
                                         }
-
                                     }
-
                                 });
                             }
                             else
                             {
                                 AnchorTaskIdsList.Id.push(CalendarTaskID);
                             }
-
-
-
+                            // Added by Arpita Soni for Ticket #2357 on 07/15/2016
+                            var ViewBy =  $('#ddlTabViewBy').val();
+                            if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]') {
+                                var removeEntirePkg = CalendarTaskID.split('_')[0];
+                                gantt.deleteTask(removeEntirePkg);
+                                gantt.refreshData();
+                                // If there is no data then hide grid and display message
+                                if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
+                                    $("#gantt_here").hide();
+                                    $(".pull-right.toggle-status.source-sans-proregular").hide();
+                                    $("#improvements").hide();
+                                    $('#lblMarkringActivitiestitle').hide();
+                                    $('#divCollaborator').hide();
+                                    $('#divCollaboratorCount').hide(); // Added for #2112
+                                    $("#NodatawithfilterCalendar").show();
+                                }
+                            }
                         }
 
                         // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
@@ -4869,10 +4885,16 @@
             RemoveAllHoneyCombData();
             IsPackageView = true;
 
-            PreventClick = false;
+            PreventUnPackageClick = false;
             currentPkgIds = $(obj).attr('pkgtacids').split(',');
             $('.popover-content > #UnpackageHoneyComb').removeAttr('style');
             $('.popover-content > #UnpackageHoneyComb').attr('style', 'cursor: pointer !important');
+            var ViewBy =  $('#ddlTabViewBy').val();
+            if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
+            {
+                $('.popover-content > #PackageHoneyComb').removeAttr('style');
+                $('.popover-content > #PackageHoneyComb').attr('style', 'color:gray; cursor: default !important');
+            }
 
             // Get tactics belongs to the package
             for (i = 0; i < currentPkgIds.length; i++) {
@@ -5135,6 +5157,18 @@
 
                 // Enable/Disable Unpackage Menu from Honeycomb popup
                 $('#honeycomb_content').find("#UnpackageHoneyComb").removeAttr('style');
+                $('#honeycomb_content').find("#PackageHoneyComb").removeAttr('style');
+
+                var ViewBy = $('#ddlTabViewBy').val();
+
+                if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
+                {
+                    $('#honeycomb_content').find("#PackageHoneyComb").attr('style', 'color:gray; cursor: default !important');
+                }
+                else {
+                    $('#honeycomb_content').find("#PackageHoneyComb").attr('style', 'cursor: pointer !important');
+                }
+
                 if (!IsPackageView) {
                     $('#honeycomb_content').find("#UnpackageHoneyComb").attr('style', 'color:gray; cursor: default !important');
                 }
@@ -5197,7 +5231,7 @@
                             {
                                 htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + ExportSelectedIds.Title[i] + '">' + ExportSelectedIds.Title[i] + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                             }
-                          
+
                         }
 
                     }
@@ -5235,7 +5269,7 @@
 
             // Added by Arpita Soni for Ticket #2354 on 07/07/2016
             IsPackageView = false;
-            PreventClick = true;
+            PreventUnPackageClick = true;
             ExportSelectedIds = {
                 TaskID: [],
                 Title: [],
@@ -5314,7 +5348,7 @@
                 }
 
             }
-       
+
         var index = ExportSelectedIds.TaskID.indexOf(taskId);
         if (index >= 0) {
             ExportSelectedIds.TaskID.splice(index, 1);
@@ -5332,8 +5366,8 @@
         item.parentNode.parentNode.parentNode.remove();
         var HoneyContent = $('.popover-content').find(".hc-block").length;
         if (HoneyContent == 0) {
-                PreventClick = true;
-                IsPackageView = false;
+            PreventUnPackageClick = true;
+            IsPackageView = false;
             $(".popover ").hide();
             $(".honeycombbox").hide();
         }
@@ -5379,6 +5413,7 @@
                 success: function (data) {
                     var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
                     var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                    var ViewBy = $('#ddlTabViewBy').val();
 
                     if (IsPromotion) {
                         TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).setAttribute("pkgtacids", data.remainItems.toString());
@@ -5388,14 +5423,17 @@
                                 if (AnchorID == CalendarTaskID) {
                                     AnchorTaskIdsList.Value[index] = data.remainItems.toString()
                                 }
-
                             });
                         }
                         else {
                             AnchorTaskIdsList.Id.push(CalendarTaskID);
                             AnchorTaskIdsList.Value.push(data.remainItems.toString());
                         }
-
+                        if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
+                        {
+                            gantt.deleteTask(taskId);
+                            gantt.refreshData();
+                        }
                         // Update count on Honeycomb icon
                         // Conditions for Calender
                         $("div[name1='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
@@ -5420,6 +5458,11 @@
 
                         });
                         AnchorTaskIdsList.Id.push(CalendarTaskID);
+                        if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]') {
+                            var removeEntirePkg = taskId.split('_')[0];
+                            gantt.deleteTask(removeEntirePkg);
+                            gantt.refreshData();
+                        }
 
                         // If asset tactic is deleted then entire package deleted so remove all data from honeycomb
                         RemoveAllHoneyCombData();
@@ -5461,6 +5504,11 @@
             // Delete tactics from database
             $.ajax({
                 type: 'POST',
+                beforeSend: function (x) {
+                    if (ROITacticType.toLowerCase() != '@Enums.AssetType.Asset.ToString().ToLower()') {
+                        myApp.hidePleaseWait();
+                    }
+                },
                 url: '@Url.Content("~/Home/UnpackageTactics")',
                 data: { AnchorTacticId: planTacticId, IsPromotion: IsPromotion },
                 success: function (data) {

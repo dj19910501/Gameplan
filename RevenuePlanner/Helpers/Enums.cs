@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.Serialization;
 
 /*
  *  Author: Maninder Singh Wadhva
@@ -1453,6 +1452,17 @@ namespace RevenuePlanner.Helpers
             Asset,
             Promotion
         }
+
+        // Added by Arpita Soni for Ticket #2357 on 07/14/2016
+        public static Dictionary<string, string> DictPlanGanttTypes = new Dictionary<string, string>()
+        {
+            {PlanGanttTypes.Tactic.ToString(), "Tactic"},
+            {PlanGanttTypes.Request.ToString(), "Request"},
+            {PlanGanttTypes.Custom.ToString(), "Custom"},
+            {PlanGanttTypes.Stage.ToString(), "Stage"},
+            {PlanGanttTypes.Status.ToString(), "Status"},
+            {PlanGanttTypes.ROIPackage.ToString(), "ROI Package"},
+        };
     }
 
     #region Authorization
@@ -1482,7 +1492,8 @@ namespace RevenuePlanner.Helpers
         Request,
         Custom,
         Stage,
-        Status
+        Status,
+        ROIPackage  // Added by Arpita Soni for Ticket #2357 on 07/14/2016
     }
 
     #endregion
