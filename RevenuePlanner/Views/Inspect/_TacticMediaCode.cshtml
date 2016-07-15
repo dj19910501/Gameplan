@@ -20,7 +20,7 @@
 else
 {
     if (NoCustomfieldConfig)
-    { <div>No MediaCode custom Fields Configuration available.</div>}
+    { <div>Media Code  Custom Fields are not configured.</div>}
     else
     {
         <div>No records available.</div>
@@ -316,10 +316,12 @@ else
                         var newmediacode = data.MediaCode;
                         MediaCodeGrid.cells(row_id, GeneratecolIndex).setValue("<span class='spnMediacode'>" + newmediacode + "</span>");
                         MediaCodeGrid.cells(row_id, buttoncolIndex).setValue("<span class='plus-circle'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + row_id + "  onclick=OpenGridPopup(event); title='Add Media Code'></i></span><div class=honeycombbox-icon-gantt rowid=" + row_id + " onclick=AddRemoveMediaCode(this); title='Select' altid=" + data.NewMediaCodeId.toString() + "></div><span class='archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + row_id + " onclick=ArchiveMediaCode(event); title='Archive'></i></span>");
+                        MediaCodeGrid.setCellTextStyle(row_id, GeneratecolIndex, "color:#999");
 
                         MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
                             if (col_index > 2) {
                                 MediaCodeGrid.cells(row_id, col_index).setAttribute("locked", "1");
+                                MediaCodeGrid.setCellTextStyle(row_id, col_index, "color:#999");
                             }
                         });
                         if (data.SuccessMessage != null && data.SuccessMessage != "") {
@@ -398,6 +400,8 @@ else
                     MediaCodeGrid.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + rowId + " onclick=GenerateMediaCode(this); />")
 
                 }
+                var newvale = htmlDecode(nValue);
+                MediaCodeGrid.cells(rowId, cellInd).setValue(newvale);
             }
             else if (nValue == '') {
                 if (isrequired.toString().toLowerCase() == "true") {
@@ -418,7 +422,7 @@ else
         var i;
         var columndata = "0";
         //columndata = columndata + ",<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " onclick=ArchiveMediaCode(event)></i></span><span class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  onclick=OpenGridPopup(event)></i></span><div class=honeycombbox-icon-gantt rowid=" + newId + " onclick=AddRemoveMediaCode(this)></div>";
-        columndata = columndata + ",<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + " title='Add Media Code' ></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' ></i></span>";
+        columndata = columndata + ",<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + " title='Add Media Code' ></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event) ></i></span>";
         var mediacodeButton = ",<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + newId + " onclick=GenerateMediaCode(this); disabled='disabled' />";
         columndata = columndata + mediacodeButton;
         for (i = 2; i < cnt  ; i++) {
@@ -432,7 +436,7 @@ else
             MediaCodeGrid.copyRowContent(currentRowID, newId);
             MediaCodeGrid.cells(newId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + newId + " onclick=GenerateMediaCode(this); />");
             //MediaCodeGrid.cells(newId, 1).setValue("<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " onclick=ArchiveMediaCode(event)></i></span><span class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  onclick=OpenGridPopup(event)></i></span><div class=honeycombbox-icon-gantt rowid=" + newId + " onclick=AddRemoveMediaCode(this)></div>");
-            MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive'></i></span>");
+            MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event)></i></span>");
 
             MediaCodeGrid.cells(newId, 0).setValue("0");
         }
@@ -460,8 +464,12 @@ else
 
             });
         }
-        else
-            return false;
+        else {
+            setTimeout(function () {
+                MediaCodeGrid.deleteRow(rowid);
+            }, 200);
+            return;
+        }
     }
     
 </script>

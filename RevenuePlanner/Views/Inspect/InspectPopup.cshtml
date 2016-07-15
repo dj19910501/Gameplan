@@ -335,7 +335,7 @@
                       RemoveTabClass();
                       $(this).removeClass("pull-left");
                       $(this).addClass("active pull-left");
-                      //  $("#errorMessage").css("display", "none");
+                        $("#errorMessage").css("display", "none");
                       $("#successMessage").css("display", "none");
                       $('#MultiSelectProcced').css("display", "none");
                       var planTacticId = $("#hdnPlanTacticId").val();
@@ -388,7 +388,7 @@
               //Modified for #1318 by Komal Rawal to handle the Save function
               var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
               var planTacticId = $("#hdnPlanTacticId").val();
-
+              $("#hdnInspectMode").val('@Enums.InspectPopupMode.Edit.ToString()');
               if ($('#EditForm').hasClass('edit-icon-white')) {
                   $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
                   $('#EditForm').addClass('Save-icon-white');
@@ -486,6 +486,10 @@
                   // Added by Arpita Soni for Ticket #2237 on 06/09/2016
                   else if (activeTab == TabLineItem) {
                           $('.close-x-big-icon').trigger('click');
+                  }
+                      // Added by Devanshi gandhi for Ticket #2368 on 06/09/2016
+                  else if (activeTab == TabMediaCode) {
+                      $('.close-x-big-icon').trigger('click');
                   }
               }
 
