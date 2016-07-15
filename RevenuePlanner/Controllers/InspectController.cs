@@ -13699,15 +13699,21 @@ namespace RevenuePlanner.Controllers
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             ViewBag.TacticID = Convert.ToString(tacticId);
             bool IsArchive = true;
+            int? linkedTacticId = null;
             try
             {
-                var isasset = db.Plan_Campaign_Program_Tactic.Where(a => a.PlanTacticId == tacticId).Select(a => a.TacticType.AssetType).FirstOrDefault();
-                if (isasset != null && isasset == Convert.ToString(Enums.AssetType.Asset))
+                var objtactic = db.Plan_Campaign_Program_Tactic.Where(a => a.PlanTacticId == tacticId).FirstOrDefault();
+                if (objtactic != null )
+                {
+                    linkedTacticId = objtactic.LinkedTacticId;
+                if(objtactic.TacticType.AssetType == Convert.ToString(Enums.AssetType.Asset))
                 {
                     objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
                     return PartialView("_TacticMediaCode", objplangrid);
 
                 }
+                }
+                
                 if (IsUnarchive)
                 {
                     IsArchive = ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, false);
@@ -13731,20 +13737,8 @@ namespace RevenuePlanner.Controllers
                         }).ToList()
 
                     }).ToList();
-
-                var lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId && a.CustomField.IsDeleted == false).ToList().Select(a => new TacticCustomfieldConfig
-                {
-                    CustomFieldId = a.CustomFieldId,
-                    CustomFieldName = a.CustomField.Name,
-                    CustomFieldTypeName = a.CustomField.CustomFieldType.Name,
-                    IsRequired = a.CustomField.IsRequired,
-                    Sequence = a.Sequence,
-                    Option = a.CustomField.CustomFieldOptions.Select(opt => new CustomFieldOptionList
-                    {
-                        CustomFieldOptionId = opt.CustomFieldOptionId,
-                        CustomFieldOptionValue = opt.Value
-                    }).ToList()
-                }).OrderBy(a => a.Sequence).ToList();
+                var lstmediaCodeCustomfield =(List<TacticCustomfieldConfig>)objCache.Returncache(Enums.CacheObject.MediaCodeCustomfieldConfiguration.ToString());
+              
                 if (MediaCodecustomFieldList.Count != 0 && lstmediaCodeCustomfield.Count != 0)
                 {
                     objplangrid = LoadAllMediacodeGrid(tacticId, MediaCodecustomFieldList, lstmediaCodeCustomfield, InsepectMode, false);
@@ -13761,7 +13755,8 @@ namespace RevenuePlanner.Controllers
                 }
                 if (lstmediaCodeCustomfield.Count == 0)
                     ViewBag.NoCustomField = true;
-
+                if (linkedTacticId != null)
+                    ViewBag.LinkedTacticId = linkedTacticId;
             }
             catch (Exception objException)
             {
@@ -13812,7 +13807,7 @@ namespace RevenuePlanner.Controllers
                 headobjother.id = "selectall";
                 headobjother.sort = "na";
                 headobjother.width = 100;
-                headobjother.value = "<input type='checkbox' value='SelectAll'  title='SelectAll' onchange='SelectAllHoneyComb();' class='selectInput'><span class='selectall'> Select All</span></input>";
+                headobjother.value = "<input type='checkbox' value='SelectAll'  title='SelectAll'  class='selectInput'><span class='selectall'> Select All</span></input>";
                 // headobjother.value = "<input type='checkbox' title='Select All'/>";
                 headobjlist.Add(headobjother);
 
@@ -13914,6 +13909,7 @@ namespace RevenuePlanner.Controllers
             {
                 List<int> lstcustomfieldid = lstcustomfieldvalue.Select(a => a.CustomFieldId).ToList();
                 List<MediaCodes_CustomField_Configuration> lstmediacodecustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId && a.CustomField.IsDeleted == false).ToList();
+
                 List<CustomFieldOption> lstCustomFieldOption = db.CustomFieldOptions.Where(a => lstcustomfieldid.Contains(a.CustomFieldId)).ToList();
                 if (lstcustomfieldvalue != null && lstcustomfieldvalue.Count > 0)
                 {
@@ -13985,6 +13981,8 @@ namespace RevenuePlanner.Controllers
             catch (Exception objException)
             {
                 ErrorSignal.FromCurrentContext().Raise(objException);
+                return Json(new { Success = false });
+
             }
             return Json(new { Success = true });
         }
@@ -14068,7 +14066,7 @@ namespace RevenuePlanner.Controllers
                 headobjother.id = "selectall";
                 headobjother.sort = "na";
                 headobjother.width = 100;
-                headobjother.value = "<input type='checkbox' value='SelectAll'  title='SelectAll' onchange='SelectAllHoneyComb();' class='selectInput'><span class='selectall'> Select All</span></input>";
+                headobjother.value = "<input type='checkbox' value='SelectAll'  title='SelectAll'  class='selectInput'><span class='selectall'> Select All</span></input>";
                 headobjlist.Add(headobjother);
 
                 headobjother = new PlanHead();
@@ -14143,15 +14141,11 @@ namespace RevenuePlanner.Controllers
         #region Method to archive mediacode and bind Archive media code list
         public PartialViewResult ArchiveMediaCode(int tacticId, string MediaCodeId, string Mode)
         {
-            List<PlanHead> headobjlist = new List<PlanHead>();
-            List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
-            PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
+          
+           
             PlanController objPlanController = new PlanController();
             Plangrid objplangrid = new Plangrid();
-            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
-            string mode = Enums.InspectPopupMode.ReadOnly.ToString();
-            string customFieldEntityValue = string.Empty;
-            string DropdowList = Enums.CustomFieldType.DropDownList.ToString();
+           
             try
             {
 
@@ -14172,21 +14166,9 @@ namespace RevenuePlanner.Controllers
                     }).ToList()
 
                 }).ToList();
+                var lstmediaCodeCustomfield = (List<TacticCustomfieldConfig>)objCache.Returncache(Enums.CacheObject.MediaCodeCustomfieldConfiguration.ToString());
 
 
-                var lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId && a.CustomField.IsDeleted == false).ToList().Select(a => new TacticCustomfieldConfig
-                {
-                    CustomFieldId = a.CustomFieldId,
-                    CustomFieldName = a.CustomField.Name,
-                    CustomFieldTypeName = a.CustomField.CustomFieldType.Name,
-                    IsRequired = a.CustomField.IsRequired,
-                    Sequence = a.Sequence,
-                    Option = a.CustomField.CustomFieldOptions.Select(opt => new CustomFieldOptionList
-                    {
-                        CustomFieldOptionId = opt.CustomFieldOptionId,
-                        CustomFieldOptionValue = opt.Value
-                    }).ToList()
-                }).OrderBy(a => a.Sequence).ToList();
 
                 if (MediaCodecustomFieldList.Count != 0)
                 {
@@ -14212,9 +14194,9 @@ namespace RevenuePlanner.Controllers
             bool isarchived = false;
             try
             {
-                if (MediaCodeId != null && MediaCodeId != "0" && MediaCodeId != "")
+                if (!string.IsNullOrEmpty(MediaCodeId) && MediaCodeId != "0")
                 {
-                    int CodeId = Convert.ToInt32(MediaCodeId);
+                    int CodeId = Int32.Parse(MediaCodeId);
                     var MediacodeObj = db.Tactic_MediaCodes.Where(a => a.TacticId == tacticId && a.MediaCodeId == CodeId).FirstOrDefault();
                     if (MediacodeObj != null)
                     {
@@ -14238,10 +14220,8 @@ namespace RevenuePlanner.Controllers
                                 foreach (var item in objmediacodecustomfield)
                                     db.Entry(item).State = EntityState.Deleted;
                                 db.SaveChanges();
-                                if (Isarchive)
                                     MediacodeObj.IsDeleted = false;
-                                else
-                                    MediacodeObj.IsDeleted = true;
+                               
                             }
                         }
                         db.Entry(MediacodeObj).State = EntityState.Modified;

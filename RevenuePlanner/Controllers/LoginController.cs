@@ -363,7 +363,25 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     //End Bhavesh
-
+                    //added by devanshi cache media code customfield configuration
+                    #region add tactic media code customfield configuration to cache
+                    CacheObject objCache = new CacheObject();
+                    var lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId && a.CustomField.IsDeleted == false).ToList().Select(a => new TacticCustomfieldConfig
+                    {
+                        CustomFieldId = a.CustomFieldId,
+                        CustomFieldName = a.CustomField.Name,
+                        CustomFieldTypeName = a.CustomField.CustomFieldType.Name,
+                        IsRequired = a.CustomField.IsRequired,
+                        Sequence = a.Sequence,
+                        Option = a.CustomField.CustomFieldOptions.Select(opt => new CustomFieldOptionList
+                        {
+                            CustomFieldOptionId = opt.CustomFieldOptionId,
+                            CustomFieldOptionValue = opt.Value
+                        }).ToList()
+                    }).OrderBy(a => a.Sequence).ToList();
+                    objCache.AddCache(Enums.CacheObject.MediaCodeCustomfieldConfiguration.ToString(), lstmediaCodeCustomfield);
+                    #endregion
+                    //end
                     //Redirect users logging in for the first time to the change password module
                     TempData.Clear();
                     if (obj.LastLoginDate == null)

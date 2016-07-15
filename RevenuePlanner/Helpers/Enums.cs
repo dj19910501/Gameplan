@@ -1393,7 +1393,8 @@ namespace RevenuePlanner.Helpers
             CustomField,
             CustomFieldEntity,
             CustomFieldOption,
-            StageList
+            StageList,
+            MediaCodeCustomfieldConfiguration
         }
 
         public enum DownloadCSV
