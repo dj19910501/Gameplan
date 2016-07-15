@@ -15779,7 +15779,7 @@ a:focus, a:hover{outline:0 none !important}
 
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, 
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td,
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td, 
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, 
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td{
     background-color: #f0f0f0;
