@@ -1054,8 +1054,23 @@ END
 
 
 GO
-
-
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[vClientWise_Tactic]'))
+DROP VIEW [dbo].[vClientWise_Tactic]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[vClientWise_Tactic]'))
+EXEC dbo.sp_executesql @statement = N'CREATE VIEW [dbo].[vClientWise_Tactic] AS
+SELECT  a.PlanTacticId, a.Title, me.*, e.ClientId from Plan_Campaign_Program_Tactic a
+inner join Tactic_MediaCodes me on me.TacticId=a.PlanTacticId
+inner join Plan_Campaign_Program b on a.PlanProgramId=b.PlanProgramId
+inner join Plan_Campaign c on b.PlanCampaignId=c.PlanCampaignId
+inner join [Plan] d on c.PlanId=d.PlanId
+inner join Model e on d.ModelId=e.ModelId
+where a.IsDeleted=0  and b.IsDeleted=0 and c.IsDeleted=0 and e.IsDeleted=0' 
+GO
 -- ===========================Please put your script above this script=============================
 -- Added By : Maitri Gandhi
 -- Added Date : 2/22/2016

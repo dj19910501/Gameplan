@@ -17,7 +17,7 @@ GO
 
 CREATE VIEW [dbo].[vClientWise_Tactic] AS
 SELECT  a.PlanTacticId, a.Title, me.*, e.ClientId from Plan_Campaign_Program_Tactic a
-left join Tactic_MediaCodes me on me.TacticId=a.PlanTacticId
+inner join Tactic_MediaCodes me on me.TacticId=a.PlanTacticId
 inner join Plan_Campaign_Program b on a.PlanProgramId=b.PlanProgramId
 inner join Plan_Campaign c on b.PlanCampaignId=c.PlanCampaignId
 inner join [Plan] d on c.PlanId=d.PlanId
