@@ -40,6 +40,8 @@
     List<RevenuePlanner.Models.TacticTypeModel> tacticTypeList = Model.lstTacticType != null ? Model.lstTacticType : new List<RevenuePlanner.Models.TacticTypeModel>();
     List<RevenuePlanner.Models.PlanListModel> planList = Model.lstPlan != null ? Model.lstPlan : new List<RevenuePlanner.Models.PlanListModel>();
 
+    //#2327 boost section loads on permission - zz
+    bool isBoostAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit);
 }
 
 @Html.Hidden("IsViewOnly")
@@ -2059,6 +2061,7 @@
     <div id="divBackground" class="modal-backdrop fade in" style="display: none; z-index: 2502 !important;"></div>
 
     <script type="text/javascript">
+        var isBoostAuthorized = @(isBoostAuthorized? "true" : "false");
         var IslineItemDelete = false;   //Added By Maitri for #2040 Observation
         var scrollstate = 0;
         var bodyscrollpos = 0;
@@ -2246,7 +2249,7 @@
                 $('#IsGridView').val("True");
                 $("#CalenderView").hide();
                 $("#divgridview").show();
-                $("#ImprovementGrid").show();
+                if (isBoostAuthorized) $("#ImprovementGrid").show();
                 //     $("#btnPlanReport").css("display", "none");
                 //Call the function for grid view
                 isCopyTactic = 0;
@@ -2380,7 +2383,7 @@
 
                     $("#CalenderView").hide();
                     $("#divgridview").show();
-                    $("#ImprovementGrid").show();
+                    if (isBoostAuthorized) $("#ImprovementGrid").show();
                     LoadPlanGrid();
                     //Modified By Komal Rawal for #1447 - to Change the header data according to the filter selected.
                     GetHealderDataPer(SelectedPlanIds, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId);// Modified By Nishant Sheth Desc header value wrong with plan tab
@@ -3046,7 +3049,7 @@
                         bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
                     });
 
-                    LoadImprovementGrid(CurrentPlanId)
+                    if (isBoostAuthorized) LoadImprovementGrid(CurrentPlanId);
                 }
             });
 
@@ -7044,7 +7047,7 @@
                                 LoadPlanGrid();
                                 gridSearchFlag = 0;
                             }
-                            else {
+                            else if (isBoostAuthorized) {
                                 var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
                                 $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
 
@@ -7147,7 +7150,7 @@
                             LoadPlanGrid();
                             gridSearchFlag = 0;
                         }
-                        else {
+                        else if (isBoostAuthorized) {
                             var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
                             $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
 
