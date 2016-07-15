@@ -104,6 +104,7 @@ a{cursor:pointer !important}
 .dropdown-menu > li > a{color:inherit}
 .btn.btn-large{font-size:18px}
 .no-btm-bdr{border-bottom:0 !important}
+.hide-visibility{visibility:hidden}
 
 /*  ============ End General style ============ */
 #header {
@@ -8576,14 +8577,14 @@ div.sub {
     background: #DFF0F8;
 }
 .tacticLevel {
-    background: #eaeaea;
+    background: #dfdfdf; /*eaeaea change for #2312*/
 }
 .programLevel {
-    background:#ebf4f6; /*#E4F1E1; change for #2312 */
+    background:#dbf8ff ; /*#E4F1E1; #ebf4f6 change for #2312 */
 }
 
 .lineitemLevel {
-    background: #F2F2F2;
+    background: #FFF; /*F2F2F2 change for #2312*/
 }
 .budget-table .lineitemLevel {
     background: #fff;
@@ -15873,6 +15874,9 @@ input.selectInput{
 }
 
 #popupMediCode.btn-dropdwn{ position: absolute; top: 40px; z-index: 11;}
+
+.nav.nav-tabs.version-tab{margin-bottom: 20px; padding-bottom: 10px;margin-left:0; margin-right:0}
+
 
 /* ********************  new styles  - End ******************** */
 

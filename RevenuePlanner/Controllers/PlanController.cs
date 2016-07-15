@@ -44,7 +44,7 @@ namespace RevenuePlanner.Controllers
         private string PeriodChar = "Y";
         public const string TacticCustomTitle = "TacticCustom";
         private const string Open = "1";
-        private const string PlanBackgroundColor = "#e6e6e6";
+        private const string PlanBackgroundColor = "#b4cfd5";
         private const string Plan = "Plan";
         private const string OtherBackgroundColor = "#f2f2f2";
         private const string Campaign = "Campaign";

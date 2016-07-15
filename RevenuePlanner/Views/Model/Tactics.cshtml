@@ -5,25 +5,25 @@
     ViewBag.Title = "Tactic Selection";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Model;
     Layout = "~/Views/Shared/_Layout.cshtml";
-                                                               string PublishedMsg = ViewBag.ModelPublishComfirmation;
+    string PublishedMsg = ViewBag.ModelPublishComfirmation;
     @Html.Hidden("PublishedMsg", PublishedMsg);
                                               bool PublisheStatus = ViewBag.Flag;
-    @Html.Hidden("PublisheStatus", PublisheStatus);
-                                                  var currentdate = System.DateTime.Today.ToShortDateString();
-                                                  bool IsModelIntegrated = ViewBag.IsModelIntegrated;
+                                            @Html.Hidden("PublisheStatus", PublisheStatus);
+                                                                                          var currentdate = System.DateTime.Today.ToShortDateString();
+                                                                                          bool IsModelIntegrated = ViewBag.IsModelIntegrated;
 
     // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
-    
+
     @Html.Hidden("IsModelIntegrated", IsModelIntegrated);
-    string TargetStageNotAssociatedWithModelMsg = Convert.ToString(ViewBag.TargetStageNotAssociatedWithModelMsg);   // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
-    @Html.Hidden("TargetStageNotAssociatedWithModelMsg", TargetStageNotAssociatedWithModelMsg);                     // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
-    // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-    string IsOwner = Convert.ToString(ViewBag.IsOwner);
-    @Html.Hidden("IsOwner", IsOwner);
-    // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-     ViewBag.ModelIdPartial = Model.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
-     ViewBag.PageTitle = "Tactics";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
-                                    
+                                                        string TargetStageNotAssociatedWithModelMsg = Convert.ToString(ViewBag.TargetStageNotAssociatedWithModelMsg);   // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+                                                        @Html.Hidden("TargetStageNotAssociatedWithModelMsg", TargetStageNotAssociatedWithModelMsg);                     // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+                                                                                                                                                  // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
+                                                                                                                                                  string IsOwner = Convert.ToString(ViewBag.IsOwner);
+                                                                                                                                                @Html.Hidden("IsOwner", IsOwner);
+                                                                                                                                                                                // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
+                                                                                                                                                                                ViewBag.ModelIdPartial = Model.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+                                                                                                                                                                                ViewBag.PageTitle = "Tactics";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+
 }
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.slidepanel.css")" type="text/css" />
@@ -32,7 +32,7 @@
 {
     @Html.Partial("~/Views/Model/_model.cshtml")
 }
-    @Html.Hidden("hdnMsg", (string)TempData["ErrorMessage"], new { id = "hdnMsg" })
+@Html.Hidden("hdnMsg", (string)TempData["ErrorMessage"], new { id = "hdnMsg" })
 <!--success message-->
 <div id="successMessage" class="alert hide alert-success message-position">
     <a class="close">×</a>
@@ -47,47 +47,62 @@
 
 <div id="DivBackgroundModel" class="modal-backdrop fade in" style="z-index: 1501;display: none;"></div>
 @Html.Partial("~/Views/Model/_publishmodel.cshtml")
-<ul class="nav nav-tabs">
-    @if (Model.Versions != null)
+
+@if (Model.Versions != null)
+{
+    foreach (ModelVersion v in Model.Versions)
     {
-        foreach (ModelVersion v in Model.Versions)
+        if (v.IsLatest)
+        {
+            @Html.HiddenFor(model => v.ModelId, new { id = "VersionModelId" })  @*changed for #2312 *@ 
+            <input type="hidden" value="@v.ModelId" id="latestModelId" />
+
+            <div class="title-header source-sans-proregular" title="@v.Title"> 
+                <h2 id="lblTitle" >@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
+
+            </div>
+        }
+    }
+    <ul class="nav nav-tabs">
+        @foreach (ModelVersion v in Model.Versions)
         {
             if (v.IsLatest)
             {
-        @Html.HiddenFor(model => v.ModelId, new { id = "VersionModelId" })
-        <input type="hidden" value="@v.ModelId" id="latestModelId" />
-    
-        <li class="title-header source-sans-proregular" title="@v.Title">
-            <h2 id="lblTitle" style="margin-left:0">@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
 
-        </li>
-        <li id="ver_@v.ModelId" class="pull-right"  title="@v.Version">
-            <a href="#" name="versionId" id="@v.ModelId"  onclick="LoadModelData(@v.ModelId,true)">@Html.Raw("v")@v.Version</a>
-        </li>
+                <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
+                    <a href="#" name="versionId" id="@v.ModelId" onclick="LoadModelData(@v.ModelId,true)">@Html.Raw("v")@v.Version</a>
+                </li>
+
             }
             else
             {
-        @Html.HiddenFor(model => v.ModelId, new { id = "VersionModelId" })
-        <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
-            <a href="#"  name="versionId"  id="@v.ModelId" >@Html.Raw("v")@v.Version</a>
-        </li>
+                @Html.HiddenFor(model => v.ModelId, new { id = "VersionModelId" })
+
+                <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
+                    <a href="#" name="versionId" id="@v.ModelId">@Html.Raw("v")@v.Version</a>
+                </li>
+
             }
         }
-        
-        if (Model.Versions.Count == 0)
-        {
-        <li class="title-header source-sans-proregular" title="Title">
-            <h2 style="margin-left:0">@Html.Raw("Title") <span class="gray source-sans-prolight" title="Draft">@Html.Raw("Draft")</span></h2>
-        </li>
-        <li class="active pull-right" title="1.0">
-            <a href="#">@Html.Raw("v")1.0</a>
-        </li>
-        <li class="pull-right">@*#585*@
-            <a href="#">@Html.Raw("No Saved Versions")</a>
-        </li>
-        }
+    </ul>
+
+    if (Model.Versions.Count == 0)
+    {
+        <div class="title-header source-sans-proregular" title="Title">
+            <h2>@Html.Raw("Title") <span class="gray source-sans-prolight" title="Draft">@Html.Raw("Draft")</span></h2>
+        </div>
+        <ul class="nav nav-tabs">
+            <li class="active pull-right" title="1.0">
+                <a href="#">@Html.Raw("v")1.0</a>
+            </li>
+            <li class="pull-right">
+                @*#585*@
+                <a href="#">@Html.Raw("No Saved Versions")</a>
+            </li>
+        </ul>
     }
-</ul>
+}
+
 
 @Html.Hidden("0", (int)ViewBag.Version, new { id = "mode" })
 @Html.Hidden("EffectiveDate", currentdate)
@@ -118,12 +133,12 @@
     {
         <button id="create_new_tactic" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular pull-left font-size14" type="button">Create New Tactic</button>
         <button class="btn btn-blue btn-large text-shadow-blue source-sans-proregular pull-right font-size14" id="continue" type="button">Save & Continue</button>
-   }
-   
+    }
+
 </div>
 
- @*Added By Kalpesh Sharma Functional and code review #560 07-16-2014   *@
- @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
+@*Added By Kalpesh Sharma Functional and code review #560 07-16-2014   *@
+@Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
 
 <script type="text/javascript">
     var lastModelId = null;
@@ -134,7 +149,7 @@
         $('#dp_start .add-on').click(function () {
             $('#dp_start').datepicker('show');
         })
-      
+
         var ismsg = $("#hdnMsg").val();
         if ($('#cSuccess').html() != '') {
             $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
@@ -148,7 +163,7 @@
             window.location.href = "@Url.Action("Create", "Model")";
         });
 
-        if ($('#hdnModelId').val() == $("#latestModelId").val()) {            
+        if ($('#hdnModelId').val() == $("#latestModelId").val()) {
             if ($('#hdnStatus').val() == "Draft" && ($('#IsOwner').val().toLowerCase() == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true"))) {   // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
                 $("#publish").removeClass('btn-blue-disable');
                 $("#publish").addClass('btn-blue');
@@ -161,16 +176,16 @@
             if ($('#hdnModelId').val() != modelId) {
                 modelId = $('#hdnModelId').val();
                 if ('@ViewBag.IsAuthorized'.toLowerCase() == 'true') {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-                $("#create_new_tactic").hide();
-                $("#continue").hide();
-                $("#liDuplicate").hide();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
-            }
+                    $("#create_new_tactic").hide();
+                    $("#continue").hide();
+                    $("#liDuplicate").hide();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
+                }
             }
             else {
                 if ('@ViewBag.IsAuthorized'.toLowerCase() == 'true') {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-                $("#create_new_tactic").show();
-                $("#continue").show();
-                $("#liDuplicate").show();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
+                    $("#create_new_tactic").show();
+                    $("#continue").show();
+                    $("#liDuplicate").show();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
                 }
             }
 
@@ -202,34 +217,34 @@
                 //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
                 var titleName = htmlEncode($("#copymodeldesc").val().trim());
 
-                    $.ajax(
-                    {
-                        type: "GET",
-                        cache: false,
-                        url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-                        data: { Title: titleName },
-                        dataType: "json",
-                        success: function (data) {
-                    if (data == 'exist') {
-                        var msgspan = "@Common.objCached.ModelAlreadyExits";
-                        $("#errorMessagecopy").css("display", "block");
-                        $("#spanErrorMessageModelcopy").text(msgspan);
+                $.ajax(
+                {
+                    type: "GET",
+                    cache: false,
+                    url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
+                    data: { Title: titleName },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data == 'exist') {
+                            var msgspan = "@Common.objCached.ModelAlreadyExits";
+                            $("#errorMessagecopy").css("display", "block");
+                            $("#spanErrorMessageModelcopy").text(msgspan);
+                        }
+                        else {
+                            $('#DivPartialShareModelDuplicate').hide();
+                            DuplicateModel();
+                        }
                     }
-                    else {
-                        $('#DivPartialShareModelDuplicate').hide();
-                        DuplicateModel();
-                    }
-                }
-            });
-    }
-        return false;
-    });
+                });
+            }
+            return false;
+        });
 
         $(document).on("click", "a[name='versionId']", function (e) {
             $('#successMessage').slideUp();
             $('#errorMessage').slideUp();
             var latest = $("#latestModelId").val();
-            var id = $(this).attr("id");          
+            var id = $(this).attr("id");
             if (id == latest) {
                 if ($('#IsOwner').val().toLowerCase() == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true")) {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
                     $("#create_new_tactic").show();
@@ -238,8 +253,8 @@
                 $("#save_tactic").show();
                 $("#CreateTactic").show();
                 $("#NewModel").removeClass('btn-blue-disable');
-                $("#NewModel").addClass('btn-blue');                
-                $("#mode").val(latest);              
+                $("#NewModel").addClass('btn-blue');
+                $("#mode").val(latest);
                 if ($('#hdnStatus').val() == "Draft" && ($('#IsOwner').val().toLowerCase() == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true"))) {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
                     $("#publish").removeClass('btn-blue-disable');
                     $("#publish").addClass('btn-blue');
@@ -296,16 +311,16 @@
                                 $("#lblTitle").html(r[i].Title + '<span class="gray source-sans-prolight">' + r[i].Status + '</span>');
                                 if (id == latest) {
                                     if ($('#IsOwner').val().toLowerCase() == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true")) {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-                                    $("#create_new_tactic").show();
-                                    $("#continue").show();
+                                        $("#create_new_tactic").show();
+                                        $("#continue").show();
                                     }
                                     $("#save_tactic").show();
                                     $("#CreateTactic").show();
                                     $("#NewModel").removeClass('btn-blue-disable');
                                     $("#NewModel").addClass('btn-blue');
-                                    $("#mode").val(latest);                                    
+                                    $("#mode").val(latest);
                                     if (r[i].Status == "Draft" && ($('#IsOwner').val().toLowerCase() == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true"))) { // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-                                       
+
                                         $("#publish").removeClass('btn-blue-disable');
                                         $("#publish").addClass('btn-blue');
                                         $("#publish").removeAttr('disabled');  //Added by Rahul Shah to make editable publish model button
@@ -320,8 +335,8 @@
                                 }
                                 else {
                                     if ($('#IsOwner').val().toLowerCase() == 'true' || ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == "true")) {   // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-                                    $("#create_new_tactic").hide();
-                                    $("#continue").hide();
+                                        $("#create_new_tactic").hide();
+                                        $("#continue").hide();
                                     }
                                     $("#save_tactic").hide();
                                     $("#CreateTactic").hide();
@@ -378,7 +393,7 @@
             if (tactic != 'undefined') {
                 if (tactic.length) {
                     for (i in tactic) {
-                        /*  TFS Bug - 179 : Improper behavior when editing Tactic in model 
+                        /*  TFS Bug - 179 : Improper behavior when editing Tactic in model
                             Changed By : Nirav shah on 6 Feb 2014
                             Change : pass new parameter modelid
                         */
@@ -398,20 +413,20 @@
             }
         }
         //add row in tactics table //changes done by uday for PL #497 changed mlqs to projectedstagevalue
-        function addRowTactic(_index, _id, _Clientid, _modelId, _title, Stage,_AssetType, _ProjectedStageValue, _revenue, _IsDeployedToIntegration, _IsTargetStageOfModel, _IsDeployedToModel) { // parameter _IsTargetStageOfModel Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+        function addRowTactic(_index, _id, _Clientid, _modelId, _title, Stage, _AssetType, _ProjectedStageValue, _revenue, _IsDeployedToIntegration, _IsTargetStageOfModel, _IsDeployedToModel) { // parameter _IsTargetStageOfModel Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
             var $tableTactics = $('#table_tactics > tbody');
             var $table_activities = $('#table_activities > tbody');
             var $html = "";
             if ($tableTactics.find("tr td.gray").html() == "No saved tactics to display.") {
                 $tableTactics.find("tr").remove();
             }
-            /*  TFS Bug - 179 : Improper behavior when editing Tactic in model 
+            /*  TFS Bug - 179 : Improper behavior when editing Tactic in model
                 Changed By : Nirav shah on 6 Feb 2014
-                Change : Use condition _modelId == lastModelId Instead of _Clientid 
+                Change : Use condition _modelId == lastModelId Instead of _Clientid
             */
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
 
-            if (_IsDeployedToModel) { 
+            if (_IsDeployedToModel) {
                 $html += '<tr clientid="' + _Clientid + '" class="rejected" id="' + _id + '" data-index="' + _index + '" IsTargetStageOfModel="' + _IsTargetStageOfModel + '">' +   // Modified by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                           '<td  class="border-r sm" id="' + _id + '"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                           '<td   class="sm border-r" id="' + _id + '">' + Stage + '</td>' +
@@ -425,7 +440,7 @@
                     $html += '<td><span class="circle-check-icon-gray-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '"></span></td>';
                 }
 
-                
+
 
                 $html += '</tr>';
 
@@ -442,7 +457,7 @@
                 if ($("#IsModelIntegrated").val() == 'True') {
                     $html += '<td><span class="circle-check-icon-gray-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '"></span></td>';
                 }
-              
+
                 $html += '</tr>';
 
             }
@@ -489,8 +504,7 @@
                 if ($(this).hasClass('circle-check-icon-blue')) {
                     $(this).removeClass('circle-check-icon-blue');
 
-                    if ($(this).parent().next().find("span").hasClass("circle-check-icon-integration-blue"))
-                    {
+                    if ($(this).parent().next().find("span").hasClass("circle-check-icon-integration-blue")) {
                         $(this).parent().next().find("span").removeClass("circle-check-icon-integration-blue")
                     }
                     //revert all the changes regarding 2115
@@ -589,7 +603,7 @@
         $("#continue").click(function () {
             SaveAllTactic(false);
         });
-        
+
         function SaveAllTactic(isPublishToo) {
             var ids = [];
             var rejid = [];
@@ -639,7 +653,7 @@
                         var queryStringArr = [];
                         if (data.errorMessage != undefined) {
                             url = '@Url.Content("~/Model/Tactics")';
-                           // window.location.href = url + '?id=' + ModelId;
+                            // window.location.href = url + '?id=' + ModelId;
                         }
                         else {
                             url = '@Url.Content("~/Model/IntegrationSelection")';
@@ -665,12 +679,12 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
-                //Added By Kalpesh Sharma Functional and code review #560 07-16-2014 
+                //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
                 data: { modelId: $('#latestModelId').val() },
                 dataType: "json",
                 success: function (data) {
                     if (data.status == 1) {
-                       
+
                         //Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014
                         $("#copymodeldesc").val(htmlDecode(data.msg));
                         $("#original").text(htmlDecode(data.name));
@@ -696,7 +710,7 @@
     });
 
     // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
-    // Close or hide the Duplicate popup on Cancel click . 
+    // Close or hide the Duplicate popup on Cancel click .
     $('#cancelbtncopy').click(function () {
         $('#DivPartialShareModelDuplicate').hide();
     });
@@ -711,7 +725,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Model/DuplicateModel/")',
-            //Added By Kalpesh Sharma Functional and code review #560 07-16-2014 
+            //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
             data: { modelId: $('#latestModelId').val(), title: titleName },
             dataType: "json",
             success: function (data) {

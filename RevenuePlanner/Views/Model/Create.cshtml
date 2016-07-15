@@ -19,7 +19,7 @@
                                   var currentdate = System.DateTime.Today.ToShortDateString();
                                   // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                                   string IsOwner = Convert.ToString(ViewBag.IsOwner);
-    @Html.Hidden("IsOwner", IsOwner);
+                                @Html.Hidden("IsOwner", IsOwner);
                                     // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                                     ViewBag.ModelIdPartial = ViewBag.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
                                     if (Model != null)
@@ -61,7 +61,7 @@
 }
 @using (Html.BeginForm("Create", "Model", FormMethod.Post, new { id = "form1" }))
 {
-    
+
     @Html.Hidden("ValidateForEmptyField", @strValidateForEmptyField)
     @Html.Hidden("ErrorOccured", @strErrorOccured)
     @Html.Hidden("ModelId", ModelId)
@@ -73,207 +73,219 @@
         <a class="close">×</a>
         <div id="cError"></div>
     </div>
-  
+
     if (@Model != null)
     {
-    TempData["ErrorMessage"] = "";
-    <div id="DivBackgroundModel" class="modal-backdrop fade in" style="z-index: 1501; display: none;"></div>
-    @Html.Partial("~/Views/Model/_publishmodel.cshtml")
-    
-   
+        TempData["ErrorMessage"] = "";
+        <div id="DivBackgroundModel" class="modal-backdrop fade in" style="z-index: 1501; display: none;"></div>
+        @Html.Partial("~/Views/Model/_publishmodel.cshtml")
+
+
         if (Model.Versions != null)
         {
             foreach (ModelVersion v in Model.Versions)
             {
                 if (v.IsLatest)
                 {
-            <input type="hidden" value="@v.ModelId" id="latestModelId" />
-            <div class="title-header source-sans-proregular" title="@v.Title" >
-                <h2 id="lblTitle">@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
 
-            </div>  @*changed for title alignment #2312*@ 
-             <ul class="nav nav-tabs">
-            <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
-                <a href="#" onclick="LoadModelData(@v.ModelId, true)">@Html.Raw("v")@v.Version</a>
-            </li>
-                 </ul>
-                }
-                else
-                {
-                     <ul class="nav nav-tabs">
-            <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
-                <a href="#" onclick="LoadModelData(@v.ModelId, false)">@Html.Raw("v")@v.Version</a>
-            </li>
-                         </ul>
+                    <input type="hidden" value="@v.ModelId" id="latestModelId" />
+                    <div class="title-header source-sans-proregular" title="@v.Title">
+                        <h2 id="lblTitle">@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
+
+                    </div>  @*changed for title alignment #2312*@
                 }
             }
+            <ul class="nav nav-tabs">
+                @foreach (ModelVersion v in Model.Versions)
+                {
+                    if (v.IsLatest)
+                    {
+
+
+                        <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
+                            <a href="#" onclick="LoadModelData(@v.ModelId, true)">@Html.Raw("v")@v.Version</a>
+                        </li>
+
+                    }
+                    else
+                    {
+                        <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
+                            <a href="#" onclick="LoadModelData(@v.ModelId, false)">@Html.Raw("v")@v.Version</a>
+                        </li>
+                    }
+                }
+            </ul>
 
             if (Model.Versions.Count == 0)
             {
-                <div class="title-header source-sans-proregular" title="Title" >
+                <div class="title-header source-sans-proregular" title="Title">
                     <h2>@Html.Raw("Baseline Model") <span class="gray source-sans-prolight" title="Draft">@Html.Raw("DRAFT")</span></h2>
                 </div>@*changed for title alignment #2312*@
-             <ul class="nav nav-tabs">
-            <li class="active pull-right" title="1.0">
-                <a href="#">@Html.Raw("v")1.0</a>
-            </li>
-                 </ul>
+                <ul class="nav nav-tabs">
+                    <li class="active pull-right" title="1.0">
+                        <a href="#">@Html.Raw("v")1.0</a>
+                    </li>
+                </ul>
             }
         }
-    
-    <div id="MainContent" class="padding-content cf source-sans-proregular">
 
-        <div class="row">
-            <div class="span2 content-colum-left">
-                <div class="padding-right70">
-                    <p>@Html.Raw("Add your organization's unique behaviors to create assumptions for your baseline model in Plan. This model will be used to create recommendations when building your annual marketing plan.")</p>
-                    <ul class="nav nav-pills nav-stacked nav-colum-bar">
-                        <li class="subheader active" id="ModelOverView">
-                            <a href="#Overview">@Html.Raw("1. Model Overview")</a>
-                        </li>
-                        <li class="subheader" id="ContactsandInquiries"><a href="#Inquiries">@Html.Raw("2. Average Deal Size")</a></li>
-                        <li class="subheader" id="ConversionRates"><a href="#Rates">@Html.Raw("3. Conversion Rates")</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="span10 content-colum-right">
-                <a name="Overview"></a>
-                <h2 class="sub-title-forms source-sans-proregular">@Html.Raw("1. Model Overview")</h2>
-                <div id="divModelOverview"></div>
-                <a name="Inquiries"></a>
-                <h2 class="sub-title-forms source-sans-proregular">@Html.Raw("2. Average Deal Size")</h2>
-                <div id="divcontactInquiry"></div>
-                <a name="Rates"></a>
-                <h2 class="sub-title-forms source-sans-proregular">3. Conversion Rates</h2>
-                @*<ul id="sub_nav_tabs" class="nav nav-tabs">
-                    <li class="title-header source-sans-proregular">
+        <div id="MainContent" class="padding-content cf source-sans-proregular">
 
-                        <h2>3. Conversion Rates</h2>
-
-                    </li>
-                    <li id="benchmarked-option" class="pull-right" >
-                        <a>Benchmarked</a>
-                    </li>
-                    <li id="advanced-option" class="active pull-right">
-                        <a>Advanced</a>
-                    </li>
-                </ul>*@
-                <div class="tab-content">
-                    <div class="tab-pane" id="benchmarked" style="display:none;">
-                        <p>
-                            @Html.Raw("  Click continue to populate your baseline model with benchmarked values for conversion and stage velocity. Select Advanced to add your organization's custom conversion rates.")
-
-                        </p>
+            <div class="row">
+                <div class="span2 content-colum-left">
+                    <div class="padding-right70">
+                        <p>@Html.Raw("Add your organization's unique behaviors to create assumptions for your baseline model in Plan. This model will be used to create recommendations when building your annual marketing plan.")</p>
+                        <ul class="nav nav-pills nav-stacked nav-colum-bar">
+                            <li class="subheader active" id="ModelOverView">
+                                <a href="#Overview">@Html.Raw("1. Model Overview")</a>
+                            </li>
+                            <li class="subheader" id="ContactsandInquiries"><a href="#Inquiries">@Html.Raw("2. Average Deal Size")</a></li>
+                            <li class="subheader" id="ConversionRates"><a href="#Rates">@Html.Raw("3. Conversion Rates")</a></li>
+                        </ul>
                     </div>
-                    <div id="inputs-group">
-                        @Html.Raw("Add your waterfall stage conversion rates for each source. Hover over the info icon for additional explanation about a stage.")
-                        <table id="tblCR_SV" class="tblCR_SV source-sans-probold">
-                            <thead>
-                                <tr>
-                                    <th title="Stage" style="width: 40%">Stage
-                                    </th>
-                                    <th title="Conversion (%)" style="width: 20%">Conversion (%)
-                                    </th>
-                                    <th title="Velocity (Days)" style="width: 20%">Velocity (Days)
-                                    </th>
-                                    <th title="Allowed as Target Stage" style="width: 20%">Allowed as
-                                        <br />
-                                        Target Stage
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{
-                                    var cnti = 0;
-                                    var cntj = 2;
-                                    foreach (var item in Model.lstmodelstage)
-                                    {
-                                        cnti = cnti + 1;
-                                        if (cnti <= Model.lstmodelstage.Count())
-                                        {
-                                            if (@item.Funnel != "" && @item.Funnel != null)
-                                            {
-                                                string m = Enums.FunnelFlag.M.ToString();
-                                                string strmarketingflag = Enums.FunnelFlagValue.Single(s => s.Key.Equals(m)).Value;
+                </div>
+                <div class="span10 content-colum-right">
+                    <a name="Overview"></a>
+                    <h2 class="sub-title-forms source-sans-proregular">@Html.Raw("1. Model Overview")</h2>
+                    <div id="divModelOverview"></div>
+                    <a name="Inquiries"></a>
+                    <h2 class="sub-title-forms source-sans-proregular">@Html.Raw("2. Average Deal Size")</h2>
+                    <div id="divcontactInquiry"></div>
+                    <a name="Rates"></a>
+                    <h2 class="sub-title-forms source-sans-proregular">3. Conversion Rates</h2>
+                    @*<ul id="sub_nav_tabs" class="nav nav-tabs">
+                            <li class="title-header source-sans-proregular">
 
-                                                if (Array.IndexOf(@item.Funnel.Split(','), strmarketingflag) >= 0)
-                                                {
-                                                    <input  type="hidden"  name="txtStageId"  value="@item.StageId" >
-                                                    <input type="hidden" name="txtTargetStage" id="hdnAllowedtargetStage_@item.StageId">
-                                                    if (cntj == cnti)
-                                                    {
-                                                      <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;" class="alternate">
-                                                          <td style="width: 30%">
-                                                              <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon-grey" title="@item.Description"></span>
-                                                          </td>
-                                                          <td style="width: 22%; border-left: thin solid; border-color: black;">
-                                                              <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0" >
-                                                          </td>
-                                                          <td style="width: 22%; border-left: thin solid; border-color: black;">
-                                                              <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
-                                                          </td>
-                                                          <td style="width: 26%; border-left: thin solid; border-color: black;" align="center">
-                                                              <a class="targetStageclick"  id="TargetStage_@item.StageId" >False</a>
-                                                          </td>
-                                                      </tr>
-                                                        cntj = cntj + 2;
-                                                    }
-                                                    else
-                                                    {
-                                                     <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;">
-                                                         <td style="width: 30%">
-                                                             <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon-grey" title="@item.Description"></span>
-                                                         </td>
-                                                         <td style="width: 22%; border-left: thin solid; border-color: black;">
-                                                             <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0" >
-                                                         </td>
-                                                         <td style="width: 22%; border-left: thin solid; border-color: black;">
-                                                             <input class="backgroundC6EBF3 input-table source-sans-probold " type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
-                                                         </td>
-                                                         <td style="width: 26%; border-left: thin solid; border-color: black;" align="center">
-                                                             <a class="targetStageclick"  id="TargetStage_@item.StageId" >False</a>
-                                                         </td>
-                                                     </tr>
-                                                    }
-                                                }
-                                            }
-                                        }
+                                <h2>3. Conversion Rates</h2>
+
+                            </li>
+                            <li id="benchmarked-option" class="pull-right" >
+                                <a>Benchmarked</a>
+                            </li>
+                            <li id="advanced-option" class="active pull-right">
+                                <a>Advanced</a>
+                            </li>
+                        </ul>*@
+                    <div class="tab-content">
+                        <div class="tab-pane" id="benchmarked" style="display:none;">
+                            <p>
+                                @Html.Raw("  Click continue to populate your baseline model with benchmarked values for conversion and stage velocity. Select Advanced to add your organization's custom conversion rates.")
+
+                            </p>
+                        </div>
+                        <div id="inputs-group">
+                            @Html.Raw("Add your waterfall stage conversion rates for each source. Hover over the info icon for additional explanation about a stage.")
+                            <table id="tblCR_SV" class="tblCR_SV source-sans-probold">
+                                <thead>
+                                    <tr>
+                                        <th title="Stage" style="width: 40%">
+                                            Stage
+                                        </th>
+                                        <th title="Conversion (%)" style="width: 20%">
+                                            Conversion (%)
+                                        </th>
+                                        <th title="Velocity (Days)" style="width: 20%">
+                                            Velocity (Days)
+                                        </th>
+                                        <th title="Allowed as Target Stage" style="width: 20%">
+                                            Allowed as
+                                            <br />
+                                            Target Stage
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+        var cnti = 0;
+        var cntj = 2;
+        foreach (var item in Model.lstmodelstage)
+        {
+            cnti = cnti + 1;
+            if (cnti <= Model.lstmodelstage.Count())
+            {
+                if (@item.Funnel != "" && @item.Funnel != null)
+                {
+                    string m = Enums.FunnelFlag.M.ToString();
+                    string strmarketingflag = Enums.FunnelFlagValue.Single(s => s.Key.Equals(m)).Value;
+
+                    if (Array.IndexOf(@item.Funnel.Split(','), strmarketingflag) >= 0)
+                    {
+                        <input type="hidden" name="txtStageId" value="@item.StageId">
+                                        <input type="hidden" name="txtTargetStage" id="hdnAllowedtargetStage_@item.StageId">
+                        if (cntj == cnti)
+                        {
+                            <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;" class="alternate">
+                                <td style="width: 30%">
+                                    <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon-grey" title="@item.Description"></span>
+                                </td>
+                                <td style="width: 22%; border-left: thin solid; border-color: black;">
+                                    <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0">
+                                </td>
+                                <td style="width: 22%; border-left: thin solid; border-color: black;">
+                                    <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0">
+                                </td>
+                                <td style="width: 26%; border-left: thin solid; border-color: black;" align="center">
+                                    <a class="targetStageclick" id="TargetStage_@item.StageId">False</a>
+                                </td>
+                            </tr>
+                            cntj = cntj + 2;
+                        }
+                        else
+                        {
+                            <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;">
+                                <td style="width: 30%">
+                                    <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon-grey" title="@item.Description"></span>
+                                </td>
+                                <td style="width: 22%; border-left: thin solid; border-color: black;">
+                                    <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0">
+                                </td>
+                                <td style="width: 22%; border-left: thin solid; border-color: black;">
+                                    <input class="backgroundC6EBF3 input-table source-sans-probold " type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0">
+                                </td>
+                                <td style="width: 26%; border-left: thin solid; border-color: black;" align="center">
+                                    <a class="targetStageclick" id="TargetStage_@item.StageId">False</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            }
+        }
                                     }
-                                }
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <br />
-                <br />
-                <div class="container-button">
-                    @{ 
+                    <br />
+                    <br />
+                    <div class="container-button">
+                        @{
         if (Model.lstmodelstage.Count() > 0)
         {
-             if (Convert.ToString(ViewBag.IsAuthorized) == "True") // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-             {
-                        <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
-                        <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
+            if (Convert.ToString(ViewBag.IsAuthorized) == "True") // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            {
+                <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
+                            <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
             }
         }
-                    }
-                </div>
-                @Html.Hidden("isPublishButton")
-                @Html.Hidden("whichButton")
-                @Html.Hidden("CurrentModelId")
-                @Html.Hidden("IsBenchmarked", IsBenchmarked)
-                @*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*@
-                @Html.Hidden("ModelPublishEdit", ModelPublishEdit)
-                @Html.Hidden("ModelPublishCreateNew", ModelPublishCreateNew)
-                @Html.Hidden("EffectiveDate", currentdate)
+                        }
+                    </div>
+                    @Html.Hidden("isPublishButton")
+                    @Html.Hidden("whichButton")
+                    @Html.Hidden("CurrentModelId")
+                    @Html.Hidden("IsBenchmarked", IsBenchmarked)
+                    @*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*@
+                    @Html.Hidden("ModelPublishEdit", ModelPublishEdit)
+                    @Html.Hidden("ModelPublishCreateNew", ModelPublishCreateNew)
+                    @Html.Hidden("EffectiveDate", currentdate)
 
+                </div>
             </div>
         </div>
-    </div>
-    
-        //Added By Kalpesh Sharma Functional and code review #560 07-16-2014   
-    @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
-}
+
+        //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
+        @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
+    }
 }
 <script type="text/javascript">
     var lastModelId;
@@ -425,12 +437,12 @@
                     }
                 }
             });
+            }
+            else {
+                $("#" + astageid).text("False");
+                $("#hdnAllowedtargetStage_" + id).val('false');
+            }
         }
-        else {
-            $("#" + astageid).text("False");
-            $("#hdnAllowedtargetStage_" + id).val('false');
-        }
-    }
     });
 
     $(document).ready(function () {
@@ -443,8 +455,8 @@
             $("html, body").animate({ scrollTop: 0 }, 1000);
         }
 
-    // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-    if ($('#IsOwner').val().toLowerCase() == 'false' && ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == 'false')) {
+        // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+        if ($('#IsOwner').val().toLowerCase() == 'false' && ('@Convert.ToString(ViewBag.IsAuthorized)'.toLowerCase() == 'false')) {
             $('#form1 :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'textarea' || $(this).attr('type') == 'select') {
                     $(this).attr('readonly', 'readonly');
@@ -664,7 +676,7 @@
     });;
     $(".savebtn").click(function (e) {
         if (CheckHtmlTag($("#lnkTitle").html()) == false) {
-            $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> '+'@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString'+'. ')
+            $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + '@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString' + '. ')
             $("#errorMessage").slideDown(400);
             $("html, body").animate({ scrollTop: 0 }, 1000);
             return false;
@@ -1087,6 +1099,5 @@
         }
     });
     // End - Added by Sohel Pathan on 08/09/2014 for PL ticket #754
-   
-</script>
 
+</script>
