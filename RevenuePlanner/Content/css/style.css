@@ -7649,52 +7649,58 @@ input.icon-check-blue {
  /*#2015 Bhumika End*/
 /*.toggle-status .pull-right > span {*/ /*#2015 Bhumika*/
 .toggle-status .pull-left > span {
-    height: 20px;
     border: 1px solid #e5e5e5;
     font-size: 12px;
     color: #BBB;
-    padding: 0 5px 0 18px;
+    padding: 0 5px;
     margin-left: 3px !important;
     margin-right: 0 !important;
     display: inline-block;
     background-repeat: no-repeat;
-    background-position: 5px center;
+    /*background-position: 5px center;
+    height: 20px;*//*changed for #2312*/
+}
+.toggle-status .pull-left > span > .fa{
+    font-size:9px; margin-right:5px;
+}
+.status-created .fa{
+    color:#E2755A;
+    /*background-image: url(../images/status-created.gif);*/ /*changed for #2312*/
 }
 
-.status-created {
-    background-image: url(../images/status-created.gif);
+.status-submitted .fa{
+    /*background-image: url(../images/status-submitted.gif);*/
+    color:#F88D40;
 }
 
-.status-submitted {
-    background-image: url(../images/status-submitted.gif);
+.status-approved .fa{
+    /*background-image: url(../images/status-approved.gif);*/
+    color:#E2BE58;
 }
 
-.status-approved {
-    background-image: url(../images/status-approved.gif);
-}
-
-.status-rejected {
-    background-image: url(../images/status-rejected.gif);
+.status-rejected .fa {
+    /*background-image: url(../images/status-rejected.gif);*/
+    color:#727272;
 }
 
 .tactic-created {
-    background-color: #F6D87F !important;
-    border: 1px solid #F6D87F !important;
+    background-color: #E2755A !important;/* #F6D87F changed for #2312*/
+    border: 1px solid #E2755A !important;
 }
 
 .tactic-submitted {
-    background-color: #EE8F7A !important;
-    border: 1px solid #EE8F7A !important;
+    background-color: #F88D40 !important; /*#EE8F7A changed for #2312 */
+    border: 1px solid #F88D40 !important;
 }
 
 .tactic-approved {
-    background-color: #CC91BF !important;
-    border: 1px solid #CC91BF !important;
+    background-color: #E2BE58 !important; /*#CC91BF changed for #2312 */ 
+    border: 1px solid #E2BE58 !important;
 }
 
 .tactic-rejected {
-    background-color: #D4D4D4 !important;
-    border: 1px solid #D4D4D4 !important;
+    background-color: #727272 !important; /*#D4D4D4 changed for #2312 */
+    border: 1px solid #727272 !important;
 }
 
 .improvement-border-top-status {
@@ -15771,6 +15777,9 @@ a:focus, a:hover{outline:0 none !important}
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td{border-top:0;border-bottom: 1px solid #d4d4d4;}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox,
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox{background-color: white; width: 98%;}
+
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
@@ -15798,7 +15807,10 @@ a:focus, a:hover{outline:0 none !important}
     line-height: 28px !important;
 }
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr td,
-#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td{padding-left:4px; padding-right:4px}
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td{padding-left:15px; padding-right:15px}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{padding-left: 15px !important;}
+
 
 .GenerateMediaCode.btn,
 .UnarchiveMediaCode.btn {
@@ -15821,7 +15833,8 @@ input.GenerateMediaCode[type="button"]:disabled:hover,
 input.GenerateMediaCode[type="button"]:disabled:focus{color:#333}
 
 .archive, .plus-circle{font-size:15px; color:#5f91b3; float:left; margin:0; cursor:pointer;}
-.archive.disabled, .plus-circle.disabled, #MediaCodeGrid.gridbox_dhx_skyblue.gridbox .honeycombbox-icon-gantt.disabled{cursor:default}
+.archive.disabled, .plus-circle.disabled, 
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox .honeycombbox-icon-gantt.disabled{cursor:default}
 
 /*.archive:hover::before {
     background: rgba(255, 255, 255, 0.4) none repeat scroll 0 0;
@@ -15858,6 +15871,9 @@ input.selectInput{
     float: left;
     overflow: hidden; 
 }
+
+#popupMediCode.btn-dropdwn{ position: absolute; top: 40px; z-index: 11;}
+
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

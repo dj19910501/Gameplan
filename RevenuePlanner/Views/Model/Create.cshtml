@@ -80,41 +80,47 @@
     <div id="DivBackgroundModel" class="modal-backdrop fade in" style="z-index: 1501; display: none;"></div>
     @Html.Partial("~/Views/Model/_publishmodel.cshtml")
     
-    <ul class="nav nav-tabs">
-        @if (Model.Versions != null)
+   
+        if (Model.Versions != null)
         {
             foreach (ModelVersion v in Model.Versions)
             {
                 if (v.IsLatest)
                 {
             <input type="hidden" value="@v.ModelId" id="latestModelId" />
-            <li class="title-header source-sans-proregular" title="@v.Title" >
-                <h2 id="lblTitle" style="margin-left:0">@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
+            <div class="title-header source-sans-proregular" title="@v.Title" >
+                <h2 id="lblTitle">@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
 
-            </li>
+            </div>  @*changed for title alignment #2312*@ 
+             <ul class="nav nav-tabs">
             <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
                 <a href="#" onclick="LoadModelData(@v.ModelId, true)">@Html.Raw("v")@v.Version</a>
             </li>
+                 </ul>
                 }
                 else
                 {
+                     <ul class="nav nav-tabs">
             <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
                 <a href="#" onclick="LoadModelData(@v.ModelId, false)">@Html.Raw("v")@v.Version</a>
             </li>
+                         </ul>
                 }
             }
 
             if (Model.Versions.Count == 0)
             {
-                <li class="title-header source-sans-proregular" title="Title" >
-                    <h2 style="margin-left:0">@Html.Raw("Baseline Model") <span class="gray source-sans-prolight" title="Draft">@Html.Raw("DRAFT")</span></h2>
-                </li>
+                <div class="title-header source-sans-proregular" title="Title" >
+                    <h2>@Html.Raw("Baseline Model") <span class="gray source-sans-prolight" title="Draft">@Html.Raw("DRAFT")</span></h2>
+                </div>@*changed for title alignment #2312*@
+             <ul class="nav nav-tabs">
             <li class="active pull-right" title="1.0">
                 <a href="#">@Html.Raw("v")1.0</a>
             </li>
+                 </ul>
             }
         }
-    </ul>
+    
     <div id="MainContent" class="padding-content cf source-sans-proregular">
 
         <div class="row">
