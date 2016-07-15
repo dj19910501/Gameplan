@@ -360,12 +360,21 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <param name="PlanId">PlanId</param>
         /// <returns>returns an ClientId for given PlanId</returns>
-        public static Guid GetClientId(int PlanId)
+        public static Guid GetClientId(int PlanId = 0, int ModelId = 0)
         {
-            var ClientId = (from i in db.Models
-                            join t in db.Plans on i.ModelId equals t.ModelId
-                            where i.IsDeleted == false && t.IsDeleted == false && t.PlanId == PlanId
-                            select i.ClientId).FirstOrDefault();
+            Guid ClientId = new Guid();
+            if (PlanId > 0)
+            {
+               ClientId = (from i in db.Models
+                                join t in db.Plans on i.ModelId equals t.ModelId
+                                where i.IsDeleted == false && t.IsDeleted == false && t.PlanId == PlanId
+                                select i.ClientId).FirstOrDefault();
+            }
+            else {
+               ClientId = (from i in db.Models                                
+                                where i.IsDeleted == false
+                                select i.ClientId).FirstOrDefault();
+            }
             return ClientId;
         }
 
@@ -398,9 +407,17 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <param name="PlanId">PlanId</param>
         /// <returns>returns an ClientId for given PlanId</returns>
-        public static Guid GetUserId(int PlanId)
-        {            
-            var UserId = db.Plans.Where(pl => pl.PlanId == PlanId && pl.CreatedBy != null).Select(pl => pl.CreatedBy).FirstOrDefault();
+        public static Guid GetUserId(int PlanId = 0 , int ModelId = 0)
+        {
+            Guid UserId = new Guid();
+            if (PlanId > 0)
+            {
+                UserId = db.Plans.Where(pl => pl.PlanId == PlanId && pl.CreatedBy != null).Select(pl => pl.CreatedBy).FirstOrDefault();
+            }
+            else {
+                UserId = db.Models.Where(pl => pl.ModelId == ModelId && pl.CreatedBy != null).Select(pl => pl.CreatedBy).FirstOrDefault();
+            }
+            
             return UserId;
         }
         /// <summary>
@@ -416,6 +433,82 @@ namespace RevenuePlanner.Test.MockHelpers
                             where t.PlanId == PlanId
                             select i.ClientId).FirstOrDefault();
             return ClientId;
+        }
+
+        /// <summary>
+        /// Get Model data for the given deleted Model Id
+        /// Added by Rahul Shah Date:- 13/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="ModelId">ModelId</param>
+        /// <returns>returns an Model Data for given ModelId</returns>        
+        public static Model GetModel(int ModelId)
+        {
+            var objModel = db.Models.Where(a => a.ModelId == ModelId).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            return objModel;
+        }
+        /// <summary>
+        /// Get a StageId for the given ClientId
+        /// Added by Rahul Shah Date:- 13/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="ClientId">ClientId</param>
+        /// <returns>returns an ClientId for given PlanId</returns>
+        public static int GetStageId(Guid clientId)
+        {
+            var StageId = db.Stages.Where(pl => pl.ClientId == clientId && pl.IsDeleted == false).Select(pl => pl.StageId).FirstOrDefault();
+            return StageId;
+        }
+        /// <summary>
+        /// Get a Deleted ModelId.
+        /// Added by Rahul Shah Date:- 13/06/2016 for PL Ticket PL #2193
+        /// </summary>        
+        /// <returns>returns an Deleted ModelId </returns>
+        public static int GetDeletedModelId()
+        {
+            
+            return db.Models.Where(m => m.IsDeleted == true).Select(m => m.ModelId).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Get TacticTypeId for the given Model Id
+        /// Added by Rahul Shah Date:- 14/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="ModelId">ModelId</param>
+        /// <returns>returns Tactic Type ID for given ModelId</returns>        
+        public static int GetTacticTypeId(int ModelId)
+        {
+            return db.TacticTypes.Where(p => p.IsDeleted == false && p.ModelId == ModelId).Select(p => p.TacticTypeId).FirstOrDefault();
+        }
+        /// <summary>
+        /// Get TacticType for the given Model Id
+        /// Added by Rahul Shah Date:- 14/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="ModelId">ModelId</param>
+        /// <returns>returns Tactic Type for given ModelId</returns>        
+        public static TacticType GetTacticType(int ModelId)
+        {
+            var objTacticType = db.TacticTypes.Where(a => a.ModelId == ModelId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            return objTacticType;
+        }
+        /// <summary>
+        /// Get TacticType List for the given Model Id
+        /// Added by Rahul Shah Date:- 14/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="ModelId">ModelId</param>
+        /// <returns>returns Tactic Type List for given ModelId</returns>        
+        public static List<TacticType> GetTacticTypeList(int ModelId)
+        {
+            var objTacticType = db.TacticTypes.Where(a => a.ModelId == ModelId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).ToList();
+            return objTacticType;
+        }
+        /// <summary>
+        /// Get deleted TacticTypeId for the given Model Id
+        /// Added by Rahul Shah Date:- 14/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="ModelId">ModelId</param>
+        /// <returns>returns deleted Tactic Type ID for given ModelId</returns>        
+        public static int GetdeletedTacticTypeId(int ModelId)
+        {
+            return db.TacticTypes.Where(p => p.ModelId == ModelId).Select(p => p.TacticTypeId).FirstOrDefault();
         }
     }
 }

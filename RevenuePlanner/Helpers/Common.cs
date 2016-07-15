@@ -6174,6 +6174,9 @@ namespace RevenuePlanner.Helpers
                                     linkedTacticIds = new List<int>();
                                 #endregion
 
+                                // added by devanshi #2386 Remove media codes
+                                RemoveTacticMediaCode(tacticIds);
+                                //end
                                 //tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic).ToList().ForEach(a => customFieldList.Add(a));
 
                                 var programList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId == PlanId && pcp.IsDeleted == false).ToList();
@@ -6286,6 +6289,10 @@ namespace RevenuePlanner.Helpers
                                 campaign_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
 
+                                // added by devanshi #2386 Remove media codes
+                                RemoveTacticMediaCode(tacticIds);
+                                //end
+
                             }
                             else if (section == Enums.Section.Program.ToString() && id != 0)
                             {
@@ -6337,7 +6344,7 @@ namespace RevenuePlanner.Helpers
                                 var program_customFieldList = db.CustomField_Entity.Where(a => (a.EntityId == id && a.CustomField.EntityType == section) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic) || (linkedTacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic)).ToList();
                                 program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
-
+                                RemoveTacticMediaCode(tacticIds);
                                 //var tactic_customFieldList = tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
                                 //tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
@@ -6385,6 +6392,15 @@ namespace RevenuePlanner.Helpers
                                 var tactic_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section || (linkedTacticIds.Contains(a.EntityId) && a.CustomField.EntityType == section)).ToList();
                                 tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactic
+
+                                // added by devanshi #2386 Remove media codes
+                                #region remove MediaCode
+                                var MediaCodeCustomfields = db.Tactic_MediaCodes_CustomFieldMapping.Where(a => a.TacticId == id).ToList();
+                                MediaCodeCustomfields.ForEach(custmfield => db.Entry(custmfield).State = EntityState.Deleted);
+                                var TacticMediacode = db.Tactic_MediaCodes.Where(a => a.TacticId == id).ToList();
+                                TacticMediacode.ForEach(mediacode => db.Entry(mediacode).State = EntityState.Deleted);
+                                #endregion
+                                //end
                             }
                             else if (section == Enums.Section.LineItem.ToString() && id != 0)
                             {
@@ -6446,7 +6462,19 @@ namespace RevenuePlanner.Helpers
         }
         
         #endregion
-
+	 // added by devanshi #2386 Remove media codes
+        #region remove MediaCode
+        public static void RemoveTacticMediaCode(List<int> TacticIDs)
+        {
+            MRPEntities db = new MRPEntities();
+            var MediaCodeCustomfields = db.Tactic_MediaCodes_CustomFieldMapping.Where(a => TacticIDs.Contains(a.TacticId)).ToList();
+            MediaCodeCustomfields.ForEach(custmfield => db.Entry(custmfield).State = EntityState.Deleted);
+            var TacticMediacode = db.Tactic_MediaCodes.Where(a => TacticIDs.Contains(a.TacticId)).ToList();
+            TacticMediacode.ForEach(mediacode => db.Entry(mediacode).State = EntityState.Deleted);
+           
+        }
+        #endregion
+        //end
         /// <summary>
         /// Function to generate message for modification of tactic.
         /// Added by Mitesh on 03/09/2014
@@ -7705,16 +7733,11 @@ namespace RevenuePlanner.Helpers
                                                          join v in viewnoneoptionid on int.Parse(c.Value) equals v
                                                          select c.EntityId).ToList();
                             //var onlyedittactic = lstAllTacticCustomFieldEntities.Where(tac => !onlyviewnonetacticids.Contains(tac.EntityId)).Select(tac => tac.EntityId).Distinct().ToList();
-                            //Added By John
-                            //var onlyedittactic = (from c in lstAllTacticCustomFieldEntities
-                            //                      join v in onlyviewnonetacticids on c.EntityId equals v into cv
-                            //                      from f in cv.DefaultIfEmpty()
-                            //                      select new { c.EntityId, cv }).Where(x=>x.cv == null).Select(x=>x.EntityId).Distinct().ToList();
-                            //Added By Manoj
+                            //Added By Manoj & John 
                             var onlyedittactic = (from c in lstAllTacticCustomFieldEntities
                                                    join v in onlyviewnonetacticids on c.EntityId equals v into cv
-                                                   from f in cv.DefaultIfEmpty()
-                                                   select new { c.EntityId, cv }).Where(x => x.cv.Count() == 0).Select(x => x.EntityId).Distinct().ToList();
+                                                   from f in cv.DefaultIfEmpty(-1)
+                                                   select new { c.EntityId, f}).Where(x => x.f == -1).Select(x => x.EntityId).Distinct().ToList();
                             if (isDefaultRestrictionsEditable)
                             {
                                 lstEditableEntityIds = onlyedittactic;

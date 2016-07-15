@@ -605,7 +605,7 @@
                     //    $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
                     //    $(".honeycombbox").show();
                     //}
-                    if (ExportSelectedIds.TaskID.length == 0) {
+                    if (ExportSelectedIds.TaskID.length == 0 && task_id != undefined && task_id != 'undefined' && task_id != null) {
                         $(".honeycombbox").hide();
                         // Added by Arpita Soni for Ticket #2354 on 07/11/2016
                         IsPackageView = false;
@@ -1125,7 +1125,7 @@
                     </div>
                 </div>
                 <div style="background-color:#fff;padding: 20px 14px;" id="filterdiv">
-                    <h2 style="color: #040707; margin: 0 0 7px;">Marketing Activities (Ongoing)</h2>
+                    <h2 style="color: #040707; margin: 0 0 7px;">Marketing Calendar</h2>
                 </div>
                 <div id="mainpdfdiv" style="padding:4px;margin-left: 8px;">
                     @*<div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;background:url('@Url.Content(" ~ />Content/images/bullhorn-bg.png")') no-repeat bottom right;display: inline-block;height:100px;vertical-align:top;    border-radius: 4px;">*@
@@ -3678,7 +3678,7 @@
                     gantt.init("gantt_here");
                     gantt.parse(GanttTaskData);
                     var htmltestdiv = '';
-                    htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
+                    htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Calendar</h2>';
                     htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
                     htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
                     htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
@@ -4221,7 +4221,7 @@
                 gantt.parse(GanttTaskDataforHoney);
                 gantt.refreshData();
                 var htmltestdiv = '';
-                htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
+                htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Calendar</h2>';
                 htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
                 htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
                 htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';

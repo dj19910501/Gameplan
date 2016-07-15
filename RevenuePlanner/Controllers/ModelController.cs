@@ -12,6 +12,9 @@ using System.Web.Mvc;
 using System.Xml;
 using System.Text.RegularExpressions;
 using Integration;
+using System.IO;
+using System.Reflection;
+using System.Web.Caching;
 
 /*
  *  Author: 
@@ -30,7 +33,23 @@ namespace RevenuePlanner.Controllers
         static Random rnd = new Random();
         string strVersion = "version";
         #endregion
+        public ModelController()
+        {
 
+            if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
+            {
+
+                Common.xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");//Modify by Akashdeep Kadia on 09/05/2016 to resolve PL ticket #989.
+                Common.objCached.loadMsg(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
+                CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache.Insert("CommonMsg", Common.objCached, dependency);
+            }
+            else
+            {
+                Common.objCached = (Message)System.Web.HttpContext.Current.Cache["CommonMsg"];
+            }
+        }
         #region Create/Edit/Version Model Input
 
         /// <summary>
@@ -2526,31 +2545,31 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Common Functions for Model
-
-        /// <summary>
-        /// Function to update tactics
-        /// </summary>
-        /// <param name="NewVersionmodelId">model of new versioned model</param>
-        /// <param name="oldVersionModelId">model of old versioned model</param>
-        /// <param name="PlanId">plan id of the model</param>
-        public void UpdatePlanTactic(int NewVersionmodelId, int oldVersionModelId, int PlanId)
-        {
-            var lstTacticType = objDbMrpEntities.TacticTypes.Where(taticType => taticType.ModelId == NewVersionmodelId).ToList();
-            var listPlanTactics = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.TacticTypeId != null && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId == oldVersionModelId && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId).ToList();
-            foreach (var tactic in listPlanTactics)
-            {
-                foreach (var tacticType in lstTacticType)
-                {
-                    objDbMrpEntities.Plan_Campaign_Program_Tactic.Attach(tactic);
-                    objDbMrpEntities.Entry(tactic).State = EntityState.Modified;
-                    if (tactic.TacticType.TacticTypeId == tacticType.PreviousTacticTypeId)
-                    {
-                        tactic.TacticTypeId = tacticType.TacticTypeId;
-                        objDbMrpEntities.SaveChanges();
-                    }
-                }
-            }
-        }
+        //Commented by Rahul Shah because its not used.
+        ///// <summary>
+        ///// Function to update tactics
+        ///// </summary>
+        ///// <param name="NewVersionmodelId">model of new versioned model</param>
+        ///// <param name="oldVersionModelId">model of old versioned model</param>
+        ///// <param name="PlanId">plan id of the model</param>
+        //public void UpdatePlanTactic(int NewVersionmodelId, int oldVersionModelId, int PlanId)
+        //{
+        //    var lstTacticType = objDbMrpEntities.TacticTypes.Where(taticType => taticType.ModelId == NewVersionmodelId).ToList();
+        //    var listPlanTactics = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.TacticTypeId != null && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId == oldVersionModelId && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId).ToList();
+        //    foreach (var tactic in listPlanTactics)
+        //    {
+        //        foreach (var tacticType in lstTacticType)
+        //        {
+        //            objDbMrpEntities.Plan_Campaign_Program_Tactic.Attach(tactic);
+        //            objDbMrpEntities.Entry(tactic).State = EntityState.Modified;
+        //            if (tactic.TacticType.TacticTypeId == tacticType.PreviousTacticTypeId)
+        //            {
+        //                tactic.TacticTypeId = tacticType.TacticTypeId;
+        //                objDbMrpEntities.SaveChanges();
+        //            }
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Function to check parent published model
