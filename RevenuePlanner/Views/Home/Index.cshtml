@@ -40,7 +40,7 @@
     List<RevenuePlanner.Models.TacticTypeModel> tacticTypeList = Model.lstTacticType != null ? Model.lstTacticType : new List<RevenuePlanner.Models.TacticTypeModel>();
     List<RevenuePlanner.Models.PlanListModel> planList = Model.lstPlan != null ? Model.lstPlan : new List<RevenuePlanner.Models.PlanListModel>();
 
-    //#2327 boost section loads on permission - zz
+    //#2327 boost section loads based on permission - zz
     bool isBoostAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit);
 }
 
