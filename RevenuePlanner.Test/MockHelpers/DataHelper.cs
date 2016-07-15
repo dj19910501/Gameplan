@@ -359,7 +359,8 @@ namespace RevenuePlanner.Test.MockHelpers
         /// Added by Akashdeep Kadia Date:- 12/05/2016 for PL Ticket #989 & 2129
         /// </summary>
         /// <param name="PlanId">PlanId</param>
-        /// <returns>returns an ClientId for given PlanId</returns>
+        /// <param name="ModelId">ModelId</param>
+        /// <returns>returns an ClientId for given PlanId or ModelId</returns>
         public static Guid GetClientId(int PlanId = 0, int ModelId = 0)
         {
             Guid ClientId = new Guid();
@@ -394,19 +395,21 @@ namespace RevenuePlanner.Test.MockHelpers
         }
 
         /// <summary>
-        /// Get single Deleted plan id.
+        /// Get a Deleted Plan Id
+        /// Added by Rahul Shah Date:- 06/06/2016 for PL Ticket PL #2193
         /// </summary>
-        /// <returns></returns>
+        /// <returns>returns an deleted PlanId </returns>
         public static int GetDeletedPlanId()
         {            
             return db.Plans.Where(p => p.IsDeleted == true && p.CreatedBy != null).Select(p => p.PlanId).FirstOrDefault();
         }
         /// <summary>
-        /// Get a UserId for the given PlanId
+        /// Get a UserId for the given PlanId or ModelId
         /// Added by Akashdeep Kadia Date:- 12/05/2016 for PL Ticket #989 & 2129
         /// </summary>
         /// <param name="PlanId">PlanId</param>
-        /// <returns>returns an ClientId for given PlanId</returns>
+        /// <param name="ModelId">ModelId</param>
+        /// <returns>returns an ClientId for given PlanId or ModelId</returns>
         public static Guid GetUserId(int PlanId = 0 , int ModelId = 0)
         {
             Guid UserId = new Guid();
@@ -422,9 +425,9 @@ namespace RevenuePlanner.Test.MockHelpers
         }
         /// <summary>
         /// Get a ClientId for the given deleted PlanId
-        /// Added by Akashdeep Kadia Date:- 12/05/2016 for PL Ticket #989 & 2129
+        /// Added by Rahul Shah Date:- 06/06/2016 for PL #2193
         /// </summary>
-        /// <param name="PlanId">PlanId</param>
+        /// <param name="PlanId">PlanId</param>        
         /// <returns>returns an ClientId for given PlanId</returns>
         public static Guid GetDeletedPlanClientId(int PlanId)
         {
@@ -440,7 +443,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// Added by Rahul Shah Date:- 13/06/2016 for PL Ticket PL #2193
         /// </summary>
         /// <param name="ModelId">ModelId</param>
-        /// <returns>returns an Model Data for given ModelId</returns>        
+        /// <returns>returns Model Data for given ModelId</returns>        
         public static Model GetModel(int ModelId)
         {
             var objModel = db.Models.Where(a => a.ModelId == ModelId).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
@@ -451,7 +454,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// Added by Rahul Shah Date:- 13/06/2016 for PL Ticket PL #2193
         /// </summary>
         /// <param name="ClientId">ClientId</param>
-        /// <returns>returns an ClientId for given PlanId</returns>
+        /// <returns>returns ClientId for given PlanId</returns>
         public static int GetStageId(Guid clientId)
         {
             var StageId = db.Stages.Where(pl => pl.ClientId == clientId && pl.IsDeleted == false).Select(pl => pl.StageId).FirstOrDefault();
@@ -509,6 +512,60 @@ namespace RevenuePlanner.Test.MockHelpers
         public static int GetdeletedTacticTypeId(int ModelId)
         {
             return db.TacticTypes.Where(p => p.ModelId == ModelId).Select(p => p.TacticTypeId).FirstOrDefault();
+        }
+        /// <summary>
+        /// Get Best in class List for the given Client id
+        /// Added by Rahul Shah Date:- 15/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="ClientId">ClientId</param>
+        /// <returns>returns Best in Class List for given ClientId</returns>        
+        public static List<BestInClass> GetBestInClassList(Guid ClientId)
+        {
+            var objBestInClassList = db.BestInClasses.Where(a => a.Stage.ClientId == ClientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).ToList();
+            return objBestInClassList;
+        }
+        /// <summary>
+        /// Get a Stage Data for the given StageId
+        /// Added by Rahul Shah Date:- 15/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="StageId">StageId</param>
+        /// <returns>returns an Stage Data for given Stageid</returns>
+        public static Stage GetStageData(int Stageid)
+        {
+            var StageData = db.Stages.Where(pl => pl.StageId == Stageid && pl.IsDeleted == false).Select(pl => pl).FirstOrDefault();
+            return StageData;
+        }
+
+        /// <summary>
+        /// Get a Improvement Tactic Type id for the given ClientId
+        /// Added by Rahul Shah Date:- 15/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="ClientId">ClientId</param>
+        /// <returns>returns an Improvement TacticType id for given ClientId</returns>
+        public static int GetImprovementTacticTypeId(Guid Clientid)
+        {
+            return  db.ImprovementTacticTypes.Where(pl => pl.ClientId == Clientid && pl.IsDeleted == false).Select(pl => pl.ImprovementTacticTypeId).FirstOrDefault();            
+        }
+        /// <summary>
+        /// Get deleted Improvement Tactic Type id for the given ClientId
+        /// Added by Rahul Shah Date:- 15/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="ClientId">ClientId</param>
+        /// <returns>returns deleted Improvement TacticType id for given ClientId</returns>
+        public static int GetDeletedImprovementTacticTypeId(Guid Clientid)
+        {
+            return db.ImprovementTacticTypes.Where(pl => pl.ClientId == Clientid && pl.IsDeleted == true).Select(pl => pl.ImprovementTacticTypeId).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Get a Improvement Tactic Type for the given ClientId
+        /// Added by Rahul Shah Date:- 15/06/2016 for PL Ticket PL #2193
+        /// </summary>
+        /// <param name="ClientId">ClientId</param>
+        /// <returns>returns an Improvement TacticType for given ClientId</returns>
+        public static ImprovementTacticType GetImprovementTacticType(Guid Clientid)
+        {
+            return db.ImprovementTacticTypes.Where(pl => pl.ClientId == Clientid && pl.IsDeleted == false).Select(pl => pl).FirstOrDefault();
         }
     }
 }

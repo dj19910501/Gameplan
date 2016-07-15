@@ -5,8 +5,11 @@ using RevenuePlanner.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Transactions;
+using System.Web.Caching;
 using System.Web.Mvc;
 
 namespace RevenuePlanner.Controllers
@@ -17,7 +20,23 @@ namespace RevenuePlanner.Controllers
         private MRPEntities db = new MRPEntities();
         static Random rnd = new Random();
         #endregion
+        public BoostController()
+        {
 
+            if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
+            {
+
+                Common.xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");//Modify by Akashdeep Kadia on 09/05/2016 to resolve PL ticket #989.
+                Common.objCached.loadMsg(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
+                CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
+                System.Web.HttpContext.Current.Cache.Insert("CommonMsg", Common.objCached, dependency);
+            }
+            else
+            {
+                Common.objCached = (Message)System.Web.HttpContext.Current.Cache["CommonMsg"];
+            }
+        }
         #region Methods
 
         #region Best In Class

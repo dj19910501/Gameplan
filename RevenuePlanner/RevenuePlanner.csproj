@@ -209,7 +209,6 @@
     <Compile Include="Controllers\ExternalServiceController.cs" />
     <Compile Include="Controllers\FinanceController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ImprovementController.cs" />
     <Compile Include="Controllers\InspectController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ModelController.cs" />

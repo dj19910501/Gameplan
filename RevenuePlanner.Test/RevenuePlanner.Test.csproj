@@ -80,6 +80,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Controllers\BoostControllerTest.cs" />
     <Compile Include="Controllers\CommonControllerTest.cs" />
     <Compile Include="Controllers\ErrorControllerTest.cs" />
     <Compile Include="Controllers\ExternalServiceControllerTest.cs">
