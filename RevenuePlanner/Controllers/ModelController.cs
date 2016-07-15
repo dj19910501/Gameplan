@@ -1606,6 +1606,14 @@ namespace RevenuePlanner.Controllers
                 //End
 
                 objDbMrpEntities.SaveChanges();
+                //Added By Komal rawal for #2356 Delete associated package on deletion of Tactic type
+                bool DeleteAllpackage = false;
+                if(objTacticTypeDB.AssetType == Enums.AssetType.Asset.ToString())
+                {
+                    DeleteAllpackage = true;
+                }
+                UpdatePackageDetails(id, DeleteAllpackage);
+                //End
 
                 Common.InsertChangeLog(Sessions.ModelId, 0, objTacticTypeDB.TacticTypeId, objTacticTypeDB.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
 
@@ -1729,7 +1737,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    UpdatePackageDetails(TacticTypeId, AssetType, DeleteAllPackage);     //Added By Komal rawal for #2356 add roi package tactic type selection
+                    UpdatePackageDetails(TacticTypeId, DeleteAllPackage);     //Added By Komal rawal for #2356 add roi package tactic type selection
                     var existingTacticTypes = objDbMrpEntities.TacticTypes.Where(tacticType => (tacticType.ModelId == ModelId) && tacticType.Title.ToLower() == Title.ToLower() && tacticType.TacticTypeId != TacticTypeId && (tacticType.IsDeleted == null || tacticType.IsDeleted == false)).ToList();
 
                     //// TFS Bug - 179 : Improper behavior when editing Tactic in model 
@@ -3340,7 +3348,7 @@ namespace RevenuePlanner.Controllers
         }
 
         //Added By Komal rawal for #2356 add roi package tactic type selection to update package detail on changinf of asset type
-        public void UpdatePackageDetails(int TacticTypeId, string AssetTypeValue, bool DeleteAllPackage)
+        public void UpdatePackageDetails(int TacticTypeId, bool DeleteAllPackage)
         {
             try
             {
