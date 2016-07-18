@@ -4999,7 +4999,7 @@ namespace RevenuePlanner.Controllers
                                 if (linkedTacticId > 0)
                                 {
                                     LinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == linkedTacticId && pcpt.IsDeleted == false).FirstOrDefault();
-                                }
+
                                 if (LinkedTactic != null)
                                 {
                                     int yearDiff = LinkedTactic.EndDate.Year - LinkedTactic.StartDate.Year;
@@ -5037,6 +5037,8 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
+                                }
+                                
 
                                 #endregion
 
@@ -5149,7 +5151,7 @@ namespace RevenuePlanner.Controllers
                                 if (linkedTacticId > 0)
                                 {
                                     LinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == linkedTacticId && pcpt.IsDeleted == false).FirstOrDefault();
-                                }
+
                                 if (LinkedTactic != null)
                                 {
                                     int yearDiff = LinkedTactic.EndDate.Year - LinkedTactic.StartDate.Year;
@@ -5188,6 +5190,8 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
+                                }
+                                
 
                                 #endregion
                             }
@@ -5342,7 +5346,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     LinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == linkedTacticId && pcpt.IsDeleted == false).FirstOrDefault();
                                     isLinkedQuarter = LinkedTactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString() ? true : false;
-                                }
+
                                 if (LinkedTactic != null)
                                 {
                                     int yearDiff = LinkedTactic.EndDate.Year - LinkedTactic.StartDate.Year;
@@ -5380,6 +5384,8 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
+                                }
+                                
 
                                 #endregion
 
@@ -5626,7 +5632,7 @@ namespace RevenuePlanner.Controllers
                                 if (linkedTacticId > 0)
                                 {
                                     LinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == linkedTacticId && pcpt.IsDeleted == false).FirstOrDefault();
-                                }
+
                                 if (LinkedTactic != null)
                                 {
                                     int yearDiff = LinkedTactic.EndDate.Year - LinkedTactic.StartDate.Year;
@@ -5664,6 +5670,8 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
+                                }
+                                
 
                                 #endregion
 
@@ -5818,7 +5826,6 @@ namespace RevenuePlanner.Controllers
                                 if (linkedTacticId > 0)
                                 {
                                     LinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == linkedTacticId && pcpt.IsDeleted == false).FirstOrDefault();
-                                }
                                 if (LinkedTactic != null)
                                 {
                                     int yearDiff = LinkedTactic.EndDate.Year - LinkedTactic.StartDate.Year;
@@ -5856,6 +5863,8 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
+                                }
+                               
 
                                 #endregion
                             }
@@ -5955,7 +5964,7 @@ namespace RevenuePlanner.Controllers
                                 if (linkedTacticId > 0)
                                 {
                                     LinkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == linkedTacticId && pcpt.IsDeleted == false).FirstOrDefault();
-                                }
+
                                 if (LinkedTactic != null)
                                 {
                                     int yearDiff = LinkedTactic.EndDate.Year - LinkedTactic.StartDate.Year;
@@ -5993,6 +6002,8 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
+                                }
+                                
 
                                 #endregion
                             }
@@ -6511,7 +6522,7 @@ namespace RevenuePlanner.Controllers
                                 if (linkedLineItemId > 0)
                                 {
                                     LinkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcpt => pcpt.PlanLineItemId == linkedLineItemId && pcpt.IsDeleted == false).FirstOrDefault();
-                                }
+
                                 if (LinkedLineItem != null)
                                 {
                                     int yearDiff = LinkedLineItem.Plan_Campaign_Program_Tactic.EndDate.Year - LinkedLineItem.Plan_Campaign_Program_Tactic.StartDate.Year;
@@ -6549,6 +6560,8 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
+                                }
+                                
 
                                 #endregion
                             }
@@ -6646,7 +6659,7 @@ namespace RevenuePlanner.Controllers
                                 if (linkedLineItemId > 0)
                                 {
                                     LinkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcpt => pcpt.PlanLineItemId == linkedLineItemId && pcpt.IsDeleted == false).FirstOrDefault();
-                                }
+
                                 if (LinkedLineItem != null)
                                 {
                                     int yearDiff = LinkedLineItem.Plan_Campaign_Program_Tactic.EndDate.Year - LinkedLineItem.Plan_Campaign_Program_Tactic.StartDate.Year;
@@ -6684,6 +6697,8 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
+                                }
+                               
 
                                 #endregion
                             }
@@ -8578,7 +8593,14 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (item.ActivityType == ActivityType.ActivityLineItem)
                 {
-                    if (item.CreatedBy == Sessions.User.UserId)
+                    Guid tacticOwner = Guid.Empty;
+                    if (model.Where(m => m.ActivityId == item.ParentActivityId).Any())
+                    {
+                        tacticOwner = model.Where(m => m.ActivityId == item.ParentActivityId).FirstOrDefault().CreatedBy;
+                    }
+
+
+                    if (item.CreatedBy == Sessions.User.UserId || tacticOwner == Sessions.User.UserId)
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
