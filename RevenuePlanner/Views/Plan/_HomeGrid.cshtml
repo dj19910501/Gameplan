@@ -155,7 +155,15 @@
             $(".honeycombbox").hide();
         }
         else {
+            if(IsPackageView == true)
+            {
+                $("#totalEntity").text(ExportSelectedIds.TaskID.length);
+            }
+            else
+            {
             $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+            }
+          
             $(".honeycombbox").show();
         }
         //#1780

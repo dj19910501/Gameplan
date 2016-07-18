@@ -127,6 +127,8 @@ namespace RevenuePlanner.Models
         public int AnchorTacticId { get; set; } // Added by Arpita Soni for Ticket #2357 on 07/14/2016
         public string PackageTitle { get; set; }  // Added by Arpita Soni for Ticket #2357 on 07/14/2016
 
+        public string AssetType { get; set; }  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
+
     }
     // Add by Nishant Sheth
     // Desc :: For stroe customfield in cache memory

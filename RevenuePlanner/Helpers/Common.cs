@@ -8652,7 +8652,8 @@ namespace RevenuePlanner.Helpers
                     StageTitle = Convert.ToString(row["StageTitle"]),
                     // Added by Arpita Soni for Ticket #2357 on 07/14/2016
                     AnchorTacticId = row["AnchorTacticId"] == DBNull.Value ? 0 : Convert.ToInt32(row["AnchorTacticId"]),
-                    PackageTitle = row["PackageTitle"] == DBNull.Value ? "" : Convert.ToString(row["PackageTitle"])
+                    PackageTitle = row["PackageTitle"] == DBNull.Value ? "" : Convert.ToString(row["PackageTitle"]),
+                    AssetType = Convert.ToString(row["AssetType"])  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
                 }).ToList();
             }
 

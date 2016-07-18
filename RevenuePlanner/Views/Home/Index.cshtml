@@ -30,6 +30,8 @@
     var IsPlanSelector = (bool)ViewBag.IsPlanSelector;
     //   var IsSavedPlan = (string)ViewBag.LastSavedPlanIDs;
     var PreviousPlanID = (int)ViewBag.PreviousPlanID;
+
+    var TacticTaskColor = (string)ViewBag.TacticTaskColor;  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
     //Added by Ravindra for  PL Ticket #1411 date 07/07/2015
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
@@ -4658,10 +4660,10 @@
                             var TaskId = $(this).attr('EntityTaskId');
                             var ListIds = TaskId.split('_');
                             $.each(ListIds, function (index, Id) {
-                                if (Id.contains('T')) {
+                                if (Id.indexOf('T') >= 0) {
                                     TacticId = Id.replace("T", "");
                                 }
-                                else if(Id.contains('L'))
+                                else if (Id.indexOf('L') >= 0)
                                 {
                                     var TacticPlanId = Id.replace("L", "");
                                     var PlanIndex = PlanIds.indexOf(TacticPlanId);
@@ -4801,7 +4803,7 @@
                 {
                 var ListIds = CalendarTaskID.split('_');
                 $.each(ListIds, function (index, Id) {
-                    if (Id.contains('T')) {
+                    if (Id.indexOf('T') >= 0) {
                         anchorTacticId = Id.replace("T", "");
                     }
                 });
@@ -4900,13 +4902,90 @@
             }
 
             // Get tactics belongs to the package
+            var IdsNotinList = [];
             for (i = 0; i < currentPkgIds.length; i++) {
                 var rowObject = $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']');
                 var id = $(rowObject).attr('taskid');
+                if (IsUpdate==true || (id == undefined || id == 'undefined' || id == null || id == "")) {
+                    IdsNotinList.push(currentPkgIds[i])
+                }
                 if (currentPkgIds.indexOf(id) >= 0) {
                     $(rowObject).trigger('click');
                 }
             }
+            //Added BY Komal rawal for #2358 show tactics in package even if they are not filtered
+            if (IdsNotinList.length != 0) {
+                $.ajax({
+                    beforeSend: function (x) {
+                          myApp.hidePleaseWait();
+                    },
+                    type: 'POST',
+                    url: '@Url.Content("~/Home/GetPackageTacticDetails")',
+                    data: {
+                        viewBy: isRequest ? '@PlanGanttTypes.Request.ToString()' : type,
+                        TacticIds: IdsNotinList.toString(),
+                        TacticTaskColor: '@TacticTaskColor',
+                        IsGridView: $('#IsGridView').val().toLowerCase(),
+                    },
+                    success: function (data) {
+                        var ListData = data.Listofdata;
+                        if ($('#IsGridView').val() == "True") {
+                            $.each(IdsNotinList, function (index, TacticId) {
+                                $.each(ListData, function (index, Data) {
+                                    if (Data.TacticId.toString() == TacticId) {
+                                        $("div[altid='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
+                                        var index = ExportSelectedIds.TaskID.indexOf(Data.TaskId);
+                                        if (index < 0)
+                                        {
+                                            ExportSelectedIds.TaskID.push(Data.TaskId);
+                                            ExportSelectedIds.Title.push(Data.Title);
+                                            ExportSelectedIds.OwnerName.push(Data.OwnerName);
+                                            ExportSelectedIds.TacticType.push(Data.TacticTypeValue);
+                                            ExportSelectedIds.ColorCode.push(Data.ColorCode);
+                                            ExportSelectedIds.PlanFlag.push('Grid');
+                                            ExportSelectedIds.CsvId.push(Data.CsvId);
+                                            ExportSelectedIds.ROITacticType.push(Data.ROITacticType);
+                                            ExportSelectedIds.AnchorTacticId.push(Data.AnchorTacticId);
+                                        }
+                                      
+
+                                    }
+
+                                });
+                            });
+                        }
+                        else
+                        {
+                            $.each(IdsNotinList, function (index, TacticId) {
+                                $.each(ListData, function (index, Data) {
+                                    if (Data.TacticId.toString() == TacticId) {
+                                        $("div[name1='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
+                                        var index = ExportSelectedIds.TaskID.indexOf(Data.TaskId);
+                                        if (index < 0) {
+                                            ExportSelectedIds.TaskID.push(Data.TaskId);
+                                            ExportSelectedIds.Title.push(Data.Title);
+                                            ExportSelectedIds.OwnerName.push(Data.OwnerName);
+                                            ExportSelectedIds.TacticType.push(Data.TacticTypeValue);
+                                            ExportSelectedIds.ColorCode.push(Data.ColorCode);
+                                            ExportSelectedIds.PlanFlag.push('Calender');
+                                            ExportSelectedIds.ROITacticType.push(Data.ROITacticType);
+                                            ExportSelectedIds.CalendarEntityType.push(Data.CalendarEntityType);
+                                            ExportSelectedIds.AnchorTacticId.push(Data.AnchorTacticId);
+                                        }
+
+                                    }
+
+                                });
+                            });
+                        }
+                      
+
+                        $("#totalEntity").text(ExportSelectedIds.TaskID.length);
+                        $(".honeycombbox").show();
+                    }
+                });
+            }
+            //End
         }
 
         // Added by Arpita Soni to display error message in Honeycomb popup
@@ -5190,7 +5269,7 @@
                         var HasActiveClass = false;
                         if ($('#IsGridView').val() == "True") {
                             HasActiveClass = $("div[altid='" + ExportSelectedIds.TaskID[i] + "']").hasClass("honeycombbox-icon-gantt-Active");
-                            if (HasActiveClass == true) {
+                            if (HasActiveClass == true || IsPackageView == true) {
                                 // Modified by Arpita Soni for Ticket #2354 on 07/07/2016
                                 // Added some attributes for validation in ROI packaging
                                 if(ExportSelectedIds.ROITacticType[i] == '@Enums.AssetType.Asset.ToString()')
@@ -5385,7 +5464,7 @@
             var ListIds = taskId.split('_');
             var anchorTacticId = 0;
             $.each(ListIds, function (index, Id) {
-                if (Id.contains('T')) {
+                if (Id.indexOf('T') >= 0) {
                     anchorTacticId = Id.replace("T", "");
                 }
 

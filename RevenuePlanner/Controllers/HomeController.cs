@@ -136,7 +136,12 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsPlanSelector = IsPlanSelector;
 
             ViewBag.PreviousPlanID = PreviousPlanID;
-
+            //Added by Komal Rawal for #2358
+            Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
+            ViewBag.TacticTaskColor = TacticColor;
+            //End
 
             //// Set viewbag for notification email shared link inspect popup
             ViewBag.ActiveMenu = activeMenu;
@@ -3376,7 +3381,7 @@ namespace RevenuePlanner.Controllers
             var ProgramColor = ColorCodelist[Enums.EntityType.Program.ToString().ToLower()];
             var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
             var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
-            var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
+            var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];         
             //Emd
             string doubledesh = "--";
             //Added BY Ravindra Singh Sisodiya, Get Subordinates Ids List #1433
@@ -7758,6 +7763,7 @@ namespace RevenuePlanner.Controllers
 
                 var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                 objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
                 // Add By Nishant Sheth
                 // Desc :: Set tatcilist for original db/modal format
                 var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
@@ -9245,6 +9251,76 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return Json(new { remainItems = remainItems }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added BY : Komal Rawal
+        /// Date : 18-07-2016
+        /// Show tactic in package even if they are not filtered
+        /// Ticket # 2358
+        /// </summary>
+        public JsonResult GetPackageTacticDetails(string viewBy, string TacticIds = "", string TacticTaskColor = "", bool IsGridView = false)
+        {
+            var PlanTacticListforpackageing = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.PlanTacticListforpackageing.ToString());
+
+            if(IsGridView == false)
+            {
+                if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) || viewBy.Equals(PlanGanttTypes.Request.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                    {
+                        TacticId = tactic.PlanTacticId,
+                        TaskId = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId, tactic.TacticTypeId),
+                        Title = tactic.Title,
+                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                        ColorCode = TacticTaskColor,
+                        OwnerName = GetOwnerName(tactic.CreatedBy),
+                        ROITacticType = tactic.AssetType,
+                        CalendarEntityType = "Tactic",
+                        AnchorTacticId = tactic.AnchorTacticId,
+                    });
+
+                    return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                    {
+                        TacticId = tactic.PlanTacticId,
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.StageId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                        Title = tactic.Title,
+                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                        ColorCode = TacticTaskColor,
+                        OwnerName = GetOwnerName(tactic.CreatedBy),
+                        ROITacticType = tactic.AssetType,
+                        CalendarEntityType = "Tactic",
+                        AnchorTacticId = tactic.AnchorTacticId,
+                    });
+
+                    return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
+
+                }
+            }
+            else
+            {
+                var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                {
+                    TacticId = tactic.PlanTacticId,
+                    TaskId = "__"+tactic.PlanProgramId + "_" + tactic.PlanTacticId,
+                    Title = tactic.Title,
+                    TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                    ColorCode = TacticTaskColor,
+                    OwnerName = GetOwnerName(tactic.CreatedBy),
+                    ROITacticType = tactic.AssetType,
+                    AnchorTacticId = tactic.AnchorTacticId,
+                    CsvId = "Tactic_" + tactic.PlanTacticId,
+                });
+
+                return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
+            }
+           
+
+
         }
 
         #endregion
