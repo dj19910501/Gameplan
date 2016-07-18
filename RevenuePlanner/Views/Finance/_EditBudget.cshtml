@@ -35,12 +35,13 @@
     }   
     
 </style>
+<link href="@Url.Content("~/Content/css/fileinput.css")" rel="stylesheet" />
 <div id="gridbox" style="width:100%; background-color:white;"></div>
 <script type="text/javascript">
     var RowIDs = {
         IDs: []
     }
-   
+
     var myTreeGrid;
     //  var GlobalBudgetId = '';
     //var GlobalEditLevel = '';
@@ -57,14 +58,14 @@
     var ActualColName;
     var GridData = "";
     var EditPermission = "";
-   // var mygrid;
+    // var mygrid;
     var AllocatedBy;
     var combo;
     $(document).ready(function () {
-      
-        GlobalBudgetId = '@ViewBag.BudgetId';
+
+        GlobalBudgetId = '@Sessions.BudgetDetailId';
         GlobalEditLevel = '@ViewBag.EditLevel';
-        
+
         if (GlobalEditLevel == "Budget") {
             GetListOfBudgetName();
         }
@@ -109,9 +110,66 @@
 
     });
 
+    function LoadInputModelBox()
+    {
+        // Add By Nishant sheth
+        // #2248 File input popup function for import finance marketing budget
+        var importurl = '@Url.Content("~/Finance/ExcelFileUpload/")';
+        $('.fileinput-upload-button').hide();
+        $('#ImportModal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+            $('#input-43').fileinput('clear');
+        });
+        $('#input-43').off('fileclear').on('fileclear', function (event) {
+            $('.fileinput-upload-button').hide();
+        });
 
-    function LoadBudgetGrid(AllocatedBy) {
+        $("#input-43").fileinput({
+            type: 'POST',
+            showPreview: false,
+            uploadUrl: importurl,
+            allowedFileExtensions: ["xls", "xlsx"],
+            msgInvalidFileExtension: 'Incorrect file format. Please export the file and use that file to upload your changes',
+            elErrorContainer: "#errorBlock"
 
+        });
+
+        $('#input-43').off('filepreupload').on('filepreupload', function (event, data, previewId, index) {
+            myApp.showPleaseWait();
+        });
+
+
+        $('#input-43').off('fileuploaded').on('fileuploaded', function (event, data, previewId, index) {
+            if (data.response.conflict == true) {
+                ShowMessage(false, data.response.message);
+            }
+            if (GlobalEditLevel != undefined) {
+                LoadBudgetGrid(AllocatedBy);
+                GetFinanceHeaderValue(0, false);
+            }
+            var sucesstextmessagespan = $("#spanMsgSuccess");
+            var sucesstextmessagediv = $("#SuccessMsg");
+            if (sucesstextmessagespan != undefined && sucesstextmessagespan != null) {
+                sucesstextmessagespan.text('Your file imported successfully.')
+                if (sucesstextmessagediv != undefined && sucesstextmessagediv != null) {
+                    sucesstextmessagediv.css('display', 'block');
+                }
+            }
+            myApp.hidePleaseWait();
+            $('#ImportModal').modal('hide');
+            
+        });
+
+        $('#input-43').off('fileloaded').on('fileloaded', function (event, file, previewId, index, reader) {
+            $('.fileinput-upload-button').show();
+        });
+        $('#input-43').off('fileuploaderror').on('fileuploaderror', function (event, data, msg) {
+            $('.fileinput-upload-button').hide();
+        });
+        // End By Nishant Sheth
+    }
+
+       function LoadBudgetGrid(AllocatedBy) {
+           LoadInputModelBox();
         myApp.showPleaseWait();
         var GridWidth = $("#gridbox").width();
         RevnueTimeFrameChange = true;
@@ -155,8 +213,8 @@
         myTreeGrid = new dhtmlXGridObject('gridbox');
         myTreeGrid.setImagePath("@Url.Content("~/codebase/imgs/")");
         //myTreeGrid.setImageSize(1, 1);
-        
-       // var Columnsetval = $("#ddlColumnSet").val();
+
+        // var Columnsetval = $("#ddlColumnSet").val();
         var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
         var CheckedColumns = "";
         $.each(ColumnsCheckBox, function () {
@@ -164,7 +222,7 @@
             if (a != undefined && a == "true") {
                 CheckedColumns += $(this).val() + ",";
             }
-            
+
         });
         CheckedColumns = CheckedColumns.slice(0, -1);
         $.ajax({
@@ -220,15 +278,14 @@
         //myTreeGrid.attachEvent("onXLE", function (grid_obj, count) {
         //    alert("onXLE");
         //});
-        myTreeGrid.init(); 
-        //Modified by Maitri Gandhi for #2066 on 17/3/2016          
+        myTreeGrid.init();
+        //Modified by Maitri Gandhi for #2066 on 17/3/2016
         myTreeGrid.attachEvent("onDistributedEnd", function () {
             if (Maintained != 0) {
                 var ID = myTreeGrid.getRowId(Maintained);
                 if (ID != undefined || ID == '') {
                     var divname = "#dv" + ID;
-                    if ($(divname).html() != undefined && $(divname).html() != "undefined")
-                    {
+                    if ($(divname).html() != undefined && $(divname).html() != "undefined") {
                         $('html, body').animate({
                             scrollTop: $(divname).offset().top
                         }, 0);
@@ -309,7 +366,7 @@
         //myTreeGrid.setUserData("id");
         $("#gridbox").find("table").first().find("tr").next().last().find("td").first().css("text-align", "center");
 
-        var IsValid = true;        
+        var IsValid = true;
 
 
         myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
@@ -322,7 +379,7 @@
             IsValid = true;
         });
         myTreeGrid.attachEvent("onEditCancel", function (id, value) {
-            
+
             //myTreeGrid.cells(id, 0).setCValue("invalid");
             //alert('');
             RevnueTimeFrameChange = true;
@@ -357,7 +414,7 @@
             ValidColumnId = cInd;
             ValidRowId = rId;
             //Added by Maitri Gandhi for #2049 on 8/3/2016
-            ItemIdForFocus = myTreeGrid.getRowIndex(ValidRowId);    
+            ItemIdForFocus = myTreeGrid.getRowIndex(ValidRowId);
             Maintained = ItemIdForFocus;
             var ColumnName = myTreeGrid.getColLabel(cInd, 1);
             if (stage == 1) {
@@ -380,7 +437,7 @@
                     //$(".dhx_combo_edit").off("keydown");
                     $(".dhx_combo_edit").on('keydown', (
                     myTreeGrid.editor.obj.onkeypress = function (event) {
-                       // var key = window.event ? event.keyCode : event.which;
+                        // var key = window.event ? event.keyCode : event.which;
                         var text = this.value;
                         if (event.keyCode == 8 || event.keyCode == 46
                          || event.keyCode == 37 || event.keyCode == 39) {
@@ -402,14 +459,14 @@
                 var value = myTreeGrid.cells(rId, cInd).getValue();
                 var comboList = combo.getKeys();
                 $('.dhx_combo_select option[value="' + value + '"]').remove();
-                
+
                 $(".dhx_combo_select option").filter(function () {
                     return this.text == value;
                 }).attr('selected', true);
                 $(".dhx_combo_select").css("right", "20px");
                 $(".dhx_combo_select").css("left", "auto");
                 combo.save();
-                
+
             }
             if (stage == 0 && cInd == 2) return true;
             var ParentID = $("#ddlParentFinance").val();
@@ -482,11 +539,11 @@
                             }
                             var checkComobo = myTreeGrid.getCombo(cInd);
                             if (!(checkComobo.keys.length > 0)) {
-                            myTreeGrid.cells(rId, cInd).setValue(Intl.NumberFormat().format(nValue));
+                                myTreeGrid.cells(rId, cInd).setValue(Intl.NumberFormat().format(nValue));
                             } else {
                                 var result;
                                 for (var i = 0, len = combo._save.length; i < len; i++) {
-                                    
+
                                     if (combo._save[i][0].toString() === nValue) {
                                         result = combo._save[i][1];
                                         break;
@@ -559,7 +616,7 @@
                                 }
 
                                 if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
-                                   
+
                                     for (var i = 1; i <= 18; i++) {
                                         var colId = myTreeGrid.getColumnId(i);
                                         var colIndex = myTreeGrid.getColIndexById(colId);
@@ -696,7 +753,7 @@
                             $("#divFinanceBack").css("display", "block");
                             //}
                             if (ColumnName == "Task Name") {
-                                 AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+                                AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
                                 LoadBudgetGrid(AllocatedBy);
                                 //GetFinanceHeaderValue(rId, false);
                                 BindParentBudgetDrp(ParentID);
@@ -715,7 +772,7 @@
                             //myApp.hidePleaseWait();
                         }
                     });
-                   
+
                 }
 
             }
@@ -746,7 +803,7 @@
             //$("#gridbox").css("height", tableheight + 100);
             //myTreeGrid.setSizes();
 
-           // $("#gridbox").find("table").css("width", GridWidth);
+            // $("#gridbox").find("table").css("width", GridWidth);
 
 
             return true;
@@ -823,9 +880,9 @@
 
             });
         }
-        
+
         ItemIdForFocus = myTreeGrid.getRowIndex($(checkbox).attr('row-id').toString());    //Added by Maitri Gandhi for #2049 on 10/3/2016
-        Maintained = ItemIdForFocus -1;
+        Maintained = ItemIdForFocus - 1;
     }
     //Added BY Komal Rawal for #1639
     //RowIDs = {
@@ -933,7 +990,7 @@
     }
     function AddNewRowbyType(itemType, cntrl) {
         if (_isNewRowAdd == false) {
-             AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+            AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
             //if (AllocatedBy == 'quarters') {
             //    AllocatedBy = true;
             //}
@@ -942,7 +999,7 @@
             //}
             var row_id = $(cntrl).attr('row-id');
             //Added by Maitri Gandhi for #2049 on 8/3/2016
-            ItemIdForFocus = myTreeGrid.getRowIndex(row_id.toString());   
+            ItemIdForFocus = myTreeGrid.getRowIndex(row_id.toString());
             Maintained = ItemIdForFocus;
             //var rowId = myTreeGrid.getSelectedId();
             //var rowindex = myTreeGrid.getRowIndex(row_id.toString());

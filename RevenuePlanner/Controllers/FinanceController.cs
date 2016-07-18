@@ -13,6 +13,12 @@ using RevenuePlanner.BDSService;
 using System.Globalization;
 using Elmah;
 using System.Web.UI.WebControls;
+using Excel;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Xml;
+using System.Data.SqlClient;
+using System.IO;
 
 namespace RevenuePlanner.Controllers
 {
@@ -301,7 +307,8 @@ namespace RevenuePlanner.Controllers
                 TempData["FinanceHeader"] = objFinanceHeader;
                 gridRowModel.FinanemodelheaderObj = Common.CommonGetFinanceHeaderValue(objFinanceHeader);
             }
-            ViewBag.BudgetId = (Int32)budgetId;
+            //ViewBag.BudgetId = (Int32)budgetId;
+            Sessions.BudgetDetailId = (Int32)budgetId;
             ViewBag.IsBudgetCreateEdit = IsBudgetCreateEdit;
             ViewBag.IsBudgetView = IsBudgetView;
             ViewBag.IsForecastView = IsForecastView;
@@ -1300,7 +1307,8 @@ namespace RevenuePlanner.Controllers
         public ActionResult EditPermission(int BudgetId = 0, string level = "", string FlagCondition = "", string rowid = "")
         {
             FinanceModel objFinanceModel = new FinanceModel();
-            ViewBag.BudgetId = BudgetId;
+            //ViewBag.BudgetId = BudgetId;
+            Sessions.BudgetDetailId = BudgetId;
             ViewBag.EditLevel = level;
             ViewBag.GridRowID = rowid;
             List<ViewByModel> lstchildbudget = new List<ViewByModel>();
@@ -1582,7 +1590,8 @@ namespace RevenuePlanner.Controllers
         public JsonResult DrpFilterByBudget(int BudgetId = 0, string level = "", string FlagCondition = "")
         {
 
-            ViewBag.BudgetId = BudgetId;
+            //ViewBag.BudgetId = BudgetId;
+            Sessions.BudgetDetailId = BudgetId;
             List<UserPermission> _user = new List<UserPermission>();
 
             List<BDSService.User> lstUser = new List<BDSService.User>();
@@ -2926,7 +2935,8 @@ namespace RevenuePlanner.Controllers
         public ActionResult EditBudget(int BudgetId = 0, string level = "", string EditPermission = "")
         {
             FinanceModel objFinanceModel = new FinanceModel();
-            ViewBag.BudgetId = BudgetId;
+            //ViewBag.BudgetId = BudgetId;
+            Sessions.BudgetDetailId = BudgetId;
             ViewBag.EditLevel = level;
             ViewBag.EditPermission = EditPermission;
             ViewBag.IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
@@ -4242,6 +4252,268 @@ namespace RevenuePlanner.Controllers
                 Elmah.ErrorSignal.FromCurrentContext().Raise(e);
             }
             return strURL;
+        }
+
+        #endregion
+
+        #region Import Marketing Budget
+
+        /// <summary>
+        /// Created By Nishant Sheth
+        /// Import finance budget #2248
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult ExcelFileUpload()
+        {
+            int BudgetDetailId = Sessions.BudgetDetailId;
+            ImportData objImprtData = new ImportData();
+            DataTable dtColumns = new DataTable();
+            XmlDocument xmlData = new XmlDocument();
+            try
+            {
+                var app = new Microsoft.Office.Interop.Excel.Application();
+                if (Request != null)
+                {
+                    if (Request.Files[0].ContentLength > 0)
+                    {
+                        string fileExtension =
+                            System.IO.Path.GetExtension(Request.Files[0].FileName);
+
+                        if (fileExtension == ".xls" || fileExtension == ".xlsx")
+                        {
+                            string DirectoryLocation = Server.MapPath("~/Content/");
+                            Guid FileGuid = Guid.NewGuid();
+                            string FileName = Convert.ToString(FileGuid) + DateTime.Now.ToString("mm.dd.yyyy.hh.mm.ss.fff") + fileExtension;
+                            string fileLocation = DirectoryLocation + FileName;
+                            string excelConnectionString = string.Empty;
+                            Request.Files[0].SaveAs(fileLocation);
+
+                            if (fileExtension == ".xls")
+                            {
+                                fileLocation = ConvertxlsToXLSX(DirectoryLocation, FileName); // Covert .xls fromat to .xlsx
+                            }
+
+                            objImprtData = GetXLSXData(fileLocation, BudgetDetailId); // Read Data from excel file to xml
+                            dtColumns = objImprtData.MarketingBudgetColumns;
+                            xmlData = objImprtData.XmlData;
+                            System.IO.File.Delete(fileLocation);
+
+                            if (!string.IsNullOrEmpty(objImprtData.ErrorMsg))
+                            {
+                                return Json(new { msg = "error", error = objImprtData.ErrorMsg }, JsonRequestBehavior.AllowGet);
+                            }
+
+                            if (dtColumns == null)
+                            {
+                                return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                            }
+
+                            if (dtColumns.Rows.Count == 0 || dtColumns.Rows[0][0] == DBNull.Value)
+                            {
+                                return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                            }
+
+                            #region Check the file data is monthly or quarterly
+
+                            List<string> MonthList = new List<string>();
+                            List<string> DefaultMonthList = new List<string>();
+
+                            MonthList = dtColumns.Rows.Cast<DataRow>().Select(x => x.Field<string>("Month").ToLower()).Distinct().ToList();
+
+                            DefaultMonthList = Enums.ReportMonthDisplayValuesWithPeriod.Select(a => a.Key.ToLower()).ToList();
+
+                            var IsMonthly = (from dtMonth in MonthList
+                                             join defaultMonth in DefaultMonthList on dtMonth equals defaultMonth
+                                             select new { dtMonth }).Any();
+                            #endregion
+
+                            StoredProcedure objSp = new StoredProcedure();
+                            objSp.ImportMarketingFinance(xmlData, dtColumns, BudgetDetailId, IsMonthly);
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("process"))
+                {
+                    return Json(new { msg = "error", error = "File is being used by another process." }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return new EmptyResult();
+
+        }
+
+        /// <summary>
+        /// Created By Nishant Sheth
+        /// Read data from excel to xml and list of columns
+        /// </summary>
+        /// <param name="fileLocation"></param>
+        /// <param name="BudgetDetailId"></param>
+        /// <returns></returns>
+        private ImportData GetXLSXData(string fileLocation, int BudgetDetailId = 0)
+        {
+            ImportData objImportData = new ImportData();
+            DataTable dtColumns = new DataTable();
+            XmlDocument xmlDoc = new XmlDocument();
+            dtColumns.Columns.Add("Month", typeof(string));
+            dtColumns.Columns.Add("ColumnName", typeof(string));
+            dtColumns.Columns.Add("ColumnIndex", typeof(Int64));
+
+            try
+            {
+                using (SpreadsheetDocument doc = SpreadsheetDocument.Open(fileLocation, false))
+                {
+                    //Read the first Sheet from Excel file.
+                    Sheet sheet = doc.WorkbookPart.Workbook.Sheets.GetFirstChild<Sheet>();
+
+                    //Get the Worksheet instance.
+                    Worksheet worksheet = (doc.WorkbookPart.GetPartById(sheet.Id.Value) as WorksheetPart).Worksheet;
+
+                    //Fetch all the rows present in the Worksheet.
+                    IEnumerable<Row> rowsData = worksheet.GetFirstChild<SheetData>().Descendants<Row>();
+                    var RowsListData = rowsData.ToList();
+                    RowsListData.Remove(RowsListData.LastOrDefault());
+                    var rows = RowsListData;
+                    //Loop through the Worksheet rows.
+                    XmlNode rootNode = xmlDoc.CreateElement("data");
+                    xmlDoc.AppendChild(rootNode);
+
+                    List<XmlColumns> listColumnIndex = new List<XmlColumns>();
+                    foreach (Row row in rows)
+                    {
+                        //Use the first row to add columns to DataTable.
+                        if (row.RowIndex.Value > 2)
+                        {
+                            XmlNode childnode = xmlDoc.CreateElement("row");
+                            rootNode.AppendChild(childnode);
+
+                            int i = 0;
+                            foreach (Cell cell in row.Descendants<Cell>())
+                            {
+                                var CellData = listColumnIndex.Where(a => a.ColumnIndex == i).Select(a => a).FirstOrDefault();
+                                if (CellData != null)
+                                {
+                                    XmlNode datanode = xmlDoc.CreateElement("value");
+                                    XmlAttribute attribute = xmlDoc.CreateAttribute("code");
+                                    attribute.Value = Convert.ToString(CellData.ColumName);
+                                    datanode.Attributes.Append(attribute);
+                                    datanode.InnerText = GetValue(doc, cell).Trim();
+                                    // RowIndex 3 is for first row
+                                    if (row.RowIndex == 3)
+                                    {
+                                        if (!string.IsNullOrEmpty(attribute.Value) && Convert.ToString(attribute.Value).ToLower() == "id")
+                                        {
+                                            int n;
+                                            bool isNumeric = int.TryParse(datanode.InnerText, out n);
+                                            if (isNumeric)
+                                            {
+                                                if (BudgetDetailId != n)
+                                                {
+                                                    objImportData = new ImportData();
+                                                    objImportData.ErrorMsg = "Data getting uploaded does not relate to specific Budget/Forecast.";
+                                                    return objImportData;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    childnode.AppendChild(datanode);
+                                }
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            // Get list of columns and its time frame
+                            if (row.RowIndex.Value == 1)
+                            {
+                                var HeaderRows = RowsListData.Where(a => a.RowIndex.Value == 1 || a.RowIndex.Value == 2).ToList();
+                                if (HeaderRows.Count > 0)
+                                {
+                                    var InnerHeader = HeaderRows[0].Descendants<Cell>().Select(a => a).ToList();
+                                    int p = 0;
+                                    int j = 1;
+                                    foreach (Cell cell in HeaderRows[1].Descendants<Cell>())
+                                    {
+                                        string columnName = GetValue(doc, cell);
+                                        if (!string.IsNullOrEmpty(columnName))
+                                        {
+
+                                            string columnNameLower = columnName.ToLower();
+                                            if (columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Planned).ToLower() && columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Actual).ToLower())
+                                            {
+                                                var InnerCol = InnerHeader[p];
+                                                var InnerColName = GetValue(doc, InnerCol);
+                                                if (InnerColName.ToLower() != "total")
+                                                {
+                                                    listColumnIndex.Add(new XmlColumns { ColumName = columnName, ColumnIndex = p });
+                                                    dtColumns.Rows.Add();
+                                                    dtColumns.Rows[j - 1]["Month"] = InnerColName;
+                                                    dtColumns.Rows[j - 1]["ColumnIndex"] = j;
+                                                    dtColumns.Rows[j - 1]["ColumnName"] = columnName;
+                                                    j++;
+                                                }
+                                            }
+                                        }
+                                        p++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return null;
+            }
+
+            objImportData.MarketingBudgetColumns = dtColumns;
+            objImportData.XmlData = xmlDoc;
+
+            return objImportData;
+        }
+
+        private string GetValue(SpreadsheetDocument doc, Cell cell)
+        {
+            string value = string.Empty;
+            if (cell.CellValue != null)
+            {
+                value = cell.CellValue.InnerText;
+            }
+            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+            {
+                return doc.WorkbookPart.SharedStringTablePart.SharedStringTable.ChildElements.GetItem(int.Parse(value)).InnerText;
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// Created By Nishant Sheth
+        /// Convert .xls file format to .xlsx
+        /// </summary>
+        /// <param name="filesFolder"></param>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public string ConvertxlsToXLSX(string filesFolder, string filename)
+        {
+            string filePath = filesFolder + filename;
+            var app = new Microsoft.Office.Interop.Excel.Application();
+            var wb = app.Workbooks.Open(filePath);
+            string renamefilename = Path.ChangeExtension(filePath, ".xlsx");
+            wb.SaveAs(Filename: renamefilename, FileFormat: Microsoft.Office.Interop.Excel.XlFileFormat.xlOpenXMLWorkbook);
+            wb.Close();
+            app.Quit();
+            System.IO.File.Delete(filePath);
+            return renamefilename;
         }
 
         #endregion

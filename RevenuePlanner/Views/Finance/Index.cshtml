@@ -42,7 +42,8 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
 }
-
+<script src="@Url.Content("~/Scripts/jquery.cluetip.js")"></script>
+<script src="@Url.Content("~/Scripts/js/fileinput.js")"></script>
 
 @Html.Hidden("hdn_row_parentId", "", new { id = "hdn_row_parentId", name = "hdn_row_parentId", value = "" })
 @Html.Hidden("hdn_BudgetId", "", new { id = "hdn_BudgetId", name = "hdn_BudgetId", value = "" })
@@ -89,9 +90,34 @@
 
 
             @*Modified by Rushil Bhuptani on 06/03/2016 for #2247*@
+            <div id="ImportModal" class="modal hide fade import-popover">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4> Import Data  </h4>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        @*<li><strong>Download file format <a href="~/Content/Common/grid sample.xls">here</a></strong></li>*@
+                        <li>
+                            <strong>Make any necessary changes</strong><br />
+                            <span>Note: Any additional rows or columns added will not appear after imported</span>
+                        </li>
+                        <li>
+                            <strong>Import the file</strong><br />
+                            <span>Note:The file format must match the file format of sample file.</span>
+                        </li>
+                    </ul>
+                    <input id="input-43" name="input43[]" type="file" class="file-loading select-file">
+                    <div id="errorBlock" class="help-block"></div>
+                    <div id="successBlock" class="help-block alert alert-success hide message-position-small">Your Data Save Successfully</div>
+                </div>
+            </div>
             <div id="dvExportToExcel" class="finance-export-btn">
                 <a class="btn btn-blue export-link remove-box-shadow" style="cursor: pointer; float:left; line-height:35px" id="exportcsv" onclick=" return ExportToExcel(); ">
                     Export
+                </a>
+                <a class="btn btn-blue export-link remove-box-shadow" style="cursor: pointer; float:left; line-height:35px;margin-left:15px;display:none;" onclick="showModal();" id="ImportBtn">
+                    Import
                 </a>
             </div>
 
@@ -241,6 +267,22 @@
     //        $('#btnSettings').css('display', 'none')
     //    }
     //});
+    // Add By Nishant Sheth
+    // Open modal popup
+    function showModal() {
+        var sucesstextmessagespan = $("#spanMsgSuccess");
+        var sucesstextmessagediv = $("#SuccessMsg");
+        if (sucesstextmessagespan != undefined && sucesstextmessagespan!=null)
+        {
+            sucesstextmessagespan.text('')
+            if (sucesstextmessagediv != undefined && sucesstextmessagediv != null)
+            {
+                sucesstextmessagediv.css('display', 'none');
+            }
+        }
+        $('#ImportModal').modal('show');
+    }
+
     $(document).ready(function () {
         //Added by Rahul Shah on 29/10/2015 to set maximum character length of dropdownlist.
         $('#ddlParentFinanceMain').attr('maxlength', '30');
@@ -668,16 +710,6 @@
                         }
                         if (IsChecked == "true") {
                             myTreeGrid.setColumnHidden(Count, false);
-                            //Added By Bhumika Chakravarti for #1771 on 4/4/2016
-                            var HeaderRowCount = $("#gridbox .xhdr .hdr tr").length;
-                            if(HeaderRowCount == 3)
-                            {
-                                if($("#gridbox .xhdr .hdr tr:nth-child(2)").height() < $("#gridbox .xhdr .hdr tr:nth-child(3)").height())
-                                {
-                                    $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","none");
-                                    $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","32px");
-                                }
-                            }
                         }
                     }
 
@@ -685,6 +717,32 @@
                 } else {
                     clickcheck = 1;
                     GetColName = false;
+                }
+
+                var HeaderRowCount = $("#gridbox .xhdr .hdr tr").length;
+                var IsFirstRowDisplay = false;
+                if(HeaderRowCount == 3)
+                {
+                    var TimeFrameRow=$("#gridbox .xhdr .hdr tr:nth-child(2)").children('td');
+
+                    if(TimeFrameRow!=undefined)
+                    {
+                        if(TimeFrameRow!=null)
+                        {
+                            IsFirstRowDisplay = ShowHideTimeFrameRow();
+                        }
+
+                        if(!IsFirstRowDisplay)
+                        {
+                            $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","none");
+                            $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","32px");
+                        }
+                        else
+                        {
+                            $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","table-row");
+                            $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","normal");
+                        }
+                    }
                 }
             }else{
                 var spanval = $(this).find("span");
@@ -827,6 +885,26 @@
                     clickcheck = 1;
                     GetColName = false;
                 }
+                var TimeFrameRow=$("#gridbox .xhdr .hdr tr:nth-child(2)").children('td');
+                var IsFirstRowDisplay = false;
+                if(TimeFrameRow!=undefined)
+                {
+                    if(TimeFrameRow!=null)
+                    {
+                        IsFirstRowDisplay = ShowHideTimeFrameRow();
+                    }
+
+                    if(!IsFirstRowDisplay)
+                    {
+                        $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","none");
+                        $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","32px");
+                    }
+                    else
+                    {
+                        $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","table-row");
+                        $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","normal");
+                    }
+                }
             }else{
 
                 var spanval = $(this).find("span");
@@ -927,6 +1005,41 @@
     //    $("#btnMultiselect_ddlChildFinance").find("span").text('');
     //    $("#btnMultiselect_ddlChildFinance").find("span").text(htmlDecode(txtval));
     //});
+
+    // Add By Nishant Sheth
+    // Show/Hide Timeframe Row function
+    function ShowHideTimeFrameRow()
+    {
+        var IsFirstRowDisplayfun=false;
+        var TimeFrameRow=$("#gridbox .xhdr .hdr tr:nth-child(2)").children('td');
+        if(TimeFrameRow!=undefined)
+        {
+            if(TimeFrameRow!=null)
+            {
+                $.each(TimeFrameRow,function(){ 
+                    if($(this).css('display').toLowerCase()!='none')
+                    {
+                        if($(this).find('div').first()!=undefined)
+                        {
+                            var tdDivtext= $(this).find('div').first().text().trim();
+                            if(!IsFirstRowDisplayfun)
+                            {   
+                                if(tdDivtext!=undefined)
+                                {
+                                    if(tdDivtext!=null && tdDivtext)
+                                    {
+                                        IsFirstRowDisplayfun=true;
+                                        return IsFirstRowDisplayfun;
+                                    }
+                                }
+                            }  
+                        }
+                    }                 
+                });
+            }
+        }
+        return IsFirstRowDisplayfun;
+    }
 
     function GetFinanceHeaderValue(_budgetId, Ismain, mainTimeFrame) {
 
@@ -1160,16 +1273,32 @@
             function( response, status, xhr){
                 if(status == "success")
                 {
-                    var HeaderRowCount = $("#gridbox .xhdr .hdr tr").length;
-                    if(HeaderRowCount == 3)
-                    {
-                        if($("#gridbox .xhdr .hdr tr:nth-child(2)").height() < $("#gridbox .xhdr .hdr tr:nth-child(3)").height())
+                        var HeaderRowCount = $("#gridbox .xhdr .hdr tr").length;
+                        var IsFirstRowDisplay = false;
+                        if(HeaderRowCount == 3)
                         {
-                            $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","none");
-                            $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","32px");
+                            var TimeFrameRow=$("#gridbox .xhdr .hdr tr:nth-child(2)").children('td');
+
+                            if(TimeFrameRow!=undefined)
+                            {
+                                if(TimeFrameRow!=null)
+                                {
+                                    IsFirstRowDisplay = ShowHideTimeFrameRow();
+                                }
+
+                                if(!IsFirstRowDisplay)
+                                {
+                                    $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","none");
+                                    $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","32px");
+                                }
+                                else
+                                {
+                                    $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","table-row");
+                                    $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","normal");
+                                }
+                            }
                         }
-                    }
-                }
+                  }
             });
 
     }
@@ -1278,6 +1407,7 @@
             $("#ddlColumnsFrameBox").css("display","inline-block");
             // Added by Rushil Bhuptani on 06/06/2015 for ticket #2247 to address issue of exporting previous data.
             $("#dvExportToExcel").css("display","block");
+            $("#ImportBtn").hide();
         }
         if (Page == "EditBudget") {
             $("#drpParentMain").css("display", "none");
@@ -1295,6 +1425,7 @@
             $("#ddlColumnsFrameBox").css("display","inline-block");
             // Added by Rushil Bhuptani on 06/06/2015 for ticket #2247 to address issue of exporting previous data.
             $("#dvExportToExcel").css("display","block");
+            $("#ImportBtn").show();
         }
         if (Page == "LineItemGrid") {
             $("#divBudget").css("display", "none");         // Hide Budget checkbox
@@ -1807,6 +1938,26 @@
                     }
                 }
             }
+                var TimeFrameRow=$("#gridbox .xhdr .hdr tr:nth-child(2)").children('td');
+                var IsFirstRowDisplay = false;
+                if(TimeFrameRow!=undefined)
+                {
+                    if(TimeFrameRow!=null)
+                    {
+                        IsFirstRowDisplay = ShowHideTimeFrameRow();
+                    }
+
+                    if(!IsFirstRowDisplay)
+                    {
+                        $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","none");
+                        $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","32px");
+                    }
+                    else
+                    {
+                        $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","table-row");
+                        $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","normal");
+                    }
+                }
         }else{
             for(var i=0;i<TotalColumn;i++)
             {
@@ -1841,8 +1992,28 @@
                     {
                         myTreeGrid.setColumnHidden(i, true);
                     }
+                    }
                 }
-            }
+                var TimeFrameRow=$("#gridbox .xhdr .hdr tr:nth-child(2)").children('td');
+                var IsFirstRowDisplay = false;
+                if(TimeFrameRow!=undefined)
+                {
+                    if(TimeFrameRow!=null)
+                    {
+                        IsFirstRowDisplay = ShowHideTimeFrameRow();
+                    }
+
+                    if(!IsFirstRowDisplay)
+                    {
+                        $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","none");
+                        $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","32px");
+                    }
+                    else
+                    {
+                        $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","table-row");
+                        $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","normal");
+                    }
+                }
         }else{
             for(var i=0;i<TotalColumn;i++)
             {

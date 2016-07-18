@@ -55,7 +55,7 @@
     var _isBudgetCreateEdit = '', _isForecastCreateEdit = '';
 
     $(document).ready(function () {
-        GlobalBudgetId = '@ViewBag.BudgetId';
+        GlobalBudgetId = '@Sessions.BudgetDetailId';
         GlobalEditLevel = '@ViewBag.EditLevel';
         pageName = "LineItemGrid";
         var hasLineItems = '@_hasLineItems';

@@ -26,7 +26,8 @@ using System.Text.RegularExpressions;
 using Integration;
 using System.Web.Caching;
 using System.Data.SqlClient;
-using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;	 
+using System.Xml;
 
 namespace RevenuePlanner.Helpers
 {
@@ -8829,6 +8830,53 @@ namespace RevenuePlanner.Helpers
     #region stored procedures methods
     public class StoredProcedure
     {
+        /// <summary>
+        /// Add By Nishant Sheth 
+        /// Desc:: Import Marketing finance Data from excel 
+        /// </summary>
+        /// <param name="XMLData"></param>
+        /// <param name="ImportBudgetCol"></param>
+        /// <returns></returns>
+        public int ImportMarketingFinance(XmlDocument XMLData, DataTable ImportBudgetCol, int BudgetDetailId = 0, bool IsMonthly = false)
+        {
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+            int ExecuteCommand = 0;
+            try
+            {
+                if (!IsMonthly)
+                {
+                    command = new SqlCommand("ImportMarketingBudgetQuarter", Connection);
+                }
+                else
+                {
+                    command = new SqlCommand("ImportMarketingBudgetMonthly", Connection);
+                }
+                using (command)
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@UserId", Sessions.User.UserId);
+                    command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                    command.Parameters.AddWithValue("@XMLData", XMLData.InnerXml);
+                    command.Parameters.AddWithValue("@ImportBudgetCol", ImportBudgetCol);
+                    command.Parameters.AddWithValue("@BudgetDetailId", BudgetDetailId);
+                    SqlDataAdapter adp = new SqlDataAdapter(command);
+                    command.CommandTimeout = 0;
+                    ExecuteCommand = command.ExecuteNonQuery();
+                    if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+            return ExecuteCommand;
+        }
+
         // Get List of Line Items
         public List<Plan_Campaign_Program_Tactic_LineItem> GetLineItemList(string planid)
         {

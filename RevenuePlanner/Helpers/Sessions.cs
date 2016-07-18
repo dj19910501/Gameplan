@@ -247,6 +247,22 @@ namespace RevenuePlanner.Helpers
             }
         }
         /// <summary>
+        /// Add By Nishant Sheth
+        /// Date : 15-Jul-2016
+        /// Store Budgetid/Budget Detail Id
+        /// </summary>
+        public static Int32 BudgetDetailId
+        {
+            get
+            {
+                return Convert.ToInt32(HttpContext.Current.Session["BudgetDetailId"]);
+            }
+            set
+            {
+                HttpContext.Current.Session["BudgetDetailId"] = value;
+            }
+        }
+        /// <summary>
         /// Added By: Kunal
         /// Store Model Id.
         /// </summary>

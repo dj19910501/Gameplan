@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Xml;
 
 namespace RevenuePlanner.Models
 {
@@ -38,6 +40,22 @@ namespace RevenuePlanner.Models
         public string createdby { get; set; }
         public bool IsOwner { get; set; }
 
+    }
+
+    // Add By Nishant Sheth
+    // Get list of columns and data wtih xml format
+    public class ImportData
+    {
+        public DataTable MarketingBudgetColumns { get; set; }
+        public XmlDocument XmlData { get; set; }
+        public string ErrorMsg { get; set; }
+    }
+
+    // Add By Nishant Sheth
+    public class XmlColumns
+    {
+        public int ColumnIndex { get; set; }
+        public string ColumName { get; set; }
     }
 
     public class UserBudgetPermission

@@ -2058,6 +2058,35 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
+        #region Import Finance Budget Data
+        /// <summary>
+        /// Created By Nishant Sheth
+        /// Created Date : 15-Jul-2016
+        /// Without file for import marketing budget
+        /// </summary>
+        [TestMethod]
+        public void Import_Finance_Budget()
+        {
+            
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            FinanceController controller = new FinanceController();
+            int BudgetDetailId = DataHelper.GetBudgetDetailId();
+            Sessions.BudgetDetailId= BudgetDetailId;
+            var result = controller.ExcelFileUpload() as ActionResult;
+            if (result != null)
+            {
+                Assert.IsNotNull(result);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
+            }
+
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+        }
+        #endregion
+
 
     }
 }

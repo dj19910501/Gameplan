@@ -66,6 +66,11 @@
       <HintPath>DLLs\HelperSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>DLLs\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\Newtonsoft.Json.dll</HintPath>
@@ -586,6 +591,7 @@
     <Content Include="DLLs\evohtmltopdf.dll" />
     <Content Include="DLLs\Excel.dll" />
     <Content Include="DLLs\HelperSharp.dll" />
+    <Content Include="DLLs\Microsoft.Office.Interop.Excel.dll" />
     <Content Include="DLLs\Newtonsoft.Json.dll" />
     <Content Include="DLLs\RestSharp.dll" />
     <Content Include="DLLs\SalesforceSharp.dll" />
