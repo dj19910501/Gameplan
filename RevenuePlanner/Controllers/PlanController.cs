@@ -5857,6 +5857,7 @@ namespace RevenuePlanner.Controllers
                                             Plan_Campaign_Program_Tactic_Actual objLinkedTacticActual = new Plan_Campaign_Program_Tactic_Actual();
                                             objLinkedTacticActual.PlanTacticId = linkedTacticId;
                                             objLinkedTacticActual.Period = linkedPeriod;
+                                            objLinkedTacticActual.StageTitle = costStageTitle;
                                             objLinkedTacticActual.Actualvalue = monthlycost;
                                             objLinkedTacticActual.CreatedBy = Sessions.User.UserId;
                                             objLinkedTacticActual.CreatedDate = DateTime.Now;
@@ -5996,6 +5997,7 @@ namespace RevenuePlanner.Controllers
                                             Plan_Campaign_Program_Tactic_Actual objLinkedTacticActual = new Plan_Campaign_Program_Tactic_Actual();
                                             objLinkedTacticActual.PlanTacticId = linkedTacticId;
                                             objLinkedTacticActual.Period = linkedPeriod;
+                                            objLinkedTacticActual.StageTitle = costStageTitle;
                                             objLinkedTacticActual.Actualvalue = monthlycost;
                                             objLinkedTacticActual.CreatedBy = Sessions.User.UserId;
                                             objLinkedTacticActual.CreatedDate = DateTime.Now;
