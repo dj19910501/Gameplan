@@ -5012,13 +5012,13 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if ((mnt - 12) > 0)
                                         {
-                                             linkedPeriod = PeriodChar + (mnt - 12).ToString();
+                                             linkedPeriod = PeriodChar + Convert.ToString((mnt - 12));
                                         }
 
                                     }
                                     else
                                     {
-                                        linkedPeriod = PeriodChar + (mnt + 12).ToString();
+                                        linkedPeriod = PeriodChar + Convert.ToString((mnt + 12));
                                     }
                                     if (linkedPeriod!=string.Empty)
                                     {
@@ -5164,15 +5164,15 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if ((mnt - 12) > 0)
                                         {
-                                            linkedPeriod = PeriodChar + (mnt - 12).ToString();
+                                            linkedPeriod = PeriodChar + Convert.ToString((mnt - 12));
                                         }
 
                                     }
                                     else
                                     {
-                                        linkedPeriod = PeriodChar + (mnt + 12).ToString();
+                                        linkedPeriod = PeriodChar + Convert.ToString((mnt + 12));
                                     }
-                                    if (linkedPeriod != string.Empty)
+                                    if (!string.IsNullOrEmpty( linkedPeriod))
                                     {
                                         if (LinkedTactic.Plan_Campaign_Program_Tactic_Budget.Where(pcptc => pcptc.Period == linkedPeriod).Any())
                                         {
@@ -5359,15 +5359,15 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if ((mnt - 12) > 0)
                                         {
-                                            linkedPeriod = PeriodChar + (mnt - 12).ToString();
+                                            linkedPeriod = PeriodChar + Convert.ToString((mnt - 12));
                                         }
 
                                     }
                                     else
                                     {
-                                        linkedPeriod = PeriodChar + (mnt + 12).ToString();
+                                        linkedPeriod = PeriodChar + Convert.ToString((mnt + 12));
                                     }
-                                    if (linkedPeriod != string.Empty)
+                                    if (!string.IsNullOrEmpty( linkedPeriod))
                                     {
                                         if (LinkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == linkedPeriod).Any())
                                         {
@@ -5645,15 +5645,15 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if ((mnt - 12) > 0)
                                         {
-                                            linkedPeriod = PeriodChar + (mnt - 12).ToString();
+                                            linkedPeriod = PeriodChar + Convert.ToString((mnt - 12));
                                         }
 
                                     }
                                     else
                                     {
-                                        linkedPeriod = PeriodChar + (mnt + 12).ToString();
+                                        linkedPeriod = PeriodChar + Convert.ToString((mnt + 12));
                                     }
-                                    if (linkedPeriod != string.Empty)
+                                    if (!string.IsNullOrEmpty(linkedPeriod))
                                     {
                                         if (LinkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == linkedPeriod).Any())
                                         {
@@ -5838,15 +5838,15 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if ((mnt - 12) > 0)
                                         {
-                                            linkedPeriod = PeriodChar + (mnt - 12).ToString();
+                                            linkedPeriod = PeriodChar + Convert.ToString((mnt - 12));
                                         }
 
                                     }
                                     else
                                     {
-                                        linkedPeriod = PeriodChar + (mnt + 12).ToString();
+                                        linkedPeriod = PeriodChar + Convert.ToString((mnt + 12));
                                     }
-                                    if (linkedPeriod != string.Empty)
+                                    if (!string.IsNullOrEmpty(linkedPeriod))
                                     {
                                         if (LinkedTactic.Plan_Campaign_Program_Tactic_Actual.Where(pcptc => pcptc.Period == linkedPeriod).Any())
                                         {
@@ -5978,15 +5978,15 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if ((mnt - 12) > 0)
                                         {
-                                            linkedPeriod = PeriodChar + (mnt - 12).ToString();
+                                            linkedPeriod = PeriodChar + Convert.ToString((mnt - 12));
                                         }
 
                                     }
                                     else
                                     {
-                                        linkedPeriod = PeriodChar + (mnt + 12).ToString();
+                                        linkedPeriod = PeriodChar + Convert.ToString((mnt + 12));
                                     }
-                                    if (linkedPeriod != string.Empty)
+                                    if (!string.IsNullOrEmpty(linkedPeriod))
                                     {
                                         if (LinkedTactic.Plan_Campaign_Program_Tactic_Actual.Where(pcptc => pcptc.Period == linkedPeriod).Any())
                                         {
@@ -6537,15 +6537,15 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if ((mnt - 12) > 0)
                                         {
-                                            linkedPeriod = PeriodChar + (mnt - 12).ToString();
+                                            linkedPeriod = PeriodChar + Convert.ToString((mnt - 12));
                                         }
 
                                     }
                                     else
                                     {
-                                        linkedPeriod = PeriodChar + (mnt + 12).ToString();
+                                        linkedPeriod = PeriodChar + Convert.ToString((mnt + 12));
                                     }
-                                    if (linkedPeriod != string.Empty)
+                                    if (!string.IsNullOrEmpty(linkedPeriod))
                                     {
                                         if (LinkedLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(pcptc => pcptc.Period == linkedPeriod).Any())
                                         {
@@ -6674,15 +6674,15 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if ((mnt - 12) > 0)
                                         {
-                                            linkedPeriod = PeriodChar + (mnt - 12).ToString();
+                                            linkedPeriod = PeriodChar + Convert.ToString((mnt - 12));
                                         }
 
                                     }
                                     else
                                     {
-                                        linkedPeriod = PeriodChar + (mnt + 12).ToString();
+                                        linkedPeriod = PeriodChar + Convert.ToString((mnt + 12));
                                     }
-                                    if (linkedPeriod != string.Empty)
+                                    if (!string.IsNullOrEmpty(linkedPeriod))
                                     {
                                         if (LinkedLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(pcptc => pcptc.Period == linkedPeriod).Any())
                                         {
