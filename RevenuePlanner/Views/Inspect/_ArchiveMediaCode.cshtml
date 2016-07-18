@@ -49,12 +49,13 @@
         var Aarchivemediacodeid = ArchiveMediaCodeGrid.cells(archiverowid, 0).getValue();
         var tacticId = $("#hdnPlanTacticId").val();
         var inspectmode = $("#hdnInspectMode").val();
+        var linkedtacticid = $("#hdnLinkedTacticID").val();
         if (Aarchivemediacodeid != '' && Aarchivemediacodeid != null && Aarchivemediacodeid != '0') {
             var result = confirm('@Common.objCached.UndoMediacode');
             if (result) {
                 url = '@Url.Content("~/Inspect/LoadMediaCodeFromTacticPopup/")';
                 // $("#divTab").html('');
-                $("#divTab").load(url + '?tacticId=' + tacticId + '&InsepectMode=' + inspectmode + '&IsUnarchive=true&MediaCodeId=' + Aarchivemediacodeid, function (response, status, xhr) {
+                $("#divTab").load(url + '?tacticId=' + tacticId + '&InsepectMode=' + inspectmode + '&IsUnarchive=true&MediaCodeId=' + Aarchivemediacodeid + '&LinkedTacticId=' + linkedtacticid, function (response, status, xhr) {
                     ArchiveMediaCodeGrid.deleteRow(archiverowid);
                     var cnt = ArchiveMediaCodeGrid.getRowsNum();
                     if (cnt == 0) {

@@ -6169,6 +6169,8 @@ namespace RevenuePlanner.Helpers
                                 {
                                     var linkedTactics = db.Plan_Campaign_Program_Tactic.Where(lnkdtac => lnkdtac.IsDeleted == false && linkedTacticIds.Contains(lnkdtac.PlanTacticId)).ToList();
                                     linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+
+                                    RemoveTacticMediaCode(linkedTacticIds);
                                 }
                                 else
                                     linkedTacticIds = new List<int>();
@@ -6262,6 +6264,7 @@ namespace RevenuePlanner.Helpers
                                 {
                                     var linkedTactics = db.Plan_Campaign_Program_Tactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId) && lnkdtac.IsDeleted == false).ToList();
                                     linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                    RemoveTacticMediaCode(linkedTacticIds);
                                 }
                                 else
                                     linkedTacticIds = new List<int>();
@@ -6324,6 +6327,7 @@ namespace RevenuePlanner.Helpers
                                 {
                                     var linkedTactics = db.Plan_Campaign_Program_Tactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId) && lnkdtac.IsDeleted == false).ToList();
                                     linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                    RemoveTacticMediaCode(linkedTacticIds);
                                 }
                                 else
                                     linkedTacticIds = new List<int>();
@@ -6378,6 +6382,7 @@ namespace RevenuePlanner.Helpers
                                 {
                                     var linkedTactics = db.Plan_Campaign_Program_Tactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId) && lnkdtac.LinkedTacticId == id).ToList();
                                     linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                    RemoveTacticMediaCode(linkedTacticIds);
                                 }
                                 else
                                     linkedTacticIds = new List<int>();
@@ -6497,8 +6502,12 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
             var MediaCodeCustomfields = db.Tactic_MediaCodes_CustomFieldMapping.Where(a => TacticIDs.Contains(a.TacticId)).ToList();
             MediaCodeCustomfields.ForEach(custmfield => db.Entry(custmfield).State = EntityState.Deleted);
+           int resultmedia= db.SaveChanges();
+           if (resultmedia > 0)
+           {
             var TacticMediacode = db.Tactic_MediaCodes.Where(a => TacticIDs.Contains(a.TacticId)).ToList();
             TacticMediacode.ForEach(mediacode => db.Entry(mediacode).State = EntityState.Deleted);
+           }
            
         }
         #endregion

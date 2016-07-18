@@ -12,6 +12,11 @@
     {
         NoCustomfieldConfig = true;
     }
+    var LinkedTacticID=0;
+    if (ViewBag.LinkedTacticId != null)
+    { 
+        LinkedTacticID = Convert.ToInt32(ViewBag.LinkedTacticId);
+    }
 }
 @if (countrows > 0)
 {
@@ -27,6 +32,7 @@ else
     }
 
 }
+@Html.Hidden("hdnLinkedTacticID", LinkedTacticID, new { id = "hdnLinkedTacticID" })
 <div class="market-activity-main">
     <div class="btn-dropdwn" style="display: none;" id="popupMediCode">
 
@@ -296,6 +302,7 @@ else
 
         if (cusotmfieldValue != null) {
             cusotmfieldValue = JSON.stringify(cusotmfieldValue);
+          
             $.ajax({
 
                 type: 'POST',
@@ -304,7 +311,7 @@ else
                 dataType: 'json',
                 contentType: 'application/json',
                 //data: { TacticId: '@tacticId', lstcustomfieldvalue: a },
-                data: "{'TacticId':'" + ('@tacticId') + "','lstcustomfieldvalue':" + (cusotmfieldValue) + "}",
+                data: "{'TacticId':'" + ('@tacticId') + "','lstcustomfieldvalue':" + (cusotmfieldValue) + ",'LinkedTacticID':'"+('@LinkedTacticID')+"'}",
                 success: function (data) {
                     if (data.Success == true && data.ErrorMessage == null) {
                         var newmediacode = data.MediaCode;
@@ -455,7 +462,7 @@ else
         if (mediacodeid != '' && mediacodeid != null && mediacodeid != '0') {
             url = '@Url.Content("~/Inspect/ArchiveMediaCode/")';
 
-            $("#divArchiveMediaCode").load(url + '?tacticId=' + '@tacticId' + '&MediaCodeId=' + mediacodeid + '&Mode=' + inspectmode, function (response, status, xhr) {
+            $("#divArchiveMediaCode").load(url + '?tacticId=' + '@tacticId' + '&MediaCodeId=' + mediacodeid + '&Mode=' + inspectmode+'&LinkedTacticId='+'@LinkedTacticID', function (response, status, xhr) {
                 MediaCodeGrid.deleteRow(rowid);
                 var gridrowconut = MediaCodeGrid.getRowsNum();
                 if(gridrowconut==0)

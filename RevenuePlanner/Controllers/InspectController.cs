@@ -13692,7 +13692,7 @@ namespace RevenuePlanner.Controllers
 
         #region Media code related Functions and methods #2290
         #region Method to load mediacode for tactic
-        public PartialViewResult LoadMediaCodeFromTacticPopup(int tacticId, string InsepectMode, bool IsPlanCreateAll = false, bool IsUnarchive = false, string MediaCodeId = "0")
+        public PartialViewResult LoadMediaCodeFromTacticPopup(int tacticId, string InsepectMode, bool IsPlanCreateAll = false, bool IsUnarchive = false, string MediaCodeId = "0", int LinkedTacticId=0)
         {
 
             Plangrid objplangrid = new Plangrid();
@@ -13717,7 +13717,15 @@ namespace RevenuePlanner.Controllers
                 if (IsUnarchive)
                 {
                     IsArchive = ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, false);
+                    if (LinkedTacticId != 0)
+                    {
 
+                        var lstmediacode = db.Tactic_MediaCodes.ToList();
+                        int mediacodeid = Convert.ToInt32(MediaCodeId);
+                        string mediacode = lstmediacode.Where(a => a.MediaCodeId == mediacodeid).FirstOrDefault().MediaCode;
+                        int linkedmediacodeid = lstmediacode.Where(a => a.MediaCode == mediacode && a.TacticId == LinkedTacticId).Select(a => a.MediaCodeId).FirstOrDefault();
+                        ArchiveUnarchiveMediaCode(linkedmediacodeid.ToString(), LinkedTacticId, false);
+                    }
                 }
 
                 //list of custom fields for particular Tactic
@@ -13915,10 +13923,11 @@ namespace RevenuePlanner.Controllers
 
         #region Method to generate media code and save media code customfield values
         [HttpPost]
-        public JsonResult GenerateMediaCode(string TacticId, List<CustomFieldValue> lstcustomfieldvalue)
+        public JsonResult GenerateMediaCode(string TacticId, List<CustomFieldValue> lstcustomfieldvalue, int LinkedTacticID = 0)
         {
             string NewMediacode = string.Empty;
             bool IsValid = true;
+            int linkedMediaCodeid = 0;
             List<TacticMediaCodeModel> lstMediaCodeCustomField = new List<TacticMediaCodeModel>();
             try
             {
@@ -13969,20 +13978,46 @@ namespace RevenuePlanner.Controllers
                         objMediaCode.MediaCode = NewMediacode;
                         objMediaCode.TacticId = Convert.ToInt32(TacticId);
                         db.Entry(objMediaCode).State = EntityState.Added;
+                       
                         int result = db.SaveChanges();
                         int MediaCodeId = objMediaCode.MediaCodeId;
+                       
                         if (result > 0)
                         {
-
+                            // add media code for linked tactic
+                            if (LinkedTacticID != 0)
+                            {
+                                Tactic_MediaCodes objlinkedMediaCode = new Tactic_MediaCodes();
+                                objlinkedMediaCode.CreatedBy = Sessions.User.UserId;
+                                objlinkedMediaCode.CreatedDate = DateTime.Now;
+                                objlinkedMediaCode.IsDeleted = false;
+                                objlinkedMediaCode.MediaCode = NewMediacode;
+                                objlinkedMediaCode.TacticId = Convert.ToInt32(LinkedTacticID);
+                                db.Entry(objlinkedMediaCode).State = EntityState.Added;
+                                db.SaveChanges();
+                                linkedMediaCodeid = objlinkedMediaCode.MediaCodeId;
+                            }
+                            //end
                             foreach (var CustomField in lstMediaCodeCustomField)
                             {
                                 CustomField.MediaCodeId = MediaCodeId;
                                 Tactic_MediaCodes_CustomFieldMapping objmediaCodeCustomField = new Tactic_MediaCodes_CustomFieldMapping();
                                 objmediaCodeCustomField.CustomFieldId = CustomField.CustomFieldId;
                                 objmediaCodeCustomField.CustomFieldValue = HttpUtility.HtmlEncode(CustomField.CustomFieldValue);
-                                objmediaCodeCustomField.MediaCodeId = MediaCodeId;
+                                objmediaCodeCustomField.MediaCodeId = CustomField.MediaCodeId;
                                 objmediaCodeCustomField.TacticId = Convert.ToInt32(TacticId);
                                 db.Entry(objmediaCodeCustomField).State = EntityState.Added;
+
+                                if(linkedMediaCodeid!=0)
+                                {
+                                    CustomField.MediaCodeId = linkedMediaCodeid;
+                                    Tactic_MediaCodes_CustomFieldMapping objlinkedmediaCodeCustomField = new Tactic_MediaCodes_CustomFieldMapping();
+                                    objlinkedmediaCodeCustomField.CustomFieldId = CustomField.CustomFieldId;
+                                    objlinkedmediaCodeCustomField.CustomFieldValue = HttpUtility.HtmlEncode(CustomField.CustomFieldValue);
+                                    objlinkedmediaCodeCustomField.MediaCodeId = CustomField.MediaCodeId;
+                                    objlinkedmediaCodeCustomField.TacticId = Convert.ToInt32(LinkedTacticID);
+                                    db.Entry(objlinkedmediaCodeCustomField).State = EntityState.Added;
+                                }
                             }
                             int finalresult = db.SaveChanges();
                             if (finalresult > 0)
@@ -14107,7 +14142,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Method to archive mediacode and bind Archive media code list
-        public PartialViewResult ArchiveMediaCode(int tacticId, string MediaCodeId, string Mode)
+        public PartialViewResult ArchiveMediaCode(int tacticId, string MediaCodeId, string Mode, int LinkedTacticId=0)
         {
           
            
@@ -14118,6 +14153,16 @@ namespace RevenuePlanner.Controllers
             {
 
                 ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, true);
+                if (LinkedTacticId != 0)
+                {
+                  
+                    var lstmediacode= db.Tactic_MediaCodes.ToList();
+                    int mediacodeid=Convert.ToInt32(MediaCodeId);
+                    string mediacode = lstmediacode.Where(a => a.MediaCodeId == mediacodeid).FirstOrDefault().MediaCode;
+                    int linkedmediacodeid = lstmediacode.Where(a => a.MediaCode == mediacode && a.TacticId == LinkedTacticId).Select(a => a.MediaCodeId).FirstOrDefault();
+                    ArchiveUnarchiveMediaCode(linkedmediacodeid.ToString(), LinkedTacticId, true);
+                }
+
                 #region bind list archive mediacode
                 var mainlist = db.Tactic_MediaCodes.Where(a => a.TacticId == tacticId && a.IsDeleted == true).ToList();
                 List<TacticMediaCodeCustomField> MediaCodecustomFieldList = mainlist.Select(a => new TacticMediaCodeCustomField
@@ -14190,7 +14235,7 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             string MediaCode = MediacodeObj.MediaCode;
-                            var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == MediaCode).FirstOrDefault();
+                            var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == MediaCode && a.TacticId==tacticId).FirstOrDefault();
                             if (Result != null)
                                 IsValid= false;
                             else
