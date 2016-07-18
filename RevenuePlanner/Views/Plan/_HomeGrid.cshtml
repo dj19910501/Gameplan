@@ -790,13 +790,14 @@
         // Apply Distributed Parsing
         HomeGrid.attachEvent("onDistributedEnd", function () {
             // your code here
-            LoadAfterParsing();
+          
             // flag=false;
             HomeGrid.loadOpenStates();
+            LoadAfterParsing();
             // if(relativeOffsetscroll > 0)
             // {
 
-
+          
             if(HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '')
             {
                 HomeGrid.showRow(HomeGrid.getRowId(state0));
@@ -1230,7 +1231,7 @@
                 // HomeGrid.openItem(HomeGrid.getParentId(rowid));
                 HomeGrid.openItem(rowid);
                 //}
-
+               
                 ItemIndex=HomeGrid.getRowIndex(rowid);
                 state0=ItemIndex;
                 HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
@@ -1243,7 +1244,6 @@
             var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, 3, true);
 
             //  HomeGrid.openItem(id[0]);
-
             var id = selectedcell[0];
             var rowid;
             if(id != undefined && id != 'undefined')
