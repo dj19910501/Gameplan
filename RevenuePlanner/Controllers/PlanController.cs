@@ -23,6 +23,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Data.OleDb;
 using Excel;
+using System.Runtime.CompilerServices;
 
 /*
  * Added By :
@@ -8437,6 +8438,7 @@ namespace RevenuePlanner.Controllers
 
         //Added by Mitesh Vaishnav
         //Function passed value if its convertable then return otherwise return 0
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Double ParseDoubleValue(string val)
         {
             Double OutVal = 0;
