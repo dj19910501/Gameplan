@@ -14003,7 +14003,7 @@ namespace RevenuePlanner.Controllers
                                 CustomField.MediaCodeId = MediaCodeId;
                                 Tactic_MediaCodes_CustomFieldMapping objmediaCodeCustomField = new Tactic_MediaCodes_CustomFieldMapping();
                                 objmediaCodeCustomField.CustomFieldId = CustomField.CustomFieldId;
-                                objmediaCodeCustomField.CustomFieldValue = HttpUtility.HtmlEncode(CustomField.CustomFieldValue);
+                                objmediaCodeCustomField.CustomFieldValue = (CustomField.CustomFieldValue);
                                 objmediaCodeCustomField.MediaCodeId = CustomField.MediaCodeId;
                                 objmediaCodeCustomField.TacticId = Convert.ToInt32(TacticId);
                                 db.Entry(objmediaCodeCustomField).State = EntityState.Added;
@@ -14087,7 +14087,7 @@ namespace RevenuePlanner.Controllers
                     if (Convert.ToString(Cust.CustomFieldTypeName) == Convert.ToString(Enums.CustomFieldType.TextBox))
                     {
                         if (mode == Convert.ToString(Enums.InspectPopupMode.Edit) || mode == Convert.ToString(Enums.InspectPopupMode.Add))
-                            coltype = "edtxt";
+                            coltype = "ed";
                         else
                             coltype = "ro";
                         if (IsArchive)
@@ -14142,7 +14142,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Method to archive mediacode and bind Archive media code list
-        public PartialViewResult ArchiveMediaCode(int tacticId, string MediaCodeId, string Mode, int LinkedTacticId=0)
+        public PartialViewResult ArchiveMediaCode(int tacticId,  string Mode, int LinkedTacticId=0,string MediaCodeId="")
         {
           
            
@@ -14151,7 +14151,7 @@ namespace RevenuePlanner.Controllers
            
             try
             {
-
+                if (!string.IsNullOrEmpty(MediaCodeId))
                 ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, true);
                 if (LinkedTacticId != 0)
                 {
@@ -14300,7 +14300,7 @@ namespace RevenuePlanner.Controllers
                         headobjlist = GenerateHeader(lstmediaCodeCustomfield, mode, true);
                     else
                         headobjlist = GenerateHeader(lstmediaCodeCustomfield, mode);
-
+                    int requiredcnt = 0;
                     foreach (var item in MediaCodecustomFieldList)
                     {
                         string RowID = "mediacode." + item.MediaCodeId;
@@ -14338,8 +14338,8 @@ namespace RevenuePlanner.Controllers
                         }
 
                         lineitemdataobj = new Plandataobj();
-                        lineitemdataobj.value = "<span class='spnMediacode'>" + item.MediaCode + "</span>";
-                        lineitemdataobj.actval = item.MediaCode;
+                        lineitemdataobj.value = "<span class='spnMediacode'>" + HttpUtility.HtmlEncode(item.MediaCode) + "</span>";
+                        lineitemdataobj.actval = HttpUtility.HtmlEncode(item.MediaCode);
                         lineitemdataobj.style = stylecolorgray;
                         lineitemdataobjlist.Add(lineitemdataobj);
 
@@ -14348,14 +14348,8 @@ namespace RevenuePlanner.Controllers
                         {
                             if (Cust.CustomFieldTypeName.ToString() == Convert.ToString(Enums.CustomFieldType.TextBox))
                             {
-                                if (mode == Convert.ToString(Enums.InspectPopupMode.Edit) || mode == Convert.ToString(Enums.InspectPopupMode.Add))
-                                {
-                                    coltype = "edtxt";
-                                }
-                                else
-                                {
                                     coltype = "ro";
-                                }
+                              
 
                                 isRequire = Cust.IsRequired;
 
@@ -14364,7 +14358,7 @@ namespace RevenuePlanner.Controllers
                                     coltype = "ro";
 
                                 var optionValue = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).Select(o => o.CustomFieldValue).FirstOrDefault();
-                                customFieldEntityValue = (optionValue != null) ? optionValue.Replace("\"", "&quot;") : string.Empty;
+                                customFieldEntityValue = (optionValue != null) ? optionValue: string.Empty;
 
                             }
                             else if (Convert.ToString(Cust.CustomFieldTypeName) == Convert.ToString(Enums.CustomFieldType.DropDownList))
@@ -14375,7 +14369,7 @@ namespace RevenuePlanner.Controllers
                                     coltype = "coro";
 
                                     var optionValue = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).Select(o => o.CustomFieldValue).FirstOrDefault();
-                                    customFieldEntityValue = (optionValue != null) ? optionValue.Replace("\"", "&quot;") : string.Empty;
+                                    customFieldEntityValue = (optionValue != null) ? optionValue : string.Empty;
                                     isRequire = Cust.IsRequired;
 
                                 }
@@ -14388,25 +14382,27 @@ namespace RevenuePlanner.Controllers
                                     {
                                         int intoptionID = Convert.ToInt32(objoptionID.CustomFieldValue);
                                         string OptionValue = Cust.Option.Where(a => a.CustomFieldOptionId == intoptionID).Select(a => a.CustomFieldOptionValue).FirstOrDefault();
-                                        customFieldEntityValue = (OptionValue != null) ? OptionValue.Replace("\"", "&quot;") : string.Empty;
+                                        customFieldEntityValue = (OptionValue != null) ? OptionValue: string.Empty;
                                     }
                                     else
                                         customFieldEntityValue = string.Empty;
                                 }
                             }
-
+                            if (isRequire)
+                                requiredcnt = requiredcnt + 1;
                             lineitemdataobj = new Plandataobj();
                             if (!string.IsNullOrEmpty(customFieldEntityValue))
-                                lineitemdataobj.value = HttpUtility.HtmlDecode(customFieldEntityValue);
+                                lineitemdataobj.value = HttpUtility.HtmlEncode(customFieldEntityValue);
                             else
                                 lineitemdataobj.value = "--";
                             lineitemdataobj.locked = "1";
                             lineitemdataobj.actval = Convert.ToString(isRequire);
                             lineitemdataobj.style = stylecolorgray;
-
+                            
                             lineitemdataobjlist.Add(lineitemdataobj);
                         }
                         lineitemrowsobj.data = lineitemdataobjlist;
+                      
                         lineitemrowsobjlist.Add(lineitemrowsobj);
 
                     }

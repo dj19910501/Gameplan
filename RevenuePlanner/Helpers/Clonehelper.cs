@@ -1771,6 +1771,35 @@ namespace RevenuePlanner.Helpers
                         db.Entry(LineItemId).State = EntityState.Modified;
                     }
 
+                    //clone media code of tactic added by devanshi #2398
+                    List<Tactic_MediaCodes> lstMediacode = db.Tactic_MediaCodes.Where(a => a.TacticId == entityId).ToList();
+                    foreach (var objMediaCode in lstMediacode)
+                    {
+                        Tactic_MediaCodes objlinkedMediaCode = new Tactic_MediaCodes();
+                        objlinkedMediaCode.CreatedBy = Sessions.User.UserId;
+                        objlinkedMediaCode.CreatedDate = DateTime.Now;
+                        objlinkedMediaCode.IsDeleted = objMediaCode.IsDeleted;
+                        objlinkedMediaCode.MediaCode = objMediaCode.MediaCode;
+                        objlinkedMediaCode.TacticId = Convert.ToInt32(planTacticId);
+                        db.Entry(objlinkedMediaCode).State = EntityState.Added;
+                        db.SaveChanges();
+                      int  linkedMediaCodeid = objlinkedMediaCode.MediaCodeId;
+                      var lstMediaCodeCustomField = db.Tactic_MediaCodes_CustomFieldMapping.Where(a => a.TacticId == entityId && a.MediaCodeId == objMediaCode.MediaCodeId).ToList();
+                      if (linkedMediaCodeid != 0)
+                      {
+                          foreach (var CustomField in lstMediaCodeCustomField)
+                          {
+                              Tactic_MediaCodes_CustomFieldMapping objlinkedmediaCodeCustomField = new Tactic_MediaCodes_CustomFieldMapping();
+                              objlinkedmediaCodeCustomField.CustomFieldId = CustomField.CustomFieldId;
+                              objlinkedmediaCodeCustomField.CustomFieldValue = HttpUtility.HtmlEncode(CustomField.CustomFieldValue);
+                              objlinkedmediaCodeCustomField.MediaCodeId = linkedMediaCodeid;
+                              objlinkedmediaCodeCustomField.TacticId = Convert.ToInt32(planTacticId);
+                              db.Entry(objlinkedmediaCodeCustomField).State = EntityState.Added;
+                          }
+                      }
+                    }
+                    //end
+
                     db.SaveChanges();
 
                     Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
