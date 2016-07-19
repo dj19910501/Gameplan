@@ -2069,6 +2069,15 @@ namespace RevenuePlanner.Controllers
             {
                 lstTactic = lstTactic.Where(x => x.AnchorTacticId != 0).ToList();
 
+                //Added By Komal Rawal for #2358 show all tactics in package even if there is single tactic filtered
+                if (lstTactic.Count > 0)
+                {
+                    List<int> AnchortacticIds = lstTactic.Select(ids => ids.AnchorTacticId).ToList();
+                    var ListOfAllTacticsinPlan = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.PlanTacticListforpackageing.ToString());
+                    lstTactic = ListOfAllTacticsinPlan.Where(ids => AnchortacticIds.Contains(ids.AnchorTacticId)).ToList();
+                }
+
+                //End
                 List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
                 //List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.
                 //                                                    Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).
@@ -2078,7 +2087,8 @@ namespace RevenuePlanner.Controllers
                                                                   join lstImpTac in lstImprovementTactic on planId equals lstImpTac.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId
                                                                   select new ProgressModel
                                                                   {
-                                                                        PlanId = planId, EffectiveDate = lstImpTac.EffectiveDate
+                                                                      PlanId = planId,
+                                                                      EffectiveDate = lstImpTac.EffectiveDate
                                                                   }).ToList();
 
                 #region "Create Tactic-Package Mapping list"
@@ -2132,7 +2142,7 @@ namespace RevenuePlanner.Controllers
                     var StartMinDatePlan = StartMinDatePlanList.Where(plan => plan.EntityId == tacticPlanId && plan.Status == tacticstatus).FirstOrDefault();
                     if (StartMinDatePlan == null)
                     {
-                        MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById,false,false,tacticAnchorId);
+                        MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById, false, false, tacticAnchorId);
                         StartMinDatePlanList.Add(new StartMinDatePlan { EntityId = tacticPlanId, Status = tacticstatus, StartDate = MinStartDateForPlan });
 
                     }
@@ -3381,7 +3391,7 @@ namespace RevenuePlanner.Controllers
             var ProgramColor = ColorCodelist[Enums.EntityType.Program.ToString().ToLower()];
             var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
             var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
-            var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];         
+            var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
             //Emd
             string doubledesh = "--";
             //Added BY Ravindra Singh Sisodiya, Get Subordinates Ids List #1433
@@ -4392,12 +4402,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="IsCampaign">flag to indicate campaign</param>
         /// <param name="IsProgram">flag to indicate program</param>
         /// <returns>Return the min start date for program and Campaign</returns>
-        public DateTime GetMinStartDateForPlanOfCustomField(string currentGanttTab, string tacticstatus, string typeId, int planId, List<Plan_Campaign> lstCampaign, List<Custom_Plan_Campaign_Program> lstProgram, List<Custom_Plan_Campaign_Program_Tactic> lstTactic, bool IsCampaign = false, bool IsProgram = false,int tacticAnchorId = 0)
+        public DateTime GetMinStartDateForPlanOfCustomField(string currentGanttTab, string tacticstatus, string typeId, int planId, List<Plan_Campaign> lstCampaign, List<Custom_Plan_Campaign_Program> lstProgram, List<Custom_Plan_Campaign_Program_Tactic> lstTactic, bool IsCampaign = false, bool IsProgram = false, int tacticAnchorId = 0)
         {
             List<int> queryPlanProgramId = new List<int>();
             DateTime minDateTactic = DateTime.Now;
             // Added by Arpita Soni for Ticket #2357 on 07/14/2016
-            if(currentGanttTab == Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)])
+            if (currentGanttTab == Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)])
             {
                 currentGanttTab = Convert.ToString(PlanGanttTypes.ROIPackage);
             }
@@ -4509,7 +4519,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="IsCampaign">flag to indicate campaign</param>
         /// <param name="IsProgram">flag to indicate program</param>
         /// <returns>Return the min start date for program and Campaign</returns>
-        public DateTime GetMaxEndDateForPlanOfCustomFields(string currentGanttTab, string tacticstatus, string typeId, int planId, List<Plan_Campaign> lstCampaign, List<Custom_Plan_Campaign_Program> lstProgram, List<Custom_Plan_Campaign_Program_Tactic> lstTactic, bool IsCampaign = false, bool IsProgram = false,int tacticAnchorId = 0)
+        public DateTime GetMaxEndDateForPlanOfCustomFields(string currentGanttTab, string tacticstatus, string typeId, int planId, List<Plan_Campaign> lstCampaign, List<Custom_Plan_Campaign_Program> lstProgram, List<Custom_Plan_Campaign_Program_Tactic> lstTactic, bool IsCampaign = false, bool IsProgram = false, int tacticAnchorId = 0)
         {
             List<int> queryPlanProgramId = new List<int>();
             DateTime maxDateTactic = DateTime.Now;
@@ -9200,7 +9210,7 @@ namespace RevenuePlanner.Controllers
 
                 // Update AnchorTacticId of tactics in cache
                 planTacAnchorTac = new Dictionary<int, int>();
-                arrPromoTacticIds.Select(int.Parse).ToList().ForEach(planTacId => planTacAnchorTac.Add(planTacId,AnchorTacticId));
+                arrPromoTacticIds.Select(int.Parse).ToList().ForEach(planTacId => planTacAnchorTac.Add(planTacId, AnchorTacticId));
                 Common.UpdateAnchorTacticInCache(planTacAnchorTac);
             }
             catch (Exception ex)
@@ -9263,7 +9273,7 @@ namespace RevenuePlanner.Controllers
         {
             var PlanTacticListforpackageing = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.PlanTacticListforpackageing.ToString());
 
-            if(IsGridView == false)
+            if (IsGridView == false)
             {
                 if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) || viewBy.Equals(PlanGanttTypes.Request.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
@@ -9282,11 +9292,12 @@ namespace RevenuePlanner.Controllers
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
                 }
-                else
+                else if (viewBy.Equals(PlanGanttTypes.Stage.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
+
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.StageId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
@@ -9300,13 +9311,69 @@ namespace RevenuePlanner.Controllers
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
 
                 }
+                else if (viewBy.Equals(PlanGanttTypes.Status.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                    {
+                        TacticId = tactic.PlanTacticId,
+
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.Status, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                        Title = tactic.Title,
+                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                        ColorCode = TacticTaskColor,
+                        OwnerName = GetOwnerName(tactic.CreatedBy),
+                        ROITacticType = tactic.AssetType,
+                        CalendarEntityType = "Tactic",
+                        AnchorTacticId = tactic.AnchorTacticId,
+                    });
+
+                    return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
+
+                }
+                else if (viewBy.Equals(Enums.DictPlanGanttTypes[PlanGanttTypes.ROIPackage.ToString()].ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                    {
+                        TacticId = tactic.PlanTacticId,
+
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.AnchorTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                        Title = tactic.Title,
+                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                        ColorCode = TacticTaskColor,
+                        OwnerName = GetOwnerName(tactic.CreatedBy),
+                        ROITacticType = tactic.AssetType,
+                        CalendarEntityType = "Tactic",
+                        AnchorTacticId = tactic.AnchorTacticId,
+                    });
+
+                    return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
+
+                }
+                else
+                {
+                    var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                    {
+                        TacticId = tactic.PlanTacticId,
+
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.PlanTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                        Title = tactic.Title,
+                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                        ColorCode = TacticTaskColor,
+                        OwnerName = GetOwnerName(tactic.CreatedBy),
+                        ROITacticType = tactic.AssetType,
+                        CalendarEntityType = "Tactic",
+                        AnchorTacticId = tactic.AnchorTacticId,
+                    });
+
+                    return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
+                }
             }
             else
             {
                 var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                 {
                     TacticId = tactic.PlanTacticId,
-                    TaskId = "__"+tactic.PlanProgramId + "_" + tactic.PlanTacticId,
+                    TaskId = "__" + tactic.PlanProgramId + "_" + tactic.PlanTacticId,
                     Title = tactic.Title,
                     TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
                     ColorCode = TacticTaskColor,
@@ -9318,7 +9385,7 @@ namespace RevenuePlanner.Controllers
 
                 return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
             }
-           
+
 
 
         }

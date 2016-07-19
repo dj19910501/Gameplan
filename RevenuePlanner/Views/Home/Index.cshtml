@@ -4959,9 +4959,19 @@
                             $.each(IdsNotinList, function (index, TacticId) {
                                 $.each(ListData, function (index, Data) {
                                     if (Data.TacticId.toString() == TacticId) {
+                                        var ValueAlreadyExists = false
                                         $("div[name1='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
-                                        var index = ExportSelectedIds.TaskID.indexOf(Data.TaskId);
-                                        if (index < 0) {
+                                        $.each(ExportSelectedIds.TaskID, function (index, TaskId) {
+                                            var Ids = TaskId.split('_');
+                                            var index = Ids.indexOf("T" + TacticId);
+                                            if(index >= 0)
+                                            {
+                                                ValueAlreadyExists = true;
+                                            }
+
+                                        });
+                                        var Dataindex = ExportSelectedIds.TaskID.indexOf(Data.TaskId);
+                                        if (Dataindex < 0 && ValueAlreadyExists == false) {
                                             ExportSelectedIds.TaskID.push(Data.TaskId);
                                             ExportSelectedIds.Title.push(Data.Title);
                                             ExportSelectedIds.OwnerName.push(Data.OwnerName);

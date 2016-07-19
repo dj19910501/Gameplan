@@ -6494,6 +6494,22 @@ namespace RevenuePlanner.Helpers
                             });
 
             objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), lstTacticPer);
+
+            //Added by komal rawal for #2358 to update cache object
+            List<Custom_Plan_Campaign_Program_Tactic> PlanTacticListforpackageing = new List<Custom_Plan_Campaign_Program_Tactic>();
+            PlanTacticListforpackageing = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.PlanTacticListforpackageing.ToString());
+
+            (from dict in dictPlanTacticAnchorTactic
+             join tactic in PlanTacticListforpackageing on dict.Key equals tactic.PlanTacticId
+             select tactic).ToList()
+             .ForEach(tac => {
+                 tac.AnchorTacticId = dictPlanTacticAnchorTactic[tac.PlanTacticId];
+                 tac.PackageTitle = PlanTacticListforpackageing.Where(x => x.PlanTacticId == dictPlanTacticAnchorTactic[tac.PlanTacticId]).
+                                                 Select(t => t.Title).FirstOrDefault();
+             });
+
+            objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), PlanTacticListforpackageing);
+            //End
         }
         #endregion
 	 // added by devanshi #2386 Remove media codes
