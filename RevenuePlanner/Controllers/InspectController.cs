@@ -13823,6 +13823,8 @@ namespace RevenuePlanner.Controllers
             int cnt = 0;
             bool isRequire = false;
             List<PlanOptions> viewoptionlist = new List<PlanOptions>();
+            List<RequriedCustomField> lstRequiredcustomfield = new List<RequriedCustomField>();
+
             try
             {
                 lineitemrowsobj = new PlanDHTMLXGridDataModel();
@@ -13905,10 +13907,16 @@ namespace RevenuePlanner.Controllers
 
                     }
                     if (isRequire)
+                    {
                         Gridheder = item.CustomFieldName + "<span class='required-asterisk'>*</span>";
+                        RequriedCustomField objrequired = new RequriedCustomField();
+                        objrequired.CustomFieldId = "customfield_" + item.CustomFieldId;
+                        objrequired.IsRequired = isRequire;
+                        lstRequiredcustomfield.Add(objrequired);
+                    }
                     else
                         Gridheder = item.CustomFieldName;
-
+                   
 
                     PlanHead headobj = new PlanHead();
                     headobj.type = coltype;
@@ -13935,7 +13943,8 @@ namespace RevenuePlanner.Controllers
                 lineitemrowsobjlist.Add(lineitemrowsobj);
                 objPlanMainDHTMLXGrid.head = headobjlist;
                 objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
-
+                if (lstRequiredcustomfield != null && lstRequiredcustomfield.Count > 0)
+                    ViewBag.RequiredList = lstRequiredcustomfield;
             }
             catch (Exception objException)
             {

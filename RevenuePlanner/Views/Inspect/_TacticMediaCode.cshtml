@@ -378,6 +378,7 @@ else
                         MediaCodeGrid.cells(row_id, GeneratecolIndex).setValue("<span class='spnMediacode'>" + newmediacode + "</span>");
                         MediaCodeGrid.cells(row_id, buttoncolIndex).setValue("<span class='plus-circle' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + row_id + "  onclick=OpenGridPopup(event); title='Add Media Code'></i></span><div class=honeycombbox-icon-gantt rowid=" + row_id + " onclick=AddRemoveMediaCode(this); title='Select' altid=" + data.NewMediaCodeId.toString() + "></div><span class='archive' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + row_id + " onclick=ArchiveMediaCode(event); title='Archive'></i></span>");
                         MediaCodeGrid.setCellTextStyle(row_id, GeneratecolIndex, "color:#999");
+                        MediaCodeGrid.cells(row_id, GeneratecolIndex).setAttribute("actval", newmediacode);
 
                         MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
                             if (col_index > 2) {
@@ -518,7 +519,7 @@ else
             MediaCodeGrid.cells(newId, 0).setValue("0");
         }
         if (isOnly == true) {
-            MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event)></i></span>");
+            MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event)></i></span>");
         }
         var RequiredCustoList=JSON.parse('@Html.Raw(Json.Encode(@ViewBag.RequiredList))');
         
