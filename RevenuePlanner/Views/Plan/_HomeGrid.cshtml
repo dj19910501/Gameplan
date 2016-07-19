@@ -1704,7 +1704,7 @@
                     if(newAssetType != null && newAssetType.length > 0) {
                         newAssetType  = newAssetType[0].AssetType; 
                     }
-                    if (oldAssetType != newAssetType && oldAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()')
+                    if (oldAssetType != null && oldAssetType != newAssetType && oldAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()')
                     {
                         var retValue = confirm('Package associated to this tactic will be deleted. Do you wish to continue?');
                         if(!retValue){
