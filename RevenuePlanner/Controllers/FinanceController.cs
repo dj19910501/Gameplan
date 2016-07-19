@@ -4270,9 +4270,10 @@ namespace RevenuePlanner.Controllers
             ImportData objImprtData = new ImportData();
             DataTable dtColumns = new DataTable();
             XmlDocument xmlData = new XmlDocument();
+            DataSet ds = new DataSet();
             try
             {
-                var app = new Microsoft.Office.Interop.Excel.Application();
+                
                 if (Request != null)
                 {
                     if (Request.Files[0].ContentLength > 0)
@@ -4291,10 +4292,20 @@ namespace RevenuePlanner.Controllers
 
                             if (fileExtension == ".xls")
                             {
-                                fileLocation = ConvertxlsToXLSX(DirectoryLocation, FileName); // Covert .xls fromat to .xlsx
+                                excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+                                                                                   fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
+                                IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(Request.Files[0].InputStream);
+                                ds = excelReader.AsDataSet();
+                                objImprtData = GetXLSData(ds, BudgetDetailId); // Read Data from excel 2003/(.xls) format file to xml
+                                if (ds == null)
+                                {
+                                    return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                                }
                             }
-
-                            objImprtData = GetXLSXData(fileLocation, BudgetDetailId); // Read Data from excel file to xml
+                            else
+                            {
+                                objImprtData = GetXLSXData(fileLocation, BudgetDetailId); // Read Data from excel 2007/(.xlsx) and above version format file to xml
+                            }
                             dtColumns = objImprtData.MarketingBudgetColumns;
                             xmlData = objImprtData.XmlData;
                             System.IO.File.Delete(fileLocation);
@@ -4354,7 +4365,7 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Created By Nishant Sheth
-        /// Read data from excel to xml and list of columns
+        /// Read Data from excel 2007/(.xlsx) and above version format file to xml
         /// </summary>
         /// <param name="fileLocation"></param>
         /// <param name="BudgetDetailId"></param>
@@ -4483,6 +4494,129 @@ namespace RevenuePlanner.Controllers
             return objImportData;
         }
 
+
+        /// <summary>
+        /// Created By Nishant Sheth
+        /// Read Data from excel 2003/(.xls) format file to xml
+        /// </summary>
+        /// <param name="fileLocation"></param>
+        /// <param name="BudgetDetailId"></param>
+        /// <returns></returns>
+        private ImportData GetXLSData(DataSet ds, int BudgetDetailId = 0)
+        {
+            List<XmlColumns> listColumnIndex = new List<XmlColumns>();
+            DataTable dtExcel = new DataTable();
+            ImportData objImportData = new ImportData();
+            DataTable dtColumns = new DataTable();
+            XmlDocument xmlDoc = new XmlDocument();
+            dtColumns.Columns.Add("Month", typeof(string));
+            dtColumns.Columns.Add("ColumnName", typeof(string));
+            dtColumns.Columns.Add("ColumnIndex", typeof(Int64));
+
+            try
+            {
+                dtExcel = ds.Tables[0];
+
+                int RowCount = dtExcel.Rows.Count;
+                int ColumnCount = dtExcel.Columns.Count;
+                XmlNode childnode = null;
+                if (RowCount > 0)
+                {
+                    dtExcel.Rows[RowCount - 1].Delete();
+                    dtExcel.AcceptChanges();
+                    RowCount = dtExcel.Rows.Count;
+                    XmlNode rootNode = xmlDoc.CreateElement("data");
+                    xmlDoc.AppendChild(rootNode);
+
+                    for (int i = 0; i < RowCount; i++)
+                    {
+
+                        int p = 0;
+                        int j = 1;
+                        // Create Child Node For Data
+                        if (i > 1)
+                        {
+                            childnode = xmlDoc.CreateElement("row");
+                            rootNode.AppendChild(childnode);
+                        }
+                        for (int k = 0; k < ColumnCount; k++)
+                        {
+                            #region Create Data Table For Column name and it's TimeFrame
+                            if (i == 0)
+                            {
+                                // Get list of columns and its time frame
+                                string columnName = Convert.ToString(dtExcel.Rows[i + 1][k]);
+                                if (!string.IsNullOrEmpty(columnName))
+                                {
+                                    string columnNameLower = columnName.ToLower();
+                                    if (columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Planned).ToLower() && columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Actual).ToLower())
+                                    {
+                                        var InnerColName = Convert.ToString(dtExcel.Rows[i][k]);
+                                        if (InnerColName.ToLower() != "total")
+                                        {
+                                            listColumnIndex.Add(new XmlColumns { ColumName = columnName, ColumnIndex = p });
+                                            dtColumns.Rows.Add();
+                                            dtColumns.Rows[j - 1]["Month"] = InnerColName;
+                                            dtColumns.Rows[j - 1]["ColumnIndex"] = j;
+                                            dtColumns.Rows[j - 1]["ColumnName"] = columnName;
+                                            j++;
+                                        }
+                                    }
+                                }
+                                p++;
+                            }
+                            #endregion
+
+                            #region Insert Record to XML
+                            if (i > 1)
+                            {
+                                var CellData = listColumnIndex.Where(a => a.ColumnIndex == k).Select(a => a).FirstOrDefault();
+
+                                if (CellData != null)
+                                {
+                                    XmlNode datanode = xmlDoc.CreateElement("value");
+                                    XmlAttribute attribute = xmlDoc.CreateAttribute("code");
+                                    attribute.Value = Convert.ToString(CellData.ColumName);
+                                    datanode.Attributes.Append(attribute);
+                                    datanode.InnerText = Convert.ToString(dtExcel.Rows[i][k]).Trim();
+                                    // RowIndex 2 is for first row
+                                    if (i == 2)
+                                    {
+                                        if (!string.IsNullOrEmpty(attribute.Value) && Convert.ToString(attribute.Value).ToLower() == "id")
+                                        {
+                                            int n;
+                                            bool isNumeric = int.TryParse(datanode.InnerText, out n);
+                                            if (isNumeric)
+                                            {
+                                                if (BudgetDetailId != n)
+                                                {
+                                                    objImportData = new ImportData();
+                                                    objImportData.ErrorMsg = "Data getting uploaded does not relate to specific Budget/Forecast.";
+                                                    return objImportData;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    childnode.AppendChild(datanode);
+                                }
+                            }
+                            #endregion
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return null;
+            }
+
+            objImportData.MarketingBudgetColumns = dtColumns;
+            objImportData.XmlData = xmlDoc;
+
+            return objImportData;
+        }
+
         /// <summary>
         /// Created By Nishant Sheth
         /// Get the value of cell from excel sheet.
@@ -4509,33 +4643,6 @@ namespace RevenuePlanner.Controllers
                 throw ex;
             }
             return value;
-        }
-
-        /// <summary>
-        /// Created By Nishant Sheth
-        /// Convert .xls file format to .xlsx
-        /// </summary>
-        /// <param name="filesFolder"></param>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        private string ConvertxlsToXLSX(string filesFolder, string filename)
-        {
-            string filePath = filesFolder + filename;
-            string renamefilename = Path.ChangeExtension(filePath, ".xlsx");
-            try
-            {
-                var app = new Microsoft.Office.Interop.Excel.Application();
-                var wb = app.Workbooks.Open(filePath);
-                wb.SaveAs(Filename: renamefilename, FileFormat: Microsoft.Office.Interop.Excel.XlFileFormat.xlOpenXMLWorkbook);
-                wb.Close();
-                app.Quit();
-                System.IO.File.Delete(filePath);
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-            return renamefilename;
         }
 
         #endregion
