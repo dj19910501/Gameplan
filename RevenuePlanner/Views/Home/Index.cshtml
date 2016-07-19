@@ -5545,6 +5545,16 @@
                             gantt.deleteTask(removeEntirePkg);
                             gantt.refreshData();
                         }
+                        // If there is no data then hide grid and display message
+                        if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
+                            $("#gantt_here").hide();
+                            $(".pull-right.toggle-status.source-sans-proregular").hide();
+                            $("#improvements").hide();
+                            $('#lblMarkringActivitiestitle').hide();
+                            $('#divCollaborator').hide();
+                            $('#divCollaboratorCount').hide(); // Added for #2112
+                            $("#NodatawithfilterCalendar").show();
+                        }
 
                         // If asset tactic is deleted then entire package deleted so remove all data from honeycomb
                         RemoveAllHoneyCombData();
@@ -5625,7 +5635,7 @@
                         $('.honeycombbox-icon-gantt[anchortacticid=' + planTacticId + ']').each(function () {
                             $(this).attr('anchortacticid', '0');
                         });
-
+                        
                         // If asset tactic is deleted then entire package deleted so remove all data from honeycomb
                         RemoveAllHoneyCombData();
                     }
