@@ -13856,7 +13856,7 @@ namespace RevenuePlanner.Controllers
                 headobjother.type = "ro";
                 headobjother.id = "generateMediaCode";
                 headobjother.sort = "na";
-                headobjother.width = 150;
+                headobjother.width = 200;
                 headobjother.value = "Media Code";
                 headobjlist.Add(headobjother);
 
@@ -13865,7 +13865,7 @@ namespace RevenuePlanner.Controllers
                 lineitemdataobjlist.Add(lineitemdataobj);
 
                 lineitemdataobj = new Plandataobj();
-                lineitemdataobj.value = "<span alt=" + TacticID.ToString() + " class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' title='Add Media Code' aria-hidden='true' rowid=mediacode." + cnt + " onclick='javascript:OpenGridPopup(event)'></i></span><div class='honeycombbox-icon-gantt disabled' title='Select' rowid=mediacode." + cnt + " ></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' title='Archive' aria-hidden='true' rowid=mediacode." + cnt + " ></i></span>";
+                lineitemdataobj.value = "<span alt=" + TacticID.ToString() + " class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' title='Add Media Code' aria-hidden='true' rowid=mediacode." + cnt + "></i></span><div class='honeycombbox-icon-gantt disabled' title='Select' rowid=mediacode." + cnt + " ></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' title='Archive' aria-hidden='true' rowid=mediacode." + cnt + " ></i></span>";
                 lineitemdataobjlist.Add(lineitemdataobj);
 
                 lineitemdataobj = new Plandataobj();
@@ -13873,6 +13873,12 @@ namespace RevenuePlanner.Controllers
                 lineitemdataobjlist.Add(lineitemdataobj);
 
                 // end
+                var columncnt = customfieldlist.Count;
+                var colwidth = 200;
+                if (columncnt != 0 && columncnt < 4)
+                {
+                    colwidth = 750 / columncnt;
+                }
                 foreach (var item in customfieldlist)
                 {
 
@@ -13907,8 +13913,8 @@ namespace RevenuePlanner.Controllers
                     PlanHead headobj = new PlanHead();
                     headobj.type = coltype;
                     headobj.id = "customfield_" + item.CustomFieldId;
-                    headobj.sort = "na";
-                    headobj.width = 200;
+                    headobj.sort = "str";
+                    headobj.width = colwidth;
                     headobj.value = Gridheder;
                     if (viewoptionlist != null && viewoptionlist.Count > 0)
                         headobj.options = viewoptionlist;
@@ -14070,6 +14076,7 @@ namespace RevenuePlanner.Controllers
             List<PlanOptions> viewoptionlist = new List<PlanOptions>();
             string mode = Mode;
             bool IsRequired = false;
+            List<RequriedCustomField> lstRequiredcustomfield = new List<RequriedCustomField>();
             try
             {
                 PlanHead headobjother = new PlanHead();
@@ -14087,7 +14094,12 @@ namespace RevenuePlanner.Controllers
                 headobjother.id = "selectall";
                 headobjother.sort = "na";
                 headobjother.width = 100;
+                if (IsArchive == false)
+                {
                 headobjother.value = "<input type='checkbox' value='SelectAll'  title='SelectAll'  class='selectInput'><span class='selectall'> Select All</span></input>";
+                }
+                else
+                    headobjother.value = "";
                 headobjlist.Add(headobjother);
 
                 headobjother = new PlanHead();
@@ -14098,7 +14110,12 @@ namespace RevenuePlanner.Controllers
                 headobjother.value = "Media Code";
 
                 headobjlist.Add(headobjother);
-
+                var columncnt = lstmediaCodeCustomfield.Count;
+                var colwidth = 200;
+                if (columncnt != 0 && columncnt < 4)
+                {
+                    colwidth = 750 / columncnt;
+                }
                 foreach (var Cust in lstmediaCodeCustomfield)
                 {
                     IsRequired = Cust.IsRequired;
@@ -14134,13 +14151,19 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-
+                    if (Cust.IsRequired)
+                    {
+                        RequriedCustomField objrequired = new RequriedCustomField();
+                        objrequired.CustomFieldId = "customfield_" + Cust.CustomFieldId;
+                        objrequired.IsRequired = Cust.IsRequired;
+                        lstRequiredcustomfield.Add(objrequired);
+                    }
                     PlanHead headobj = new PlanHead();
                     headobj.type = coltype;
                     headobj.id = "customfield_" + Cust.CustomFieldId;
                     headobj.sort = "str";
-                    headobj.width = 150;
-                    if (IsRequired)
+                    headobj.width = colwidth;
+                    if (IsRequired && IsArchive == false)
                         headobj.value = Cust.CustomFieldName + "<span class='required-asterisk'>*</span>";
                     else
                         headobj.value = Cust.CustomFieldName;
@@ -14148,7 +14171,10 @@ namespace RevenuePlanner.Controllers
                     if (viewoptionlist != null && viewoptionlist.Count > 0)
                         headobj.options = viewoptionlist;
                     headobjlist.Add(headobj);
+                    
                 }
+                if (lstRequiredcustomfield != null && lstRequiredcustomfield.Count > 0)
+                    ViewBag.RequiredList = lstRequiredcustomfield;
             }
             catch (Exception objException)
             {

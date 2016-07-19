@@ -17,6 +17,7 @@
     {
         LinkedTacticID = Convert.ToInt32(ViewBag.LinkedTacticId);
     }
+    
 }
 @if (countrows > 0)
 {
@@ -137,8 +138,8 @@ else
     </div>
 </div>
 <style>
-    .tooltip{
-        z-index:99999;
+    .tooltip {
+        z-index: 99999;
     }
 </style>
 <script type="text/javascript">
@@ -162,9 +163,9 @@ else
                 MediaCodeGrid.setSizes();
                 SetTooltip();
             });
-          
+
         }
-      
+
 
     });
 
@@ -174,7 +175,7 @@ else
         $('#popupMediCode').css('display', 'none');
         $('.dhx_combo_select').css('display', 'none');
     });
-   
+
     $(document).mouseup(function (e) {
         $('#popupMediCode').css("display", "none");
         $('.dhx_combo_select').css('display', 'none');
@@ -188,10 +189,10 @@ else
     });
     function LoadArchiveGrid()
     {
-       var url = '@Url.Content("~/Inspect/ArchiveMediaCode/")';
+        var url = '@Url.Content("~/Inspect/ArchiveMediaCode/")';
         var inspectmode = $("#hdnInspectMode").val();
         $("#divArchiveMediaCode").load(url + '?tacticId=' + '@tacticId' + '&Mode=' + inspectmode , function (response, status, xhr) {
-           
+
         });
     }
     function SetTooltip()
@@ -279,9 +280,9 @@ else
         MediaCodeGrid.init();
         MediaCodeGrid.splitAt(3);
         MediaCodeGrid.parse(GridDataHomeGrid, "json");
-       
+
     }
-   
+
     function GenerateMediaCode(obj) {
         var row_id = $(obj).attr('rowid');
         var cusotmfieldValue = [];
@@ -354,7 +355,7 @@ else
                     if (data.Success == true && data.ErrorMessage == null) {
                         var newmediacode = data.MediaCode;
                         MediaCodeGrid.cells(row_id, GeneratecolIndex).setValue("<span class='spnMediacode'>" + newmediacode + "</span>");
-                        MediaCodeGrid.cells(row_id, buttoncolIndex).setValue("<span class='plus-circle'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + row_id + "  onclick=OpenGridPopup(event); title='Add Media Code'></i></span><div class=honeycombbox-icon-gantt rowid=" + row_id + " onclick=AddRemoveMediaCode(this); title='Select' altid=" + data.NewMediaCodeId.toString() + "></div><span class='archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + row_id + " onclick=ArchiveMediaCode(event); title='Archive'></i></span>");
+                        MediaCodeGrid.cells(row_id, buttoncolIndex).setValue("<span class='plus-circle' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + row_id + "  onclick=OpenGridPopup(event); title='Add Media Code'></i></span><div class=honeycombbox-icon-gantt rowid=" + row_id + " onclick=AddRemoveMediaCode(this); title='Select' altid=" + data.NewMediaCodeId.toString() + "></div><span class='archive' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + row_id + " onclick=ArchiveMediaCode(event); title='Archive'></i></span>");
                         MediaCodeGrid.setCellTextStyle(row_id, GeneratecolIndex, "color:#999");
 
                         MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
@@ -431,10 +432,7 @@ else
 
                 if (isrequired != null && isrequired != undefined && isrequired.toString().toLowerCase() == "true") {
                     MediaCodeGrid.setCellTextStyle(rowId, cellInd, "");
-                    fillrequired = fillrequired + 1;
-                    MediaCodeGrid.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + rowId + " onclick=GenerateMediaCode(this); />")
-
-                }
+               }
 
                 var newvale = htmlDecode(nValue);
                 MediaCodeGrid.cells(rowId, cellInd).setValue(newvale);
@@ -442,11 +440,27 @@ else
             else if (nValue == '') {
                 if (isrequired != null && isrequired != undefined && isrequired.toString().toLowerCase() == "true") {
                     MediaCodeGrid.setCellTextStyle(rowId, cellInd, "border-bottom: 2px solid red;");
-                      MediaCodeGrid.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn disabled' rowid=" + rowId + " onclick=GenerateMediaCode(this); disabled='disabled' />");
                 }
                 MediaCodeGrid.cells(rowId, cellInd).setValue('--');
             }
-         
+            MediaCodeGrid.forEachCell(rowId, function (cellObj, col_index) {
+                if (col_index > 2) {
+                    var isrequired = MediaCodeGrid.cells(rowId, col_index).getAttribute("actval");
+                    if (isrequired != null && isrequired != undefined && isrequired.toString().toLowerCase() == "true") {
+                        var val = MediaCodeGrid.cells(rowId, col_index).getValue();
+                        if (val == '' || val=='--')
+                        fillrequired = fillrequired + 1;
+                    }
+                }
+            });
+            if(fillrequired>0)
+            {
+                MediaCodeGrid.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn disabled' rowid=" + rowId + " onclick=GenerateMediaCode(this); disabled='disabled' />");
+
+            }
+            else
+                MediaCodeGrid.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + rowId + " onclick=GenerateMediaCode(this); />")
+
         }
         return true;
     }
@@ -485,10 +499,17 @@ else
         if (isOnly == true) {
             MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event)></i></span>");
         }
-        MediaCodeGrid.forEachCell(currentRowID, function (cellObj, col_index) {
+        var RequiredCustoList=JSON.parse('@Html.Raw(Json.Encode(@ViewBag.RequiredList))');
+        
+        MediaCodeGrid.forEachCell(newId, function (cellObj, col_index) {
             if (col_index > 2) {
-                var isrequired = MediaCodeGrid.cells(currentRowID, col_index).getAttribute("actval");
-                MediaCodeGrid.cells(newId, col_index).setAttribute("actval", isrequired);
+      var colid = MediaCodeGrid.getColumnId(col_index);
+                var found = RequiredCustoList.some(function (el) {
+                    return el.CustomFieldId == colid;
+                });
+                if (found) {
+                    MediaCodeGrid.cells(newId, col_index).setAttribute("actval", 'true');
+                }
                 var type = MediaCodeGrid.getColType(col_index);
                 if (type == 'ed') {
                     MediaCodeGrid.setCellExcellType(newId, col_index, "edtxt");
@@ -498,7 +519,6 @@ else
         SetTooltip();
         setTimeout(function () {
             MediaCodeGrid.setSizes();
-          
         }, 100);
     }
     function ArchiveMediaCode(e) {

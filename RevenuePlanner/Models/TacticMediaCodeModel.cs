@@ -46,4 +46,9 @@ namespace RevenuePlanner.Models
         public int CustomFieldOptionId { get; set; }
         public string CustomFieldOptionValue { get; set; }
     }
+    public class RequriedCustomField
+    {
+        public string CustomFieldId { get; set; }
+        public bool IsRequired { get; set; }
+    }
 }
