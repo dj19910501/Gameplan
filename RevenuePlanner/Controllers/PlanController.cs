@@ -8604,7 +8604,7 @@ namespace RevenuePlanner.Controllers
                     }
 
 
-                    if (item.CreatedBy == Sessions.User.UserId || tacticOwner == Sessions.User.UserId)
+                    if (item.CreatedBy == Sessions.User.UserId || tacticOwner == Sessions.User.UserId || lstSubordinatesIds.Contains(tacticOwner))
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
