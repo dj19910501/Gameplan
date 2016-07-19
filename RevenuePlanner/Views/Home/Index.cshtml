@@ -1839,7 +1839,7 @@
         @*// Add By Nishant Sheth
             // Desc:: #1818 display message with filter*@
         <div id="NodatawithfilterCalendar" style="display:none;">
-            <span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters applied.</span>
+            <span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>
         </div>
         <div class="tab-pane active all-height" id="panel-656352">
             <div class=" pl20 cf">
@@ -3040,7 +3040,7 @@
                     // Add By Nishant Sheth
                     // Desc :: #1818
                     var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
-            '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters applied.</span>' +
+            '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +
         '<br/></div>';
                     gridhtml += result;
                     $("#divgridview").html('');
@@ -4740,19 +4740,23 @@
                     success: function (data) {
                         if ($('#IsGridView').val() != "True") {
                             var TaskHtml = $("div[task_id='" + AnchorTaskId + "']")[0];
-                            var LastChildNode = TaskHtml.firstChild.lastChild.outerHTML;
-                            var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
-                            var AllCHildNodes = TaskHtml.firstChild.innerHTML;
-                            var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
-                            if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
-                                var PackageNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
-                                AllCHildNodes = TaskHtml.firstChild.innerHTML;
-                                AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
+                            if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
+                            {
+                                var LastChildNode = TaskHtml.firstChild.lastChild.outerHTML;
+                                var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
+                                var AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                                var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
+                                if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
+                                    var PackageNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                                    AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                                    AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
+                                }
+                                AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
+                                AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                                AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + promotionTacticIds + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                                TaskHtml.firstChild.innerHTML = AllCHildNodes;
                             }
-                            AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
-                            AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                            AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + promotionTacticIds + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
-                            TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                          
 
                             // Bind anchortacticid of the new package to honeycomb icons in the grid
                             $.each(promotionTacticIds, function (i) {
@@ -4832,10 +4836,13 @@
                         }
                         else {
                             var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
-                            var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
-                            var AllCHildNodes = TaskHtml.firstChild.innerHTML;
-                            AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                            TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                            if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
+                            {
+                                var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                                var AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                                AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                                TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                            }
                             if (AnchorTaskIdsList.Id.length != 0)
                             {
                                 $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
@@ -5317,11 +5324,11 @@
                             //Add asset to the top in the honeycomb list
                             if(ExportSelectedIds.ROITacticType[i] == '@Enums.AssetType.Asset.ToString()')
                             {
-                                htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + ExportSelectedIds.Title[i] + '">' + ExportSelectedIds.Title[i] + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                                htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' +  htmlEncode(ExportSelectedIds.Title[i]) + '">' +  htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                             }
                             else
                             {
-                                htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + ExportSelectedIds.Title[i] + '">' + ExportSelectedIds.Title[i] + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                                htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' +  htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode( ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                             }
 
                         }
@@ -5504,11 +5511,17 @@
                 data: { AnchorTacticId: anchorTacticId, IsPromotion: IsPromotion },
                 success: function (data) {
                     var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
-                    var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                    if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
+                    {
+                        var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                    }
                     var ViewBy = $('#ddlTabViewBy').val();
 
                     if (IsPromotion) {
-                        TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).setAttribute("pkgtacids", data.remainItems.toString());
+                        if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
+                        {
+                            TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).setAttribute("pkgtacids", data.remainItems.toString());
+                        }
 
                         if (AnchorTaskIdsList.Id.length != 0) {
                             $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
@@ -5518,6 +5531,7 @@
                             });
                         }
                         else {
+
                             AnchorTaskIdsList.Id.push(CalendarTaskID);
                             AnchorTaskIdsList.Value.push(data.remainItems.toString());
                         }
@@ -5534,9 +5548,12 @@
                     }
                     else {
                         // As package is deleted, remove package icon from the grid
-                        var AllCHildNodes = TaskHtml.firstChild.innerHTML;
-                        AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                        TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                        if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
+                        {
+                            var AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                            AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                            TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                        }
 
                         $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
                             if (AnchorID == CalendarTaskID) {
