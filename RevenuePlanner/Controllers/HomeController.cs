@@ -9374,6 +9374,7 @@ namespace RevenuePlanner.Controllers
                 {
                     TacticId = tactic.PlanTacticId,
                     TaskId = "__" + tactic.PlanProgramId + "_" + tactic.PlanTacticId,
+                    PCPTId = string.Format("L{0}_C{1}_P{2}_T{3}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                     Title = tactic.Title,
                     TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
                     ColorCode = TacticTaskColor,

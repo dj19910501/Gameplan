@@ -4940,12 +4940,11 @@
                             $.each(IdsNotinList, function (index, TacticId) {
                                 $.each(ListData, function (index, Data) {
                                     if (Data.TacticId.toString() == TacticId) {
-                                        $("div[altid='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
                                         var index = ExportSelectedIds.TaskID.indexOf(Data.TaskId);
                                         if (index < 0)
                                         {
                                             ExportSelectedIds.TaskID.push(Data.TaskId);
-                                            ExportSelectedIds.Title.push(Data.Title);
+                                            ExportSelectedIds.Title.push(htmlDecode(Data.Title));
                                             ExportSelectedIds.OwnerName.push(Data.OwnerName);
                                             ExportSelectedIds.TacticType.push(Data.TacticTypeValue);
                                             ExportSelectedIds.ColorCode.push(Data.ColorCode);
@@ -4953,13 +4952,13 @@
                                             ExportSelectedIds.CsvId.push(Data.CsvId);
                                             ExportSelectedIds.ROITacticType.push(Data.ROITacticType);
                                             ExportSelectedIds.AnchorTacticId.push(Data.AnchorTacticId);
+                                            ExpandTacticsForSelectedPackage(Data.PCPTId);
+                                            $("div[altid='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
                                         }
-                                      
-
                                     }
 
                                 });
-                            });
+                            });                            
                         }
                         else
                         {
@@ -5003,6 +5002,21 @@
                 });
             }
             //End
+        }
+
+        // Added by Arpita Soni for Ticket #2354 to expand tactics for selected package
+        function ExpandTacticsForSelectedPackage(PCPTId) {
+            var arrEntityIds = PCPTId.split('_');
+            var CampaignId = "", ProgramId = "", TacticId = ""; 
+            if(arrEntityIds!= null && arrEntityIds.length > 2) {
+                CampaignId = arrEntityIds[1].replace('C','');
+                ProgramId = arrEntityIds[2].replace('P','');
+                
+                var divCamp = $('div[taskid="' + CampaignId + '"]').attr('dhtmlxrowid');
+                HomeGrid.openItem(divCamp);
+                var divProg = $('div[taskid="' + ProgramId + '"]').attr('dhtmlxrowid');
+                HomeGrid.openItem(divProg);
+            }
         }
 
         // Added by Arpita Soni to display error message in Honeycomb popup
