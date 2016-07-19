@@ -136,6 +136,11 @@ else
         </div>
     </div>
 </div>
+<style>
+    .tooltip{
+        z-index:99999;
+    }
+</style>
 <script type="text/javascript">
     var MediaCodeGrid;
     var tacticId = 0;
@@ -155,23 +160,31 @@ else
             LoadArchiveGrid();
             $(document).ajaxComplete(function () {
                 MediaCodeGrid.setSizes();
+                SetTooltip();
             });
+          
         }
+      
 
     });
 
     var $doc = $(document);
     $doc.click(function () {
+        $(".tooltip").hide();
         $('#popupMediCode').css('display', 'none');
-        $('#dhx_combo_select').css('display', 'none');
+        $('.dhx_combo_select').css('display', 'none');
     });
-
+   
     $(document).mouseup(function (e) {
         $('#popupMediCode').css("display", "none");
-        $('#dhx_combo_select').css('display', 'none');
+        $('.dhx_combo_select').css('display', 'none');
     });
     $(".grid_ver_scroll").scroll(function () {
         $('#popupMediCode').css('display', 'none');
+    });
+    $(".pop-body-wraper").scroll(function () {
+        $('#popupMediCode').css('display', 'none');
+        $('.dhx_combo_select').css('display', 'none');
     });
     function LoadArchiveGrid()
     {
@@ -179,6 +192,21 @@ else
         var inspectmode = $("#hdnInspectMode").val();
         $("#divArchiveMediaCode").load(url + '?tacticId=' + '@tacticId' + '&Mode=' + inspectmode , function (response, status, xhr) {
            
+        });
+    }
+    function SetTooltip()
+    {
+        $(".archive").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
+        });
+        $(".honeycombbox-icon-gantt").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
+        });
+        $(".plus-circle").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
         });
     }
     function OpenGridPopup(e) {
@@ -244,12 +272,14 @@ else
         MediaCodeGrid.setImageSize(1, 1);
 
         MediaCodeGrid.attachEvent("onEditCell", doOnEditCell);
-
+        MediaCodeGrid.attachEvent("onScroll", function (sLeft, sTop) {
+            $(".dhx_combo_select").css("display", "none");
+            $('#popupMediCode').css('display', 'none');
+        });
         MediaCodeGrid.init();
         MediaCodeGrid.splitAt(3);
         MediaCodeGrid.parse(GridDataHomeGrid, "json");
-        
-
+       
     }
    
     function GenerateMediaCode(obj) {
@@ -434,7 +464,7 @@ else
         var i;
         var columndata = "0";
         //columndata = columndata + ",<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " onclick=ArchiveMediaCode(event)></i></span><span class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  onclick=OpenGridPopup(event)></i></span><div class=honeycombbox-icon-gantt rowid=" + newId + " onclick=AddRemoveMediaCode(this)></div>";
-        columndata = columndata + ",<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + " title='Add Media Code' ></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event) ></i></span>";
+        columndata = columndata + ",<span class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + " title='Add Media Code' ></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event) ></i></span>";
         var mediacodeButton = ",<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + newId + " onclick=GenerateMediaCode(this); disabled='disabled' />";
         columndata = columndata + mediacodeButton;
         for (i = 2; i < cnt  ; i++) {
@@ -448,12 +478,12 @@ else
             MediaCodeGrid.copyRowContent(currentRowID, newId);
             MediaCodeGrid.cells(newId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + newId + " onclick=GenerateMediaCode(this); />");
             //MediaCodeGrid.cells(newId, 1).setValue("<span class='pull-left'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " onclick=ArchiveMediaCode(event)></i></span><span class='pull-left'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  onclick=OpenGridPopup(event)></i></span><div class=honeycombbox-icon-gantt rowid=" + newId + " onclick=AddRemoveMediaCode(this)></div>");
-            MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event)></i></span>");
+            MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event)></i></span>");
 
             MediaCodeGrid.cells(newId, 0).setValue("0");
         }
         if (isOnly == true) {
-            MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event)></i></span>");
+            MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event)></i></span>");
         }
         MediaCodeGrid.forEachCell(currentRowID, function (cellObj, col_index) {
             if (col_index > 2) {
@@ -465,11 +495,14 @@ else
                 }
             }
         });
+        SetTooltip();
         setTimeout(function () {
             MediaCodeGrid.setSizes();
-        }, 200);
+          
+        }, 100);
     }
     function ArchiveMediaCode(e) {
+        $(".tooltip").hide();
         var rowid = $(e.target).attr('rowid');
         var inspectmode = $("#hdnInspectMode").val();
         var mediacodeid = MediaCodeGrid.cells(rowid, 0).getValue();
