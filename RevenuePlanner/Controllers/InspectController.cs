@@ -13826,7 +13826,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 lineitemrowsobj = new PlanDHTMLXGridDataModel();
-                lineitemrowsobj.id = "mediacode." + cnt;
+                lineitemrowsobj.id = "newRow_" + cnt;
                 List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
                 Plandataobj lineitemdataobj = new Plandataobj();
 
@@ -13855,7 +13855,7 @@ namespace RevenuePlanner.Controllers
                 headobjother = new PlanHead();
                 headobjother.type = "ro";
                 headobjother.id = "generateMediaCode";
-                headobjother.sort = "na";
+                headobjother.sort = "custom_sort";
                 headobjother.width = 200;
                 headobjother.value = "Media Code";
                 headobjlist.Add(headobjother);
@@ -13913,7 +13913,7 @@ namespace RevenuePlanner.Controllers
                     PlanHead headobj = new PlanHead();
                     headobj.type = coltype;
                     headobj.id = "customfield_" + item.CustomFieldId;
-                    headobj.sort = "str";
+                    headobj.sort = "custom_sort";
                     headobj.width = colwidth;
                     headobj.value = Gridheder;
                     if (viewoptionlist != null && viewoptionlist.Count > 0)
@@ -14105,7 +14105,7 @@ namespace RevenuePlanner.Controllers
                 headobjother = new PlanHead();
                 headobjother.type = "ro";
                 headobjother.id = "generateMediaCode";
-                headobjother.sort = "na";
+                headobjother.sort = "custom_sort";
                 headobjother.width = 200;
                 headobjother.value = "Media Code";
 
@@ -14161,7 +14161,7 @@ namespace RevenuePlanner.Controllers
                     PlanHead headobj = new PlanHead();
                     headobj.type = coltype;
                     headobj.id = "customfield_" + Cust.CustomFieldId;
-                    headobj.sort = "str";
+                    headobj.sort = "custom_sort";
                     headobj.width = colwidth;
                     if (IsRequired && IsArchive == false)
                         headobj.value = Cust.CustomFieldName + "<span class='required-asterisk'>*</span>";

@@ -295,6 +295,9 @@ else
             $(".dhx_combo_select").css("display", "none");
             $('#popupMediCode').css('display', 'none');
         });
+        MediaCodeGrid.attachEvent("onAfterSorting", function (index, type, direction) {
+            SetTooltip();
+        });
         MediaCodeGrid.init();
         MediaCodeGrid.splitAt(3);
         MediaCodeGrid.parse(GridDataHomeGrid, "json");
@@ -565,7 +568,23 @@ else
             return;
         }
     }
-
+    function custom_sort(a, b, ord, aid, bid) {
+        if (a == "" ) {
+            return 1;
+        }
+        if (b == "" ) {
+            return -1;
+        }
+        var aid = aid.split("_");
+        var bid = bid.split("_");
+        if (aid[0] == "newRow") {
+            return -1;
+        }
+        if (bid[0] == "newRow") {
+            return -1;
+        }
+        return (a.toLowerCase() > b.toLowerCase() ? 1 : -1) * (ord == "asc" ? 1 : -1);
+    }
 </script>
 <script>
     function AddRemoveMediaCode(item) {
