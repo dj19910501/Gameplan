@@ -5428,6 +5428,20 @@
                     $("#totalEntity").text(Totallength);
                     $(".popover").css('top', Height + "px");
                 }
+
+                var index = ExportSelectedIds.TaskID.indexOf(taskId);
+                if (index >= 0) {
+                    ExportSelectedIds.TaskID.splice(index, 1);
+                    ExportSelectedIds.Title.splice(index, 1);
+                    ExportSelectedIds.OwnerName.splice(index, 1);
+                    ExportSelectedIds.TacticType.splice(index, 1);
+                    ExportSelectedIds.ColorCode.splice(index, 1);
+                    ExportSelectedIds.ROITacticType.splice(index, 1);
+                    ExportSelectedIds.CalendarEntityType.splice(index, 1);
+                    ExportSelectedIds.DhtmlxRowId.splice(index, 1);
+                    ExportSelectedIds.AnchorTacticId.splice(index, 1);
+
+                }
             }
             else {
                 if (IsPackageView && currentPkgIds.indexOf($(item).parents('.hc-block').attr('anchortacticid')) > -1) {
@@ -5446,21 +5460,22 @@
                     $(".popover").css('top', Height + "px");
                 }
 
+                var index = ExportSelectedIds.TaskID.indexOf(taskId);
+                if (index >= 0) {
+                    ExportSelectedIds.TaskID.splice(index, 1);
+                    ExportSelectedIds.Title.splice(index, 1);
+                    ExportSelectedIds.OwnerName.splice(index, 1);
+                    ExportSelectedIds.TacticType.splice(index, 1);
+                    ExportSelectedIds.ColorCode.splice(index, 1);
+                    ExportSelectedIds.ROITacticType.splice(index, 1);
+                    ExportSelectedIds.CalendarEntityType.splice(index, 1);
+                    ExportSelectedIds.AnchorTacticId.splice(index, 1);
+
+                }
+
             }
 
-        var index = ExportSelectedIds.TaskID.indexOf(taskId);
-        if (index >= 0) {
-            ExportSelectedIds.TaskID.splice(index, 1);
-            ExportSelectedIds.Title.splice(index, 1);
-            ExportSelectedIds.OwnerName.splice(index, 1);
-            ExportSelectedIds.TacticType.splice(index, 1);
-            ExportSelectedIds.ColorCode.splice(index, 1);
-            ExportSelectedIds.ROITacticType.splice(index, 1);
-            ExportSelectedIds.CalendarEntityType.splice(index, 1);
-            ExportSelectedIds.DhtmlxRowId.splice(index, 1);
-            ExportSelectedIds.AnchorTacticId.splice(index, 1);
-
-        }
+      
 
         item.parentNode.parentNode.parentNode.remove();
         var HoneyContent = $('.popover-content').find(".hc-block").length;
@@ -5475,6 +5490,7 @@
 
         // Added by Komal Rawal for Ticket #2355 on 13/07/2016
         function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totallength, Height, Sum) {
+            debugger;
             // If package is selected then apply validation as per selected asset or promotion
             var ROITacticType = $(item).parents('.hc-block').attr('roitactictype');
             var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]").attr('entitytaskid');
@@ -5510,6 +5526,7 @@
                 url: '@Url.Content("~/Home/UnpackageTactics")',
                 data: { AnchorTacticId: anchorTacticId, IsPromotion: IsPromotion },
                 success: function (data) {
+                    debugger;
                     var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
                     if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                     {
