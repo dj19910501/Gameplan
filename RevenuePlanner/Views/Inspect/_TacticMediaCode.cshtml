@@ -34,6 +34,30 @@ else
 
 }
 @Html.Hidden("hdnLinkedTacticID", LinkedTacticID, new { id = "hdnLinkedTacticID" })
+<style>
+    .tooltip {
+        z-index: 99999;
+    }
+
+    .dhx_combo_select {
+        overflow-x: hidden; /* For chrome */
+    }
+
+    .dhx_combo_select option {
+        word-wrap: break-word !important;
+        white-space: normal !important;
+    }
+
+    /*.dhx_combo_select {
+        width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .dhx_combo_select option {
+        white-space: nowrap;
+        width: 100%
+    }*/
+</style>
 <div class="market-activity-main">
     <div class="btn-dropdwn" style="display: none;" id="popupMediCode">
 
@@ -44,9 +68,7 @@ else
     <!-- honeycomb svg -->
     <svg id="honeycombmediacode" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
          viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve">
-    <style type="text/css">
-
-</style>
+ 
     <g>
     <g>
 	                       
@@ -137,11 +159,7 @@ else
         </div>
     </div>
 </div>
-<style>
-    .tooltip {
-        z-index: 99999;
-    }
-</style>
+
 <script type="text/javascript">
     var MediaCodeGrid;
     var tacticId = 0;

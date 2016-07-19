@@ -18,7 +18,8 @@
 .hierarchy_wrapper *, .hierarchy_wrapper *::after, .hierarchy_wrapper *::before, .hierarchy_wrapper,
 .pop-body-wraper *, .pop-body-wraper *::after, .pop-body-wraper *::before,
 .create-plan-form #accordion2 *,.create-plan-form #accordion2 *::after, .create-plan-form #accordion2 *::before,
-#modal-container-186470 .partial_wrapper *, #modal-container-186470 .partial_wrapper *::after, #modal-container-186470 .partial_wrapper *::before{
+#modal-container-186470 .partial_wrapper *, #modal-container-186470 .partial_wrapper *::after, #modal-container-186470 .partial_wrapper *::before, 
+.gridbox.gridbox_dhx_skyblue, .gridbox.gridbox_dhx_skyblue *, .gridbox.gridbox_dhx_skyblue *:before, .gridbox.gridbox_dhx_skyblue *:after{
     box-sizing: content-box !important;
 } 
 
@@ -2333,7 +2334,9 @@ span.link-blue:hover {
     color: #2384B8;
     line-height: 40px;
 }
-
+.plan-text .nl-ti-input input::-moz-placeholder {
+    line-height: normal;
+}
 .defaul-value-form,
 .defaul-value-form input,
 .defaul-value-form:hover {
@@ -3410,8 +3413,14 @@ span.accept-icon:hover {
         width: calc(100% - 14px);
         border-color: #C6C6C6;
         color: #6D6D6D;
+        min-height: 30px;/* #2356 resolve height issue */
     }
+    .sidebar-form .simpleSelectBox .sbSelector {/* #2356 resolve  issue */
+    width: 90%;
+    line-height:26px;
+}
 
+    .sidebar-form .simpleSelectBox .sbHolder{min-height:28px;}
     .sidebar-form .content input::-moz-placeholder,
     .sidebar-form .content input:active::-moz-placeholder,
     .sidebar-form .content input:focus::-moz-placeholder {
@@ -10664,7 +10673,7 @@ color: #3e3f37; /* Edited for #2219 - Bhumika */
     stroke: #f77616;
     }*/
 
-      .honeycombbox-icon-gantt {
+.honeycombbox-icon-gantt {
   background: rgba(0, 0, 0, 0) url("../images/honeycomb-icon.png")  no-repeat scroll center center / 100% ;
   float: left;
   line-height: normal;
@@ -15779,7 +15788,7 @@ a:focus, a:hover{outline:0 none !important}
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td{border-top:0;border-bottom: 1px solid #d4d4d4;}
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox,
-#divArchiveGrid.gridbox_dhx_skyblue.gridbox{background-color: white; width: 98%;}
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox{background-color: white; width: 98% !important;}
 
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
@@ -15792,7 +15801,7 @@ a:focus, a:hover{outline:0 none !important}
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td, 
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, 
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td{
-    background-color: #f0f0f0;
+    background-color: #f7f7f7;
     border-bottom: 1px solid #d4d4d4;
     border-right: 0px solid #d4d4d4; 
     border-top: 0px solid #d4d4d4; 
@@ -15877,7 +15886,7 @@ input.selectInput{
 
 .nav.nav-tabs.version-tab{margin-bottom: 20px; padding-bottom: 10px;margin-left:0; margin-right:0}
 
-
+.honeycombbox-icon-gantt.disabled{opacity:0.7}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

@@ -34,7 +34,9 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
 }
-
+<style>
+    .nl-ti-example{white-space:nowrap}
+</style>
 @Html.Hidden("hdnPlanId", strPlanId, new { id = "hdnPlanId" })
 @Html.HiddenFor(model => model.GoalType) @*Modified by Komal Rawal for 1903 goals not showing as per plan defination*@
 
@@ -103,7 +105,7 @@
                 <td>
                     <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment n1-form-main">
                         <div class="bold font_size16 plan-defination">Plan definition</div>
-                        <div id="divPlanDefinationEnabled plan-text">
+                        <div id="divPlanDefinationEnabled" class="plan-text">
                             I'm using the
                             @{
     if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable) && IsModelCreateEditAuthorized)
