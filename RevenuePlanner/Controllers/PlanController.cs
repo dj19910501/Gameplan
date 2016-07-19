@@ -13979,7 +13979,8 @@ namespace RevenuePlanner.Controllers
                         TacticType tt = db.TacticTypes.Where(tacType => tacType.TacticTypeId == tactictypeid).FirstOrDefault();
 						// Added by Arpita Soni for Ticket #3254 on 07/19/2016
 						// Remove tactics from package when tactic type is changed
-                        if (pcpobj.ROI_PackageDetail != null && pcpobj.ROI_PackageDetail.Count > 0)
+                        if ((pcpobj.ROI_PackageDetail != null && pcpobj.ROI_PackageDetail.Count > 0) &&
+                                    pcpobj.TacticType.AssetType != tt.AssetType)
                         {
                             HomeController objHome = new HomeController();
                             bool IsPromotion = false;

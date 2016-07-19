@@ -4762,12 +4762,14 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-								// Added by Arpita Soni for Ticket #2354 on 07/19/2016
-								// To remove tactic from package when asset type is changed
-                                if (pcpobj.ROI_PackageDetail != null && pcpobj.ROI_PackageDetail.Count > 0)
+                                // Added by Arpita Soni for Ticket #2354 on 07/19/2016
+                                // To remove tactic from package when asset type is changed
+                                TacticType tt = db.TacticTypes.Where(t => t.TacticTypeId == form.TacticTypeId).FirstOrDefault();
+
+                                if ((pcpobj.ROI_PackageDetail != null && pcpobj.ROI_PackageDetail.Count > 0) &&
+                                    pcpobj.TacticType.AssetType != tt.AssetType)
                                 {
                                     HomeController objHome = new HomeController();
-                                    TacticType tt = db.TacticTypes.Where(t => t.TacticTypeId == form.TacticTypeId).FirstOrDefault();
                                     bool IsPromotion = false;
                                     if (pcpobj.TacticType.AssetType == Convert.ToString(Enums.AssetType.Promotion) &&
                                              tt.AssetType == Convert.ToString(Enums.AssetType.Asset))

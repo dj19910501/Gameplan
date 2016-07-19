@@ -1547,8 +1547,8 @@
         // Added by Arpita Soni for Ticket #2354
         // Get previous asset type
         var oldTacticTypeId = $(this).attr('oldvalue');
-        
-        var oldAssetType = arrTacTypes.filter(function (v) {
+        var oldAssetType = "";
+        oldAssetType = arrTacTypes.filter(function (v) {
             return v.TacticTypeId == oldTacticTypeId; // Filter to get asset type for selected tactic type
         });
         if (oldAssetType != null && oldAssetType.length > 0) {
@@ -1562,7 +1562,7 @@
             newAssetType = newAssetType[0].AssetType;
         }
         // If user changes asset to promo then confirm to delete entire package.
-        if (oldAssetType != null && oldAssetType != newAssetType && oldAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()') {
+        if (oldAssetType != null && oldAssetType != "" && oldAssetType != newAssetType && oldAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()') {
             var retValue = confirm('Package associated to this tactic will be deleted. Do you wish to continue?');
             if (!retValue) {
                 return false;
