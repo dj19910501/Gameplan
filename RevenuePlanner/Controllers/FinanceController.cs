@@ -308,7 +308,7 @@ namespace RevenuePlanner.Controllers
                 gridRowModel.FinanemodelheaderObj = Common.CommonGetFinanceHeaderValue(objFinanceHeader);
             }
             //ViewBag.BudgetId = (Int32)budgetId;
-            Sessions.BudgetDetailId = (Int32)budgetId;
+            Sessions.BudgetDetailId = budgetId;
             ViewBag.IsBudgetCreateEdit = IsBudgetCreateEdit;
             ViewBag.IsBudgetView = IsBudgetView;
             ViewBag.IsForecastView = IsForecastView;
@@ -445,8 +445,8 @@ namespace RevenuePlanner.Controllers
                 //}
                 //else
                 //{
-                    setColumnsVisibility.Append("false,false,false,false,");
-               // }
+                setColumnsVisibility.Append("false,false,false,false,");
+                // }
                 foreach (var columns in objColumns)
                 {
                     setHeader.Append(columns.CustomField.Name + ",");
@@ -1551,7 +1551,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            if(!CurrentobjBudget_Permission.IsOwner)
+                            if (!CurrentobjBudget_Permission.IsOwner)
                             {
                                 CurrentobjBudget_Permission.UserId = Guid.Parse(FinalUserData[i].UserId);
                                 CurrentobjBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
@@ -1559,7 +1559,7 @@ namespace RevenuePlanner.Controllers
                                 CurrentobjBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
                                 db.Entry(CurrentobjBudget_Permission).State = EntityState.Modified;
                             }
-                           
+
 
 
                         }
@@ -1923,7 +1923,7 @@ namespace RevenuePlanner.Controllers
                 EditPermission = "View";
             }
             #endregion
-     
+
             var Listofcheckedcol = ListofCheckedColums.Split(',');
             #region Set coulmn base on columnset
             List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
@@ -2035,7 +2035,7 @@ namespace RevenuePlanner.Controllers
             dataTableMain.Columns.Add("Name", typeof(String));
             dataTableMain.Columns.Add("AddRow", typeof(String));
             dataTableMain.Columns.Add("LineItemCount", typeof(Int32));
-            dataTableMain.Columns.Add("Permission", typeof(String)); 
+            dataTableMain.Columns.Add("Permission", typeof(String));
 
             #region set dynamic columns in dataTable
             var IntegerColumnValidation = new string[] { Enums.ColumnValidation.ValidInteger.ToString() };
@@ -4337,6 +4337,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
                 if (ex.Message.Contains("process"))
                 {
                     return Json(new { msg = "error", error = "File is being used by another process." }, JsonRequestBehavior.AllowGet);
@@ -4405,7 +4406,7 @@ namespace RevenuePlanner.Controllers
                                     XmlAttribute attribute = xmlDoc.CreateAttribute("code");
                                     attribute.Value = Convert.ToString(CellData.ColumName);
                                     datanode.Attributes.Append(attribute);
-                                    datanode.InnerText = GetValue(doc, cell).Trim();
+                                    datanode.InnerText = GetCellValue(doc, cell).Trim();
                                     // RowIndex 3 is for first row
                                     if (row.RowIndex == 3)
                                     {
@@ -4442,7 +4443,7 @@ namespace RevenuePlanner.Controllers
                                     int j = 1;
                                     foreach (Cell cell in HeaderRows[1].Descendants<Cell>())
                                     {
-                                        string columnName = GetValue(doc, cell);
+                                        string columnName = GetCellValue(doc, cell);
                                         if (!string.IsNullOrEmpty(columnName))
                                         {
 
@@ -4450,7 +4451,7 @@ namespace RevenuePlanner.Controllers
                                             if (columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Planned).ToLower() && columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Actual).ToLower())
                                             {
                                                 var InnerCol = InnerHeader[p];
-                                                var InnerColName = GetValue(doc, InnerCol);
+                                                var InnerColName = GetCellValue(doc, InnerCol);
                                                 if (InnerColName.ToLower() != "total")
                                                 {
                                                     listColumnIndex.Add(new XmlColumns { ColumName = columnName, ColumnIndex = p });
@@ -4482,16 +4483,30 @@ namespace RevenuePlanner.Controllers
             return objImportData;
         }
 
-        private string GetValue(SpreadsheetDocument doc, Cell cell)
+        /// <summary>
+        /// Created By Nishant Sheth
+        /// Get the value of cell from excel sheet.
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        private string GetCellValue(SpreadsheetDocument doc, Cell cell)
         {
             string value = string.Empty;
-            if (cell.CellValue != null)
+            try
             {
-                value = cell.CellValue.InnerText;
+                if (cell.CellValue != null)
+                {
+                    value = cell.CellValue.InnerText;
+                }
+                if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+                {
+                    return doc.WorkbookPart.SharedStringTablePart.SharedStringTable.ChildElements.GetItem(int.Parse(value)).InnerText;
+                }
             }
-            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+            catch (Exception ex)
             {
-                return doc.WorkbookPart.SharedStringTablePart.SharedStringTable.ChildElements.GetItem(int.Parse(value)).InnerText;
+                throw ex;
             }
             return value;
         }
@@ -4503,16 +4518,23 @@ namespace RevenuePlanner.Controllers
         /// <param name="filesFolder"></param>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public string ConvertxlsToXLSX(string filesFolder, string filename)
+        private string ConvertxlsToXLSX(string filesFolder, string filename)
         {
             string filePath = filesFolder + filename;
-            var app = new Microsoft.Office.Interop.Excel.Application();
-            var wb = app.Workbooks.Open(filePath);
             string renamefilename = Path.ChangeExtension(filePath, ".xlsx");
-            wb.SaveAs(Filename: renamefilename, FileFormat: Microsoft.Office.Interop.Excel.XlFileFormat.xlOpenXMLWorkbook);
-            wb.Close();
-            app.Quit();
-            System.IO.File.Delete(filePath);
+            try
+            {
+                var app = new Microsoft.Office.Interop.Excel.Application();
+                var wb = app.Workbooks.Open(filePath);
+                wb.SaveAs(Filename: renamefilename, FileFormat: Microsoft.Office.Interop.Excel.XlFileFormat.xlOpenXMLWorkbook);
+                wb.Close();
+                app.Quit();
+                System.IO.File.Delete(filePath);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
             return renamefilename;
         }
 

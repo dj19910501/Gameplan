@@ -832,7 +832,9 @@
         // GetFinanceHeaderValue(rId, false);
         //alert($("#gridbox").find("table").width());
     }
-
+    $("#ddlRevenueTimeFrame").change(function () {
+        AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+    });
     //$("#ddlRevenueTimeFrame").change(function () {
     //    var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
     //    if (AllocatedBy == 'Quarterly') {

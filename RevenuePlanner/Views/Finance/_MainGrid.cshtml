@@ -3,7 +3,7 @@
 @using RevenuePlanner.Helpers;
 @{
     var _mainGridData = Model != null ? JsonConvert.SerializeObject(Model) : string.Empty;
-    var BudgetId = Sessions.BudgetDetailId != null ? (Int32)Sessions.BudgetDetailId : 0;
+    var BudgetId = Sessions.BudgetDetailId != null ? Sessions.BudgetDetailId : 0;
     var IsBudgetCreateEdit = ViewBag.IsBudgetCreateEdit;
     var IsBudgetView = ViewBag.IsBudgetView;
     var IsForecastView = ViewBag.IsForecastView;

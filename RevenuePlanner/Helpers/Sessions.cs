@@ -255,7 +255,11 @@ namespace RevenuePlanner.Helpers
         {
             get
             {
-                return Convert.ToInt32(HttpContext.Current.Session["BudgetDetailId"]);
+                if (HttpContext.Current.Session["BudgetDetailId"] != null)
+                {
+                    return Convert.ToInt32(HttpContext.Current.Session["BudgetDetailId"]);
+                }
+                return 0;
             }
             set
             {

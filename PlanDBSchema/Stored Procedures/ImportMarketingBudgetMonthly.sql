@@ -14,17 +14,6 @@ CREATE PROCEDURE ImportMarketingBudgetMonthly
 AS
 BEGIN
 SET NOCOUNT ON;
-IF OBJECT_ID('tempdb.dbo.#tmpXmlData') IS NOT NULL 
-	DROP TABLE #tmpXmlData 
-
-IF OBJECT_ID('tempdb.dbo.#tmpCustomDeleteDropDown') IS NOT NULL 
-	DROP TABLE #tmpCustomDeleteDropDown
-
-IF OBJECT_ID('tempdb.dbo.#tmpCustomDeleteTextBox') IS NOT NULL 
-	DROP TABLE #tmpCustomDeleteTextBox
-
-IF OBJECT_ID('tempdb.dbo.#tmpChildBudgets') IS NOT NULL 
-	DROP TABLE #tmpChildBudgets
 
 CREATE TABLE #tmpXmlData (ROWNUM BIGINT)
 CREATE TABLE #tmpCustomDeleteDropDown (EntityId BIGINT,CustomFieldId BIGINT)
@@ -117,18 +106,32 @@ BEGIN
 			SELECT  @MonthNumber = CAST(DATEPART(MM,''+@IsMonth+' 01 1990') AS varchar(2))
 			DECLARE @temp nvarchar(max)=''
 			SET @GetBudgetAmoutData+=' 
-
-			UPDATE BudgetDetailAmount SET ['+(@UpdateColumn)+']=CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'','','''')AS FLOAT) FROM 
+			-- Update the Budget Detail amount table for Forecast and Budget values
+			UPDATE BudgetDetailAmount SET ['+(@UpdateColumn)+']=CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+			THEN 
+			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) > 0
+			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
+			ELSE 0 END FROM 
 			Budget_DetailAmount BudgetDetailAmount
-			CROSS APPLY (SELECT * FROM #tmpXmlData WHERE BudgetDetailAmount.BudgetDetailId=CAST([Id#1] AS INT) 
+			CROSS APPLY (SELECT * FROM #tmpXmlData tmpXmlData WHERE BudgetDetailAmount.BudgetDetailId=CAST([Id#1] AS INT) 
 			AND BudgetDetailAmount.Period=''Y'+@MonthNumber+''' AND ISNULL(['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'''')<>'''' 
-			AND CAST(REPLACE(['+@UpdateColumn+'#'+CAST(@Count AS VARCHAR(50))+'],'','','''')AS FLOAT) <> ['+(@UpdateColumn)+']
+			AND CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+			THEN 
+			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) > 0
+			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
+			ELSE 0 END <> ['+(@UpdateColumn)+']
 			) tmpXmlData
 			
+			-- Insert into the Budget Detail amount table for Forecast and Budget values if that period values are not exist
 			INSERT INTO Budget_DetailAmount (BudgetDetailId,Period,['+@UpdateColumn+'])
 			SELECT  tmpXmlData.[Id#1] 
 			,''Y'+@MonthNumber+'''
-			,CAST(tmpXmlData.['+(SELECT [ColumnName]+'#'+CAST(@Count AS VARCHAR(50))+'' FROM @ImportBudgetCol WHERE ColumnIndex=@Count)+'] AS FLOAT)  FROM #tmpXmlData  tmpXmlData
+			,CASE WHEN ISNUMERIC(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+']) = 1 
+			THEN 
+			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) > 0
+			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
+			ELSE 0 END
+			FROM #tmpXmlData  tmpXmlData
 			OUTER APPLY (SELECT A.BudgetDetailId,A.Period,A.Id FROM Budget_DetailAmount A
 			WHERE A.BudgetDetailId = CAST(tmpXmlData.[Id#1] AS INT) 
 			AND A.Period=''Y'+@MonthNumber+''')
