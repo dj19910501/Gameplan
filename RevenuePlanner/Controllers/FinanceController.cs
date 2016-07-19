@@ -4283,8 +4283,8 @@ namespace RevenuePlanner.Controllers
                         if (fileExtension == ".xls" || fileExtension == ".xlsx")
                         {
                             string DirectoryLocation = Server.MapPath("~/Content/");
-                            Guid FileGuid = Guid.NewGuid();
-                            string FileName = Convert.ToString(FileGuid) + DateTime.Now.ToString("mm.dd.yyyy.hh.mm.ss.fff") + fileExtension;
+                            string FileSessionId = Convert.ToString(Session.Contents.SessionID);
+                            string FileName = FileSessionId + DateTime.Now.ToString("mm.dd.yyyy.hh.mm.ss.fff") + fileExtension;
                             string fileLocation = DirectoryLocation + FileName;
                             string excelConnectionString = string.Empty;
                             Request.Files[0].SaveAs(fileLocation);
