@@ -12492,7 +12492,15 @@ namespace RevenuePlanner.Controllers
                 string Year = lstplandetail.Where(p => p.PlanId == MainPlanID).Select(p => p.Year).FirstOrDefault(); //Added by Rahul Shah on 30/11/2015 for PL#1764. 
                 // Generate Tactic Type dropdown data on click of edit dropdown cell
                 // Get Tactic Type List : Added By Bhavesh : 17-Nov-2015 : Changes related to line item dropdown allow editable in grid view
-                List<TacticTypeModel> TacticTypeList = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) && tactype.IsDeployedToModel && tactype.ModelId == modelId).Select(tacttype => new TacticTypeModel { TacticTypeId = tacttype.TacticTypeId, Title = tacttype.Title }).ToList().OrderBy(tactype => tactype.Title).ToList();
+                List<TacticTypeModel> TacticTypeList = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) && 
+                                                                                        tactype.IsDeployedToModel && 
+                                                                                        tactype.ModelId == modelId).
+                                                       Select(tacttype => new TacticTypeModel
+                                                       {
+                                                           TacticTypeId = tacttype.TacticTypeId,
+                                                           Title = tacttype.Title,
+                                                           AssetType = tacttype.AssetType
+                                                       }).ToList().OrderBy(tactype => tactype.Title).ToList();
                 // Store Tactic Type list in view bag
                 ViewBag.TacticTypelist = TacticTypeList;
                 ViewBag.Year = Year; //Added by Rahul Shah on 30/11/2015 for PL#1764. 
@@ -13968,8 +13976,21 @@ namespace RevenuePlanner.Controllers
                     {
                         int tactictypeid = Convert.ToInt32(UpdateVal);
                         int oldTactictypeId = pcpobj.TacticTypeId;
-                        pcpobj.TacticTypeId = tactictypeid;
                         TacticType tt = db.TacticTypes.Where(tacType => tacType.TacticTypeId == tactictypeid).FirstOrDefault();
+						// Added by Arpita Soni for Ticket #3254 on 07/19/2016
+						// Remove tactics from package when tactic type is changed
+                        if (pcpobj.ROI_PackageDetail != null && pcpobj.ROI_PackageDetail.Count > 0)
+                        {
+                            HomeController objHome = new HomeController();
+                            bool IsPromotion = false;
+                            if (pcpobj.TacticType.AssetType == Convert.ToString(Enums.AssetType.Promotion) &&
+                                     tt.AssetType == Convert.ToString(Enums.AssetType.Asset))
+                            {
+                                IsPromotion = true;
+                            }
+                            objHome.UnpackageTactics(pcpobj.PlanTacticId, IsPromotion);
+                        }
+                        pcpobj.TacticTypeId = tactictypeid;
                         pcpobj.ProjectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue;
 
                         pcpobj.StageId = tt.StageId == null ? 0 : (int)tt.StageId;

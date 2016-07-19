@@ -4715,6 +4715,8 @@ namespace RevenuePlanner.Controllers
                             //List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false).ToList();
                             Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId.Equals(form.PlanTacticId)).FirstOrDefault();
 
+                           
+
                             #region "Retrieve linkedTactic"
                             linkedTacticId = (pcpobj != null && pcpobj.LinkedTacticId.HasValue) ? pcpobj.LinkedTacticId.Value : 0;
                             //if (linkedTacticId <= 0)
@@ -4760,6 +4762,20 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
+								// Added by Arpita Soni for Ticket #2354 on 07/19/2016
+								// To remove tactic from package when asset type is changed
+                                if (pcpobj.ROI_PackageDetail != null && pcpobj.ROI_PackageDetail.Count > 0)
+                                {
+                                    HomeController objHome = new HomeController();
+                                    TacticType tt = db.TacticTypes.Where(t => t.TacticTypeId == form.TacticTypeId).FirstOrDefault();
+                                    bool IsPromotion = false;
+                                    if (pcpobj.TacticType.AssetType == Convert.ToString(Enums.AssetType.Promotion) &&
+                                             tt.AssetType == Convert.ToString(Enums.AssetType.Asset))
+                                    {
+                                        IsPromotion = true;
+                                    }
+                                    objHome.UnpackageTactics(pcpobj.PlanTacticId, IsPromotion);
+                                }
                                 #region "Variable Initialize"
                                 bool isReSubmission = false;
                                 string status = string.Empty;

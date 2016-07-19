@@ -1,5 +1,7 @@
 ﻿@model RevenuePlanner.Models.Inspect_Popup_Plan_Campaign_Program_TacticModel
 @using RevenuePlanner.Helpers;
+@using RevenuePlanner.Models;
+@using System.Web.Script.Serialization;
 @{
     var IsTackticAddEdit = Model.IsTackticAddEdit;
     var IsLinkedTactic = Model.IsLinkedTactic;
@@ -10,6 +12,8 @@
     var Allowresubmission = Model.IsOwner;//Modified By komal Rawal for #1235
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
     string customFieldWeightage = Model.customFieldWeightage;
+
+    var lstTacticTypes = Model.Tactics.Select(tt=> new TacticTypeModel { TacticTypeId = tt.TacticTypeId, Title = tt.Title, AssetType = tt.AssetType });
     //Modified By komal Rawal for #1235
     var resubmission = "";
     if (Allowresubmission)
@@ -1535,11 +1539,36 @@
     }
 
 
-    $('#ddlTacticType').change(function () {
-        
-        var tacticTypeId = $(this).val();
-        loadtacticdata(tacticTypeId);
+    $('#ddlTacticType').change(function (e) {
+    	// Modified by Arpita Soni for Ticket #2354 on 07/19/2016
+        var newTacticTypeId = $(this).val();
+        var arrTacTypes = JSON.parse('@Html.Raw(Json.Encode(lstTacticTypes))');
 
+        // Added by Arpita Soni for Ticket #2354
+        // Get previous asset type
+        var oldTacticTypeId = $(this).attr('oldvalue');
+        
+        var oldAssetType = arrTacTypes.filter(function (v) {
+            return v.TacticTypeId == oldTacticTypeId; // Filter to get asset type for selected tactic type
+        });
+        if (oldAssetType != null && oldAssetType.length > 0) {
+            oldAssetType = oldAssetType[0].AssetType;
+        }
+        // Get new asset type
+        var newAssetType = arrTacTypes.filter(function (v) {
+            return v.TacticTypeId == newTacticTypeId; // Filter to get asset type for selected tactic type
+        });
+        if (newAssetType != null && newAssetType.length > 0) {
+            newAssetType = newAssetType[0].AssetType;
+        }
+        // If user changes asset to promo then confirm to delete entire package.
+        if (oldAssetType != newAssetType && oldAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()') {
+            var retValue = confirm('Package associated to this tactic will be deleted. Do you wish to continue?');
+            if (!retValue) {
+                return false;
+            }
+        }
+        loadtacticdata(newTacticTypeId);
     });
 
     //End

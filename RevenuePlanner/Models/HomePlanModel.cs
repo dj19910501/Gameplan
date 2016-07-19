@@ -54,6 +54,8 @@ namespace RevenuePlanner.Models
         public int TacticTypeId { get; set; }
         public string Title { get; set; }
         public int Number { get; set; }
+		// Added by Arpita Soni for Ticket #2354 on 07/19/2016
+        public string AssetType { get; set; }
     }
     public class OwnerModel
     {

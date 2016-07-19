@@ -1,10 +1,13 @@
 ﻿@model RevenuePlanner.Models.Plangrid
+@using RevenuePlanner.Models
+@using RevenuePlanner.Helpers
 @*<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />*@
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>*@
 @*// Add By Nishant Sheth
     // Desc :: #1818 To display message with no data exists*@
 @{
     var countrows = Model.PlanDHTMLXGrid.rows.Count;
+    List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);
 }
 <style>
     div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
@@ -788,9 +791,9 @@
 
         HomeGrid.setImageSize(1, 1);
 
-        HomeGrid.setCustomSorting(sort_Owner, 8);
+        HomeGrid.setCustomSorting(sort_Owner, 9);
 
-        HomeGrid.setCustomSorting(sort_TacticType, 7);
+        HomeGrid.setCustomSorting(sort_TacticType, 8);
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
         //HomeGrid.splitAt(2);
@@ -1319,17 +1322,17 @@
 
     function sort_Owner(a, b, ord, a_id, b_id) {
 
-        a = HomeGrid.cells(a_id, 8).getText();
-        b = HomeGrid.cells(b_id, 8).getText();
+        a = HomeGrid.cells(a_id, 9).getText();
+        b = HomeGrid.cells(b_id, 9).getText();
         return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
     };
-    function sort_TacticType(a, b, ord, a_id, b_id) {     
-        
+    function sort_TacticType(a, b, ord, a_id, b_id) {
+
         var atype = a_id.split(".")[0].toString();
         var btype = b_id.split(".")[0].toString();
         if (atype == "tact" && btype == "tact") {
-            a = HomeGrid.cells(a_id, 7).getText();
-            b = HomeGrid.cells(b_id, 7).getText();
+            a = HomeGrid.cells(a_id, 8).getText();
+            b = HomeGrid.cells(b_id, 8).getText();
             return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
         } else return 0;
     };
@@ -1513,7 +1516,7 @@
 
             //}
             // Only check for type column
-            if (Colind == 7) {
+            if (Colind == 8) {
                 if (updatetype == "line") {
                     var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
                     if (actval == "") {
@@ -1592,6 +1595,7 @@
                 var NewValue = htmlDecode(nValue);
                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                 var TaskID = HomeGrid.cells(rowId,3).getValue();
+                var oldAssetType = HomeGrid.cells(rowId,7).getValue();
                 //Modified by Rahul Shah on 09/03/2016 for PL #1939
                 if (UpdateColumn == "" || UpdateColumn == null)
                     UpdateColumn = HomeGrid.getColLabel(Colind, 0);
@@ -1689,8 +1693,24 @@
                         return false;
                 }
                 if (UpdateColumn == "Type" && updatetype == "tact") {
-
+                    
                     var tacticTypeId = nValue;
+                    // Added by Arpita Soni for Ticket #2354 
+                    // If user changes asset to promo then confirm to delete entire package.
+                    var arrTacTypes = JSON.parse('@Html.Raw(Json.Encode(lstTacticType))');
+                    var newAssetType = arrTacTypes.filter(function(v) {
+                        return v.TacticTypeId == tacticTypeId; // Filter to get asset type for selected tactic type
+                    });
+                    if(newAssetType != null && newAssetType.length > 0) {
+                        newAssetType  = newAssetType[0].AssetType; 
+                    }
+                    if (oldAssetType != newAssetType && oldAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()')
+                    {
+                        var retValue = confirm('Package associated to this tactic will be deleted. Do you wish to continue?');
+                        if(!retValue){
+                            return false;
+                        }
+                    }
                     if (nValue != oValue) {
                         $.ajax({
                             type: 'POST',
