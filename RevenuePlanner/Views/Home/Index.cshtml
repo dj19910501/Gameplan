@@ -2131,6 +2131,11 @@
         var ExportSelectedIdsafterSearch = {
             TaskID: [],
         }
+
+        var AddRemovePackageItems = {
+            RemoveId : [],
+            AddItemId : [],
+        }
         var gridSearchFlag = 0;
         var PlanCount = 0, OwnerCount = 0;
         var isCopyTactic = 0;
@@ -2213,6 +2218,10 @@
             };
             //#1780
 
+            AddRemovePackageItems = {
+                RemoveId : [],
+                AddItemId : [],
+            }
 
             $("#totalEntity").text(0);
             $(".honeycombbox-icon-gantt-Active").removeClass();
@@ -4760,6 +4769,8 @@
 
                             // Bind anchortacticid of the new package to honeycomb icons in the grid
                             $.each(promotionTacticIds, function (i) {
+                                var ItemID = anchorTacticId + "_" + promotionTacticIds[i];
+                                AddRemovePackageItems.AddItemId.push(ItemID);
                                 $('.honeycombbox-icon-gantt[taskid=' + promotionTacticIds[i] + ']').attr('anchortacticid', anchorTacticId);
                             });
                         }
@@ -4815,6 +4826,13 @@
                 if ($('#IsGridView').val() == "True") {
                     anchorTacticId = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]").attr('csvid').split('_')[1];
                 }
+                else{
+                    $('.popover-content').find(".hc-block[anchortacticid= " + anchorTacticId +" ]").each(function () {
+                        var TaskID = $(this).attr('entitytaskid');
+                        AddRemovePackageItems.RemoveId.push(TaskID);
+                    });
+                  }
+        
                 $.ajax({
                     url: '@Url.Content("~/Home/UnpackageTactics/")',
                     data: {
@@ -4879,6 +4897,7 @@
                         }
 
                         // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
+                      
                         $('.honeycombbox-icon-gantt[anchortacticid=' + anchorTacticId + ']').each(function () {
                             $(this).attr('anchortacticid', '0');
                         });
@@ -5504,7 +5523,6 @@
 
         // Added by Komal Rawal for Ticket #2355 on 13/07/2016
         function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totallength, Height, Sum) {
-            debugger;
             // If package is selected then apply validation as per selected asset or promotion
             var ROITacticType = $(item).parents('.hc-block').attr('roitactictype');
             var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]").attr('entitytaskid');
@@ -5527,7 +5545,14 @@
                     removeFromHoneyComb = false;
                     return false;
                 }
+                else{
+                    $('.popover-content').find(".hc-block[anchortacticid= " + anchorTacticId +" ]").each(function () {
+                        var TaskID = $(this).attr('entitytaskid');
+                        AddRemovePackageItems.RemoveId.push(TaskID);
+                    });
+                }
             }
+
 
             // Delete tactics from database
             $.ajax({
@@ -5540,7 +5565,7 @@
                 url: '@Url.Content("~/Home/UnpackageTactics")',
                 data: { AnchorTacticId: anchorTacticId, IsPromotion: IsPromotion },
                 success: function (data) {
-                    debugger;
+
                     var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
                     if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                     {
@@ -5549,6 +5574,7 @@
                     var ViewBy = $('#ddlTabViewBy').val();
 
                     if (IsPromotion) {
+                        AddRemovePackageItems.RemoveId.push(taskId);
                         if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                         {
                             TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).setAttribute("pkgtacids", data.remainItems.toString());
@@ -5576,8 +5602,14 @@
                         $("div[name1='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
                         Totallength = Totallength - 1;
                         Height = Number(Height) + (Sum);
+
+                        // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
+                        $('.honeycombbox-icon-gantt[name1 =' + taskId + ']').each(function () {
+                            $(this).attr('anchortacticid', '0');
+                        });
                     }
                     else {
+
                         // As package is deleted, remove package icon from the grid
                         if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                         {
@@ -5616,13 +5648,14 @@
 
                         // If asset tactic is deleted then entire package deleted so remove all data from honeycomb
                         RemoveAllHoneyCombData();
+
+                        $('.honeycombbox-icon-gantt[anchortacticid=' + anchorTacticId + ']').each(function () {
+                            $(this).attr('anchortacticid', '0');
+                        });
                     }
 
 
-                    // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
-                    $('.honeycombbox-icon-gantt[name1 =' + taskId + ']').each(function () {
-                        $(this).attr('anchortacticid', '0');
-                    });
+
 
                     $("#totalEntity").text(Totallength);
                     $(".popover").css('top', Height + "px");

@@ -3100,7 +3100,7 @@ gantt._render_data = function () {
     }
    
     //#1780
-    //Added By Komal Rawal for #2355 on 14-07-16 to maintain package icon without refreshing page
+    //Added By Komal Rawal for #2355 on 14-07-16 to maintain package icon without refreshing page   
     if (AnchorTaskIdsList.Id != undefined && AnchorTaskIdsList.Id != 'undefined' && AnchorTaskIdsList.Id != null && AnchorTaskIdsList.Id != [] && AnchorTaskIdsList.Id != "") {
         $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
             var TaskHtml = $("div[task_id='" + AnchorID + "']")[0];
@@ -3170,7 +3170,7 @@ gantt._update_layout_sizes = function () {
     //task bars layer
     this.$task_data.style.height = Math.max(this.$task.offsetHeight - this.config.scale_height, 0) + 'px';
 
-    if (gantt.config.smart_rendering) {       
+    if (gantt.config.smart_rendering) {
         this.$task_bg.style.height = gantt.config.row_height * this.getVisibleTaskCount() + "px";
     } else {
         this.$task_bg.style.height = "";
@@ -3382,7 +3382,7 @@ gantt._render_bg_line = function (item) {
     if (gantt.config.smart_rendering) {
         row.style.position = "absolute";
         row.style.top = this.getTaskTop(item.id) + "px";
-        row.style.width = "100%";     
+        row.style.width = "100%";
     }
     row.style.height = (gantt.config.row_height) + "px";
     row.setAttribute(this.config.task_attribute, item.id);
@@ -8592,8 +8592,63 @@ gantt.scrollTo = function (left, top) {
             //Added by Rahul Shah for PL #2300. to maintain honeycomb selection for calendar after applying smart rendering.
             if ($(".gantt_last_cell").find("div").hasClass("honeycombbox-icon-gantt-Active")) {
                 $(".gantt_last_cell").find("div").removeClass("honeycombbox-icon-gantt-Active")
-
             }
+
+            //Added by komal Rawal for #2355 Assigning attributes on package unpackage on scroll after applying smart rendering
+            if (AnchorTaskIdsList.Id != undefined && AnchorTaskIdsList.Id != 'undefined' && AnchorTaskIdsList.Id != null && AnchorTaskIdsList.Id != [] && AnchorTaskIdsList.Id != "") {
+                $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
+                    var TaskHtml = $("div[task_id='" + AnchorID + "']")[0];
+                    if (TaskHtml != undefined && TaskHtml != 'undefined' && TaskHtml != null) {
+                        var LastChildNode = TaskHtml.firstChild.lastChild.outerHTML;
+                        var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
+                        var AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                        var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
+                        if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
+                            var PackageNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                            AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                            AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
+                            TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                        }
+                        if (AnchorTaskIdsList.Value[index] != undefined && AnchorTaskIdsList.Value[index] != 'undefined' && AnchorTaskIdsList.Value[index] != null && AnchorTaskIdsList.Value[index] != [] && AnchorTaskIdsList.Value[index] != "") {
+                            AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
+                            AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                            AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                            TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                        }
+
+
+
+                    }
+                });
+            }
+
+            if (AddRemovePackageItems != null && AddRemovePackageItems != [] && AddRemovePackageItems != "") {
+                if (AddRemovePackageItems.RemoveId.length > 0) {
+                    for (var i = 0; i < AddRemovePackageItems.RemoveId.length; i++) {
+                        $('.honeycombbox-icon-gantt[name1 =' + AddRemovePackageItems.RemoveId[i] + ']').each(function () {
+                            if ($(this).attr('roitactictype') == "Asset") {
+                                $(this).parents('.gantt_row').find('.ROIPackage').remove();
+                                 }
+                                $(this).attr('anchortacticid', '0');
+                                AddRemovePackageItems.RemoveId.splice(i, 1);
+                            });
+                    }
+                }
+                else if (AddRemovePackageItems.AddItemId.length > 0) {
+                    for (var i = 0; i < AddRemovePackageItems.AddItemId.length; i++) {
+                        var Taskid = AddRemovePackageItems.AddItemId[i].split('_')[1];
+                        var AnchorTacticId = AddRemovePackageItems.AddItemId[i].split('_')[0];
+                        if ($('.honeycombbox-icon-gantt[taskid=' + Taskid + ']').length > 0) {
+                            $('.honeycombbox-icon-gantt[taskid=' + Taskid + ']').attr('anchortacticid', AnchorTacticId);
+                            AddRemovePackageItems.AddItemId.splice(i, 1);
+
+                        }
+                    }
+                }
+            }
+            //End
+
+
             if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "") {
                 if (ExportSelectedIds.TaskID.length > 0) {
                     for (var i = 0; i < ExportSelectedIds.TaskID.length; i++) {
@@ -8603,6 +8658,9 @@ gantt.scrollTo = function (left, top) {
                     }
                 }
             }
+
+        
+
             if (this.$grid_data.scrollTop != top) {
                 this.$grid_data.scrollTop = top % gantt.config.row_height;
             }
