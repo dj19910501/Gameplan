@@ -34,6 +34,9 @@
         ArchiveMediaCodeGrid.setImagePath(imgpath);
         ArchiveMediaCodeGrid.enableAutoHeight(true);
         ArchiveMediaCodeGrid.setImageSize(1, 1);
+        ArchiveMediaCodeGrid.attachEvent("onAfterSorting", function (index, type, direction) {
+            SetTooltip();
+        });
        // ArchiveMediaCodeGrid.setNoHeader(true);
         ArchiveMediaCodeGrid.init();
         ArchiveMediaCodeGrid.splitAt(3);

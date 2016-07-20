@@ -1198,14 +1198,9 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'MRPDev.dbo.User_Permission' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="User_Permission">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="DashboardId" Type="int" />
@@ -2580,22 +2575,11 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User_Permission" EntityType="Self.User_Permission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AggregationStatus" EntityType="Self.AggregationStatus" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
 [AggregationStatus].[StatusCode] AS [StatusCode]
 FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="User_Permission" EntityType="Self.User_Permission" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-[User_Permission].[Id] AS [Id], 
-[User_Permission].[DashboardId] AS [DashboardId], 
-[User_Permission].[ApplicationActivityId] AS [ApplicationActivityId], 
-[User_Permission].[UserId] AS [UserId], 
-[User_Permission].[CreatedDate] AS [CreatedDate], 
-[User_Permission].[CreatedBy] AS [CreatedBy], 
-[User_Permission].[PermissionType] AS [PermissionType], 
-[User_Permission].[HomePageId] AS [HomePageId]
-FROM [dbo].[User_Permission] AS [User_Permission]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vClientWise_Tactic" EntityType="Self.vClientWise_Tactic" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
