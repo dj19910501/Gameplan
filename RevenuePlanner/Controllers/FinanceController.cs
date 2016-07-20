@@ -4520,13 +4520,25 @@ namespace RevenuePlanner.Controllers
             dtColumns.Columns.Add("Month", typeof(string));
             dtColumns.Columns.Add("ColumnName", typeof(string));
             dtColumns.Columns.Add("ColumnIndex", typeof(Int64));
-
+            int RowCount = 0, ColumnCount = 0;
             try
             {
-                dtExcel = ds.Tables[0];
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    dtExcel = ds.Tables[0];
+                    if (dtExcel != null)
+                    {
+                        if (dtExcel.Rows.Count > 0)
+                        {
+                            RowCount = dtExcel.Rows.Count;
+                        }
+                        if (dtExcel.Columns.Count > 0)
+                        {
+                            ColumnCount = dtExcel.Columns.Count;
+                        }
+                    }
+                }
 
-                int RowCount = dtExcel.Rows.Count;
-                int ColumnCount = dtExcel.Columns.Count;
                 XmlNode childnode = null;
                 if (RowCount > 0)
                 {
