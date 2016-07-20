@@ -696,6 +696,7 @@
     <Content Include="Content\fonts\ProximaNova-Regular.woff2" />
     <Content Include="Scripts\js\scripts_v2.js" />
     <Content Include="Scripts\moment.min.js" />
+    <None Include="Properties\PublishProfiles\zhang-local.pubxml" />
     <None Include="Service References\BDSService\BDSService1.wsdl" />
     <None Include="Service References\BDSService\BDSService4.xsd">
       <SubType>Designer</SubType>
