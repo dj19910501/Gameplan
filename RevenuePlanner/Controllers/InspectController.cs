@@ -13947,6 +13947,8 @@ namespace RevenuePlanner.Controllers
                 objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
                 if (lstRequiredcustomfield != null && lstRequiredcustomfield.Count > 0)
                     ViewBag.RequiredList = lstRequiredcustomfield;
+                else
+                    ViewBag.RequiredList = "";
             }
             catch (Exception objException)
             {
@@ -14186,6 +14188,8 @@ namespace RevenuePlanner.Controllers
                 }
                 if (lstRequiredcustomfield != null && lstRequiredcustomfield.Count > 0)
                     ViewBag.RequiredList = lstRequiredcustomfield;
+                else
+                    ViewBag.RequiredList = "";
             }
             catch (Exception objException)
             {

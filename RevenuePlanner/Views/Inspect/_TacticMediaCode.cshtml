@@ -305,6 +305,8 @@ else
     }
 
     function GenerateMediaCode(obj) {
+        $("#successMessage").css("display", "none");
+        $("#errorMessage").css("display", "none");
         var row_id = $(obj).attr('rowid');
         var cusotmfieldValue = [];
         var cnt = 0;
@@ -316,7 +318,7 @@ else
             if (col_index > 2) {
                 var attributeName = MediaCodeGrid.getColLabel(col_index);
                 var attributeid = MediaCodeGrid.getColumnId(col_index);
-                var attributeValue = cellObj.getValue();
+                var attributeValue = cellObj.getValue().toString().trim();
                 var attributeType = "";
                 if (cellObj.combo != null)
                     attributeType = 'DropDownList';
@@ -459,7 +461,7 @@ else
                 var newvale = htmlDecode(nValue);
                 MediaCodeGrid.cells(rowId, cellInd).setValue(newvale);
             }
-            else if (nValue == '') {
+            else if (nValue.toString().trim() == '') {
                 if (isrequired != null && isrequired != undefined && isrequired.toString().toLowerCase() == "true") {
                     MediaCodeGrid.setCellTextStyle(rowId, cellInd, "border-bottom: 2px solid red;");
                 }
@@ -488,12 +490,14 @@ else
     }
 
     function AddCopyMediaCode(obj) {
-
+        $("#successMessage").css("display", "none");
+        $("#errorMessage").css("display", "none");
         var currentRowID = $(obj).attr('currentRowId');
         var task = $(obj).attr('id');
         AddNewRow(currentRowID, task, false);
     }
     function AddNewRow(currentRowID, task, isOnly) {
+
         var GeneratecolIndex = MediaCodeGrid.getColIndexById("generateMediaCode");
         var newId = "newRow_" + MediaCodeGrid.getRowsNum() + 3;
         var cnt = MediaCodeGrid.getColumnCount();
@@ -521,29 +525,33 @@ else
         if (isOnly == true) {
             MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event)></i></span>");
         }
-        var RequiredCustoList=JSON.parse('@Html.Raw(Json.Encode(@ViewBag.RequiredList))');
-        
-        MediaCodeGrid.forEachCell(newId, function (cellObj, col_index) {
-            if (col_index > 2) {
-      var colid = MediaCodeGrid.getColumnId(col_index);
-                var found = RequiredCustoList.some(function (el) {
-                    return el.CustomFieldId == colid;
-                });
-                if (found) {
-                    MediaCodeGrid.cells(newId, col_index).setAttribute("actval", 'true');
+      
+        var RequiredCustoList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.RequiredList))');
+        if (RequiredCustoList != "") {
+            MediaCodeGrid.forEachCell(newId, function (cellObj, col_index) {
+                if (col_index > 2) {
+                    var colid = MediaCodeGrid.getColumnId(col_index);
+                    var found = RequiredCustoList.some(function (el) {
+                        return el.CustomFieldId == colid;
+                    });
+                    if (found) {
+                        MediaCodeGrid.cells(newId, col_index).setAttribute("actval", 'true');
+                    }
+                    var type = MediaCodeGrid.getColType(col_index);
+                    if (type == 'ed') {
+                        MediaCodeGrid.setCellExcellType(newId, col_index, "edtxt");
+                    }
                 }
-                var type = MediaCodeGrid.getColType(col_index);
-                if (type == 'ed') {
-                    MediaCodeGrid.setCellExcellType(newId, col_index, "edtxt");
-                }
-            }
-        });
+            });
+        }
         SetTooltip();
         setTimeout(function () {
             MediaCodeGrid.setSizes();
         }, 100);
     }
     function ArchiveMediaCode(e) {
+        $("#successMessage").css("display", "none");
+        $("#errorMessage").css("display", "none");
         $(".tooltip").hide();
         var rowid = $(e.target).attr('rowid');
         var inspectmode = $("#hdnInspectMode").val();
@@ -554,6 +562,10 @@ else
             $("#divArchiveMediaCode").load(url + '?tacticId=' + '@tacticId' + '&MediaCodeId=' + mediacodeid + '&Mode=' + inspectmode + '&LinkedTacticId=' + '@LinkedTacticID', function (response, status, xhr) {
                 MediaCodeGrid.deleteRow(rowid);
                 var gridrowconut = MediaCodeGrid.getRowsNum();
+                $("#successMessage").css("display", "block");
+                $("#spanMessageSuccess").empty();
+                $("#spanMessageSuccess").text('@Common.objCached.ArchiveMediacode');
+                $("#errorMessage").css("display", "none");
                 if (gridrowconut == 0) {
                     AddNewRow('', 'CreateMediaCode', true);
                 }

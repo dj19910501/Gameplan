@@ -59,6 +59,8 @@
 
     }
     function UnarchiveMediaCode(e) {
+        $("#successMessage").css("display", "none");
+        $("#errorMessage").css("display", "none");
         $(".tooltip").hide();
         var archiverowid = $(e.target).attr('rowid');
         var Aarchivemediacodeid = ArchiveMediaCodeGrid.cells(archiverowid, 0).getValue();
@@ -73,6 +75,10 @@
                 $("#divTab").load(url + '?tacticId=' + tacticId + '&InsepectMode=' + inspectmode + '&IsUnarchive=true&MediaCodeId=' + Aarchivemediacodeid + '&LinkedTacticId=' + linkedtacticid, function (response, status, xhr) {
                     ArchiveMediaCodeGrid.deleteRow(archiverowid);
                     var cnt = ArchiveMediaCodeGrid.getRowsNum();
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text('@Common.objCached.UnarchiveMediacode');
+                    $("#errorMessage").css("display", "none");
                     if (cnt == 0) {
                         $("#divArchiveGrid").hide();
                         $("#divnorecord").show();
