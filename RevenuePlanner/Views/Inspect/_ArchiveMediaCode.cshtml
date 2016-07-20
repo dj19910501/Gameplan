@@ -8,9 +8,10 @@
     }
 }
 @if (countrows > 0)
-{ <h4>Archived Media Codes (@countrows)</h4>
+{<div class="clearfix archive-header"> <h4>Archived Media Codes (@countrows)</h4><span class="hideArchvie" actval="hide">Hide<i class="fa fa-angle-down" aria-hidden="true"></i></span></div>
     <div id="divArchiveGrid"  class="gridViewGrid"></div>
 }
+
 <div id="divnorecord" style="display:none;">No records available.</div>
 <script type="text/javascript">
     var ArchiveMediaCodeGrid;
@@ -21,8 +22,22 @@
             BindArchiveMediaCodeGrid();
         
         }
-
+        $(".hideArchvie").on('click', function (e) {
+            e.preventDefault();
+            var txt = $(this).attr("actval");
+            if (txt == "hide")
+            {
+                $(this).html("Show<i class='fa fa-angle-up' aria-hidden='true'></i>");
+                $(this).attr("actval","show");
+            }
+            else {
+                $(this).html("Hide<i class='fa fa-angle-down' aria-hidden='true'></i>");
+                $(this).attr("actval", "hide");
+            }
+            $('#divArchiveGrid').slideToggle('fast');
+        });
     });
+
     function BindArchiveMediaCodeGrid() {
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
         var mainGridData = JsonModel;

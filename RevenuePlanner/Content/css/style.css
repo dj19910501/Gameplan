@@ -15781,14 +15781,19 @@ a:focus, a:hover{outline:0 none !important}
 /*#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td:last-child{border-right:0}*/
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox{margin-bottom: 30px;}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox {min-height: 300px !important;}
 
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox,
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox{ border-left:0; border-right:0; border-top:0;}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox{ border:0;}
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td{border-top:0;border-bottom: 1px solid #d4d4d4;}
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox,
-#divArchiveGrid.gridbox_dhx_skyblue.gridbox{background-color: white; width: 98% !important;}
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox{background-color: #fff; width: 98% !important;}
+.archive-header{width: 98%; border-bottom: 1px solid #ccc; margin-bottom: 5px;}
+.hideArchvie{color:#F86B0E; float:right; cursor: pointer; margin-top: 10px;}
+.hideArchvie .fa{margin-left:5px}
+.archive-header h4{float:left;}
 
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
