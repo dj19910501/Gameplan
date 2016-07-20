@@ -15826,7 +15826,7 @@ a:focus, a:hover{outline:0 none !important}
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{padding-left: 25px !important;}
-
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td{height:auto !important;}
 
 .GenerateMediaCode.btn,
 .UnarchiveMediaCode.btn {
