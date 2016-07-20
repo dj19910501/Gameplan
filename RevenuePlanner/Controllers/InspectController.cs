@@ -13737,12 +13737,14 @@ namespace RevenuePlanner.Controllers
                     IsArchive = ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, false);
                     if (LinkedTacticId != 0)
                     {
-
+                        string mediacode=string.Empty;
                         var lstmediacode = db.Tactic_MediaCodes.ToList();
-                        int mediacodeid = Convert.ToInt32(MediaCodeId);
-                        string mediacode = lstmediacode.Where(a => a.MediaCodeId == mediacodeid).FirstOrDefault().MediaCode;
+                        int mediacodeid = Int32.Parse(MediaCodeId);
+                        var objmediacode = lstmediacode.Where(a => a.MediaCodeId == mediacodeid).FirstOrDefault();
+                        if(objmediacode!=null)
+                            mediacode = objmediacode.MediaCode;
                         int linkedmediacodeid = lstmediacode.Where(a => a.MediaCode == mediacode && a.TacticId == LinkedTacticId).Select(a => a.MediaCodeId).FirstOrDefault();
-                        ArchiveUnarchiveMediaCode(linkedmediacodeid.ToString(), LinkedTacticId, false);
+                        ArchiveUnarchiveMediaCode(Convert.ToString(linkedmediacodeid), LinkedTacticId, false);
                     }
                 }
 
@@ -13879,7 +13881,7 @@ namespace RevenuePlanner.Controllers
                 var colwidth = 200;
                 if (columncnt != 0 && columncnt < 4)
                 {
-                    colwidth = 750 / columncnt;
+                    colwidth = 725 / columncnt;
                 }
                 foreach (var item in customfieldlist)
                 {
@@ -14123,7 +14125,7 @@ namespace RevenuePlanner.Controllers
                 var colwidth = 200;
                 if (columncnt != 0 && columncnt < 4)
                 {
-                    colwidth = 750 / columncnt;
+                    colwidth = 725 / columncnt;
                 }
                 foreach (var Cust in lstmediaCodeCustomfield)
                 {
@@ -14172,7 +14174,7 @@ namespace RevenuePlanner.Controllers
                     headobj.id = "customfield_" + Cust.CustomFieldId;
                     headobj.sort = "custom_sort";
                     headobj.width = colwidth;
-                    if (IsRequired && IsArchive == false)
+                    if (IsRequired)
                         headobj.value = Cust.CustomFieldName + "<span class='required-asterisk'>*</span>";
                     else
                         headobj.value = Cust.CustomFieldName;
