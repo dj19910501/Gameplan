@@ -3415,9 +3415,10 @@ span.accept-icon:hover {
         color: #6D6D6D;
         min-height: 30px;/* #2356 resolve height issue */
     }
-    .sidebar-form .simpleSelectBox .sbSelector {/* #2356 resolve  issue */
-    width: 90%;
-    line-height:26px;
+ .sidebar-form .simpleSelectBox .sbSelector {
+    width: 100%;
+    line-height: 26px;
+    padding-right: 0;
 }
 
     .sidebar-form .simpleSelectBox .sbHolder{min-height:28px;}
@@ -15789,15 +15790,20 @@ a:focus, a:hover{outline:0 none !important}
 /* Media Code Grid style start */
 /*#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td:last-child{border-right:0}*/
 
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox{margin-bottom: 20px;}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox{margin-bottom: 30px;}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox {min-height: 300px !important;}
 
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox,
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox{ border-left:0; border-right:0; border-top:0;}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox{ border:0;}
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td{border-top:0;border-bottom: 1px solid #d4d4d4;}
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox,
-#divArchiveGrid.gridbox_dhx_skyblue.gridbox{background-color: white; width: 98% !important;}
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox{background-color: #fff; width: 98% !important;}
+.archive-header{width: 98%; border-bottom: 1px solid #ccc; margin-bottom: 5px;}
+.hideArchvie{color:#F86B0E; float:right; cursor: pointer; margin-top: 10px;}
+.hideArchvie .fa{margin-left:5px}
+.archive-header h4{float:left;}
 
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
@@ -15826,10 +15832,11 @@ a:focus, a:hover{outline:0 none !important}
     line-height: 28px !important;
 }
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr td,
-#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td{padding-left:15px; padding-right:15px}
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
-#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{padding-left: 15px !important;}
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td{padding-left:25px; padding-right:15px}
 
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{padding-left: 25px !important;}
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td{height:auto !important;}
 
 .GenerateMediaCode.btn,
 .UnarchiveMediaCode.btn {
@@ -15854,19 +15861,6 @@ input.GenerateMediaCode[type="button"]:disabled:focus{color:#333}
 .archive, .plus-circle{font-size:15px; color:#5f91b3; float:left; margin:0; cursor:pointer;}
 .archive.disabled, .plus-circle.disabled, 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox .honeycombbox-icon-gantt.disabled{cursor:default}
-
-/*.archive:hover::before {
-    background: rgba(255, 255, 255, 0.4) none repeat scroll 0 0;
-    border: 1px solid #ccc;
-    color: black;
-    content: "Archive";
-    font-size: 10px;
-    line-height: 16px;
-    padding: 0 3px;
-    position: absolute;
-    top: 24px;
-}*/
-
 .pop-body-wraper #MediaCodeGrid.gridbox_dhx_skyblue.gridbox *, .pop-body-wraper #MediaCodeGrid.gridbox_dhx_skyblue.gridbox *::after,
 .pop-body-wraper #MediaCodeGrid.gridbox_dhx_skyblue.gridbox *::before{
     -webkit-box-sizing: border-box !important;
@@ -17493,4 +17487,4 @@ tbody.column2 {
 
 }
 /*End by Device 320 Mukesh 25-9-2015*/
-/************************************************ Responsive css End here **********************************************************/
+/************************************************ Responsive css End here **********************************************************/  
