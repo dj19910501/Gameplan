@@ -3415,9 +3415,10 @@ span.accept-icon:hover {
         color: #6D6D6D;
         min-height: 30px;/* #2356 resolve height issue */
     }
-    .sidebar-form .simpleSelectBox .sbSelector {/* #2356 resolve  issue */
-    width: 90%;
-    line-height:26px;
+ .sidebar-form .simpleSelectBox .sbSelector {
+    width: 100%;
+    line-height: 26px;
+    padding-right: 0;
 }
 
     .sidebar-form .simpleSelectBox .sbHolder{min-height:28px;}

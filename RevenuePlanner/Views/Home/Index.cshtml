@@ -2400,6 +2400,9 @@
                     GetHealderDataPer(SelectedPlanIds, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId);// Modified By Nishant Sheth Desc header value wrong with plan tab
                     GetNumberOfActivityPerMonByPlanIdPer(SelectedPlanIds, Currenttime, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId); //Modified BY Komal rawal for #1929 proper Hud chart and count
                     //End
+
+                    $("#totalEntity").text(ExportSelectedIds.TaskID.length);
+
                 }
                 else {
                     UpdateCalenderView();
