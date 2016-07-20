@@ -265,8 +265,8 @@ namespace RevenuePlanner.Controllers
                             var AppId = obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
                             var RoleId = obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
                             Sessions.User.RoleId = RoleId;
-                            Sessions.AppMenus = objBDSServiceClient.GetMenu(AppId, Sessions.User.RoleId);
-                            Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
+                            //Sessions.AppMenus = objBDSServiceClient.GetMenu(AppId, Sessions.User.RoleId);
+                            //Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
                         }
                         else if (obj.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.OPT.ToString()).Any())
                         {

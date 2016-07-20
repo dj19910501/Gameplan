@@ -26,6 +26,7 @@ using System.Data.EntityClient;
 using RevenuePlanner.BAL;
 using System.Web.Caching;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace RevenuePlanner.Controllers
 {
@@ -93,7 +94,15 @@ namespace RevenuePlanner.Controllers
             {
                 Sessions.AppMenus = objBDSServiceClient.GetMeasureMenuforPlan(MeasureAppId);
             }
-            return Index(Enums.ActiveMenu.Overview);
+
+            if (Sessions.AppMenus == null)
+            {
+                return Index(Enums.ActiveMenu.None);
+            }
+            else
+            {
+                return Index(Enums.ActiveMenu.Overview);
+            }            
         }
         public ActionResult ReportOverview()
         {
