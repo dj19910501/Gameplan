@@ -15780,7 +15780,7 @@ a:focus, a:hover{outline:0 none !important}
 /* Media Code Grid style start */
 /*#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td:last-child{border-right:0}*/
 
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox{margin-bottom: 20px;}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox{margin-bottom: 30px;}
 
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox,
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox{ border-left:0; border-right:0; border-top:0;}
@@ -15817,9 +15817,10 @@ a:focus, a:hover{outline:0 none !important}
     line-height: 28px !important;
 }
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr td,
-#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td{padding-left:15px; padding-right:15px}
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td{padding-left:25px; padding-right:15px}
+
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
-#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{padding-left: 15px !important;}
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{padding-left: 25px !important;}
 
 
 .GenerateMediaCode.btn,
@@ -15845,19 +15846,6 @@ input.GenerateMediaCode[type="button"]:disabled:focus{color:#333}
 .archive, .plus-circle{font-size:15px; color:#5f91b3; float:left; margin:0; cursor:pointer;}
 .archive.disabled, .plus-circle.disabled, 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox .honeycombbox-icon-gantt.disabled{cursor:default}
-
-/*.archive:hover::before {
-    background: rgba(255, 255, 255, 0.4) none repeat scroll 0 0;
-    border: 1px solid #ccc;
-    color: black;
-    content: "Archive";
-    font-size: 10px;
-    line-height: 16px;
-    padding: 0 3px;
-    position: absolute;
-    top: 24px;
-}*/
-
 .pop-body-wraper #MediaCodeGrid.gridbox_dhx_skyblue.gridbox *, .pop-body-wraper #MediaCodeGrid.gridbox_dhx_skyblue.gridbox *::after,
 .pop-body-wraper #MediaCodeGrid.gridbox_dhx_skyblue.gridbox *::before{
     -webkit-box-sizing: border-box !important;
