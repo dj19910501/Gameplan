@@ -4780,12 +4780,12 @@
                             var Index = getvalue.indexOf("pkgIcon");
                             if (Index <= -1) {
                                 // Add package icon on the grid when new package is created
-                                var PkgIconDiv = "<div id=pkgIcon class='package-icon package-icon-grid' onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
+                                var PkgIconDiv = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer' onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
                                 HomeGrid.cells(rowId, 1).setValue(PkgIconDiv + getvalue);
                             }
                             else if (Index > -1) {
                                 // Bind updated items to package icon into grid
-                                var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
+                                var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer'  onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
                                 var oldValue = $(getvalue).get(0).outerHTML;
                                 getvalue = getvalue.replace(oldValue, newValue);
                                 HomeGrid.cells(rowId, 1).setValue(getvalue);
@@ -5705,7 +5705,7 @@
                     if (IsPromotion) {
                         if (Index > -1) {
                             // Bind updated items to package icon into grid
-                            var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' onclick=OpenHoneyComb(this) pkgtacids=" + data.remainItems.toString() + "><i class='fa fa-object-group'></i></div>";
+                            var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer'  onclick=OpenHoneyComb(this) pkgtacids=" + data.remainItems.toString() + "><i class='fa fa-object-group'></i></div>";
                             var oldValue = $(getvalue).get(0).outerHTML;
                             getvalue = getvalue.replace(oldValue, newValue);
                             HomeGrid.cells(dhtmlxrowid, 1).setValue(getvalue);
