@@ -73,6 +73,14 @@
                 url = '@Url.Content("~/Inspect/LoadMediaCodeFromTacticPopup/")';
                 // $("#divTab").html('');
                 $("#divTab").load(url + '?tacticId=' + tacticId + '&InsepectMode=' + inspectmode + '&IsUnarchive=true&MediaCodeId=' + Aarchivemediacodeid + '&LinkedTacticId=' + linkedtacticid, function (response, status, xhr) {
+
+                    if ($("#hdnErrorUnarchive").val() != "") {
+                        $("#successMessage").css("display", "none");
+                        $("#spanMessageError").empty();
+                        $("#spanMessageError").text('@Common.objCached.DuplicateMediacode');
+                        $("#errorMessage").css("display", "block");
+                    }
+                    else {
                     ArchiveMediaCodeGrid.deleteRow(archiverowid);
                     var cnt = ArchiveMediaCodeGrid.getRowsNum();
                     $("#successMessage").css("display", "block");
@@ -83,10 +91,10 @@
                         $("#divArchiveGrid").hide();
                         $("#divnorecord").show();
                     }
-                    else
-                    {
+                        else {
                         $("#divArchiveGrid").show();
                         $("#divnorecord").hide();
+                        }
                     }
                 });
             }

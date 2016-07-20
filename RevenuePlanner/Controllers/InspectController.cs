@@ -13735,6 +13735,8 @@ namespace RevenuePlanner.Controllers
                 if (IsUnarchive)
                 {
                     IsArchive = ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, false);
+                    if (IsArchive)
+                    {
                     if (LinkedTacticId != 0)
                     {
                         string mediacode=string.Empty;
@@ -13746,6 +13748,9 @@ namespace RevenuePlanner.Controllers
                         int linkedmediacodeid = lstmediacode.Where(a => a.MediaCode == mediacode && a.TacticId == LinkedTacticId).Select(a => a.MediaCodeId).FirstOrDefault();
                         ArchiveUnarchiveMediaCode(Convert.ToString(linkedmediacodeid), LinkedTacticId, false);
                     }
+                }
+                    else
+                        ViewBag.ErrorUnarchived = true;
                 }
 
                 //list of custom fields for particular Tactic
@@ -14294,7 +14299,7 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             string MediaCode = MediacodeObj.MediaCode;
-                            var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == MediaCode && a.TacticId==tacticId).FirstOrDefault();
+                            var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == MediaCode ).FirstOrDefault();
                             if (Result != null)
                                 IsValid= false;
                             else
@@ -14306,7 +14311,10 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                var obj = db.Tactic_MediaCodes.Where(a => a.MediaCode == MediaCode && a.TacticId == tacticId && a.IsDeleted == false).FirstOrDefault();
+                                var lstexistsMediacode = db.Tactic_MediaCodes.Where(a => a.MediaCode == MediaCode  && a.IsDeleted == false).ToList();
+                                var obj = lstexistsMediacode.Where(a => a.TacticId == tacticId).FirstOrDefault();
+                                if (obj != null)
+                                {
                                 var mediacodeid = obj.MediaCodeId;
                                 db.Entry(obj).State = EntityState.Deleted;
                                 var objmediacodecustomfield = db.Tactic_MediaCodes_CustomFieldMapping.Where(a => a.MediaCodeId == mediacodeid).ToList();
@@ -14314,6 +14322,16 @@ namespace RevenuePlanner.Controllers
                                     db.Entry(item).State = EntityState.Deleted;
                                 db.SaveChanges();
                                     MediacodeObj.IsDeleted = false;
+                                }
+                                else
+                                {
+                                    var otherobj = lstexistsMediacode.Where(a => a.TacticId != tacticId).FirstOrDefault();
+                                    if(otherobj!=null)
+                                    { isarchived = false;
+                                    return isarchived;
+                                    }
+                                }
+                             
                                
                             }
                         }

@@ -17,6 +17,12 @@
     {
         LinkedTacticID = Convert.ToInt32(ViewBag.LinkedTacticId);
     }
+     var errorUnarchive = "";
+
+     if (ViewBag.ErrorUnarchived!=null)
+     {
+         errorUnarchive = Convert.ToString(ViewBag.ErrorUnarchived);
+     }
     
 }
 @if (countrows > 0)
@@ -33,6 +39,8 @@ else
     }
 
 }
+@Html.Hidden("hdnErrorUnarchive", errorUnarchive, new { id = "hdnErrorUnarchive" })
+
 @Html.Hidden("hdnLinkedTacticID", LinkedTacticID, new { id = "hdnLinkedTacticID" })
 <style>
     .tooltip {
