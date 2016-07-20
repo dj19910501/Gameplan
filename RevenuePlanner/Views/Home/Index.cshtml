@@ -4932,7 +4932,8 @@
             for (i = 0; i < currentPkgIds.length; i++) {
                 var rowObject = $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']');
                 var id = $(rowObject).attr('taskid');
-                if (IsUpdate==true || (id == undefined || id == 'undefined' || id == null || id == "")) {
+                
+                if (IsUpdate==true || rowObject.is(':visible') == false || (id == undefined || id == 'undefined' || id == null || id == "")) {
                     IdsNotinList.push(currentPkgIds[i])
                 }
                 if (currentPkgIds.indexOf(id) >= 0) {
@@ -4971,7 +4972,10 @@
                                             ExportSelectedIds.CsvId.push(Data.CsvId);
                                             ExportSelectedIds.ROITacticType.push(Data.ROITacticType);
                                             ExportSelectedIds.AnchorTacticId.push(Data.AnchorTacticId);
-                                            ExpandTacticsForSelectedPackage(Data.PCPTId);
+                                            if (Data.PCPTId != undefined && Data.PCPTId != null && Data.PCPTId != "")
+                                            {
+                                                ExpandTacticsForSelectedPackage(Data.PCPTId);
+                                            }
                                             $("div[altid='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
                                         }
                                     }

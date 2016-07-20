@@ -158,14 +158,14 @@
             $(".honeycombbox").hide();
         }
         else {
-            if(IsPackageView == true)
-            {
+            //if(IsPackageView == true)
+            //{
                 $("#totalEntity").text(ExportSelectedIds.TaskID.length);
-            }
-            else
-            {
-            $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
-            }
+            //}
+            //else
+            //{
+            //$("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+            //}
           
             $(".honeycombbox").show();
         }
@@ -1153,7 +1153,8 @@
             $(".honeycombbox").hide();
         }
         else {
-            $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+            //$("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+            $("#totalEntity").text(ExportSelectedIds.TaskID.length);
             $(".honeycombbox").show();
 
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
@@ -1278,7 +1279,8 @@
         editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
 
             setTimeout(function () {
-                HomeGrid.saveOpenStates();},1000);  //Added by Maitri Gandhi for #2040 on 31/3/2016
+                HomeGrid.saveOpenStates();
+            } , 1000);  //Added by Maitri Gandhi for #2040 on 31/3/2016
             //Modified by komal Rawal for #1553
             $(".grid_Search").off("click");
             $(".grid_Search").click(function (e) {
@@ -1289,6 +1291,30 @@
                 DisplayEditablePopup(id, type);
 
             });
+            // Start - Added by Arpita Soni for Ticket #2354 on 07/20/2016
+            // Get child tactics of campaign or program
+            var childItems = HomeGrid.getAllSubItems(rowid);
+            if (childItems != undefined && childItems != null && childItems != "")
+            {
+                childItems = childItems.split(',').filter(function(tac) {
+                    return tac.indexOf('tact') > -1;
+                });
+
+                // Deselect honeycomb when honey comb is closed then expand campaign or program
+                $.each(childItems,function(item) {
+                    var objHoneyComb = $(HomeGrid.getRowById(childItems[item])).find('div[id=TacticAdd]');
+                    var altIdForTac = objHoneyComb.attr('altid');
+                    var index = ExportSelectedIds.TaskID.indexOf(altIdForTac);
+                    if(index < 0){
+                        objHoneyComb.removeClass('honeycombbox-icon-gantt-Active');
+                    }
+                    else{
+                        objHoneyComb.addClass('honeycombbox-icon-gantt-Active');
+                    }
+                });
+            }
+            // End - Added by Arpita Soni for Ticket #2354 on 07/20/2016
+
             //Commented BY Komal Rawal for 2056 to remove unresponsive error
             //$(".grid_add").click(function (e) {
             //    $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
