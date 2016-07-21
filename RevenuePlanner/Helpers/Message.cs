@@ -2767,6 +2767,20 @@ namespace RevenuePlanner.Helpers
             set { _ClientDimenisionNotSet = value; }
         }        
 
+        private string _PackageCreated;
+        public string PackageCreated
+        {
+            get { return _PackageCreated; }
+            set { _PackageCreated = value; }
+        }
+
+        private string _UnpackageSuccessful;
+        public string UnpackageSuccessful
+        {
+            get { return _UnpackageSuccessful; }
+            set { _UnpackageSuccessful = value; }
+        }
+
         //// End - Ticket #994, by Pratik chauhan
         // added error and suucess message for media code generation #2375
         private string _SuccessMediacode;
@@ -3722,6 +3736,12 @@ namespace RevenuePlanner.Helpers
                                             _UnarchiveMediacode=strMsgValue;
                                             break;
                                             //end
+                                        case "PackageCreated":
+                                            _PackageCreated = strMsgValue;
+                                            break;
+                                        case "UnpackageSuccessful":
+                                            _UnpackageSuccessful = strMsgValue;
+                                            break;
 
                                     }
                                 }

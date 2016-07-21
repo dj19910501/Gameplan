@@ -1122,14 +1122,21 @@
 		<Name>UndoMediacode</Name>
 		<value>This undo will overwrite your existing code. Do you want to continue?</value>
 	</Field>
-  <Field>
-    <Name>UnarchiveMediacode</Name>
-    <value>Selected Media code has been Unarchived successfully. </value>
+	<Field>
+		<Name>UnarchiveMediacode</Name>
+		<value>Selected Media code has been Unarchived successfully.</value>
+	</Field>
+	<Field>
+		<Name>ArchiveMediacode</Name>
+		<value>Selected Media code has been archived successfully.</value>
+	</Field>	 
 
-  </Field>
-  <Field>
-    <Name>ArchiveMediacode</Name>
-    <value>Selected Media code has been archived successfully. </value>
-
-  </Field>
+<Field>
+		<Name>PackageCreated</Name>
+		<value>Package created successfully.</value>
+	</Field>
+	<Field>
+		<Name>UnpackageSuccessful</Name>
+		<value>Package deleted successfully.</value>
+	</Field>
 </Messages>

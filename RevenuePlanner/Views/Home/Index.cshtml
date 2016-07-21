@@ -4802,6 +4802,8 @@
 
                         // Unselect all items
                         RemoveAllHoneyCombData();
+
+                        ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.PackageCreated", 3000);
                     }
 
                 });
@@ -4906,6 +4908,8 @@
                         });
                         // Unselect all items from the grid
                         RemoveAllHoneyCombData();
+
+                        ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful", 3000);
                     }
                 });
             }
@@ -5658,7 +5662,9 @@
 
                         $('.honeycombbox-icon-gantt[anchortacticid=' + anchorTacticId + ']').each(function () {
                             $(this).attr('anchortacticid', '0');
-                        });
+                        });	
+
+         ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful", 3000);
                     }
 
 
@@ -5736,6 +5742,7 @@
                         
                         // If asset tactic is deleted then entire package deleted so remove all data from honeycomb
                         RemoveAllHoneyCombData();
+                        ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful", 3000);
                     }
 
                     $("#totalEntity").text(Totallength);
