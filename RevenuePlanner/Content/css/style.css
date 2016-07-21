@@ -9793,41 +9793,32 @@ li.close-list {
     float: right;
 }
 
-.Save-icon-white:after,
-.edit-icon-white:after,
-.Save-add-next-icon-white:after {
-    background-position: 0 3px;
-    background-repeat: no-repeat;
-    font-size: 14px;
-    height: 14px;
-    line-height: 34px;
-    margin-top: 12px;
-    padding-left: 24px;
-    vertical-align: top;
-    font-weight: lighter;
-    cursor: pointer;
-}
+    .Save-icon-white:after,
+    .edit-icon-white:after {
+        background-position: 0 3px;
+        background-repeat: no-repeat;
+        font-size: 14px;
+        height: 14px;
+        line-height: 34px;
+        margin-top: 12px;
+        padding-left: 24px;
+        vertical-align: top;
+        font-weight: lighter;
+        cursor: pointer;
+    }
 
-.edit-icon-white:after {
-    background-image: url(../images/edit-icon-white.png);
-    content: "Edit";
-    margin-left: 10px;
-    color: #fff;/* Added for #2219 - Bhumika */
-}
+    .edit-icon-white:after {
+        background-image: url(../images/edit-icon-white.png);
+        content: "Edit";
+        margin-left: 10px;
+        color: #fff;/* Added for #2219 - Bhumika */
+    }
 
 .Save-icon-white:after {
     background-image: url(../images/save-icon-white.png);
     content: "Save & Close";
     color: #fff;/* Added for #2219 - Bhumika */
 }
-
-.Save-add-next-icon-white:after {
-    background-image: url(../images/save-icon-white.png);
-    content: "Save & Add Next";
-    color: #fff;
-}
-
-.Save-add-next-icon-white {margin-left:10px } 
 
 .border-top-div {
     border-top: 1px solid #a8a8a8;

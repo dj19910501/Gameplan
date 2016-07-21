@@ -13735,15 +13735,22 @@ namespace RevenuePlanner.Controllers
                 if (IsUnarchive)
                 {
                     IsArchive = ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, false);
+                    if (IsArchive)
+                    {
                     if (LinkedTacticId != 0)
                     {
-
+                        string mediacode=string.Empty;
                         var lstmediacode = db.Tactic_MediaCodes.ToList();
-                        int mediacodeid = Convert.ToInt32(MediaCodeId);
-                        string mediacode = lstmediacode.Where(a => a.MediaCodeId == mediacodeid).FirstOrDefault().MediaCode;
+                        int mediacodeid = Int32.Parse(MediaCodeId);
+                        var objmediacode = lstmediacode.Where(a => a.MediaCodeId == mediacodeid).FirstOrDefault();
+                        if(objmediacode!=null)
+                            mediacode = objmediacode.MediaCode;
                         int linkedmediacodeid = lstmediacode.Where(a => a.MediaCode == mediacode && a.TacticId == LinkedTacticId).Select(a => a.MediaCodeId).FirstOrDefault();
-                        ArchiveUnarchiveMediaCode(linkedmediacodeid.ToString(), LinkedTacticId, false);
+                        ArchiveUnarchiveMediaCode(Convert.ToString(linkedmediacodeid), LinkedTacticId, false);
                     }
+                }
+                    else
+                        ViewBag.ErrorUnarchived = true;
                 }
 
                 //list of custom fields for particular Tactic
@@ -13879,7 +13886,7 @@ namespace RevenuePlanner.Controllers
                 var colwidth = 200;
                 if (columncnt != 0 && columncnt < 4)
                 {
-                    colwidth = 750 / columncnt;
+                    colwidth = 725 / columncnt;
                 }
                 foreach (var item in customfieldlist)
                 {
@@ -13945,6 +13952,8 @@ namespace RevenuePlanner.Controllers
                 objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
                 if (lstRequiredcustomfield != null && lstRequiredcustomfield.Count > 0)
                     ViewBag.RequiredList = lstRequiredcustomfield;
+                else
+                    ViewBag.RequiredList = "";
             }
             catch (Exception objException)
             {
@@ -14123,7 +14132,7 @@ namespace RevenuePlanner.Controllers
                 var colwidth = 200;
                 if (columncnt != 0 && columncnt < 4)
                 {
-                    colwidth = 750 / columncnt;
+                    colwidth = 725 / columncnt;
                 }
                 foreach (var Cust in lstmediaCodeCustomfield)
                 {
@@ -14172,7 +14181,7 @@ namespace RevenuePlanner.Controllers
                     headobj.id = "customfield_" + Cust.CustomFieldId;
                     headobj.sort = "custom_sort";
                     headobj.width = colwidth;
-                    if (IsRequired && IsArchive == false)
+                    if (IsRequired)
                         headobj.value = Cust.CustomFieldName + "<span class='required-asterisk'>*</span>";
                     else
                         headobj.value = Cust.CustomFieldName;
@@ -14184,6 +14193,8 @@ namespace RevenuePlanner.Controllers
                 }
                 if (lstRequiredcustomfield != null && lstRequiredcustomfield.Count > 0)
                     ViewBag.RequiredList = lstRequiredcustomfield;
+                else
+                    ViewBag.RequiredList = "";
             }
             catch (Exception objException)
             {
@@ -14288,7 +14299,7 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             string MediaCode = MediacodeObj.MediaCode;
-                            var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == MediaCode && a.TacticId==tacticId).FirstOrDefault();
+                            var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == MediaCode ).FirstOrDefault();
                             if (Result != null)
                                 IsValid= false;
                             else
@@ -14300,7 +14311,10 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                var obj = db.Tactic_MediaCodes.Where(a => a.MediaCode == MediaCode && a.TacticId == tacticId && a.IsDeleted == false).FirstOrDefault();
+                                var lstexistsMediacode = db.Tactic_MediaCodes.Where(a => a.MediaCode == MediaCode  && a.IsDeleted == false).ToList();
+                                var obj = lstexistsMediacode.Where(a => a.TacticId == tacticId).FirstOrDefault();
+                                if (obj != null)
+                                {
                                 var mediacodeid = obj.MediaCodeId;
                                 db.Entry(obj).State = EntityState.Deleted;
                                 var objmediacodecustomfield = db.Tactic_MediaCodes_CustomFieldMapping.Where(a => a.MediaCodeId == mediacodeid).ToList();
@@ -14308,6 +14322,16 @@ namespace RevenuePlanner.Controllers
                                     db.Entry(item).State = EntityState.Deleted;
                                 db.SaveChanges();
                                     MediacodeObj.IsDeleted = false;
+                                }
+                                else
+                                {
+                                    var otherobj = lstexistsMediacode.Where(a => a.TacticId != tacticId).FirstOrDefault();
+                                    if(otherobj!=null)
+                                    { isarchived = false;
+                                    return isarchived;
+                                    }
+                                }
+                             
                                
                             }
                         }

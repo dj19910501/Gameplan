@@ -255,11 +255,12 @@ namespace RevenuePlanner.Helpers
         {
             get
             {
+                int num = 0;
                 if (HttpContext.Current.Session["BudgetDetailId"] != null)
                 {
-                    return Convert.ToInt32(HttpContext.Current.Session["BudgetDetailId"]);
+                    int.TryParse(Convert.ToString(HttpContext.Current.Session["BudgetDetailId"]), out num);
                 }
-                return 0;
+                return num;
             }
             set
             {

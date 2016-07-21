@@ -2131,6 +2131,11 @@
         var ExportSelectedIdsafterSearch = {
             TaskID: [],
         }
+
+        var AddRemovePackageItems = {
+            RemoveId : [],
+            AddItemId : [],
+        }
         var gridSearchFlag = 0;
         var PlanCount = 0, OwnerCount = 0;
         var isCopyTactic = 0;
@@ -2213,6 +2218,10 @@
             };
             //#1780
 
+            AddRemovePackageItems = {
+                RemoveId : [],
+                AddItemId : [],
+            }
 
             $("#totalEntity").text(0);
             $(".honeycombbox-icon-gantt-Active").removeClass();
@@ -2391,6 +2400,9 @@
                     GetHealderDataPer(SelectedPlanIds, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId);// Modified By Nishant Sheth Desc header value wrong with plan tab
                     GetNumberOfActivityPerMonByPlanIdPer(SelectedPlanIds, Currenttime, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId); //Modified BY Komal rawal for #1929 proper Hud chart and count
                     //End
+
+                    $("#totalEntity").text(ExportSelectedIds.TaskID.length);
+
                 }
                 else {
                     UpdateCalenderView();
@@ -4760,6 +4772,8 @@
 
                             // Bind anchortacticid of the new package to honeycomb icons in the grid
                             $.each(promotionTacticIds, function (i) {
+                                var ItemID = anchorTacticId + "_" + promotionTacticIds[i];
+                                AddRemovePackageItems.AddItemId.push(ItemID);
                                 $('.honeycombbox-icon-gantt[taskid=' + promotionTacticIds[i] + ']').attr('anchortacticid', anchorTacticId);
                             });
                         }
@@ -4769,12 +4783,12 @@
                             var Index = getvalue.indexOf("pkgIcon");
                             if (Index <= -1) {
                                 // Add package icon on the grid when new package is created
-                                var PkgIconDiv = "<div id=pkgIcon class='package-icon package-icon-grid' onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
+                                var PkgIconDiv = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer' onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
                                 HomeGrid.cells(rowId, 1).setValue(PkgIconDiv + getvalue);
                             }
                             else if (Index > -1) {
                                 // Bind updated items to package icon into grid
-                                var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
+                                var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer'  onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
                                 var oldValue = $(getvalue).get(0).outerHTML;
                                 getvalue = getvalue.replace(oldValue, newValue);
                                 HomeGrid.cells(rowId, 1).setValue(getvalue);
@@ -4815,6 +4829,13 @@
                 if ($('#IsGridView').val() == "True") {
                     anchorTacticId = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]").attr('csvid').split('_')[1];
                 }
+                else{
+                    $('.popover-content').find(".hc-block[anchortacticid= " + anchorTacticId +" ]").each(function () {
+                        var TaskID = $(this).attr('entitytaskid');
+                        AddRemovePackageItems.RemoveId.push(TaskID);
+                    });
+                  }
+        
                 $.ajax({
                     url: '@Url.Content("~/Home/UnpackageTactics/")',
                     data: {
@@ -4879,6 +4900,7 @@
                         }
 
                         // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
+                      
                         $('.honeycombbox-icon-gantt[anchortacticid=' + anchorTacticId + ']').each(function () {
                             $(this).attr('anchortacticid', '0');
                         });
@@ -4913,7 +4935,8 @@
             for (i = 0; i < currentPkgIds.length; i++) {
                 var rowObject = $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']');
                 var id = $(rowObject).attr('taskid');
-                if (IsUpdate==true || (id == undefined || id == 'undefined' || id == null || id == "")) {
+                
+                if (IsUpdate==true || rowObject.is(':visible') == false || (id == undefined || id == 'undefined' || id == null || id == "")) {
                     IdsNotinList.push(currentPkgIds[i])
                 }
                 if (currentPkgIds.indexOf(id) >= 0) {
@@ -4952,7 +4975,10 @@
                                             ExportSelectedIds.CsvId.push(Data.CsvId);
                                             ExportSelectedIds.ROITacticType.push(Data.ROITacticType);
                                             ExportSelectedIds.AnchorTacticId.push(Data.AnchorTacticId);
-                                            ExpandTacticsForSelectedPackage(Data.PCPTId);
+                                            if (Data.PCPTId != undefined && Data.PCPTId != null && Data.PCPTId != "")
+                                            {
+                                                ExpandTacticsForSelectedPackage(Data.PCPTId);
+                                            }
                                             $("div[altid='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
                                         }
                                     }
@@ -5504,7 +5530,6 @@
 
         // Added by Komal Rawal for Ticket #2355 on 13/07/2016
         function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totallength, Height, Sum) {
-            debugger;
             // If package is selected then apply validation as per selected asset or promotion
             var ROITacticType = $(item).parents('.hc-block').attr('roitactictype');
             var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]").attr('entitytaskid');
@@ -5527,7 +5552,14 @@
                     removeFromHoneyComb = false;
                     return false;
                 }
+                else{
+                    $('.popover-content').find(".hc-block[anchortacticid= " + anchorTacticId +" ]").each(function () {
+                        var TaskID = $(this).attr('entitytaskid');
+                        AddRemovePackageItems.RemoveId.push(TaskID);
+                    });
+                }
             }
+
 
             // Delete tactics from database
             $.ajax({
@@ -5540,7 +5572,7 @@
                 url: '@Url.Content("~/Home/UnpackageTactics")',
                 data: { AnchorTacticId: anchorTacticId, IsPromotion: IsPromotion },
                 success: function (data) {
-                    debugger;
+
                     var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
                     if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                     {
@@ -5549,6 +5581,7 @@
                     var ViewBy = $('#ddlTabViewBy').val();
 
                     if (IsPromotion) {
+                        AddRemovePackageItems.RemoveId.push(taskId);
                         if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                         {
                             TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).setAttribute("pkgtacids", data.remainItems.toString());
@@ -5576,8 +5609,14 @@
                         $("div[name1='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
                         Totallength = Totallength - 1;
                         Height = Number(Height) + (Sum);
+
+                        // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
+                        $('.honeycombbox-icon-gantt[name1 =' + taskId + ']').each(function () {
+                            $(this).attr('anchortacticid', '0');
+                        });
                     }
                     else {
+
                         // As package is deleted, remove package icon from the grid
                         if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                         {
@@ -5616,13 +5655,14 @@
 
                         // If asset tactic is deleted then entire package deleted so remove all data from honeycomb
                         RemoveAllHoneyCombData();
+
+                        $('.honeycombbox-icon-gantt[anchortacticid=' + anchorTacticId + ']').each(function () {
+                            $(this).attr('anchortacticid', '0');
+                        });
                     }
 
 
-                    // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
-                    $('.honeycombbox-icon-gantt[name1 =' + taskId + ']').each(function () {
-                        $(this).attr('anchortacticid', '0');
-                    });
+
 
                     $("#totalEntity").text(Totallength);
                     $(".popover").css('top', Height + "px");
@@ -5668,7 +5708,7 @@
                     if (IsPromotion) {
                         if (Index > -1) {
                             // Bind updated items to package icon into grid
-                            var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' onclick=OpenHoneyComb(this) pkgtacids=" + data.remainItems.toString() + "><i class='fa fa-object-group'></i></div>";
+                            var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer'  onclick=OpenHoneyComb(this) pkgtacids=" + data.remainItems.toString() + "><i class='fa fa-object-group'></i></div>";
                             var oldValue = $(getvalue).get(0).outerHTML;
                             getvalue = getvalue.replace(oldValue, newValue);
                             HomeGrid.cells(dhtmlxrowid, 1).setValue(getvalue);

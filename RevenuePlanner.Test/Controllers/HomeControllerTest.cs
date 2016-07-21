@@ -2367,7 +2367,11 @@ namespace RevenuePlanner.Test.Controllers
 
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-
+            string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
+            string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
+            string singlehash = DataHelper.ComputeSingleHash(password);
+            RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
+            Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
             var result = objHomeController.Homezero() as ViewResult;
 
             if (result != null)

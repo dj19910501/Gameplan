@@ -2799,6 +2799,18 @@ namespace RevenuePlanner.Helpers
             get { return _UndoMediacode; }
             set { _UndoMediacode = value; }
         }
+        private string _ArchiveMediacode;
+        public string ArchiveMediacode
+        {
+            get { return _ArchiveMediacode; }
+            set { _ArchiveMediacode = value; }
+        }
+        private string _UnarchiveMediacode;
+        public string UnarchiveMediacode
+        {
+            get { return _UnarchiveMediacode; }
+            set { _UnarchiveMediacode = value; }
+        }
         //end #2375
         #endregion
 
@@ -3702,6 +3714,12 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "UndoMediacode":
                                             _UndoMediacode = strMsgValue;
+                                            break;
+                                        case "ArchiveMediacode":
+                                            _ArchiveMediacode=strMsgValue;
+                                            break;
+                                        case "UnarchiveMediacode":
+                                            _UnarchiveMediacode=strMsgValue;
                                             break;
                                             //end
 

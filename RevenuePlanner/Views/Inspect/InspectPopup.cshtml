@@ -138,7 +138,6 @@
                 @if (InspectMode == Enums.InspectPopupMode.Add.ToString())
                 {
                     <span class="Save-icon-white btn-blue btn-large SpanDisable" style="display: block; cursor: pointer;" id="EditForm"></span>
-                    <span class="Save-add-next-icon-white btn-blue btn-large SpanDisable" style="display: block; cursor: pointer;" id="EditFormAddNext"></span>
                 }
 
             </span>
@@ -308,12 +307,12 @@
           $("#liSetup,#liReview,#liActuals,#liLine_Items,#liMedia_Code").on("click", function () {
               $("#divArchiveMediaCode").html("");
               //added by devanshi for PL ticket #2276
-              if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
-                  ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
-                  $("#txtTacticTitle").addClass("error");
-                  return false;
-              }
-              //end
+        if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+            $("#txtTacticTitle").addClass("error");
+            return false;
+        }
+        //end
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
               {
@@ -336,7 +335,7 @@
                       RemoveTabClass();
                       $(this).removeClass("pull-left");
                       $(this).addClass("active pull-left");
-                      $("#errorMessage").css("display", "none");
+                        $("#errorMessage").css("display", "none");
                       $("#successMessage").css("display", "none");
                       $('#MultiSelectProcced').css("display", "none");
                       var planTacticId = $("#hdnPlanTacticId").val();
@@ -373,150 +372,132 @@
           });
           //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
-          $('#EditForm').on("click", function (e){SaveTacticEx(false);});
-          $('#EditFormAddNext').on("click", function (e){SaveTacticEx(true);});
+          $('#EditForm').on("click", function (e) {
+              $("#divArchiveMediaCode").html("");
+              //added by devanshi for PL ticket #2276
+              if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
+                  ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                  $("#txtTacticTitle").addClass("error");
+                  return false;
+              }
+              //end
+              // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
+              if($(this).hasClass('SpanDisable') == false)
+              {
+              isDataModified = true;
+              //Modified for #1318 by Komal Rawal to handle the Save function
+              var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
+              var planTacticId = $("#hdnPlanTacticId").val();
+              $("#hdnInspectMode").val('@Enums.InspectPopupMode.Edit.ToString()');
+              if ($('#EditForm').hasClass('edit-icon-white')) {
+                  $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+                  $('#EditForm').addClass('Save-icon-white');
+                  $("#errorMessage").css("display", "none");
+                  $("#successMessage").css("display", "none");
+                  $('#MultiSelectProcced').css("display", "none");
+                  $("#txtTacticTitle").removeClass("error");
+
+
+                  if (activeTab == TabReview) {
+                      activeTab = TabSetup;
+                  }
+                  if (activeTab == TabActual) {
+                      //// Modified By: Arpita Soni on 1/7/2015.
+                      //// Ticket: 1067
+                      var hdnTacticStatus = $("#hdnTacticStatus").val();
+                      var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                      var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                      var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                      if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
+                          activeTab = TabSetup;
+
+                      }
+                  }
+                  $('#popupnewTactic').css('display', 'none');
+                  $("#hdnTacticBudgetAllocationOpt").val("Edit");
+                  $('#txtTacticTitle').css('display', 'block');
+                  //$("#txtTacticTitle").val($("#lblTacticTitle").text());
+                  $('#lblTacticTitle').css('display', 'none');
+                  // $('#EditForm').css('display', 'none');
+                  loadReview(planTacticId, activeTab);
+                  //// Added By Kalpesh on 11/06/2014 to Non-Editable Tactic Name.mp4 mentioned in resolve ticket #868
+                  $("#txtTacticTitle").prop('readonly', false);
+                  //  $("#AddForm").css("display", "none");
+                  //$('#divDeleteTactic').css('display', 'none');
+              }
+              else {
+
+                  isclickfrompopup = false;
+                  //To save the Active Tab on Save Button
+                  if (activeTab == TabSetup) {
+                      var ReturnParameter = SetupSavetactic();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
+                          $('.close-x-big-icon').trigger('click');
+
+                      }
+                  }
+                  // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
+                  //else if (activeTab == TabBudget) {
+                  //    var ReturnParameter = TacticBudgetSave();
+                  //    if (ReturnParameter == false) {
+                  //        return false;
+                  //    }
+                  //    else {
+                  //        $('.close-x-big-icon').trigger('click');
+
+                  //    }
+                  //}
+
+                  else if (activeTab == TabActual) {
+
+                      var hdnTacticStatus = $("#hdnTacticStatus").val();
+                      var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                      var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                      var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                      if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
+                          var ReturnParameter = SaveActual();
+                      }
+                      else {
+                          var ReturnParameter = SaveTitle();
+                      }
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
+                          $('.close-x-big-icon').trigger('click');
+
+                      }
+                  }
+
+                  else if (activeTab == TabReview) {
+                      var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
+                      if (ReturnParameter == false) {
+                          return false;
+                      }
+                      else {
+
+                          $('.close-x-big-icon').trigger('click');
+
+                      }
+                  }
+                  // Added by Arpita Soni for Ticket #2237 on 06/09/2016
+                  else if (activeTab == TabLineItem) {
+                          $('.close-x-big-icon').trigger('click');
+                  }
+                      // Added by Devanshi gandhi for Ticket #2368 on 06/09/2016
+                  else if (activeTab == TabMediaCode) {
+                      $('.close-x-big-icon').trigger('click');
+                  }
+              }
+
+              }
+          });
+
 
       });
-
-    //
-    //The save will need to work for both "Save & Close" and "Save & Add Next" - #2329 by zz
-    //addnext - a boolean falg to indicate which case it is.
-    //
-    function SaveTacticEx(addNext) {
-        $("#divArchiveMediaCode").html("");
-        //added by devanshi for PL ticket #2276
-        if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
-            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
-            $("#txtTacticTitle").addClass("error");
-            return false;
-        }
-        //end
-        // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
-        if($(this).hasClass('SpanDisable') == false)
-        {
-            isDataModified = true;
-            //Modified for #1318 by Komal Rawal to handle the Save function
-            var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
-            var planTacticId = $("#hdnPlanTacticId").val();
-            $("#hdnInspectMode").val('@Enums.InspectPopupMode.Edit.ToString()');
-            if ($('#EditForm').hasClass('edit-icon-white')) {
-                $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
-                $('#EditForm').addClass('Save-icon-white');
-                $("#errorMessage").css("display", "none");
-                $("#successMessage").css("display", "none");
-                $('#MultiSelectProcced').css("display", "none");
-                $("#txtTacticTitle").removeClass("error");
-
-
-                if (activeTab == TabReview) {
-                    activeTab = TabSetup;
-                }
-                if (activeTab == TabActual) {
-                    //// Modified By: Arpita Soni on 1/7/2015.
-                    //// Ticket: 1067
-                    var hdnTacticStatus = $("#hdnTacticStatus").val();
-                    var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-                    var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-                    var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-                    if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
-                        activeTab = TabSetup;
-
-                    }
-                }
-                $('#popupnewTactic').css('display', 'none');
-                $("#hdnTacticBudgetAllocationOpt").val("Edit");
-                $('#txtTacticTitle').css('display', 'block');
-                //$("#txtTacticTitle").val($("#lblTacticTitle").text());
-                $('#lblTacticTitle').css('display', 'none');
-                // $('#EditForm').css('display', 'none');
-                loadReview(planTacticId, activeTab);
-                //// Added By Kalpesh on 11/06/2014 to Non-Editable Tactic Name.mp4 mentioned in resolve ticket #868
-                $("#txtTacticTitle").prop('readonly', false);
-                //  $("#AddForm").css("display", "none");
-                //$('#divDeleteTactic').css('display', 'none');
-            }
-            else {
-
-                isclickfrompopup = false;
-                //To save the Active Tab on Save Button
-                if (activeTab == TabSetup) {
-                    var ReturnParameter = SetupSavetactic();
-                    if (ReturnParameter == false) {
-                        return false;
-                    }
-                    else {
-                        if (!addNext){
-                            $('.close-x-big-icon').trigger('click');
-                        }else{
-                            ClearTacticFields();
-                        }
-                    }
-                }
-                    // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
-                    //else if (activeTab == TabBudget) {
-                    //    var ReturnParameter = TacticBudgetSave();
-                    //    if (ReturnParameter == false) {
-                    //        return false;
-                    //    }
-                    //    else {
-                    //        $('.close-x-big-icon').trigger('click');
-
-                    //    }
-                    //}
-
-                else if (activeTab == TabActual) {
-
-                    var hdnTacticStatus = $("#hdnTacticStatus").val();
-                    var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-                    var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-                    var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-                    if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
-                        var ReturnParameter = SaveActual();
-                    }
-                    else {
-                        var ReturnParameter = SaveTitle();
-                    }
-                    if (ReturnParameter == false) {
-                        return false;
-                    }
-                    else {
-                        $('.close-x-big-icon').trigger('click');
-
-                    }
-                }
-
-                else if (activeTab == TabReview) {
-                    var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
-                    if (ReturnParameter == false) {
-                        return false;
-                    }
-                    else {
-
-                        $('.close-x-big-icon').trigger('click');
-
-                    }
-                }
-                    // Added by Arpita Soni for Ticket #2237 on 06/09/2016
-                else if (activeTab == TabLineItem) {
-                    $('.close-x-big-icon').trigger('click');
-                }
-                    // Added by Devanshi gandhi for Ticket #2368 on 06/09/2016
-                else if (activeTab == TabMediaCode) {
-                    $('.close-x-big-icon').trigger('click');
-                }
-            }
-
-        }
-    }
-
-    //
-    // Clears all fields before next add 
-    //
-    function ClearTacticFields(){
-        $("#lblTacticTitle").css('display', 'none');        
-        $("#txtTacticTitle").css('display', 'block');
-        $("#txtTacticTitle").val('');
-    }
  
     //Added By Komal Rawal for #1213
     function SaveAllData(activeTab) {

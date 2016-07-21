@@ -2855,7 +2855,9 @@ namespace RevenuePlanner.Helpers
 
         public static MVCUrl DefaultRedirectURL(Enums.ActiveMenu from)
         {
-            MRPEntities db = new MRPEntities();
+            if (Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Any())
+            {
+                MRPEntities db = new MRPEntities();
 
             try
             {
@@ -2914,17 +2916,24 @@ namespace RevenuePlanner.Helpers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
 
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    throw new System.ServiceModel.EndpointNotFoundException();
+                    //To handle unavailability of BDSService
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        throw new System.ServiceModel.EndpointNotFoundException();
+                    }
                 }
+                finally
+                {
+                    db = null;
+                }
+                return null;
             }
-            finally
+            else if (Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Any())
             {
-                db = null;
+                return new MVCUrl { actionName = "MeasureReport", controllerName = "Report", queryString = "" };
             }
-
+            else if (Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.OPT.ToString()).Any())
+            { return null; }
             return null;
         }
 

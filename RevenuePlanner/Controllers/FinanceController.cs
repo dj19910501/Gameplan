@@ -4273,7 +4273,7 @@ namespace RevenuePlanner.Controllers
             DataSet ds = new DataSet();
             try
             {
-                
+
                 if (Request != null)
                 {
                     if (Request.Files[0].ContentLength > 0)
@@ -4296,7 +4296,11 @@ namespace RevenuePlanner.Controllers
                                                                                    fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
                                 IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(Request.Files[0].InputStream);
                                 ds = excelReader.AsDataSet();
-                                objImprtData = GetXLSData(ds, BudgetDetailId); // Read Data from excel 2003/(.xls) format file to xml
+                                if (ds != null && ds.Tables.Count > 0)
+                                {
+                                    objImprtData = GetXLSData(ds, BudgetDetailId); // Read Data from excel 2003/(.xls) format file to xml
+                                }
+
                                 if (ds == null)
                                 {
                                     return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
@@ -4308,7 +4312,11 @@ namespace RevenuePlanner.Controllers
                             }
                             dtColumns = objImprtData.MarketingBudgetColumns;
                             xmlData = objImprtData.XmlData;
-                            System.IO.File.Delete(fileLocation);
+
+                            if (System.IO.File.Exists(fileLocation))
+                            {
+                                System.IO.File.Delete(fileLocation);
+                            }
 
                             if (!string.IsNullOrEmpty(objImprtData.ErrorMsg))
                             {
@@ -4512,13 +4520,25 @@ namespace RevenuePlanner.Controllers
             dtColumns.Columns.Add("Month", typeof(string));
             dtColumns.Columns.Add("ColumnName", typeof(string));
             dtColumns.Columns.Add("ColumnIndex", typeof(Int64));
-
+            int RowCount = 0, ColumnCount = 0;
             try
             {
-                dtExcel = ds.Tables[0];
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    dtExcel = ds.Tables[0];
+                    if (dtExcel != null)
+                    {
+                        if (dtExcel.Rows.Count > 0)
+                        {
+                            RowCount = dtExcel.Rows.Count;
+                        }
+                        if (dtExcel.Columns.Count > 0)
+                        {
+                            ColumnCount = dtExcel.Columns.Count;
+                        }
+                    }
+                }
 
-                int RowCount = dtExcel.Rows.Count;
-                int ColumnCount = dtExcel.Columns.Count;
                 XmlNode childnode = null;
                 if (RowCount > 0)
                 {
