@@ -14114,7 +14114,7 @@ namespace RevenuePlanner.Controllers
                 headobjother.width = 100;
                 if (IsArchive == false)
                 {
-                headobjother.value = "<input type='checkbox' value='SelectAll'  title='SelectAll'  class='selectInput'><span class='selectall'> Select All</span></input>";
+                headobjother.value = "<input type='checkbox' id = 'MediaCodeSelectAll' value='SelectAll'  title='SelectAll'  class='selectInput'><span class='selectall'> Select All</span></input>";
                 }
                 else
                     headobjother.value = "";

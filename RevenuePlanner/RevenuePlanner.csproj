@@ -336,7 +336,7 @@
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_asc.gif" />
     <Content Include="Content\css\fileinput.css" />
     <Content Include="Content\css\jquery.mCustomScrollbar-new.css" />
-    <Content Include="Content\css\style_min_July_21.css" />
+    <Content Include="Content\css\style_min_July_22.css" />
     <Content Include="Content\css\style_extended_min_Oct2.css" />
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_desc.gif" />
     <Content Include="Content\css\JquryUI\images\ui-bg_glass_85_dfeffc_1x400.png" />

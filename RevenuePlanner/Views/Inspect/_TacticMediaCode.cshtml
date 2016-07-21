@@ -71,7 +71,7 @@ else
 
     </div>
 </div>
-<div class="honeycombbox" style="display:none" id="divhoneycombboxmediacode">
+<div class="honeycombbox" style="display:none" id="divHoneyCombBoxMediaCode">   
     <span id="totalEntityMediacode" class="badge">0</span>
     <!-- honeycomb svg -->
     <svg id="honeycombmediacode" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -154,16 +154,18 @@ else
 	                        </g>	                </g>
 	        </g>
 	        </svg>
-    <div class="hidden" id="honeycomb_content1">
+   
+    <div class="hidden" id="honeycomb_contentMediaCode">
 
-        <div class="hc-controls" id="hc-controlsdiv1">
+        <div class="hc-controls" id="hc-controlsdivMediaCode">
             <div class="dropup pull-left">
                 <button class="btn btn-lg dropdown-toggle" type="button" id="exportMenuMediaCode" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-external-link"></i></button>
                 <ul class="dropdown-menu" aria-labelledby="exportMenuMediaCode">
 
-                    <li><a href="#" id="ExportCSVHoneyCombMediacode" style="display:none" onclick="GenerateBulkMediacode()">Export .csv</a></li>
+                    <li><a href="#" id="ExportCSVHoneyCombMediacode" onclick="ExportToCSVMedia()">Export .csv</a></li>
                 </ul>
             </div>
+            <button class="btn btn-lg pull-right" onclick='RemoveAllMediaCodeData();'><i class="fa fa-close"></i></button>
         </div>
     </div>
 </div>
@@ -309,7 +311,21 @@ else
         MediaCodeGrid.init();
         MediaCodeGrid.splitAt(3);
         MediaCodeGrid.parse(GridDataHomeGrid, "json");
-
+        //Added by Rahul shah to Select/Deselect all honeycomb on click of checkbox for  PL #2371
+        $('#MediaCodeSelectAll').change(function () {          
+            if ($(this).is(':checked')) {
+                $('#MediaCodeGrid').find('tr').find('td').find("div.honeycombbox-icon-gantt").each(function () {
+                    if (!$(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                        AddRemoveMediaCode(this);
+                    }
+                });
+            }
+            else {
+                $('#MediaCodeGrid').find('tr').find('td').find("div.honeycombbox-icon-gantt-Active").each(function () {
+                    AddRemoveMediaCode(this);
+                });
+            }
+        });
     }
 
     function GenerateMediaCode(obj) {
@@ -606,10 +622,217 @@ else
         }
         return (a.toLowerCase() > b.toLowerCase() ? 1 : -1) * (ord == "asc" ? 1 : -1);
     }
-</script>
-<script>
+    //Added by Rahul shah to add/remove honeycomb in array and honeycombbox click of honeycomb icon for  PL #2371
     function AddRemoveMediaCode(item) {
+        var rowId = $(item).attr('rowid');
+        if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
+            $(item).removeClass("honeycombbox-icon-gantt-Active");
+            var index = ExportSelectedIdsMediaCode.MediacodeSelectedRowId.indexOf($(item).attr('rowid'));
+            if (index >= 0) {
+
+                ExportSelectedIdsMediaCode.MediacodeSelectedRowId.splice(index, 1);
+                ExportSelectedIdsMediaCode.Mediacodes.splice(index, 1);
+                ExportSelectedIdsMediaCode.MediacodeID.splice(index, 1);
+                ExportSelectedIdsMediaCode.AltId.splice(index, 1);
+            }
+        }
+        else {
+            var mediacode = MediaCodeGrid.cells(rowId, 2).getAttribute("actval");
+            var mediacodeid = MediaCodeGrid.cells(rowId, 0).getValue();
+            var isExist = false;
+            if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length > 0) {
+                for (var i = 0; i < ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length; i++) {
+                    if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId[i] == rowId) {
+                        isExist = true;
+                    }
+                }
+            }
+            if (!isExist) {
+                ExportSelectedIdsMediaCode.MediacodeSelectedRowId.push(rowId);
+                ExportSelectedIdsMediaCode.Mediacodes.push(mediacode);
+                ExportSelectedIdsMediaCode.MediacodeID.push(mediacodeid);
+                ExportSelectedIdsMediaCode.AltId.push($(item).attr('altid'));
+                $(item).addClass("honeycombbox-icon-gantt-Active");
+            }
+        }
+        if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length == 0) {
+            $("#divHoneyCombBoxMediaCode").hide();
+
+        }
+        else {
+            $("#totalEntityMediacode").text(ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length);
+            $("#divHoneyCombBoxMediaCode").show();
+
+        }
+
+        if (MediaCodeGrid.rowsBuffer.length != ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length) {
+            $('#MediaCodeSelectAll').removeAttr('checked');
+        }
+        else {
+            $('#MediaCodeSelectAll').attr('checked', 'checked');
+        }
+    }
+    //Added by Rahul shah to open honeycomb popup on click of honeycomb icon for  PL #2371
+    $("#honeycombmediacode").popover({
+        title: 'HoneyComb',
+        html: true,
+        placement: 'top',
+        content: function () {
+            CloseClick = true;
+            $('#honeycomb_contentMediaCode').find(".hc-block").remove();
+            var htmlstring1 = "";
+            var hccontrolsdiv1 = $('#honeycomb_contentMediaCode').find("#hc-controlsdivMediaCode").parent().html();
+            var Removefromlist1 = [];
+            if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length > 0) {
+                $('#honeycomb_contentMediaCode').html("");
+                for (i = 0; i < (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length) ; i++) {
+                    var HasmediaActiveClass = false;
+                    HasmediaActiveClass = $("div[altid='" + ExportSelectedIdsMediaCode.AltId[i] + "']").hasClass("honeycombbox-icon-gantt-Active");
+                    if (HasmediaActiveClass == true) {
+                        htmlstring1 += '<div class="hc-block"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #"><h5 title="' + htmlEncode(ExportSelectedIdsMediaCode.Mediacodes[i]) + '">' + htmlEncode(ExportSelectedIdsMediaCode.Mediacodes[i]) + '</h5>  </div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIdsMediaCode.MediacodeID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIconMediaCode(this)" ></i></div></div></div>';
+
+                    }
+                    else {
+                        Removefromlist1.push(ExportSelectedIdsMediaCode.AltId[i]);
+                    }
+                }
+            }
+            $('#honeycomb_contentMediaCode').append(htmlstring1 + hccontrolsdiv1);
+            for (i = 0; i < Removefromlist1.length; i++) {
+                var index = ExportSelectedIdsMediaCode.AltId.indexOf(Removefromlist1[i]);
+                if (index >= 0) {
+                    ExportSelectedIdsMediaCode.AltId.splice(index, 1);
+                    ExportSelectedIdsMediaCode.MediacodeSelectedRowId.splice(index, 1);
+                    ExportSelectedIdsMediaCode.Mediacodes.splice(index, 1);
+                    ExportSelectedIdsMediaCode.MediacodeID.splice(index, 1);
+                }
+            }
+            return $("#honeycomb_contentMediaCode").html();
+        }
+    });
+
+    //Added by Rahul shah to remove honeycomb data close icon for  PL #2371
+    function CloseIconMediaCode(item) {
+        CloseClick = true;
+        var taskId = item.attributes.taskid.value;
+        var Totallength = $("#totalEntityMediacode").text();
+        var Height = $(".popover").css('top').replace("px", "");
+        var Blockheight = $('.popover-content').find(".hc-block").css('height').replace("px", "");
+        var Margin = $('.popover-content').find(".hc-block").css('margin').split(" ")[0].replace("px", "");
+        var Sum = parseInt(Number(Blockheight) + Number(Margin));
+        var removeFromHoneyComb = true;
+        $("div[altid='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
+        Totallength = Totallength - 1;
+        Height = Number(Height) + (Sum);
+
+
+        $(".popover").css('top', Height + "px");
+        var index = ExportSelectedIdsMediaCode.AltId.indexOf(taskId);
+        if (index >= 0) {
+            ExportSelectedIdsMediaCode.AltId.splice(index, 1);
+            ExportSelectedIdsMediaCode.MediacodeID.splice(index, 1);
+            ExportSelectedIdsMediaCode.Mediacodes.splice(index, 1);
+            ExportSelectedIdsMediaCode.MediacodeSelectedRowId.splice(index, 1);
+
+        }
+        $("#totalEntityMediacode").text(ExportSelectedIdsMediaCode.AltId.length);
+        item.parentNode.parentNode.parentNode.remove();
+        var HoneyContent = $('.popover-content').find(".hc-block").length;
+        if (HoneyContent == 0) {
+            $(".popover ").hide();
+            $(".honeycombbox").hide();
+        }
 
     }
+    //Added by Rahul shah to export to csv for PL #2371
+    function ExportToCSVMedia() {
+        var MediaCodeGridSelected = MediaCodeGrid;
+        var ids = MediaCodeGridSelected.getAllRowIds();
+        var AllRowIds = ids.split(",");
+        for (var i = 0; i < ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length; i++) {
+            var arrlen = AllRowIds.length;
+            for (var j = 0; j < arrlen; j++) {
+                if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId[i] == AllRowIds[j]) {
+                    AllRowIds = AllRowIds.slice(0, j).concat(AllRowIds.slice(j + 1, arrlen));
+                }
+            }
+        }
+
+        for (var i = 0 ; i < AllRowIds.length ; i++) {
+            MediaCodeGridSelected.deleteRow(AllRowIds[i]);
+        }
+
+        var count = MediaCodeGridSelected.getRowsNum();
+        var colCount = MediaCodeGridSelected.getColumnsNum()
+        if (count > 0) {
+            MediaCodeGridSelected.enableCSVAutoID(true);
+            MediaCodeGridSelected.enableCSVHeader(true);
+            var checkColumn = "";
+            if (colCount > 0) {
+                for (var i = 1; i <= colCount; i++) {
+                    if (i <= 2) {
+                        checkColumn = checkColumn.concat("false,")
+                    }
+                    else {
+                        checkColumn = checkColumn.concat("true,")
+                    }
+
+                }
+            }
+            var header = MediaCodeGridSelected.setSerializableColumns(checkColumn);
+            var myCSVString = MediaCodeGridSelected.serializeToCSV(true);
+            var lines = myCSVString.split(",");
+            var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
+            var Filename = '@ViewBag.TacticID' + '_MediaCode.csv';
+            if (navigator.userAgent.search("Trident") >= 0) {
+                if (!window.Blob) {
+                    // if IE 9 then becuase ie 9 and lower version not support blob
+                    //http://code.ciphertrick.com/2014/12/07/download-json-data-in-csv-format-cross-browser-support/
+                    var IEwindow = window.open();
+                    IEwindow.document.write('sep=,\r\n' + lines);
+                    IEwindow.document.close();
+                    IEwindow.document.execCommand('SaveAs', true, Filename);
+                    IEwindow.close();
+                }
+                else {
+                    var fileData = ["sep=,\r\n" + lines];
+                    blobObject = new Blob(fileData);
+                    window.navigator.msSaveOrOpenBlob(blobObject, Filename); // Now the user will have the option of clicking the Save button and the Open button.
+                }
+            }
+            else {
+                var uri = 'data:text/csv;charset=utf-8,' + escape(lines);
+                var downloadLink = document.createElement("a");
+                downloadLink.href = uri;
+                downloadLink.download = Filename + ".csv";
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink)
+            }
+            $('#spanMessageError').html("");
+            $("#errorMessage").hide();
+
+        }
+        else {
+            $("#modal-container-186470").scrollTop(0);
+            $("#errorMessage").css("display", "block");
+            $("#errorMessage").slideDown(400);
+            $("#spanMessageError").empty();
+            $("#spanMessageError").html('No Records found for Export Grid data.');
+        }
+        BindMediaCodeGrid();
+        if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length > 0) {
+            for (var i = 0 ; i < ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length; i++) {
+                $('#MediaCodeGrid').find('tr').find('td').find("div[rowid='" + ExportSelectedIdsMediaCode.MediacodeSelectedRowId[i] + "']").addClass("honeycombbox-icon-gantt-Active");
+            }
+        }
+    }
+
+    $('#MediaCodeGrid').find('table').find('tbody').on('click', function (e) {
+        var targetname = e.target.nodeName;
+        if (targetname != "circle") {
+            $(".popover").removeClass('in').addClass('out');
+        }
+    });
 
 </script>

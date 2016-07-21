@@ -7234,6 +7234,9 @@
         });
         function CloseIconClick() {
             $('.close-x-big-icon').click(function () {
+                //Added by Rahul shah to remove all media code honeycomb data on click of close icon for  PL #2371
+
+                RemoveAllMediaCodeData();
                 $("#modal-container-186470").addClass("transition-close");
                 $("#modal-container-186470").removeClass("transition_y");
                 addDefaultModalPopupBackgroungColor();
@@ -9896,5 +9899,19 @@
             //$('#ExpLoading').css('display', 'none');
         }
 
+        //Added by Rahul shah to remove all media code honeycomb data on click of close icon for  PL #2371
+        function RemoveAllMediaCodeData() {
+            $('#honeycomb_contentMediaCode').find(".hc-block").remove();
+            $('#divHoneyCombBoxMediaCode .popover-content').html("");
+            ExportSelectedIdsMediaCode = {
+                MediacodeSelectedRowId: [],
+                Mediacodes: [],
+                MediacodeID: [],
+                AltId: []
+            };
+            $('#MediaCodeGrid').find('tr').find('td').find("div[class*='honeycombbox-icon-gantt-Active']").removeClass("honeycombbox-icon-gantt-Active");
+            $("#totalEntityMediacode").text(ExportSelectedIdsMediaCode.AltId.length);                 
+            $("#divHoneyCombBoxMediaCode").hide();
+        }
        
     </script>

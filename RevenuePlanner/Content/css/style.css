@@ -10784,7 +10784,7 @@ color: #3e3f37; /* Edited for #2219 - Bhumika */
             }*/
 
             .honeycombbox .hc-block i {
-                margin: 10px 0;
+                margin: 0 0 10px 0;
                 cursor: pointer;
                 font-size:18px;
             }
