@@ -4912,7 +4912,7 @@ a.link-gray {
 
 .fin-head-right {
     float: right;
-    width: 28%;/*#2312*/
+    width: 50%;/*#2312*/
     text-align: right;
 }
 
@@ -15676,9 +15676,9 @@ a:focus, a:hover{outline:0 none !important}
     padding-left: 15px;
     border-bottom: 1px solid #CCC;
 }
-.ddlQuarter{
+/*.ddlQuarter{
     margin-top:20px;
-}
+}*//*commented by Bhumika for Report/ReportRevenue page resolve issue of Quarterly dropdown*/
 .error-box {
     display: none;
     background: #f6d87f none repeat scroll 0 0;

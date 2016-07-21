@@ -20,17 +20,17 @@
                                   // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                                   string IsOwner = Convert.ToString(ViewBag.IsOwner);
                                 @Html.Hidden("IsOwner", IsOwner);
-                                    // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                                    ViewBag.ModelIdPartial = ViewBag.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
-                                    if (Model != null)
-                                    {
-                                        ViewBag.modelStageCount = Model.lstmodelstage.Count();//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
-                                    }
-                                    else
-                                    {
-                                        ViewBag.modelStageCount = 0;
-                                    }
-                                    ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+                                                                // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                                                                ViewBag.ModelIdPartial = ViewBag.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+                                                                if (Model != null)
+                                                                {
+                                                                    ViewBag.modelStageCount = Model.lstmodelstage.Count();//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+                                                                }
+                                                                else
+                                                                {
+                                                                    ViewBag.modelStageCount = 0;
+                                                                }
+                                                                ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
 }
 <script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
 @section nlFormContent{
@@ -83,40 +83,42 @@
 
         if (Model.Versions != null)
         {
-            foreach (ModelVersion v in Model.Versions)
+            if (Model.Versions.Count > 0)
             {
-                if (v.IsLatest)
-                {
-
-                    <input type="hidden" value="@v.ModelId" id="latestModelId" />
-                    <div class="title-header source-sans-proregular" title="@v.Title">
-                        <h2 id="lblTitle">@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
-
-                    </div>  @*changed for title alignment #2312*@
-                }
-            }
-            <ul class="nav nav-tabs" style="border-bottom:0">
-                @foreach (ModelVersion v in Model.Versions)
+                foreach (ModelVersion v in Model.Versions)
                 {
                     if (v.IsLatest)
                     {
 
+                        <input type="hidden" value="@v.ModelId" id="latestModelId" />
+                        <div class="title-header source-sans-proregular" title="@v.Title">
+                            <h2 id="lblTitle">@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
 
-                        <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
-                            <a href="#" onclick="LoadModelData(@v.ModelId, true)">@Html.Raw("v")@v.Version</a>
-                        </li>
-
-                    }
-                    else
-                    {
-                        <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
-                            <a href="#" onclick="LoadModelData(@v.ModelId, false)">@Html.Raw("v")@v.Version</a>
-                        </li>
+                        </div>  @*changed for title alignment #2312*@
                     }
                 }
-            </ul>
+                <ul class="nav nav-tabs">
+                    @foreach (ModelVersion v in Model.Versions)
+                    {
+                        if (v.IsLatest)
+                        {
 
-            if (Model.Versions.Count == 0)
+
+                            <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
+                                <a href="#" onclick="LoadModelData(@v.ModelId, true)">@Html.Raw("v")@v.Version</a>
+                            </li>
+
+                        }
+                        else
+                        {
+                            <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
+                                <a href="#" onclick="LoadModelData(@v.ModelId, false)">@Html.Raw("v")@v.Version</a>
+                            </li>
+                        }
+                    }
+                </ul>
+            }
+            else if (Model.Versions.Count == 0)
             {
                 <div class="title-header source-sans-proregular" title="Title">
                     <h2>@Html.Raw("Baseline Model") <span class="gray source-sans-prolight" title="Draft">@Html.Raw("DRAFT")</span></h2>
