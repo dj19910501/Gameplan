@@ -15782,7 +15782,7 @@ a:focus, a:hover{outline:0 none !important}
 /*#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td:last-child{border-right:0}*/
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox{margin-bottom: 30px;}
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox {min-height: 300px !important;}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox {min-height: 150px !important;}
 
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox,
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox{ border:0;}
