@@ -4755,7 +4755,12 @@
                             if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                             {
                                 var LastChildNode = TaskHtml.firstChild.lastChild.outerHTML;
-                                var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
+                                var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0);
+                                if(FileNode != null && FileNode!= 'undefined' && FileNode != undefined)
+                                {
+                                    FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
+                                }
+
                                 var AllCHildNodes = TaskHtml.firstChild.innerHTML;
                                 var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
                                 if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
@@ -4861,7 +4866,11 @@
                             var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
                             if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                             {
-                                var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                                var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0)
+                                if(FileNode != null && FileNode!= 'undefined' && FileNode != undefined)
+                                {
+                                   FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML
+                                }
                                 var AllCHildNodes = TaskHtml.firstChild.innerHTML;
                                 AllCHildNodes = AllCHildNodes.replace(FileNode, "");
                                 TaskHtml.firstChild.innerHTML = AllCHildNodes;
@@ -5580,7 +5589,11 @@
                     var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
                     if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                     {
-                        var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                        var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
+                        if(FileNode != null && FileNode!= 'undefined' && FileNode != undefined)
+                        {
+                            FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                        }
                     }
                     var ViewBy = $('#ddlTabViewBy').val();
 
