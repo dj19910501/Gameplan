@@ -4098,6 +4098,16 @@ namespace RevenuePlanner.Controllers
             {
                 ippctm.IsLinkedTactic = false;
             }
+
+            if (pcpt.ROI_PackageDetail != null && pcpt.ROI_PackageDetail.Count > 0)
+            {
+                ippctm.IsPackagedTactic = true;
+            }
+            else
+            {
+                ippctm.IsPackagedTactic = false;
+            }
+
             //End
             Plan_Campaign plancampaignobj = pcpt.Plan_Campaign_Program.Plan_Campaign;
 
@@ -5685,7 +5695,7 @@ namespace RevenuePlanner.Controllers
                 item.Title = HttpUtility.HtmlDecode(item.Title);
             }
 
-
+            pcptm.IsPackagedTactic = false;
 
             if (pcpt == null)
             {
