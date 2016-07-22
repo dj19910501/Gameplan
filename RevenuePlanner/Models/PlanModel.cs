@@ -204,7 +204,7 @@ namespace RevenuePlanner.Models
         public List<SelectListUser> OwnerList { get; set; }
         public bool IsLinkedTactic { get; set; }
         public string Status { get; set; }      //Added By Komal Rawal for #1292 dont apply isdeleted flag for tactics that are completed.
-
+        public bool IsPackagedTactic { get; set; }
     }
 
     public class Plan_Campaign_Program_Tactic_LineItemModel
