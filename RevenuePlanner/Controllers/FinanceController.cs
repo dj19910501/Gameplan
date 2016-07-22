@@ -4565,25 +4565,28 @@ namespace RevenuePlanner.Controllers
                             if (i == 0)
                             {
                                 // Get list of columns and its time frame
-                                string columnName = Convert.ToString(dtExcel.Rows[i + 1][k]);
-                                if (!string.IsNullOrEmpty(columnName))
+                                if (RowCount > (i + 2)) // Set Condition for invalid file where only first two rows (Timeframe and column names) without data
                                 {
-                                    string columnNameLower = columnName.ToLower();
-                                    if (columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Planned).ToLower() && columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Actual).ToLower())
+                                    string columnName = Convert.ToString(dtExcel.Rows[i + 1][k]);
+                                    if (!string.IsNullOrEmpty(columnName))
                                     {
-                                        var InnerColName = Convert.ToString(dtExcel.Rows[i][k]);
-                                        if (InnerColName.ToLower() != "total")
+                                        string columnNameLower = columnName.ToLower();
+                                        if (columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Planned).ToLower() && columnNameLower != Convert.ToString(Enums.FinanceHeader_Label.Actual).ToLower())
                                         {
-                                            listColumnIndex.Add(new XmlColumns { ColumName = columnName, ColumnIndex = p });
-                                            dtColumns.Rows.Add();
-                                            dtColumns.Rows[j - 1]["Month"] = InnerColName;
-                                            dtColumns.Rows[j - 1]["ColumnIndex"] = j;
-                                            dtColumns.Rows[j - 1]["ColumnName"] = columnName;
-                                            j++;
+                                            var InnerColName = Convert.ToString(dtExcel.Rows[i][k]);
+                                            if (InnerColName.ToLower() != "total")
+                                            {
+                                                listColumnIndex.Add(new XmlColumns { ColumName = columnName, ColumnIndex = p });
+                                                dtColumns.Rows.Add();
+                                                dtColumns.Rows[j - 1]["Month"] = InnerColName;
+                                                dtColumns.Rows[j - 1]["ColumnIndex"] = j;
+                                                dtColumns.Rows[j - 1]["ColumnName"] = columnName;
+                                                j++;
+                                            }
                                         }
                                     }
+                                    p++;
                                 }
-                                p++;
                             }
                             #endregion
 
