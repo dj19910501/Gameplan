@@ -1987,7 +1987,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result.Result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Result.Data);
+                Assert.IsNotNull(result.Result.Data);
+                var serializedData = new RouteValueDictionary(result.Result.Data);
+                var resultvalue = serializedData["isSuccess"];
+                Assert.AreEqual("true", resultvalue.ToString(), true);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -2026,7 +2030,10 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result.Data != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                Assert.AreEqual(PlanId, result.GetValue("id"));
+              
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("id"));
             }
             else
             {
@@ -2066,7 +2073,9 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result.Data != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                Assert.IsNotNull(result.GetValue("Count")); 
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("Count"));
             }
             else
             {
@@ -2100,7 +2109,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result.Data != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["isSuccess"];
+                Assert.AreEqual("true", resultvalue.ToString(), true);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -2134,7 +2147,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result.Data != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["isSuccess"];
+                Assert.AreEqual("true", resultvalue.ToString(), true);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -2166,7 +2183,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result.Data != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["isSuccess"];
+                Assert.AreEqual("true", resultvalue.ToString(), true);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -2198,7 +2219,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result.Data != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["isSuccess"];
+                Assert.AreEqual("true", resultvalue.ToString(), true);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -2234,7 +2259,10 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["returnURL"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -2272,6 +2300,9 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Result.Data);
+                var serializedData = new RouteValueDictionary(result.Result.Data);
+                var resultvalue = serializedData["isSuccess"];
+                Assert.AreEqual("true", resultvalue.ToString(), true);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else
@@ -2314,6 +2345,7 @@ namespace RevenuePlanner.Test.Controllers
                 {
                     Assert.IsNotNull(result.Model);
                 }
+                Assert.IsNotNull(result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
@@ -2352,7 +2384,10 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
+                var serializedData = new RouteValueDictionary(result.Result.Data);
+                var resultvalue = serializedData["strparam"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -2390,8 +2425,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewData.Values);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["defaultURL"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -2427,7 +2465,10 @@ namespace RevenuePlanner.Test.Controllers
             {
                 //// Json result data should not be null
                 Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["IsPlanEditable"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -2471,7 +2512,7 @@ namespace RevenuePlanner.Test.Controllers
                 {
                     Assert.IsNotNull(result.Model);
                 }
-
+                Assert.IsNotNull(result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else

@@ -5057,6 +5057,10 @@ namespace RevenuePlanner.Controllers
             Common.GetPlanGanttStartEndDate(planYear, strparam, ref CalendarStartDate, ref CalendarEndDate);
             DataSet dsPlanCampProgTac = new DataSet();
             dsPlanCampProgTac = (DataSet)objCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
+            if (dsPlanCampProgTac == null)
+            {
+                dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(planid);
+            }
             var planData = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
             var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
             //Modified BY Komal rawal for #1929 proper Hud chart and count
@@ -6806,6 +6810,9 @@ namespace RevenuePlanner.Controllers
                 //    Status = Convert.ToString(row["Status"]),
                 //    Title = Convert.ToString(row["Title"])
                 //}).ToList();
+                if (dsPlanCampProgTac == null) {
+                    dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(PlanId);
+                }
                 List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
                 if (dsPlanCampProgTac != null && dsPlanCampProgTac.Tables[1] != null)
                 {
@@ -6852,7 +6859,15 @@ namespace RevenuePlanner.Controllers
                 // Add By Nishant Sheth
                 // Get Records from cache memory
                 List<Custom_Plan_Campaign_Program_Tactic> customtacticList = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.CustomTactic.ToString());
+                if (customtacticList == null || customtacticList.Count == 0) {
+                    customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                }
+                objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);
                 List<Plan_Campaign_Program_Tactic> tacticList = (List<Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.Tactic.ToString());
+                if (tacticList == null || tacticList.Count == 0) {
+                    tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+                }
+                objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
                 //var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programListids.Contains(tactic.PlanProgramId)).Select(tactic => tactic).ToList();
                 //List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
                 //List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
