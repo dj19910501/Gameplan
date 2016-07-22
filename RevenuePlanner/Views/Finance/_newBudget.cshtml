@@ -46,7 +46,7 @@
         $('#ddlMainTimeFrameSelectBox').css('display', 'none');
         $('#ddlColumnSetFrameBox').css('display', 'none');
         $('#ddlColumnsFrameBox').css('display', 'none');
-        // Added by Rushil Bhuptani on 06/06/2015 for ticket #2247 to address issue of exporting previous data. 
+        // Added by Rushil Bhuptani on 06/06/2015 for ticket #2247 to address issue of exporting previous data.
         $('#dvExportToExcel').css('display', 'none');
         GetListOfBudgetName();
         // Add By Nishant Sheth
@@ -58,22 +58,12 @@
                 isrepeat = false;
                 IsValid = false;
             } else {
-                //$.each(childitems, function () {
-
-                //    if (this.toString() != ValidRowId.toString()) {
-                //        var ColCurrentValue = newTreeGrid.cells(this, ValidColumnId).getValue();
-                //        if (data.toLowerCase().trim() == ColCurrentValue.toLowerCase().trim()) {
-                //            isrepeat = false;
-                //            IsValid = false;
-                //        }
-                //    }
-                //});
-
                 var BudgetIndex = BudgetDetails.Name.indexOf(data.toLowerCase().trim());
                 if (BudgetIndex >= 0) {
 
                     isrepeat = false;
                     IsValid = false;
+                    ShowMessage(true,'@RevenuePlanner.Helpers.Common.objCached.BudgetTitleExist', 1200);
                 }
             }
             return isrepeat;
@@ -82,20 +72,17 @@
         newTreeGrid = new dhtmlXGridObject('newGridbox');
         newTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
         newTreeGrid.setImageSize(1, 1);
-        //newTreeGrid.enableTreeCellEdit(false);
+
         newTreeGrid.setHeader("Task Name,,Budget,Forecast,Planned,Actual,Line Items", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;", , "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
         newTreeGrid.setInitWidths("100,100,100,100,100,100,100");
         newTreeGrid.setColAlign("left,center,center,center,center,center,center");
         newTreeGrid.setColTypes("tree,ro,ron,ron,ron,ron,ro");
-        //newTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
         newTreeGrid.enableValidation(true);
         newTreeGrid.setColValidators("CustomNameValid,,,,,,");
         newTreeGrid.setColumnIds("title,action,budget,forecast,planned,actual,lineitems");
-        //newTreeGrid.setColSorting("str,na,str,str,na,str");
         newTreeGrid.attachEvent("onEditCell", OnEditCell);
 
         newTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
-
             IsValid = false;
             return true;
         });
@@ -137,7 +124,6 @@
                 $(".dhx_combo_edit").on('keydown', (
                 newTreeGrid.editor.obj.onkeypress = function (event) {
 
-                  //  var key = window.event ? event.keyCode : event.which;
                     var text = this.value;
                     if (event.keyCode == 8 || event.keyCode == 46
                      || event.keyCode == 37 || event.keyCode == 39) {
@@ -152,43 +138,24 @@
                 }));
             }
         }
-        //var _val = $("#hdn_row_parentId").val();
-        //var splitRowParentIds = '';
-        //var rowId = '', parentId = '',parentRowID='';
-        //var itemIndex=-1;
 
         if (stage.toString() == '0' || stage.toString() == '1') {
-            //if (stage.toString() == '1') {
-            //    var currentval = $(this).value;
-            //    //alert(currentval);
-            //    if (currentval == null || currentval == 'undefined' || currentval == '') {
-            //        this.editor.obj.placeholder = "New Budget";
-            //
-            //    }
-            //}
             return true;
         }
         if (IsValid) {
             if (stage.toString() == '2') {
-
-                //var _budgetIdVal = $('#ddlParentFinance').val();
                 if (newVal == null || newVal == '') {
                     return false;
                 }
                 else {
                     SaveNewBudgetDetail(htmlDecode(newVal));
-                    //newTreeGrid.openItem(parentId);
-                    //_newrowid = "";
-                    //_isNewRowAdd = false;
-                    //_newParentId = 0;
-                    //_parentRowId = "";
                     return true;
                 }
             }
         }
     };
-    function SaveNewBudgetDetail(budgetName) {	
-       // Desc : display selected columns
+    function SaveNewBudgetDetail(budgetName) {
+        // Desc : display selected columns
         var Columnsetval = $("#ddlColumnSet").val();
         var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
         var CheckedColumns = "";

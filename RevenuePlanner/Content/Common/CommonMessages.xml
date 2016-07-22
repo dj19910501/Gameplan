@@ -1139,4 +1139,9 @@
 		<Name>UnpackageSuccessful</Name>
 		<value>Package deleted successfully.</value>
 	</Field>
+  <!--Added by Mitesh Vaishnav for internal review point-->
+  <Field>
+    <Name>BudgetTitleExist</Name>
+    <value>This budget title already exists. Please choose another title.</value>
+  </Field>
 </Messages>

@@ -2826,6 +2826,19 @@ namespace RevenuePlanner.Helpers
             set { _UnarchiveMediacode = value; }
         }
         //end #2375
+        ////Added by mitesh vaishnav for internal review point
+        private string _BudgetTitleExist;
+        public string BudgetTitleExist
+        {
+            get
+            {
+                return _BudgetTitleExist;
+            }
+            set
+            {
+                _BudgetTitleExist = value;
+            }
+        }
         #endregion
 
         #region  Functions
@@ -3742,7 +3755,9 @@ namespace RevenuePlanner.Helpers
                                         case "UnpackageSuccessful":
                                             _UnpackageSuccessful = strMsgValue;
                                             break;
-
+                                        case "BudgetTitleExist":
+                                            _BudgetTitleExist = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;

@@ -329,12 +329,22 @@
         $("#gridbox").find("table").first().find("tr").next().last().find("td").first().css("text-align", "center");
 
         var IsValid = true;
-
+        var isEmptyStringForCell = false;
 
         myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
-            ValidOldValue = "";
-            IsValid = false;
-            return true;
+            var colLable = myTreeGrid.getColLabel(ind, 1);
+            if (colLable == 'Task Name') {
+                ValidOldValue = "";
+                IsValid = false;
+                return true;
+            }
+            else {
+                myTreeGrid.cellById(id, ind).setValue("0");
+                ValidOldValue = "";
+                IsValid = true;
+                isEmptyStringForCell = true;
+                return false;
+            }
         });
         myTreeGrid.attachEvent("onValidationCorrect", function (id, index, value, rule) {
             ValidOldValue = "";
@@ -357,6 +367,12 @@
         myTreeGrid.enableAutoHeight(true); //Modified By Maitri Gandhi on 17/3/2016 for #2066
         myTreeGrid.enableAutoWidth(false);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
+            if (isEmptyStringForCell)
+            {
+                nValue = '0';
+                isEmptyStringForCell = false;
+            }
+            debugger;
             if (!_isNewRowAdd) {
                 RevnueTimeFrameChange = false;
             }
@@ -418,7 +434,11 @@
                 combo.save();
 
             }
-            if (stage == 0 && cInd == 2) return true;
+
+            if (stage == 0 && cInd == 2) {
+                return true;
+            }
+
             var ParentID = $("#ddlParentFinance").val();
             var ChildID = $("#ddlChildFinance").val();
             if (IsValid) {
