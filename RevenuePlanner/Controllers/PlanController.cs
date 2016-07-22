@@ -17784,7 +17784,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            return new EmptyResult();
+            return Json(new { conflict = false, message = "File imported successfully." }, JsonRequestBehavior.AllowGet); ;
 
 
         }

@@ -904,8 +904,9 @@
                     }
                     else
                     {
-                        $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","table-row");
                         $("#gridbox .xhdr .hdr tr:nth-child(3) .hdrcell").css("line-height","normal");
+                        $("#gridbox .xhdr .hdr tr:nth-child(2)").css("display","table-row");
+                        myTreeGrid.setSizes();
                     }
                 }
             }else{

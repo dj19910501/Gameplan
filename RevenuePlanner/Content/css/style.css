@@ -13807,6 +13807,10 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
 
 .ui-multiselect-menu {
     max-width: none;
+    padding-bottom:0; /* Change for this id #multipleselect_ddlColumnSet, #multipleselect_ddlMainGridTimeFrame */
+}
+.ui-multiselect-checkboxes label {
+    margin-bottom:0;
 }
 
 #PlanTab li {

@@ -127,7 +127,7 @@
             var sucesstextmessagespan = $("#spanMsgSuccess");
             var sucesstextmessagediv = $("#SuccessMsg");
             if (sucesstextmessagespan != undefined && sucesstextmessagespan != null) {
-                sucesstextmessagespan.text('Your file imported successfully.')
+                sucesstextmessagespan.text('file imported successfully.')
                 if (sucesstextmessagediv != undefined && sucesstextmessagediv != null) {
                     sucesstextmessagediv.css('display', 'block');
                 }
@@ -372,7 +372,6 @@
                 nValue = '0';
                 isEmptyStringForCell = false;
             }
-            debugger;
             if (!_isNewRowAdd) {
                 RevnueTimeFrameChange = false;
             }
@@ -889,7 +888,6 @@
     }
 
     function RollupFinanceValue(rId, cId, colIndex) {
-
         var parentid = rId;
         var sum = 0;
         var childitems = myTreeGrid.getSubItems(rId).split(',');
