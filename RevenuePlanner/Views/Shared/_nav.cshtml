@@ -58,7 +58,7 @@
                     {
                         if (!Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Any())
                         {
-                            if (o.Description != null)
+                            if (!string.IsNullOrEmpty(Convert.ToString(o.Description)))
                             {
                                 hrefLink = o.Description;
                             }
