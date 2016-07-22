@@ -13744,6 +13744,9 @@ namespace RevenuePlanner.Controllers
                 
                 if (IsUnarchive)
                 {
+                    if (LinkedTacticId != 0)
+                        IsArchive = ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, false, true, LinkedTacticId);
+                    else
                     IsArchive = ArchiveUnarchiveMediaCode(MediaCodeId, tacticId, false);
                     if (IsArchive)
                     {
@@ -13756,7 +13759,7 @@ namespace RevenuePlanner.Controllers
                         if(objmediacode!=null)
                             mediacode = objmediacode.MediaCode;
                         int linkedmediacodeid = lstmediacode.Where(a => a.MediaCode == mediacode && a.TacticId == LinkedTacticId).Select(a => a.MediaCodeId).FirstOrDefault();
-                        ArchiveUnarchiveMediaCode(Convert.ToString(linkedmediacodeid), LinkedTacticId, false);
+                        ArchiveUnarchiveMediaCode(Convert.ToString(linkedmediacodeid), LinkedTacticId, false, true, tacticId);
                     }
                 }
                     else
@@ -14291,7 +14294,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region code for making active code to archive media code
-        public bool ArchiveUnarchiveMediaCode(string MediaCodeId, int tacticId, bool Isarchive)
+        public bool ArchiveUnarchiveMediaCode(string MediaCodeId, int tacticId, bool Isarchive, bool IsLinkedTactic=false, int linkedTacticID=0)
         {
             bool isarchived = false;
             bool IsValid = true;
@@ -14309,7 +14312,12 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             string MediaCode = MediacodeObj.MediaCode;
-                            var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == MediaCode ).FirstOrDefault();
+                             var Result=new object();
+                             if (IsLinkedTactic)
+                                 Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == MediaCode &&  a.TacticId!=linkedTacticID).FirstOrDefault();
+                             else
+                                 Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCode == MediaCode).FirstOrDefault();
+
                             if (Result != null)
                                 IsValid= false;
                             else
