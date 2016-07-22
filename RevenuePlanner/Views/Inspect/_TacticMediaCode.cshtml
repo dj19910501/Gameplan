@@ -17,13 +17,13 @@
     {
         LinkedTacticID = Convert.ToInt32(ViewBag.LinkedTacticId);
     }
-     var errorUnarchive = "";
+    var errorUnarchive = "";
 
-     if (ViewBag.ErrorUnarchived!=null)
-     {
-         errorUnarchive = Convert.ToString(ViewBag.ErrorUnarchived);
-     }
-    
+    if (ViewBag.ErrorUnarchived != null)
+    {
+        errorUnarchive = Convert.ToString(ViewBag.ErrorUnarchived);
+    }
+
 }
 @if (countrows > 0)
 {
@@ -37,9 +37,9 @@ else
     </div>}
     else
     {
-       <div class="content-panel-tab">
-        <div class="bold padding-top16 font-size18">No records available.</div>
-    </div>
+        <div class="content-panel-tab">
+            <div class="bold padding-top16 font-size18">No records available.</div>
+        </div>
     }
 
 }
@@ -55,10 +55,10 @@ else
         overflow-x: hidden; /* For chrome */
     }
 
-    .dhx_combo_select option {
-        word-wrap: break-word !important;
-        white-space: normal !important;
-    }
+        .dhx_combo_select option {
+            word-wrap: break-word !important;
+            white-space: normal !important;
+        }
 
     /*.dhx_combo_select {
         width: 150px;
@@ -75,7 +75,7 @@ else
 
     </div>
 </div>
-<div class="honeycombbox" style="display:none" id="divHoneyCombBoxMediaCode">   
+<div class="honeycombbox" style="display:none" id="divHoneyCombBoxMediaCode">
     <span id="totalEntityMediacode" class="badge">0</span>
     <!-- honeycomb svg -->
     <svg id="honeycombmediacode" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -158,7 +158,7 @@ else
 	                        </g>	                </g>
 	        </g>
 	        </svg>
-   
+
     <div class="hidden" id="honeycomb_contentMediaCode">
 
         <div class="hc-controls" id="hc-controlsdivMediaCode">
@@ -219,16 +219,14 @@ else
         $('#popupMediCode').css('display', 'none');
         $('.dhx_combo_select').css('display', 'none');
     });
-    function LoadArchiveGrid()
-    {
+    function LoadArchiveGrid() {
         var url = '@Url.Content("~/Inspect/ArchiveMediaCode/")';
         var inspectmode = $("#hdnInspectMode").val();
-        $("#divArchiveMediaCode").load(url + '?tacticId=' + '@tacticId' + '&Mode=' + inspectmode , function (response, status, xhr) {
+        $("#divArchiveMediaCode").load(url + '?tacticId=' + '@tacticId' + '&Mode=' + inspectmode, function (response, status, xhr) {
 
         });
     }
-    function SetTooltip()
-    {
+    function SetTooltip() {
         $(".archive").tooltip({
             'container': 'body',
             'placement': 'bottom'
@@ -316,7 +314,7 @@ else
         MediaCodeGrid.splitAt(3);
         MediaCodeGrid.parse(GridDataHomeGrid, "json");
         //Added by Rahul shah to Select/Deselect all honeycomb on click of checkbox for  PL #2371
-        $('#MediaCodeSelectAll').change(function () {          
+        $('#MediaCodeSelectAll').change(function () {
             if ($(this).is(':checked')) {
                 $('#MediaCodeGrid').find('tr').find('td').find("div.honeycombbox-icon-gantt").each(function () {
                     if (!$(this).hasClass("honeycombbox-icon-gantt-Active")) {
@@ -484,7 +482,7 @@ else
 
                 if (isrequired != null && isrequired != undefined && isrequired.toString().toLowerCase() == "true") {
                     MediaCodeGrid.setCellTextStyle(rowId, cellInd, "");
-               }
+                }
 
                 var newvale = htmlDecode(nValue);
                 MediaCodeGrid.cells(rowId, cellInd).setValue(newvale);
@@ -500,13 +498,12 @@ else
                     var isrequired = MediaCodeGrid.cells(rowId, col_index).getAttribute("actval");
                     if (isrequired != null && isrequired != undefined && isrequired.toString().toLowerCase() == "true") {
                         var val = MediaCodeGrid.cells(rowId, col_index).getValue();
-                        if (val == '' || val=='--')
-                        fillrequired = fillrequired + 1;
+                        if (val == '' || val == '--')
+                            fillrequired = fillrequired + 1;
                     }
                 }
             });
-            if(fillrequired>0)
-            {
+            if (fillrequired > 0) {
                 MediaCodeGrid.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn disabled' rowid=" + rowId + " onclick=GenerateMediaCode(this); disabled='disabled' />");
 
             }
@@ -553,7 +550,7 @@ else
         if (isOnly == true) {
             MediaCodeGrid.cells(newId, 1).setValue("<span class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newId + "  title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt disabled' rowid=" + newId + " title='Select'></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newId + " title='Archive' onclick=ArchiveMediaCode(event)></i></span>");
         }
-      
+
         var RequiredCustoList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.RequiredList))');
         if (RequiredCustoList != "") {
             MediaCodeGrid.forEachCell(newId, function (cellObj, col_index) {
@@ -577,7 +574,7 @@ else
             MediaCodeGrid.setSizes();
         }, 100);
     }
-    function ArchiveMediaCode(e) {
+    function ArchiveMediaCode(e) {   
         $("#successMessage").css("display", "none");
         $("#errorMessage").css("display", "none");
         $(".tooltip").hide();
@@ -607,13 +604,16 @@ else
                 }, 200);
             }
             return;
+        }        
+        if (e.srcElement.parentElement.previousElementSibling.className == "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active") {
+            AddRemoveMediaCode(e.srcElement.parentElement.previousElementSibling);
         }
     }
     function custom_sort(a, b, ord, aid, bid) {
-        if (a == "" ) {
+        if (a == "") {
             return 1;
         }
-        if (b == "" ) {
+        if (b == "") {
             return -1;
         }
         var aid = aid.split("_");
@@ -746,29 +746,32 @@ else
             $(".popover ").hide();
             $(".honeycombbox").hide();
         }
-
+        if ($('#MediaCodeGrid').find('tr').find('td').find("div.honeycombbox-icon-gantt").length / 2 != HoneyContent) {
+            $('#MediaCodeSelectAll').removeAttr('checked');
+        }
     }
     //Added by Rahul shah to export to csv for PL #2371
     function ExportToCSVMedia() {
-        var MediaCodeGridSelected = MediaCodeGrid;
-        var ids = MediaCodeGridSelected.getAllRowIds();
-        var AllRowIds = ids.split(",");
-        for (var i = 0; i < ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length; i++) {
-            var arrlen = AllRowIds.length;
-            for (var j = 0; j < arrlen; j++) {
-                if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId[i] == AllRowIds[j]) {
-                    AllRowIds = AllRowIds.slice(0, j).concat(AllRowIds.slice(j + 1, arrlen));
+        if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length > 0) {
+            var MediaCodeGridSelected = MediaCodeGrid;
+            var ids = MediaCodeGridSelected.getAllRowIds();
+            var AllRowIds = ids.split(",");
+            for (var i = 0; i < ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length; i++) {
+                var arrlen = AllRowIds.length;
+                for (var j = 0; j < arrlen; j++) {
+                    if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId[i] == AllRowIds[j]) {
+                        AllRowIds = AllRowIds.slice(0, j).concat(AllRowIds.slice(j + 1, arrlen));
+                    }
                 }
             }
-        }
 
-        for (var i = 0 ; i < AllRowIds.length ; i++) {
-            MediaCodeGridSelected.deleteRow(AllRowIds[i]);
-        }
+            for (var i = 0 ; i < AllRowIds.length ; i++) {
+                MediaCodeGridSelected.deleteRow(AllRowIds[i]);
+            }
 
-        var count = MediaCodeGridSelected.getRowsNum();
-        var colCount = MediaCodeGridSelected.getColumnsNum()
-        if (count > 0) {
+            //var count = MediaCodeGridSelected.getRowsNum();
+            var colCount = MediaCodeGridSelected.getColumnsNum();
+
             MediaCodeGridSelected.enableCSVAutoID(true);
             MediaCodeGridSelected.enableCSVHeader(true);
             var checkColumn = "";
@@ -787,7 +790,7 @@ else
             var myCSVString = MediaCodeGridSelected.serializeToCSV(true);
             var lines = myCSVString.split(",");
             var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
-            var Filename = '@ViewBag.TacticID' + '_MediaCode.csv';
+            var Filename = '@ViewBag.TacticID' + '_MediaCode';
             if (navigator.userAgent.search("Trident") >= 0) {
                 if (!window.Blob) {
                     // if IE 9 then becuase ie 9 and lower version not support blob
@@ -815,7 +818,12 @@ else
             }
             $('#spanMessageError').html("");
             $("#errorMessage").hide();
-
+            BindMediaCodeGrid();
+            if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length > 0) {
+                for (var i = 0 ; i < ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length; i++) {
+                    $('#MediaCodeGrid').find('tr').find('td').find("div[rowid='" + ExportSelectedIdsMediaCode.MediacodeSelectedRowId[i] + "']").addClass("honeycombbox-icon-gantt-Active");
+                }
+            }
         }
         else {
             $("#modal-container-186470").scrollTop(0);
@@ -823,12 +831,6 @@ else
             $("#errorMessage").slideDown(400);
             $("#spanMessageError").empty();
             $("#spanMessageError").html('No Records found for Export Grid data.');
-        }
-        BindMediaCodeGrid();
-        if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length > 0) {
-            for (var i = 0 ; i < ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length; i++) {
-                $('#MediaCodeGrid').find('tr').find('td').find("div[rowid='" + ExportSelectedIdsMediaCode.MediacodeSelectedRowId[i] + "']").addClass("honeycombbox-icon-gantt-Active");
-            }
         }
     }
 
