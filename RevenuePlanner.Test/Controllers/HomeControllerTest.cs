@@ -2232,6 +2232,8 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result.Data != null)
             {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Data);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
@@ -2268,6 +2270,8 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Result.Data);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else
@@ -2302,6 +2306,14 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
+                if (!(result.ViewName.Equals("_ChangeLog")))
+                {
+                    Assert.Fail();
+                }
+                else if (result.ViewName.Equals("_ChangeLog"))
+                {
+                    Assert.IsNotNull(result.Model);
+                }
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
@@ -2338,6 +2350,8 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Result.Data);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else
@@ -2376,6 +2390,7 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
+                
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewData.Values);
             }
             else
@@ -2408,8 +2423,10 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = objHomeController.GetCurrentPlanPermissionDetail(PlanId) as JsonResult;
 
-            if (result.Data != null)
+            if (result != null)
             {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Data);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
@@ -2446,6 +2463,15 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
+                if (!(result.ViewName.Equals("_PlanDropdown")))
+                {
+                    Assert.Fail();
+                }
+                else if (result.ViewName.Equals("_PlanDropdown"))
+                {
+                    Assert.IsNotNull(result.Model);
+                }
+
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
