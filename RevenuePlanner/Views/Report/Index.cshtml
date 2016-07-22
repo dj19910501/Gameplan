@@ -1082,63 +1082,59 @@
     $(document).ready(function () {
         $('#aMeasure').addClass('active');
         $('#aPlan').removeClass('active');
-        if ('@ActiveReportMenu'.toLowerCase() == "none") {
-            $('#sidebar').empty();
-        }
-        else if ('@ActiveReportMenu'.toLowerCase() == "overview") {
-            myApp.showPleaseWait();// add by nishant sheth
-            $('.overview').addClass('active');
-            $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
-            $("#ddlYearSpan select").selectbox();
-            $('.sbHolder').click(function () {
-                $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
-                    $(this).multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu
-                });
-            });
-            ///Start Modified by Mitesh Vaishnav for PL ticket #727
+
+        myApp.showPleaseWait();// add by nishant sheth
+        $('#ddlCustomTimeFrame').hide(); //Add By Nishant Sheth #2262
+        $("#ddlYearSpan select").selectbox();
+        $('.sbHolder').click(function () {
             $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
-                $(this).multiselect({ noneSelectedText: $(this).attr('noneselectedvalue') }).multiselectfilter();
+                $(this).multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu
             });
+        });
+        ///Start Modified by Mitesh Vaishnav for PL ticket #727
+        $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
+            $(this).multiselect({ noneSelectedText: $(this).attr('noneselectedvalue') }).multiselectfilter();
+        });
 
-            $(".sbSelector").css("color", "#6D6D6D");
-            $(".sbToggle").css("border-top-color", "#6D6D6D");
-
-            OptionMain = getYearSelectedValue(true);
-
-            // Qurt_Month = getQuarterMonthlySelectedValue();
-
-            // Load Multiselect Dropdown list i.e. Bind with new design
-            LoadYearDropdown();
-            //loadBasedOnPlan(); // Commented By Nishant Sheth due to off multiple time same methods are called
-            PlanIds = GetFilterIdForPlan(multiselectPlanId);
-            GetTacticTypelist(PlanIds, false);
-            GetOwnerListForFilter(PlanIds, false);
-            GetLastSetofViews($('#FilterName').val());
-            GetselectionFilter();
-            $("#DivShareReport").hide();
-            GetFilterIdForPlan(multiselectPlanId);
-            function toggleChevron(e) {
-                $(e.target)
-                    .prev('.accordion-heading')
-                    .find("i.indicator")
-                //.toggleClass('glyphicon-chevron-down glyphicon-chevron-up'); /* #1952 */
-                .toggleClass('fa-angle-down fa-angle-up');
-            }
-            $('.accordion').on('hidden.bs.collapse', toggleChevron);
-            $('.accordion').on('shown.bs.collapse', toggleChevron);
-            NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
-
-            $('#ulLeftPane .dropdown-toggle').dropdown(); // Added for #2257
+        $(".sbSelector").css("color", "#6D6D6D");
+        $(".sbToggle").css("border-top-color", "#6D6D6D");
+        OptionMain = getYearSelectedValue(true);
+        PlanIds = GetFilterIdForPlan(multiselectPlanId);
+        GetTacticTypelist(PlanIds, false);
+        GetOwnerListForFilter(PlanIds, false);
+        GetLastSetofViews($('#FilterName').val());
+        
+        $("#DivShareReport").hide();
+        GetFilterIdForPlan(multiselectPlanId);
+        function toggleChevron(e) {
+            $(e.target)
+				.prev('.accordion-heading')
+				.find("i.indicator")
+            //.toggleClass('glyphicon-chevron-down glyphicon-chevron-up'); /* #1952 */
+            .toggleClass('fa-angle-down fa-angle-up');
         }
-        else if ('@ActiveReportMenu'.toLowerCase() == "revenue") {
+        $('.accordion').on('hidden.bs.collapse', toggleChevron);
+        $('.accordion').on('shown.bs.collapse', toggleChevron);
+        NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
+
+        $('#ulLeftPane .dropdown-toggle').dropdown(); // Added for #2257
+	    if ('@ActiveReportMenu'.toLowerCase() == "none") {
+	        $('#sidebar').empty();
+	        $('#ddlsection').empty();
+        }
+        else if ('@ActiveReportMenu' == "Overview") {
+            LoadYearDropdown();
+            GetselectionFilter();
+        }
+        else if ('@ActiveReportMenu' == "Revenue") {
             $('.revenue').addClass('active');
             RevenueDash();
         }
-        else if ('@ActiveReportMenu'.toLowerCase() == "waterfall") {
+        else if ('@ActiveReportMenu' == "Waterfall") {
             $('.waterfall').addClass('active');
             WaterfallDash();
         }
-        else if ('@ActiveReportMenu'.toLowerCase() == "finance") {
+        else if ('@ActiveReportMenu' == "Finance") {
             $('.finance').addClass('active');
             FinanceDash();
         }

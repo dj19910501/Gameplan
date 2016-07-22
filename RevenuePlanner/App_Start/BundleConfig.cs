@@ -21,7 +21,8 @@ namespace RevenuePlanner
                      "~/Content/css/datepicker.css",
                      "~/Content/css/dhtmlxgantt.css",
                      "~/Content/css/summernote.css",
-                     "~/Content/css/jquery.multiselect.css"
+                     "~/Content/css/jquery.multiselect.css",
+                     "~/Content/css/daterangepicker-bs3.css"
                 //"~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css"
                     ));
 
@@ -87,6 +88,11 @@ namespace RevenuePlanner
                        "~/Scripts/js/highcharts-funnel.js",
                        "~/Scripts/js/scripts_v2.js"
                        ));
+            bundles.Add(new ScriptBundle("~/bundles/DateRangeJs").Include(
+                   "~/Scripts/moment.js",
+                   "~/Scripts/moment.min.js",
+                   "~/Scripts/daterangepicker.js"
+                ));
             //added by devanshi #2368
             bundles.Add(new StyleBundle("~/Content/css/GetCSSBudget").Include(
                 "~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css",

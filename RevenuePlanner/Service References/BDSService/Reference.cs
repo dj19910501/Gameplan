@@ -521,6 +521,12 @@ namespace RevenuePlanner.BDSService {
             private string ApplicationTitleField;
             
             [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string ConnectionStringField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private byte[] EncryptedConnectionStringField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
             private System.Guid RoleIdApplicationWiseField;
             
             public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
@@ -554,6 +560,32 @@ namespace RevenuePlanner.BDSService {
                     if ((object.ReferenceEquals(this.ApplicationTitleField, value) != true)) {
                         this.ApplicationTitleField = value;
                         this.RaisePropertyChanged("ApplicationTitle");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string ConnectionString {
+                get {
+                    return this.ConnectionStringField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.ConnectionStringField, value) != true)) {
+                        this.ConnectionStringField = value;
+                        this.RaisePropertyChanged("ConnectionString");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public byte[] EncryptedConnectionString {
+                get {
+                    return this.EncryptedConnectionStringField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.EncryptedConnectionStringField, value) != true)) {
+                        this.EncryptedConnectionStringField = value;
+                        this.RaisePropertyChanged("EncryptedConnectionString");
                     }
                 }
             }
@@ -2400,6 +2432,12 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreateUser", ReplyAction="http://tempuri.org/IBDSService/CreateUserResponse")]
         System.Threading.Tasks.Task<int> CreateUserAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_CreateUser", ReplyAction="http://tempuri.org/IBDSService/_CreateUserResponse")]
+        int _CreateUser(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/_CreateUser", ReplyAction="http://tempuri.org/IBDSService/_CreateUserResponse")]
+        System.Threading.Tasks.Task<int> _CreateUserAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreateUserBasic", ReplyAction="http://tempuri.org/IBDSService/CreateUserBasicResponse")]
         int CreateUserBasic(RevenuePlanner.BDSService.User user, System.Guid createdBy);
         
@@ -2940,6 +2978,14 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<int> CreateUserAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy) {
             return base.Channel.CreateUserAsync(user, applicationId, createdBy);
+        }
+        
+        public int _CreateUser(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy) {
+            return base.Channel._CreateUser(user, applicationId, createdBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> _CreateUserAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy) {
+            return base.Channel._CreateUserAsync(user, applicationId, createdBy);
         }
         
         public int CreateUserBasic(RevenuePlanner.BDSService.User user, System.Guid createdBy) {

@@ -7,6 +7,7 @@ using System;
 using System.Net;
 using RevenuePlanner.BAL;
 using System.Collections.ObjectModel;
+using System.Configuration;
 
 namespace RevenuePlanner.Helpers
 {
@@ -6692,6 +6693,99 @@ namespace RevenuePlanner.Helpers
             {
                 return "";
             }
+        }
+
+        public static string GetFilterData(this HtmlHelper helper, int DashboardID, int DashboardPageID)
+        {
+            WebClient client = new WebClient();
+            string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+            string regularConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
+            string ReportDBConnString = string.Empty;
+            if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
+            {
+                ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+            }
+            string AuthorizedReportAPIUserName = string.Empty;
+            if (ConfigurationManager.AppSettings.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
+                {
+                    AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
+                }
+            }
+
+            string AuthorizedReportAPIPassword = string.Empty;
+            if (ConfigurationManager.AppSettings.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
+                {
+                    AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
+                }
+            }
+            string ApiUrl = string.Empty;
+            if (ConfigurationManager.AppSettings.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
+                {
+                    ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                }
+            }
+            string url = marketoIntegrstionApi + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.UserId + "&RoleId=" + Sessions.User.RoleId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+            string result = client.DownloadString(url);
+            result = result.Substring(1);
+            result = result.Remove(result.Length - 1);
+            return result;
+        }
+
+        public static string GetMenuString(this HtmlHelper helper, int MenuNo, int TotalMenuCnt, RevenuePlanner.BDSService.Menu o)
+        {
+
+            string MenuStr = string.Empty;
+            if (MenuNo == 10)
+            {
+                MenuStr = MenuStr + "<li class='Other fix-width dropdown'><a href='#'><span class='fa fa-gear'></span><span class='nav-text'>OTHER</span><span class='dd-arrow'><i class='fa fa-caret-down'></i></span></a><ul class='dropdown-menu'>";
+            }
+            string hrefLink = string.Empty;
+            if (!Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Any())
+            {
+                if (o.Description != null)
+                {
+                    hrefLink = o.Description;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(o.ActionName)) && Convert.ToString(o.ActionName).ToLower() == "index")
+                    {
+                        hrefLink = "/" + Convert.ToString(o.ControllerName);
+                    }
+                    else
+                    {
+                        hrefLink = "/" + Convert.ToString(o.ControllerName) + "/" + Convert.ToString(o.ActionName);
+                    }
+                }
+            }
+            string classname = Convert.ToString(o.Code.ToLower().Replace(" ", ""));
+            classname = "'" + classname + " fix-width";
+            if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
+            {
+                classname = classname + " dropdown";
+            }
+            classname = classname + "'";
+            string LiId = "Measure_" + o.MenuApplicationId;
+
+            MenuStr = MenuStr + "<li class=" + classname + " id=" + LiId + "> <a href=" + hrefLink + "> <span class=" + o.CustomCss + "></span> <span class='nav-text'> " + Convert.ToString(o.Name).ToUpper() + " </span>";
+            if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
+            {
+                MenuStr = MenuStr + "<span class='dd-arrow'><i class='fa fa-caret-down'></i></span>";
+            }
+            MenuStr = MenuStr + "</a></li>";
+
+            if (MenuNo == TotalMenuCnt)
+            {
+                MenuStr = MenuStr + "</ul></li>";
+            }
+
+            return MenuStr;
         }
 
         private static string GetAbbrivatedZoneName(string StandandName)

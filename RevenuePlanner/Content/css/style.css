@@ -15892,6 +15892,31 @@ input.selectInput{
 .nav.nav-tabs.version-tab{margin-bottom: 20px; padding-bottom: 10px;margin-left:0; margin-right:0}
 
 .honeycombbox-icon-gantt.disabled{opacity:0.7}
+/* New menu style only fr Measure */
+ 
+.menu-content > li.fix-width > a{
+    width:auto;
+    text-align:center;
+    margin:auto;
+}
+.menu-content > li.fix-width .nav-text, .menu-content > li.fix-width.dropdown a > .nav-text {
+    max-width: 94px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.menu-content > li.fix-width.dropdown .dropdown-menu .nav-text {
+    white-space: normal;
+    word-wrap: break-word;
+}
+.menu-content .dd-arrow {
+   position: relative;
+   right: unset;
+   width: unset;
+}
+
+.report-handing{margin-bottom:20px}
+.report-handing .selectBox{width: 158px; line-height: 1.1; float:right} /*#2406 */
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

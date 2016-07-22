@@ -4,6 +4,10 @@
 
 @{
     List<Custom_Dashboard> DashboardList = ViewBag.DashboardList;
+    string MeasureConnStr = Convert.ToString(ViewBag.MeasureConnStr);
+    string AuthorizedReportAPIUserName = Convert.ToString(ViewBag.AuthorizedReportAPIUserName);
+    string AuthorizedReportAPIPassword = Convert.ToString(ViewBag.AuthorizedReportAPIPassword);
+    string ApiUrl = Convert.ToString(ViewBag.ApiUrl);
 }
 
 <!-- Added by Arpita Soni for Ticket #2202 on 05/23/2016 -->
@@ -11,16 +15,19 @@
     <ul class="cf menu-content">
         @if (Sessions.AppMenus != null && Sessions.AppMenus.Count() > 0)
         {
+            int MenuCount = 1;
             foreach (Menu o in Sessions.AppMenus.Where(x => x.ParentApplicationId == null))
             {
                 string menuname = Convert.ToString(o.Name);
                 string hrefLink = "#";
-
+                if (MenuCount < 10)
+                {
                     if (o.Name.ToLower() == "custom")
                     {
                         if (DashboardList != null && DashboardList.Count > 0)
                         {
                             string classname = Convert.ToString(o.Code.ToLower().Replace(" ", ""));
+                            classname = classname + " fix-width";
                             classname = classname + " dropdown";
                             <li class="@classname">
                                 <a href="@hrefLink">
@@ -51,14 +58,23 @@
                     {
                         if (!Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Any())
                         {
-                            hrefLink = Url.Action(Convert.ToString(o.ActionName), Convert.ToString(o.ControllerName));
+                            if (o.Description != null)
+                            {
+                                hrefLink = o.Description;
+                            }
+                            else
+                            {
+                                hrefLink = Url.Action(Convert.ToString(o.ActionName), Convert.ToString(o.ControllerName));
+                            }
                         }
                         string classname = Convert.ToString(o.Code.ToLower().Replace(" ", ""));
+                        classname = classname + " fix-width";
                         if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
                         {
                             classname = classname + " dropdown";
                         }
-                        <li class="@classname">
+                        string LiId = "Measure_" + o.MenuApplicationId;
+                        <li class="@classname" id="@LiId">
                             <a href="@hrefLink">
                                 <span class="@o.CustomCss"></span>@*Added by Akashdeep Kadia for Ticket #2275 on 10-June-2016*@
                                 <span class="nav-text">@menuname.ToUpper()</span>
@@ -79,10 +95,17 @@
                             </ul>
                         </li>
                     }
+                    MenuCount++;
+                }
+                else
+                {
+                    @Html.Raw(@Html.GetMenuString(MenuCount, Sessions.AppMenus.Count(), o))
+                    MenuCount++;
                 }
             }
-        </ul>
-    </nav>
+        }
+    </ul>
+</nav>
 
 <script>
     $(document).ready(function () {
@@ -106,5 +129,12 @@
               });
     });
 
+    $(document).on("click", "li[id^='Measure']", function () {
+        $('.menu-content li').removeClass('active');
+        $(this).addClass('active');
+        var DashId = $(this).attr('id').replace('Measure_', '');
+        var url = '@Url.Action("Index", "MeasureDashboard", new { DashboardId = "FIRST" })';
+        window.location.href = url.replace('FIRST', DashId);
+    });
 </script>
 

@@ -85,7 +85,8 @@ namespace RevenuePlanner.Controllers
         public ActionResult MeasureReport()
         {
             var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
-            var MeasureAppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+            Guid MeasureAppId = Guid.Parse(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"]);
+            //Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
             var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
             Sessions.User.RoleId = RoleId;
             var AppMenus = objBDSServiceClient.GetAllMenu(AppId, Sessions.User.RoleId);
@@ -95,14 +96,86 @@ namespace RevenuePlanner.Controllers
                 Sessions.AppMenus = objBDSServiceClient.GetMeasureMenuforPlan(MeasureAppId);
             }
 
-            if (Sessions.AppMenus == null)
+            List<Menu> lstMenu = new List<Menu>();
+            if (Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).Any())
             {
-                return Index(Enums.ActiveMenu.None);
+                WebClient client = new WebClient();
+                string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                //if (marketoIntegrstionApi != null)
+                //{
+                string regularConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
+                string ReportDBConnString = string.Empty;
+                if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
+                {
+                    ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                }
+                string AuthorizedReportAPIUserName = string.Empty;
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
+                    {
+                        AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
+                    }
+                }
+
+                string AuthorizedReportAPIPassword = string.Empty;
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
+                    {
+                        AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
+                    }
+                }
+                string ApiUrl = string.Empty;
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
+                    {
+                        ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                    }
+                }
+
+                string url = marketoIntegrstionApi + "api/Dashboard/GetdashboardListUserWise?UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                string result = string.Empty;
+                try
+                {
+                    result = client.DownloadString(url);
+                    lstMenu = JsonConvert.DeserializeObject<List<Menu>>(result);
+                }
+                catch (Exception ex)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(ex);
+                }
+                
+
+                if (Sessions.AppMenus != null)
+                {
+                    foreach (var item in lstMenu)
+                    {
+                        Sessions.AppMenus.Add(item);
+                    }
+                }
+                else
+                {
+                    Sessions.AppMenus = lstMenu;
+                }
+            }
+
+            if (Sessions.AppMenus != null && Sessions.AppMenus.Count > 0)
+            {
+                if (Sessions.AppMenus.Count == lstMenu.Count)
+                {
+                    return RedirectToAction("Index", "MeasureDashboard", new { DashboardId = Sessions.AppMenus[0].MenuApplicationId });
+                }
+                else
+                {
+                    return Index(Enums.ActiveMenu.Overview);
+                }
             }
             else
             {
-                return Index(Enums.ActiveMenu.Overview);
-            }            
+                return Index(Enums.ActiveMenu.None);
+            }
         }
         public ActionResult ReportOverview()
         {
@@ -423,6 +496,51 @@ namespace RevenuePlanner.Controllers
             //End Added by Mitesh Vaishnav for PL ticket #846
 
             ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.UserId.ToString());// Add By Nishant Sheth // #2262 : display menu for report's dashboard
+
+            var UserMeasureAppCode = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).Any();
+            string ReportDBConnString = string.Empty;
+            string AuthorizedReportAPIUserName = string.Empty;
+            string AuthorizedReportAPIPassword = string.Empty;
+            string ApiUrl = string.Empty;
+            if (Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).Any())
+            {
+                string regularConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
+                {
+                    ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                }
+
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
+                    {
+                        AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
+                    }
+                }
+
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
+                    {
+                        AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
+                    }
+                }
+
+                if (ConfigurationManager.AppSettings.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
+                    {
+                        ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                    }
+                }   
+            }            
+
+            ViewBag.MeasureConnStr = ReportDBConnString;
+            ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
+            ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
+            ViewBag.ApiUrl = ApiUrl;
+
             return View("Index");
         }
 
