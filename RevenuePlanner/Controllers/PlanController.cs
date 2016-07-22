@@ -17175,7 +17175,14 @@ namespace RevenuePlanner.Controllers
             string FileName = HttpUtility.HtmlDecode(Convert.ToString(Session["FileName"]));
             DataTable CSVDataTable = (DataTable)Session["CSVDataTable"];
             Response.ContentType = "Application/x-msexcel";
-            Response.AddHeader("content-disposition", "attachment;filename=" + FileName + ".csv");
+            // Modified By Nishant Sheth
+            // Export csv does not work in Firefox #2430
+            if (!string.IsNullOrEmpty(FileName))
+            {
+                FileName = FileName + ".csv";
+            }
+            Response.AddHeader("content-disposition", string.Format("attachment; filename = \"{0}\"", System.IO.Path.GetFileName(FileName)));
+            // End By Nishant Sheth
             Response.Write(ExportToCSVFile(CSVDataTable));
             Response.End();
         }
