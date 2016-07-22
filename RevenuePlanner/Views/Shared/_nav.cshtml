@@ -73,7 +73,12 @@
                         {
                             classname = classname + " dropdown";
                         }
-                        string LiId = "Measure_" + o.MenuApplicationId;
+                        string LiId = string.Empty;
+                        if (!string.IsNullOrEmpty(Convert.ToString(o.Description)) && Convert.ToString(o.Description).Contains("javascript:void(0)"))
+                        {
+                            LiId = "Measure_" + o.MenuApplicationId;
+                        }
+                        
                         <li class="@classname" id="@LiId">
                             <a href="@hrefLink">
                                 <span class="@o.CustomCss"></span>@*Added by Akashdeep Kadia for Ticket #2275 on 10-June-2016*@
