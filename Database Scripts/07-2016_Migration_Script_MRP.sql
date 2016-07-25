@@ -3197,11 +3197,22 @@ END
 
 GO
 -- added by devanshi on 25-7-2016 for pl ticket #2429
-sp_RENAME 'Tactic_MediaCodes.MediaCode', 'MediaCodeValue' , 'COLUMN'
+
+
+IF  EXISTS (  SELECT *   FROM   sys.columns   WHERE  object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes]')  AND name = 'MediaCode')
+ALTER TABLE Tactic_MediaCodes DROP COLUMN MediaCode
+
+
+go
 IF Not EXISTS (  SELECT *   FROM   sys.columns   WHERE  object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes]')  AND name = 'MediaCode')
 	ALTER TABLE Tactic_MediaCodes 
     ADD MediaCode bigint
 GO 
+
+IF Not EXISTS (  SELECT *   FROM   sys.columns   WHERE  object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes]')  AND name = 'MediaCode')
+	ALTER TABLE Tactic_MediaCodes 
+    ADD MediaCodeValue nvarchar(max)
+Go
 -- end
 
 

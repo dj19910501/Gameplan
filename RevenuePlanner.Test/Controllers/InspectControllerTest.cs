@@ -1447,6 +1447,91 @@ namespace RevenuePlanner.Test.Controllers
             }
         }
         #endregion
+
+        #region Archive/Unarchvie MediaCode
+        /// <summary>
+        /// method to archive/unarchive media code
+        ///  <auther>Devanshi gandhi</auther>
+        /// <createddate>22July2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void ArchiveUnarchvieMediacode()
+        {
+            Console.WriteLine("To archive/unarchive Media code for Tactic.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            var listmediacode = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId).ToList();
+            if(listmediacode!=null)
+            {
+                int tacticId = listmediacode.Select(a => a.TacticId).FirstOrDefault();
+                int mediacodeId = listmediacode.Where(a => a.TacticId == tacticId).Select(a => a.MediaCodeId).FirstOrDefault();
+                string mode = Convert.ToString(Enums.InspectPopupMode.Edit);
+                if (mediacodeId != 0)
+                {
+                    string mediacodestr = Convert.ToString(mediacodeId);
+                    var result = objInspectController.ArchiveMediaCode(tacticId, mode, 0, mediacodestr) as PartialViewResult;
+                    if (result != null)
+                    {
+                        Assert.IsNotNull(result.Model);
+                        Assert.AreEqual("_ArchiveMediaCode", result.ViewName);
+                        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                    }
+                    else
+                    {
+                        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                    }
+                }
+            }
+            
+           
+        }
+        #endregion
+
+        #region Archive/Unarchvie MediaCode
+        /// <summary>
+        /// method to archive/unarchive media code
+        ///  <auther>Devanshi gandhi</auther>
+        /// <createddate>22July2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void GetArchiveMediacode()
+        {
+            Console.WriteLine("To Get list of archived Media code for Tactic.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            var listmediacode = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId).ToList();
+            if (listmediacode != null)
+            {
+                int tacticId = listmediacode.Select(a => a.TacticId).FirstOrDefault();
+               
+                string mode = Convert.ToString(Enums.InspectPopupMode.Edit);
+               
+                    
+                    var result = objInspectController.ArchiveMediaCode(tacticId, mode, 0, string.Empty) as PartialViewResult;
+                    if (result != null)
+                    {
+                        Assert.IsNotNull(result.Model);
+                        Assert.AreEqual("_ArchiveMediaCode", result.ViewName);
+                        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                    }
+                    else
+                    {
+                        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                    }
+                }
+            
+        }
+        #endregion
         #endregion
 
     }
