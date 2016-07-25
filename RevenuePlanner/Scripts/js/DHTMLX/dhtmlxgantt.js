@@ -8678,7 +8678,9 @@ gantt.scrollTo = function (left, top) {
                                 }
                                 else
                                 {
-                                  $(this).parents('.gantt_row').find('.ROIPackage')[0].outerHTML = "<div class='gantt_tree_icon gantt_blank'></div>"
+                                    if ($(this).parents('.gantt_row').find('.ROIPackage') != 'undefined' && $(this).parents('.gantt_row').find('.ROIPackage') != undefined && $(this).parents('.gantt_row').find('.ROIPackage') != null) {
+                                        $(this).parents('.gantt_row').find('.ROIPackage')[0].outerHTML = "<div class='gantt_tree_icon gantt_blank'></div>"
+                                    }
                                 }
                                
                                  }
