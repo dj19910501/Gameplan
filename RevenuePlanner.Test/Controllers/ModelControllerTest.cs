@@ -920,9 +920,8 @@ namespace RevenuePlanner.Test.Controllers
                 if (result != null)
                 {
                     Assert.IsNotNull(result.Data);
-                    var serializedData = new RouteValueDictionary(result.Data);
-                    var resultvalue = serializedData["errormsg"];
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
+                   
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
                 }
                 else
                 {
