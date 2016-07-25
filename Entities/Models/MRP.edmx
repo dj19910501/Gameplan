@@ -1123,7 +1123,8 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           </Key>
           <Property Name="MediaCodeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TacticId" Type="int" Nullable="false" />
-          <Property Name="MediaCode" Type="varchar(max)" />
+          <Property Name="MediaCodeValue" Type="varchar(max)" />
+          <Property Name="MediaCode" Type="bigint" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="LastModifiedBy" Type="uniqueidentifier" />
@@ -1198,9 +1199,14 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'MRPDev.dbo.User_Permission' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="User_Permission">
           <Key>
             <PropertyRef Name="Id" />
+            
+            
+            
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="DashboardId" Type="int" />
@@ -1225,7 +1231,8 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
           <Property Name="Title" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="MediaCodeId" Type="int" Nullable="false" />
           <Property Name="TacticId" Type="int" Nullable="false" />
-          <Property Name="MediaCode" Type="varchar(max)" />
+          <Property Name="MediaCodeValue" Type="varchar(max)" />
+          <Property Name="MediaCode" Type="bigint" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="LastModifiedBy" Type="uniqueidentifier" />
@@ -2575,11 +2582,22 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="User_Permission" EntityType="Self.User_Permission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AggregationStatus" EntityType="Self.AggregationStatus" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
 [AggregationStatus].[StatusCode] AS [StatusCode]
 FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="User_Permission" EntityType="Self.User_Permission" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[User_Permission].[Id] AS [Id], 
+[User_Permission].[DashboardId] AS [DashboardId], 
+[User_Permission].[ApplicationActivityId] AS [ApplicationActivityId], 
+[User_Permission].[UserId] AS [UserId], 
+[User_Permission].[CreatedDate] AS [CreatedDate], 
+[User_Permission].[CreatedBy] AS [CreatedBy], 
+[User_Permission].[PermissionType] AS [PermissionType], 
+[User_Permission].[HomePageId] AS [HomePageId]
+FROM [dbo].[User_Permission] AS [User_Permission]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vClientWise_Tactic" EntityType="Self.vClientWise_Tactic" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -2587,6 +2605,7 @@ FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
 [vClientWise_Tactic].[Title] AS [Title], 
 [vClientWise_Tactic].[MediaCodeId] AS [MediaCodeId], 
 [vClientWise_Tactic].[TacticId] AS [TacticId], 
+[vClientWise_Tactic].[MediaCodeValue] AS [MediaCodeValue], 
 [vClientWise_Tactic].[MediaCode] AS [MediaCode], 
 [vClientWise_Tactic].[CreatedBy] AS [CreatedBy], 
 [vClientWise_Tactic].[CreatedDate] AS [CreatedDate], 
@@ -3543,7 +3562,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="ROI_PackageDetail" EntitySet="ROI_PackageDetail" />
           </AssociationSet>
           <EntitySet Name="MediaCodes_CustomField_Configuration" EntityType="MRPModel.MediaCodes_CustomField_Configuration" />
-          <EntitySet Name="Tactic_MediaCodes" EntityType="MRPModel.Tactic_MediaCodes" />
           <EntitySet Name="Tactic_MediaCodes_CustomFieldMapping" EntityType="MRPModel.Tactic_MediaCodes_CustomFieldMapping" />
           <AssociationSet Name="FK_MediaCodes_CustomField_Configuration_CustomField" Association="MRPModel.FK_MediaCodes_CustomField_Configuration_CustomField">
             <End Role="CustomField" EntitySet="CustomFields" />
@@ -3553,11 +3571,12 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="CustomField" EntitySet="CustomFields" />
             <End Role="Tactic_MediaCodes_CustomFieldMapping" EntitySet="Tactic_MediaCodes_CustomFieldMapping" />
           </AssociationSet>
+          <EntitySet Name="User_Permission" EntityType="MRPModel.User_Permission" />
+          <EntitySet Name="Tactic_MediaCodes" EntityType="MRPModel.Tactic_MediaCodes" />
           <AssociationSet Name="FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes">
             <End Role="Tactic_MediaCodes" EntitySet="Tactic_MediaCodes" />
             <End Role="Tactic_MediaCodes_CustomFieldMapping" EntitySet="Tactic_MediaCodes_CustomFieldMapping" />
           </AssociationSet>
-          <EntitySet Name="User_Permission" EntityType="MRPModel.User_Permission" />
           <EntitySet Name="vClientWise_Tactic" EntityType="MRPModel.vClientWise_Tactic" />
           </EntityContainer>
         <EntityType Name="BestInClass">
@@ -6178,20 +6197,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_MediaCodes_CustomField_Configuration_CustomField" FromRole="MediaCodes_CustomField_Configuration" ToRole="CustomField" />
         </EntityType>
-        <EntityType Name="Tactic_MediaCodes">
-          <Key>
-            <PropertyRef Name="MediaCodeId" />
-          </Key>
-          <Property Name="MediaCodeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TacticId" Type="Int32" Nullable="false" />
-          <Property Name="MediaCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="CreatedBy" Type="Guid" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
-          <Property Name="LastModifiedBy" Type="Guid" />
-          <Property Name="LastModifiedDate" Type="DateTime" Precision="3" />
-          <Property Name="IsDeleted" Type="Boolean" />
-          <NavigationProperty Name="Tactic_MediaCodes_CustomFieldMapping" Relationship="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" FromRole="Tactic_MediaCodes" ToRole="Tactic_MediaCodes_CustomFieldMapping" />
-        </EntityType>
         <EntityType Name="Tactic_MediaCodes_CustomFieldMapping">
           <Key>
             <PropertyRef Name="Id" />
@@ -6228,18 +6233,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes">
-          <End Type="MRPModel.Tactic_MediaCodes" Role="Tactic_MediaCodes" Multiplicity="1" />
-          <End Type="MRPModel.Tactic_MediaCodes_CustomFieldMapping" Role="Tactic_MediaCodes_CustomFieldMapping" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Tactic_MediaCodes">
-              <PropertyRef Name="MediaCodeId" />
-            </Principal>
-            <Dependent Role="Tactic_MediaCodes_CustomFieldMapping">
-              <PropertyRef Name="MediaCodeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="User_Permission">
           <Key>
             <PropertyRef Name="Id" />
@@ -6253,6 +6246,33 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="PermissionType" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="HomePageId" Type="Int32" />
         </EntityType>
+        <EntityType Name="Tactic_MediaCodes">
+          <Key>
+            <PropertyRef Name="MediaCodeId" />
+          </Key>
+          <Property Name="MediaCodeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TacticId" Type="Int32" Nullable="false" />
+          <Property Name="MediaCodeValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="MediaCode" Type="Int64" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="LastModifiedBy" Type="Guid" />
+          <Property Name="LastModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" />
+          <NavigationProperty Name="Tactic_MediaCodes_CustomFieldMapping" Relationship="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" FromRole="Tactic_MediaCodes" ToRole="Tactic_MediaCodes_CustomFieldMapping" />
+        </EntityType>
+        <Association Name="FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes">
+          <End Type="MRPModel.Tactic_MediaCodes" Role="Tactic_MediaCodes" Multiplicity="1" />
+          <End Type="MRPModel.Tactic_MediaCodes_CustomFieldMapping" Role="Tactic_MediaCodes_CustomFieldMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tactic_MediaCodes">
+              <PropertyRef Name="MediaCodeId" />
+            </Principal>
+            <Dependent Role="Tactic_MediaCodes_CustomFieldMapping">
+              <PropertyRef Name="MediaCodeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="vClientWise_Tactic">
           <Key>
             <PropertyRef Name="PlanTacticId" />
@@ -6265,7 +6285,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="Title" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="MediaCodeId" Type="Int32" Nullable="false" />
           <Property Name="TacticId" Type="Int32" Nullable="false" />
-          <Property Name="MediaCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="MediaCodeValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="MediaCode" Type="Int64" />
           <Property Name="CreatedBy" Type="Guid" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="LastModifiedBy" Type="Guid" />
@@ -7544,20 +7565,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Tactic_MediaCodes">
-            <EntityTypeMapping TypeName="MRPModel.Tactic_MediaCodes">
-              <MappingFragment StoreEntitySet="Tactic_MediaCodes">
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
-                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="MediaCode" ColumnName="MediaCode" />
-                <ScalarProperty Name="TacticId" ColumnName="TacticId" />
-                <ScalarProperty Name="MediaCodeId" ColumnName="MediaCodeId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Tactic_MediaCodes_CustomFieldMapping">
             <EntityTypeMapping TypeName="MRPModel.Tactic_MediaCodes_CustomFieldMapping">
               <MappingFragment StoreEntitySet="Tactic_MediaCodes_CustomFieldMapping">
@@ -7583,6 +7590,21 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Tactic_MediaCodes">
+            <EntityTypeMapping TypeName="MRPModel.Tactic_MediaCodes">
+              <MappingFragment StoreEntitySet="Tactic_MediaCodes">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="MediaCode" ColumnName="MediaCode" />
+                <ScalarProperty Name="MediaCodeValue" ColumnName="MediaCodeValue" />
+                <ScalarProperty Name="TacticId" ColumnName="TacticId" />
+                <ScalarProperty Name="MediaCodeId" ColumnName="MediaCodeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="vClientWise_Tactic">
             <EntityTypeMapping TypeName="MRPModel.vClientWise_Tactic">
               <MappingFragment StoreEntitySet="vClientWise_Tactic">
@@ -7593,6 +7615,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="MediaCode" ColumnName="MediaCode" />
+                <ScalarProperty Name="MediaCodeValue" ColumnName="MediaCodeValue" />
                 <ScalarProperty Name="TacticId" ColumnName="TacticId" />
                 <ScalarProperty Name="MediaCodeId" ColumnName="MediaCodeId" />
                 <ScalarProperty Name="Title" ColumnName="Title" />

@@ -1737,6 +1737,14 @@
                             return false;
                         }
                     }
+                    // If user changes promo to asset then confirm to delete all mediacode.
+                    if ( '@Sessions.IsMediaCodePermission.ToString().ToLower()'=='true' && newAssetType != null && newAssetType != "" && oldAssetType != newAssetType && newAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()') {
+                        var retValue = confirm('Media code associated to this tactic will be deleted. Do you wish to continue?');
+                        if (!retValue) {
+                            return false;
+                        }
+                    }
+                    //end
                     if (nValue != oValue) {
                         $.ajax({
                             type: 'POST',

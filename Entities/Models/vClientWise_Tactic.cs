@@ -18,7 +18,8 @@ namespace RevenuePlanner.Models
         public string Title { get; set; }
         public int MediaCodeId { get; set; }
         public int TacticId { get; set; }
-        public string MediaCode { get; set; }
+        public string MediaCodeValue { get; set; }
+        public Nullable<long> MediaCode { get; set; }
         public Nullable<System.Guid> CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
         public Nullable<System.Guid> LastModifiedBy { get; set; }

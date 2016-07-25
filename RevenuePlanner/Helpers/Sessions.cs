@@ -485,6 +485,19 @@ namespace RevenuePlanner.Helpers
             }
 
         }
+        //Added By devanshi to store media code permission
+        public static bool IsMediaCodePermission
+        {
 
+            get
+            {
+                return Convert.ToBoolean(HttpContext.Current.Session["IsMediaCodePermission"]);
+            }
+            set
+            {
+                HttpContext.Current.Session["IsMediaCodePermission"] = value;
+            }
+
+        }
     }
 }

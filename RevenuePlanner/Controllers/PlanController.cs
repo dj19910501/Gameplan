@@ -13995,6 +13995,16 @@ namespace RevenuePlanner.Controllers
                             }
                             objHome.UnpackageTactics(pcpobj.PlanTacticId, IsPromotion);
                         }
+                        //added by devanshi for #2373 on 22-7-2016 to remove all media code when asset type changes to asset
+                        if (tt.AssetType == Convert.ToString(Enums.AssetType.Asset) && Sessions.IsMediaCodePermission == true)
+                        {
+                            List<int> intacticids = new List<int>();
+                            intacticids.Add(id);
+                            if (linkedTacticId > 0)
+                                intacticids.Add(linkedTacticId);
+                            Common.RemoveTacticMediaCode(intacticids);
+                        }
+                        //end
                         pcpobj.TacticTypeId = tactictypeid;
                         pcpobj.ProjectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue;
 
