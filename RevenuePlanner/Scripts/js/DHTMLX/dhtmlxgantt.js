@@ -3109,6 +3109,7 @@ gantt._render_data = function () {
                 var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
                 var AllCHildNodes = TaskHtml.firstChild.innerHTML;
                 var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
+                var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
                 if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
                     var PackageNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
                     AllCHildNodes = TaskHtml.firstChild.innerHTML;
@@ -3121,6 +3122,13 @@ gantt._render_data = function () {
                     AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
                     TaskHtml.firstChild.innerHTML = AllCHildNodes;
                 }
+                else if (BlankDiv == null || BlankDiv == 'undefined' || BlankDiv == undefined)
+                {
+                    AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
+                    AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                    AllCHildNodes = AllCHildNodes.concat("<div class='gantt_tree_icon gantt_blank'></div>" + FileNode + LastChildNode);
+                    TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                }
 
 
 
@@ -3129,6 +3137,35 @@ gantt._render_data = function () {
 
 
 
+    }
+
+    if (AddRemovePackageItems != null && AddRemovePackageItems != [] && AddRemovePackageItems != "") {
+        if (AddRemovePackageItems.RemoveId.length > 0) {
+            for (var i = 0; i < AddRemovePackageItems.RemoveId.length; i++) {
+                $('.honeycombbox-icon-gantt[name1 =' + AddRemovePackageItems.RemoveId[i] + ']').each(function () {
+                    if ($(this).attr('roitactictype') == "Asset") {
+                        if ($(this).parents('.gantt_row').find('.gantt_blank').length > 0) {
+                            $(this).parents('.gantt_row').find('.ROIPackage').remove();
+                        }
+                        else {
+                            $(this).parents('.gantt_row').find('.ROIPackage')[0].outerHTML = "<div class='gantt_tree_icon gantt_blank'></div>"
+                        }
+
+                    }
+                    $(this).attr('anchortacticid', '0');
+                });
+            }
+        }
+        else if (AddRemovePackageItems.AddItemId.length > 0) {
+            for (var i = 0; i < AddRemovePackageItems.AddItemId.length; i++) {
+                var Taskid = AddRemovePackageItems.AddItemId[i].split('_')[1];
+                var AnchorTacticId = AddRemovePackageItems.AddItemId[i].split('_')[0];
+                if ($('.honeycombbox-icon-gantt[taskid=' + Taskid + ']').length > 0) {
+                    $('.honeycombbox-icon-gantt[taskid=' + Taskid + ']').attr('anchortacticid', AnchorTacticId);
+
+                }
+            }
+        }
     }
 
     //End
@@ -8603,10 +8640,17 @@ gantt.scrollTo = function (left, top) {
                         var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
                         var AllCHildNodes = TaskHtml.firstChild.innerHTML;
                         var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
+                        var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
                         if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
                             var PackageNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
                             AllCHildNodes = TaskHtml.firstChild.innerHTML;
-                            AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
+                            if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
+                                AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
+                            }
+                            else {
+                                AllCHildNodes = AllCHildNodes.replace(PackageNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                            }
+                           
                             TaskHtml.firstChild.innerHTML = AllCHildNodes;
                         }
                         if (AnchorTaskIdsList.Value[index] != undefined && AnchorTaskIdsList.Value[index] != 'undefined' && AnchorTaskIdsList.Value[index] != null && AnchorTaskIdsList.Value[index] != [] && AnchorTaskIdsList.Value[index] != "") {
@@ -8615,9 +8659,6 @@ gantt.scrollTo = function (left, top) {
                             AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
                             TaskHtml.firstChild.innerHTML = AllCHildNodes;
                         }
-
-
-
                     }
                 });
             }
@@ -8627,7 +8668,15 @@ gantt.scrollTo = function (left, top) {
                     for (var i = 0; i < AddRemovePackageItems.RemoveId.length; i++) {
                         $('.honeycombbox-icon-gantt[name1 =' + AddRemovePackageItems.RemoveId[i] + ']').each(function () {
                             if ($(this).attr('roitactictype') == "Asset") {
-                                $(this).parents('.gantt_row').find('.ROIPackage').remove();
+                                if ($(this).parents('.gantt_row').find('.gantt_blank').length > 0)
+                                {
+                                    $(this).parents('.gantt_row').find('.ROIPackage').remove();
+                                }
+                                else
+                                {
+                                  $(this).parents('.gantt_row').find('.ROIPackage')[0].outerHTML = "<div class='gantt_tree_icon gantt_blank'></div>"
+                                }
+                               
                                  }
                                 $(this).attr('anchortacticid', '0');
                                 AddRemovePackageItems.RemoveId.splice(i, 1);

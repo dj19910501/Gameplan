@@ -570,6 +570,15 @@
                             break;
                         case 'TACTIC':
                             if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                                var IsAssetTactic = $(this).attr('roitactictype');
+                                var AssetTacId = $(this).attr('anchortacticid');
+                                var EntityId = $(this).attr('taskid');
+                                if (IsPackageView && IsAssetTactic == '@Enums.AssetType.Asset' && AssetTacId == EntityId) 
+                                {
+                                    ShowMessage(true, "@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage", 3000);
+                                    $('html,body').scrollTop(0);
+                                    return false;
+                                }
                                 $(this).removeClass("honeycombbox-icon-gantt-Active");
                                 var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
                                 if (index >= 0) {
@@ -4726,17 +4735,17 @@
                     Value: []
                 };
                 if (!isOnlyTactics) {
-                    ShowMessageHoneyComb(isError, "Only tactics can be grouped into a package. Please remove Plan/Campaign/Program.", 400);
+                    ShowMessageHoneyComb(isError, '@RevenuePlanner.Helpers.Common.objCached.OnlyTacticsToCreatePackage', 400);
                 }
                 else if(PlanIds.length > 1)
                 {
-                    ShowMessageHoneyComb(isError, "Tactics of different Plans cannot be grouped into a package.", 400);
+                    ShowMessageHoneyComb(isError, "@RevenuePlanner.Helpers.Common.objCached.SinglePlanTacticForPackage", 400);
                 }
                 else if (hasAnchorTactic == 0) {
-                    ShowMessageHoneyComb(isError, "There is no asset included in this package. Please add one asset before packaging.", 400);
+                    ShowMessageHoneyComb(isError, "@RevenuePlanner.Helpers.Common.objCached.AtLeastOneAssetValidation", 400);
                 }
                 else if (hasAnchorTactic > 1) {
-                    ShowMessageHoneyComb(isError, "There is more than one asset included in this package. Please remove any additional assets before packaging.", 400);
+                    ShowMessageHoneyComb(isError, "@RevenuePlanner.Helpers.Common.objCached.MoreThanOneAssetValidation", 400);
                 }
                 else if (IsAlreadyPackaged.length > 0) {
                     ShowMessageHoneyComb(isError, "Tactics(" + IsAlreadyPackaged.join(',') + ") can belong to only one package. Please remove above tactic(s).", 400);
@@ -4804,11 +4813,14 @@
                             });
 
                         }
-
                         // Unselect all items
                         RemoveAllHoneyCombData();
-
-                        ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.PackageCreated", 3000);
+                        if(data.IsUpdatePackage != undefined && data.IsUpdatePackage == true) {
+                            ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.PackageUpdated", 3000);
+                        }
+                        else{
+                            ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.PackageCreated", 3000);
+                        }
                     }
 
                 });
@@ -4834,7 +4846,14 @@
                 });
                 }
                 if ($('#IsGridView').val() == "True") {
-                    anchorTacticId = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]").attr('csvid').split('_')[1];
+                    var objAssetElement = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]");
+                    if (objAssetElement != undefined && objAssetElement != null && objAssetElement.length > 0) {
+                        anchorTacticId = $(objAssetElement).attr('csvid').split('_')[1];
+                    }
+                    else {
+                        ShowMessageHoneyComb(true, "@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage", 400);
+                        return false;
+                    }
                 }
                 else{
                     $('.popover-content').find(".hc-block[anchortacticid= " + anchorTacticId +" ]").each(function () {
@@ -4866,13 +4885,22 @@
                             var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
                             if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                             {
-                                var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0)
+                                var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
+                                var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
                                 if(FileNode != null && FileNode!= 'undefined' && FileNode != undefined)
                                 {
                                    FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML
                                 }
                                 var AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                                if(BlankDiv != null && BlankDiv!= 'undefined' && BlankDiv != undefined)
+                                {
                                 AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                                    
+                                }
+                                else
+                                {
+                                    AllCHildNodes = AllCHildNodes.replace(FileNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                                }
                                 TaskHtml.firstChild.innerHTML = AllCHildNodes;
                             }
                             if (AnchorTaskIdsList.Id.length != 0)
@@ -5637,8 +5665,18 @@
                         // As package is deleted, remove package icon from the grid
                         if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                         {
+                            var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
                             var AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                            if(BlankDiv != null && BlankDiv!= 'undefined' && BlankDiv != undefined)
+                            {
                             AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                                    
+                            }
+                            else
+                            {
+                                AllCHildNodes = AllCHildNodes.replace(FileNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                            }
+                          
                             TaskHtml.firstChild.innerHTML = AllCHildNodes;
                         }
 

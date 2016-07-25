@@ -364,22 +364,28 @@ namespace RevenuePlanner.Controllers
                     }
                     //End Bhavesh
                     //added by devanshi cache media code customfield configuration
+                  
                     #region add tactic media code customfield configuration to cache
-                    CacheObject objCache = new CacheObject();
-                    var lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId && a.CustomField.IsDeleted == false).ToList().Select(a => new TacticCustomfieldConfig
+                    bool isMediaCodePermission = IsClientMediaCodePermission();
+                    Sessions.IsMediaCodePermission = isMediaCodePermission;
+                    if (isMediaCodePermission)
                     {
-                        CustomFieldId = a.CustomFieldId,
-                        CustomFieldName = a.CustomField.Name,
-                        CustomFieldTypeName = a.CustomField.CustomFieldType.Name,
-                        IsRequired = a.CustomField.IsRequired,
-                        Sequence = a.Sequence,
-                        Option = a.CustomField.CustomFieldOptions.Select(opt => new CustomFieldOptionList
+                        CacheObject objCache = new CacheObject();
+                        var lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId && a.CustomField.IsDeleted == false).ToList().Select(a => new TacticCustomfieldConfig
                         {
-                            CustomFieldOptionId = opt.CustomFieldOptionId,
-                            CustomFieldOptionValue = opt.Value
-                        }).ToList()
-                    }).OrderBy(a => a.Sequence).ToList();
-                    objCache.AddCache(Enums.CacheObject.MediaCodeCustomfieldConfiguration.ToString(), lstmediaCodeCustomfield);
+                            CustomFieldId = a.CustomFieldId,
+                            CustomFieldName = a.CustomField.Name,
+                            CustomFieldTypeName = a.CustomField.CustomFieldType.Name,
+                            IsRequired = a.CustomField.IsRequired,
+                            Sequence = a.Sequence,
+                            Option = a.CustomField.CustomFieldOptions.Select(opt => new CustomFieldOptionList
+                            {
+                                CustomFieldOptionId = opt.CustomFieldOptionId,
+                                CustomFieldOptionValue = opt.Value
+                            }).ToList()
+                        }).OrderBy(a => a.Sequence).ToList();
+                        objCache.AddCache(Enums.CacheObject.MediaCodeCustomfieldConfiguration.ToString(), lstmediaCodeCustomfield);
+                    }
                     #endregion
                     //end
                     //Redirect users logging in for the first time to the change password module
@@ -531,7 +537,32 @@ namespace RevenuePlanner.Controllers
                 Sessions.UserActivityPermission |= Common.GetKey<Enums.ApplicationActivity>(permission);
             }
         }
+        // Added by Viral for #2366
+        private bool IsClientMediaCodePermission()
+        {
+            bool isMediaCodePermission = false;
+            try
+            {
+                if (Sessions.User.ClientId != Guid.Empty)
+                {
+                    int appActivityId = 0;
+                    BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
+                    string strMediaCodeActivity = Enums.clientAcivityType.MediaCodes.ToString().ToLower();
+                    var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(Sessions.ApplicationId);
+                    if (ApplicationActivityList != null && ApplicationActivityList.Count > 0)
+                        appActivityId = ApplicationActivityList.Where(act => act.Code.ToLower() == strMediaCodeActivity).Select(act => act.ApplicationActivityId).FirstOrDefault();
+                    //GetClientApplicationactivitylist(_applicationId);
 
+                    if (db.Client_Activity.Any(act => act.ClientId == Sessions.User.ClientId && act.ApplicationActivityId == appActivityId))
+                        isMediaCodePermission = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return isMediaCodePermission;
+        }
         private ActionResult RedirectLocal(string returnUrl)
         {
             var questionMarkIndex = returnUrl.IndexOf('?');

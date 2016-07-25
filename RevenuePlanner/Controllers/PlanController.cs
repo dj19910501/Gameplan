@@ -13995,6 +13995,16 @@ namespace RevenuePlanner.Controllers
                             }
                             objHome.UnpackageTactics(pcpobj.PlanTacticId, IsPromotion);
                         }
+                        //added by devanshi for #2373 on 22-7-2016 to remove all media code when asset type changes to asset
+                        if (tt.AssetType == Convert.ToString(Enums.AssetType.Asset) && Sessions.IsMediaCodePermission == true)
+                        {
+                            List<int> intacticids = new List<int>();
+                            intacticids.Add(id);
+                            if (linkedTacticId > 0)
+                                intacticids.Add(linkedTacticId);
+                            Common.RemoveTacticMediaCode(intacticids);
+                        }
+                        //end
                         pcpobj.TacticTypeId = tactictypeid;
                         pcpobj.ProjectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue;
 
@@ -16679,6 +16689,7 @@ namespace RevenuePlanner.Controllers
 
                         var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                         objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                        objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                         var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                         objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);

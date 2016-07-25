@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="bb8fdfed9bf64c98807c1b637575aba9" Name="Diagram1" ZoomLevel="43">
+      <Diagram DiagramId="bb8fdfed9bf64c98807c1b637575aba9" Name="Diagram1" ZoomLevel="95">
         <EntityTypeShape EntityType="MRPModel.BestInClass" Width="1.5" PointX="4.8502290532226811" PointY="23.631975199855852" />
         <EntityTypeShape EntityType="MRPModel.CampaignNameConvention" Width="1.5" PointX="9.2341701673502889" PointY="18.545508214526581" />
         <EntityTypeShape EntityType="MRPModel.ChangeLog" Width="1.5" PointX="11.991676596920787" PointY="30.812232240481411" />
@@ -190,13 +190,13 @@
         <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_ROIPackageDetail_Plan_Campaign_Program_Tactic1" />
         <EntityTypeShape EntityType="MRPModel.MediaCodes_CustomField_Configuration" Width="1.5" PointX="13.25" PointY="38.25" />
-        <EntityTypeShape EntityType="MRPModel.Tactic_MediaCodes" Width="1.5" PointX="16" PointY="26" />
         <EntityTypeShape EntityType="MRPModel.Tactic_MediaCodes_CustomFieldMapping" Width="1.5" PointX="18.25" PointY="13.125" />
         <AssociationConnector Association="MRPModel.FK_MediaCodes_CustomField_Configuration_CustomField" />
         <AssociationConnector Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_CustomField" />
-        <AssociationConnector Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" />
         <EntityTypeShape EntityType="MRPModel.User_Permission" Width="1.5" PointX="18.875" PointY="0.75" />
-        <EntityTypeShape EntityType="MRPModel.vClientWise_Tactic" Width="1.5" PointX="18.375" PointY="4.75" />
+        <EntityTypeShape EntityType="MRPModel.Tactic_MediaCodes" Width="1.5" PointX="18.375" PointY="9" />
+        <AssociationConnector Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" />
+        <EntityTypeShape EntityType="MRPModel.vClientWise_Tactic" Width="1.5" PointX="18.875" PointY="4.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -1336,7 +1336,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', end
 }
 
 .message-position {
-    margin: -37px 3px 3px !important;
+    margin: -37px 3px 18px !important;/* Changed by bhumika 22-7-2016*/
+    float:left;
+    width:100%;
 }
 
 .all-width {
@@ -2173,9 +2175,9 @@ span.link-blue:hover {
 
 .form-forgot-password .signin-button {
     width: 120px !important;
-    height: 17px !important;
+    /*height: 17px !important;*/
     margin-top: 80px !important;
-    background: url(../images/btn-login.jpg) repeat-x #3b9de4 !important;
+    background: #89cede !important;/*url(../images/btn-login.jpg) repeat-x #3b9de4 !important*/
 }
 
 .nl-form {
@@ -4964,7 +4966,7 @@ a.link-gray {
     margin-bottom: 0px;
 }
 
-.finance-tbl .div.gridbox {
+.finance-tbl div.gridbox {
     width: 100% !important;
 }
 
@@ -5799,7 +5801,7 @@ span.left-arrow {
 .form-inspect-share-button {
     float: left;
     width: 120px !important;
-    height: 17px !important;
+    /*height: 17px !important;*//* commented by - Bhumika 22-7-2016 */
     background: #89CEDE ; /* Edited for #2312- Komal */
     border: none !important;
     border-top: none !important;
@@ -5810,7 +5812,7 @@ span.left-arrow {
     font-family: Conv_HelveticaLTStd-Light, Arial, sans-serif;
     color: #FFF;
 }
-
+.form-inspect-share .input-append .add-on{height:auto; border-radius: 4px;}
 .attach-icon {
     margin-right: 10px;
     float: left;
@@ -5844,6 +5846,7 @@ span.left-arrow {
     -webkit-box-shadow: -3px -16px 4px -13px #262626 inset;
     -moz-box-shadow: -3px -16px 4px -13px #262626 inset;
     box-shadow: -3px -16px 4px -13px #262626 inset;
+    padding-bottom:25px; /*Added by Bhumika 25/7 */
 }
 
     .form-inspect-share-confirmation label {
@@ -5855,7 +5858,6 @@ span.left-arrow {
     .form-inspect-share-confirmation button {
         margin-left: 100px;
         width: 120px !important;
-        height: 17px !important;
         /*background: url(../images/btn-login.jpg) repeat-x #3b9de4 !important;*/
         border: none !important;
         border-top: none !important;
@@ -12488,6 +12490,7 @@ div.clue-bottom-default .cluetip-arrows {
 .top-cost {
     padding: 2% 0 2% 6%;
     margin-top: 1%;
+    width: 54%;/* Added by Bhumika 22-7-2016*/
 }
 
     .top-cost h5 {
@@ -13451,7 +13454,7 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
             margin: 0;
             padding: 3px 5px;
             text-align: center;
-            width: 19px;
+            width: 30px;/* Changed by Bhumika 22-7-2016 */
         }
 
     .paging li:first-child {
@@ -13591,7 +13594,7 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
 .region-data .data,
 .region-data .dataR {
     margin: 22px 0;
-    padding: 0 3.4%;
+    padding: 0 10px; /* Changed by Bhumika 22-7-2016 */
     float: left;
 }
 
@@ -15838,7 +15841,16 @@ a:focus, a:hover{outline:0 none !important}
     line-height: 28px !important;
 }
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr td,
-#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td{padding-left:25px; padding-right:15px}
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td{
+    padding-left:25px; 
+    padding-right:15px;
+    -webkit-user-select: unset; 
+    -khtml-user-select: unset; 
+    -moz-user-select: unset; 
+    -ms-user-select: unset; 
+    -o-user-select: unset; 
+    user-select: unset; 
+}
 
 #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
 #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{padding-left: 25px !important;}

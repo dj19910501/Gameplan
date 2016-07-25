@@ -2839,6 +2839,79 @@ namespace RevenuePlanner.Helpers
                 _BudgetTitleExist = value;
             }
         }
+        private string _DeselectAssetFromPackage;
+        public string DeselectAssetFromPackage
+        {
+            get
+            {
+                return _DeselectAssetFromPackage;
+            }
+            set
+            {
+                _DeselectAssetFromPackage = value;
+            }
+        }
+        private string _OnlyTacticsToCreatePackage;
+        public string OnlyTacticsToCreatePackage
+        {
+            get
+            {
+                return _OnlyTacticsToCreatePackage;
+            }
+            set
+            {
+                _OnlyTacticsToCreatePackage = value;
+            }
+        }
+        private string _SinglePlanTacticForPackage;
+        public string SinglePlanTacticForPackage
+        {
+            get
+            {
+                return _SinglePlanTacticForPackage;
+            }
+            set
+            {
+                _SinglePlanTacticForPackage = value;
+            }
+        }
+        private string _AtLeastOneAssetValidation;
+        public string AtLeastOneAssetValidation
+        {
+            get
+            {
+                return _AtLeastOneAssetValidation;
+            }
+            set
+            {
+                _AtLeastOneAssetValidation = value;
+            }
+        }
+        private string _MoreThanOneAssetValidation;
+        public string MoreThanOneAssetValidation
+        {
+            get
+            {
+                return _MoreThanOneAssetValidation;
+            }
+            set
+            {
+                _MoreThanOneAssetValidation = value;
+            }
+        }
+        private string _PackageUpdated;
+        public string PackageUpdated
+        {
+            get
+            {
+                return _PackageUpdated;
+            }
+            set
+            {
+                _PackageUpdated = value;
+            }
+        }
+
         #endregion
 
         #region  Functions
@@ -3757,6 +3830,24 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "BudgetTitleExist":
                                             _BudgetTitleExist = strMsgValue;
+                                            break;
+                                        case "DeselectAssetFromPackage":
+                                            _DeselectAssetFromPackage = strMsgValue;
+                                            break;
+                                        case "OnlyTacticsToCreatePackage":
+                                            _OnlyTacticsToCreatePackage = strMsgValue;
+                                            break;
+                                        case "SinglePlanTacticForPackage":
+                                            _SinglePlanTacticForPackage = strMsgValue;
+                                            break;
+                                        case "AtLeastOneAssetValidation":
+                                            _AtLeastOneAssetValidation = strMsgValue;
+                                            break;
+                                        case "MoreThanOneAssetValidation":
+                                            _MoreThanOneAssetValidation = strMsgValue;
+                                            break;
+                                        case "PackageUpdated":
+                                            _PackageUpdated = strMsgValue;
                                             break;
                                     }
                                 }

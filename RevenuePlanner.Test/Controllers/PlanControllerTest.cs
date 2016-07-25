@@ -716,6 +716,7 @@ namespace RevenuePlanner.Test.Controllers
 
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
+            int ExportPlanId = 0;
             Sessions.PlanId = PlanId;
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             List<int> honeyCombIds = new List<int>();
@@ -725,21 +726,19 @@ namespace RevenuePlanner.Test.Controllers
             {
                 honeyCombIds.Add(TaskData.PlanTacticId);
                 honeyCombId = string.Join(",", honeyCombIds);
+                ExportPlanId = TaskData.Plan_Campaign_Program.Plan_Campaign.PlanId;
             }
             else
             {
                 honeyCombId = null;
             }
 
-            var result = objPlanController.ExportToCsv(null, null, null, null, honeyCombId, PlanId) as JsonResult;
+            var result = objPlanController.ExportToCsv(null, null, null, null, honeyCombId, ExportPlanId) as JsonResult;
 
             if (result != null)
-            {
-                var serializedData = new RouteValueDictionary(result.Data);
-                var fileName = serializedData["data"];
-                //Assert.IsNotNull(fileName);
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + fileName);
+            {               
+                Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
@@ -787,12 +786,9 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = objPlanController.ExportToCsv(Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, null, PlanId) as JsonResult;
             if (result != null)
-            {
-                var serializedData = new RouteValueDictionary(result.Data);
-                var fileName = serializedData["data"];
-                //Assert.IsNotNull(fileName);
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + fileName);
+            {                
+                Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
@@ -932,7 +928,8 @@ namespace RevenuePlanner.Test.Controllers
             var result = objPlanController.CalculateBudget(ModelId, goalType, goalValue) as JsonResult;
 
             if (result != null)
-            {
+            {               
+                Assert.IsNotNull(result.Data);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
@@ -963,6 +960,15 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
+                if (!(result.ViewName.Equals("_ApplytoCalendarPlanList")))
+                {
+                    Assert.Fail();
+                }
+                else if (result.ViewName.Equals("_ApplytoCalendarPlanList"))
+                {
+                    Assert.IsNotNull(result.Model);
+                }
+                Assert.IsNotNull(result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
@@ -995,7 +1001,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["planYear"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -2199,8 +2209,6 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-
-
         #region "Get Years Tab for Plan"
         ///<summary>
         /// To Check to Get Years Tab for Plan
@@ -2793,6 +2801,7 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
+                Assert.IsNotNull(result);                
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else

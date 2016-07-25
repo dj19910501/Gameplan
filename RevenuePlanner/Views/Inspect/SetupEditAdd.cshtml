@@ -1270,6 +1270,11 @@
                             else {
                                 //RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                             }
+
+                            if ("@Enums.InspectPopupRequestedModules.Index.ToString()" == requestedModule) {
+                                RemoveAllHoneyCombData();
+                            }
+
                             $("#ddlcampaign").val(ddlcampaignValue);
                             $("#ddlProgram").val(ddlProgramValue);
                             $("#txtTacticTitle").val(txtTacticValue);
@@ -1542,26 +1547,26 @@
     $('#ddlTacticType').change(function (e) {
     	// Modified by Arpita Soni for Ticket #2354 on 07/19/2016
         var newTacticTypeId = $(this).val();
-        if ('@Model.IsPackagedTactic' != null && '@Model.IsPackagedTactic' == 'true') {
-            var arrTacTypes = JSON.parse('@Html.Raw(Json.Encode(lstTacticTypes))');
+        var arrTacTypes = JSON.parse('@Html.Raw(Json.Encode(lstTacticTypes))');
+        // Added by Arpita Soni for Ticket #2354
+        // Get previous asset type
+        var oldTacticTypeId = $(this).attr('oldvalue');
+        var oldAssetType = "";
+        oldAssetType = arrTacTypes.filter(function (v) {
+            return v.TacticTypeId == oldTacticTypeId; // Filter to get asset type for selected tactic type
+        });
+        if (oldAssetType != null && oldAssetType.length > 0) {
+            oldAssetType = oldAssetType[0].AssetType;
+        }
+        // Get new asset type
+        var newAssetType = arrTacTypes.filter(function (v) {
+            return v.TacticTypeId == newTacticTypeId; // Filter to get asset type for selected tactic type
+        });
+        if (newAssetType != null && newAssetType.length > 0) {
+            newAssetType = newAssetType[0].AssetType;
+        }
+if ('@Model.IsPackagedTactic' != null && '@Convert.ToString(Model.IsPackagedTactic).ToLower()' == 'true') {
 
-            // Added by Arpita Soni for Ticket #2354
-            // Get previous asset type
-            var oldTacticTypeId = $(this).attr('oldvalue');
-            var oldAssetType = "";
-            oldAssetType = arrTacTypes.filter(function (v) {
-                return v.TacticTypeId == oldTacticTypeId; // Filter to get asset type for selected tactic type
-            });
-            if (oldAssetType != null && oldAssetType.length > 0) {
-                oldAssetType = oldAssetType[0].AssetType;
-            }
-            // Get new asset type
-            var newAssetType = arrTacTypes.filter(function (v) {
-                return v.TacticTypeId == newTacticTypeId; // Filter to get asset type for selected tactic type
-            });
-            if (newAssetType != null && newAssetType.length > 0) {
-                newAssetType = newAssetType[0].AssetType;
-            }
             // If user changes asset to promo then confirm to delete entire package.
             if (oldAssetType != null && oldAssetType != "" && oldAssetType != newAssetType && oldAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()') {
                 var retValue = confirm('Package associated to this tactic will be deleted. Do you wish to continue?');
@@ -1570,6 +1575,15 @@
                 }
             }
         }
+            // If user changes promo to asset then confirm to delete all mediacode.
+            if ('@Sessions.IsMediaCodePermission.ToString().ToLower()' == 'true' &&  newAssetType != null && newAssetType != "" && oldAssetType != newAssetType && newAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()') {
+                var retValue = confirm('Media code associated to this tactic will be deleted. Do you wish to continue?');
+                if (!retValue) {
+                    return false;
+                }
+            }
+            //end
+        
         loadtacticdata(newTacticTypeId);
     });
 

@@ -491,7 +491,12 @@
                 }
             
             }
-
+            if (AssetType == '@Enums.AssetType.Asset.ToString()' && '@Sessions.IsMediaCodePermission.ToString().ToLower()'=='true') {
+                var retValue = confirm('Media code associated to this tactic will be deleted. Do you wish to continue?');
+                if (!retValue) {
+                    return false;
+                }
+            }
             // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
             if (AssetType == '@Enums.AssetType.Asset.ToString()' || DeleteAllPackage == true)
             {

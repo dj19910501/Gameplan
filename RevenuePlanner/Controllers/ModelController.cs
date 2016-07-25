@@ -1614,7 +1614,14 @@ namespace RevenuePlanner.Controllers
                 }
                 UpdatePackageDetails(id, DeleteAllpackage);
                 //End
-
+                //remove media code of tactic
+                if (Sessions.IsMediaCodePermission == true)
+                {
+                    List<int> tacticId = new List<int>();
+                    tacticId.Add(id);
+                    Common.RemoveTacticMediaCode(tacticId);
+                }
+                //end
                 Common.InsertChangeLog(Sessions.ModelId, 0, objTacticTypeDB.TacticTypeId, objTacticTypeDB.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
 
                 //// Dispose db object
@@ -1738,6 +1745,14 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     UpdatePackageDetails(TacticTypeId, DeleteAllPackage);     //Added By Komal rawal for #2356 add roi package tactic type selection
+                    //remove media code of tactic
+                    if (AssetType == Convert.ToString(Enums.AssetType.Asset) && Sessions.IsMediaCodePermission==true)
+                    {
+                        var AssociatedTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(list => list.TacticTypeId == TacticTypeId && list.IsDeleted == false).Select(list => list.PlanTacticId).ToList();
+                        var mediCodeTacticd = objDbMrpEntities.Tactic_MediaCodes.Where(a => AssociatedTacticIds.Contains(a.TacticId)).Select(a => a.TacticId).ToList();
+                        Common.RemoveTacticMediaCode(mediCodeTacticd);
+                    }
+                    //end
                     var existingTacticTypes = objDbMrpEntities.TacticTypes.Where(tacticType => (tacticType.ModelId == ModelId) && tacticType.Title.ToLower() == Title.ToLower() && tacticType.TacticTypeId != TacticTypeId && (tacticType.IsDeleted == null || tacticType.IsDeleted == false)).ToList();
 
                     //// TFS Bug - 179 : Improper behavior when editing Tactic in model 
