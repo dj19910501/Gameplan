@@ -106,6 +106,7 @@ namespace RevenuePlanner.Helpers
         public static string RevenueCampaign = "Campaign";
         public static string RevenueProgram = "Program";
         public static string RevenueTactic = "Tactic";
+        public static string RevenueROIPackage = "ROIPackage";
         public static string RevenueOrganization = "Organization";
 
         public static string SourcePerformanceActual = "Actual";

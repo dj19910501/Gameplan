@@ -552,6 +552,16 @@
             //    $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
             //    fillCardTacticDropDown(id, "");
         }
+        // Add By Nishant Sheth
+        // Desc :: #2376 Load Tactic Dropdrown where go back from tactic details screen
+        if (marsterCustomField == '@RevenuePlanner.Helpers.Common.RevenueCampaign' && BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+            $("#ddlCampaignRevenueToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
+            fillCardTacticDropDown(BackId, BackChildLabel);
+        }
+        // End By Nishant Sheth
     }
 
 

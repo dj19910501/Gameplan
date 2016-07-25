@@ -410,6 +410,9 @@ namespace RevenuePlanner.Models
         public List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList { get; set; }
         public string TacticYear { get; set; }
         public List<TacticCustomFieldStageWeightage> TacticStageWeightages { get; set; }
+        public string RoiPackageTitle { get; set; } // Add By Nishant Sheth
+        public bool IsPackage { get; set; } // Add By Nishant Sheth
+        public int ROIAnchorTacticId { get; set; } // Add By Nishant Sheth
     }
 
     public class PlanADSRelation
