@@ -104,7 +104,7 @@
     var TimeFrameRevenueList = [];
     var RevIsnextprev = false;
     var IsGotoPage = false;
-    
+
     $(function () {
         var options = {
 
@@ -307,6 +307,15 @@
         id = _BackHeadValues.BackId;
         //}
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&DrpChange=" + 'true';
+        // Add By Nishant Sheth
+        // Desc :: #2376 Set isdetails=true where Tactic selected 0 
+        var IsROIPackageURl = '';
+        if (childlabelType == '@Common.RevenueROIPackage') {
+            if ($('#ddlTacticRevenueToPlan').val() == '0') {
+                _url += '&isDetails=true'
+            }
+        }
+        // End By Nishant sheth
         $("#dvRevenueToPlan").load(_url);
         //LoadRevenueData();
     });
@@ -391,7 +400,7 @@
                 BackId: campId > 0 ? campId : (IsCardDetailsClick == true ? (BackCampaignId > 0 ? BackCampaignId : 0) : 0),
                 HeadHireachy: ''
             }
-            
+
         }
         id = _BackFwdVar.BackId;
         if ((parentlabel.indexOf('@Common.TacticCustomTitle') > -1 || parentlabel.indexOf('@Common.CampaignCustomTitle') > -1 || parentlabel.indexOf('@Common.ProgramCustomTitle') > -1)) {
@@ -444,14 +453,14 @@
                 HeadHireachy: ''
             }
         } else {
-            
+
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
                 BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : (IsCardDetailsClick == true ? '@Common.RevenueCampaign' : ''),
                 BackId: campId > 0 ? campId : (IsCardDetailsClick == true ? (BackCampaignId > 0 ? BackCampaignId : 0) : 0),
                 HeadHireachy: ''
             }
-          
+
         }
         id = _BackFwdVar.BackId;
         if ((parentlabel.indexOf('@Common.TacticCustomTitle') > -1 || parentlabel.indexOf('@Common.CampaignCustomTitle') > -1 || parentlabel.indexOf('@Common.ProgramCustomTitle') > -1)) {
@@ -480,7 +489,7 @@
         var TacticId = $('#ddlTacticRevenueToPlan').val();
         var campId = $('#ddlCampaignRevenueToPlan').val();
         var ProgramId = $('#ddlProgramRevenueToPlan').val();
-        
+
         var BackCampaignId = 0; //ForGet Back CampaignID
         var BackProgramId = 0; //ForGet Back ProgramID
         $(BackFwdRevenueList).each(function () {
@@ -507,7 +516,7 @@
                 BackId: programId > 0 ? programId : (IsCardDetailsClick == true ? BackProgramId : (campId > 0 ? campId : BackCampaignId)),
                 HeadHireachy: ''
             }
-            
+
         }
         id = _BackFwdVar.BackId;
         if ((parentlabel.indexOf('@Common.TacticCustomTitle') > -1 || parentlabel.indexOf('@Common.CampaignCustomTitle') > -1 || parentlabel.indexOf('@Common.ProgramCustomTitle') > -1)) {
@@ -535,7 +544,7 @@
 
     });
     $('#ddlChildRevenueToPlan').change(function () {
-        
+
         var _childValue = $("#ddlChildRevenueToPlan").val();
         masterCustomFieldOptionId = _childValue;
         ReloadRevenueToPlanByCustomField(_childValue);
@@ -574,33 +583,33 @@
     }
     function LoadDataRevenueToPlanByCampaign() {
         myApp.showPleaseWait();
-        
+
         var id = '0';
         var Type = '';
         var tacticId = $("#ddlTacticRevenueToPlan").val();
         var parentlabel = $("#ddlParentRevenueSummery").val();
 
         if (IsCardDetailsClick == false) {
-        if (tacticId > 0) {
-            id = tacticId;
-            Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
-        }
-        else if (programId > 0) {
-            Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
-            id = programId.toString();
-        }
-        else if (campaignId > 0) {
-            Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
-            id = campaignId.toString();
-        }
-        else {
-            var _BackHeadValues = BackFwdRevenueList[BackFwdRevenueList.length - 1];
-            // parentlabel = _BackHeadValues.BackParentLabel;
-            Type = _BackHeadValues.BackChildLabel;
-            id = _BackHeadValues.BackId;
-        }
+            if (tacticId > 0) {
+                id = tacticId;
+                Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
+            }
+            else if (programId > 0) {
+                Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
+                id = programId.toString();
+            }
+            else if (campaignId > 0) {
+                Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
+                id = campaignId.toString();
+            }
+            else {
+                var _BackHeadValues = BackFwdRevenueList[BackFwdRevenueList.length - 1];
+                // parentlabel = _BackHeadValues.BackParentLabel;
+                Type = _BackHeadValues.BackChildLabel;
+                id = _BackHeadValues.BackId;
+            }
         } else {
-          
+
             var BackCampaignId = 0;
             var BackProgramId = 0;
             var BackTacticId = 0;
@@ -619,7 +628,7 @@
             Type = tacticId > 0 ? '@Common.RevenueTactic' : (BackTacticId > 0 ? '@Common.RevenueTactic' : (programId > 0 ? '@Common.RevenueProgram' : (BackProgramId > 0 ? '@Common.RevenueProgram' : (campaignId > 0 ? '@Common.RevenueCampaign' : '@Common.RevenueCampaign'))));
         }
         if ((parentlabel.indexOf('@Common.TacticCustomTitle') > -1 || parentlabel.indexOf('@Common.CampaignCustomTitle') > -1 || parentlabel.indexOf('@Common.ProgramCustomTitle') > -1)) {
-            
+
             if (id > 0) {
                 parentlabel = '@Common.RevenueCampaign';
             }
@@ -629,7 +638,18 @@
             }
 
         }
+        
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month;
+        // Add By Nishant Sheth
+        // Desc :: #2376 Set isdetails=true where Tactic selected 0 
+        var IsROIPackageURl = '';
+        if (childlabelType == '@Common.RevenueROIPackage')
+        {
+            if ($('#ddlTacticRevenueToPlan').val() == '0') {
+                _url += '&isDetails=true'
+            }
+        }
+        // End By Nishant Sheth
         $("#dvRevenueToPlan").load(_url);
         // myApp.hidePleaseWait();
     }

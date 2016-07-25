@@ -43,7 +43,7 @@ namespace RevenuePlanner.Models
         public string isDisplay { get; set; }
         public string todayValue { get; set; }
         public double pointLabelWidth { get; set; }
-        
+
     }
     public class series
     {
@@ -51,9 +51,9 @@ namespace RevenuePlanner.Models
         public List<double?> data { get; set; }
         public marker marker { get; set; }
         private bool ShowInLegend = true;
-        public bool showInLegend 
+        public bool showInLegend
         {
-            get 
+            get
             {
                 return ShowInLegend;
             }
@@ -373,6 +373,8 @@ namespace RevenuePlanner.Models
         public double FieldId { get; set; }
         public string FieldType { get; set; }
         public Projected_Goal RevenueHeaderModel { get; set; } // Add By Nishant SHeth
+        public string RoiPackageTitle { get; set; } // Add By Nishant Sheth
+        public bool IsPackage { get; set; } // Add By Nishant Sheth
     }
     public class CardSectionListSubModel
     {
@@ -389,6 +391,17 @@ namespace RevenuePlanner.Models
         public int ParentId { get; set; }
         public string ParentTitle { get; set; }
         public int ChildId { get; set; }
+    }
+    /// <summary>
+    /// Add By Nishant Sheth
+    /// #2376 Get/set the values for ROI Package Card section
+    /// </summary>
+    public class ROIPackageCardTacticData
+    {
+        public List<ActualTrendModel> ActualTacticTrendList { get; set; }
+        public List<ProjectedTrendModel> ProjectedTrendList { get; set; }
+        public List<TacticStageValue> TacticData { get; set; }
+        public Dictionary<int, string> ROIAnchorTactic { get; set; }
     }
     #endregion
 
