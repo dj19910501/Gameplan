@@ -4617,7 +4617,7 @@ namespace RevenuePlanner.Controllers
                 string ReportDBConnString = string.Empty;
                 if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
                 {
-                    ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                    ReportDBConnString = Convert.ToString(regularConnectionString);
                 }
 
                 string AuthorizedReportAPIUserName = string.Empty;
