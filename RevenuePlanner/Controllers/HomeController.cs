@@ -9189,7 +9189,7 @@ namespace RevenuePlanner.Controllers
             string[] arrPromoTacticIds = null;
             ROI_PackageDetail newPackage = null;
             Dictionary<int, int> planTacAnchorTac = new Dictionary<int, int>();
-
+            bool IsUpdatePackage = false;
             try
             {
                 if (!string.IsNullOrEmpty(PromotionTacticIds))
@@ -9202,6 +9202,8 @@ namespace RevenuePlanner.Controllers
                 lstPkgDelete = objDbMrpEntities.ROI_PackageDetail.Where(p => p.AnchorTacticID == AnchorTacticId).ToList();
                 if (lstPkgDelete != null && lstPkgDelete.Count > 0)
                 {
+                    IsUpdatePackage = true;
+
                     // Update AnchorTacticId of tactics in cache
                     lstPkgDelete.ForEach(pkg => planTacAnchorTac.Add(pkg.PlanTacticId, 0));
                     Common.UpdateAnchorTacticInCache(planTacAnchorTac);
@@ -9232,7 +9234,7 @@ namespace RevenuePlanner.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
-            return Json(new { data = "Success" }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = "Success", IsUpdatePackage = IsUpdatePackage }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

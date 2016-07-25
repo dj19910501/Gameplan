@@ -1118,6 +1118,17 @@
 
         if ($(item).attr('id') == 'TacticAdd') {
             if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
+
+                // When package is selected then de-select asset then warning message and asset remain selected
+                var IsAssetTactic = $(item).attr('roitactictype');
+                var AssetTacId = $(item).attr('anchortacticid');
+                var EntityId = $(item).attr('taskid');
+                if (IsPackageView && IsAssetTactic == '@Enums.AssetType.Asset' && AssetTacId == EntityId) {
+                    ShowMessage(true, "@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage", 3000);
+                    $('html,body').scrollTop(0);
+                    return false;
+                }
+
                 $(item).removeClass("honeycombbox-icon-gantt-Active");
                 var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
                 if (index >= 0) {
@@ -1506,7 +1517,7 @@
         var hdnYear;
         hdnYear= @ViewBag.Year;
 
-        if(stage == 0  )
+        if(stage == 0)
         {
             var  newvalue = HomeGrid.cells(rowId, cellInd).getValue();
             if(newvalue.indexOf("</div>") > -1)
@@ -1719,9 +1730,9 @@
                         return false;
                 }
                 if (UpdateColumn == "Type" && updatetype == "tact") {
-                    
                     var tacticTypeId = nValue;
-                    // Added by Arpita Soni for Ticket #2354 
+		            var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div[id=TacticAdd]');
+		            // Added by Arpita Soni for Ticket #2354 
                     // If user changes asset to promo then confirm to delete entire package.
                     var arrTacTypes = JSON.parse('@Html.Raw(Json.Encode(lstTacticType))');
                     var newAssetType = arrTacTypes.filter(function(v) {
@@ -1730,13 +1741,19 @@
                     if(newAssetType != null && newAssetType.length > 0) {
                         newAssetType  = newAssetType[0].AssetType; 
                     }
-                    if (oldAssetType != null && oldAssetType != "" && oldAssetType != newAssetType && oldAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()')
-                    {
-                        var retValue = confirm('Package associated to this tactic will be deleted. Do you wish to continue?');
-                        if(!retValue){
-                            return false;
-                        }
-                    }
+                    if (objHoneyComb != undefined && objHoneyComb != null ) {
+                        var anchorTacId = objHoneyComb.attr('anchortacticid');
+                        if(anchorTacId != null && anchorTacId != "0") 
+                        {
+	                        if (oldAssetType != null && oldAssetType != "" && oldAssetType != newAssetType && oldAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()')
+	                        {
+	                            var retValue = confirm('Package associated to this tactic will be deleted. Do you wish to continue?');
+	                            if(!retValue){
+	                                return false;
+	                            }
+	                        }
+		                }
+		            }
                     // If user changes promo to asset then confirm to delete all mediacode.
                     if ( '@Sessions.IsMediaCodePermission.ToString().ToLower()'=='true' && newAssetType != null && newAssetType != "" && oldAssetType != newAssetType && newAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()') {
                         var retValue = confirm('Media code associated to this tactic will be deleted. Do you wish to continue?');
@@ -2112,7 +2129,7 @@
                     //Modified By Komal Rawal for #1848 Link To tactic feature
                     if(cellInd == 1)
                     {
-                        if(value.trim() != undefined && value.trim() != "undefined" && value.trim() != null)
+                        if(value != undefined && value != "undefined" && value != null && value.trim() != '')
                         {
                             HomeGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
                         }

@@ -1270,6 +1270,11 @@
                             else {
                                 //RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                             }
+
+                            if ("@Enums.InspectPopupRequestedModules.Index.ToString()" == requestedModule) {
+                                RemoveAllHoneyCombData();
+                            }
+
                             $("#ddlcampaign").val(ddlcampaignValue);
                             $("#ddlProgram").val(ddlProgramValue);
                             $("#txtTacticTitle").val(txtTacticValue);
@@ -1560,7 +1565,7 @@
         if (newAssetType != null && newAssetType.length > 0) {
             newAssetType = newAssetType[0].AssetType;
         }
-        if (('@Model.IsPackagedTactic' != null && '@Model.IsPackagedTactic' == 'true')) {
+if ('@Model.IsPackagedTactic' != null && '@Convert.ToString(Model.IsPackagedTactic).ToLower()' == 'true') {
 
             // If user changes asset to promo then confirm to delete entire package.
             if (oldAssetType != null && oldAssetType != "" && oldAssetType != newAssetType && oldAssetType.toLowerCase() == '@Convert.ToString(Enums.AssetType.Asset).ToLower()') {
