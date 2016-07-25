@@ -16689,6 +16689,7 @@ namespace RevenuePlanner.Controllers
 
                         var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                         objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                        objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                         var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                         objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);

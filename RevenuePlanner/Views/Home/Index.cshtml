@@ -4885,13 +4885,22 @@
                             var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
                             if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                             {
-                                var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0)
+                                var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
+                                var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
                                 if(FileNode != null && FileNode!= 'undefined' && FileNode != undefined)
                                 {
                                    FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML
                                 }
                                 var AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                                if(BlankDiv != null && BlankDiv!= 'undefined' && BlankDiv != undefined)
+                                {
                                 AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                                    
+                                }
+                                else
+                                {
+                                    AllCHildNodes = AllCHildNodes.replace(FileNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                                }
                                 TaskHtml.firstChild.innerHTML = AllCHildNodes;
                             }
                             if (AnchorTaskIdsList.Id.length != 0)
@@ -5656,8 +5665,18 @@
                         // As package is deleted, remove package icon from the grid
                         if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                         {
+                            var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
                             var AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                            if(BlankDiv != null && BlankDiv!= 'undefined' && BlankDiv != undefined)
+                            {
                             AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                                    
+                            }
+                            else
+                            {
+                                AllCHildNodes = AllCHildNodes.replace(FileNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                            }
+                          
                             TaskHtml.firstChild.innerHTML = AllCHildNodes;
                         }
 
@@ -5742,6 +5761,7 @@
                 success: function (data) {
                     var getvalue = HomeGrid.cells(dhtmlxrowid, 1).getValue();
                     var Index = getvalue.indexOf("pkgIcon");
+
                     if (IsPromotion) {
                         if (Index > -1) {
                             // Bind updated items to package icon into grid
@@ -7252,7 +7272,6 @@
         });
         function CloseIconClick() {
             $('.close-x-big-icon').click(function () {
-
                 //Added by Rahul shah to remove all media code honeycomb data on click of close icon for  PL #2371
 
                 RemoveAllMediaCodeData();
@@ -8438,7 +8457,6 @@
     <script>
         var ImpTacticId;
         $(document).ready(function () {
-
             function toggleChevron(e) {
                 $(e.target)
                     .prev('.accordion-heading')

@@ -1136,6 +1136,8 @@ namespace RevenuePlanner.Controllers
 
                                     var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                                     objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
+
 
                                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                                     objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
@@ -1333,6 +1335,7 @@ namespace RevenuePlanner.Controllers
 
                                     var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                                     objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                                     objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
@@ -2002,6 +2005,7 @@ namespace RevenuePlanner.Controllers
 
                                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                                     objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
+                                    objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != Sessions.User.UserId && form.OwnerId != Guid.Empty)
                                     {
@@ -2183,9 +2187,11 @@ namespace RevenuePlanner.Controllers
 
                                     var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                                     objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                                     objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
+                        
                                     //Send Email Notification For Owner changed.
                                     if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
                                     {
@@ -4646,9 +4652,11 @@ namespace RevenuePlanner.Controllers
 
                                     var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                                     objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                                     objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
+
 
                                     // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                     #region "Send Email Notification For Owner changed"
@@ -5624,6 +5632,7 @@ namespace RevenuePlanner.Controllers
 
                                     var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                                     objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                                    objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                                     objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
@@ -6722,6 +6731,7 @@ namespace RevenuePlanner.Controllers
 
                                         var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                                         objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                                        objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                                         var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                                         objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
@@ -6817,6 +6827,7 @@ namespace RevenuePlanner.Controllers
 
                                         var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                                         objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                                        objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                                         var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                                         objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
@@ -12450,6 +12461,7 @@ namespace RevenuePlanner.Controllers
 
                                 var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                                 objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                                objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                                 var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                                 objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
@@ -12900,6 +12912,7 @@ namespace RevenuePlanner.Controllers
 
                     var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                     objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                    objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                     objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
@@ -13238,6 +13251,7 @@ namespace RevenuePlanner.Controllers
 
                             var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                             objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+                            objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
 
                             var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                             objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);

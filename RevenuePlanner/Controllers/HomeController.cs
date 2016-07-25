@@ -6862,7 +6862,7 @@ namespace RevenuePlanner.Controllers
                 if (customtacticList == null || customtacticList.Count == 0) {
                     customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                 }
-                objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);
+                objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
                 List<Plan_Campaign_Program_Tactic> tacticList = (List<Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.Tactic.ToString());
                 if (tacticList == null || tacticList.Count == 0) {
                     tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
@@ -9434,6 +9434,7 @@ namespace RevenuePlanner.Controllers
 
             var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
             objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
+             objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
             // Add By Nishant Sheth
             // Desc :: Set tatcilist for original db/modal format
             var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
