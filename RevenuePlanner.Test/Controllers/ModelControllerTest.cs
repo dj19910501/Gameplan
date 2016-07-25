@@ -870,10 +870,8 @@ namespace RevenuePlanner.Test.Controllers
                 var result = objModelController.SaveTactic(Title, Description, Stageid, ProjectedStageValue, ProjectedRevenue, TacticTypeId, ModelId.ToString(), isDeployedToIntegration, isDeployedToModel, WorkFrontTemplate, AssetType, ProgramType, Channel, DeleteAllPackage) as JsonResult;
                 if (result != null)
                 {
-                    Assert.IsNotNull(result.Data);
-                    var serializedData = new RouteValueDictionary(result.Data);
-                    var resultvalue = serializedData["errormsg"];
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
+                    Assert.IsNotNull(result.Data);                   
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
                 }
                 else
                 {
