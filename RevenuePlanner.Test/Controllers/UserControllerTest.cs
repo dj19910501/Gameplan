@@ -44,7 +44,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.Model);
+                var serializedData = new RouteValueDictionary(result.Model);
+                var resultvalue = serializedData["Count"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -79,6 +83,7 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewData);               
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
@@ -121,7 +126,14 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.Model);
+                var serializedData = new RouteValueDictionary(result.Model);
+                var resultvalue = serializedData["UserId"];
+                var resultvalue1 = serializedData["CurrentPassword"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Assert.IsNotNull(resultvalue1.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "UserID: " + resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "Password: " + resultvalue1.ToString());
             }
             else
             {
@@ -158,6 +170,7 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);               
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
@@ -193,7 +206,12 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["CurrClient"];               
+                Assert.IsNotNull(resultvalue.ToString());                
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "UserID: " + resultvalue.ToString());
+           
             }
             else
             {
@@ -242,7 +260,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["CurrClient"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "UserID: " + resultvalue.ToString());
             }
             else
             {
@@ -279,6 +301,8 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);              
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
@@ -317,6 +341,7 @@ namespace RevenuePlanner.Test.Controllers
 
                 if (result != null)
                 {
+                    Assert.IsNotNull(result.Data);                   
                     Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
                 }
                 else
@@ -357,7 +382,12 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["IsUserAdminAuthorized"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "UserID: " + resultvalue.ToString());
+               
             }
             else
             {
@@ -366,87 +396,6 @@ namespace RevenuePlanner.Test.Controllers
 
         }
         #endregion
-
-//        #region Edit User Detail
-//        /// <summary>
-//        /// To Edit User Detail with All Params.
-//        /// <author>Rahul Shah</author>
-//        /// <createddate>07July2016</createddate>
-//        /// </summary>
-//        [TestMethod]
-//        public void Edit_User_Detail_All_Params()
-//        {
-//            var routes = new RouteCollection();
-//            Console.WriteLine("To Edit User Detail with all Params.\n");
-//            MRPEntities db = new MRPEntities();
-//            HttpContext.Current = DataHelper.SetUserAndPermission();
-//            UserController objUserController = new UserController();
-//            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-//            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-//            objUserController.Url = new UrlHelper(
-//  new RequestContext(
-//      objUserController.HttpContext, new RouteData()
-//  ),
-//  routes
-//);
-//            int PlanId = DataHelper.GetPlanId();
-//            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-//            Sessions.PlanId = PlanId;
-//            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
-//            string UserId = Sessions.User.UserId.ToString();
-//            string src = "myaccount";
-//            string isfordelete = "false";
-//            var result = objUserController.EditUserDetails(UserId,src,isfordelete) as PartialViewResult;
-
-//            if (result != null)
-//            {
-//                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-//            }
-//            else
-//            {
-//                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-//            }
-
-//        }
-
-//        /// <summary>
-//        /// To Edit User Detail without passing All Params.
-//        /// <author>Rahul Shah</author>
-//        /// <createddate>07July2016</createddate>
-//        /// </summary>
-//        [TestMethod]
-//        public void Edit_User_Detail_without_All_Params()
-//        {
-//            var routes = new RouteCollection();
-//            Console.WriteLine("To Edit User Detail with all Params.\n");
-//            MRPEntities db = new MRPEntities();
-//            HttpContext.Current = DataHelper.SetUserAndPermission();
-//            UserController objUserController = new UserController();
-//            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
-//            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-//            objUserController.Url = new UrlHelper(
-//  new RequestContext(
-//      objUserController.HttpContext, new RouteData()
-//  ),
-//  routes
-//);
-//            int PlanId = DataHelper.GetPlanId();
-//            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-//            Sessions.PlanId = PlanId;
-//            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
-//            var result = objUserController.EditUserDetails() as PartialViewResult;
-
-//            if (result != null)
-//            {
-//                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-//            }
-//            else
-//            {
-//                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-//            }
-
-//        }
-//        #endregion
 
         #region Edit User
         /// <summary>
@@ -496,6 +445,7 @@ namespace RevenuePlanner.Test.Controllers
             
             if (result != null)
             {
+                Assert.IsNotNull(result);                
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
             }
             else
@@ -538,7 +488,13 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.Model);
+                List<UserNotification> objModelList = (List<UserNotification>)result.Model;
+                UserNotification objModel = objModelList.FirstOrDefault();
+                var serializedData = new RouteValueDictionary(objModel);
+                var resultvalue = serializedData["NotificationTitle"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());                
             }
             else
             {
@@ -579,6 +535,7 @@ namespace RevenuePlanner.Test.Controllers
             string strNotification = NotificationId.ToString();
             try
             {
+                //here we are calling void  method so it doesn't return any data.
                 objUserController.SaveNotifications(strNotification);
                 Assert.IsTrue(true);
             }
@@ -621,7 +578,11 @@ namespace RevenuePlanner.Test.Controllers
             var result = objUserController.GetManagers() as JsonResult;
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);                
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["Count"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -660,7 +621,12 @@ namespace RevenuePlanner.Test.Controllers
             var result = objUserController.GetManagers(null,UserId) as JsonResult;
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["Count"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
+              
             }
             else
             {
@@ -700,7 +666,12 @@ namespace RevenuePlanner.Test.Controllers
             var result = objUserController.GetManagers(ClientId, UserId) as JsonResult;
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["Count"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
+                
             }
             else
             {
@@ -740,6 +711,7 @@ namespace RevenuePlanner.Test.Controllers
                 var result = objUserController.AssignUser(userId, RoleId) as JsonResult;
                 if (result != null)
                 {
+                    Assert.IsNotNull(result.Data);                    
                     Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
                 }
                 else

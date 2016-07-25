@@ -21,9 +21,7 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class ModelControllerTest
     {
-
         #region Display channel and Program type selection for marketo under Model-Tactictype
-
         /// <summary>
         /// To Save Marketo Settings on Model-TacticType scrren
         /// </summary>
@@ -42,16 +40,13 @@ namespace RevenuePlanner.Test.Controllers
             string EntityType = Enums.FilterLabel.TacticType.ToString();
             ApiIntegration ObjApiintegration = new ApiIntegration(Enums.ApiIntegrationData.Programtype.ToString(), InstanceId);
             MarketoDataObject CampaignFolderList = ObjApiintegration.GetProgramChannellistData();
-
             string ProgramType = CampaignFolderList.program.Select(list => list.Key).FirstOrDefault();
             string Channel = CampaignFolderList.channels.Select(list => list.name).FirstOrDefault();
-
             ModelController objModelController = new ModelController();
             objModelController.SaveMarketoSettings(EntityID, InstanceId, EntityType, ProgramType, Channel);
             Assert.IsTrue(true);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + true);
         }
-
 
         /// <summary>
         /// To Save Marketo integration data
@@ -79,7 +74,6 @@ namespace RevenuePlanner.Test.Controllers
             }
             else
             {
-
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
             }
         }
@@ -105,12 +99,18 @@ namespace RevenuePlanner.Test.Controllers
             ModelController objModelController = new ModelController();
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-
             var result = objModelController.CreateModel() as ViewResult;
-
             if (result != null)
             {
+                if (!(result.ViewName.Equals("Create")))
+                {
+                    Assert.Fail();
+                }
+                else if (result.ViewName.Equals("Create"))
+                {
+                    Assert.IsNotNull(result.Model);
+                }
+                Assert.IsNotNull(result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
@@ -142,16 +142,16 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             int StageId = DataHelper.GetStageId(Sessions.User.ClientId);
             var result = objModelController.CheckTargetStage(ModelId, StageId) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);
+              
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
 
         /// <summary>
@@ -173,21 +173,19 @@ namespace RevenuePlanner.Test.Controllers
             int ModelId = 0;
             int StageId = 0;
             var result = objModelController.CheckTargetStage(ModelId, StageId) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);               
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
         #region Check Target Stage BenchMark
-
         /// <summary>
         /// To Check Target Stage BenchMark.     
         /// </summary>
@@ -208,21 +206,17 @@ namespace RevenuePlanner.Test.Controllers
                     objModelController.HttpContext, new RouteData()
                     ),
                 routes);
-
             var result = objModelController.CheckTargetStageBenchMark() as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);     
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
-
-
         #endregion
 
         #region Check Duplicate Model Title
@@ -244,11 +238,10 @@ namespace RevenuePlanner.Test.Controllers
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             string ModelTitle = DataHelper.GetModel(ModelId).Title;
-
             var result = objModelController.CheckDuplicateModelTitle(ModelTitle) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);               
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
@@ -276,18 +269,16 @@ namespace RevenuePlanner.Test.Controllers
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             string ModelTitle = DataHelper.GetModel(ModelId).Title + "Not Exist";
-
             var result = objModelController.CheckDuplicateModelTitle(ModelTitle) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
@@ -309,18 +300,16 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-
             var result = objModelController.GetModelData(ModelId) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);             
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
 
         /// <summary>
@@ -340,18 +329,16 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-
             var result = objModelController.GetModelData() as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);               
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
@@ -364,7 +351,6 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Model_Zero()
         {
-
             var routes = new RouteCollection();
             Console.WriteLine("no model exist in case of current year.\n");
             MRPEntities db = new MRPEntities();
@@ -374,18 +360,22 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-
             var result = objModelController.ModelZero() as ViewResult;
-
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["ActiveMenu"];
+                var resultvalue1 = serializedData["ModelExists"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Assert.IsNotNull(resultvalue1.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue1.ToString());
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
@@ -409,16 +399,15 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             string listtype = "active";
             var result = objModelController.GetModelList(listtype) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
 
         /// <summary>
@@ -440,16 +429,15 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             string listtype = "all";
             var result = objModelController.GetModelList(listtype) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
 
         /// <summary>
@@ -471,16 +459,15 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             string listtype = "Invalid";
             var result = objModelController.GetModelList(listtype) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
@@ -505,16 +492,15 @@ namespace RevenuePlanner.Test.Controllers
             string ModelTitle = "Baseline Model";
             int New_ModelId = 0;
             var result = objModelController.LoadModelOverview(ModelTitle, New_ModelId) as PartialViewResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);             
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
 
         /// <summary>
@@ -536,16 +522,15 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             string ModelTitle = DataHelper.GetModel(ModelId).Title;
             var result = objModelController.LoadModelOverview(ModelTitle, ModelId) as PartialViewResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);               
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
@@ -569,16 +554,19 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             double Msize = DataHelper.GetModel(ModelId).AverageDealSize;
             var result = objModelController.LoadContactInquiry(Msize) as PartialViewResult;
-
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["MarketingDealSize"];               
+                Assert.IsNotNull(resultvalue.ToString());
+              
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
 
         #endregion
@@ -601,18 +589,16 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-
             var result = objModelController.Tactics() as ViewResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);             
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
 
         /// <summary>
@@ -632,18 +618,16 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-
             var result = objModelController.Tactics() as ViewResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);               
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
 
         #endregion
@@ -666,20 +650,17 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-
             var result = objModelController.FillVersion(ModelId) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);               
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
-
         #endregion
 
         #region Get Tactic Type Data by ModelId
@@ -700,20 +681,17 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-
             var result = objModelController.GetTacticDatabyid(ModelId) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);             
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
-
         #endregion
 
         #region Get Detail Tactic Type Data.
@@ -736,16 +714,18 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             int TacticTypeId = DataHelper.GetTacticTypeId(ModelId);
             var result = objModelController.DetailTacticData(TacticTypeId, ModelId) as PartialViewResult;
-
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["ModelStatus"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
 
         #endregion
@@ -771,7 +751,11 @@ namespace RevenuePlanner.Test.Controllers
             var result = objModelController.CreateTacticData(ModelId) as PartialViewResult;
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["IsCreated"];
+                Assert.AreEqual("True",resultvalue.ToString(),true);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -803,7 +787,10 @@ namespace RevenuePlanner.Test.Controllers
             var result = objModelController.DeleteTactic(TacticTypeId, Sessions.User.UserId.ToString()) as JsonResult;
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["status"];               
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -833,7 +820,10 @@ namespace RevenuePlanner.Test.Controllers
             var result = objModelController.DeleteTactic(TacticTypeId) as JsonResult;
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["status"];
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -880,7 +870,10 @@ namespace RevenuePlanner.Test.Controllers
                 var result = objModelController.SaveTactic(Title, Description, Stageid, ProjectedStageValue, ProjectedRevenue, TacticTypeId, ModelId.ToString(), isDeployedToIntegration, isDeployedToModel, WorkFrontTemplate, AssetType, ProgramType, Channel, DeleteAllPackage) as JsonResult;
                 if (result != null)
                 {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Assert.IsNotNull(result.Data);
+                    var serializedData = new RouteValueDictionary(result.Data);
+                    var resultvalue = serializedData["errormsg"];
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
                 }
                 else
                 {
@@ -928,7 +921,10 @@ namespace RevenuePlanner.Test.Controllers
                 var result = objModelController.SaveTactic(Title, Description, Stageid, ProjectedStageValue, ProjectedRevenue, TacticTypeId, ModelId.ToString(), isDeployedToIntegration, isDeployedToModel, WorkFrontTemplate, AssetType) as JsonResult;
                 if (result != null)
                 {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Assert.IsNotNull(result.Data);
+                    var serializedData = new RouteValueDictionary(result.Data);
+                    var resultvalue = serializedData["errormsg"];
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
                 }
                 else
                 {
@@ -985,6 +981,9 @@ namespace RevenuePlanner.Test.Controllers
                 var result = objModelController.saveAllTactic(ids, rejIds, ModelId, isModelPublished, EffectiveDate) as JsonResult;
                 if (result != null)
                 {
+                    Assert.IsNotNull(result.Data);
+                    var serializedData = new RouteValueDictionary(result.Data);
+                    var resultvalue = serializedData["successMessage"];
                     Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
                 }
                 else
@@ -997,8 +996,6 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
-
-
         #endregion
 
         #region Get Plan Tactic(s)
@@ -1030,7 +1027,10 @@ namespace RevenuePlanner.Test.Controllers
 
                 if (result != null)
                 {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
+                    Assert.IsNotNull(result);
+                    var serializedData = new RouteValueDictionary(result);
+                    var resultvalue = serializedData["Count"];
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
                 }
                 else
                 {
@@ -1042,8 +1042,6 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
         }
-
-
         #endregion
 
         #region Action method to show model integration screen
@@ -1068,7 +1066,10 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["ActiveMenu"];
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -1076,8 +1077,6 @@ namespace RevenuePlanner.Test.Controllers
             }
 
         }
-
-
         #endregion
 
         #region Get Integration Data by Model Id
@@ -1099,9 +1098,9 @@ namespace RevenuePlanner.Test.Controllers
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.GetIntegrationDatabyid(ModelId) as JsonResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.Data);              
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
@@ -1110,8 +1109,6 @@ namespace RevenuePlanner.Test.Controllers
             }
 
         }
-
-
         #endregion              
 
         #region Publish Model
@@ -1138,9 +1135,9 @@ namespace RevenuePlanner.Test.Controllers
             {
                 string EffectiveDate = TaskData.EffectiveDate.ToString();
                 var result = objModelController.ModelPublish(ModelId, EffectiveDate) as JsonResult;
-
                 if (result != null)
                 {
+                    Assert.IsNotNull(result.Data);                    
                     Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
                 }
                 else
@@ -1154,8 +1151,6 @@ namespace RevenuePlanner.Test.Controllers
             }
 
         }
-
-
         #endregion
 
         #region Check Model Publish or Not
@@ -1186,11 +1181,12 @@ namespace RevenuePlanner.Test.Controllers
 
                 if (isModelPublished)
                 {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + isTacticTypeExist);
+                    Assert.IsNotNull(isModelPublished);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + isModelPublished);
                 }
                 else
                 {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + isTacticTypeExist);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + isModelPublished);
                 }
             }
             else
@@ -1199,8 +1195,6 @@ namespace RevenuePlanner.Test.Controllers
             }
 
         }
-
-
         #endregion
 
         #region Check Duplicate Model or Not
@@ -1231,7 +1225,11 @@ namespace RevenuePlanner.Test.Controllers
 
                 if (result != null)
                 {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Assert.IsNotNull(result.Data);
+                    var serializedData = new RouteValueDictionary(result.Data);
+                    var resultvalue = serializedData["msg"];
+                    Assert.IsNotNull(resultvalue.ToString());
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
                 }
                 else
                 {
@@ -1272,7 +1270,11 @@ namespace RevenuePlanner.Test.Controllers
 
                 if (result != null)
                 {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                    Assert.IsNotNull(result.Data);
+                    var serializedData = new RouteValueDictionary(result.Data);
+                    var resultvalue = serializedData["msg"];
+                    Assert.IsNotNull(resultvalue.ToString());
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
                 }
                 else
                 {
@@ -1309,7 +1311,11 @@ namespace RevenuePlanner.Test.Controllers
             var result = objModelController.GetDefaultDuplicateModelName(ModelId) as JsonResult;
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["msg"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -1338,14 +1344,18 @@ namespace RevenuePlanner.Test.Controllers
             var result = objModelController.GetDefaultDuplicateModelName(0) as JsonResult;
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["msg"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
+                
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
-
         #endregion
 
         #region Check Duplicate Model Title or Not
@@ -1376,6 +1386,7 @@ namespace RevenuePlanner.Test.Controllers
 
                 if (result != null)
                 {
+                    Assert.IsNotNull(result.Data);                  
                     Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
                 }
                 else
@@ -1414,7 +1425,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["ActiveMenu"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -1448,7 +1463,11 @@ namespace RevenuePlanner.Test.Controllers
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["ActiveMenu"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {

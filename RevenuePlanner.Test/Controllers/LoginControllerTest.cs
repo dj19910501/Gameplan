@@ -15,41 +15,6 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class LoginControllerTest
     {
-        //#region DBService Unavailable
-        ///// <summary>
-        ///// To DBService Unavailable.
-        ///// <author>Rahul Shah</author>
-        ///// <createddate>11July2016</createddate>
-        ///// </summary>
-        //[TestMethod]
-        //public void DBService_Unavailable()
-        //{
-        //    var routes = new RouteCollection();
-        //    Console.WriteLine("To check DBService Unavailable.\n");
-        //    MRPEntities db = new MRPEntities();
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    LoginController objLoginController = new LoginController();
-        //    objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
-        //    objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-        //    int PlanId = DataHelper.GetPlanId();
-        //    Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-        //    Sessions.PlanId = PlanId;
-
-        //    var result = objLoginController.DBServiceUnavailable() as ViewResult;
-
-        //    if (result != null)
-        //    {
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-        //    }
-
-        //}
-        //#endregion
-
         #region Create Login View
         /// <summary>
         /// To Create Login View.
@@ -66,21 +31,22 @@ namespace RevenuePlanner.Test.Controllers
             LoginController objLoginController = new LoginController();
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
             int PlanId = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-
             var result = objLoginController.Index() as ViewResult;
 
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["ApplicationReleaseVersion"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
@@ -108,10 +74,13 @@ namespace RevenuePlanner.Test.Controllers
             form.Password = "Test@1234";
             string returnURL = "https://172.30.17.111/gameplan/Home?activeMenu=Home";
             var result = objLoginController.Index(form, returnURL) as ViewResult;
-
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.ViewName);
+                var serializedData = new RouteValueDictionary(result.ViewData);
+                var resultvalue = serializedData["ApplicationReleaseVersion"];
+                Assert.IsNotNull(resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -120,83 +89,6 @@ namespace RevenuePlanner.Test.Controllers
 
         }
         #endregion
-
-        //#region Log off
-        ///// <summary>
-        ///// To log off.
-        ///// <author>Rahul Shah</author>
-        ///// <createddate>12July2016</createddate>
-        ///// </summary>
-        //[TestMethod]
-        //public void LogOff()
-        //{
-        //    var routes = new RouteCollection();
-        //    Console.WriteLine("To Log off.\n");
-        //    MRPEntities db = new MRPEntities();
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    LoginController objLoginController = new LoginController();
-        //    objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
-        //    objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-        //    int PlanId = DataHelper.GetPlanId();
-        //    Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-        //    var result = objLoginController.LogOff() as ActionResult;
-
-        //    if (result != null)
-        //    {
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-        //    }
-
-        //}
-        //#endregion
-
-        //#region Support request Issue field 
-        ///// <summary>
-        ///// To Support request Issue field .
-        ///// <author>Rahul Shah</author>
-        ///// <createddate>12July2016</createddate>
-        ///// </summary>
-        //[TestMethod]
-        //public void Contact_Support()
-        //{
-        //    var routes = new RouteCollection();
-        //    Console.WriteLine("To Support request Issue field .\n");
-        //    MRPEntities db = new MRPEntities();
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-        //    LoginController objLoginController = new LoginController();
-        //    objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
-        //    objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-        //    int PlanId = DataHelper.GetPlanId();
-        //    Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-        //    Sessions.User.UserId = DataHelper.GetUserId(PlanId);
-        //    var lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
-        //    if (lstUser != null && lstUser.Count > 0)
-        //    {
-        //        string EmailId = lstUser.FirstOrDefault().Email;
-        //        string CompanyName = "Hive9";
-        //        string Issue = "Data not support";
-        //        var result = objLoginController.ContactSupport(EmailId, CompanyName, Issue) as JsonResult;
-
-        //        if (result.Data != null)
-        //        {
-        //            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "Data not found.");
-        //    }
-
-        //}
-        //#endregion
 
         #region Load Support Partial On Login 
         /// <summary>
@@ -218,18 +110,15 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             Sessions.User.UserId = DataHelper.GetUserId(PlanId);
             var result = objLoginController.LoadSupportPartialOnLogin() as PartialViewResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);                
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
-
-
         }
         #endregion
 
@@ -259,47 +148,8 @@ namespace RevenuePlanner.Test.Controllers
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
-
-
         }
         #endregion
-
-        //#region Forgot Password Submit
-        ///// <summary>
-        ///// To Forgot Password Submit.
-        ///// <author>Rahul Shah</author>
-        ///// <createddate>12July2016</createddate>
-        ///// </summary>
-        //[TestMethod]
-        //public void ForgotPassword_Submit()
-        //{
-        //    var routes = new RouteCollection();
-        //    Console.WriteLine("To Forgot Password Submit.\n");
-        //    MRPEntities db = new MRPEntities();
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    LoginController objLoginController = new LoginController();
-        //    objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
-        //    objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-        //    ForgotPasswordModel form = new ForgotPasswordModel();
-        //    form.UserEmail = "rahul.shah@indusa.com";
-        //    form.IsSuccess = true;
-
-        //    var result = objLoginController.ForgotPassword(form) as ActionResult;
-
-        //    if (result != null)
-        //    {
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-        //    }
-
-
-
-        //}
-        //#endregion
 
         #region Reset Password View
         /// <summary>
@@ -332,26 +182,25 @@ namespace RevenuePlanner.Test.Controllers
                 objPasswordResetRequest.UserId = objUser.UserId;
                 objPasswordResetRequest.AttemptCount = 0;
                 objPasswordResetRequest.CreatedDate = DateTime.Now;
-
                 string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
-
                 var result = objLoginController.ResetPassword(PasswordResetRequestId, false) as ViewResult;
-
                 if (result != null)
                 {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                    Assert.IsNotNull(result.Model);
+                    var serializedData = new RouteValueDictionary(result.Model);
+                    var resultvalue = serializedData["UserId"];
+                    Assert.AreEqual(objUser.UserId.ToString(), resultvalue.ToString());
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
                 }
                 else
                 {
                     Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
                 }
             }
-            else {
+            else
+            {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
             }
-
-
-
         }
         #endregion
 
@@ -375,17 +224,18 @@ namespace RevenuePlanner.Test.Controllers
             int PlanId = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             Sessions.User.UserId = DataHelper.GetUserId(PlanId);
-
             ResetPasswordModel form = new ResetPasswordModel();
             form.UserId = Sessions.User.UserId;
             form.NewPassword = "test1234";
             form.ConfirmNewPassword = "test1234";
-
             var result = objLoginController.ResetPassword(form) as ViewResult;
-
             if (result != null)
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
+                Assert.IsNotNull(result.Model);
+                var serializedData = new RouteValueDictionary(result.Model);
+                var resultvalue = serializedData["UserId"];
+                Assert.AreEqual(Sessions.User.UserId.ToString(), resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
             }
             else
             {
@@ -417,19 +267,16 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             Sessions.User.UserId = DataHelper.GetUserId(PlanId);
             string currentPassword = "Test1234";
-           
             var result = objLoginController.CheckCurrentPassword(currentPassword, Sessions.User.UserId.ToString()) as JsonResult;
-
             if (result.Data != null)
             {
+                Assert.IsNotNull(result.Data);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
-
         }
         #endregion
 
@@ -449,22 +296,18 @@ namespace RevenuePlanner.Test.Controllers
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             LoginController objLoginController = new LoginController();
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
-            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();          
-
+            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = objLoginController.MaintenanceSite() as ViewResult;
-
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
-
         }
         #endregion
-
     }
 }

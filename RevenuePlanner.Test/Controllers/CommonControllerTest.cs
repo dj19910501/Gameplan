@@ -33,13 +33,13 @@ namespace RevenuePlanner.Test.Controllers
             var result = objCommonController.LoadSupportPartial() as PartialViewResult;
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);                
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
@@ -62,13 +62,13 @@ namespace RevenuePlanner.Test.Controllers
             var result = objCommonController.LoadNoModelPartial() as PartialViewResult;
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
@@ -91,13 +91,13 @@ namespace RevenuePlanner.Test.Controllers
             var result = objCommonController.LoadSessionWarning() as PartialViewResult;
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
     }

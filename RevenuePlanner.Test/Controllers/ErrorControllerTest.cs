@@ -33,13 +33,13 @@ namespace RevenuePlanner.Test.Controllers
             var result = objErrorController.Error() as ViewResult;
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
@@ -62,13 +62,13 @@ namespace RevenuePlanner.Test.Controllers
             var result = objErrorController.ElmahError() as ViewResult;
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
@@ -93,41 +93,16 @@ namespace RevenuePlanner.Test.Controllers
             var result = objErrorController.PageNotFound() as ViewResult;
             if (result != null)
             {
+                Assert.IsNotNull(result.ViewName);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
             }
             else
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
-
         }
         #endregion
 
-        //#region Log Java Script Error
-        ///// <summary>
-        ///// Log Java Script Error.
-        ///// <author>Rahul Shah</author>
-        ///// <createddate>12July2016</createddate>
-        ///// </summary>
-        //[TestMethod]
-        //public void Log_Java_Script_Error()
-        //{
-        //    var routes = new RouteCollection();
-        //    Console.WriteLine("Log Java Script Error.\n");
-        //    MRPEntities db = new MRPEntities();
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    ErrorController objErrorController = new ErrorController();
-        //    objErrorController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objErrorController);
-        //    objErrorController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-        //    int PlanId = DataHelper.GetPlanId();
-        //    Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-        //    string message = "Java Script Error log";
-                  
-        //    objErrorController.LogJavaScriptError(message);            
-        //    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + message);
-            
-
-        //}
-        //#endregion
+       
     }
 }
