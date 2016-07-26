@@ -6429,9 +6429,10 @@ namespace RevenuePlanner.Controllers
                                 // Add by Nishant Sheth
                                 // Desc :: #2178 Not Capturing Multi Month Actuals
                                 int TacticEndMonth = tactic.EndDate.Month;
-                                if (_TacEndMonth < TacticEndMonth)
+                                //if (_TacEndMonth < TacticEndMonth)
+                                if (_TacEndMonth < currentMonth)    // Modified by Viral regarding PL ticket #2435.
                                 {
-                                    _TacEndMonth = TacticEndMonth;
+                                    _TacEndMonth = currentMonth;    // Modified by Viral regarding PL ticket #2435.
                                 }
                             }
                         }
@@ -8383,8 +8384,8 @@ namespace RevenuePlanner.Controllers
                             {
                                 List<string> Quarters = new List<string>() { PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++) };
                                 // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
-                                _curntQuarterListActual = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : Convert.ToInt32("12"))).ToList(); // Modified By Nishant Sheth #1839
-                                _curntQuarterListProjected = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) >= (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : Convert.ToInt32("12"))).ToList(); // Modified By Nishant Sheth #1839
+                                _curntQuarterListActual = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= 12).ToList(); // Modified By Nishant Sheth #1839
+                                _curntQuarterListProjected = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) >= (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : 12)).ToList(); // Modified By Nishant Sheth #1839
                                 _curntQuarterListGoal = Quarters;
                                 // Get list of Month After current month for Projected2 calculation.
                                 _curntQuarterListActProjected2 = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) > (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : Convert.ToInt32("12"))).ToList(); // Modified By Viral #2126
@@ -8460,8 +8461,11 @@ namespace RevenuePlanner.Controllers
                                 // Modified By Nishant Sheth #1839
                                 curntPeriod = PeriodPrefix + k;
                                 // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
-                                _Actual = ActualTrendList.Where(actual => actual.Year == year && (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate))
-                                    && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= (year == Convert.ToInt32(currentYear) ? currentEndMonth : Convert.ToInt32("12")) ? actual.Month.Equals(curntPeriod) : actual.Month.Equals("")).Sum(actual => actual.Value);
+                                _Actual = ActualTrendList.Where(actual => actual.Year == year &&
+                                                                            (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate)) &&
+                                                                            (Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= (12)) ? 
+                                                                            ( actual.Month.Equals(curntPeriod) ) : 
+                                                                            ( actual.Month.Equals(string.Empty))).Sum(actual => actual.Value);
 
                                 if (k > currentMonth)
                                 {
