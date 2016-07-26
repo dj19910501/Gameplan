@@ -1009,14 +1009,20 @@ namespace RevenuePlanner.Controllers
         /// Get plan by plan id
         /// </summary>
         /// <param name="planid"></param>
-        public async Task<JsonResult> GetPlanByPlanID(int planid, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "", bool IsHeaderActuals = false)
+        public async Task<JsonResult> GetPlanByPlanID(int planid, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "", bool IsHeaderActuals = false, string viewBy = "Tactic")
         {
             try
             {
                 await Task.Delay(1);
+
+                // Modified by Arpita Soni for Ticket #2357 on 07/26/2016
+                // To update heads up when view by ROI Package is selected
+                // Modified By Nishant Sheth Desc header value wrong with plan tab
+                HomePlanModelHeader lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, TabId: TabId, IsHeaderActuals: IsHeaderActuals, ViewBy: viewBy); 
+                
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, TabId: TabId, IsHeaderActuals: IsHeaderActuals),// Modified By Nishant Sheth Desc header value wrong with plan tab
+                    lstHomePlanModelHeader  = lstHomePlanModelHeader 
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
@@ -1058,7 +1064,7 @@ namespace RevenuePlanner.Controllers
         }
         // Add By Nishant Sheth 
         // Desc:: For get header values with sync proces and performance
-        public async Task<JsonResult> GetPlanByMultiplePlanIDsPer(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
+        public async Task<JsonResult> GetPlanByMultiplePlanIDsPer(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "", string viewBy = "Tactics")
         {
             planid = System.Web.HttpUtility.UrlDecode(planid);
             List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
@@ -1068,7 +1074,7 @@ namespace RevenuePlanner.Controllers
                 await Task.Delay(1);
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlansPer(planIds, activeMenu, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds),
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlansPer(planIds, activeMenu, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds,viewBy),
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)

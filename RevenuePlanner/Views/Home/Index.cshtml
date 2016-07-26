@@ -5046,7 +5046,7 @@
                                         var Dataindex = ExportSelectedIds.TaskID.indexOf(Data.TaskId);
                                         if (Dataindex < 0 && ValueAlreadyExists == false) {
                                             ExportSelectedIds.TaskID.push(Data.TaskId);
-                                            ExportSelectedIds.Title.push(Data.Title);
+                                            ExportSelectedIds.Title.push(htmlDecode(Data.Title));
                                             ExportSelectedIds.OwnerName.push(Data.OwnerName);
                                             ExportSelectedIds.TacticType.push(Data.TacticTypeValue);
                                             ExportSelectedIds.ColorCode.push(Data.ColorCode);
@@ -6227,9 +6227,10 @@
                 GetSelectedPlanNo = 1;
             }
             if (Planid != 0) {
-                if (!IsViewBy) {
+                // Modified by Arpita Soni to update heads up when view by ROI Package is selected
+                //if (!IsViewBy) {
                     GetHealderDataPer(Planid.toString(), CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(), CalendarId);
-                }
+                //}
                 IsViewBy = false;
                 GetNumberOfActivityPerMonByPlanIdPer(Planid.toString(), isQuater, CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(), CalendarId);
                 $.ajax({

@@ -630,6 +630,10 @@
             {
                 return;
             }
+            // Added by Arpita Soni for Ticket #2357 on 07/26/2016
+            // To update heads up when view by ROI Package is selected
+            var viewByValue = $("#ddlTabViewBy").val();
+
             $.ajax(
             {
                 type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
@@ -644,7 +648,8 @@
                     TacticTypeids:TacticTypeids.toString(),
                     StatusIds:StatusIds.toString(),
                     TabId:Tabid,
-                    IsHeaderActuals: IsHeaderActuals
+                    IsHeaderActuals: IsHeaderActuals,
+                    viewBy: viewByValue
                 },
                 dataType: "json",
                 success: function (data) {

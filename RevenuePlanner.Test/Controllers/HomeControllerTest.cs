@@ -10,8 +10,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Data;
 using System.Web.Mvc;
 using System.Web.Routing;
+
 
 namespace RevenuePlanner.Test.Controllers
 {
@@ -2522,5 +2524,54 @@ namespace RevenuePlanner.Test.Controllers
 
         }
         #endregion
+
+        #region ROI Packaging
+        /// <summary>
+        /// Create new ROI Package
+        /// <author>Arpita Soni</author>
+        /// <createddate>22Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void CreateROIPackage()
+        {
+            Console.WriteLine("Create new ROI Package.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            string asset = Convert.ToString(Enums.AssetType.Asset);
+            var AssetTacticTypes = db.TacticTypes.Where(tt => tt.AssetType.Equals(asset)).Select(x => x);
+            Plan_Campaign_Program_Tactic tactic = new Plan_Campaign_Program_Tactic();
+            JsonResult result = null;
+            string pkgItems = string.Empty;
+            if (AssetTacticTypes != null && AssetTacticTypes.Count() > 0)
+            {
+                int TacTypeId = AssetTacticTypes.Select(tt => tt.TacticTypeId).FirstOrDefault();
+                tactic = db.Plan_Campaign_Program_Tactic.Where(x => x.TacticTypeId == TacTypeId && x.ROI_PackageDetail.Count == 0).FirstOrDefault();
+            }
+            if (tactic != null && tactic.PlanTacticId != 0)
+            {
+                pkgItems = Convert.ToString(tactic.PlanTacticId);
+                result = objHomeController.AddROIPackageDetails(tactic.PlanTacticId, pkgItems) as JsonResult;
+            }
+
+            if (result != null)
+            {
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var data = serializedData["data"];
+                // data object should not be null in json result
+                Assert.AreEqual(data, "Success");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+        }
+        #endregion
+
     }
 }

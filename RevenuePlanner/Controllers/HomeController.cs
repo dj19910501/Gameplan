@@ -2069,15 +2069,6 @@ namespace RevenuePlanner.Controllers
             {
                 lstTactic = lstTactic.Where(x => x.AnchorTacticId != 0).ToList();
 
-                //Added By Komal Rawal for #2358 show all tactics in package even if there is single tactic filtered
-                if (lstTactic.Count > 0)
-                {
-                    List<int> AnchortacticIds = lstTactic.Select(ids => ids.AnchorTacticId).ToList();
-                    var ListOfAllTacticsinPlan = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.PlanTacticListforpackageing.ToString());
-                    lstTactic = ListOfAllTacticsinPlan.Where(ids => AnchortacticIds.Contains(ids.AnchorTacticId)).ToList();
-                }
-
-                //End
                 List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
                 //List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.
                 //                                                    Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).
@@ -9212,27 +9203,32 @@ namespace RevenuePlanner.Controllers
                     objDbMrpEntities.SaveChanges();
                 }
 
-                // Create new package 
-                foreach (var tacticId in arrPromoTacticIds)
+                if (arrPromoTacticIds != null)
                 {
-                    newPackage = new ROI_PackageDetail();
-                    newPackage.AnchorTacticID = AnchorTacticId;
-                    newPackage.PlanTacticId = Convert.ToInt32(tacticId);
-                    newPackage.CreatedDate = DateTime.Now;
-                    newPackage.CreatedBy = Sessions.User.UserId;
-                    objDbMrpEntities.ROI_PackageDetail.Add(newPackage);
-                }
-                objDbMrpEntities.Entry(newPackage).State = EntityState.Added;
-                objDbMrpEntities.SaveChanges();
+                    // Create new package 
+                    foreach (var tacticId in arrPromoTacticIds)
+                    {
+                        newPackage = new ROI_PackageDetail();
+                        newPackage.AnchorTacticID = AnchorTacticId;
+                        newPackage.PlanTacticId = Convert.ToInt32(tacticId);
+                        newPackage.CreatedDate = DateTime.Now;
+                        newPackage.CreatedBy = Sessions.User.UserId;
+                        objDbMrpEntities.ROI_PackageDetail.Add(newPackage);
+                    }
+                    objDbMrpEntities.Entry(newPackage).State = EntityState.Added;
+                    objDbMrpEntities.SaveChanges();
 
-                // Update AnchorTacticId of tactics in cache
-                planTacAnchorTac = new Dictionary<int, int>();
-                arrPromoTacticIds.Select(int.Parse).ToList().ForEach(planTacId => planTacAnchorTac.Add(planTacId, AnchorTacticId));
-                Common.UpdateAnchorTacticInCache(planTacAnchorTac);
+                    // Update AnchorTacticId of tactics in cache
+                    planTacAnchorTac = new Dictionary<int, int>();
+                    arrPromoTacticIds.Select(int.Parse).ToList().ForEach(planTacId => planTacAnchorTac.Add(planTacId, AnchorTacticId));
+                    Common.UpdateAnchorTacticInCache(planTacAnchorTac);
+                }
+               
             }
             catch (Exception ex)
             {
                 ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { data = "Error" }, JsonRequestBehavior.AllowGet);
             }
             return Json(new { data = "Success", IsUpdatePackage = IsUpdatePackage }, JsonRequestBehavior.AllowGet);
         }

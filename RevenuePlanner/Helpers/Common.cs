@@ -1672,7 +1672,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planId">selected plan id</param>
         /// <returns>returns  HomePlanModelHeader object</returns>
-        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false, string TabId = "", bool IsHeaderActuals = false)
+        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false, string TabId = "", bool IsHeaderActuals = false, string ViewBy = "Tactics")
         {
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
@@ -1724,6 +1724,14 @@ namespace RevenuePlanner.Helpers
                 //List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Commented By Rahul Shah on 16/09/2015 for PL #1610
                 List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId
                     && tactic.Plan_Campaign_Program.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.IsDeleted == false).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
+
+                // Added by Arpita Soni for ticket #2357 on 07/26/2016
+                // Display only packaged tactics count into heads up in case of View By ROI Package
+                if (ViewBy == Convert.ToString(Enums.DictPlanGanttTypes[Convert.ToString(Helpers.PlanGanttTypes.ROIPackage)]))
+                {
+                    planTacticIds = planTacticIds.Where(tac => tac.ROI_PackageDetail != null && tac.ROI_PackageDetail.Count > 0).ToList();
+                }
+
                 // Add By Nishant Sheth for Plan Year
                 //Modified BY Komal rawal for #1929 proper Hud chart and count
                 var CampaignList = planTacticIds.Select(ids => ids.Plan_Campaign_Program.Plan_Campaign).ToList();
@@ -2548,7 +2556,7 @@ namespace RevenuePlanner.Helpers
 
         // Add By Nishant Sheth
         // Desc :: for performance with cache data
-        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlansPer(List<int> planIds, string activeMenu, string year, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds)
+        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlansPer(List<int> planIds, string activeMenu, string year, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, string ViewBy = "Tactics")
         {
             HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
             CacheObject dataCache = new CacheObject();
@@ -2666,6 +2674,11 @@ namespace RevenuePlanner.Helpers
                 //List<Custom_Plan_Campaign_Program_Tactic> planTacticsList = ((List<Custom_Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.Tactic.ToString())).Where(t => t.IsDeleted == false && innerplanids.Contains(t.PlanId) && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).Select(tactic => tactic).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
                 List<Custom_Plan_Campaign_Program_Tactic> customtacticList = (List<Custom_Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.CustomTactic.ToString());
                 var planTacticsList = ((List<Custom_Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.CustomTactic.ToString())).Where(t => t.IsDeleted == false && innerplanids.Contains(t.PlanId) && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
+
+                if (ViewBy == Convert.ToString(Enums.DictPlanGanttTypes[Convert.ToString(Helpers.PlanGanttTypes.ROIPackage)]))
+                {
+                    planTacticsList = planTacticsList.Where(tac => tac.AnchorTacticId != null && tac.AnchorTacticId != 0).ToList();
+                }
 
                 lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
@@ -6492,33 +6505,42 @@ namespace RevenuePlanner.Helpers
         {
             CacheObject objCache = new CacheObject();
             List<Custom_Plan_Campaign_Program_Tactic> lstTacticPer = new List<Custom_Plan_Campaign_Program_Tactic>();
-            lstTacticPer = ((List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.CustomTactic.ToString()))
-                                                                               .Where(tactic => tactic.IsDeleted.Equals(false)).ToList();
+            lstTacticPer = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.CustomTactic.ToString());
+            if (lstTacticPer != null && lstTacticPer.Count > 0)
+            {
+                lstTacticPer = lstTacticPer.Where(tactic => tactic.IsDeleted.Equals(false)).ToList();
+
+                (from dict in dictPlanTacticAnchorTactic
+                 join tactic in lstTacticPer on dict.Key equals tactic.PlanTacticId
+                 select tactic).ToList()
+                 .ForEach(tac =>
+                 {
+                     tac.AnchorTacticId = dictPlanTacticAnchorTactic[tac.PlanTacticId];
+                     tac.PackageTitle = lstTacticPer.Where(x => x.PlanTacticId == dictPlanTacticAnchorTactic[tac.PlanTacticId]).
+                                                     Select(t => t.Title).FirstOrDefault();
+                 });
+
+                objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), lstTacticPer);
+            }
             
-            (from dict in dictPlanTacticAnchorTactic
-             join tactic in lstTacticPer on dict.Key equals tactic.PlanTacticId select tactic).ToList()
-             .ForEach(tac => {
-                                tac.AnchorTacticId = dictPlanTacticAnchorTactic[tac.PlanTacticId];
-                                tac.PackageTitle = lstTacticPer.Where(x => x.PlanTacticId == dictPlanTacticAnchorTactic[tac.PlanTacticId]).
-                                                                Select(t => t.Title).FirstOrDefault();
-                            });
-
-            objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), lstTacticPer);
-
             //Added by komal rawal for #2358 to update cache object
             List<Custom_Plan_Campaign_Program_Tactic> PlanTacticListforpackageing = new List<Custom_Plan_Campaign_Program_Tactic>();
+
             PlanTacticListforpackageing = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.PlanTacticListforpackageing.ToString());
+            if (PlanTacticListforpackageing != null && PlanTacticListforpackageing.Count > 0)
+            {
+                (from dict in dictPlanTacticAnchorTactic
+                 join tactic in PlanTacticListforpackageing on dict.Key equals tactic.PlanTacticId
+                 select tactic).ToList()
+                 .ForEach(tac =>
+                 {
+                     tac.AnchorTacticId = dictPlanTacticAnchorTactic[tac.PlanTacticId];
+                     tac.PackageTitle = PlanTacticListforpackageing.Where(x => x.PlanTacticId == dictPlanTacticAnchorTactic[tac.PlanTacticId]).
+                                                     Select(t => t.Title).FirstOrDefault();
+                 });
 
-            (from dict in dictPlanTacticAnchorTactic
-             join tactic in PlanTacticListforpackageing on dict.Key equals tactic.PlanTacticId
-             select tactic).ToList()
-             .ForEach(tac => {
-                 tac.AnchorTacticId = dictPlanTacticAnchorTactic[tac.PlanTacticId];
-                 tac.PackageTitle = PlanTacticListforpackageing.Where(x => x.PlanTacticId == dictPlanTacticAnchorTactic[tac.PlanTacticId]).
-                                                 Select(t => t.Title).FirstOrDefault();
-             });
-
-            objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), PlanTacticListforpackageing);
+                objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), PlanTacticListforpackageing);
+            }
             //End
         }
         #endregion
