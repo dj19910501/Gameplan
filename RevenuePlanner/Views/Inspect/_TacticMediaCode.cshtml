@@ -605,8 +605,15 @@ else
             }
             return;
         }        
-        if (e.srcElement.parentElement.previousElementSibling.className == "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active") {
-            AddRemoveMediaCode(e.srcElement.parentElement.previousElementSibling);
+        //Modified by Rahul Shah on 22/07/2016 for Pl #2371 code review observation.
+        if (e.target.parentElement.previousElementSibling.className == "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active") {
+            AddRemoveMediaCode(e.target.parentElement.previousElementSibling);
+        }
+        if (MediaCodeGrid.rowsBuffer.length - 1 != ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length || ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length == 0) {
+            $('#MediaCodeSelectAll').removeAttr('checked');
+        }
+        else {            
+            $('#MediaCodeSelectAll').attr('checked', 'checked');
         }
     }
     function custom_sort(a, b, ord, aid, bid) {
@@ -668,8 +675,7 @@ else
             $("#divHoneyCombBoxMediaCode").show();
 
         }
-
-        if (MediaCodeGrid.rowsBuffer.length != ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length) {
+        if (MediaCodeGrid.rowsBuffer.length != ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length || ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length == 0) {
             $('#MediaCodeSelectAll').removeAttr('checked');
         }
         else {
@@ -753,27 +759,9 @@ else
     //Added by Rahul shah to export to csv for PL #2371
     function ExportToCSVMedia() {
         if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length > 0) {
-            var MediaCodeGridSelected = MediaCodeGrid;
-            var ids = MediaCodeGridSelected.getAllRowIds();
-            var AllRowIds = ids.split(",");
-            for (var i = 0; i < ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length; i++) {
-                var arrlen = AllRowIds.length;
-                for (var j = 0; j < arrlen; j++) {
-                    if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId[i] == AllRowIds[j]) {
-                        AllRowIds = AllRowIds.slice(0, j).concat(AllRowIds.slice(j + 1, arrlen));
-                    }
-                }
-            }
-
-            for (var i = 0 ; i < AllRowIds.length ; i++) {
-                MediaCodeGridSelected.deleteRow(AllRowIds[i]);
-            }
-
-            //var count = MediaCodeGridSelected.getRowsNum();
-            var colCount = MediaCodeGridSelected.getColumnsNum();
-
-            MediaCodeGridSelected.enableCSVAutoID(true);
-            MediaCodeGridSelected.enableCSVHeader(true);
+            var colCount = MediaCodeGrid.getColumnsNum();
+            MediaCodeGrid.enableCSVAutoID(true);
+            MediaCodeGrid.enableCSVHeader(true);
             var checkColumn = "";
             if (colCount > 0) {
                 for (var i = 1; i <= colCount; i++) {
@@ -786,9 +774,40 @@ else
 
                 }
             }
-            var header = MediaCodeGridSelected.setSerializableColumns(checkColumn);
-            var myCSVString = MediaCodeGridSelected.serializeToCSV(true);
-            var lines = myCSVString.split(",");
+            var Entity = [];
+            MediaCodeGrid.setSerializableColumns(checkColumn);
+            var myCSVString = MediaCodeGrid.serializeToCSV(true);
+            var myCSVStringwithNewLine = myCSVString.split(/\n/);
+            var myCSVStringArray = [];
+            for (var i = 0; i < myCSVStringwithNewLine.length; i++) {
+                // only push this line if it contains a non whitespace character.
+                if (/\S/.test(myCSVStringwithNewLine[i])) {
+                    myCSVStringArray.push($.trim(myCSVStringwithNewLine[i]));                    
+                }
+            }            
+            Entity.push(myCSVStringArray[0]);
+            if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length > 0) {
+                for (var i = 1; i < myCSVStringArray.length; i++) {
+                    var isExist = false
+                    for (var j = 0; j < ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length; j++) {                       
+                        if (myCSVStringArray[i].indexOf(ExportSelectedIdsMediaCode.Mediacodes[j]) >= 0) {
+                            isExist = true;
+                        }
+                    }
+                    if (isExist) {                        
+                        Entity.push(myCSVStringArray[i]);
+                    }
+                }               
+            }
+            var ExportToCSVString;
+            for (i = 0; i < Entity.length; i++) {
+                if (i != 0) {
+                    ExportToCSVString += "\t" + Entity[i] + "\r\n";  //here "\t" added to leading zero in export to .csv
+                }
+                else {
+                    ExportToCSVString = Entity[i] + "\r\n";
+                }                
+            }            
             var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
             var Filename = '@ViewBag.TacticID' + '_MediaCode';
             if (navigator.userAgent.search("Trident") >= 0) {
@@ -796,19 +815,20 @@ else
                     // if IE 9 then becuase ie 9 and lower version not support blob
                     //http://code.ciphertrick.com/2014/12/07/download-json-data-in-csv-format-cross-browser-support/
                     var IEwindow = window.open();
-                    IEwindow.document.write('sep=,\r\n' + lines);
+                    IEwindow.document.write('sep=,\r\n' + ExportToCSVString);                    
                     IEwindow.document.close();
                     IEwindow.document.execCommand('SaveAs', true, Filename);
                     IEwindow.close();
                 }
                 else {
-                    var fileData = ["sep=,\r\n" + lines];
+                    var fileData = ["sep=,\r\n" + ExportToCSVString];                    
                     blobObject = new Blob(fileData);
                     window.navigator.msSaveOrOpenBlob(blobObject, Filename); // Now the user will have the option of clicking the Save button and the Open button.
                 }
             }
             else {
-                var uri = 'data:text/csv;charset=utf-8,' + escape(lines);
+                
+                var uri = 'data:text/csv;charset=utf-8,' + escape(ExportToCSVString);
                 var downloadLink = document.createElement("a");
                 downloadLink.href = uri;
                 downloadLink.download = Filename + ".csv";
@@ -818,12 +838,6 @@ else
             }
             $('#spanMessageError').html("");
             $("#errorMessage").hide();
-            BindMediaCodeGrid();
-            if (ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length > 0) {
-                for (var i = 0 ; i < ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length; i++) {
-                    $('#MediaCodeGrid').find('tr').find('td').find("div[rowid='" + ExportSelectedIdsMediaCode.MediacodeSelectedRowId[i] + "']").addClass("honeycombbox-icon-gantt-Active");
-                }
-            }
         }
         else {
             $("#modal-container-186470").scrollTop(0);
