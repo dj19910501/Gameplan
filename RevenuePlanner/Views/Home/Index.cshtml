@@ -5649,7 +5649,7 @@
 
                         if ($('#IsGridView').val() != "True" &&  ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
                         {
-                            var taskToDelete = $("div[task_id='" + CalendarTaskID + "']");
+                            var taskToDelete = $("div[name1='" + taskId + "']");
                             if(taskToDelete != undefined && taskToDelete.length > 0){ 
                                 gantt.deleteTask(taskId);
                             }
