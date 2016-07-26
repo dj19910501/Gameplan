@@ -15342,12 +15342,12 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     padding-bottom: 5px;
     padding-right: 0;
     padding-top: 4px;
-    width: 27%;
+    width: 18%;
     margin-right: 15px;
 }
 .info-user  .username {
     float: right;
-    max-width: 85%; /* Changed for #795 */
+    max-width: 83%; /* Changed for #795 */
     overflow: hidden;
     margin: 8px 0 0;
     text-align: left;
