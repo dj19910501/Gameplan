@@ -14382,7 +14382,7 @@ namespace RevenuePlanner.Controllers
             string customFieldEntityValue = string.Empty;
             string DropdowList = Enums.CustomFieldType.DropDownList.ToString();
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
-            string stylecolorgray = "color:#999";
+            string stylecolorgray = "color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:85%;";
             try
             {
                 if (MediaCodecustomFieldList.Count != 0)

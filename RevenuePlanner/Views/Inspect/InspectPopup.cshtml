@@ -240,7 +240,7 @@
                 </li>
                 @if (_isClientMediaCodesPermission && IsAssetType==false)
                 {
-                    <li class="pull-left" id="liMedia_Code">
+                    <li class="pull-left" id="liMedia_Codes">
                         <a>Media Codes</a>
                     </li>
                 }
@@ -305,7 +305,7 @@
           // Click on Tab Partialview Refresh Based On Selected Tab
 
           // $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
-          $("#liSetup,#liReview,#liActuals,#liLine_Items,#liMedia_Code").on("click", function () {
+          $("#liSetup,#liReview,#liActuals,#liLine_Items,#liMedia_Codes").on("click", function () {
               $("#divArchiveMediaCode").html("");
               //added by devanshi for PL ticket #2276
         if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
@@ -313,7 +313,8 @@
             $("#txtTacticTitle").addClass("error");
             return false;
         }
-        //end
+              //end
+            
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
               {
@@ -333,6 +334,7 @@
                       returnpara = SaveAllData(activeTab); //Added By Komal Rawal for #1213 to save data to tab click
                   }
                   if (returnpara) {
+                      
                       RemoveTabClass();
                       $(this).removeClass("pull-left");
                       $(this).addClass("active pull-left");

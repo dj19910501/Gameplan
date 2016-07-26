@@ -405,13 +405,13 @@ else
                         var newmediacode = data.MediaCode;
                         MediaCodeGrid.cells(row_id, GeneratecolIndex).setValue("<span class='spnMediacode'>" + newmediacode + "</span>");
                         MediaCodeGrid.cells(row_id, buttoncolIndex).setValue("<span class='plus-circle' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + row_id + "  onclick=OpenGridPopup(event); title='Add Media Code'></i></span><div class=honeycombbox-icon-gantt rowid=" + row_id + " onclick=AddRemoveMediaCode(this); title='Select' altid=" + data.NewMediaCodeId.toString() + "></div><span class='archive' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + row_id + " onclick=ArchiveMediaCode(event); title='Archive'></i></span>");
-                        MediaCodeGrid.setCellTextStyle(row_id, GeneratecolIndex, "color:#999");
+                        MediaCodeGrid.setCellTextStyle(row_id, GeneratecolIndex, "color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:85%;");
                         MediaCodeGrid.cells(row_id, GeneratecolIndex).setAttribute("actval", newmediacode);
 
                         MediaCodeGrid.forEachCell(row_id, function (cellObj, col_index) {
                             if (col_index > 2) {
                                 MediaCodeGrid.cells(row_id, col_index).setAttribute("locked", "1");
-                                MediaCodeGrid.setCellTextStyle(row_id, col_index, "color:#999");
+                                MediaCodeGrid.setCellTextStyle(row_id, col_index, "color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:85%;");
                             }
                         });
                         if (data.SuccessMessage != null && data.SuccessMessage != "") {

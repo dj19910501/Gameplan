@@ -6534,6 +6534,7 @@ namespace RevenuePlanner.Helpers
            {
             var TacticMediacode = db.Tactic_MediaCodes.Where(a => TacticIDs.Contains(a.TacticId)).ToList();
             TacticMediacode.ForEach(mediacode => db.Entry(mediacode).State = EntityState.Deleted);
+            db.SaveChanges();
            }
            
         }
