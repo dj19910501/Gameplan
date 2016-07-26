@@ -5769,7 +5769,7 @@ namespace RevenuePlanner.Controllers
 
                     #region "Declare local variables"
                     FinancialOverviewModel objFinanceModel = new FinancialOverviewModel();
-                    double _PlanBudget = 0, _TacticTotalBudget = 0;
+                    double _PlanBudget = 0, _PlanTotalBudget = 0;
                     List<int> lstPlanIds = new List<int>();
                     List<int> _TacticIds = new List<int>();
                     List<Plan_Campaign_Program_Tactic> _tacList = new List<Plan_Campaign_Program_Tactic>();
@@ -5839,11 +5839,15 @@ namespace RevenuePlanner.Controllers
                                             Value = tact.Value
                                         }).ToList();
 
-                    _TacticTotalBudget = _tacBudgetList != null && _tacBudgetList.Count > 0 ? _tacBudgetList.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(budget => budget.Value) : 0;
-
+                    // Modified By Nishant Sheth // Reg::#2432 Show a plan allocated budget instead of tactic allocated budget
+                    //_TacticTotalBudget = _tacBudgetList != null && _tacBudgetList.Count > 0 ? _tacBudgetList.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(budget => budget.Value) : 0;
                     _PlanBudget = db.Plans.Where(plan => lstPlanIds.Contains(plan.PlanId)).Sum(plan => plan.Budget);
-                    objFinanceModel.TotalBudgetAllocated = _TacticTotalBudget;
-                    objFinanceModel.TotalBudgetUnAllocated = _PlanBudget - _TacticTotalBudget;
+                    //objFinanceModel.TotalBudgetAllocated = _TacticTotalBudget;
+                    //objFinanceModel.TotalBudgetUnAllocated = _PlanBudget - _TacticTotalBudget;
+                    _PlanTotalBudget = _planBudgetList != null && _planBudgetList.Count > 0 ? _planBudgetList.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(budget => budget.Value) : 0;
+                    objFinanceModel.TotalBudgetAllocated = _PlanTotalBudget;
+                    objFinanceModel.TotalBudgetUnAllocated = _PlanBudget - _PlanTotalBudget;
+                    // End By Nishant Sheth
 
                     #endregion
 
