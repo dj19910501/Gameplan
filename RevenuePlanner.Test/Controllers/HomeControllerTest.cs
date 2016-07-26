@@ -2571,6 +2571,72 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
             }
         }
+
+        /// <summary>
+        /// Get tactic details on clicking of package icon from grid/calendar 
+        /// <author>Arpita Soni</author>
+        /// <createddate>26Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void GetPackageTacticsOnClickPackageIcon()
+        {
+            Console.WriteLine("Get tactic details on clicking of package icon from grid/calendar.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            JsonResult result = null;
+
+            Plan_Campaign_Program_Tactic objTactic = DataHelper.GetPlanTacticForPackage(Sessions.User.ClientId);
+            Sessions.PlanPlanIds = new List<int>();
+            Sessions.PlanPlanIds.Add(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId);
+
+            // Call to verify various view by scenarios in calender
+            string[] names = Enum.GetNames(typeof(PlanGanttTypes));
+            for (int i = 0; i < names.Length; i++)
+            {
+                if(names[i] == Convert.ToString(PlanGanttTypes.ROIPackage)) {
+                    names[i] = Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)];
+                }
+                result = objHomeController.GetPackageTacticDetails(names[i],
+                                                               Convert.ToString(objTactic.PlanTacticId),
+                                                               Convert.ToString(objTactic.TacticType.ColorCode),
+                                                               IsGridView: false);
+
+                if (result != null)
+                {
+                    Assert.IsNotNull(result.Data);
+                    var serializedData = new RouteValueDictionary(result.Data);
+                    var data = serializedData["Listofdata"];
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + data);
+                }
+                else
+                {
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                }
+            }
+
+            // Call to verfiy function in grid
+            result = objHomeController.GetPackageTacticDetails(string.Empty,
+                                                               Convert.ToString(objTactic.PlanTacticId),
+                                                               Convert.ToString(objTactic.TacticType.ColorCode),
+                                                               IsGridView: true);
+
+            if (result != null)
+            {
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var data = serializedData["Listofdata"];
+                Assert.IsNotNull(data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + data);
+            }
+            else
+            {
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+            }
+        }
+
         #endregion
 
     }

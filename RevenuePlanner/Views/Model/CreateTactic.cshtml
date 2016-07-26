@@ -491,7 +491,7 @@
                 }
             
             }
-            if (AssetType == '@Enums.AssetType.Asset.ToString()' && '@Sessions.IsMediaCodePermission.ToString().ToLower()'=='true') {
+            if ('@ViewBag.IsCreated.ToString().ToLower()' == 'false' && AssetType == '@Enums.AssetType.Asset.ToString()' && '@Sessions.IsMediaCodePermission.ToString().ToLower()' == 'true') {
                 var retValue = confirm('Media code associated to this tactic will be deleted. Do you wish to continue?');
                 if (!retValue) {
                     return false;

@@ -9286,6 +9286,17 @@ namespace RevenuePlanner.Controllers
         {
             var PlanTacticListforpackageing = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.PlanTacticListforpackageing.ToString());
 
+            if (PlanTacticListforpackageing == null || PlanTacticListforpackageing.Count == 0)
+            {
+                var PlanId = string.Join(",", Sessions.PlanPlanIds);
+                DataSet dsPlanCampProgTac = new DataSet();
+                dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(PlanId);
+
+                var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+                objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);
+                PlanTacticListforpackageing = customtacticList;
+            }
+
             if (IsGridView == false)
             {
                 if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) || viewBy.Equals(PlanGanttTypes.Request.ToString(), StringComparison.OrdinalIgnoreCase))
