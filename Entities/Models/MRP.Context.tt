@@ -59,6 +59,7 @@ using System.Linq;
     public <#=code.Escape(container)#>()
         : base("name=<#=container.Name#>")
     {
+		((IObjectContextAdapter)this).ObjectContext.CommandTimeout = 180;
 <#
 if (!loader.IsLazyLoadingEnabled(container))
 {
