@@ -50,7 +50,7 @@ namespace RevenuePlanner.Test.Controllers
             else
             {
                 //Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                Assert.IsFalse(false);           
+                Assert.IsTrue(false);           
             }
         }
         #endregion        
