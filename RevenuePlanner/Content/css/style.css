@@ -15942,6 +15942,8 @@ input.selectInput{
 
 .report-handing{margin-bottom:20px}
 .report-handing .selectBox{width: 158px; line-height: 1.1; float:right} /*#2406 */
+
+.range_inputs .cancelBtn.btn{color:inherit}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

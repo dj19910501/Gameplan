@@ -194,8 +194,9 @@ namespace RevenuePlanner.Controllers
         {
             return Index(Enums.ActiveMenu.Finance);
         }
-        public ActionResult ReportCustom()
+        public ActionResult ReportCustom(int DashboardId)
         {
+            ViewBag.CustomDashboardId = DashboardId;
             return Index(Enums.ActiveMenu.Custom);
         }
         /// <summary>

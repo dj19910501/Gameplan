@@ -42,7 +42,7 @@
             <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
                 <div class="wraper-btns cf">
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdatePlan" onclick="UpdatePlan()">
-                        @Enums.FilterLabel.Update_Plans.ToString().Replace("_", " ")
+                        Update Results
                     </button>
                 </div>
             </div>    
@@ -194,6 +194,7 @@
                 data: $.param(params, true),
                 dataType: "json",
                 success: function (data) {
+                    //alert(data);
                     eval(data);
                 },
                 error: function (err) {
@@ -437,9 +438,9 @@ function () {
             $("#dashboardpagetext").text(CustomUrlLink);
         }
         var DashboardID = $(this).attr('id').replace('CustomReportli', '');
-        @*var url = '@Url.Action("GetCustomReport", "Report", new { DashboardId = "FIRST" })';
-        window.location.href = url.replace('FIRST', DashboardID);*@
-        var url = '@Url.Content("~/Report/GetCustomReport/")';
+        var url = '@Url.Action("ReportCustom", "Report", new { DashboardId = "FIRST" })';
+        window.location.href = url.replace('FIRST', DashboardID);
+        @*var url = '@Url.Content("~/Report/GetCustomReport/")';
         $.ajax({
             type: 'POST',
             url: url,
@@ -454,7 +455,7 @@ function () {
                     $(".popover.fade.top.in").remove();
                 }
             }
-        });
+        });*@
     });
 
     function RemoveAllActiveItem() {
