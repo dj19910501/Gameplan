@@ -1284,7 +1284,7 @@ BEGIN
 			THEN 
 			CASE WHEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) > 0
 			THEN CAST(REPLACE(tmpXmlData.['+@UpdateColumn+'#'+CAST(@Count AS varchar(5))+'],'','','''') AS FLOAT) ELSE 0 END
-			ELSE 0 END <> ['+(@UpdateColumn)+']
+			ELSE 0 END <> ISNULL(['+(@UpdateColumn)+'],0)
 			) tmpXmlData
 			
 			-- Insert into the Budget Detail amount table for Forecast and Budget values if that period values are not exist
