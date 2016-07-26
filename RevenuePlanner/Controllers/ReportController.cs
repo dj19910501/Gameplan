@@ -107,7 +107,7 @@ namespace RevenuePlanner.Controllers
                 string ReportDBConnString = string.Empty;
                 if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
                 {
-                    ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                    ReportDBConnString = Convert.ToString(regularConnectionString);
                 }
                 string AuthorizedReportAPIUserName = string.Empty;
                 if (ConfigurationManager.AppSettings.Count > 0)
@@ -139,6 +139,7 @@ namespace RevenuePlanner.Controllers
                 string result = string.Empty;
                 try
                 {
+                    ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
                     result = client.DownloadString(url);
                     lstMenu = JsonConvert.DeserializeObject<List<Menu>>(result);
                 }
@@ -4617,7 +4618,7 @@ namespace RevenuePlanner.Controllers
                 string ReportDBConnString = string.Empty;
                 if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
                 {
-                    ReportDBConnString = Convert.ToString(regularConnectionString);
+                    ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
                 }
 
                 string AuthorizedReportAPIUserName = string.Empty;
