@@ -39,7 +39,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objBoostController.BestInClass() as ViewResult;
             if (result != null)
             {
-                Assert.IsNotNull(result.Model);
+                Assert.IsNotNull(result.Model);                
                 List<BestInClassModel> objModelList = (List<BestInClassModel>)result.Model;
                 BestInClassModel objModel = objModelList.FirstOrDefault();
                 var serializedData = new RouteValueDictionary(objModel);
@@ -49,7 +49,8 @@ namespace RevenuePlanner.Test.Controllers
             }
             else
             {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                //Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                Assert.IsFalse(false);           
             }
         }
         #endregion        
