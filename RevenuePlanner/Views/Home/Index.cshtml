@@ -5613,7 +5613,6 @@
                 url: '@Url.Content("~/Home/UnpackageTactics")',
                 data: { AnchorTacticId: anchorTacticId, IsPromotion: IsPromotion },
                 success: function (data) {
-
                     var TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
                     if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                     {
@@ -5644,10 +5643,13 @@
                             AnchorTaskIdsList.Id.push(CalendarTaskID);
                             AnchorTaskIdsList.Value.push(data.remainItems.toString());
                         }
+
                         if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
                         {
-                            gantt.deleteTask(taskId);
-                            gantt.refreshData();
+                            var taskToDelete = $("div[task_id='" + CalendarTaskID + "']");
+                            if(taskToDelete != undefined && taskToDelete.length > 0){ 
+                                gantt.deleteTask(taskId);
+                            }
                         }
                         // Update count on Honeycomb icon
                         // Conditions for Calender
