@@ -2232,6 +2232,9 @@
                 AddItemId : [],
             }
 
+            IsPackageView = false;
+            PreventUnPackageClick = true;
+
             $("#totalEntity").text(0);
             $(".honeycombbox-icon-gantt-Active").removeClass();
             //#1780
@@ -4629,7 +4632,7 @@
         };
         function CallPackageHoneyComb() {
             var ViewBy = $('#ddlTabViewBy').val();
-            if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
+            if ($('#IsGridView').val() != "True" &&  ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
             {
                 return false;
             }
@@ -4921,7 +4924,7 @@
                             }
                             // Added by Arpita Soni for Ticket #2357 on 07/15/2016
                             var ViewBy =  $('#ddlTabViewBy').val();
-                            if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]') {
+                            if ($('#IsGridView').val() != "True" &&  ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]') {
                                 var removeEntirePkg = CalendarTaskID.split('_')[0];
                                 gantt.deleteTask(removeEntirePkg);
                                 gantt.refreshData();
@@ -4965,7 +4968,7 @@
             $('.popover-content > #UnpackageHoneyComb').removeAttr('style');
             $('.popover-content > #UnpackageHoneyComb').attr('style', 'cursor: pointer !important');
             var ViewBy =  $('#ddlTabViewBy').val();
-            if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
+            if ($('#IsGridView').val() != "True" &&  ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
             {
                 $('.popover-content > #PackageHoneyComb').removeAttr('style');
                 $('.popover-content > #PackageHoneyComb').attr('style', 'color:gray; cursor: default !important');
@@ -5341,7 +5344,7 @@
 
                 var ViewBy = $('#ddlTabViewBy').val();
 
-                if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
+                if ($('#IsGridView').val() != "True" &&  ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
                 {
                     $('#honeycomb_content').find("#PackageHoneyComb").attr('style', 'color:gray; cursor: default !important');
                 }
@@ -5644,7 +5647,7 @@
                             AnchorTaskIdsList.Value.push(data.remainItems.toString());
                         }
 
-                        if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
+                        if ($('#IsGridView').val() != "True" &&  ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
                         {
                             var taskToDelete = $("div[task_id='" + CalendarTaskID + "']");
                             if(taskToDelete != undefined && taskToDelete.length > 0){ 
@@ -5694,7 +5697,7 @@
 
                         });
                         AnchorTaskIdsList.Id.push(CalendarTaskID);
-                        if (ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]') {
+                        if ($('#IsGridView').val() != "True" &&  ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]') {
                             var removeEntirePkg = taskId.split('_')[0];
                             gantt.deleteTask(removeEntirePkg);
                             gantt.refreshData();
