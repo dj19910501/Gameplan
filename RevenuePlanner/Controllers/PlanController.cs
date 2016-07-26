@@ -17157,7 +17157,7 @@ namespace RevenuePlanner.Controllers
                 dtTable.Rows.Add(dtRow);
             }
 
-            Response.ContentType = "Application/x-msexcel";
+            Response.ContentType = "Application/x-excel";
             Response.AddHeader("content-disposition", "attachment;filename=test.csv");
             Response.Write(ExportToCSVFile(dtTable));
             Response.End();
@@ -17191,7 +17191,7 @@ namespace RevenuePlanner.Controllers
         {
             string FileName = HttpUtility.HtmlDecode(Convert.ToString(Session["FileName"]));
             DataTable CSVDataTable = (DataTable)Session["CSVDataTable"];
-            Response.ContentType = "Application/x-msexcel";
+            Response.ContentType = "Application/x-excel";
             // Modified By Nishant Sheth
             // Export csv does not work in Firefox #2430
             if (!string.IsNullOrEmpty(FileName))
