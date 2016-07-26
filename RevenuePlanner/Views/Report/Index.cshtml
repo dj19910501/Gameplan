@@ -1124,6 +1124,7 @@
             $('#ddlsection').empty();
         }
         else if ('@ActiveReportMenu' == "Overview") {
+            $('.summary').addClass('active');
             LoadYearDropdown();
             GetselectionFilter();
         }
@@ -1140,7 +1141,6 @@
             FinanceDash();
         }
         else if ('@ActiveReportMenu' == "Custom") {
-            debugger;
             $('.custom').addClass('active');
             var DashboardID = '@CustomDashboardId';
             var url = '@Url.Content("~/Report/GetCustomReport/")';
