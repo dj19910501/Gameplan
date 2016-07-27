@@ -37,20 +37,20 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = objBoostController.BestInClass() as ViewResult;
+            Assert.IsNotNull(result.Model);
+            List<BestInClassModel> objModelList = (List<BestInClassModel>)result.Model;
+            BestInClassModel objModel = objModelList.FirstOrDefault();
+            var serializedData = new RouteValueDictionary(objModel);
+            var resultvalue = serializedData["StageName"];
+            Assert.IsNotNull(resultvalue.ToString());
             if (result != null)
             {
-                Assert.IsNotNull(result.Model);                
-                List<BestInClassModel> objModelList = (List<BestInClassModel>)result.Model;
-                BestInClassModel objModel = objModelList.FirstOrDefault();
-                var serializedData = new RouteValueDictionary(objModel);
-                var resultvalue = serializedData["StageName"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value: result.Model  " + result.Model);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value: resultvalue.ToString " + resultvalue.ToString());
             }
             else
             {
-                //Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                Assert.IsTrue(false);           
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + resultvalue.ToString());
             }
         }
         #endregion        
