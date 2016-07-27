@@ -6698,39 +6698,35 @@ namespace RevenuePlanner.Helpers
         public static string GetFilterData(this HtmlHelper helper, int DashboardID, int DashboardPageID)
         {
             WebClient client = new WebClient();
-            string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
             string regularConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
             string ReportDBConnString = string.Empty;
             if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
             {
-                ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                ReportDBConnString = Convert.ToString(regularConnectionString);
             }
             string AuthorizedReportAPIUserName = string.Empty;
+            string AuthorizedReportAPIPassword = string.Empty;
+            string ApiUrl = string.Empty;
             if (ConfigurationManager.AppSettings.Count > 0)
             {
                 if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
                 {
                     AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
                 }
-            }
-
-            string AuthorizedReportAPIPassword = string.Empty;
-            if (ConfigurationManager.AppSettings.Count > 0)
-            {
                 if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
                 {
                     AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
                 }
-            }
-            string ApiUrl = string.Empty;
-            if (ConfigurationManager.AppSettings.Count > 0)
-            {
                 if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
                 {
                     ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                    if (!string.IsNullOrEmpty(ApiUrl) && !ApiUrl.EndsWith("/"))
+                    {
+                        ApiUrl += "/";
+                    }
                 }
             }
-            string url = marketoIntegrstionApi + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.UserId + "&RoleId=" + Sessions.User.RoleId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+            string url = ApiUrl + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.UserId + "&RoleId=" + Sessions.User.RoleId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
             string result = client.DownloadString(url);
             result = result.Substring(1);
             result = result.Remove(result.Length - 1);
