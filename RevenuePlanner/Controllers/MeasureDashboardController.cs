@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Elmah;
+using Newtonsoft.Json;
 using RevenuePlanner.BAL;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
@@ -73,7 +74,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
-
+                ErrorSignal.FromCurrentContext().Raise(ex);
                 throw;
             }
         }
