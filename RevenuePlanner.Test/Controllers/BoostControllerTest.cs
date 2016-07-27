@@ -47,11 +47,7 @@ namespace RevenuePlanner.Test.Controllers
             {
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value: result.Model  " + result.Model);
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value: resultvalue.ToString " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + resultvalue.ToString());
-            }
+            }          
         }
         #endregion        
 
