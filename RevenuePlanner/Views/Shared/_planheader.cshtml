@@ -245,7 +245,6 @@
 
 
     function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam,Cid, OId,Tacticids,StatusId,Tabid,IsHeaderActuals) {
-    
         var _filters = {
             OwnerIds: [],
             TacticTypeids:[],
@@ -379,7 +378,7 @@
             });
         }
 
-    function GetNumberOfActivityPerMonByPlanIdPer(selectedPlanIds, strParam,Cid, OId,Tacticids,StatusId,Tabid,IsHeaderActuals) {
+    function GetNumberOfActivityPerMonByPlanIdPer(selectedPlanIds, strParam, Cid, OId,Tacticids,StatusId,Tabid,IsHeaderActuals) {
         var _filters = {
             OwnerIds: [],
             TacticTypeids:[],
@@ -468,6 +467,9 @@
         if (selectedPlanIds == '') {
             return;
         }
+        // Added by Arpita Soni for Ticket #2357 on 07/26/2016
+        // To update heads up when view by ROI Package is selected
+        var viewByValue = $("#ddlTabViewBy").val();
         $.ajax(
         {
             type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
@@ -482,7 +484,8 @@
                 TacticTypeids:_filters.TacticTypeids.toString(),
                 StatusIds:_filters.StatusIds.toString(),
                 TabId:Tabid, //Added BY Komal rawal for #1929 proper Hud chart and count
-                IsHeaderActuals:IsHeaderActuals
+                IsHeaderActuals:IsHeaderActuals,
+                ViewBy: viewByValue
             },
             dataType: "json",
             success: function (data) {
@@ -601,7 +604,6 @@
 
         //ENd
         function GetHealderDataPer(selectedPlanIds,Cid, OId,Tacticids,StatusId,Tabid,IsHeaderActuals) {
-            
             // Modified By Nishant Sheth add tab id as argument:  Desc header value wrong with plan tab 
             var CustomId = "";
             var OwnerIds = "";

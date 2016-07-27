@@ -1423,7 +1423,6 @@
                                     return false;
                                 }
                             }
-
                         }
 
                         ProgarmName = HomeGrid.cells(tid, 1).getValue();
@@ -1431,6 +1430,8 @@
                         $("#hdnsourceid").val(sourseid);
                         $("#hdndestid").val(destinatinId);
                         $("#divMovetacticPopup").modal('show');
+                        // Unselect all items from the grid
+                        RemoveAllHoneyCombData();
                     }
                     else {
                         ProgarmName = HomeGrid.cells(tid, 1).getValue();

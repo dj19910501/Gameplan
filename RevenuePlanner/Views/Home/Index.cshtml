@@ -2245,19 +2245,21 @@
             var ID = CalendarId;
             //   var id = $(this).attr('id');
             if (TabName == "liCalender") {
+
+                $('#IsGridView').val("False");
                 $("#CalenderView").show();
                 $("#divgridview").hide();
                 $("#ImprovementGrid").hide();
                 $("#divupcomingact").show();
                 $("#liplanrequest").show();
                 $('.nav').removeClass('no-bottom-border');
-                //       $("#btnPlanReport").css("display", "block");
+                //$("#btnPlanReport").css("display", "block");
                 //modified by Rahul Shah on 22/02/2016 for PL #1905. to set focus after link tactic
                 scrollstate = 0;
                 GetCollaborators(CurrentPlanId);
                 RefreshCurrentTab();
+
                 // 1762
-                $('#IsGridView').val("False");
                 Currenttime = $('#ddlUpComingActivites').val(); //Modified by Komal Rawal for proper HuD when we change tab
                 $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
                 $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
@@ -4956,6 +4958,8 @@
                                     $('#divCollaboratorCount').hide(); // Added for #2112
                                     $("#NodatawithfilterCalendar").show();
                                 }
+                                GetHealderDataPer(filters.SelectedPlans.toString(),filters.customFieldIds.toString(),filters.OwnerIds.toString(),filters.TacticTypeids.toString(),filters.StatusIds.toString(),CalendarId);
+                                GetNumberOfActivityPerMonByPlanIdPer(filters.SelectedPlans, isQuater, filters.customFieldIds.toString(),filters.OwnerIds.toString(),filters.TacticTypeids.toString(),filters.StatusIds.toString(),CalendarId);
                             }
                         }
 
@@ -5671,6 +5675,10 @@
                             if(taskToDelete != undefined && taskToDelete.length > 0){ 
                                 gantt.deleteTask(taskId);
                             }
+                            // To update heads up values
+                            GetHealderDataPer(filters.SelectedPlans.toString(),filters.customFieldIds.toString(),filters.OwnerIds.toString(),filters.TacticTypeids.toString(),filters.StatusIds.toString(),CalendarId);
+                            GetNumberOfActivityPerMonByPlanIdPer(filters.SelectedPlans, isQuater, filters.customFieldIds.toString(),filters.OwnerIds.toString(),filters.TacticTypeids.toString(),filters.StatusIds.toString(),CalendarId);
+
                         }
                         // Update count on Honeycomb icon
                         // Conditions for Calender
@@ -5727,6 +5735,10 @@
                             var removeEntirePkg = taskId.split('_')[0];
                             gantt.deleteTask(removeEntirePkg);
                             gantt.refreshData();
+
+                            // To update heads up values
+                            GetHealderDataPer(filters.SelectedPlans.toString(),filters.customFieldIds.toString(),filters.OwnerIds.toString(),filters.TacticTypeids.toString(),filters.StatusIds.toString(),CalendarId);
+                            GetNumberOfActivityPerMonByPlanIdPer(filters.SelectedPlans, isQuater, filters.customFieldIds.toString(),filters.OwnerIds.toString(),filters.TacticTypeids.toString(),filters.StatusIds.toString(),CalendarId);
                         }
                         // If there is no data then hide grid and display message
                         if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
@@ -5746,7 +5758,7 @@
                             $(this).attr('anchortacticid', '0');
                         });	
 
-         ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful", 3000);
+                        ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful", 3000);
                     }
 
 
@@ -6260,7 +6272,7 @@
             if (Planid != 0) {
                 // Modified by Arpita Soni to update heads up when view by ROI Package is selected
                 //if (!IsViewBy) {
-                    GetHealderDataPer(Planid.toString(), CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(), CalendarId);
+                GetHealderDataPer(Planid.toString(), CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(), CalendarId);
                 //}
                 IsViewBy = false;
                 GetNumberOfActivityPerMonByPlanIdPer(Planid.toString(), isQuater, CustomFieldId.toString(), OwnerIds.toString(), TacticTypeids.toString(), filters.StatusIds.toString(), CalendarId);

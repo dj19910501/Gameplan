@@ -1727,7 +1727,7 @@ namespace RevenuePlanner.Helpers
 
                 // Added by Arpita Soni for ticket #2357 on 07/26/2016
                 // Display only packaged tactics count into heads up in case of View By ROI Package
-                if (ViewBy == Convert.ToString(Enums.DictPlanGanttTypes[Convert.ToString(Helpers.PlanGanttTypes.ROIPackage)]))
+                if (string.Compare(TabId, "liCalender", true) == 0 && ViewBy == Convert.ToString(Enums.DictPlanGanttTypes[Convert.ToString(Helpers.PlanGanttTypes.ROIPackage)]))
                 {
                     planTacticIds = planTacticIds.Where(tac => tac.ROI_PackageDetail != null && tac.ROI_PackageDetail.Count > 0).ToList();
                 }
@@ -6542,6 +6542,22 @@ namespace RevenuePlanner.Helpers
                 objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), PlanTacticListforpackageing);
             }
             //End
+
+            // Added by Arpita Soni for Ticket #2358 on 07/27/2016
+            // To update dsPlanCampProgTac object into cache which is used to show activity distribution chart
+            DataSet dsPlanCampProgTac = new DataSet();
+            dsPlanCampProgTac = (DataSet)objCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
+
+            (from dict in dictPlanTacticAnchorTactic
+             join tactic in dsPlanCampProgTac.Tables[3].AsEnumerable() on dict.Key equals tactic.Field<int>("PlanTacticId")
+             select tactic).ToList<DataRow>()
+                 .ForEach(tac =>
+                 {
+                     tac["AnchorTacticId"] = dictPlanTacticAnchorTactic[tac.Field<int>("PlanTacticId")];
+                     tac["PackageTitle"] = dsPlanCampProgTac.Tables[3].AsEnumerable().Where(x => x.Field<int>("PlanTacticId") == dictPlanTacticAnchorTactic[tac.Field<int>("PlanTacticId")]).
+                                                             Select(t => t.Field<string>("Title")).FirstOrDefault();
+                 });
+            objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
         }
         #endregion
 	 // added by devanshi #2386 Remove media codes
