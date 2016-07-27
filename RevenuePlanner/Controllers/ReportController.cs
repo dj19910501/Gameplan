@@ -517,7 +517,7 @@ namespace RevenuePlanner.Controllers
 
                 if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
                 {
-                    ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                    ReportDBConnString = Convert.ToString(regularConnectionString).Replace(@"\", @"\\");
                 }
 
                 if (ConfigurationManager.AppSettings.Count > 0)
@@ -526,18 +526,10 @@ namespace RevenuePlanner.Controllers
                     {
                         AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
                     }
-                }
-
-                if (ConfigurationManager.AppSettings.Count > 0)
-                {
                     if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
                     {
                         AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
                     }
-                }
-
-                if (ConfigurationManager.AppSettings.Count > 0)
-                {
                     if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
                     {
                         ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
