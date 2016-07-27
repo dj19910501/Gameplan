@@ -13868,7 +13868,7 @@ namespace RevenuePlanner.Controllers
                 headobjother.id = "selectall";
                 headobjother.sort = "na";
                 headobjother.width = 100;
-                headobjother.value = "<input type='checkbox' value='SelectAll'  title='SelectAll'  class='selectInput'><span class='selectall'> Select All</span></input>";
+                headobjother.value = "<input type='checkbox' id = 'MediaCodeSelectAll' value='SelectAll'  title='SelectAll'  class='selectInput'><span class='selectall'> Select All</span></input>";
                 // headobjother.value = "<input type='checkbox' title='Select All'/>";
                 headobjlist.Add(headobjother);
 

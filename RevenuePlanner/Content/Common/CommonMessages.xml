@@ -1104,19 +1104,19 @@
 	</Field>
 	<Field>
 		<Name>DuplicateMediacode</Name>
-		<value>A Media Code with Same attributes Already exists.</value>
+		<value>A Media code with same attributes already exists.</value>
 	</Field>
 	<Field>
 		<Name>SuccessMediacode</Name>
-		<value>Media code generated Successfully.</value>
+		<value>Media code generated successfully.</value>
 	</Field>
 	<Field>
 		<Name>AtLeastOneMediacode</Name>
-		<value>Please add atleast one value of Custom field to generate Media Code.</value>
+		<value>Please add atleast one value of custom field to generate Media code.</value>
 	</Field>
 	<Field>
 		<Name>RequiredMediacode</Name>
-		<value>Please fill Required fields to Generate Media Code.</value>
+		<value>Please fill required fields to generate Media code.</value>
 	</Field>
 	<Field>
 		<Name>UndoMediacode</Name>
@@ -1124,7 +1124,7 @@
 	</Field>
 	<Field>
 		<Name>UnarchiveMediacode</Name>
-		<value>Selected Media code has been Unarchived successfully.</value>
+		<value>Selected Media code has been unarchived successfully.</value>
 	</Field>
 	<Field>
 		<Name>ArchiveMediacode</Name>

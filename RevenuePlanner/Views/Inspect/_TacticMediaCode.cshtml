@@ -317,7 +317,7 @@ else
         $('#MediaCodeSelectAll').change(function () {
             if ($(this).is(':checked')) {
                 $('#MediaCodeGrid').find('tr').find('td').find("div.honeycombbox-icon-gantt").each(function () {
-                    if (!$(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                  if (!$(this).hasClass("honeycombbox-icon-gantt-Active") && !$(this).hasClass("disabled")) {
                         AddRemoveMediaCode(this);
                     }
                 });
@@ -403,8 +403,9 @@ else
                 success: function (data) {
                     if (data.Success == true && data.ErrorMessage == null) {
                         var newmediacode = data.MediaCode;
+                        var newrowid = 'mediacode.' + data.NewMediaCodeId.toString();
                         MediaCodeGrid.cells(row_id, GeneratecolIndex).setValue("<span class='spnMediacode'>" + newmediacode + "</span>");
-                        MediaCodeGrid.cells(row_id, buttoncolIndex).setValue("<span class='plus-circle' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + row_id + "  onclick=OpenGridPopup(event); title='Add Media Code'></i></span><div class=honeycombbox-icon-gantt rowid=" + row_id + " onclick=AddRemoveMediaCode(this); title='Select' altid=" + data.NewMediaCodeId.toString() + "></div><span class='archive' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + row_id + " onclick=ArchiveMediaCode(event); title='Archive'></i></span>");
+                        MediaCodeGrid.cells(row_id, buttoncolIndex).setValue("<span class='plus-circle' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + newrowid + "  onclick=OpenGridPopup(event); title='Add Media Code'></i></span><div class=honeycombbox-icon-gantt rowid=" + newrowid + " onclick=AddRemoveMediaCode(this); title='Select' altid=" + data.NewMediaCodeId.toString() + "></div><span class='archive' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + newrowid + " onclick=ArchiveMediaCode(event); title='Archive'></i></span>");
                         MediaCodeGrid.setCellTextStyle(row_id, GeneratecolIndex, "color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:85%;");
                         MediaCodeGrid.cells(row_id, GeneratecolIndex).setAttribute("actval", newmediacode);
 
@@ -423,7 +424,8 @@ else
                         if (data.NewMediaCodeId != null && data.NewMediaCodeId) {
                             MediaCodeGrid.cells(row_id, MediaCodeIdcolIndex).setValue(data.NewMediaCodeId.toString());
                         }
-
+                        var rowIndex = MediaCodeGrid.getRowIndex(row_id);
+                        MediaCodeGrid.setRowId(rowIndex, newrowid);
                     }
                     else {
                         if (data.ErrorMessage != null && data.ErrorMessage != '') {
