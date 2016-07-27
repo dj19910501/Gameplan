@@ -311,23 +311,10 @@ else
             SetTooltip();
         });
         MediaCodeGrid.init();
+        MediaCodeGrid.csvParser = MediaCodeGrid.csvExtParser;
         MediaCodeGrid.splitAt(3);
         MediaCodeGrid.parse(GridDataHomeGrid, "json");
-        //Added by Rahul shah to Select/Deselect all honeycomb on click of checkbox for  PL #2371
-        $('#MediaCodeSelectAll').change(function () {
-            if ($(this).is(':checked')) {
-                $('#MediaCodeGrid').find('tr').find('td').find("div.honeycombbox-icon-gantt").each(function () {
-                  if (!$(this).hasClass("honeycombbox-icon-gantt-Active") && !$(this).hasClass("disabled")) {
-                        AddRemoveMediaCode(this);
-                    }
-                });
-            }
-            else {
-                $('#MediaCodeGrid').find('tr').find('td').find("div.honeycombbox-icon-gantt-Active").each(function () {
-                    AddRemoveMediaCode(this);
-                });
-            }
-        });
+      
     }
 
     function GenerateMediaCode(obj) {
@@ -426,6 +413,8 @@ else
                         }
                         var rowIndex = MediaCodeGrid.getRowIndex(row_id);
                         MediaCodeGrid.setRowId(rowIndex, newrowid);
+                        $('#MediaCodeSelectAll').removeAttr('checked');
+
                     }
                     else {
                         if (data.ErrorMessage != null && data.ErrorMessage != '') {
@@ -856,5 +845,19 @@ else
             $(".popover").removeClass('in').addClass('out');
         }
     });
-
+    //Added by Rahul shah to Select/Deselect all honeycomb on click of checkbox for  PL #2371
+    $('#MediaCodeSelectAll').change(function () {
+        if ($(this).is(':checked')) {
+            $('#MediaCodeGrid').find('tr').find('td').find("div.honeycombbox-icon-gantt").each(function () {
+                if (!$(this).hasClass("honeycombbox-icon-gantt-Active") && !$(this).hasClass("disabled")) {
+                    AddRemoveMediaCode(this);
+                }
+            });
+        }
+        else {
+            $('#MediaCodeGrid').find('tr').find('td').find("div.honeycombbox-icon-gantt-Active").each(function () {
+                AddRemoveMediaCode(this);
+            });
+        }
+    });
 </script>
