@@ -447,12 +447,7 @@
                         return false;
                     }
                     else {
-                        if (!addNew){
-                            $('.close-x-big-icon').trigger('click');
-                        }else{
-                            $("#spanMessageSuccess").text('Tactic \'' + $("#txtTacticTitle").val() + '\' has been successfully created! ');
-                            ClearTacticFields();
-                        }
+                        CloseIfNotAddNew(addNew, activeTab);
                     }
                 }
                     // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
@@ -483,7 +478,7 @@
                         return false;
                     }
                     else {
-                        $('.close-x-big-icon').trigger('click');
+                        CloseIfNotAddNew(addNew, activeTab);
 
                     }
                 }
@@ -495,17 +490,17 @@
                     }
                     else {
 
-                        $('.close-x-big-icon').trigger('click');
+                        CloseIfNotAddNew(addNew, activeTab);
 
                     }
                 }
                     // Added by Arpita Soni for Ticket #2237 on 06/09/2016
                 else if (activeTab == TabLineItem) {
-                    $('.close-x-big-icon').trigger('click');
+                    CloseIfNotAddNew(addNew);
                 }
                     // Added by Devanshi gandhi for Ticket #2368 on 06/09/2016
                 else if (activeTab == TabMediaCode) {
-                    $('.close-x-big-icon').trigger('click');
+                    CloseIfNotAddNew(addNew, activeTab);
                 }
             }
 
@@ -513,12 +508,22 @@
     }
 
     //
-    // Clears certain fields before add new
+    //Close the inspect tab if no new to be added 
     //
-    function ClearTacticFields(){
-        $("#lblTacticTitle").css('display', 'none');        
-        $("#txtTacticTitle").css('display', 'block');
-        $("#txtTacticTitle").val('');
+    function CloseIfNotAddNew(addNew, activeTab){
+        if (!addNew){
+            $('.close-x-big-icon').trigger('click');
+        }else{
+            ResetAllTacticFields(activeTab);
+        }
+    }
+
+    //
+    // Reset all tactic fields before add new
+    //
+    function ResetAllTacticFields(){
+        //Reloading the dialog is NOT ideal, yet it sure cleans things up and guarantees a clean start. zz
+        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", @PlanProgramId, '@RequestedModule');
     }
 
     //Added By Komal Rawal for #1213
