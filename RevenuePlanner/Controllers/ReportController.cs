@@ -55,6 +55,7 @@ namespace RevenuePlanner.Controllers
         private const double _PlotBandToValue = 5;
         private BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
         // Add By Nishant Sheth
         // Desc #1842
 
@@ -769,7 +770,9 @@ namespace RevenuePlanner.Controllers
                                                                   planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList()
                                                                   .Where(tactic => selectedYearList.Contains(tactic.StartDate.Year.ToString()) || selectedYearList.Contains(tactic.EndDate.Year.ToString())).ToList();// Add By Nishant Sheth #1838;
             }
-
+            // Add By Nishant Sheth
+            // Desc :: Add cache object for ROI Package data
+            objCache.AddCache(Enums.CacheObject.ROIPackageTactics.ToString(), tacticList);
             //Commented by Maitri Gandhi on 4/3/2016 
             //Added by Komal Rawal
             if (Sessions.ReportOwnerIds != null && Sessions.ReportOwnerIds.Count > 0)
@@ -1641,7 +1644,7 @@ namespace RevenuePlanner.Controllers
                 // Add BY Nishant Sheth
                 // Use below viewbag for details button on card section
                 ViewBag.ParentLabel = Common.RevenueCampaign;
-                ViewBag.childlabelType = Common.RevenueCampaign;
+                Sessions.childlabelType = Common.RevenueCampaign;
                 ViewBag.childId = 0;
                 ViewBag.option = option;
 
@@ -8563,6 +8566,8 @@ namespace RevenuePlanner.Controllers
         {
             #region "Declare Local Variables"
             List<TacticStageValue> TacticData = (List<TacticStageValue>)TempData["ReportData"];
+            List<TacticStageValue> ROITacticData = new List<TacticStageValue>();
+
             // Add By Nishant Sheth
             // Desc :: #2376 For ROI Package Card Section
             List<TacticStageValue> ROIPackageTacticData = new List<TacticStageValue>();
@@ -8614,7 +8619,17 @@ namespace RevenuePlanner.Controllers
             TacticData = new List<TacticStageValue>();
             //Added by Rahul Shah on 30/10/2015 for PL #1715
             tacticlist = GetTacticForReporting();
-            TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+
+            // Add By Nishant Sheth
+            // Desc :: #2376 to set the cache roi data object from cache
+            List<Plan_Campaign_Program_Tactic> ROItacticlist = new List<Plan_Campaign_Program_Tactic>();
+            ROItacticlist = (List<Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.ROIPackageTactics.ToString());
+            ROITacticData = Common.GetTacticStageRelation(ROItacticlist, IsReport: true);
+            List<int> CardTacticIds = tacticlist.Select(a => a.PlanTacticId).ToList();
+            // Modified By Nishant Sheth
+            // Desc :: get Tactic data from roi data because in roi data have all tactic related to plan
+            TacticData = ROITacticData.Where(a => CardTacticIds.Contains(a.TacticObj.PlanTacticId)).ToList();
+            //TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
             CardSectionModel objCardSectionModel = new CardSectionModel();
@@ -8684,7 +8699,7 @@ namespace RevenuePlanner.Controllers
                         // Add By Nishant Sheth
                         // Set ROI Attribute for Tactic Data
                         List<ROI_PackageDetail> ListOfROITacticList = new List<ROI_PackageDetail>();
-                        var TacticList = _tacticdata.Select(tac => tac.TacticObj).ToList();
+                        var TacticList = ROITacticData.Select(tac => tac.TacticObj).ToList();
                         if (TacticList != null)
                         {
                             TacticList.ForEach(tac => ListOfROITacticList.AddRange(tac.ROI_PackageDetail));
@@ -8693,6 +8708,8 @@ namespace RevenuePlanner.Controllers
                                 var ListOfAnchorTactics = (from RoiPackage in ListOfROITacticList
                                                            join Tactic in TacticList on RoiPackage.AnchorTacticID equals Tactic.PlanTacticId
                                                            select RoiPackage).Distinct().ToList();
+                                #region Set ROI Attribute
+                                // Set ROI Title and it's attribute
                                 if (ListOfAnchorTactics != null)
                                 {
                                     _tacticdata.ForEach(a =>
@@ -8711,6 +8728,55 @@ namespace RevenuePlanner.Controllers
                                         }
                                     });
                                 }
+                                // End ROI Title and it's attribute
+                                #endregion
+
+                                #region Set ROI Package Card Data
+                                if (ListOfAnchorTactics != null)
+                                {
+                                    // Add ROI Anchor Tactic id to dicionary to pass for card details
+                                    ListOfAnchorTactics.Where(tac => tac.AnchorTacticID == tac.PlanTacticId)
+                                        .Select(anchor => new { AnchorTacticId = anchor.AnchorTacticID, Title = anchor.Plan_Campaign_Program_Tactic.Title })
+                                        .ToList()
+                                        .ForEach(a =>
+                                        {
+                                            ROIAnchorTactic.Add(a.AnchorTacticId, a.Title);
+                                        });
+                                    
+                                    objROIPackageCard.ROIAnchorTactic = ROIAnchorTactic;
+
+                                    var ListROITactic = ROITacticData.Select(a => a.TacticObj).ToList();
+                                    ListOfROITacticList = new List<ROI_PackageDetail>();
+                                    ListROITactic.ForEach(tac => ListOfROITacticList.AddRange(tac.ROI_PackageDetail));
+
+                                    // Get the Tactic ids which are included in package
+                                    ListROICardTactic = (from ROITactic in ROIAnchorTactic
+                                                         join Tactic in ListOfROITacticList
+                                                             on ROITactic.Key equals Tactic.AnchorTacticID
+                                                         select Tactic.PlanTacticId).ToList();
+                                }
+
+                                if (ListROICardTactic.Count > 0)
+                                {
+                                    objROIPackageCard.TacticData = ROITacticData.Where(pcpt => ListROICardTactic.Contains(pcpt.TacticObj.PlanTacticId)).Select(t => t).ToList();
+                                    // Set the anchor tactic id, package titkle and ispackage or not to each tactic
+                                    objROIPackageCard.TacticData.ForEach(a =>
+                                    {
+                                        var isROIPackage = ListOfROITacticList.Where(roi => roi.PlanTacticId == a.TacticObj.PlanTacticId).Select(tac => tac).FirstOrDefault();
+                                        if (isROIPackage != null)
+                                        {
+                                            if (isROIPackage.AnchorTacticID == a.TacticObj.PlanTacticId)
+                                            {
+                                                a.IsPackage = true;
+                                            }
+                                            var ROIPackageTitle = ListOfAnchorTactics.Where(roi => roi.AnchorTacticID == isROIPackage.AnchorTacticID)
+                                                .Select(tac => tac.Plan_Campaign_Program_Tactic.Title).FirstOrDefault();
+                                            a.RoiPackageTitle = ROIPackageTitle;
+                                            a.ROIAnchorTacticId = isROIPackage.AnchorTacticID;
+                                        }
+                                    });
+                                }
+                                #endregion
                             }
                         }
                         // End By Nishant Sheth
@@ -8722,11 +8788,11 @@ namespace RevenuePlanner.Controllers
                         // Add By Nishant Sheth
                         // Set ROI Attribute for Tactic Data
                         List<ROI_PackageDetail> ListOfROITacticList = new List<ROI_PackageDetail>();
-                        var TacticList = TacticData.Select(tac => tac.TacticObj).ToList();
+                        var TacticList = ROITacticData.Select(tac => tac.TacticObj).ToList();
                         if (TacticList != null)
                         {
                             TacticList.ForEach(tac => ListOfROITacticList.AddRange(tac.ROI_PackageDetail));
-                            var AnchorTacticDetails = ListOfROITacticList.Where(roi => roi.PlanTacticId == tacticid).Select(tac =>
+                            var AnchorTacticDetails = ListOfROITacticList.Where(roi => roi.AnchorTacticID == roi.PlanTacticId).Select(tac =>
                                 new
                                 {
                                     AnchorTacticID = tac.AnchorTacticID,
@@ -8737,20 +8803,21 @@ namespace RevenuePlanner.Controllers
                             {
                                 ROIAnchorTactic.Add(AnchorTacticDetails.AnchorTacticID, AnchorTacticDetails.PackageTitle);
                                 objROIPackageCard.ROIAnchorTactic = ROIAnchorTactic;
+                                var isWithRoiPackage = ListOfROITacticList.Where(a => a.PlanTacticId == tacticid).FirstOrDefault();
+                                if (isWithRoiPackage != null)
+                                {
                                 ListROICardTactic = ListOfROITacticList.Where(roi => roi.AnchorTacticID == AnchorTacticDetails.AnchorTacticID)
                                                     .Select(tac => tac.PlanTacticId).ToList();
+                            }
                             }
 
                             if (ListROICardTactic.Count > 0)
                             {
-                                ROIPackageTacticData = TacticData.Where(pcpt => ListROICardTactic.Contains(pcpt.TacticObj.PlanTacticId)).Select(t => t).ToList();
+                                ROIPackageTacticData = ROITacticData.Where(pcpt => ListROICardTactic.Contains(pcpt.TacticObj.PlanTacticId)).Select(t => t).ToList();
                                 ROIPackageTacticData.ForEach(a =>
                                 {
-                                    if (a.TacticObj.PlanTacticId == AnchorTacticDetails.AnchorTacticID)
-                                    {
-                                        a.IsPackage = true;
-                                    }
                                     a.RoiPackageTitle = AnchorTacticDetails.PackageTitle;
+                                    a.ROIAnchorTacticId = AnchorTacticDetails.AnchorTacticID;
                                 });
                                 objROIPackageCard.TacticData = ROIPackageTacticData;
                             }
@@ -8813,7 +8880,7 @@ namespace RevenuePlanner.Controllers
                     }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
 
                     #region ROI Package Actual List
-                    if (childlabelType == Common.RevenueTactic && objROIPackageCard.TacticData != null)
+                    if (objROIPackageCard.TacticData != null)
                     {
                         var ROIActualTacticStageList = GetActualListInTacticInterval(objROIPackageCard.TacticData, option, ActualStageCodeList, IsTillCurrentMonth);
                         var ROIActualTacticTrendList = GetActualTrendModelForRevenueOverview(objROIPackageCard.TacticData, ROIActualTacticStageList, option);
@@ -8891,7 +8958,7 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     #region ROI Package Projcted List
-                    if (childlabelType == Common.RevenueTactic && objROIPackageCard.TacticData != null)
+                    if (objROIPackageCard.TacticData != null)
                     {
                         var ROIProjectedTrendList = CalculateProjectedTrend(objROIPackageCard.TacticData, includeMonth, revStageCode);
                         objROIPackageCard.ProjectedTrendList = ROIProjectedTrendList.Select(tac => new
@@ -8939,7 +9006,14 @@ namespace RevenuePlanner.Controllers
                     if (childlabelType.Contains(Common.RevenueTactic))
                     {
                         //ViewBag.childlabelType = Common.RevenueTactic;
-                        ViewBag.childlabelType = Common.RevenueROIPackage;
+                        if (isDetails || Sessions.childlabelType == Common.RevenueROIPackage)
+                        {
+                            Sessions.childlabelType = Common.RevenueROIPackage;
+                        }
+                        else
+                        {
+                            Sessions.childlabelType = Common.RevenueTactic;
+                        }
 
                         _lstTactic = tacticlist.ToList();
 
@@ -8959,7 +9033,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (childlabelType.Contains(Common.RevenueProgram))
                     {
-                        ViewBag.childlabelType = Common.RevenueTactic;
+                        Sessions.childlabelType = Common.RevenueTactic;
 
                         _lstTactic = tacticlist.ToList();
                         if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
@@ -8972,7 +9046,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (childlabelType.Contains(Common.RevenueCampaign))
                     {
-                        ViewBag.childlabelType = Common.RevenueProgram;
+                        Sessions.childlabelType = Common.RevenueProgram;
 
                         _lstTactic = tacticlist.ToList();
 
@@ -8987,7 +9061,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        ViewBag.childlabelType = Common.RevenueCampaign;
+                        Sessions.childlabelType = Common.RevenueCampaign;
 
                         _lstTactic = tacticlist.ToList();
                         _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
@@ -9014,7 +9088,8 @@ namespace RevenuePlanner.Controllers
                         {
                             customFieldOptionIdCardSection = Convert.ToInt32(childId);
                             ViewBag.ParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
-                            ViewBag.childlabelType = Common.RevenueTactic;
+                            Sessions.childlabelType = Common.RevenueTactic;
+
                         }
                     }
                     else if (ParentLabel.Contains(Common.CampaignCustomTitle))
@@ -9027,7 +9102,7 @@ namespace RevenuePlanner.Controllers
                         if (Convert.ToInt32(childId) > 0)
                         {
                             ViewBag.ParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
-                            ViewBag.childlabelType = Common.RevenueCampaign;
+                            Sessions.childlabelType = Common.RevenueCampaign;
                         }
                     }
                     else if (ParentLabel.Contains(Common.ProgramCustomTitle))
@@ -9040,7 +9115,7 @@ namespace RevenuePlanner.Controllers
                         if (Convert.ToInt32(childId) > 0)
                         {
                             ViewBag.ParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
-                            ViewBag.childlabelType = Common.RevenueProgram;
+                            Sessions.childlabelType = Common.RevenueProgram;
                         }
                     }
                     else
@@ -9139,6 +9214,100 @@ namespace RevenuePlanner.Controllers
                     #region "filter TacticData based on Customfield"
 
                     _tacticdata = TacticData.Where(t => PlanTacticIdsList.Contains(t.TacticObj.PlanTacticId)).ToList();
+
+                    if (ParentLabel.Contains(Common.TacticCustomTitle))
+                    {
+                        if (int.Parse(childId) > 0)
+                        {
+                            #region Set ROI Package Card Data
+                            // Add By Nishant Sheth
+                            // Set ROI Attribute for Tactic Data
+                            List<ROI_PackageDetail> ListOfROITacticList = new List<ROI_PackageDetail>();
+                            var TacticList = ROITacticData.Select(tac => tac.TacticObj).ToList();
+                            if (TacticList != null)
+                            {
+                                TacticList.ForEach(tac => ListOfROITacticList.AddRange(tac.ROI_PackageDetail));
+                                if (ListOfROITacticList.Count > 0)
+                                {
+                                    var ListOfAnchorTactics = (from RoiPackage in ListOfROITacticList
+                                                               join Tactic in TacticList on RoiPackage.AnchorTacticID equals Tactic.PlanTacticId
+                                                               select RoiPackage).Distinct().ToList();
+                                    
+                                    #region Set ROI Attribute
+                                    // Set ROI Title and it's attribute
+                                    if (ListOfAnchorTactics != null)
+                                    {
+                                        _tacticdata.ForEach(a =>
+                                        {
+                                            var isROIPackage = ListOfAnchorTactics.Where(roi => roi.PlanTacticId == a.TacticObj.PlanTacticId).Select(tac => tac).FirstOrDefault();
+                                            if (isROIPackage != null)
+                                            {
+                                                if (isROIPackage.AnchorTacticID == a.TacticObj.PlanTacticId)
+                                                {
+                                                    a.IsPackage = true;
+                                                }
+                                                var ROIPackageTitle = ListOfAnchorTactics.Where(roi => roi.AnchorTacticID == isROIPackage.AnchorTacticID)
+                                                    .Select(tac => tac.Plan_Campaign_Program_Tactic.Title).FirstOrDefault();
+                                                a.RoiPackageTitle = ROIPackageTitle;
+                                                a.ROIAnchorTacticId = isROIPackage.AnchorTacticID;
+                                            }
+                                        });
+                                    }
+                                    // End ROI Title and it's attribute
+                    #endregion
+
+                                    #region Set ROI Package Card Data
+                                    if (ListOfAnchorTactics != null)
+                                    {
+                                        // Add ROI Anchor Tactic id to dicionary to pass for card details
+                                        ListOfAnchorTactics.Where(tac => tac.AnchorTacticID == tac.PlanTacticId)
+                                            .Select(anchor => new { AnchorTacticId = anchor.AnchorTacticID, Title = anchor.Plan_Campaign_Program_Tactic.Title })
+                                            .ToList()
+                                            .ForEach(a =>
+                                            {
+                                                ROIAnchorTactic.Add(a.AnchorTacticId, a.Title);
+                                            });
+                                        
+                                        objROIPackageCard.ROIAnchorTactic = ROIAnchorTactic;
+
+                                        var ListROITactic = ROITacticData.Select(a => a.TacticObj).ToList();
+                                        ListOfROITacticList = new List<ROI_PackageDetail>();
+                                        ListROITactic.ForEach(tac => ListOfROITacticList.AddRange(tac.ROI_PackageDetail));
+
+                                        // Get the Tactic ids which are included in package
+                                        ListROICardTactic = (from ROITactic in ROIAnchorTactic
+                                                             join Tactic in ListOfROITacticList
+                                                                 on ROITactic.Key equals Tactic.AnchorTacticID
+                                                             select Tactic.PlanTacticId).ToList();
+                                    }
+
+                                    if (ListROICardTactic.Count > 0)
+                                    {
+                                        objROIPackageCard.TacticData = ROITacticData.Where(pcpt => ListROICardTactic.Contains(pcpt.TacticObj.PlanTacticId)).Select(t => t).ToList();
+                                        // Set the anchor tactic id, package titkle and ispackage or not to each tactic
+                                        objROIPackageCard.TacticData.ForEach(a =>
+                                        {
+                                            var isROIPackage = ListOfROITacticList.Where(roi => roi.PlanTacticId == a.TacticObj.PlanTacticId).Select(tac => tac).FirstOrDefault();
+                                            if (isROIPackage != null)
+                                            {
+                                                if (isROIPackage.AnchorTacticID == a.TacticObj.PlanTacticId)
+                                                {
+                                                    a.IsPackage = true;
+                                                }
+                                                var ROIPackageTitle = ListOfAnchorTactics.Where(roi => roi.AnchorTacticID == isROIPackage.AnchorTacticID)
+                                                    .Select(tac => tac.Plan_Campaign_Program_Tactic.Title).FirstOrDefault();
+                                                a.RoiPackageTitle = ROIPackageTitle;
+                                                a.ROIAnchorTacticId = isROIPackage.AnchorTacticID;
+                                            }
+                                        });
+                                    }
+                                    #endregion
+                                }
+                            }
+                            // End By Nishant Sheth
+                            #endregion
+                        }
+                    }
 
                     #endregion
 
@@ -9308,11 +9477,146 @@ namespace RevenuePlanner.Controllers
                         NoTacticMonths = tact.NoTacticMonths,
                         TrendValue = tact.TrendValue
                     }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
+
+                    #region ROI Package Actual List
+                    if (objROIPackageCard.TacticData != null)
+                    {
+                        List<Plan_Campaign_Program_Tactic_Actual> ROIActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                        List<ActualTrendModel> ROIActualTacticTrendList = new List<ActualTrendModel>();
+                        var RIOActualTacticStageList = GetActualListInTacticInterval(objROIPackageCard.TacticData, option, ActualStageCodeList, IsTillCurrentMonth);
+                        ROIActualTacticList = RIOActualTacticStageList.Where(actual => actual.StageCode.Equals(revStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
+                        if (_customfieldOptionId > 0)
+                        {
+                            List<ActualDataTable> ROIActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.Revenue, ROIActualTacticList, objROIPackageCard.TacticData, IsTacticCustomField);
+                            ROIActualTacticTrendList = GetActualTrendModelForRevenue(objROIPackageCard.TacticData, ROIActualRevenueDataTable, revStageCode, option);
+                        }
+                        else
+                        {
+                            ROIActualTacticTrendList = GetActualTrendModelForRevenueOverview(objROIPackageCard.TacticData, RIOActualTacticStageList, option);
+                        }
+                        objROIPackageCard.ActualTacticTrendList = ROIActualTacticTrendList.Select(tac => new
+                        {
+                            Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                            TacticId = tac.PlanTacticId,
+                            Value = tac.Value,
+                            StartYear = tac.StartDate.Year,
+                            StageCode = tac.StageCode,
+                            StartDate = tac.StartDate,
+                            EndDate = tac.EndDate,
+                            Trend = tac.Trend
+                        }).ToList().Select(tac => new
+                        {
+                            Period = tac.Period,
+                            NumPeriod = (tac.Period / 13),
+                            TacticId = tac.TacticId,
+                            Value = tac.Value,
+                            StartYear = tac.StartYear,
+                            StageCode = tac.StageCode,
+                            StartDate = tac.StartDate,
+                            EndDate = tac.EndDate,
+                            Trend = tac.Trend
+                        }).ToList().Select(tact => new ActualTrendModel
+                        {
+                            Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                            Year = tact.StartYear + tact.NumPeriod,
+                            PlanTacticId = tact.TacticId,
+                            Value = tact.Value,
+                            StageCode = tact.StageCode,
+                            StartDate = tact.StartDate,
+                            EndDate = tact.EndDate,
+                            Trend = tact.Trend
+                        }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
+                    }
+                    #endregion
+
+                    #region ROI Package Projected List
+                    if (objROIPackageCard.TacticData != null)
+                    {
+                        if (_customfieldOptionId > 0)
+                        {
+                            #region "Get Tactic data by Weightage for Projected by StageCode(Revenue)"
+                            List<TacticDataTable> _TacticDataTable = new List<TacticDataTable>();
+                            List<TacticMonthValue> _TacticListMonth = new List<TacticMonthValue>();
+                            List<ProjectedTacticModel> _TacticList = new List<ProjectedTacticModel>();
+                            _TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.Revenue, objROIPackageCard.TacticData, IsTacticCustomField, true);
+                            _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
+                            _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
+                            {
+                                TacticId = tac.Id,
+                                StartMonth = tac.StartMonth,
+                                EndMonth = tac.EndMonth,
+                                Value = tac.Value,
+                                Year = tac.StartYear,
+                                StartDate = tac.StartDate,
+                                EndDate = tac.EndDate,
+                                VeloCity = tac.VeloCity
+                            }).Distinct().ToList();
+                            objROIPackageCard.ProjectedTrendList = GetProjectedTrendModel(_TacticList);
+                            objROIPackageCard.ProjectedTrendList = (from _prjTac in objROIPackageCard.ProjectedTrendList
+                                                                    group _prjTac by new
+                                                                    {
+                                                                        _prjTac.PlanTacticId,
+                                                                        _prjTac.Month,
+                                                                        _prjTac.Value,
+                                                                        _prjTac.TrendValue,
+                                                                        _prjTac.StartDate,
+                                                                        _prjTac.EndDate
+                                                                    } into tac
+                                                                    select new ProjectedTrendModel
+                                                                    {
+                                                                        PlanTacticId = tac.Key.PlanTacticId,
+                                                                        Month = tac.Key.Month,
+                                                                        Value = tac.Key.Value,
+                                                                        TrendValue = tac.Key.TrendValue,
+                                                                        StartDate = tac.Key.StartDate,
+                                                                        EndDate = tac.Key.EndDate
+                                                                    }).Distinct().ToList();
+                            #endregion
+                        }
+                        else
+                        {
+                            objROIPackageCard.ProjectedTrendList = CalculateProjectedTrend(objROIPackageCard.TacticData, includeMonth, revStageCode);
+                        }
+                        objROIPackageCard.ProjectedTrendList = objROIPackageCard.ProjectedTrendList.Select(tac => new
+                        {
+                            Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                            TacticId = tac.PlanTacticId,
+                            Value = tac.Value,
+                            StartYear = tac.StartDate.Year,
+                            StartDate = tac.StartDate,
+                            EndDate = tac.EndDate,
+                            NoTacticMonths = tac.NoTacticMonths,
+                            TrendValue = tac.TrendValue
+                        }).ToList().Select(tac => new
+                        {
+                            Period = tac.Period,
+                            NumPeriod = (tac.Period / 13),
+                            TacticId = tac.TacticId,
+                            Value = tac.Value,
+                            StartYear = tac.StartDate.Year,
+                            StartDate = tac.StartDate,
+                            EndDate = tac.EndDate,
+                            NoTacticMonths = tac.NoTacticMonths,
+                            TrendValue = tac.TrendValue
+                        }).ToList().Select(tact => new ProjectedTrendModel
+                        {
+                            Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                            Year = tact.StartYear + tact.NumPeriod,
+                            PlanTacticId = tact.TacticId,
+                            Value = tact.Value,
+                            StartDate = tact.StartDate,
+                            EndDate = tact.EndDate,
+                            NoTacticMonths = tact.NoTacticMonths,
+                            TrendValue = tact.TrendValue
+                        }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
+                    }
+                    #endregion
+
                 }
                 /// Add By Nishant Sheth : 07-July-2015 
                 /// Desc : Fill card section with filter option , Ticket no:#1397 
-
-                CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection, customFieldOptionIdCardSection, childlabelType, objROIPackageCard);
+                Sessions.IsROIPackDisplay = false;
+                CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection, customFieldOptionIdCardSection, childlabelType, isDetails, objROIPackageCard);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
                 TempData["RevenueCardList"] = null;
                 TempData["RevenueCardList"] = CardSectionListModel;// For Pagination Sorting and searching
@@ -10662,7 +10966,7 @@ namespace RevenuePlanner.Controllers
         public PartialViewResult SearchSortPaginataionRevenue(int PageNo = 0, int PageSize = 5, string SearchString = "", string SortBy = "", string ParentLabel = "", string childlabelType = "", string option = "")
         {
             ViewBag.ParentLabel = ParentLabel;
-            ViewBag.childlabelType = childlabelType;
+            //Sessions.childlabelType = childlabelType;
             ViewBag.option = option;
             CardSectionModel cardModel = new CardSectionModel();
             cardModel = RevenueCardSectionModelWithFilter(PageNo, PageSize, SearchString, SortBy);
@@ -13697,7 +14001,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="CustomFieldType"></param>
         /// <param name="customFieldId"></param>
         /// <returns></returns>
-        public List<CardSectionListModel> GetCardSectionDefaultData(List<TacticStageValue> _TacticData, List<ActualTrendModel> ActualTacticTrendList, List<ProjectedTrendModel> ProjectedTrendList, List<TacticMappingItem> TacticMappingList, string timeframeOption, bool IsQuarterly, string ParentLabel = "", bool IsTacticCustomField = false, string CustomFieldType = "", int customFieldId = 0, int customFieldOptionId = 0, string childlabelType = "", ROIPackageCardTacticData objROIPackageCard = null)
+        public List<CardSectionListModel> GetCardSectionDefaultData(List<TacticStageValue> _TacticData, List<ActualTrendModel> ActualTacticTrendList, List<ProjectedTrendModel> ProjectedTrendList, List<TacticMappingItem> TacticMappingList, string timeframeOption, bool IsQuarterly, string ParentLabel = "", bool IsTacticCustomField = false, string CustomFieldType = "", int customFieldId = 0, int customFieldOptionId = 0, string childlabelType = "", bool isDetails = false, ROIPackageCardTacticData objROIPackageCard = null)
         {
             #region "Declare local variables"
             List<CardSectionListModel> objCardSectionList = new List<CardSectionListModel>();
@@ -13830,10 +14134,7 @@ namespace RevenuePlanner.Controllers
                     if (GetROIDetails != null)
                     {
                         objCardSection.RoiPackageTitle = HttpUtility.HtmlEncode(GetROIDetails.RoiPackageTitle);
-                        if (_ParentId == GetROIDetails.ROIAnchorTacticId)
-                        {
-                            objCardSection.IsPackage = true;
-                        }
+                        objCardSection.AnchorTacticId = GetROIDetails.ROIAnchorTacticId;
                     }
                     if (IsTacticCustomField)
                     {
@@ -14001,8 +14302,10 @@ namespace RevenuePlanner.Controllers
 
 
                 #region "ROI Package iterate each tactic for ROI package card"
-                if (childlabelType == Common.RevenueTactic)
+                // Include ROI Pacakge as tactic on package details screen
+                if ((childlabelType == Common.RevenueTactic && Sessions.childlabelType == Common.RevenueROIPackage))
                 {
+                    Sessions.IsROIPackDisplay = true;
                     if (objROIPackageCard != null)
                     {
                         if (objROIPackageCard.TacticData != null)
@@ -14079,10 +14382,7 @@ namespace RevenuePlanner.Controllers
                                     if (GetROIDetails != null)
                                     {
                                         objCardSection.RoiPackageTitle = HttpUtility.HtmlEncode(GetROIDetails.RoiPackageTitle);
-                                        if (_ParentId == GetROIDetails.ROIAnchorTacticId)
-                                        {
-                                            objCardSection.IsPackage = true;
-                                        }
+                                        
                                     }
                                     if (IsTacticCustomField)
                                     {
@@ -14473,6 +14773,330 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
+                // Include ROI Package details in tactic card section
+                else if (childlabelType == Common.RevenueProgram || (childlabelType == Common.RevenueTactic && !isDetails) || (ParentLabel.Contains(Common.TacticCustomTitle) && customFieldOptionId > 0))
+                {
+                    Sessions.IsROIPackDisplay = true;
+                    if (objROIPackageCard != null)
+                    {
+                        if (objROIPackageCard.TacticData != null)
+                        {
+                            if (objROIPackageCard.TacticData.Count > 0)
+                            {
+                                #region Caluclate Anchor Tactics Value for ROI Pacakge Data
+
+                                TacticIds = objROIPackageCard.TacticData.Select(tac => tac.TacticObj.PlanTacticId).ToList();
+                                lstTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(line => TacticIds.Contains(line.PlanTacticId) && line.IsDeleted == false).ToList();
+                                lineitemsids = lstTacticLineItem.Select(ln => ln.PlanLineItemId).ToList();
+                                tblLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineActual => lineitemsids.Contains(lineActual.PlanLineItemId)).ToList();
+                                tblLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(line => lineitemsids.Contains(line.PlanLineItemId)).ToList();
+                                tblTacticCostList = db.Plan_Campaign_Program_Tactic_Cost.Where(line => TacticIds.Contains(line.PlanTacticId)).ToList();
+                                if (!IsTacticCustomField)
+                                {
+                                    TacticCostData = GetActualCostData(objROIPackageCard.TacticData, lstTacticLineItem, tblLineItemActualList);
+                                    CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
+
+                                    int currentEndMonth = 12;
+                                    if (yearlist.Contains(currentYear)) // Modified By Nishant Sheth #1839
+                                    {
+                                        currentEndMonth = DateTime.Now.Month;
+                                    }
+                                    List<string> periodList = new List<string>();
+                                    for (int i = 1; i <= currentEndMonth; i++)
+                                    {
+                                        periodList.Add(PeriodPrefix + i);
+                                    }
+                                    objROIPackageCard.ActualTacticTrendList = objROIPackageCard.ActualTacticTrendList.Where(actual => periodList.Contains(actual.Month)).ToList();
+
+                                }
+                                else
+                                {
+                                    List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
+                                    ActualTacticStageList = GetActualListUpToCurrentMonthByStageCode(objROIPackageCard.TacticData, timeframeOption, revStageCodeList, false);
+                                    if (ActualTacticStageList != null)
+                                    {
+                                        _revActualTacticList = ActualTacticStageList.Where(act => act.StageCode.Equals(revStageCode)).Select(act => act.ActualTacticList).FirstOrDefault();
+                                    }
+                                }
+
+                                var _lstTactic = objROIPackageCard.TacticData.Select(a => a.TacticObj).ToList();
+
+                                TacticMappingList = _lstTactic.GroupBy(pc => new { _parentId = pc.PlanTacticId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Title })
+                                            .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
+
+                                ParentIdsList = TacticMappingList.Select(card => card.ParentId).Distinct().ToList();
+
+
+
+                                foreach (int _ParentId in ParentIdsList)
+                                {
+
+                                    double costActual = 0;
+                                    double revenueActual = 0;
+                                    double costGoal = 0;
+                                    double revenueGoal = 0;
+                                    string innercustomfieldOptionid = string.Empty;
+                                    fltrTacticData = new List<TacticStageValue>();
+                                    innerCurrentMonthCostList = new List<TacticMonthValue>();
+                                    inneractuallist = new List<ActualTrendModel>();
+                                    // Get ChildIds(Tactic) List.
+                                    _ChildIdsList = TacticMappingList.Where(card => card.ParentId.Equals(_ParentId)).Select(card => card.ChildId).ToList();
+
+                                    fltrTacticData = objROIPackageCard.TacticData.Where(tac => _ChildIdsList.Contains(tac.TacticObj.PlanTacticId)).ToList();
+                                    #region "Set Default Values"
+                                    var GetROIDetails = objROIPackageCard.TacticData.Where(tac => tac.TacticObj.PlanTacticId == _ParentId).Select(tac => tac).FirstOrDefault();
+                                    strParentTitle = TacticMappingList.Where(card => card.ParentId.Equals(_ParentId)).Select(card => card.ParentTitle).FirstOrDefault();
+
+                #endregion
+
+                                    objCardSection = new CardSectionListModel();
+                                    objCardSection.title = HttpUtility.HtmlEncode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
+                                    objCardSection.MasterParentlabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
+                                    objCardSection.FieldId = _ParentId;       // Set ParentId: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id.
+                                    if (GetROIDetails != null)
+                                    {
+                                        objCardSection.RoiPackageTitle = HttpUtility.HtmlEncode(GetROIDetails.RoiPackageTitle);
+                                        if (_ParentId == GetROIDetails.ROIAnchorTacticId)
+                                        {
+                                            objCardSection.IsPackage = true;
+                                        }
+                                        objCardSection.AnchorTacticId = GetROIDetails.ROIAnchorTacticId;
+                                    }
+                                    if (IsTacticCustomField)
+                                    {
+                                        if (customFieldOptionId != 0)
+                                        {
+                                            innercustomfieldOptionid = customFieldOptionId.ToString();
+                                        }
+                                        else
+                                        {
+                                            innercustomfieldOptionid = _ParentId.ToString();
+                                        }
+                                        lstActuals = _revActualTacticList.Where(ta => _ChildIdsList.Contains(ta.PlanTacticId)).ToList();
+                                        //// Get Actuals Tactic list by weightage for Revenue.
+                                        _revActualDataTable = GetActualTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.Revenue, lstActuals, fltrTacticData, IsTacticCustomField);
+                                        //// Get ActualList upto CurrentMonth.
+                                        CurrentMonthActualTacticList = _revActualDataTable.Where(actual => IncludeCurrentMonth.Contains(objROIPackageCard.TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.PlanTacticId)).FirstOrDefault().TacticYear + actual.Period)).ToList();
+
+                                        #region "Get Tactic data by Weightage for Projected by StageCode(Revenue)"
+                                        List<TacticDataTable> _TacticDataTable = new List<TacticDataTable>();
+                                        List<TacticMonthValue> _TacticListMonth = new List<TacticMonthValue>();
+                                        List<ProjectedTacticModel> _TacticList = new List<ProjectedTacticModel>();
+
+                                        _TacticDataTable = GetTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.Revenue, fltrTacticData, IsTacticCustomField, true);
+                                        _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
+                                        _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
+                                        {
+                                            TacticId = tac.Id,
+                                            StartMonth = tac.StartMonth,
+                                            EndMonth = tac.EndMonth,
+                                            Value = tac.Value,
+                                            Year = tac.StartYear,
+                                            StartDate = tac.StartDate, // Add By Nishant Sheth #1839
+                                            EndDate = tac.EndDate,
+                                            VeloCity = tac.VeloCity
+                                        }).Distinct().ToList();
+                                        objROIPackageCard.ProjectedTrendList = GetProjectedTrendModel(_TacticList);
+                                        objROIPackageCard.ProjectedTrendList = (from _prjTac in objROIPackageCard.ProjectedTrendList
+                                                                                group _prjTac by new
+                                                                                {
+                                                                                    _prjTac.PlanTacticId,
+                                                                                    _prjTac.Month,
+                                                                                    _prjTac.Value,
+                                                                                    _prjTac.TrendValue,
+                                                                                    _prjTac.StartDate,
+                                                                                    _prjTac.EndDate
+                                                                                } into tac
+                                                                                select new ProjectedTrendModel
+                                                                                {
+                                                                                    PlanTacticId = tac.Key.PlanTacticId,
+                                                                                    Month = tac.Key.Month,
+                                                                                    Value = tac.Key.Value,
+                                                                                    TrendValue = tac.Key.TrendValue,
+                                                                                    StartDate = tac.Key.StartDate,
+                                                                                    EndDate = tac.Key.EndDate
+                                                                                }).Distinct().ToList();
+                                        #endregion
+                                        inneractuallist = CurrentMonthActualTacticList.Select(actual => new ActualTrendModel { PlanTacticId = actual.PlanTacticId, Month = actual.Period, Value = actual.ActualValue, StartDate = actual.StartDate, EndDate = actual.EndDate }).ToList(); // Modified By Nishant Sheth #1839
+                                        revenueActual = CurrentMonthActualTacticList.Sum(data => data.ActualValue);
+                                        revenueGoal = objROIPackageCard.ProjectedTrendList.Sum(data => data.Value);
+
+                                        TacticCostData = GetActualCostDataByWeightage(customFieldId, innercustomfieldOptionid, CustomFieldType, fltrTacticData, lstTacticLineItem, tblLineItemActualList, IsTacticCustomField);
+                                        innerCurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
+                                        List<TacticMonthValue> ProjectedDatatable = new List<TacticMonthValue>();
+                                        ProjectedDatatable = GetProjectedCostData(customFieldId, innercustomfieldOptionid, CustomFieldType, fltrTacticData, IsTacticCustomField, lstTacticLineItem, tblLineItemCost, tblTacticCostList);
+                                        costActual = innerCurrentMonthCostList.Sum(innercost => innercost.Value);
+                                        costGoal = ProjectedDatatable.Sum(innergoalcost => innergoalcost.Value);
+
+                                    }
+                                    else
+                                    {
+
+                                        inneractuallist = objROIPackageCard.ActualTacticTrendList.Where(actual => _ChildIdsList.Contains(actual.PlanTacticId)).ToList();
+                                        List<ProjectedTrendModel> innerGoallist = new List<ProjectedTrendModel>();
+                                        innerGoallist = objROIPackageCard.ProjectedTrendList.Where(actual => _ChildIdsList.Contains(actual.PlanTacticId)).ToList();
+
+                                        revenueActual = inneractuallist.Sum(data => data.Value);
+                                        revenueGoal = innerGoallist.Sum(data => data.Value);
+
+                                        innerCurrentMonthCostList = CurrentMonthCostList.Where(cost => _ChildIdsList.Contains(cost.Id)).ToList();
+
+                                        List<TacticMonthValue> ProjectedDatatable = new List<TacticMonthValue>();
+                                        ProjectedDatatable = GetProjectedCostData(customFieldId, _ParentId.ToString(), CustomFieldType, fltrTacticData, IsTacticCustomField, lstTacticLineItem, tblLineItemCost, tblTacticCostList);
+
+                                        costActual = innerCurrentMonthCostList.Sum(innercost => innercost.Value);
+                                        costGoal = ProjectedDatatable.Sum(innergoalcost => innergoalcost.Value);
+
+                                    }
+
+                                    #region "Calculate Revenue"
+                                    objCardSectionSubModel = new CardSectionListSubModel();
+
+                                    // Start Revenue CardSection SubModel Data
+
+                                    objCardSectionSubModel.CardType = Enums.TOPRevenueType.Revenue.ToString();
+
+                                    objCardSectionSubModel.Actual_Projected = revenueActual;
+                                    objCardSectionSubModel.Goal = revenueGoal;
+
+                                    ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
+                                    Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
+                                    if (Percentage > 0)
+                                        objCardSectionSubModel.IsNegative = false;
+                                    else
+                                        objCardSectionSubModel.IsNegative = true;
+                                    objCardSectionSubModel.Percentage = Percentage;
+
+                                    // End Revenue CardSection SubModel Data
+
+                                    objCardSection.RevenueCardValues = objCardSectionSubModel;
+                                    #endregion
+
+                                    #region "Calculate Cost"
+                                    // Start Cost CardSection SubModel Data
+                                    objCardSectionSubModel = new CardSectionListSubModel();
+                                    objCardSectionSubModel.CardType = Enums.TOPRevenueType.Cost.ToString();
+                                    objCardSectionSubModel.Actual_Projected = costActual;
+
+                                    objCardSectionSubModel.Goal = costGoal;
+                                    ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
+                                    Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
+                                    if (Percentage > 0)
+                                        objCardSectionSubModel.IsNegative = false;
+                                    else
+                                        objCardSectionSubModel.IsNegative = true;
+                                    objCardSectionSubModel.Percentage = Percentage;
+                                    objCardSection.CostCardValues = objCardSectionSubModel;
+                                    // End Cost CardSection SubModel Data
+
+                                    #endregion
+
+                                    #region "Calculate ROI"
+                                    // Start ROI CardSection SubModel Data
+                                    objCardSectionSubModel = new CardSectionListSubModel();
+                                    objCardSectionSubModel.CardType = Enums.TOPRevenueType.ROI.ToString();
+                                    objCardSectionSubModel.Actual_Projected = (costActual) != 0 ? ((((revenueActual) - (costActual)) / (costActual)) * 100) : 0;
+
+                                    objCardSectionSubModel.Goal = (costGoal) != 0 ? ((((revenueGoal) - (costGoal)) / (costGoal)) * 100) : 0; ;
+                                    ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
+                                    Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
+                                    if (Percentage > 0)
+                                        objCardSectionSubModel.IsNegative = false;
+                                    else
+                                        objCardSectionSubModel.IsNegative = true;
+                                    objCardSectionSubModel.Percentage = Percentage;
+
+                                    objCardSection.ROICardValues = objCardSectionSubModel;
+                                    // End ROI CardSection SubModel Data
+
+                                    #endregion
+
+                                    #region "line chart"
+                                    BasicModel _basicmodel = GetCardValuesListByTimeFrame(inneractuallist, innerCurrentMonthCostList, timeframeOption);
+                                    objLineChartData = new lineChartData();
+                                    objLineChartData = GetCardLineChartData(_basicmodel, timeframeOption);
+                                    objCardSection.LineChartData = objLineChartData;
+
+                                    #endregion
+                                    ROIPackageModel.Add(_basicmodel);
+                                    // Add Multiple fixed same values to Model
+                                    ROIPackageCardSectionList.Add(objCardSection);
+
+                                }
+                                #endregion
+
+                                #region Add ROI Package as tactic
+                                var ListofROIPackageCardSectionList = ROIPackageCardSectionList;
+                                if (ListofROIPackageCardSectionList.Count > 0)
+                                {
+                                    foreach (var RoiData in objROIPackageCard.ROIAnchorTactic)
+                                    {
+                                        //var ROIPackageDetails = TacticMappingList.Where(a => a.ParentId == RoiData.Key)
+                                        //                        .Select(MapTactic => new { MapTactic.ParentId, MapTactic.ParentTitle }).FirstOrDefault();
+
+                                        ROIPackageCardSectionList = ListofROIPackageCardSectionList.Where(a => a.AnchorTacticId == RoiData.Key).ToList();
+
+                                        objCardSection = new CardSectionListModel();
+                                        objCardSection.title = HttpUtility.HtmlEncode(RoiData.Value);      // Set ParentTitle Ex. (Campaign1) 
+                                        objCardSection.MasterParentlabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
+                                        objCardSection.FieldId = 0;       // Set ROI Card Id as 0
+                                        objCardSection.IsPackage = true;
+
+                                        #region "Calculate Cost"
+                                        // Start Cost CardSection SubModel Data
+                                        objCardSectionSubModel = new CardSectionListSubModel();
+                                        objCardSectionSubModel.CardType = Enums.TOPRevenueType.Cost.ToString();
+                                        objCardSectionSubModel.Actual_Projected = ROIPackageCardSectionList.Sum(a => a.CostCardValues.Actual_Projected);
+                                        objCardSectionSubModel.Goal = ROIPackageCardSectionList.Sum(a => a.CostCardValues.Goal);
+
+                                        ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
+                                        Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
+                                        if (Percentage > 0)
+                                            objCardSectionSubModel.IsNegative = false;
+                                        else
+                                            objCardSectionSubModel.IsNegative = true;
+                                        objCardSectionSubModel.Percentage = Percentage;
+                                        objCardSection.CostCardValues = objCardSectionSubModel;
+                                        // End Cost CardSection SubModel Data
+
+                                        #endregion
+
+                                        #region "Calculate ROI"
+                                        // Start ROI CardSection SubModel Data
+                                        objCardSectionSubModel = new CardSectionListSubModel();
+                                        objCardSectionSubModel.CardType = Enums.TOPRevenueType.ROI.ToString();
+                                        objCardSectionSubModel.Actual_Projected = ROIPackageCardSectionList.Sum(a => a.ROICardValues.Actual_Projected);
+
+                                        objCardSectionSubModel.Goal = ROIPackageCardSectionList.Sum(a => a.ROICardValues.Goal);
+                                        ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
+                                        Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
+                                        if (Percentage > 0)
+                                            objCardSectionSubModel.IsNegative = false;
+                                        else
+                                            objCardSectionSubModel.IsNegative = true;
+                                        objCardSectionSubModel.Percentage = Percentage;
+
+                                        objCardSection.ROICardValues = objCardSectionSubModel;
+                                        // End ROI CardSection SubModel Data
+
+                                        #endregion
+
+                                        // Set the ROI Package Card values for each tactic
+                                        objCardSectionList.Where(a => a.AnchorTacticId == RoiData.Key).ToList()
+                                            .ForEach(card =>
+                                            {
+                                                card.CostPackageCardValues = objCardSection.CostCardValues;
+                                                card.ROIPackageCardValues = objCardSection.ROICardValues;
+                                            });
+                                    }
+                                }
+                                #endregion
+
+                            }
+                        }
+                    }
+
+                }
                 #endregion
 
 
@@ -14692,7 +15316,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult LoadReportCardSectionPartial(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "")
         {
             ViewBag.ParentLabel = ParentLabel;
-            ViewBag.childlabelType = childlabelType;
+            //Sessions.childlabelType = childlabelType;
             ViewBag.childId = childId;
             ViewBag.option = option;
 

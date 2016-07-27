@@ -268,6 +268,48 @@ namespace RevenuePlanner.Helpers
             }
         }
         /// <summary>
+        /// Add By Nishant Sheth
+        /// Date : 26-Jul-2016
+        /// Store Child label type for report card section
+        /// </summary>
+        public static string childlabelType
+        {
+            get
+            {
+                string childlabelType = string.Empty;
+                if (HttpContext.Current.Session["childlabelType"] != null)
+                {
+                    childlabelType = Convert.ToString(HttpContext.Current.Session["childlabelType"]);
+                }
+                return childlabelType;
+            }
+            set
+            {
+                HttpContext.Current.Session["childlabelType"] = value;
+            }
+        }
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Date : 26-Jul-2016
+        /// Store Is ROI Package values is display or not
+        /// </summary>
+        public static bool IsROIPackDisplay
+        {
+            get
+            {
+                bool IsROIPackDisplay = false;
+                if (HttpContext.Current.Session["IsROIPackDisplay"] != null)
+                {
+                    bool.TryParse(Convert.ToString(HttpContext.Current.Session["IsROIPackDisplay"]), out IsROIPackDisplay);
+                }
+                return IsROIPackDisplay;
+            }
+            set
+            {
+                HttpContext.Current.Session["IsROIPackDisplay"] = value;
+            }
+        }
+        /// <summary>
         /// Added By: Kunal
         /// Store Model Id.
         /// </summary>

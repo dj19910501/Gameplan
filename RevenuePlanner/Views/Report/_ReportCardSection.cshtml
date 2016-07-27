@@ -101,13 +101,13 @@
     var SearchVal = [];
     var number_of_pages;
     var ParentLabel = '@ViewBag.ParentLabel';
-    var childlabelType = '@ViewBag.childlabelType';
+    var childlabelType = '@Sessions.childlabelType';
     // var RevIsnextprev = false;
     //var childId = '@ViewBag.childId';
     var optionmain = '@ViewBag.option';
 
     $(document).ready(function () {
-
+        $('.popover.fade.top.in').css('display', 'none');
         @*BackParentLabel = '@TempData["BackParentLabel"]';
         BackChildLabel = '@TempData["BackChildLabel"]';
         BackId = '@TempData["BackId"]';*@
@@ -124,12 +124,14 @@
 
         var _cardhtml = '';
         var _masterParentLabel = '', _title = '', _Revact_proj = '', _Revgoal = '', _Revpercentange = '', _Costact_proj = '', _Costgoal = '', _Costpercentange = '', _ROIact_proj = '', _ROIgoal = '', _ROIpercentange = '', _ROITitle = '';
-        var _Revdata = '', _Costdata = '', _ROIdata = '', _lineChartData = '';
+        var _Revdata = '', _Costdata = '', _ROIdata = '', _lineChartData = '', _CostPackdata = '', _ROIPackdata = '';
         var _HeaderValue = '', _revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative;
         var _fieldId = '';
-        var rev = "Revenue", cost = "Cost", roi = "ROI";
+        var rev = "Revenue", cost = "Cost", roi = "ROI", roipack = "ROIPackage", costpack = "CostPackage";
         var actproj = "_act_proj", goal = "_goal", percntg = "_percentage";
         var _Revact_projId = '', _RevgoalId = '', _RevPercntgId = '', _Costact_projId = '', _CostgoalId = '', _CostPercntgId = '', _ROIact_projId = '', _ROIgoalId = '', _ROIPercntgId = '';
+        var _CostPackact_projId = '', _CostPackgoalId = '', _CostPackPercntgId = '', _ROIPackact_projId = '', _ROIPackgoalId = '', _ROIPackPercntgId = '';
+        var _CostPackact_proj = '', _CostPackgoal = '', _CostPackpercentange = '', _ROIPackact_proj = '', _ROIPackgoal = '', _ROIPackpercentange = '';
         var _btnDetailsId = '', _btnCompareId = '', _chkCompareId = '', _linechartDivId = '';
         var _revIsNegative = '';
         // Add BY Nishant Sheth
@@ -148,6 +150,10 @@
             _Revdata = value.RevenueCardValues;
             _Costdata = value.CostCardValues;
             _ROIdata = value.ROICardValues;
+            // Get ROI Package details for Tactic card section
+            _CostPackdata = value.CostPackageCardValues;
+            _ROIPackdata = value.ROIPackageCardValues;
+
             _lineChartData = value.LineChartData;
             _HeaderValue = value.RevenueHeaderModel;
             list.push(_lineChartData);
@@ -164,6 +170,28 @@
             _ROIact_proj = _ROIdata.Actual_Projected;
             _ROIgoal = _ROIdata.Goal;
             _ROIpercentange = _ROIdata.Percentage;
+
+            // Set ROI Package details for Tactic card section
+            if (_CostPackdata != null && _CostPackdata != '') {
+                _CostPackact_proj = _CostPackdata.Actual_Projected;
+                _CostPackgoal = _CostPackdata.Goal;
+                _CostPackpercentange = _CostPackdata.Percentage;
+            }
+            else {
+                _CostPackact_proj = '0';
+                _CostPackgoal = '0';
+                _CostPackpercentange = '0';
+            }
+
+            if (_ROIPackdata != null && _ROIPackdata != '') {
+                _ROIPackact_proj = _ROIPackdata.Actual_Projected;
+                _ROIPackgoal = _ROIPackdata.Goal;
+                _ROIPackpercentange = _ROIPackdata.Percentage;
+            } else {
+                _ROIPackact_proj = '0';
+                _ROIPackgoal = '0';
+                _ROIPackpercentange = '0';
+            }
 
             _fieldId = value.FieldId;
 
@@ -204,17 +232,36 @@
             _ROIgoalId = roi + goal + "_" + _fieldId;
             _ROIPercntgId = roi + percntg + "_" + _fieldId;
 
+            // Set the ids for roi package divs/blocks
+            
+            _CostPackact_projId = costpack + actproj + "_" + _fieldId;
+            _CostPackgoalId = costpack + goal + "_" + _fieldId;
+            _CostPackPercntgId = costpack + percntg + "_" + _fieldId;
+
+            _ROIPackact_projId = roipack + actproj + "_" + _fieldId;
+            _ROIPackgoalId = roipack + goal + "_" + _fieldId;
+            _ROIPackPercntgId = roipack + percntg + "_" + _fieldId;
+
             var _titleSub = '';
             if (_title.length > 41) {
                 _titleSub = '...';
             }
-            sb.append('<div class="region-content" revenueval="' + _Revact_proj + '" costval="' + _Costact_proj + '" roival="' + _ROIact_proj + '" id="carddiv_' + divid + '" title="' + _title + '">');
+            var CardParentClass = 'region-content';
+            var ChartWidth = '35%';
+            var IsTactictxt = 'Tactic';
+            if ('@Convert.ToString(Sessions.IsROIPackDisplay).ToLower()' == 'true' && '@Sessions.childlabelType' == '@Common.RevenueTactic') {
+                CardParentClass = 'region-content max-card';
+                ChartWidth = '24%';
+            }
+            //Abc start
+            sb.append('<div class="' + CardParentClass + '" revenueval="' + _Revact_proj + '" costval="' + _Costact_proj + '" roival="' + _ROIact_proj + '" id="carddiv_' + divid + '" title="' + _title + '">');
             sb.append('<div>');
             sb.append('<div class="report-btn-group">');
             sb.append('<div>');
             if (childlabelType == '@Common.RevenueROIPackage') {
                 if (value.IsPackage) {
                     sb.append('<span class="report-package-icon"><i class="fa fa-object-group"></i></span>');
+                    IsTactictxt = 'Package';
                 }
             }
             sb.append('<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>');
@@ -240,7 +287,7 @@
             sb.append('<div class="region-data region-data-reveune">');
 
             //_cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
-            sb.append('<div class="dataR" style="width:10%">');
+            sb.append('<div class="dataR"');
             sb.append('<span class="title">Revenue</span>');
             sb.append('<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span></p>');
             sb.append('<span class="title">Goal : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span>');
@@ -248,26 +295,74 @@
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
             sb.append('</div>');
 
-            //_cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
-            sb.append('<div class="dataR" style="width:10%">');
-            sb.append('<span class="title">Cost</span>');
-            sb.append('<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span></p>');
-            sb.append('<span class="title">Projected : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span>');
-            sb.append('<p><span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span></p>');
-            //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
-            sb.append('</div>');
+            
+            if ('@Convert.ToString(Sessions.IsROIPackDisplay).ToLower()' == 'true' && '@Sessions.childlabelType' == '@Common.RevenueTactic') {
+                sb.append('<div class="dataR">');
+                // Tactic Cost
+                sb.append('<div class="dataR-sub-box">');
+                sb.append('<span class="title">Tactic Cost</span>');
+                sb.append('<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span></p>');
+                sb.append('<span class="title">Projected : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span>');
+                sb.append('<p><span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span></p>');
+                sb.append('</div>');
+                // End Tactic Cost
 
-            //_cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
-            sb.append('<div class="dataR" style="width:10%">');
-            //_cardhtml = _cardhtml + '<div class="data">';
-            sb.append('<span class="title">ROI</span>');
-            sb.append('<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span></p>');
-            sb.append('<span class="title">Goal : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">' + _ROIgoal + '</span>');
-            sb.append('<p><span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span></p>');
-            //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
-            sb.append('</div>');
+                // ROI Package Cost #2376 // Add By Nishant Sheth
+                
+                sb.append('<div class="dataR-sub-box">');
+                sb.append('<span class="title">Package Cost</span>');
+                sb.append('<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _CostPackact_proj + '" id="' + _CostPackact_projId + '">' + _CostPackact_proj + '</span></p>');
+                sb.append('<span class="title">Projected : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _CostPackgoal + '" id="' + _CostPackgoalId + '">' + _CostPackgoal + '</span>');
+                sb.append('<p><span class="percentageval" orig-val="' + _CostPackpercentange + '" id="' + _CostPackPercntgId + '">' + _CostPackpercentange + '</span></p>');
+                sb.append('</div>');
+                // End ROI Package Cost
+                sb.append('</div>');
 
-            sb.append('<div id="' + _linechartDivId + '_parent" style="height:100%; float:left;width:35%;">');// Add By Nishant Sheth // Desc :: To resolve console error for card highchart width=-1 errror
+            }
+            else {
+                sb.append('<div class="dataR"');
+                sb.append('<span class="title">' + IsTactictxt + ' Cost</span>');
+                sb.append('<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span></p>');
+                sb.append('<span class="title">Projected : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span>');
+                sb.append('<p><span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span></p>');
+                //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
+                sb.append('</div>');
+            }
+
+
+            if ('@Convert.ToString(Sessions.IsROIPackDisplay).ToLower()' == 'true' && '@Sessions.childlabelType' == '@Common.RevenueTactic') {
+                sb.append('<div class="dataR">');
+                // Tactic ROI
+                sb.append('<div class="dataR-sub-box">');
+                sb.append('<span class="title">Tactic ROI</span>');
+                sb.append('<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span></p>');
+                sb.append('<span class="title">Goal : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">' + _ROIgoal + '</span>');
+                sb.append('<p><span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span></p>');
+                sb.append('</div>');
+                // End Tactic ROI
+
+                // ROI Package #2376 // Add By Nishant Sheth
+                sb.append('<div class="dataR-sub-box">');
+                sb.append('<span class="title">Package ROI</span>');
+                sb.append('<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIPackact_proj + '" id="' + _ROIPackact_projId + '">' + _ROIPackact_proj + '</span></p>');
+                sb.append('<span class="title">Goal : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _ROIPackgoal + '" id="' + _ROIPackgoalId + '">' + _ROIPackgoal + '</span>');
+                sb.append('<p><span class="percentageval" orig-val="' + _ROIPackpercentange + '" id="' + _ROIPackPercntgId + '">' + _ROIPackpercentange + '</span></p>');
+                sb.append('</div>');
+                // End ROI Package #2376
+                sb.append('</div>');
+            }
+            else {
+                sb.append('<div class="dataR"');
+                //_cardhtml = _cardhtml + '<div class="data">';
+                sb.append('<span class="title">' + IsTactictxt + ' ROI</span>');
+                sb.append('<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span></p>');
+                sb.append('<span class="title">Goal : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">' + _ROIgoal + '</span>');
+                sb.append('<p><span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span></p>');
+                //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
+                sb.append('</div>');
+            }
+
+            sb.append('<div id="' + _linechartDivId + '_parent" style="height:100%; float:left;width:'+ChartWidth+';">');// Add By Nishant Sheth // Desc :: To resolve console error for card highchart width=-1 errror
             sb.append('<div id="' + _linechartDivId + '" style="height:100%;"> ');
             //_cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:419px;float:left;">';
             sb.append('</div>');
@@ -276,6 +371,7 @@
             sb.append('</div>');
             sb.append('</div>');
             sb.append('</div>');
+            //Abc end
             divid++;
             Strbundle = sb.getStringBuilder();
         });
@@ -476,7 +572,7 @@
         });
         //formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
         //formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
-        
+
         if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
                 $("#ddlCampaignRevenueToPlan").css('display', 'none');

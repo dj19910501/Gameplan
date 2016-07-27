@@ -13608,8 +13608,9 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
 .region-data .data,
 .region-data .dataR {
     margin: 22px 0;
-    padding: 0 10px; /* Changed by Bhumika 22-7-2016 */
+    padding: 0 22px; /* Changed by Bhumika 22-7-2016 */
     float: left;
+    min-width:21%;
 }
 
     .region-data .data .data-green {
@@ -13627,6 +13628,7 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
     padding: 0;
     text-align: center;
     word-wrap: break-word;
+    min-width:auto;
 }
 
 .bottom-paging {
@@ -13641,7 +13643,21 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
     padding: 1.8% .7% 0;
     width: 39%;
 }
+/* New style added by Bhumika when 5cards come #2376 */
+.region-content.max-card .region-data .dataR {min-width: 24%;  text-align: center; padding: 0 10px; }
+.region-content.max-card .dataR .dataR-sub-box{
+    float: left;
+    /*width: 50%;*/
+}
+.region-content.max-card .region-data .dataR .value{
+    margin-top: 26px;
+    line-height: 35px; 
+    padding-top:0
+}
 
+.region-content.max-card .region-data .dataR .dataR-sub-box:last-child .value{text-align:left; padding-left:7px}
+.region-content.max-card .region-data .dataR .dataR-sub-box:first-child .value{text-align: right; border-right: 2px solid #000; padding-right: 7px;}
+/* New style End by Bhumika when 5cards come #2376 */
 .dropdown-inline {
     display: inline-block;
 }
@@ -14124,9 +14140,9 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
     margin: 18px 0 0;
 }
 
-.region-data-reveune.region-data .dataR {
+/*.region-data-reveune.region-data .dataR {
     width: 141px !important;
-}
+}*/ /* By Bhumika #2376 */
 
     .region-data-reveune.region-data .dataR .title {
         color: #4d4d4d;
@@ -16107,7 +16123,11 @@ input.selectInput{
 .report-btn-group {
  padding: 1% 0 0 2%;
 }
- 
+    .region-data-reveune.region-data .dataR .value{font-size:30px}/* Bhumika #2376 */
+    .region-data-reveune.region-data .dataR .inner-sub-value,
+    .region-data-reveune.region-data .dataR .cardsub.sub-value,
+    .region-data-reveune.region-data .dataR .title,
+    .region-data-reveune.region-data .dataR .percentageval{font-size:12px}
 }
  @media screen and (max-width: 1366px) {
 #planHeader .planheader-title {

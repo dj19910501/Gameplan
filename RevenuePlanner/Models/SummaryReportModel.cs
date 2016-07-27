@@ -368,6 +368,8 @@ namespace RevenuePlanner.Models
         public CardSectionListSubModel RevenueCardValues { get; set; }
         public CardSectionListSubModel CostCardValues { get; set; }
         public CardSectionListSubModel ROICardValues { get; set; }
+        public CardSectionListSubModel CostPackageCardValues { get; set; }// Add By Nishant Sheth
+        public CardSectionListSubModel ROIPackageCardValues { get; set; }// Add By Nishant Sheth
         public lineChartData LineChartData { get; set; }
         public string MasterParentlabel { get; set; }
         public double FieldId { get; set; }
@@ -375,6 +377,7 @@ namespace RevenuePlanner.Models
         public Projected_Goal RevenueHeaderModel { get; set; } // Add By Nishant SHeth
         public string RoiPackageTitle { get; set; } // Add By Nishant Sheth
         public bool IsPackage { get; set; } // Add By Nishant Sheth
+        public int AnchorTacticId { get; set; } // Add By Nishant Sheth
     }
     public class CardSectionListSubModel
     {

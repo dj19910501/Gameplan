@@ -1394,7 +1394,8 @@ namespace RevenuePlanner.Helpers
             CustomFieldOption,
             StageList,
             MediaCodeCustomfieldConfiguration,
-            PlanTacticListforpackageing
+            PlanTacticListforpackageing,
+            ROIPackageTactics
         }
 
         public enum DownloadCSV
