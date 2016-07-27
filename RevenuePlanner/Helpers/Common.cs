@@ -6547,17 +6547,19 @@ namespace RevenuePlanner.Helpers
             // To update dsPlanCampProgTac object into cache which is used to show activity distribution chart
             DataSet dsPlanCampProgTac = new DataSet();
             dsPlanCampProgTac = (DataSet)objCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
-
-            (from dict in dictPlanTacticAnchorTactic
-             join tactic in dsPlanCampProgTac.Tables[3].AsEnumerable() on dict.Key equals tactic.Field<int>("PlanTacticId")
-             select tactic).ToList<DataRow>()
-                 .ForEach(tac =>
-                 {
-                     tac["AnchorTacticId"] = dictPlanTacticAnchorTactic[tac.Field<int>("PlanTacticId")];
-                     tac["PackageTitle"] = dsPlanCampProgTac.Tables[3].AsEnumerable().Where(x => x.Field<int>("PlanTacticId") == dictPlanTacticAnchorTactic[tac.Field<int>("PlanTacticId")]).
-                                                             Select(t => t.Field<string>("Title")).FirstOrDefault();
-                 });
-            objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+            if (dsPlanCampProgTac != null && dsPlanCampProgTac.Tables.Count > 0)
+            {
+                (from dict in dictPlanTacticAnchorTactic
+                 join tactic in dsPlanCampProgTac.Tables[3].AsEnumerable() on dict.Key equals tactic.Field<int>("PlanTacticId")
+                 select tactic).ToList<DataRow>()
+                     .ForEach(tac =>
+                     {
+                         tac["AnchorTacticId"] = dictPlanTacticAnchorTactic[tac.Field<int>("PlanTacticId")];
+                         tac["PackageTitle"] = dsPlanCampProgTac.Tables[3].AsEnumerable().Where(x => x.Field<int>("PlanTacticId") == dictPlanTacticAnchorTactic[tac.Field<int>("PlanTacticId")]).
+                                                                 Select(t => t.Field<string>("Title")).FirstOrDefault();
+                     });
+                objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
+            }
         }
         #endregion
 	 // added by devanshi #2386 Remove media codes
