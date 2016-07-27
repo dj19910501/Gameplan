@@ -1842,7 +1842,7 @@
             $("#ddlAllocate option[value='months']").attr("selected", false);
         }
         $('.sbSelector').text(Qurt_Month);
-
+        isAllowClick = false;           // Added by Viral regarding PL ticket #2321.
         var url = '@Url.Content("~/Report/GetOverviewData/")';
         $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
@@ -3518,51 +3518,52 @@ function () {
     // Add By Nishant Sheth
     // Desc :: #2262 call particular dashboard
     $('li[id^="CustomReportli"]').click(function () {
-        // Add By Nishant Sheth
-        // #2257 : set selected custom report tab and it's option
-        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Custom.ToString()'
-        RemoveAllActiveItem();
-        //$('.menu-content li').each(function () {
-        //    $(this).removeClass('active');
-        //});
-        $('.menu-content li').removeClass('active');
-        $('#liCustomReport').addClass('active');
-        $.each($('li[id^="CustomReportli"]'), function () {
-            if ($(this).hasClass('selected')) {
-                $(this).removeClass('selected');
-            }
-        });
-        document.title = "Custom";
-        $(this).addClass('selected');
-        $('#ddlsection').hide();
-        $("#BtnShareReport").hide();
-        $('#budgetHeader').css('display', 'none');
-        $('#ddlCustomTimeFrame').show();
-        $('.custom').addClass('active');
-        var DashboardLink = $(this).find('a');
-        if (DashboardLink != null && DashboardLink != undefined && DashboardLink != 'undefined')
-        {
-            var CustomUrlLink = $(DashboardLink).text().trim();
-            $("#dashboardpagetext").text(CustomUrlLink);
-        }
-        // End By Nishant Sheth
-        var DashboardID = $(this).attr('id').replace('CustomReportli', '');
-        var url = '@Url.Content("~/Report/GetCustomReport/")';
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: {
-                DashboardId: DashboardID
-            },
-            success: function (response) {
-                $('#divMainReportPart').html('');
-                $('#divMainReportPart').html(response);
-                isAllowClick = true;
-                if ($(".popover.fade.top.in").length != 0) {
-                    $(".popover.fade.top.in").remove();
+        if (isAllowClick) {         //modified by viral related to PL ticket #2321.
+            $('#ddlsection').hide();
+            // Add By Nishant Sheth
+            // #2257 : set selected custom report tab and it's option
+            leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Custom.ToString()'
+            RemoveAllActiveItem();
+            //$('.menu-content li').each(function () {
+            //    $(this).removeClass('active');
+            //});
+            $('.menu-content li').removeClass('active');
+            $('#liCustomReport').addClass('active');
+            $.each($('li[id^="CustomReportli"]'), function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
                 }
+            });
+            document.title = "Custom";
+            $(this).addClass('selected');
+            $("#BtnShareReport").hide();
+            $('#budgetHeader').css('display', 'none');
+            $('#ddlCustomTimeFrame').show();
+            $('.custom').addClass('active');
+            var DashboardLink = $(this).find('a');
+            if (DashboardLink != null && DashboardLink != undefined && DashboardLink != 'undefined') {
+                var CustomUrlLink = $(DashboardLink).text().trim();
+                $("#dashboardpagetext").text(CustomUrlLink);
             }
-        });
+            // End By Nishant Sheth
+            var DashboardID = $(this).attr('id').replace('CustomReportli', '');
+            var url = '@Url.Content("~/Report/GetCustomReport/")';
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: {
+                    DashboardId: DashboardID
+                },
+                success: function (response) {
+                    $('#divMainReportPart').html('');
+                    $('#divMainReportPart').html(response);
+                    isAllowClick = true;
+                    if ($(".popover.fade.top.in").length != 0) {
+                        $(".popover.fade.top.in").remove();
+                    }
+                }
+            });
+        }
     });
 
 </script>

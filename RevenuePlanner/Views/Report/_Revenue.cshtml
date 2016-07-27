@@ -306,6 +306,7 @@
         Type = _BackHeadValues.BackChildLabel;
         id = _BackHeadValues.BackId;
         //}
+        isAllowClick = false;   // disable click(i.e. isAllowClick) option for other tabs until Revenue data does not successfully load to div. // modified by viral related to PL ticket #2321.
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&DrpChange=" + 'true';
         // Add By Nishant Sheth
         // Desc :: #2376 Set isdetails=true where Tactic selected 0 
@@ -316,7 +317,9 @@
             }
         }
         // End By Nishant sheth
-        $("#dvRevenueToPlan").load(_url);
+        // modified by viral related to PL ticket #2321.
+        // enable click(i.e. isAllowClick) option for other tabs after loading Revenue data successfully to div.
+        $("#dvRevenueToPlan").load(_url, function () { isAllowClick = true; }); 
         //LoadRevenueData();
     });
 
