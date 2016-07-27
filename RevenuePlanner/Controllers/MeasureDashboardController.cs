@@ -72,7 +72,7 @@ namespace RevenuePlanner.Controllers
                 ViewData["ViewBy"] = li;
 
                 ViewBag.DashboardID = DashboardId;
-                ViewBag.ReportDBConnString = ReportDBConnString;
+                ViewBag.ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
                 ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
                 ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
                 ViewBag.ApiUrl = ApiUrl;

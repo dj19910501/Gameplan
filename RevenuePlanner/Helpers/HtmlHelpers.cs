@@ -6748,7 +6748,7 @@ namespace RevenuePlanner.Helpers
         {
 
             string MenuStr = string.Empty;
-            if (MenuNo == 10)
+            if (MenuNo == 11)
             {
                 MenuStr = MenuStr + "<li class='Other fix-width dropdown'><a href='#'><span class='fa fa-gear'></span><span class='nav-text'>OTHER</span><span class='dd-arrow'><i class='fa fa-caret-down'></i></span></a><ul class='dropdown-menu'>";
             }
@@ -6779,8 +6779,12 @@ namespace RevenuePlanner.Helpers
             }
             classname = classname + "'";
             string LiId = "Measure_" + o.MenuApplicationId;
-
-            MenuStr = MenuStr + "<li class=" + classname + " id=" + LiId + "> <a href=" + hrefLink + "> <span class=" + o.CustomCss + "></span> <span class='nav-text'> " + Convert.ToString(o.Name).ToUpper() + " </span>";
+            string CusCss = "fa fa-pie-chart";
+            if (!string.IsNullOrEmpty(o.CustomCss))
+            {
+                CusCss = o.CustomCss;
+            }
+            MenuStr = MenuStr + "<li class=" + classname + " id=" + LiId + "> <a href=" + hrefLink + "> <span class='" + CusCss + "'></span> <span class='nav-text'> " + Convert.ToString(o.Name).ToUpper() + " </span>";
             if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
             {
                 MenuStr = MenuStr + "<span class='dd-arrow'><i class='fa fa-caret-down'></i></span>";
