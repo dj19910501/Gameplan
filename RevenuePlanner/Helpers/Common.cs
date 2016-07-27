@@ -5022,8 +5022,12 @@ namespace RevenuePlanner.Helpers
                 while (ModelId != null)
                 {
                     var model = ModelList.Where(m => m.ModelId == ModelId).Select(m => m).FirstOrDefault();
-                    modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
-                    ModelId = model.ParentModelId;
+                    if (model != null) // Add Condtion for failure test case by nishant Sheth
+                    {
+                        modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
+                        ModelId = model.ParentModelId;
+                    }
+                    ModelId = (int?)null; // Add By nishant Sheth due to failure test case
                 }
             }
 
