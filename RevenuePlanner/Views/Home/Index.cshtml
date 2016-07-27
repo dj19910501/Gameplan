@@ -4768,6 +4768,7 @@
                             {
                                 var LastChildNode = TaskHtml.firstChild.lastChild.outerHTML;
                                 var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0);
+                                var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
                                 if(FileNode != null && FileNode!= 'undefined' && FileNode != undefined)
                                 {
                                     FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
@@ -4780,9 +4781,17 @@
                                     AllCHildNodes = TaskHtml.firstChild.innerHTML;
                                     AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
                                 }
-                                AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
-                                AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                                AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + promotionTacticIds + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                                if(BlankDiv != null && BlankDiv!= 'undefined' && BlankDiv != undefined)
+                                {
+
+                                    AllCHildNodes = AllCHildNodes.replace(BlankDiv.outerHTML, "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + promotionTacticIds + " ><i class='fa fa-object-group'></i></div>");
+                                }
+                                else
+                                {
+                                    AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
+                                    AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                                    AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + promotionTacticIds + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                                }
                                 TaskHtml.firstChild.innerHTML = AllCHildNodes;
                             }
                           
@@ -4890,6 +4899,7 @@
                             {
                                 var FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
                                 var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
+                                var IsLinkIcon = TaskHtml.firstChild.getElementsByClassName("unlink-icon");
                                 if(FileNode != null && FileNode!= 'undefined' && FileNode != undefined)
                                 {
                                    FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML
@@ -4902,7 +4912,15 @@
                                 }
                                 else
                                 {
-                                    AllCHildNodes = AllCHildNodes.replace(FileNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                                    if(IsLinkIcon != null && IsLinkIcon != 'undefined' && IsLinkIcon != undefined && IsLinkIcon.length <= 1)
+                                    {
+                                        AllCHildNodes = AllCHildNodes.replace(FileNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                                    }
+                                    else
+                                    {
+                                        AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                                    }
+                                  
                                 }
                                 TaskHtml.firstChild.innerHTML = AllCHildNodes;
                             }
@@ -5671,6 +5689,7 @@
                         if(TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null)
                         {
                             var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
+                            var IsLinkIcon = TaskHtml.firstChild.getElementsByClassName("unlink-icon");
                             var AllCHildNodes = TaskHtml.firstChild.innerHTML;
                             if(BlankDiv != null && BlankDiv!= 'undefined' && BlankDiv != undefined)
                             {
@@ -5679,7 +5698,14 @@
                             }
                             else
                             {
-                                AllCHildNodes = AllCHildNodes.replace(FileNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                                if(IsLinkIcon != null && IsLinkIcon != 'undefined' && IsLinkIcon != undefined && IsLinkIcon.length <= 1)
+                                {
+                                    AllCHildNodes = AllCHildNodes.replace(FileNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                                }
+                                else
+                                {
+                                    AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                                }
                             }
                           
                             TaskHtml.firstChild.innerHTML = AllCHildNodes;

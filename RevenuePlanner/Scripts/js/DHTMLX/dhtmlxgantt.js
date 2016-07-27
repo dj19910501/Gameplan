@@ -3098,7 +3098,6 @@ gantt._render_data = function () {
     for (var i = 0; i < renderers.length; i++) {
         renderers[i].render_items(data);
     }
-   
     //#1780
     //Added By Komal Rawal for #2355 on 14-07-16 to maintain package icon without refreshing page   
     if (AnchorTaskIdsList.Id != undefined && AnchorTaskIdsList.Id != 'undefined' && AnchorTaskIdsList.Id != null && AnchorTaskIdsList.Id != [] && AnchorTaskIdsList.Id != "") {
@@ -3110,6 +3109,7 @@ gantt._render_data = function () {
                 var AllCHildNodes = TaskHtml.firstChild.innerHTML;
                 var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
                 var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
+                var IsLinkIcon = TaskHtml.firstChild.getElementsByClassName("unlink-icon");
                 if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
                     var PackageNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
                     AllCHildNodes = TaskHtml.firstChild.innerHTML;
@@ -3117,12 +3117,19 @@ gantt._render_data = function () {
                     TaskHtml.firstChild.innerHTML = AllCHildNodes;
                 }
                 if (AnchorTaskIdsList.Value[index] != undefined && AnchorTaskIdsList.Value[index] != 'undefined' && AnchorTaskIdsList.Value[index] != null && AnchorTaskIdsList.Value[index] != [] && AnchorTaskIdsList.Value[index] != "") {
-                    AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
-                    AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                    AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                    if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
+
+                        AllCHildNodes = AllCHildNodes.replace(BlankDiv.outerHTML, "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>");
+                    }
+                    else
+                    {
+                        AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
+                        AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                        AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                    }
                     TaskHtml.firstChild.innerHTML = AllCHildNodes;
                 }
-                else if (BlankDiv == null || BlankDiv == 'undefined' || BlankDiv == undefined)
+                else if ((BlankDiv == null || BlankDiv == 'undefined' || BlankDiv == undefined) && (IsLinkIcon != null && IsLinkIcon != 'undefined' && IsLinkIcon != undefined && IsLinkIcon.length <= 1))
                 {
                     AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
                     AllCHildNodes = AllCHildNodes.replace(FileNode, "");
@@ -3148,9 +3155,13 @@ gantt._render_data = function () {
                             $(this).parents('.gantt_row').find('.ROIPackage').remove();
                         }
                         else {
-                            if ($(this).parents('.gantt_row').find('.ROIPackage') != 'undefined' && $(this).parents('.gantt_row').find('.ROIPackage') != undefined && $(this).parents('.gantt_row').find('.ROIPackage') !=  null)
+                            if ($(this).parents('.gantt_row').find('.ROIPackage') != 'undefined' && $(this).parents('.gantt_row').find('.ROIPackage') != undefined && $(this).parents('.gantt_row').find('.ROIPackage') != null && $(this).parents('.gantt_row').find('.ROIPackage').length > 0 && $(this).parents('.gantt_row').find('.unlink-icon').length <= 1)
                             {
                                 $(this).parents('.gantt_row').find('.ROIPackage')[0].outerHTML = "<div class='gantt_tree_icon gantt_blank'></div>"
+                            }
+                            else
+                            {
+                                $(this).parents('.gantt_row').find('.ROIPackage').remove();
                             }
                             
                         }
@@ -8634,7 +8645,6 @@ gantt.scrollTo = function (left, top) {
             if ($(".gantt_last_cell").find("div").hasClass("honeycombbox-icon-gantt-Active")) {
                 $(".gantt_last_cell").find("div").removeClass("honeycombbox-icon-gantt-Active")
             }
-
             //Added by komal Rawal for #2355 Assigning attributes on package unpackage on scroll after applying smart rendering
             if (AnchorTaskIdsList.Id != undefined && AnchorTaskIdsList.Id != 'undefined' && AnchorTaskIdsList.Id != null && AnchorTaskIdsList.Id != [] && AnchorTaskIdsList.Id != "") {
                 $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
@@ -8645,6 +8655,7 @@ gantt.scrollTo = function (left, top) {
                         var AllCHildNodes = TaskHtml.firstChild.innerHTML;
                         var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
                         var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
+                        var IsLinkIcon = TaskHtml.firstChild.getElementsByClassName("unlink-icon");
                         if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
                             var PackageNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
                             AllCHildNodes = TaskHtml.firstChild.innerHTML;
@@ -8652,15 +8663,26 @@ gantt.scrollTo = function (left, top) {
                                 AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
                             }
                             else {
-                                AllCHildNodes = AllCHildNodes.replace(PackageNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                                if (IsLinkIcon != null && IsLinkIcon != 'undefined' && IsLinkIcon != undefined && IsLinkIcon.length <= 1) {
+                                    AllCHildNodes = AllCHildNodes.replace(PackageNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                                }
+                                else {
+                                    AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
+                                }
                             }
                            
                             TaskHtml.firstChild.innerHTML = AllCHildNodes;
                         }
                         if (AnchorTaskIdsList.Value[index] != undefined && AnchorTaskIdsList.Value[index] != 'undefined' && AnchorTaskIdsList.Value[index] != null && AnchorTaskIdsList.Value[index] != [] && AnchorTaskIdsList.Value[index] != "") {
-                            AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
-                            AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                            AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                            if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
+
+                                AllCHildNodes = AllCHildNodes.replace(BlankDiv.outerHTML, "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>");
+                            }
+                            else {
+                                AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
+                                AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                                AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                            }
                             TaskHtml.firstChild.innerHTML = AllCHildNodes;
                         }
                     }
@@ -8678,8 +8700,12 @@ gantt.scrollTo = function (left, top) {
                                 }
                                 else
                                 {
-                                    if ($(this).parents('.gantt_row').find('.ROIPackage') != 'undefined' && $(this).parents('.gantt_row').find('.ROIPackage') != undefined && $(this).parents('.gantt_row').find('.ROIPackage') != null) {
+                                    if ($(this).parents('.gantt_row').find('.ROIPackage') != 'undefined' && $(this).parents('.gantt_row').find('.ROIPackage') != null && $(this).parents('.gantt_row').find('.ROIPackage').length > 0 && $(this).parents('.gantt_row').find('.unlink-icon').length <= 1) {
                                         $(this).parents('.gantt_row').find('.ROIPackage')[0].outerHTML = "<div class='gantt_tree_icon gantt_blank'></div>"
+                                    }
+                                    else
+                                    {
+                                        $(this).parents('.gantt_row').find('.ROIPackage').remove();
                                     }
                                 }
                                
