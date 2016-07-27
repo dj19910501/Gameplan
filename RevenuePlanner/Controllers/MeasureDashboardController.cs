@@ -50,12 +50,20 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
-
-                string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashboardId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
-                string result = client.DownloadString(url);
-                List<DashboardContentModel> list = JsonConvert.DeserializeObject<List<DashboardContentModel>>(result);
                 Custom_Dashboard model = new Custom_Dashboard();
-                model.DashboardContent = list;
+                string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashboardId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                try
+                {
+                    ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+                    string result = client.DownloadString(url);
+                    List<DashboardContentModel> list = JsonConvert.DeserializeObject<List<DashboardContentModel>>(result);
+                    model.DashboardContent = list;
+                }
+                catch (Exception ex)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(ex);
+                }
+                
                 List<SelectListItem> li = new List<SelectListItem>();
                 li.Add(new SelectListItem { Text = "Years", Value = "Y" });
                 li.Add(new SelectListItem { Text = "Quarters", Value = "Q" });

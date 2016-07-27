@@ -8,6 +8,7 @@ using System.Net;
 using RevenuePlanner.BAL;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using Elmah;
 
 namespace RevenuePlanner.Helpers
 {
@@ -6603,7 +6604,7 @@ namespace RevenuePlanner.Helpers
         {
 
             MRPEntities db = new MRPEntities();
-            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted==false).Select(a => a.Id).ToList();
+            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false).Select(a => a.Id).ToList();
             List<Budget_Detail> BudgetDetails = db.Budget_Detail.Where(a => BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
             List<int> SelectedOptionIDs = db.LineItem_Budget.Where(list => list.PlanLineItemId == Id).Select(list => list.BudgetDetailId).ToList();
             List<string> SelectedOptionValues = BudgetDetails.Where(Detaillist => SelectedOptionIDs.Contains(Detaillist.Id)).Select(Detaillist => Detaillist.Name).ToList();
@@ -6726,10 +6727,20 @@ namespace RevenuePlanner.Helpers
                     }
                 }
             }
+            string result = string.Empty;
             string url = ApiUrl + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.UserId + "&RoleId=" + Sessions.User.RoleId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
-            string result = client.DownloadString(url);
-            result = result.Substring(1);
-            result = result.Remove(result.Length - 1);
+            try
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+                result = client.DownloadString(url);
+                result = result.Substring(1);
+                result = result.Remove(result.Length - 1);
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
             return result;
         }
 
