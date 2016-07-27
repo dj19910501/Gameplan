@@ -954,7 +954,9 @@ namespace RevenuePlanner.Test.Controllers
             int ModelId = DataHelper.GetModelId();
             Model ModelData = DataHelper.GetModel(ModelId);
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            
             List<TacticType> TaskData = DataHelper.GetTacticTypeList(ModelId);
+            Sessions.User.UserId = ModelData.CreatedBy;
             if (TaskData != null && TaskData.Count > 0)
             {
                 List<string> tacticIds = new List<string>();
@@ -969,7 +971,7 @@ namespace RevenuePlanner.Test.Controllers
                 string ids = string.Join(",", alltacticIds);
                 string rejIds = string.Join(",", rejtacticIds);
                 var ModelStatus = ModelData.Status;
-                bool isModelPublished = false;
+                bool isModelPublished = true;
                 string EffectiveDate = ModelData.EffectiveDate.ToString();
                 if (ModelStatus == Enums.ModelStatus.Published.ToString())
                 {
