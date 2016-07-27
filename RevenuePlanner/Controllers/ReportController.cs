@@ -85,8 +85,18 @@ namespace RevenuePlanner.Controllers
         public ActionResult MeasureReport()
         {
             var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
-            Guid MeasureAppId = Guid.Parse(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"]);
-            //Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+            Guid MeasureAppId = new Guid();
+            if (ConfigurationManager.AppSettings.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"])))
+                {
+                    Guid newGuid;
+                    if (Guid.TryParse(Convert.ToString(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"]), out newGuid))
+                    {
+                        MeasureAppId = Guid.Parse(ConfigurationManager.AppSettings["BDSMeasureApplicationCode"]);
+                    }
+                }
+            }
             var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
             Sessions.User.RoleId = RoleId;
             var AppMenus = objBDSServiceClient.GetAllMenu(AppId, Sessions.User.RoleId);
@@ -100,42 +110,39 @@ namespace RevenuePlanner.Controllers
             if (Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).Any())
             {
                 WebClient client = new WebClient();
-                string marketoIntegrstionApi = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
-                //if (marketoIntegrstionApi != null)
-                //{
+
+                string AuthorizedReportAPIUserName = string.Empty;
+                string AuthorizedReportAPIPassword = string.Empty;
+                string ApiUrl = string.Empty;
+
                 string regularConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
                 string ReportDBConnString = string.Empty;
                 if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
                 {
                     ReportDBConnString = Convert.ToString(regularConnectionString);
-                }
-                string AuthorizedReportAPIUserName = string.Empty;
+                }               
+
                 if (ConfigurationManager.AppSettings.Count > 0)
                 {
                     if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
                     {
                         AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
                     }
-                }
-
-                string AuthorizedReportAPIPassword = string.Empty;
-                if (ConfigurationManager.AppSettings.Count > 0)
-                {
                     if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
                     {
                         AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
                     }
-                }
-                string ApiUrl = string.Empty;
-                if (ConfigurationManager.AppSettings.Count > 0)
-                {
                     if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
                     {
                         ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                        if (!string.IsNullOrEmpty(ApiUrl) && !ApiUrl.EndsWith("/"))
+                        {
+                            ApiUrl += "/";
+                        }
                     }
                 }
 
-                string url = marketoIntegrstionApi + "api/Dashboard/GetdashboardListUserWise?UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                string url = ApiUrl + "api/Dashboard/GetdashboardListUserWise?UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
                 string result = string.Empty;
                 try
                 {
