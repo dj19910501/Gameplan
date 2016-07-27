@@ -16,13 +16,17 @@
     box-sizing: border-box !important;
 }
 .hierarchy_wrapper *, .hierarchy_wrapper *::after, .hierarchy_wrapper *::before, .hierarchy_wrapper,
-.pop-body-wraper *, .pop-body-wraper *::after, .pop-body-wraper *::before,
 .create-plan-form #accordion2 *,.create-plan-form #accordion2 *::after, .create-plan-form #accordion2 *::before,
 #modal-container-186470 .partial_wrapper *, #modal-container-186470 .partial_wrapper *::after, #modal-container-186470 .partial_wrapper *::before, 
 .gridbox.gridbox_dhx_skyblue, .gridbox.gridbox_dhx_skyblue *, .gridbox.gridbox_dhx_skyblue *:before, .gridbox.gridbox_dhx_skyblue *:after{
     box-sizing: content-box !important;
+    -moz-box-sizing: content-box !important;
+    box-sizing: content-box !important;
 } 
-
+#modal-container-186470  .popover *, #modal-container-186470  .popover *::after, #modal-container-186470  .popover *::before{-webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+}
 body,
 html {
     height: 100% !important;
@@ -5078,6 +5082,7 @@ a.link-gray {
     width: 96%;
     font-family: source_sans_proregular;
     margin-bottom: 0;
+    height:auto;/*Bhumika 27/7/2016*/
 }
 .search-user input:focus
 {
