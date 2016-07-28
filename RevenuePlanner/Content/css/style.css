@@ -13651,13 +13651,14 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
     float: left;
     /*width: 50%;*/
 }
+.region-content.max-card .region-data .dataR:nth-child(1n) .dataR-sub-box{margin-right:7px}
 .region-content.max-card .region-data .dataR .value{
     margin-top: 26px;
     line-height: 35px; 
     padding-top:0
 }
 
-.region-content.max-card .region-data .dataR .dataR-sub-box:last-child .value{text-align:left; padding-left:7px}
+.region-content.max-card .region-data .dataR .dataR-sub-box:last-child .value{text-align:left; /*padding-left:7px*/}
 .region-content.max-card .region-data .dataR .dataR-sub-box:first-child .value{text-align: right; border-right: 2px solid #000; padding-right: 7px;}
 /* New style End by Bhumika when 5cards come #2376 */
 .dropdown-inline {

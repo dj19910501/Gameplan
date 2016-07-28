@@ -121,7 +121,7 @@ namespace RevenuePlanner.Controllers
                 if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
                 {
                     ReportDBConnString = Convert.ToString(regularConnectionString);
-                }               
+                }
 
                 if (ConfigurationManager.AppSettings.Count > 0)
                 {
@@ -8473,9 +8473,9 @@ namespace RevenuePlanner.Controllers
                                 // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
                                 _Actual = ActualTrendList.Where(actual => actual.Year == year &&
                                                                             (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate)) &&
-                                                                            (Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= (12)) ? 
-                                                                            ( actual.Month.Equals(curntPeriod) ) : 
-                                                                            ( actual.Month.Equals(string.Empty))).Sum(actual => actual.Value);
+                                                                            (Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= (12)) ?
+                                                                            (actual.Month.Equals(curntPeriod)) :
+                                                                            (actual.Month.Equals(string.Empty))).Sum(actual => actual.Value);
 
                                 if (k > currentMonth)
                                 {
@@ -8728,7 +8728,8 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 a.IsPackage = true;
                                             }
-                                            var ROIPackageTitle = ListOfAnchorTactics.Where(roi => roi.AnchorTacticID == isROIPackage.AnchorTacticID)
+                                            var ROIPackageTitle = ListOfAnchorTactics.Where(roi => roi.AnchorTacticID == isROIPackage.AnchorTacticID
+                                                && roi.AnchorTacticID == roi.PlanTacticId)
                                                 .Select(tac => tac.Plan_Campaign_Program_Tactic.Title).FirstOrDefault();
                                             a.RoiPackageTitle = ROIPackageTitle;
                                             a.ROIAnchorTacticId = isROIPackage.AnchorTacticID;
@@ -8749,7 +8750,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             ROIAnchorTactic.Add(a.AnchorTacticId, a.Title);
                                         });
-                                    
+
                                     objROIPackageCard.ROIAnchorTactic = ROIAnchorTactic;
 
                                     var ListROITactic = ROITacticData.Select(a => a.TacticObj).ToList();
@@ -8776,7 +8777,8 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 a.IsPackage = true;
                                             }
-                                            var ROIPackageTitle = ListOfAnchorTactics.Where(roi => roi.AnchorTacticID == isROIPackage.AnchorTacticID)
+                                            var ROIPackageTitle = ListOfAnchorTactics.Where(roi => roi.AnchorTacticID == isROIPackage.AnchorTacticID
+                                                && roi.AnchorTacticID == roi.PlanTacticId)
                                                 .Select(tac => tac.Plan_Campaign_Program_Tactic.Title).FirstOrDefault();
                                             a.RoiPackageTitle = ROIPackageTitle;
                                             a.ROIAnchorTacticId = isROIPackage.AnchorTacticID;
@@ -8799,7 +8801,14 @@ namespace RevenuePlanner.Controllers
                         if (TacticList != null)
                         {
                             TacticList.ForEach(tac => ListOfROITacticList.AddRange(tac.ROI_PackageDetail));
-                            var AnchorTacticDetails = ListOfROITacticList.Where(roi => roi.AnchorTacticID == roi.PlanTacticId).Select(tac =>
+                            var GetAnchorTactic = ListOfROITacticList.Where(roi => roi.PlanTacticId == tacticid).Select(tac =>
+                                new
+                                {
+                                    AnchorTacticID = tac.AnchorTacticID
+                                }).FirstOrDefault();
+
+                            var AnchorTacticDetails = ListOfROITacticList.Where(roi => roi.AnchorTacticID == GetAnchorTactic.AnchorTacticID
+                                && roi.AnchorTacticID == roi.PlanTacticId).Select(tac =>
                                 new
                                 {
                                     AnchorTacticID = tac.AnchorTacticID,
@@ -8813,9 +8822,9 @@ namespace RevenuePlanner.Controllers
                                 var isWithRoiPackage = ListOfROITacticList.Where(a => a.PlanTacticId == tacticid).FirstOrDefault();
                                 if (isWithRoiPackage != null)
                                 {
-                                ListROICardTactic = ListOfROITacticList.Where(roi => roi.AnchorTacticID == AnchorTacticDetails.AnchorTacticID)
-                                                    .Select(tac => tac.PlanTacticId).ToList();
-                            }
+                                    ListROICardTactic = ListOfROITacticList.Where(roi => roi.AnchorTacticID == AnchorTacticDetails.AnchorTacticID)
+                                                        .Select(tac => tac.PlanTacticId).ToList();
+                                }
                             }
 
                             if (ListROICardTactic.Count > 0)
@@ -9239,7 +9248,7 @@ namespace RevenuePlanner.Controllers
                                     var ListOfAnchorTactics = (from RoiPackage in ListOfROITacticList
                                                                join Tactic in TacticList on RoiPackage.AnchorTacticID equals Tactic.PlanTacticId
                                                                select RoiPackage).Distinct().ToList();
-                                    
+
                                     #region Set ROI Attribute
                                     // Set ROI Title and it's attribute
                                     if (ListOfAnchorTactics != null)
@@ -9261,7 +9270,7 @@ namespace RevenuePlanner.Controllers
                                         });
                                     }
                                     // End ROI Title and it's attribute
-                    #endregion
+                                    #endregion
 
                                     #region Set ROI Package Card Data
                                     if (ListOfAnchorTactics != null)
@@ -9274,7 +9283,7 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 ROIAnchorTactic.Add(a.AnchorTacticId, a.Title);
                                             });
-                                        
+
                                         objROIPackageCard.ROIAnchorTactic = ROIAnchorTactic;
 
                                         var ListROITactic = ROITacticData.Select(a => a.TacticObj).ToList();
@@ -14306,8 +14315,6 @@ namespace RevenuePlanner.Controllers
 
                 #endregion
 
-
-
                 #region "ROI Package iterate each tactic for ROI package card"
                 // Include ROI Pacakge as tactic on package details screen
                 if ((childlabelType == Common.RevenueTactic && Sessions.childlabelType == Common.RevenueROIPackage))
@@ -14389,7 +14396,7 @@ namespace RevenuePlanner.Controllers
                                     if (GetROIDetails != null)
                                     {
                                         objCardSection.RoiPackageTitle = HttpUtility.HtmlEncode(GetROIDetails.RoiPackageTitle);
-                                        
+
                                     }
                                     if (IsTacticCustomField)
                                     {
@@ -14771,6 +14778,7 @@ namespace RevenuePlanner.Controllers
                                     objCardSection.LineChartData = objLineChartData;
 
                                     objCardSectionList.Add(objCardSection);
+                                    objCardSectionList = objCardSectionList.OrderByDescending(a => a.IsPackage).ToList(); // OrderByDescending to show the package on the top #2376 Observation
                                 }
 
                                 #endregion
@@ -14854,7 +14862,7 @@ namespace RevenuePlanner.Controllers
                                     var GetROIDetails = objROIPackageCard.TacticData.Where(tac => tac.TacticObj.PlanTacticId == _ParentId).Select(tac => tac).FirstOrDefault();
                                     strParentTitle = TacticMappingList.Where(card => card.ParentId.Equals(_ParentId)).Select(card => card.ParentTitle).FirstOrDefault();
 
-                #endregion
+                                    #endregion
 
                                     objCardSection = new CardSectionListModel();
                                     objCardSection.title = HttpUtility.HtmlEncode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
@@ -15105,9 +15113,6 @@ namespace RevenuePlanner.Controllers
 
                 }
                 #endregion
-
-
-
 
             }
             catch (Exception ex)

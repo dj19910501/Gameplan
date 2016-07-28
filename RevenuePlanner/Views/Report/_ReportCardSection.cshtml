@@ -249,9 +249,15 @@
             var CardParentClass = 'region-content';
             var ChartWidth = '35%';
             var IsTactictxt = 'Tactic';
+            var IsDetails = true;
             if ('@Convert.ToString(Sessions.IsROIPackDisplay).ToLower()' == 'true' && '@Sessions.childlabelType' == '@Common.RevenueTactic') {
                 CardParentClass = 'region-content max-card';
                 ChartWidth = '24%';
+                // Add Condtion for if tactic is not with any package then details button not display
+                if(_ROIPackdata==null && _CostPackdata==null)
+                {
+                    IsDetails = false;
+                }
             }
             //Abc start
             sb.append('<div class="' + CardParentClass + '" revenueval="' + _Revact_proj + '" costval="' + _Costact_proj + '" roival="' + _ROIact_proj + '" id="carddiv_' + divid + '" title="' + _title + '">');
@@ -267,7 +273,7 @@
             sb.append('<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>');
             $("#titletext").val(_title).html();
             var _name = htmlEncode(_title);
-
+            
             if (childlabelType == '@Common.RevenueTactic') {
                 if (_ROITitle != null && _ROITitle != '') {
                     _name = htmlEncode(_ROITitle);
@@ -275,7 +281,9 @@
             }
             if (childlabelType != '@Common.RevenueROIPackage') {
                 BtnDetailsText = 'Details';
-                sb.append('<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + encodeURIComponent(_name) + '","' + String(_revActual_Projected) + '","' + String(_revProjected) + '","' + String(_revGoalYTD) + '","' + String(_revGoalYear) + '","' + String(_revActualPercentage) + '","' + String(_revActualPercentageIsnegative) + '","' + String(_revProjectedPercentage) + '","' + String(_revProjectedPercentageIsnegative) + '")>' + String(BtnDetailsText) + '</button>');  //Modified by Komal Rawal for #2067 special character issue
+                if (IsDetails) {
+                    sb.append('<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + encodeURIComponent(_name) + '","' + String(_revActual_Projected) + '","' + String(_revProjected) + '","' + String(_revGoalYTD) + '","' + String(_revGoalYear) + '","' + String(_revActualPercentage) + '","' + String(_revActualPercentageIsnegative) + '","' + String(_revProjectedPercentage) + '","' + String(_revProjectedPercentageIsnegative) + '")>' + String(BtnDetailsText) + '</button>');  //Modified by Komal Rawal for #2067 special character issue
+                }
             }
             //}
             sb.append('</div>');
