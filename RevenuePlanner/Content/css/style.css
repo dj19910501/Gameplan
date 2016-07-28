@@ -14781,54 +14781,54 @@ font-weight:normal;
 
 .notify-load {
     border: 1px solid transparent;
-    padding: 15px 0 0;/*by bheru 30-12-2015 #1799*/
+    padding: 0px 0 0;/*by bheru 30-12-2015 #1799*/
 }
 
 
-    .notify-load [data-notify="progressbar"] {
-        margin-bottom: 0px;
-        position: absolute;
-        bottom: 0px;
-        left: 0px;
-        width: 100%;
-        height: 5px;
-        z-index: 99999999999999;
-    }
+.notify-load [data-notify="progressbar"] {
+    margin-bottom: 0px;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 5px;
+    z-index: 99999999999999;
+}
 
-    .notify-load .notifyBox {
-        background-color: #FFF;
-        border: 1px solid #CCC;
-    }
+.notify-load .notifyBox {
+    background-color: #FFF;
+    border: 1px solid #CCC;
+}
 
-    .notify-load .notifyPic {
-        max-width: 100%;
-        max-height: 80px;
-        height: auto;
-    }
+.notify-load .notifyPic {
+    max-width: 100%;
+    max-height: 80px;
+    height: auto;
+}
 
-    .notify-load .notifyBox h5 {
-        margin-top: 0;
-    }
-    .notify-load span {
+.notify-load .notifyBox h5 {
+    margin-top: 0;
+}
+.notify-load span {
   float: left;
   padding-left: 15px;
 }
 .loading-progress {
   float: left;
-  height: 5px;
-  margin-top: 10px;
+  height: 3px;
+  margin-top: 0px;
   width: 100%;
 }
 .loading-load{
-      background: rgba(0, 0, 0, 0) url("../images/loading.gif") no-repeat scroll center 100%;
+      background: rgba(0, 0, 0, 0) url("../images/loading.gif") repeat scroll center 100%;
 }
 .loading-success{
-      background: rgba(0, 0, 0, 0) url("../images/loading-success.png") no-repeat scroll center 100%;
+      background: rgba(0, 0, 0, 0) url("../images/loading-success.png") repeat- scroll center 100%;
 }
 /*Notify animation css start*/
 .animated {
-    -webkit-animation-duration: 1s;
-    animation-duration: 1s;
+    -webkit-animation-duration: 0.2s;
+    animation-duration: 0.2s;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
