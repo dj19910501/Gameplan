@@ -13907,7 +13907,7 @@ namespace RevenuePlanner.Controllers
 
                     if (item.CustomFieldTypeName == Convert.ToString(Enums.CustomFieldType.TextBox))
                     {
-                        coltype = "ed";
+                        coltype = "edtxt";
 
                         isRequire = item.IsRequired;
 

@@ -554,9 +554,12 @@ else
                         MediaCodeGrid.cells(newId, col_index).setAttribute("actval", 'true');
                     }
                     var type = MediaCodeGrid.getColType(col_index);
+                   
                     if (type == 'ed') {
                         MediaCodeGrid.setCellExcellType(newId, col_index, "edtxt");
                     }
+                    var val = MediaCodeGrid.cells(newId, col_index).getValue();
+                    MediaCodeGrid.cells(newId, col_index).setValue(htmlDecode(val));
                 }
             });
         }
