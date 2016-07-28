@@ -106,12 +106,13 @@ BEGIN
 CREATE TABLE [dbo].[Tactic_MediaCodes](
 	[MediaCodeId] [int] IDENTITY(1,1) NOT NULL,
 	[TacticId] [int] NOT NULL,
-	[MediaCode] [varchar](max) NULL,
+	[MediaCodeValue] [varchar](max) NULL,
 	[CreatedBy] [uniqueidentifier] NULL,
 	[CreatedDate] [datetime] NULL,
 	[LastModifiedBy] [uniqueidentifier] NULL,
 	[LastModifiedDate] [datetime] NULL,
 	[IsDeleted] [bit] NULL CONSTRAINT [DF_Tactic_MediaCodes_IsDeleted]  DEFAULT ((0)),
+	[MediaCode] [bigint] NULL,
  CONSTRAINT [PK_Tactic_MediaCodes] PRIMARY KEY CLUSTERED 
 (
 	[MediaCodeId] ASC
@@ -3196,24 +3197,7 @@ END
 END
 
 GO
--- added by devanshi on 25-7-2016 for pl ticket #2429
 
-
-IF  EXISTS (  SELECT *   FROM   sys.columns   WHERE  object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes]')  AND name = 'MediaCode')
-ALTER TABLE Tactic_MediaCodes DROP COLUMN MediaCode
-
-
-go
-IF Not EXISTS (  SELECT *   FROM   sys.columns   WHERE  object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes]')  AND name = 'MediaCode')
-	ALTER TABLE Tactic_MediaCodes 
-    ADD MediaCode bigint
-GO 
-
-IF Not EXISTS (  SELECT *   FROM   sys.columns   WHERE  object_id = OBJECT_ID(N'[dbo].[Tactic_MediaCodes]')  AND name = 'MediaCode')
-	ALTER TABLE Tactic_MediaCodes 
-    ADD MediaCodeValue nvarchar(max)
-Go
--- end
 
 IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE OBJECT_ID = OBJECT_ID(N'WebApiGetReportRawData') AND TYPE IN ( N'P', N'PC' ) ) 
 BEGIN
