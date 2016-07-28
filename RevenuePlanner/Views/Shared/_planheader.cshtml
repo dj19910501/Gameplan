@@ -467,9 +467,6 @@
         if (selectedPlanIds == '') {
             return;
         }
-        // Added by Arpita Soni for Ticket #2357 on 07/26/2016
-        // To update heads up when view by ROI Package is selected
-        var viewByValue = $("#ddlTabViewBy").val();
         $.ajax(
         {
             type: "POST", //Modified BY Komal Rawal for #1991 to solve json length problem in passing query string.
@@ -485,7 +482,6 @@
                 StatusIds:_filters.StatusIds.toString(),
                 TabId:Tabid, //Added BY Komal rawal for #1929 proper Hud chart and count
                 IsHeaderActuals:IsHeaderActuals,
-                ViewBy: viewByValue
             },
             dataType: "json",
             success: function (data) {
@@ -632,9 +628,6 @@
             {
                 return;
             }
-            // Added by Arpita Soni for Ticket #2357 on 07/26/2016
-            // To update heads up when view by ROI Package is selected
-            var viewByValue = $("#ddlTabViewBy").val();
 
             $.ajax(
             {
@@ -651,7 +644,6 @@
                     StatusIds:StatusIds.toString(),
                     TabId:Tabid,
                     IsHeaderActuals: IsHeaderActuals,
-                    viewBy: viewByValue
                 },
                 dataType: "json",
                 success: function (data) {

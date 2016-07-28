@@ -5008,7 +5008,7 @@ namespace RevenuePlanner.Controllers
             return Json(new { lstchart = lstActivityChart.ToList(), strparam = strparam }, JsonRequestBehavior.AllowGet); //Modified BY Komal rawal for #1929 proper Hud chart and count
         }
 
-        public async Task<JsonResult> GetNumberOfActivityPerMonthPer(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "", bool IsHeaderActuals = false, string ViewBy = "Tactic")
+        public async Task<JsonResult> GetNumberOfActivityPerMonthPer(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "", bool IsHeaderActuals = false)
         {
 
             List<int> filteredPlanIds = new List<int>();
@@ -5124,7 +5124,7 @@ namespace RevenuePlanner.Controllers
             {
 
                 List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
-                lstActivityChartyears = getmultipleyearActivityChartPer(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan, IsHeaderActuals, ViewBy, TabId);
+                lstActivityChartyears = getmultipleyearActivityChartPer(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan, IsHeaderActuals);
 
                 return Json(new { lstchart = lstActivityChartyears.ToList(), strparam = strparam }, JsonRequestBehavior.AllowGet);
             }
@@ -5147,17 +5147,10 @@ namespace RevenuePlanner.Controllers
                                                                         Status = tactic.Status, 
                                                                         StartDate = tactic.StartDate, 
                                                                         EndDate = tactic.EndDate, 
-                                                                        isdelete = tactic.IsDeleted,
-                                                                        AnchorTacticId = tactic.AnchorTacticId }).ToList();
+                                                                        isdelete = tactic.IsDeleted }).ToList();
 
             objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
-            // Added by Arpita Soni for ticket #2358 on 07/27/2016
-            // Display only packaged tactics count into heads up in case of View By ROI Package
-            if (string.Compare(TabId,"liCalender",true) == 0 && (ViewBy == Convert.ToString(Enums.DictPlanGanttTypes[Convert.ToString(Helpers.PlanGanttTypes.ROIPackage)])))
-            {
-                objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tac => tac.AnchorTacticId != null && tac.AnchorTacticId != 0).ToList();
-            }
 
             //Modified By Komal Rawal for #1447
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
@@ -5840,7 +5833,7 @@ namespace RevenuePlanner.Controllers
             return lstActivitybothChart;
         }
 
-        private List<ActivityChart> getmultipleyearActivityChartPer(string strParam, string planid, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, bool isMultiplePlan, bool IsHeaderActuals = false, string ViewBy = "Tactic",string TabId = "liCalender")
+        private List<ActivityChart> getmultipleyearActivityChartPer(string strParam, string planid, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, bool isMultiplePlan, bool IsHeaderActuals = false)
         {
             List<int> filteredPlanIds = new List<int>();
             string planYear = string.Empty;
@@ -5918,14 +5911,7 @@ namespace RevenuePlanner.Controllers
                     //                              campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
 
                     var objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
-                                                 campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted, AnchorTacticId = tactic.AnchorTacticId }).ToList();
-
-                    // Added by Arpita Soni for ticket #2358 on 07/27/2016
-                    // Display only packaged tactics count into heads up in case of View By ROI Package
-                    if (string.Compare(TabId, "liCalender", true) == 0 && (ViewBy == Convert.ToString(Enums.DictPlanGanttTypes[Convert.ToString(Helpers.PlanGanttTypes.ROIPackage)])))
-                    {
-                        objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tac => tac.AnchorTacticId != null && tac.AnchorTacticId != 0).ToList();
-                    }
+                                                 campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted }).ToList();
 
                     objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
