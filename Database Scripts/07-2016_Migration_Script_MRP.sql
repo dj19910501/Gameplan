@@ -1,3 +1,17 @@
+
+IF EXISTS(SELECT 1 FROM sys.indexes WHERE name='IX_CustomField_Entity_CustomFieldId' AND object_id = OBJECT_ID('CustomField_Entity')) 
+DROP INDEX [IX_CustomField_Entity_CustomFieldId] ON [dbo].[CustomField_Entity]
+GO
+
+/****** Object:  Index [IX_CustomField_Entity_CustomFieldId]    Script Date: 7/28/2016 12:39:22 PM ******/
+CREATE NONCLUSTERED INDEX [IX_CustomField_Entity_CustomFieldId] ON [dbo].[CustomField_Entity]
+(
+	[CustomFieldId] ASC
+)
+INCLUDE ( 	[EntityId],
+	[Value]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+GO
+
 IF EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX-ChangeLog-TableName-ClientID-IsDeleted' AND object_id = OBJECT_ID('[ChangeLog]'))
 
 /****** Object:  Index [NonClusteredIndex-20160711-140054]    Script Date: 7/11/2016 2:35:15 PM ******/

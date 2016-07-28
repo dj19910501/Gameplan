@@ -300,6 +300,7 @@ This software is covered by DHTMLX Commercial License. Usage without proper lice
     overflow: hidden;
     white-space: nowrap;
     font-size: 13px;
+    cursor: pointer;
 }
 
 .gantt_grid_data .gantt_last_cell, .gantt_grid_scale .gantt_last_cell, .gantt_task_bg .gantt_last_cell, .gantt_task_scale .gantt_last_cell {
@@ -657,6 +658,7 @@ div.dhx_modal_cover {
     position: absolute;
     white-space: nowrap;
     text-align: center;
+    cursor: pointer;
 }
 
 .gantt_task_progress {

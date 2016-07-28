@@ -1700,7 +1700,7 @@ span.requests-logo-icon {
     font-size: 14px;
 	color:#f4f5ed;
     text-shadow: none !important;
-    transition: background 0.5s ease-out;
+    transition: background 0.2s ease-out;
 }
 .btn:hover, .btn:focus {
     color: #fff;
@@ -1714,7 +1714,7 @@ span.requests-logo-icon {
     padding-bottom: 0;
     padding-top: 0;
     background:#89CEDE none repeat scroll 0 0;  /* Edited for #2312- Komal */
-    transition: background 0.5s ease-out;
+    transition: background 0.2s ease-out;
     box-shadow: 0 2px 1px rgba(0, 0, 0, 0.25);
 }
 .btn.btn-blue:focus{background:#89CEDE none repeat scroll 0 0;}
@@ -2302,7 +2302,7 @@ span.link-blue:hover {
     top: 80%; 
     bottom: auto;
     transform: translateY(-40%) scale(.9);
-    transition: visibility 0s ease .3s, opacity .3s ease 0s, transform .3s ease 0s;
+    transition: visibility 0s ease .1s, opacity .1s ease 0s, transform .1s ease 0s;
 }
 /*added by bhumika to resolve nlForm dropdown design issue in Add integration*/
 .integration-form .nl-field > ul.drop-up {     
@@ -4270,10 +4270,10 @@ span.link-blue {
         -webkit-box-sizing: border-box;
         -moz-box-sizing: border-box;
         box-sizing: border-box;
-        -webkit-transition: width .6s ease;
-        -moz-transition: width .6s ease;
-        -o-transition: width .6s ease;
-        transition: width .6s ease;
+        -webkit-transition: width .3s ease;
+        -moz-transition: width .3s ease;
+        -o-transition: width .3s ease;
+        transition: width .3s ease;
     }
 
 .datepicker:after,
@@ -5955,9 +5955,9 @@ span.left-arrow {
     opacity: 0;
     z-index: 9999;
     visibility: hidden;
-    -webkit-transition: visibility 0s .3s, opacity .3s;
-    -moz-transition: visibility 0s .3s, opacity .3s;
-    transition: visibility 0s .3s, opacity .3s;
+    -webkit-transition: visibility 0s .1s, opacity .1s;
+    -moz-transition: visibility 0s .1s, opacity .1s;
+    transition: visibility 0s .1s, opacity .1s;
 }
 
 .nl-field.nl-field-open ~ .nl-overlay2 {
@@ -8581,7 +8581,7 @@ div.sub {
 }
 
 div.sub {
-    transition: height .35s ease 0s;
+    transition: height .15s ease 0s;
     padding: 0;
 }
 
@@ -9615,8 +9615,6 @@ li.close-list {
     visibility: visible;
     -webkit-transform: translateY(0);
     transform: translateY(0);
-    -webkit-transition: opacity .3s, -webkit-transform .3s;
-    transition: opacity .5s, transform .5s;
 }
 
 .transition-close {
@@ -9624,14 +9622,12 @@ li.close-list {
     visibility: visible;
     -webkit-transform: translateY(0);
     transform: translateY(0);
-    -webkit-transition: opacity .8s, -webkit-transform .8s;
-    transition: opacity .5s, transform .8s;
 }
 
 .Attribute-content-text,
 .description-content-area {
     word-wrap: break-word;
-    transition: border .2s linear 0s, box-shadow .2s linear 0s;
+    transition: border .1s linear 0s, box-shadow .1s linear 0s;
 }
 
 .modal-inspect-review.hide.fade.modal-full-view.transition_y.in {
@@ -13786,7 +13782,8 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
     border-right: 1px solid #d4d4d4;
 }
 
-.market-activity-main .gantt_add,
+.market-activity-main .
+,
 .market-activity-main .gantt_grid_head_add {
     background-position: center center;
     background-repeat: no-repeat;
@@ -14773,7 +14770,7 @@ font-weight:normal;
     height: 100%;
     line-height: 20px;
     text-align: center;
-    transition: width 0.6s ease 0s;
+    transition: width 0.3s ease 0s;
     width: 0;
 }
 
@@ -17073,7 +17070,7 @@ div.dropdown-info-user {
  list-style: outside none none;
  position: fixed;
  top: 57px;
- transition: left 0.5s ease 0s;
+ transition: left 0.2s ease 0s;
  width: 300px;
  z-index: 0;
 }
@@ -17169,7 +17166,7 @@ font-size:16px;
  margin: 13px 0 15px;
 }
 .sidebar_toogle a {
- transition: all 0.5s ease 0s;
+ transition: all 0.2s ease 0s;
  width:auto;
 }
 .sidebar_hide {
