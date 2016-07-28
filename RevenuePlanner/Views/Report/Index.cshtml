@@ -788,7 +788,7 @@
 
                                     $.each(OwnerDimensionList, function () {
                                         var OwnerValue = this;
-                                        if (OwnerValue.Value == OwnerItem.OwnerId.toUpperCase()) 
+                                        if (OwnerValue.Value == OwnerItem.OwnerId.toUpperCase())
                                         {
                                             DimensionOwnerId = '@OwnerDimensionId' + '_' + OwnerValue.Id;
                                         }
@@ -1141,7 +1141,27 @@
             FinanceDash();
         }
         else if ('@ActiveReportMenu' == "Custom") {
+            $('#ddlsection').hide();
+            leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Custom.ToString()'
+            RemoveAllActiveItem();
+            $('.menu-content li').removeClass('active');
+            $('#liCustomReport').addClass('active');
+            $.each($('li[id^="CustomReportli"]'), function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+            });
+            document.title = "Custom";
+            $('#CustomReportli' + '@CustomDashboardId').addClass('active');
+            $("#BtnShareReport").hide();
+            $('#budgetHeader').css('display', 'none');
+            $('#ddlCustomTimeFrame').show();
             $('.custom').addClass('active');
+            var DashboardLink = $('#CustomReportli' + '@CustomDashboardId').find('a');
+            if (DashboardLink != null && DashboardLink != undefined && DashboardLink != 'undefined') {
+                var CustomUrlLink = $(DashboardLink).text().trim();
+                $("#dashboardpagetext").text(CustomUrlLink);
+            }
             var DashboardID = '@CustomDashboardId';
             var url = '@Url.Content("~/Report/GetCustomReport/")';
             $.ajax({
@@ -1162,10 +1182,10 @@
         }
     });
 
-        function GetLastSetofViews(presetName) {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Action("LastSetOfViews", "Home")',
+    function GetLastSetofViews(presetName) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("LastSetOfViews", "Home")',
             data: { PresetName: presetName },
             dataType: "json",
             async: false,
@@ -1231,7 +1251,7 @@
                             });
                         }
                     }
-                    else if(data.OwnerNames == "All") 
+                    else if(data.OwnerNames == "All")
                     {
                         $("#ulSelectedOwner li input[type=checkbox]").each(function () {
 
@@ -1261,7 +1281,7 @@
                                 });
                             }
                         }
-                        else if (data.TTList == "All") 
+                        else if (data.TTList == "All")
                         {
                             $("#ulTacticType li input[type=checkbox]").each(function () {
                                 var Value = $(this).attr("id").replace("CbTT", "");
@@ -1465,15 +1485,15 @@
         {
              string multiselectid = string.Concat("ul", custField.CustomFieldId);
            @: var filterIds = GetCustomFilterIds('@multiselectid');
-                                       @: var arrFilterId = filterIds.split(',');
-                                       @: if (arrFilterId != "")
-                                                   @: {
-                                                   @: for (var i = 0; i < arrFilterId.length; i++) {
-                                                               @: arrOptionIds.push({ CustomFieldId: '@custField.CustomFieldId', OptionId: arrFilterId[i] });
-                                                               @:}
-                                                   @:}
+                                                               @: var arrFilterId = filterIds.split(',');
+                                                               @: if (arrFilterId != "")
+                                                                                       @: {
+                                                                                       @: for (var i = 0; i < arrFilterId.length; i++) {
+                                                                                                               @: arrOptionIds.push({ CustomFieldId: '@custField.CustomFieldId', OptionId: arrFilterId[i] });
+                                                                                                               @:}
+                            @:}
 
-            }
+        }
 
         //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
         var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
@@ -1815,9 +1835,9 @@
                 string lblid = string.Concat("lbl", custField.CustomFieldId);
                 string detailid = string.Concat(custField.CustomFieldId, "detail");
                     @: $('@btnmultiselectid').css('display', 'initial');
-                                                                                                    @: $('@lblid').css('display', 'initial');
-                                                                                                    @: $('@detailid').css('display', 'initial');
-                                                            }
+                                                                                                                            @: $('@lblid').css('display', 'initial');
+                                                                                                                            @: $('@detailid').css('display', 'initial');
+                                                                                    }
     }
 
     //// Load Summary view using ajax - partial view
@@ -2067,7 +2087,7 @@
                 var splitvalue = $(this).attr('id').split("_");
                 finalValue += splitvalue[0] + ",";
             }
-            else 
+            else
             {
                 $(this).parent().removeClass("close-list");
 
@@ -2152,14 +2172,14 @@
         {
             string multiselectid = string.Concat("ul", custField.CustomFieldId);
            @: var filterIds = GetCustomFilterIds('@multiselectid');
-                               @: var arrFilterId = filterIds.split(',');
-                               @: if(arrFilterId != "")
-                                       @: {
-                                       @: for (var i = 0; i < arrFilterId.length; i++) {
-                                               @: arrOptionIds.push({ CustomFieldId: '@custField.CustomFieldId', OptionId: arrFilterId[i] });
-                                               @:}
-                                       @:}
-                            }
+                                                       @: var arrFilterId = filterIds.split(',');
+                                                       @: if(arrFilterId != "")
+                                                                           @: {
+                                                                           @: for (var i = 0; i < arrFilterId.length; i++) {
+                                                                                               @: arrOptionIds.push({ CustomFieldId: '@custField.CustomFieldId', OptionId: arrFilterId[i] });
+                                                                                               @:}
+                            @:}
+                }
 
         //Added for "Select All" case of #1953 and #1993 By Maitri Gandhi on 16/2/2016
         var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;

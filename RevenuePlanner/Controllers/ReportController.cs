@@ -534,6 +534,10 @@ namespace RevenuePlanner.Controllers
                     if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
                     {
                         ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                        if (!string.IsNullOrEmpty(ApiUrl) && !ApiUrl.EndsWith("/"))
+                        {
+                            ApiUrl += "/";
+                        }
                     }
                 }
             }
@@ -4611,6 +4615,9 @@ namespace RevenuePlanner.Controllers
 
             if (!string.IsNullOrEmpty(DashboardId))
             {
+                ViewBag.CustomDashboardId = DashboardId;
+                ViewBag.ActiveMenu = Enums.ActiveMenu.Custom;
+
                 int DashId = int.Parse(DashboardId.ToString());
                 model = cd.GetMainDashBoardInfo(DashId);
 
