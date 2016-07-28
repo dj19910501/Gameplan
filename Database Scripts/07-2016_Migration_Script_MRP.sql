@@ -922,11 +922,11 @@ IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND T
 BEGIN
         IF EXISTS(SELECT * FROM EntityTypeColor WHERE EntityType='Plan')
                      BEGIN
-                       UPDATE EntityTypeColor SET ColorCode='3A585E' WHERE EntityType='Plan'
+                       UPDATE EntityTypeColor SET ColorCode='e00000' WHERE EntityType='Plan'
                      END
               ELSE
                      BEGIN
-                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Plan','3A585E')
+                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Plan','e00000')
                      END
 END
 
@@ -935,11 +935,11 @@ IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND T
 BEGIN
         IF EXISTS(SELECT * FROM EntityTypeColor WHERE EntityType='Campaign')
                      BEGIN
-                       UPDATE EntityTypeColor SET ColorCode='62939E' WHERE EntityType='Campaign'
+                       UPDATE EntityTypeColor SET ColorCode='00ff33' WHERE EntityType='Campaign'
                      END
               ELSE
                      BEGIN
-                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Campaign','62939E')
+                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Campaign','00ff33')
                      END
 END
 
@@ -948,11 +948,11 @@ IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND T
 BEGIN
         IF EXISTS(SELECT * FROM EntityTypeColor WHERE EntityType='Program')
                      BEGIN
-                       UPDATE EntityTypeColor SET ColorCode='79B6C4' WHERE EntityType='Program'
+                       UPDATE EntityTypeColor SET ColorCode='ff0099' WHERE EntityType='Program'
                      END
               ELSE
                      BEGIN
-                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Program','79B6C4')
+                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Program','ff0099')
                      END
 END
 
@@ -961,11 +961,11 @@ IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND T
 BEGIN
         IF EXISTS(SELECT * FROM EntityTypeColor WHERE EntityType='Tactic')
                      BEGIN
-                       UPDATE EntityTypeColor SET ColorCode='727272' WHERE EntityType='Tactic'
+                       UPDATE EntityTypeColor SET ColorCode='407b22' WHERE EntityType='Tactic'
                      END
               ELSE
                      BEGIN
-                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Tactic','727272')
+                           INSERT INTO EntityTypeColor(EntityType,ColorCode) VALUES('Tactic','407b22')
                      END
 END
 

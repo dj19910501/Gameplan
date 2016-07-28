@@ -110,7 +110,9 @@ a{cursor:pointer !important}
 .btn.btn-large{font-size:18px}
 .no-btm-bdr{border-bottom:0 !important}
 .hide-visibility{visibility:hidden}
-
+a:hover, a:focus {
+    color: unset;
+}
 /*  ============ End General style ============ */
 #header {
     background: #3e3f37  ; /* #2384b8 Edited for #2219 - Bhumika */
@@ -7682,43 +7684,43 @@ input.icon-check-blue {
     font-size:9px; margin-right:5px;
 }
 .status-created .fa{
-    color:#E2755A;
+    color:#F6D87F;
     /*background-image: url(../images/status-created.gif);*/ /*changed for #2312*/
 }
 
 .status-submitted .fa{
     /*background-image: url(../images/status-submitted.gif);*/
-    color:#F88D40;
+    color:#EE8F7A;
 }
 
 .status-approved .fa{
     /*background-image: url(../images/status-approved.gif);*/
-    color:#E2BE58;
+    color:#CC91BF;
 }
 
 .status-rejected .fa {
     /*background-image: url(../images/status-rejected.gif);*/
-    color:#727272;
+    color:#D4D4D4;
 }
 
 .tactic-created {
-    background-color: #E2755A !important;/* #F6D87F changed for #2312*/
-    border: 1px solid #E2755A !important;
+    background-color: #F6D87F !important;/* #E2755A value of  #2312*//* Reverted for #2446 */
+    border: 1px solid #F6D87F !important;
 }
 
 .tactic-submitted {
-    background-color: #F88D40 !important; /*#EE8F7A changed for #2312 */
-    border: 1px solid #F88D40 !important;
+    background-color: #EE8F7A !important; /*#F88D40 changed for #2312 *//* Reverted for #2446 */
+    border: 1px solid #EE8F7A !important;
 }
 
 .tactic-approved {
-    background-color: #E2BE58 !important; /*#CC91BF changed for #2312 */ 
-    border: 1px solid #E2BE58 !important;
+    background-color: #CC91BF !important; /*#E2BE58 changed for #2312 */ /* Reverted for #2446 */
+    border: 1px solid #CC91BF !important;
 }
 
 .tactic-rejected {
-    background-color: #727272 !important; /*#D4D4D4 changed for #2312 */
-    border: 1px solid #727272 !important;
+    background-color: #D4D4D4 !important; /*#727272 changed for #2312 *//* Reverted for #2446 */
+    border: 1px solid #D4D4D4 !important;
 }
 
 .improvement-border-top-status {
@@ -8594,10 +8596,10 @@ div.sub {
     background: #DFF0F8;
 }
 .tacticLevel {
-    background: #dfdfdf; /*eaeaea change for #2312*/
+    background: #e4f1e1; /*eaeaea change for #2312*/ /*#dfdfdf reverted on 28-7-2016 #2442 */
 }
 .programLevel {
-    background:#dbf8ff ; /*#E4F1E1; #ebf4f6 change for #2312 */
+    background:#dff0f8 ; /*#E4F1E1; #ebf4f6 change for #2312 *//* #dbf8ff reverted on 28-7-2016 #2442*/
 }
 
 .lineitemLevel {
@@ -15103,7 +15105,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     display: inline-block;
     height: 100%;
     float:left;
-    margin-left: 88px;
+    margin-left: 15px;
 }
 /*.hive9modules {
     display: inline-block;
@@ -15118,7 +15120,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     padding: 4px 6px 10px;
     text-align: center;
     text-decoration: none;
-    width: 96px;/*75px #2312 */
+    width: 77px;/*75px #2312 */
     line-height: normal;
     vertical-align: middle;
     display: inline-block;
@@ -15235,7 +15237,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .menu-content > li {
     display: inline-block;
     font-size: 14px;
-    margin: 0;
+    margin: 0 0 0 1px;
     width: auto;
     position: relative;
     float:left;
@@ -15280,8 +15282,8 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     line-height: 3px;
 }
 .menu-content > li > a span {
-    display: inline-block;
-    float: left;
+    display: inline;
+    /*float: left;*/
     font-size: 14px;
     line-height: 45px;
     margin-left: 3px;
@@ -15813,7 +15815,14 @@ a:focus, a:hover{outline:0 none !important}
     margin-top: -4px;
     height: 38px !important;
 }
-
+.hm-btn-wrap button.btn-gray{/* Added for #2446 Bhumika */
+    background: #fff ;
+    color: inherit;
+    border: 1px solid #c6c6c6;
+}
+    .hm-btn-wrap button.btn-gray:hover {
+        background: #f0f0f0 ;
+    }
 #divModelOverview .nl-ti-text ul li.nl-ti-input input {
     padding-top:0;
 }/* Added by Bhumika for Baseline Model */
@@ -17566,3 +17575,7 @@ tbody.column2 {
 }
 /*End by Device 320 Mukesh 25-9-2015*/
 /************************************************ Responsive css End here **********************************************************/  
+/* TO over write Plugin css which are run by bundling */
+.ui-multiselect-filter input[type="search"] {
+    height:auto;
+}

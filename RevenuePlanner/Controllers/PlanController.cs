@@ -45,10 +45,10 @@ namespace RevenuePlanner.Controllers
         private string PeriodChar = "Y";
         public const string TacticCustomTitle = "TacticCustom";
         private const string Open = "1";
-        private const string PlanBackgroundColor = "#b4cfd5";
-        private const string CampaignBackgroundColor = "#c9eef6";
-        private const string ProgramBackgroundColor = "#dbf8ff";
-        private const string TacticBackgroundColor = "#dfdfdf";
+        private const string PlanBackgroundColor = "#e6e6e6"; //#b4cfd5 Revert color #2312 for #2446 28-7-2016
+        private const string CampaignBackgroundColor = "#c6ebf3";//#c9eef6
+        private const string ProgramBackgroundColor = "#dff0f8";//#dbf8ff
+        private const string TacticBackgroundColor = "#e4f1e1";//#dfdfdf
         private const string LineItemBackgroundColor = "#ffffff";
         private const string Plan = "Plan";
         private const string OtherBackgroundColor = "#f2f2f2";
