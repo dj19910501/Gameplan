@@ -13664,7 +13664,7 @@ namespace RevenuePlanner.Controllers
                     headobj.type = "ro";
                     headobj.align = "center";
                     headobj.id = "roitactictype";
-                    headobj.sort = "sort_ROITacticType";
+                    headobj.sort = "str";
                     headobj.width = 150;
                     headobj.value = "Asset Type";
                     headobjlist.Add(headobj);
