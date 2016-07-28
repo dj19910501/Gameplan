@@ -13728,9 +13728,10 @@ namespace RevenuePlanner.Controllers
             int? linkedTacticId = null;
             try
             {
-                var objtactic = db.Plan_Campaign_Program_Tactic.Where(a => a.PlanTacticId == tacticId).FirstOrDefault();
+                var objtactic = db.Plan_Campaign_Program_Tactic.Where(a => a.PlanTacticId == tacticId).FirstOrDefault();                
                 if (objtactic != null )
                 {
+                    ViewBag.TacticTitle = objtactic.Title;
                     linkedTacticId = objtactic.LinkedTacticId;
                 if(objtactic.TacticType.AssetType == Convert.ToString(Enums.AssetType.Asset))
                 {
@@ -13875,7 +13876,7 @@ namespace RevenuePlanner.Controllers
                 headobjother = new PlanHead();
                 headobjother.type = "ro";
                 headobjother.id = "generateMediaCode";
-                headobjother.sort = "custom_sort";
+                headobjother.sort = "na";
                 headobjother.width = 200;
                 headobjother.value = "Media Code";
                 headobjlist.Add(headobjother);
@@ -13939,7 +13940,7 @@ namespace RevenuePlanner.Controllers
                     PlanHead headobj = new PlanHead();
                     headobj.type = coltype;
                     headobj.id = "customfield_" + item.CustomFieldId;
-                    headobj.sort = "custom_sort";
+                    headobj.sort = "na";
                     headobj.width = colwidth;
                     headobj.value = Gridheder;
                     if (viewoptionlist != null && viewoptionlist.Count > 0)
@@ -14136,7 +14137,7 @@ namespace RevenuePlanner.Controllers
                 headobjother = new PlanHead();
                 headobjother.type = "ro";
                 headobjother.id = "generateMediaCode";
-                headobjother.sort = "custom_sort";
+                headobjother.sort = "na";
                 headobjother.width = 200;
                 headobjother.value = "Media Code";
 
@@ -14192,7 +14193,7 @@ namespace RevenuePlanner.Controllers
                     PlanHead headobj = new PlanHead();
                     headobj.type = coltype;
                     headobj.id = "customfield_" + Cust.CustomFieldId;
-                    headobj.sort = "custom_sort";
+                    headobj.sort = "na";
                     headobj.width = colwidth;
                     if (IsRequired)
                         headobj.value = Cust.CustomFieldName + "<span class='required-asterisk'>*</span>";
