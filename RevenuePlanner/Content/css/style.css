@@ -15622,10 +15622,9 @@ input[type="search"].ExpInput {
     padding-top: 5px;
     text-decoration: underline;
     width: auto;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    white-space: normal;
     max-width: 99%;/* Edited for #2229 */ 
+    word-wrap:break-word;   /*Added by Viral for #2428*/
 }
 .report-wrap .main-row{
     display: block;
