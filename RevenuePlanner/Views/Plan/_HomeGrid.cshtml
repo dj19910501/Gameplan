@@ -101,6 +101,18 @@
     var editidonOpenEnd = 0;
     var plannedCostColId='plannedcost';
 
+    // Added by Arpita Soni on 07/29/2016 to resolve data issues in grid
+    // variables to set index of the column dynamically
+    var TaskNameColIndex = 0;
+    var PlannedCostColIndex = 0;
+    var AssetTypeColIndex = 0;
+    var TypeColIndex = 0;
+    var OwnerColIndex = 0;
+    var TargetStageGoalColIndex = 0;
+    var MQLColIndex = 0;
+    var RevenueColIndex = 0;
+
+
     $(document).ready(function () {
         //$("#divupcomingact").hide();
         //Modified by Komal Rawal for 2013 Home/Plan Layout changes
@@ -119,38 +131,6 @@
 
         pageIsScroll = false;
         $('.task-tbl div.gridbox').css('height', $(window).height() - 450); //PL #1758 H9_QA - Grid View Scrolling - Added by Dashrath Prajapati
-        //Commented by Rahul Shah for #1683
-        //$(".grid_Search").click(function (e) {
-        //    inspectCloseFocus = $(this).position().top;
-        //    var id = $(this).attr('alt');
-        //    var type = $(this).attr('id');
-        //    gridSearchFlag = 1;
-        //    DisplayEditablePopup(id, type);
-        //});
-
-        //End
-
-        // Commented by bhavesh - 11-Nov-2015
-        // Comment not showing Flag on grid for required field
-        //$(".orange-corner-grid").hover(function () {
-        //    $("#divTacticReqMsg").css('display', 'block');
-        //    var position = $(this).offset();
-        //    var targetOffset = $(this).offset().top;
-        //    var targetHeight = $(this).height();
-        //    var contentHeight = $('#divTacticReqMsg').outerHeight();
-        //    var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-
-        //    $('#divTacticReqMsg').css({
-        //        'top': targetBottomOffset,
-        //        'left': position.left,
-        //    });
-        //    $('#popupType').css('display', 'none');
-        //    $('#dhx_combo_select').css('display', 'none');
-        //    $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-        //}, function () {
-        //    $("#divTacticReqMsg").css('display', 'none');
-        //});
-
 
         // added by Ashish for #1780
         BindEntityState();
@@ -158,20 +138,10 @@
             $(".honeycombbox").hide();
         }
         else {
-            //if(IsPackageView == true)
-            //{
-                $("#totalEntity").text(ExportSelectedIds.TaskID.length);
-            //}
-            //else
-            //{
-            //$("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
-            //}
-          
+            $("#totalEntity").text(ExportSelectedIds.TaskID.length);
             $(".honeycombbox").show();
         }
         //#1780
-
-
     });
 
 
@@ -188,14 +158,11 @@
             }
         }
         //Added By Komal Rawal to close the popover if we click anywhere on the grid
-        //$('#gridbox').find('tbody tr').on('click', function (e) {
         $('#gridbox').find('table').find('tbody').on('click', function (e) {
             var targetname = e.target.nodeName;
             if (targetname != "circle") {
                 $(".popover").removeClass('in').addClass('out');
-
             }
-
         });
         //End
     }
@@ -290,166 +257,6 @@
         }
     }
 
-    function ExportToCSVOld() {
-        HomeGrid.expandAll();
-        var count = HomeGrid.getRowsNum();
-        var parentid = 0;
-        var parentname = "";
-        if (count > 0) {
-            //Modified BY Komal rawal for #1471
-            HomeGrid.insertColumn(2);
-            HomeGrid.setColumnHidden(2, true);
-            HomeGrid.insertColumn(3);
-            HomeGrid.setColumnHidden(3, true);
-            HomeGrid.insertColumn(4);
-            HomeGrid.setColumnHidden(4, true);
-            HomeGrid.insertColumn(5);
-            HomeGrid.setColumnHidden(5, true);
-            HomeGrid.insertColumn(6);
-            HomeGrid.setColumnHidden(6, true);
-            for (var i = 0; i < count; i++) {
-                var Taskname = HomeGrid.cellByIndex(i, 1).getValue();
-                var ActivityTypeName = HomeGrid.cellByIndex(i, 0).getValue();
-                if (ActivityTypeName == "Plan") {
-
-                    HomeGrid.cellByIndex(i, 2).setValue(Taskname);
-                }
-                if (ActivityTypeName == "Campaign") {
-
-                    HomeGrid.cellByIndex(i, 3).setValue(Taskname);
-                }
-                if (ActivityTypeName == "Program") {
-                    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                    parentname = HomeGrid.cells(parentid, 1).getValue();
-                    HomeGrid.cellByIndex(i, 3).setValue(parentname);
-                    HomeGrid.cellByIndex(i, 4).setValue(Taskname);
-                }
-                if (ActivityTypeName == "Tactic") {
-                    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                    parentname = HomeGrid.cells(parentid, 1).getValue();
-                    HomeGrid.cellByIndex(i, 4).setValue(parentname);
-                    parentid = HomeGrid.getParentId(parentid);
-                    parentname = HomeGrid.cells(parentid, 1).getValue();
-                    HomeGrid.cellByIndex(i, 3).setValue(parentname);
-                    HomeGrid.cellByIndex(i, 5).setValue(Taskname);
-                }
-                if (ActivityTypeName == "LineItem") {
-                    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                    parentname = HomeGrid.cells(parentid, 1).getValue();
-                    HomeGrid.cellByIndex(i, 5).setValue(parentname);
-                    ParentProgramid = HomeGrid.getParentId(parentid);
-                    ParentProgramname = HomeGrid.cells(ParentProgramid, 1).getValue();
-                    HomeGrid.cellByIndex(i, 4).setValue(ParentProgramname);
-                    ParentCampaignid = HomeGrid.getParentId(ParentProgramid);
-                    ParentCampaignname = HomeGrid.cells(ParentCampaignid, 1).getValue();
-                    HomeGrid.cellByIndex(i, 3).setValue(ParentCampaignname);
-                    HomeGrid.cellByIndex(i, 6).setValue(Taskname);
-                }
-            }
-
-            HomeGrid.enableCSVAutoID(true);
-            HomeGrid.enableCSVHeader(true);
-            HomeGrid.setSerializableColumns("false,false,true,true,true,true,true,false,false,true,true,true,true,true,true,true,true");
-            var myCSVString = HomeGrid.serializeToCSV(true);
-            var lines = myCSVString.split(",");
-            //lines.splice(0, 12);
-            lines.splice(0, 1, "Plan");
-            lines.splice(1, 1, "Campaign");
-            lines.splice(2, 1, "Program");
-            lines.splice(3, 1, "Tactic");
-            lines.splice(4, 1, "Line Item");
-            @*var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
-            $("#exportcsv").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv')
-            $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));*@
-
-            // Add By Nishant Sheth To resolve the issue for IE : #1782
-            var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
-            var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20) + dt + '_GridData.csv';
-
-            if (navigator.userAgent.search("Trident") >= 0) {
-                if (!window.Blob) {
-                    // if IE 9 then becuase ie 9 and lower version not support blob
-                    //http://code.ciphertrick.com/2014/12/07/download-json-data-in-csv-format-cross-browser-support/
-                    var IEwindow = window.open();
-                    IEwindow.document.write('sep=,\r\n' + lines);
-                    IEwindow.document.close();
-                    IEwindow.document.execCommand('SaveAs', true, Filename);
-                    IEwindow.close();
-                }
-                else
-                {
-                    var fileData = ["sep=,\r\n" + lines];
-                    blobObject = new Blob(fileData);
-                    window.navigator.msSaveOrOpenBlob(blobObject, Filename); // Now the user will have the option of clicking the Save button and the Open button.
-                }
-            }
-            else
-            {
-                $("#exportcsv").attr('download', Filename)
-                $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));
-            }
-
-
-            BindHomeGrid();
-            $(".orange-corner-grid").hover(function () {
-                $("#divTacticReqMsg").css('display', 'block');
-                var position = $(this).offset();
-                var targetOffset = $(this).offset().top;
-                var targetHeight = $(this).height();
-                var contentHeight = $('#divTacticReqMsg').outerHeight();
-                var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-
-                $('#divTacticReqMsg').css({
-                    'top': targetBottomOffset,
-                    'left': position.left,
-                });
-                $('#popupType').css('display', 'none');
-                $('#dhx_combo_select').css('display', 'none');
-                $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-            }, function () {
-                $("#divTacticReqMsg").css('display', 'none');
-            });
-            // Commented By Nishant Sheth
-            // Desc :: To resolve show popup isssue after export to csv feature. #1789
-
-            //$(".grid_Search").click(function (e) {
-            //
-            //    inspectCloseFocus = $(this).position().top;
-            //    var id = $(this).parent().next().html();
-            //    var type = $(this).attr('id');
-            //    gridSearchFlag = 1;
-            //    DisplayEditablePopup(id, type);
-            //});
-            //Commented BY Komal Rawal for 2056 to remove unresponsive error
-            //$(".grid_add").click(function (e) {
-            //    $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-            //    gridSearchFlag = 1;
-            //    var type = $(this).attr('id');
-            //    var name = $(this).attr('alt');
-            //    var title = $(this).parent().prev().attr('title');
-            //    /*Modified by Mitesh for PL ticket 1570
-            //    combination of title and permission conflict when title has "\" separator*/
-            //    var permission = $(this).attr('per');
-            //    //title = chk_permission[0];
-            //    //var permission = chk_permission[1];
-            //    var linetype = $(this).attr('lt');
-            //    var LinkTacticPermission = $(this).attr('linktacticper');
-            //    var LinkedTacticId = $(this).attr('linkedtacticid');
-            //    DisplayPopUpMenu(type, name, title, permission,linetype,LinkTacticPermission,LinkedTacticId, e);
-
-            //});
-
-        }
-        else {
-            $('#cErrorInspectPopup').html('No Records found for Export Grid data.');
-            $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-            $('#errorMessageInspectPopup').css("display", "block");
-        }
-        // 1782 Added by ashish mistry
-        BindEntityState();
-        // 1782 Added by ashish mistry
-    }
-
     var IsExportToCsv = false;
     // Add By Nishant Sheth
     // Desc :: #2102 CSV file with Customfield attributes
@@ -486,11 +293,14 @@
                 HomeGrid.insertColumn(i);
                 HomeGrid.setColumnHidden(i, true);
             }
+            // Modified by Arpita Soni on 07/29/2016 to resolve some data related issues in grid
+            // Passed column indexes dynamically
             ListOfSelectedIds.Id = [];
             for (var i = 0; i < count; i++) {
                 if ($(HomeGrid.cells2(i, 14).cell).find("div").last().attr("class") == "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active") {
                     ListOfSelectedIds.Id.push(HomeGrid.getRowId(i));
-                    var Taskname = HomeGrid.cellByIndex(i, 1).getValue();
+                    
+                    var Taskname = HomeGrid.cellByIndex(i, TaskNameColIndex).getValue();
                     var ActivityTypeName = HomeGrid.cellByIndex(i, 0).getValue();
                     if (ActivityTypeName == "Plan") {
                         HomeGrid.cellByIndex(i, 2).setValue(Taskname);
@@ -499,7 +309,7 @@
 
                         //1782
                         parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        parentname = HomeGrid.cells(parentid, TaskNameColIndex).getValue();
                         HomeGrid.cellByIndex(i, 2).setValue(parentname);
                         //1782
                         HomeGrid.cellByIndex(i, 3).setValue(Taskname);
@@ -509,12 +319,12 @@
                         // 1782
                         parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
                         parentid = HomeGrid.getParentId(parentid);
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        parentname = HomeGrid.cells(parentid, TaskNameColIndex).getValue();
                         HomeGrid.cellByIndex(i, 2).setValue(parentname);
                         // 1782
 
                         parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        parentname = HomeGrid.cells(parentid, TaskNameColIndex).getValue();
                         HomeGrid.cellByIndex(i, 3).setValue(parentname);
                         HomeGrid.cellByIndex(i, 4).setValue(Taskname);
                     }
@@ -524,32 +334,32 @@
                         parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
                         parentid = HomeGrid.getParentId(parentid);
                         parentid = HomeGrid.getParentId(parentid);
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        parentname = HomeGrid.cells(parentid, TaskNameColIndex).getValue();
                         HomeGrid.cellByIndex(i, 2).setValue(parentname);
                         // 1782
 
                         parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        parentname = HomeGrid.cells(parentid, TaskNameColIndex).getValue();
                         HomeGrid.cellByIndex(i, 4).setValue(parentname);
                         parentid = HomeGrid.getParentId(parentid);
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        parentname = HomeGrid.cells(parentid, TaskNameColIndex).getValue();
                         HomeGrid.cellByIndex(i, 3).setValue(parentname);
 
                         HomeGrid.cellByIndex(i, 5).setValue(Taskname);
                     }
-                    HomeGrid.cellByIndex(i, 6).setValue(HomeGrid.cellByIndex(i, 16).getValue());
-                    HomeGrid.cellByIndex(i, 7).setValue(HomeGrid.cellByIndex(i, 17).getValue());
-                    HomeGrid.cellByIndex(i, 8).setValue(HomeGrid.cellByIndex(i, 18).getValue());
-                    HomeGrid.cellByIndex(i, 9).setValue(HomeGrid.cellByIndex(i, 19).getValue());
-                    HomeGrid.cellByIndex(i, 10).setValue(HomeGrid.cellByIndex(i, 20).getValue());
-                    HomeGrid.cellByIndex(i, 11).setValue(HomeGrid.cellByIndex(i, 21).getValue());
+                    HomeGrid.cellByIndex(i, PlannedCostColIndex).setValue(HomeGrid.cellByIndex(i, 16).getValue());
+                    HomeGrid.cellByIndex(i, AssetTypeColIndex).setValue(HomeGrid.cellByIndex(i, 17).getValue());
+                    HomeGrid.cellByIndex(i, TypeColIndex).setValue(HomeGrid.cellByIndex(i, 18).getValue());
+                    HomeGrid.cellByIndex(i, OwnerColIndex).setValue(HomeGrid.cellByIndex(i, 19).getValue());
+                    HomeGrid.cellByIndex(i, TargetStageGoalColIndex).setValue(HomeGrid.cellByIndex(i, 20).getValue());
+                    HomeGrid.cellByIndex(i, MQLColIndex).setValue(HomeGrid.cellByIndex(i, 21).getValue());
                     HomeGrid.cellByIndex(i, 12).setValue(HomeGrid.cellByIndex(i, 22).getValue());
                     HomeGrid.cellByIndex(i, 13).setValue(HomeGrid.cellByIndex(i, 23).getValue());
                 }
             }
             var data;
             var Entity = [];
-            var csvHeader = String(",Plan,Campaign,Program,Tactic,Start Date,End Date,Planned Cost,Type,Owner,Target Stage Goal,"+ MQlTitle +",Revenue".split(',')).toString();
+            var csvHeader = String(",Plan,Campaign,Program,Tactic,Start Date,End Date,Planned Cost,Asset Type,Type,Owner,Target Stage Goal,"+ MQlTitle +",Revenue".split(',')).toString();
             Entity.push(csvHeader + '\n');
             if (ListOfSelectedIds.Id.length > 0) {
                 $.each(ListOfSelectedIds.Id, function () {
@@ -584,13 +394,11 @@
                     }
                 });
             }
-            @*var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
-            $("#ExportCSVHoneyComb").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv');
-            $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(", "))));*@
+          
             // Add By Nishant Sheth To resolve the issue for IE : #1782
 
             var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
-            var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20) + dt + '_GridData.csv';
+            var Filename = HomeGrid.cellByIndex(0, TaskNameColIndex).getValue().toString().substring(0, 20) + dt + '_GridData.csv';
 
             if (navigator.userAgent.search("Trident") >= 0) {
                 if (!window.Blob) {
@@ -787,27 +595,22 @@
         HomeGrid.enableAutoHeight(false);
         HomeGrid.enableAutoWidth(false);
 
-        HomeGrid.setNumberFormat("$0,000", 6, ".", ",");
-
+        HomeGrid.setNumberFormat("$0,000", 6, ".", ","); // PlannedCost column index is 6
+        
         HomeGrid.setImageSize(1, 1);
+        HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
 
-        HomeGrid.setCustomSorting(sort_Owner, 9);
-
-        HomeGrid.setCustomSorting(sort_TacticType, 8);
+        HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
         HomeGrid.csvParser = HomeGrid.csvExtParser;
+       
         HomeGrid.init();
-        //HomeGrid.splitAt(2);
+       
         // added by bhavesh - 11-Nov-2015
         // Apply Distributed Parsing
         HomeGrid.attachEvent("onDistributedEnd", function () {
-            // your code here
           
-            // flag=false;
             HomeGrid.loadOpenStates();
             LoadAfterParsing();
-            // if(relativeOffsetscroll > 0)
-            // {
-
           
             if(HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '')
             {
@@ -829,22 +632,25 @@
             }
         });
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
-        //        HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
-
-
 
         var mainGridData = JsonModel;
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
 
         //Added by Ashish mistry on 11/12/2015 for PL #1782 :- export to csv from honeycomb
-        //GridDataCsv={rows:[],head:[]};
-        //GridDataCsv.head=JSON.parse(GridData).head;
-        //GridDataCsv.rows=JSON.parse(GridData).rows;
         HomeGrid.parse(GridDataHomeGrid, "json");
-        //HomeGrid.splitAt(2);
-        //Added by Maitri Gandhi for #2040 on 31/3/2016
 
+        // Added by Arpita Soni on 07/29/2016 - To set index of the columns dynamically
+        TaskNameColIndex = HomeGrid.getColIndexById("taskname");
+        PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
+        AssetTypeColIndex = HomeGrid.getColIndexById("roitactictype");
+        TypeColIndex = HomeGrid.getColIndexById("tactictype");
+        OwnerColIndex = HomeGrid.getColIndexById("owner");
+        TargetStageGoalColIndex = HomeGrid.getColIndexById("inq");
+        MQLColIndex = HomeGrid.getColIndexById("mql");
+        RevenueColIndex = HomeGrid.getColIndexById("revenue");
+
+        //Added by Maitri Gandhi for #2040 on 31/3/2016
         HomeGrid.collapseAll();
         var cookie = document.cookie;
         if(cookie.indexOf("gridOpengridbox") > -1){
@@ -859,35 +665,13 @@
             }
         }
         else{
-            //cookie += "; gridOpen=plan.1";
             document.cookie = "gridOpengridbox=plan.1";
         }
         setTimeout(function () {
             HomeGrid.loadOpenStates();},1000);
 
-        // HomeGrid.sortRows(1, 'str', 'asc');
         LoadAfterParsing();
-        //Added by Rahul shah for PL #1683
-
-
-        //End
-
-
-        // Comment by bhavesh - 11-Nov-2015
-        // Comment not showing Flag on grid for required field
-        //$('#gridbox').find('tbody tr').each(function () {
-        //    var spnerror = $(this).find("#tacticIsRequired");
-        //    if (typeof spnerror != 'undefined' && spnerror != null) {
-        //        var div = $(spnerror).parent().parent();
-        //        //if ($(this).hasClass('ev_dhx_skyblue') || $(this).hasClass('odd_dhx_skyblue')) {
-        //        //    var div = $(this).find('.treegrid_cell');
-        //        if (typeof div != 'undefined') {
-        //            $(spnerror).remove();
-        //            $('<span class="orange-corner-grid" id="spnError"></span>').insertAfter(div);
-        //        }
-        //    }
-        //});
-
+        
         // Add By Nishant Sheth
         // #1818 :: To display message
 
@@ -917,10 +701,6 @@
 
     // 1780
 
-
-
-
-  
     //Added by Rahul shah for Honeycomb selection in grid
     function AddRemoveEntity(item) {
         //Changes  to improve performance issue
@@ -952,24 +732,6 @@
                 $(item).removeClass("honeycombbox-icon-gantt-Active");
                 $(item).addClass("honeycombbox-icon-gantt");
 
-                //$($("div[altId^='" + $(item).attr('altId').split('_')[0] + "']")).each(function (index) {
-                //    //var campid = $(this).attr('altId').split('_')[1];
-                //    //if (campid != undefined) {
-                //    //    var campRow = HomeGrid.findCell(campid, 3, true);
-                //    //    HomeGrid.openItem(campRow[0][0]);
-                //    //}
-
-                //    $($("div[altId^='_" + $(this).attr('altId').split('_')[1] + "']")).each(function (index) {
-                //        var progid = $(this).attr('altId').split('_')[2];
-                //        if (progid != undefined) {
-                //            var progRow = HomeGrid.findCell(progid, 3, true);
-                //            HomeGrid.openItem(progRow[0][0]);
-                //        }
-
-                //    });
-                //    // Loop for selecting Tactic on selecting Plan/Campaign/Program
-                //});
-                // Loop for selecting Program on selecting Plan
             }
             else {
 
@@ -985,41 +747,12 @@
                 ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
                 ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
                 ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
-                // Loop for selecting Program on selecting Plan
-                //$($("div[altId^='" + $(item).attr('altId').split('_')[0] + "']")).each(function (index) {
-                //    var campid = $(this).attr('altId').split('_')[1];
-                //    if (campid != undefined) {
-                //        var campRow = HomeGrid.findCell(campid, 3, true);
-                //        HomeGrid.openItem(campRow[0][0]);
-                //    }
-
-
-                //    $($("div[altId^='_" + $(this).attr('altId').split('_')[1] + "']")).each(function (index) {
-
-                //        var progid = $(this).attr('altId').split('_')[2];
-                //        if (progid != undefined) {
-                //            var progRow = HomeGrid.findCell(progid, 3, true);
-                //            HomeGrid.openItem(progRow[0][0]);
-                //        }
-
-
-                //    });
-
-
-                //    // Loop for selecting Tactic on selecting Plan/Campaign/Program
-                //});
-                // Loop for selecting Program on selecting Plan
             }
         }
 
 
         if ($(item).attr('id') == 'CampaignAdd') {
-            //var campid = $(item).attr('altId').split('_')[1];
-            //if (campid != undefined) {
-            //    var campRow = HomeGrid.findCell(campid, 3, true);
-            //    HomeGrid.openItem(campRow[0][0]);
-            //}
-
+         
             if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
                 var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
                 if (index >= 0) {
@@ -1037,16 +770,6 @@
                 $(item).removeClass("honeycombbox-icon-gantt-Active");
                 $(item).addClass("honeycombbox-icon-gantt");
 
-                // Loop for Clear tactic on selecting Campaign
-                //$($("div[altId^='_" + $(item).attr('altId').split('_')[1] + "']")).each(function (index) {
-                //    var progid = $(this).attr('altId').split('_')[2];
-                //    if (progid != undefined) {
-                //        var progRow = HomeGrid.findCell(progid, 3, true);
-                //        HomeGrid.openItem(progRow[0][0]);
-                //    }
-
-                //});
-                // Loop for Clear tactic on selecting Campaign
             }
             else {
                 $(item).addClass("honeycombbox-icon-gantt-Active");
@@ -1060,27 +783,13 @@
                 ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
                 ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
                 ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
-                // Loop for selecting tactin on selecting Campaign
-                //$($("div[altId^='_" + $(item).attr('altId').split('_')[1] + "']")).each(function (index) {
-                //    var progid = $(this).attr('altId').split('_')[2];
-                //    if (progid != undefined) {
-                //        var progRow = HomeGrid.findCell(progid, 3, true);
-                //        HomeGrid.openItem(progRow[0][0]);
-                //    }
-
-                //});
-                // Loop for selecting tactin on selecting Campaign
+               
             }
         }
 
 
         if ($(item).attr('id') == 'ProgramAdd') {
-            //var progid = $(item).attr('altId').split('_')[2];
-            //if (progid != undefined) {
-            //    var selectedRow = HomeGrid.findCell(progid, 3, true);
-
-            //    HomeGrid.openItem(selectedRow[0][0]);
-            //}
+           
             if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
                 $(item).removeClass("honeycombbox-icon-gantt-Active");
                 var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
@@ -1173,8 +882,6 @@
         }
     }
 
-
-    // var flag=false;
     // Create funtion to load grid view event - Apply Distributed Parsing
     // Added By Bhavesh - Date: 11-Nov-2015
     function LoadAfterParsing() {
@@ -1200,16 +907,12 @@
         }
         eventidonbeforedrag = HomeGrid.attachEvent("onBeforeDrag", function (id) {
             if (id.split(".")[0].toString() != "tact") return false;//denies dragging if user data exists
-            var locked = HomeGrid.cells(id, 1).getAttribute("locked");
+            var locked = HomeGrid.cells(id, TaskNameColIndex).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
             return true;                                          //allows dragging in any other case
         });
 
-
-        //if (isCopyTacticHomeGrid != 0) {
-        //    HomeGrid.collapseAll();
-        //}
         $(".grid_Search").off("click");
         $(".grid_Search").click(function (e) {
             inspectCloseFocus = $(this).position().top;
@@ -1218,24 +921,7 @@
             gridSearchFlag = 1;
             DisplayEditablePopup(id, type);
         });
-        //Commented BY Komal Rawal for 2056 to remove unresponsive error
-        //$(".grid_add").click(function (e) {
-        //    $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-        //    gridSearchFlag = 1;
-        //    var type = $(this).attr('id');
-        //    var name = $(this).attr('alt');
-        //    var title = $(this).parent().prev().attr('title');
-        //    /*Modified by Mitesh for PL ticket 1570
-        //    combination of title and permission conflict when title has "\" separator*/
-        //    var permission = $(this).attr('per');
-        //    //title = chk_permission[0];
-        //    //var permission = chk_permission[1];
-        //    var linetype = $(this).attr('lt');
-        //    var LinkTacticPermission = $(this).attr('linktacticper');
-        //    var LinkedTacticId = $(this).attr('linkedtacticid');
-        //    DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
-
-        //});
+       
         if (isCopyTacticHomeGrid != 0) {
             // Modified by Rahul Shah for PL #2307 on 23/06/2016 to display data without search when user add/copy tactic,program,campaign for gridview.
             $('#txtGlobalSearch').val("");
@@ -1248,12 +934,8 @@
             {
                 rowid = id[0];
 
-
                 var SourcePtype = (rowid).split(".")[0];
-                // if (SourcePtype == "line") {
-                // HomeGrid.openItem(HomeGrid.getParentId(rowid));
                 HomeGrid.openItem(rowid);
-                //}
                
                 ItemIndex=HomeGrid.getRowIndex(rowid);
                 state0=ItemIndex;
@@ -1263,10 +945,8 @@
             isCopyTactic = 0;
         }
         else if (isEditTacticHomeGrid != 0) {
-            // HomeGrid.expandAll();
             var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, 3, true);
 
-            //  HomeGrid.openItem(id[0]);
             var id = selectedcell[0];
             var rowid;
             if(id != undefined && id != 'undefined')
@@ -1278,8 +958,6 @@
                 ItemIndex=HomeGrid.getRowIndex(rowid);
                 state0=ItemIndex;
             }
-            //var scrolltop = $(".rowselected").offset().top;
-            //  $(window).scrollTop(scrolltop - 100);
             isEditTacticHomeGrid = 0;
             isEditTactic = 0;
         }
@@ -1325,42 +1003,17 @@
                 });
             }
             // End - Added by Arpita Soni for Ticket #2354 on 07/20/2016
-
-            //Commented BY Komal Rawal for 2056 to remove unresponsive error
-            //$(".grid_add").click(function (e) {
-            //    $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-            //    gridSearchFlag = 1;
-            //    var type = $(this).attr('id');
-            //    var name = $(this).attr('alt');
-            //    var title = $(this).parent().prev().attr('title');
-            //    /*Modified by Mitesh for PL ticket 1570
-            //    combination of title and permission conflict when title has "\" separator*/
-            //    var permission = $(this).attr('per');
-            //    //title = chk_permission[0];
-            //    //var permission = chk_permission[1];
-            //    var linetype = $(this).attr('lt');
-            //    var LinkTacticPermission = $(this).attr('linktacticper');
-            //    var LinkedTacticId = $(this).attr('linkedtacticid');
-            //    DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
-
-            //});
-
         });
-
 
         if(IsExportToCsv)
         {
             BindEntityState();
         }
-
-
     }
-
-
     function sort_Owner(a, b, ord, a_id, b_id) {
 
-        a = HomeGrid.cells(a_id, 9).getText();
-        b = HomeGrid.cells(b_id, 9).getText();
+        a = HomeGrid.cells(a_id, OwnerColIndex).getText();
+        b = HomeGrid.cells(b_id, OwnerColIndex).getText();
         return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
     };
     function sort_TacticType(a, b, ord, a_id, b_id) {
@@ -1368,8 +1021,8 @@
         var atype = a_id.split(".")[0].toString();
         var btype = b_id.split(".")[0].toString();
         if (atype == "tact" && btype == "tact") {
-            a = HomeGrid.cells(a_id, 8).getText();
-            b = HomeGrid.cells(b_id, 8).getText();
+            a = HomeGrid.cells(a_id, TypeColIndex).getText();
+            b = HomeGrid.cells(b_id, TypeColIndex).getText();
             return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
         } else return 0;
     };
@@ -1412,12 +1065,12 @@
 
                         var sourseid = HomeGrid.cells(sid, HomeGrid.getColIndexById('id')).getValue();
                         var destinatinId = HomeGrid.cells(tid, HomeGrid.getColIndexById('id')).getValue();
-                        var tacticname = HomeGrid.cells(sid, 1).getValue();
+                        var tacticname = HomeGrid.cells(sid, TaskNameColIndex).getValue();
                         var dtactictitle = "";
 
                         for (a in DestinationMember) {
                             if (DestinationMember[a].toString() != "" && DestinationMember[a].toString() != null) {
-                                dtactictitle = HomeGrid.cells(DestinationMember[a].toString(), 1).getValue();
+                                dtactictitle = HomeGrid.cells(DestinationMember[a].toString(), TaskNameColIndex).getValue();
                                 if (dtactictitle == tacticname) {
                                     alert("Tactic with same title already exist in Targeted Program.");
                                     return false;
@@ -1425,7 +1078,7 @@
                             }
                         }
 
-                        ProgarmName = HomeGrid.cells(tid, 1).getValue();
+                        ProgarmName = HomeGrid.cells(tid, TaskNameColIndex).getValue();
                         $("#lipname").html(ProgarmName);
                         $("#hdnsourceid").val(sourseid);
                         $("#hdndestid").val(destinatinId);
@@ -1434,7 +1087,7 @@
                         RemoveAllHoneyCombData();
                     }
                     else {
-                        ProgarmName = HomeGrid.cells(tid, 1).getValue();
+                        ProgarmName = HomeGrid.cells(tid, TaskNameColIndex).getValue();
                         alert("Tactic is already in " + ProgarmName + ".");
                     }
                 }
@@ -1507,6 +1160,7 @@
     var value;
 
     var TacticName;
+
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         var updatetype = rowId.split(".")[0];
         var Id;
@@ -1514,6 +1168,7 @@
         var UpdateVal;
         var Colind = this.cell.cellIndex;
         var lineItemFlag = 0;
+
         //Added by Rahul Shah on 30/11/2015 for PL #1764.
         var hdnYear;
         hdnYear= @ViewBag.Year;
@@ -1544,17 +1199,8 @@
         UpdateColumn = HomeGrid.getColLabel(Colind, 0);
         if (stage == 0) {
 
-            //   value = HomeGrid.cells(rowId, cellInd).getValue();
-            //  value =   divvalue.split("</div>")[0];
-
-            // TacticName = divvalue.split("</div>")[1];
-            //if(value != undefined && value != null)
-            //{
-            //    value = $(value)[0]
-
-            //}
             // Only check for type column
-            if (Colind == 8) {
+            if (Colind == TypeColIndex) {
                 if (updatetype == "line") {
                     var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
                     if (actval == "") {
@@ -1577,7 +1223,6 @@
                     });
                 }
             }
-
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
@@ -1595,9 +1240,6 @@
                         if (isNaN(v1)) {
                             $('.dhx_combo_select option[value="' + oldval + '"]').remove();
                             $('.dhx_combo_select').val(actval);
-                            //var v = $('.dhx_combo_select option:contains("' + oldval + '")').val();
-                            //if (v != "undefined")
-                            //    $('.dhx_combo_select').val(v);
                         }
                         else
                             $('.dhx_combo_select').val(actval);
@@ -1620,20 +1262,19 @@
             }
 
             if (UpdateColumn == "Target Stage Goal") {
-                var psv = HomeGrid.cells(rowId, 9).getValue().split(" ");
+                var psv = HomeGrid.cells(rowId, TargetStageGoalColIndex).getValue().split(" ");
                 this.editor.obj.value = (psv[0].replace(/,/g, ""));
             }
         }
         if (stage == 2) // start edit Shipping column
         {
-
-            if (nValue != null && nValue != "") {
+            if (nValue != null && nValue.trim() != "") {
 
                 //Added By Komal Rawal to Change the value in array if grid updated
                 var NewValue = htmlDecode(nValue);
                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
-                var TaskID = HomeGrid.cells(rowId,3).getValue();
-                var oldAssetType = HomeGrid.cells(rowId,7).getValue();
+                var TaskID = HomeGrid.cells(rowId, 3).getValue();
+                var oldAssetType = HomeGrid.cells(rowId, AssetTypeColIndex).getValue();
                 //Modified by Rahul Shah on 09/03/2016 for PL #1939
                 if (UpdateColumn == "" || UpdateColumn == null)
                     UpdateColumn = HomeGrid.getColLabel(Colind, 0);
@@ -1641,8 +1282,8 @@
                     if (CheckHtmlTag(nValue) == false) {
                         alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
                         return false;
-
                     }
+                    
                     updatePlanNameDrp(TaskID,NewValue);
                 }
                 if(cellInd == 1)
@@ -1666,8 +1307,6 @@
                 var costindex = HomeGrid.getColIndexById('plannedcost');
                 var stageindex = HomeGrid.getColIndexById('inq');
 
-                //if (UpdateColumn == "" || UpdateColumn == null)
-                //    UpdateColumn = HomeGrid.getColLabel(Colind, 0);
                 Id = HomeGrid.cells(rowId, idindex).getValue();
 
                 if (UpdateColumn == "Start Date") {
@@ -1722,7 +1361,6 @@
                     var splitoval = oValue.split(" ");
                     if (nValue != splitoval[0].replace(/,/g, "")) {
                         var tactictypeindex = HomeGrid.getColIndexById('tactictype');
-                        //var tacticTypeId = HomeGrid.cells(rowId, cellInd).getAttribute("tactictype");
                         var tacticTypeId = HomeGrid.getUserData(rowId, "tactictype");
                         GetConversionRate(Id, tacticTypeId, UpdateColumn, nValue, rowId, nValue, null);
                         return true;
@@ -1769,7 +1407,6 @@
                             url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
                             data: { tacticTypeId: tacticTypeId },
                             success: function (data) {
-
                                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                                 var TaskID = HomeGrid.cells(rowId,3).getValue();
                                 if(ExportSelectedIds.TaskID.length > 0)
@@ -1790,12 +1427,12 @@
                                 var stagetitle = data.stageTitle;
                                 var projectedStageValue = data.projectedStageValue;
                                 if (parseFloat(projectedStageValue) > 0)
-                                    HomeGrid.cells(rowId, 9).setValue(FormatCommas(projectedStageValue.toString(), false) + " " + stagetitle);
+                                    HomeGrid.cells(rowId, TargetStageGoalColIndex).setValue(FormatCommas(projectedStageValue.toString(), false) + " " + stagetitle);
                                 else
-                                    HomeGrid.cells(rowId, 9).setValue(projectedStageValue + " " + stagetitle);
-                                //HomeGrid.cells(rowId, 9).setAttribute("stage", stagetitle);
+                                    HomeGrid.cells(rowId, TargetStageGoalColIndex).setValue(projectedStageValue + " " + stagetitle);
+                                
                                 HomeGrid.setUserData(rowId, "stage", stagetitle);
-                                //HomeGrid.cells(rowId, 9).setAttribute("tactictype", tacticTypeId);
+                                
                                 HomeGrid.setUserData(rowId, "tactictype", tacticTypeId);
                                 GetConversionRate(Id, tacticTypeId, UpdateColumn, projectedStageValue, rowId, nValue, data.stageId);
                             }
@@ -1833,16 +1470,16 @@
                                     diffLineAndTactic = states.lineItemCost - states.tacticCost
                                     if (states.lineItemCost > states.tacticCost) {
 
-                                        SetColumUpdatedValue(6, diffLineAndTactic);
-                                        HomeGrid.cells(progid, 6).setValue((newProgVal));
-                                        HomeGrid.cells(campid, 6).setValue((newCampVal));
-                                        HomeGrid.cells(planid, 6).setValue((newPlanVal));
-                                        HomeGrid.cells(tactid, 6).setValue((newTactVal));
+                                        SetColumUpdatedValue(PlannedCostColIndex, diffLineAndTactic);
+                                        HomeGrid.cells(progid, PlannedCostColIndex).setValue((newProgVal));
+                                        HomeGrid.cells(campid, PlannedCostColIndex).setValue((newCampVal));
+                                        HomeGrid.cells(planid, PlannedCostColIndex).setValue((newPlanVal));
+                                        HomeGrid.cells(tactid, PlannedCostColIndex).setValue((newTactVal));
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            
                                             if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") { //Modiied by Rahul Shah
 
-                                                HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.otherLineItemCost));
+                                                HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue((states.otherLineItemCost));
                                                 HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
                                             }
                                         }
@@ -1850,7 +1487,7 @@
                                         //Added by Rahul Shah for PL #1744
                                     else if(states.lineItemCost == states.tacticCost){
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            
                                             if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
 
                                                 HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
@@ -1860,10 +1497,10 @@
                                     else {
 
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            
                                             if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
 
-                                                HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.otherLineItemCost));
+                                                HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue((states.otherLineItemCost));
 
                                             }
                                         }
@@ -1877,9 +1514,8 @@
                                     ChangeTabView('liGrid'); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
                                     ItemIndex=HomeGrid.getRowIndex(tactid);
                                     state0=ItemIndex;
-                                    HomeGrid.cells(rowId, 6).setValue((nValue));
-                                    //Commented By Rahul Shah on 16/10/2015 for PL 1559
-                                    //LoadPlanGrid();
+                                    HomeGrid.cells(rowId, PlannedCostColIndex).setValue((nValue));
+                                    
                                 }
                                 else if(UpdateColumn == "Type")
                                     HomeGrid.cells(rowId, cellInd).setAttribute("actval",nValue);
@@ -1965,7 +1601,7 @@
                                     }
 
                                     //Modified By Komal Rawal for #1848 Link To tactic feature
-                                    var EndDate = HomeGrid.cells(rowId,5).getValue();
+                                    var EndDate = HomeGrid.cells(rowId, 5).getValue();
                                     var EndYear = EndDate.split('/')[2];
                                     var StartYear = nValue.split('/')[2];
                                     var YearDiff = EndYear - StartYear;
@@ -1981,7 +1617,7 @@
                                         if(Index <= -1)
                                         {
                                             var UnLinkIconDiv ="<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
-                                            HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
+                                            HomeGrid.cells(rowId, TaskNameColIndex).setValue(UnLinkIconDiv + getvalue);
 
                                             $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True");
                                         }
@@ -1995,12 +1631,11 @@
                                             return false;
                                         }
 
-                                        var getvalue = HomeGrid.cells(rowId, 1).getValue();
+                                        var getvalue = HomeGrid.cells(rowId, TaskNameColIndex).getValue();
                                         var Index = getvalue.indexOf("</div>");
                                         if(Index > -1)
                                         {
-
-                                            HomeGrid.cells(rowId, 1).setValue(getvalue.split("</div>")[1]);
+                                            HomeGrid.cells(rowId, TaskNameColIndex).setValue(getvalue.split("</div>")[1]);
                                             $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "False")
                                         }
                                     }
@@ -2028,12 +1663,12 @@
                                     if(YearDiff > 0)
                                     {
 
-                                        var getvalue = HomeGrid.cells(rowId, 1).getValue();
+                                        var getvalue = HomeGrid.cells(rowId, TaskNameColIndex).getValue();
                                         var Index = getvalue.indexOf("unlink-icon");
                                         if(Index <= -1)
                                         {
                                             var UnLinkIconDiv ="<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
-                                            HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
+                                            HomeGrid.cells(rowId, TaskNameColIndex).setValue(UnLinkIconDiv + getvalue);
                                             $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
                                         }
                                     }
@@ -2046,38 +1681,27 @@
                                             return false;
                                         }
 
-                                        var getvalue = HomeGrid.cells(rowId, 1).getValue();
+                                        var getvalue = HomeGrid.cells(rowId, TaskNameColIndex).getValue();
                                         var Index = getvalue.indexOf("</div>");
                                         if(Index > -1)
                                         {
-                                            HomeGrid.cells(rowId, 1).setValue(getvalue.split("</div>")[1]);
+                                            HomeGrid.cells(rowId, TaskNameColIndex).setValue(getvalue.split("</div>")[1]);
                                             $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "False")
                                         }
                                     }
                                     //End
-
-
                                     ComapreDate(updatetype, rowId, edateindex, nValue, UpdateColumn);
                                 }
                                 if (UpdateColumn == "Planned Cost") {
-                                    //Commented By Rahul Shah on 16/10/2015 for PL 1559
-                                    //diff = parseInt(nValue) - parseInt(oValue);
-                                    //SetColumUpdatedValue(6, diff);
-                                    //HomeGrid.cells(progid, 6).setValue((newProgVal));
-                                    //HomeGrid.cells(campid, 6).setValue((newCampVal));
-                                    //HomeGrid.cells(planid, 6).setValue((newPlanVal));
-                                    //HomeGrid.cells(rowId, 6).setValue((nValue));
                                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                                     if (nValue < states.lineItemCost) {
-
-                                        HomeGrid.cells(rowId, 6).setValue((oValue));
+                                        HomeGrid.cells(rowId, PlannedCostColIndex).setValue((oValue));
                                     }
-                                        //Added by Rahul Shah for PL #1744.
+                                    //Added by Rahul Shah for PL #1744.
                                     else if (nValue == states.lineItemCost) {
                                         if (TotalRowIds != "") {
                                             for (var i = 0; i < TotalRowIds.split(',').length; i++) {
 
-                                                //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
                                                 if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
                                                     HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
                                                 }
@@ -2087,17 +1711,16 @@
                                     else {
 
                                         diff = parseInt(nValue) - parseInt(oValue);
-                                        SetColumUpdatedValue(6, diff);
-                                        HomeGrid.cells(progid, 6).setValue((newProgVal));
-                                        HomeGrid.cells(campid, 6).setValue((newCampVal));
-                                        HomeGrid.cells(planid, 6).setValue((newPlanVal));
-                                        HomeGrid.cells(rowId, 6).setValue((nValue));
+                                        SetColumUpdatedValue(PlannedCostColIndex, diff);
+                                        HomeGrid.cells(progid, PlannedCostColIndex).setValue((newProgVal));
+                                        HomeGrid.cells(campid, PlannedCostColIndex).setValue((newCampVal));
+                                        HomeGrid.cells(planid, PlannedCostColIndex).setValue((newPlanVal));
+                                        HomeGrid.cells(rowId, PlannedCostColIndex).setValue((nValue));
                                         if (TotalRowIds != "") {
                                             for (var i = 0; i < TotalRowIds.split(',').length; i++) {
 
-                                                //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
                                                 if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                                    HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.OtherLineItemCost));
+                                                    HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue((states.OtherLineItemCost));
                                                 }
                                             }
                                         }
@@ -2151,7 +1774,7 @@
                 }
 
 
-                //Modified By Komal Rawal for #1848 Link To tactic feature
+                // Modified By Komal Rawal for #1848 Link To tactic feature
                 if(cellInd == 1)
                 {
                     if(value != undefined && value != "undefined" && value != null)
@@ -2202,23 +1825,26 @@
             dataType: 'json',
             success: function (data) {
                 if (data.IsLocked == "1") {
-                    HomeGrid.cells(rowId, 1).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, TaskNameColIndex).setAttribute("locked", data.IsLocked);
                     HomeGrid.cells(rowId, 4).setAttribute("locked", data.IsLocked);
                     HomeGrid.cells(rowId, 5).setAttribute("locked", data.IsLocked);
-                    HomeGrid.cells(rowId, 6).setAttribute("locked", data.IsLocked);
-                    HomeGrid.cells(rowId, 7).setAttribute("locked", data.IsLocked);
-                    HomeGrid.cells(rowId, 8).setAttribute("locked", data.IsLocked);
-                    HomeGrid.cells(rowId, 9).setAttribute("locked", data.IsLocked);
-                    HomeGrid.setCellTextStyle(rowId, 1, data.cellTextColor);
+                    HomeGrid.cells(rowId, PlannedCostColIndex).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, AssetTypeColIndex).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, TypeColIndex).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, OwnerColIndex).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, TargetStageGoalColIndex).setAttribute("locked", data.IsLocked);
+
+                    HomeGrid.setCellTextStyle(rowId, TaskNameColIndex, data.cellTextColor);
                     HomeGrid.setCellTextStyle(rowId, 2, data.cellTextColor);
                     HomeGrid.setCellTextStyle(rowId, 4, data.cellTextColor);
                     HomeGrid.setCellTextStyle(rowId, 5, data.cellTextColor);
-                    HomeGrid.setCellTextStyle(rowId, 6, data.cellTextColor);
-                    HomeGrid.setCellTextStyle(rowId, 7, data.cellTextColor);
-                    HomeGrid.setCellTextStyle(rowId, 8, data.cellTextColor);
-                    HomeGrid.setCellTextStyle(rowId, 9, data.cellTextColor);
-                    HomeGrid.setCellTextStyle(rowId, 10, data.cellTextColor);
-                    HomeGrid.setCellTextStyle(rowId, 11, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, PlannedCostColIndex, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, AssetTypeColIndex, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, TypeColIndex, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, OwnerColIndex, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, TargetStageGoalColIndex, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, MQLColIndex, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, RevenueColIndex, data.cellTextColor);               
                 }
             },
             error: function (ts) { }
@@ -2388,51 +2014,42 @@
                 tactictid: parseInt(TacticID), TacticTypeId: parseInt(TacticTypeID), projectedStageValue: StageValue, RedirectType: isAssortment, isTacticTypeChange: true, StageID: stageid
             },
             success: function (data) {
-                var tactActMqlVal = HomeGrid.cells(rowid, 10).getAttribute("actval");
+                var tactActMqlVal = HomeGrid.cells(rowid, MQLColIndex).getAttribute("actval");
                 var mqlConversion = 0;
                 if (data.revenue != null)
                     revenue = data.revenue;
                 if (data.mql == 'N/A') {
-                    HomeGrid.setCellExcellType(rowid, 10, "ro");
-                    HomeGrid.cells(rowid, 10).setValue(data.mql);
+                    HomeGrid.setCellExcellType(rowid, MQLColIndex, "ro");
+                    HomeGrid.cells(rowid, MQLColIndex).setValue(data.mql);
                     diff = parseInt(-tactActMqlVal);
-                    SetColumUpdatedValue(10, diff);
+                    SetColumUpdatedValue(MQLColIndex, diff);
                 }
                 else {
-                    // HomeGrid.setCellExcellType(rowid, 10, "ron");
-
-
+                   
                     if (data.mql != null) {
                         mqlConversion = data.mql;
                     }
                     var mqlValue = GetAbberiviatedValue(mqlConversion.toString(), false);
-                    HomeGrid.cells(rowid, 10).setValue(mqlValue);
-
-
+                    HomeGrid.cells(rowid, MQLColIndex).setValue(mqlValue);
 
                     diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
-                    HomeGrid.cells(rowid, 10).setAttribute("actval", mqlConversion);
-                    SetColumUpdatedValue(10, diff);
-
-
-
-
-
+                    HomeGrid.cells(rowid, MQLColIndex).setAttribute("actval", mqlConversion);
+                    SetColumUpdatedValue(MQLColIndex, diff);
                 }
-                HomeGrid.cells(progid, 10).setValue(GetAbberiviatedValue(newProgVal), false);
-                HomeGrid.cells(campid, 10).setValue(GetAbberiviatedValue(newCampVal), false);
-                HomeGrid.cells(planid, 10).setValue(GetAbberiviatedValue(newPlanVal), false);
+                HomeGrid.cells(progid, MQLColIndex).setValue(GetAbberiviatedValue(newProgVal), false);
+                HomeGrid.cells(campid, MQLColIndex).setValue(GetAbberiviatedValue(newCampVal), false);
+                HomeGrid.cells(planid, MQLColIndex).setValue(GetAbberiviatedValue(newPlanVal), false);
 
 
-                HomeGrid.cells(rowid, 11).setValue(FormatNumber(revenue));
-                var tactActRevenuVal = HomeGrid.cells(rowid, 11).getAttribute("actval");
+                HomeGrid.cells(rowid, RevenueColIndex).setValue(FormatNumber(revenue));
+                var tactActRevenuVal = HomeGrid.cells(rowid, RevenueColIndex).getAttribute("actval");
                 diff = parseInt(revenue) - parseInt(tactActRevenuVal);
 
-                SetColumUpdatedValue(11, diff);
-                HomeGrid.cells(progid, 11).setValue((FormatNumber(newProgVal)));
-                HomeGrid.cells(campid, 11).setValue((FormatNumber(newCampVal)));
-                HomeGrid.cells(planid, 11).setValue((FormatNumber(newPlanVal)));
-                HomeGrid.cells(rowid, 11).setAttribute("actval", revenue);
+                SetColumUpdatedValue(RevenueColIndex, diff);
+                HomeGrid.cells(progid, RevenueColIndex).setValue((FormatNumber(newProgVal)));
+                HomeGrid.cells(campid, RevenueColIndex).setValue((FormatNumber(newCampVal)));
+                HomeGrid.cells(planid, RevenueColIndex).setValue((FormatNumber(newPlanVal)));
+                HomeGrid.cells(rowid, RevenueColIndex).setAttribute("actval", revenue);
                 $.ajax({
 
                     type: 'POST',
@@ -2444,9 +2061,10 @@
                     success: function (states) {
                         //    LoadPlanGrid();
                         if (UpdateColumn == "Target Stage Goal") {
+                            
                             var psv = HomeGrid.getUserData(rowid, "stage");
-                            //var psv = HomeGrid.cells(rowid, 9).getAttribute("stage");
-                            HomeGrid.cells(rowid, 9).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
+                            
+                            HomeGrid.cells(rowid, TargetStageGoalColIndex).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
                         }
                         //added by Rahul Shah for PL #2058 on 15/03/2016.
                         if (UpdateColumn == "Type") {
@@ -2470,14 +2088,14 @@
                             }
 
                             //Start - Added by Viral, To Resolve internal point: Change PlannedCost value based on TacticType.
-                            var PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
+                            PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
                             var oldPlanCost = HomeGrid.cells(rowid, PlannedCostColIndex).getValue();
                             HomeGrid.cells(rowid, PlannedCostColIndex).setValue(tacCost);
                             //End - Added by Viral, To Resolve internal point: Change PlannedCost value based on TacticType.
 
                             // Start - Added by Viral related to PL ticket #2112.
-                            var PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
                             var TotalchildRowIds = HomeGrid.getAllSubItems(rowid);
+                            PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
                             if (tacCost < states.lineItemCost) {
 
                                 HomeGrid.cells(rowid, PlannedCostColIndex).setValue((oldPlanCost));
@@ -2487,7 +2105,6 @@
                                 if (TotalchildRowIds != "") {
                                     for (var i = 0; i < TotalchildRowIds.split(',').length; i++) {
 
-                                        //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
                                         if (HomeGrid.getUserData(TotalchildRowIds.split(',')[i], "IsOther") == "True") {
                                             HomeGrid.deleteRow(TotalchildRowIds.split(',')[i]);
                                         }
@@ -2511,7 +2128,6 @@
                                 if (TotalchildRowIds != "") {
                                     for (var i = 0; i < TotalchildRowIds.split(',').length; i++) {
 
-                                        //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
                                         if (HomeGrid.getUserData(TotalchildRowIds.split(',')[i], "IsOther") == "True") {
                                             HomeGrid.cells(TotalchildRowIds.split(',')[i], PlannedCostColIndex).setValue((states.OtherLineItemCost));
                                         }
@@ -2523,9 +2139,6 @@
                             ItemIndex=HomeGrid.getRowIndex(rowid);
                             state0=ItemIndex;
                             // End - Added by Viral related to PL ticket #2112.
-
-
-
                         }
                     }
                 });
