@@ -261,7 +261,7 @@
                     }
                     <tr class="height42">
                         <th id="roiP" class="text-align-right height22 projected setBudget padding-bottom9 font3F3F3F border-none">@tacticActual.ROI</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
-                        <th id="roiT" class="border-r font3F3F3F text-align-right setBudget border-none">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                        <th id="roiT" class="border-r font3F3F3F text-align-right addFormatterActualNumber border-none">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                    
                 </tbody>
@@ -658,7 +658,6 @@
             // Add By Nishant Sheth
             // To Apply Curenncy format
             document.getElementById('roiP').innerHTML = FormatCurrency(document.getElementById('roiP').innerHTML, true);
-            document.getElementById('roiT').innerHTML = FormatCurrency(document.getElementById('roiT').innerHTML, true);
         }   
 
 
