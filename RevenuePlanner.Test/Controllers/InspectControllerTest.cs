@@ -58,7 +58,7 @@ namespace RevenuePlanner.Test.Controllers
         //    {
         //        //// ViewResult shoud not be null and should match with viewName
         //        Assert.IsNotNull(result.Data);
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
         //    }
         //    else
         //    {
@@ -102,19 +102,9 @@ namespace RevenuePlanner.Test.Controllers
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
             Form.PlanId = PlanID;
-
             var result = objInspectController.SaveCampaign(Form, Title, "[]", UserID, PlanID) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -146,19 +136,8 @@ namespace RevenuePlanner.Test.Controllers
             Form.PlanId = PlanID;
 
             var result = objInspectController.SaveCampaign(Form, Title, "[]", UserID, PlanID) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                //Assert.IsNotNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result :  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -193,18 +172,9 @@ namespace RevenuePlanner.Test.Controllers
             Form.PlanId = PlanID;
 
             var result = objInspectController.SaveCampaign(Form, Title, "[]", UserID, PlanID) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+       
         }
         #endregion
 
@@ -270,19 +240,8 @@ namespace RevenuePlanner.Test.Controllers
             int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             var result = Save_Comment(PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  \n The Assert Value result :  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
 
 
@@ -325,17 +284,8 @@ namespace RevenuePlanner.Test.Controllers
             PlanIds.Add(PlanID);
             Sessions.PlanPlanIds = PlanIds;
             var result = objInspectController.SetupSaveProgram(Form, "[]", UserID, Title) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  \n The Assert Value result :  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -365,21 +315,10 @@ namespace RevenuePlanner.Test.Controllers
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
             Form.PlanCampaignId = PlanCampaignId;
-
-
             var result = objInspectController.SetupSaveProgram(Form, "[]", UserID, Title) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+        
         }
         #endregion
 
@@ -416,18 +355,9 @@ namespace RevenuePlanner.Test.Controllers
             Form.PlanCampaignId = PlanCampaignId;
 
             var result = objInspectController.SetupSaveProgram(Form, "[]", UserID, Title) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+         
         }
         #endregion
 
@@ -463,7 +393,7 @@ namespace RevenuePlanner.Test.Controllers
         //    {
         //        //// ViewResult shoud not be null and should match with viewName
         //        Assert.IsNotNull(result.Data);
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
         //    }
         //    else
         //    {
@@ -492,20 +422,9 @@ namespace RevenuePlanner.Test.Controllers
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
             var result = Save_Comment(PlanProgramId, Enums.Section.Program.ToString().ToLower());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
 
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
         }
 
 
@@ -557,19 +476,9 @@ namespace RevenuePlanner.Test.Controllers
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
 
-
             var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -602,19 +511,10 @@ namespace RevenuePlanner.Test.Controllers
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
 
+
             var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -661,20 +561,9 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.MaxValue;
             Form.Cost = 500;
 
-
             var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -718,7 +607,7 @@ namespace RevenuePlanner.Test.Controllers
         //    {
         //        //// ViewResult shoud not be null and should match with viewName
         //        Assert.IsNotNull(result.Data);
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
         //    }
         //    else
         //    {
@@ -748,21 +637,9 @@ namespace RevenuePlanner.Test.Controllers
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
             int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
             var result = Save_Comment(PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-        }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+       }
 
 
         #endregion
@@ -802,19 +679,8 @@ namespace RevenuePlanner.Test.Controllers
             lineItemActual.Add(new Plan_Campaign_Program_Tactic_LineItem_Actual { Period = "Y3", PlanLineItemId = PlanLineItemId, Value = 100 });
             lineItemActual.Add(new Plan_Campaign_Program_Tactic_LineItem_Actual { Period = "Y4", PlanLineItemId = PlanLineItemId, Value = 0 });
             var result = objInspectController.UploadResult(tacticactual, lineItemActual, UserID, Title) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -858,20 +724,10 @@ namespace RevenuePlanner.Test.Controllers
             Form.Title = "Test Lineitem" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
-
-
             var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+        
         }
         #endregion
 
@@ -908,20 +764,9 @@ namespace RevenuePlanner.Test.Controllers
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
 
-
             var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -964,17 +809,8 @@ namespace RevenuePlanner.Test.Controllers
 
 
             var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -1015,7 +851,7 @@ namespace RevenuePlanner.Test.Controllers
         //    {
         //        //// ViewResult shoud not be null and should match with viewName
         //        Assert.IsNotNull(result.Data);
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
         //    }
         //    else
         //    {
@@ -1066,19 +902,8 @@ namespace RevenuePlanner.Test.Controllers
 
 
             var result = objPlanController.SaveActualsLineitemData(Values, LineitemId.ToString(), Title) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -1099,15 +924,9 @@ namespace RevenuePlanner.Test.Controllers
                             Select(tac => tac.PlanTacticId).FirstOrDefault();
 
             var result = controller.LoadLineItemTabFromTacticPopup(tacticId) as PartialViewResult;
-            if (result != null)
-            {
-                Assert.AreEqual("_TacticLineItemListing", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_TacticLineItemListing", result.ViewName);
+          
         }
         #endregion
 
@@ -1146,17 +965,9 @@ namespace RevenuePlanner.Test.Controllers
             // form.Owner = "sys Admin";
 
             var result = objInspectController.SaveImprovementTactic(form, false) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+           
         }
         #endregion
 
@@ -1194,17 +1005,9 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = objInspectController.SaveImprovementTactic(form, false) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+           
         }
         #endregion
 
@@ -1239,17 +1042,8 @@ namespace RevenuePlanner.Test.Controllers
 
 
             var result = objInspectController.SaveImprovementTactic(form, false) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -1273,26 +1067,10 @@ namespace RevenuePlanner.Test.Controllers
             int ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(id => id.ImprovementPlanCampaignId == ImprovementPlanCampaignId).Select(id => id.ImprovementPlanProgramId).FirstOrDefault();
             int PlanTacticId = db.Plan_Improvement_Campaign_Program_Tactic.Where(id => id.ImprovementPlanProgramId == ImprovementPlanProgramId).Select(tactic => tactic.ImprovementPlanTacticId).FirstOrDefault(); ;
             var result = Save_Comment(PlanTacticId, Enums.Section.ImprovementTactic.ToString().ToLower());
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
-
-
-
         #endregion
-
-
 
         #endregion
 
@@ -1367,19 +1145,12 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             string UserID = (Sessions.User.UserId).ToString();
             Plan_Campaign_Program_Tactic objtactic = DataHelper.GetPlanTactic(Sessions.User.ClientId);
-                int tacticId=objtactic.PlanTacticId;
-                string mode = Enums.InspectPopupMode.Edit.ToString();
-                var result = objInspectController.LoadMediaCodeFromTacticPopup(tacticId, mode) as PartialViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Model);
-                Assert.AreEqual("_TacticMediaCode", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            int tacticId=objtactic.PlanTacticId;
+            string mode = Enums.InspectPopupMode.Edit.ToString();
+            var result = objInspectController.LoadMediaCodeFromTacticPopup(tacticId, mode) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.IsNotNull(result.Model);
+            Assert.AreEqual("_TacticMediaCode", result.ViewName);
         }
           #endregion
 
@@ -1432,18 +1203,11 @@ namespace RevenuePlanner.Test.Controllers
                 }
                 lstcustomfieldvalue.Add(objcustomfield);
                 var result = objInspectController.GenerateMediaCode(tacticId, lstcustomfieldvalue) as JsonResult;
-                if (result != null)
-                {
-                    Assert.IsNotNull(result.Data);
-                    var serializedData = new RouteValueDictionary(result.Data);
-                    var resultvalue = serializedData["Success"];
-                    Assert.AreEqual("true", resultvalue.ToString(),true);
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-                }
-                else
-                {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                }
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+                Assert.IsNotNull(result.Data);
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["Success"];
+                Assert.AreEqual("true", resultvalue.ToString(), true);
             }
         }
         #endregion
@@ -1475,19 +1239,11 @@ namespace RevenuePlanner.Test.Controllers
                 {
                     string mediacodestr = Convert.ToString(mediacodeId);
                     var result = objInspectController.ArchiveMediaCode(tacticId, mode, 0, mediacodestr) as PartialViewResult;
-                    if (result != null)
-                    {
-                        Assert.IsNotNull(result.Model);
-                        Assert.AreEqual("_ArchiveMediaCode", result.ViewName);
-                        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-                    }
-                    else
-                    {
-                        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                    }
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+                    Assert.IsNotNull(result.Model);
+                    Assert.AreEqual("_ArchiveMediaCode", result.ViewName);
                 }
             }
-            
            
         }
         #endregion
@@ -1517,17 +1273,11 @@ namespace RevenuePlanner.Test.Controllers
                 string mode = Convert.ToString(Enums.InspectPopupMode.Edit);
                
                     
-                    var result = objInspectController.ArchiveMediaCode(tacticId, mode, 0, string.Empty) as PartialViewResult;
-                    if (result != null)
-                    {
-                        Assert.IsNotNull(result.Model);
-                        Assert.AreEqual("_ArchiveMediaCode", result.ViewName);
-                        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-                    }
-                    else
-                    {
-                        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                    }
+                var result = objInspectController.ArchiveMediaCode(tacticId, mode, 0, string.Empty) as PartialViewResult;
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+                Assert.IsNotNull(result.Model);
+                Assert.AreEqual("_ArchiveMediaCode", result.ViewName);
+                
                 }
             
         }

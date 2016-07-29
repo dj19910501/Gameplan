@@ -41,20 +41,11 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
             Sessions.User.UserId = DataHelper.GetUserId(PlanId);
             var result = objUserController.Index() as ViewResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Model);
-                var serializedData = new RouteValueDictionary(result.Model);
-                var resultvalue = serializedData["Count"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Assert.IsNotNull(result.Model);
+            var serializedData = new RouteValueDictionary(result.Model);
+            var resultvalue = serializedData["Count"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue: " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
         }
         #endregion
 
@@ -80,17 +71,8 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
            
             var result = objUserController.ChangePassword() as ViewResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewData);               
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result :" + result.ViewName);
+            Assert.IsNotNull(result.ViewData);
         }
         #endregion
 
@@ -123,23 +105,14 @@ namespace RevenuePlanner.Test.Controllers
             form.ConfirmNewPassword = "Test@1234";
 
             var result = objUserController.ChangePassword(form) as ViewResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Model);
-                var serializedData = new RouteValueDictionary(result.Model);
-                var resultvalue = serializedData["UserId"];
-                var resultvalue1 = serializedData["CurrentPassword"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Assert.IsNotNull(resultvalue1.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "UserID: " + resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "Password: " + resultvalue1.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Assert.IsNotNull(result.Model);
+            var serializedData = new RouteValueDictionary(result.Model);
+            var resultvalue = serializedData["UserId"];
+            var resultvalue1 = serializedData["CurrentPassword"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + "UserID: " + resultvalue.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue1:  " + "Password: " + resultvalue1.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
+            Assert.IsNotNull(resultvalue1.ToString());
         }
         #endregion
 
@@ -167,17 +140,8 @@ namespace RevenuePlanner.Test.Controllers
             string currentPassword = "Test@12345";
           
             var result = objUserController.CheckCurrentPassword(currentPassword) as JsonResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Data);               
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -203,21 +167,11 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
 
             var result = objUserController.Create() as ViewResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                var serializedData = new RouteValueDictionary(result.ViewData);
-                var resultvalue = serializedData["CurrClient"];               
-                Assert.IsNotNull(resultvalue.ToString());                
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "UserID: " + resultvalue.ToString());
-           
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Assert.IsNotNull(result.ViewName);
+            var serializedData = new RouteValueDictionary(result.ViewData);
+            var resultvalue = serializedData["CurrClient"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + "UserID: " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
         }
         #endregion
 
@@ -257,20 +211,11 @@ namespace RevenuePlanner.Test.Controllers
             form.JobTitle = "Admin";
 
             var result = objUserController.Create(form,null) as ViewResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                var serializedData = new RouteValueDictionary(result.ViewData);
-                var resultvalue = serializedData["CurrClient"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "UserID: " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Assert.IsNotNull(result.ViewName);
+            var serializedData = new RouteValueDictionary(result.ViewData);
+            var resultvalue = serializedData["CurrClient"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + "UserID: " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
         }
         #endregion
 
@@ -298,18 +243,8 @@ namespace RevenuePlanner.Test.Controllers
 
             string Email = "UnitTest@Hive9.com";
             var result = objUserController.IsEmailExist(Email) as JsonResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);              
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
 
         /// <summary>
@@ -338,20 +273,11 @@ namespace RevenuePlanner.Test.Controllers
             {
                 string Email = objUser.Email;
                 var result = objUserController.IsEmailExist(Email) as JsonResult;
-
-                if (result != null)
-                {
-                    Assert.IsNotNull(result.Data);                   
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-                }
-                else
-                {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                }
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+             
             }
-            else {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "No User found for Client" + Sessions.User.Client.ToString());
-            }
+         
 
         }
         #endregion
@@ -379,20 +305,12 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.UserId = DataHelper.GetUserId(PlanId);
 
             var result = objUserController.Edit() as ViewResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                var serializedData = new RouteValueDictionary(result.ViewData);
-                var resultvalue = serializedData["IsUserAdminAuthorized"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + "UserID: " + resultvalue.ToString());
-               
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Assert.IsNotNull(result.ViewName);
+            var serializedData = new RouteValueDictionary(result.ViewData);
+            var resultvalue = serializedData["IsUserAdminAuthorized"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + "UserID: " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
+         
 
         }
         #endregion
@@ -441,18 +359,8 @@ namespace RevenuePlanner.Test.Controllers
             FormCollection formCollection = new FormCollection();
             formCollection.Add("UserId","UserId");
             var result = objUserController.Edit(form,null, formCollection) as ActionResult;
-
-            
-            if (result != null)
-            {
-                Assert.IsNotNull(result);                
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
+            Assert.IsNotNull(result);
         }
         #endregion
 
@@ -485,21 +393,13 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.UserId = DataHelper.GetUserId(PlanId);           
             
             var result = objUserController.Notifications() as ViewResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Model);
-                List<UserNotification> objModelList = (List<UserNotification>)result.Model;
-                UserNotification objModel = objModelList.FirstOrDefault();
-                var serializedData = new RouteValueDictionary(objModel);
-                var resultvalue = serializedData["NotificationTitle"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());                
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Assert.IsNotNull(result.Model);
+            List<UserNotification> objModelList = (List<UserNotification>)result.Model;
+            UserNotification objModel = objModelList.FirstOrDefault();
+            var serializedData = new RouteValueDictionary(objModel);
+            var resultvalue = serializedData["NotificationTitle"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
 
         }
         #endregion
@@ -576,18 +476,11 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.UserId = DataHelper.GetUserId(PlanId);
 
             var result = objUserController.GetManagers() as JsonResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Data);                
-                var serializedData = new RouteValueDictionary(result.Data);
-                var resultvalue = serializedData["Count"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Assert.IsNotNull(result.Data);
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["Count"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue :  " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
 
         }
 
@@ -619,20 +512,11 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.UserId = DataHelper.GetUserId(PlanId);
             string UserId = Sessions.User.UserId.ToString();
             var result = objUserController.GetManagers(null,UserId) as JsonResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var resultvalue = serializedData["Count"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-              
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Assert.IsNotNull(result.Data);
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["Count"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
         }
 
         /// <summary>
@@ -664,19 +548,11 @@ namespace RevenuePlanner.Test.Controllers
             string UserId = Sessions.User.UserId.ToString();
             string ClientId = Sessions.User.ClientId.ToString();
             var result = objUserController.GetManagers(ClientId, UserId) as JsonResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var resultvalue = serializedData["Count"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-                
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Assert.IsNotNull(result.Data);
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["Count"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
 
         }
         #endregion
@@ -709,20 +585,10 @@ namespace RevenuePlanner.Test.Controllers
                 string userId = objUser.UserId.ToString();
                 string RoleId = objUser.RoleId.ToString();
                 var result = objUserController.AssignUser(userId, RoleId) as JsonResult;
-                if (result != null)
-                {
-                    Assert.IsNotNull(result.Data);                    
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-                }
-                else
-                {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                }
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
+                Assert.IsNotNull(result.Data);                    
             }
-            else {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
-            }
-
+           
         }
         #endregion                
 

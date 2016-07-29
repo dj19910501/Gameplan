@@ -63,17 +63,9 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
 
             var result = ReportController.GetOverviewData(string.Empty, Enums.ViewByAllocated.Quarterly.ToString()) as Task<ActionResult>;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreNotEqual("_Overview", result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Status);
+            Assert.AreNotEqual("_Overview", result);
+    
 
         }
         #endregion
@@ -103,17 +95,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetOverviewData() function
             ReportController ReportController = new ReportController();
             var result = ReportController.GetOverviewData(_InvalidTimeFrame, Enums.ViewByAllocated.Quarterly.ToString()) as Task<ActionResult>;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreNotEqual("_Overview", result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Status);
+            Assert.AreNotEqual("_Overview", result);
         }
         #endregion
 
@@ -138,17 +121,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetOverviewData() function
             ReportController ReportController = new ReportController();
             var result = ReportController.GetOverviewData(PlanYear, string.Empty) as Task<ActionResult>;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreNotEqual("_Overview", result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Status);
+            Assert.AreNotEqual("_Overview", result);
         }
         #endregion
 
@@ -174,17 +148,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetOverviewData() function
             ReportController ReportController = new ReportController();
             var result = ReportController.GetOverviewData(PlanYear, _InValidIsQuarterly) as Task<ActionResult>;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreNotEqual("_Overview", result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Status);
+            Assert.AreNotEqual("_Overview", result);
         }
         #endregion
         #endregion
@@ -216,17 +181,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
 
             var result = ReportController.GetRevenueData(PlanYear) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName            
-            if (result != null)
-            {
-
-                Assert.AreEqual("_Revenue", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_Revenue", result.ViewName);
         }
         #endregion
 
@@ -251,19 +207,9 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
-
             var result = ReportController.GetRevenueData(PlanYear, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_Revenue", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_Revenue", result.ViewName);
         }
         #endregion
 
@@ -314,17 +260,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             var result = ReportController.GetRevenueData(PlanYear, string.Empty) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_Revenue", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_Revenue", result.ViewName);
         }
         #endregion
 
@@ -348,17 +285,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             var result = ReportController.GetRevenueData(PlanYear, _InValidIsQuarterly) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_Revenue", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Assert.AreEqual("_Revenue", result.ViewName);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
         }
         #endregion
 
@@ -386,17 +314,8 @@ namespace RevenuePlanner.Test.Controllers
 
             ReportController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), ReportController);
             var result = ReportController.GetRevenueToPlanByFilter("Campaign", "", "", PlanYear);
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
         #endregion
 
@@ -422,17 +341,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
             var result = ReportController.GetRevenueToPlanByFilter(StrParent, "Campaign", "0", PlanYear, Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
         #endregion
 
@@ -458,17 +368,9 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
             var result = ReportController.GetRevenueToPlanByFilter(StrParent, "Campaign", "0", PlanYear, Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
 
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
         }
         #endregion
 
@@ -494,17 +396,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
             var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", PlanYear, Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
         #endregion
 
@@ -530,17 +423,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
             var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", PlanYear, Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
         #endregion
 
@@ -566,17 +450,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
             var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", PlanYear, Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
         #endregion
 
@@ -610,19 +485,8 @@ namespace RevenuePlanner.Test.Controllers
 
 
             var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, "Campaign", "0", PlanYear, Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
         #endregion
 
@@ -653,17 +517,9 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
             var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", PlanYear, Isquater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
+         
         }
         #endregion
 
@@ -694,17 +550,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
             var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", PlanYear, string.Empty, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
         }
         #endregion
 
@@ -735,17 +582,9 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //// Call GetRevenueToPlanByFilter() function
             var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", PlanYear, invalidQuater, false, "", false, "CampaignDrp", "", 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
+         
         }
         #endregion
 
@@ -777,17 +616,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetRevenueToPlanByFilter() function
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
             var result = ReportController.GetRevenueToPlanByFilter(StrParentLabel, StrChildLabel, "0", PlanYear, IsQuater, false, string.Empty, false, string.Empty, string.Empty, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_RevenueToPlan", result.ViewName);
 
-                Assert.AreEqual("_RevenueToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
         }
         #endregion
 
@@ -841,17 +672,8 @@ namespace RevenuePlanner.Test.Controllers
             ////// Call SearchSortPaginataionRevenue() function
             ////string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
             var result = reportController.SearchSortPaginataionRevenue() as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_ReportCardSection", result.ViewName);
         }
         #endregion
 
@@ -906,17 +728,8 @@ namespace RevenuePlanner.Test.Controllers
             ////// Call SearchSortPaginataionRevenue() function
             ////string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 
             var result = reportController.SearchSortPaginataionRevenue(0, 0, "", shortBy, "", "", "") as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName            
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_ReportCardSection", result.ViewName);
         }
         #endregion
 
@@ -964,17 +777,8 @@ namespace RevenuePlanner.Test.Controllers
             string shortBy = Enums.SortByRevenue.Cost.ToString();
             ////// Call SearchSortPaginataionRevenue() function
             var result = reportController.SearchSortPaginataionRevenue(0, 0, "", shortBy, "", "", "") as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("_ReportCardSection", result.ViewName);
         }
         #endregion
 
@@ -1024,17 +828,8 @@ namespace RevenuePlanner.Test.Controllers
             string shortBy = Enums.SortByRevenue.ROI.ToString();
             ////// Call SearchSortPaginataionRevenue() function
             var result = reportController.SearchSortPaginataionRevenue(0, 0, "", shortBy, "", "", "") as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_ReportCardSection", result.ViewName);
         }
         #endregion
 
@@ -1084,17 +879,9 @@ namespace RevenuePlanner.Test.Controllers
             string shortBy = "Invalid";
             ////// Call SearchSortPaginataionRevenue() function
             var result = reportController.SearchSortPaginataionRevenue(0, 0, "", shortBy, "", "", "") as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_ReportCardSection", result.ViewName);
+            
         }
         #endregion
 
@@ -1143,318 +930,10 @@ namespace RevenuePlanner.Test.Controllers
             string shortBy = Enums.SortByRevenue.Revenue.ToString();
             ////// Call SearchSortPaginataionRevenue() function
             var result = reportController.SearchSortPaginataionRevenue(0, 0, string.Empty, shortBy, "", "", "") as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_ReportCardSection", result.ViewName);
         }
         #endregion
-
-        //#region "LoadRevenueContribution with Empty Parameter"
-        ///// <summary>
-        ///// Get data check with Empty Parameter.
-        ///// </summary>
-        ///// <auther>Dashrath Prajapati</auther>
-        ///// <createddate>14aug2015</createddate>
-        /////LoadRevenueContribution
-        //[TestMethod]
-        //public void LoadRevenueContribution_Empty_Param()
-        //{
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    int planId = DataHelper.GetPlanId();
-        //    List<int> lst = new List<int>();
-        //    lst.Add(14936);
-        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
-        //    ReportController reportController = new ReportController();
-        //   var result= reportController.LoadRevenueContribution("","");
-        //   Assert.IsNotNull(result.Data);
-
-        //}
-        //#endregion
-
-        //#region "LoadRevenueContribution with ParentLabel as TacticCustom"
-        ///// <summary>
-        ///// Get data check with Parameter ParentLabel as TacticCustom .
-        ///// </summary>
-        ///// <auther>Dashrath Prajapati</auther>
-        ///// <createddate>14aug2015</createddate>
-        /////LoadRevenueContribution
-        //[TestMethod]
-        //public void LoadRevenueContribution_ParentType_TacticCustom()
-        //{
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    int planId = DataHelper.GetPlanId();
-        //    List<int> lst = new List<int>();
-        //    lst.Add(14936);
-        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
-        //    ReportController reportController = new ReportController();
-        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-        //    //// Calculate Value for ecah tactic
-        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-        //    //TempData["ReportData"] = tacticStageList;
-        //    reportController.TempData["ReportData"] = tacticStageList;
-        //    string Parentlbl = Common.TacticCustomTitle.ToString();
-        //    var result = reportController.LoadRevenueContribution(Parentlbl,PlanYear);
-        //    Assert.IsNotNull(result.Data);
-
-        //}
-        //#endregion
-
-        //#region "LoadRevenueContribution with ParentLabel as CampaignCustom"
-        ///// <summary>
-        ///// Get data check with Parameter ParentLabel as CampaignCustom .
-        ///// </summary>
-        ///// <auther>Dashrath Prajapati</auther>
-        ///// <createddate>14aug2015</createddate>
-        /////LoadRevenueContribution
-        //[TestMethod]
-        //public void LoadRevenueContribution_ParentType_CampaignCustom()
-        //{
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    int planId = DataHelper.GetPlanId();
-        //    List<int> lst = new List<int>();
-        //    lst.Add(14936);
-        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
-        //    ReportController reportController = new ReportController();
-        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-        //    //// Calculate Value for ecah tactic
-        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-        //    //TempData["ReportData"] = tacticStageList;
-        //    reportController.TempData["ReportData"] = tacticStageList;
-        //    string Parentlbl = Common.CampaignCustomTitle.ToString();
-        //    var result = reportController.LoadRevenueContribution(Parentlbl, PlanYear);
-        //    Assert.IsNotNull(result.Data);
-
-        //}
-        //#endregion
-
-        //#region "LoadRevenueContribution with ParentLabel as ProgramCustom"
-        ///// <summary>
-        ///// Get data check with Parameter ParentLabel as ProgramCustom .
-        ///// </summary>
-        ///// <auther>Dashrath Prajapati</auther>
-        ///// <createddate>14aug2015</createddate>
-        /////LoadRevenueContribution
-        //[TestMethod]
-        //public void LoadRevenueContribution_ParentType_ProgramCustom()
-        //{
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    int planId = DataHelper.GetPlanId();
-        //    List<int> lst = new List<int>();
-        //    lst.Add(14936);
-        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
-        //    ReportController reportController = new ReportController();
-        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-        //    //// Calculate Value for ecah tactic
-        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-        //    //TempData["ReportData"] = tacticStageList;
-        //    reportController.TempData["ReportData"] = tacticStageList;
-        //    string Parentlbl = Common.ProgramCustomTitle.ToString();
-        //    var result = reportController.LoadRevenueContribution(Parentlbl, PlanYear);
-        //    Assert.IsNotNull(result.Data);
-
-        //}
-        //#endregion
-
-        //#region "GetRevenueToPlan with Empty"
-        ///// <summary>
-        ///// Get data check with Empty parameter.
-        ///// </summary>
-        ///// <auther>Dashrath Prajapati</auther>
-        ///// <createddate>14aug2015</createddate>
-        /////GetRevenueToPlan
-        //[TestMethod]
-        //public void GetRevenueToPlan_empty()
-        //{
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    int planId = DataHelper.GetPlanId();
-        //    List<int> lst = new List<int>();
-        //    lst.Add(14936);
-        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
-        //    ReportController reportController = new ReportController();
-        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-        //    //// Calculate Value for ecah tactic
-        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-        //    //TempData["ReportData"] = tacticStageList;
-        //    reportController.TempData["ReportData"] = tacticStageList;
-        //    string Parentlbl = Common.CampaignCustomTitle.ToString();
-        //   var result= reportController.GetRevenueToPlan(Parentlbl,"0",PlanYear,"");
-        //   Assert.IsNotNull(result.Data);
-
-        //}
-        //#endregion
-
-        //#region "GetRevenueToPlan with Parent Label as Campaign Custom"
-        ///// <summary>
-        ///// Get data check with Parameter ParentLabel as Camapaign Custom.
-        ///// </summary>
-        ///// <auther>Dashrath Prajapati</auther>
-        ///// <createddate>14aug2015</createddate>
-        /////GetRevenueToPlan
-        //[TestMethod]
-        //public void GetRevenueToPlan_Parent_CamapaignCustom()
-        //{
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    int planId = DataHelper.GetPlanId();
-        //    List<int> lst = new List<int>();
-        //    lst.Add(14936);
-        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
-        //    ReportController reportController = new ReportController();
-        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-        //    //// Calculate Value for ecah tactic
-        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-        //    //TempData["ReportData"] = tacticStageList;
-        //    reportController.TempData["ReportData"] = tacticStageList;
-        //    string Parentlbl = Common.CampaignCustomTitle.ToString();
-        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", PlanYear, "");
-        //    Assert.IsNotNull(result.Data);
-
-        //}
-        //#endregion
-
-        //#region "GetRevenueToPlan with ProgramCustomTitle as Parenet Label"
-        ///// <summary>
-        ///// Get data check with Parameter ParentLabel as ProgramCustomTitle Custom.
-        ///// </summary>
-        ///// <auther>Dashrath Prajapati</auther>
-        ///// <createddate>14aug2015</createddate>
-        /////GetRevenueToPlan
-        //[TestMethod]
-        //public void GetRevenueToPlan_Parent_ProgramCustom()
-        //{
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    int planId = DataHelper.GetPlanId();
-        //    List<int> lst = new List<int>();
-        //    lst.Add(14936);
-        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
-        //    ReportController reportController = new ReportController();
-        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-        //    //// Calculate Value for ecah tactic
-        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-        //    //TempData["ReportData"] = tacticStageList;
-        //    reportController.TempData["ReportData"] = tacticStageList;
-        //    string Parentlbl = Common.ProgramCustomTitle.ToString();
-        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", PlanYear, "");
-        //    Assert.IsNotNull(result.Data);
-
-        //}
-        //#endregion
-
-        //#region "GetRevenueToPlan with TacticCustomTitle as Parenet Label"
-        ///// <summary>
-        ///// Get data check with Parameter ParentLabel as TacticCustomTitle.
-        ///// </summary>
-        ///// <auther>Dashrath Prajapati</auther>
-        ///// <createddate>14aug2015</createddate>
-        /////GetRevenueToPlan
-        //[TestMethod]
-        //public void GetRevenueToPlan_Parent_TacticCustom()
-        //{
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    int planId = DataHelper.GetPlanId();
-        //    List<int> lst = new List<int>();
-        //    lst.Add(14936);
-        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
-        //    ReportController reportController = new ReportController();
-        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-        //    //// Calculate Value for ecah tactic
-        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-        //    //TempData["ReportData"] = tacticStageList;
-        //    reportController.TempData["ReportData"] = tacticStageList;
-        //    string Parentlbl = Common.TacticCustomTitle.ToString();
-        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", PlanYear, "");
-        //    Assert.IsNotNull(result.Data);
-
-        //}
-        //#endregion
-
-        //#region "GetRevenueSummaryDataRevenueReport with empty parameter"
-        ///// <summary>
-        ///// Get data check with Empty Parameter
-        ///// </summary>
-        ///// <auther>Dashrath Prajapati</auther>
-        ///// <createddate>14aug2015</createddate>
-        /////
-        //[TestMethod]
-        //public void GetRevenueSummaryDataRevenueReport_Empty_Param()
-        //{
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    int planId = DataHelper.GetPlanId();
-        //    List<int> lst = new List<int>();
-        //    lst.Add(14936);
-        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
-        //    ReportController reportController = new ReportController();
-        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-        //    //// Calculate Value for ecah tactic
-        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-        //    //TempData["ReportData"] = tacticStageList;
-        //    reportController.TempData["ReportData"] = tacticStageList;
-
-        //    var result = reportController.GetRevenueSummaryDataRevenueReport("","","");
-        //    Assert.IsNotNull(result.Data);
-        //}
-        //#endregion
-
-        //#region "GetRevenueSummaryDataRevenueReport with CampaignCustom Title"
-        ///// <summary>
-        ///// Get data check with Parent label as Campaign Custom Title
-        ///// </summary>
-        ///// <auther>Dashrath Prajapati</auther>
-        ///// <createddate>14aug2015</createddate>
-        /////
-        //[TestMethod]
-        //public void GetRevenueSummaryDataRevenueReport_Parent_CampaignCustom()
-        //{
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    int planId = DataHelper.GetPlanId();
-        //    List<int> lst = new List<int>();
-        //    lst.Add(14936);
-        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
-        //    ReportController reportController = new ReportController();
-        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-        //    //// Calculate Value for ecah tactic
-        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-        //    //TempData["ReportData"] = tacticStageList;
-        //    reportController.TempData["ReportData"] = tacticStageList;
-        //    string Parentlbl = Common.CampaignCustomTitle.ToString();
-        //    var result = reportController.GetRevenueSummaryDataRevenueReport(Parentlbl,"0","");
-        //    Assert.IsNotNull(result.Data);
-        //}
-        //#endregion
 
         #region "GetChildLabelDataViewByModel with empty parameter"
         /// <summary>
@@ -1473,16 +952,10 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
             var result = reportcontroller.GetChildLabelDataViewByModel("", "");
-            if (result != null)
-            {
-
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Count);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+      
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Count);
+            Assert.IsNotNull(result);
+            
         }
         #endregion
 
@@ -1517,17 +990,9 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
 
             var result = ReportController.GetWaterFallData(PlanYear) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName            
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportConversion", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_ReportConversion", result.ViewName);
+          
         }
         #endregion
 
@@ -1557,17 +1022,10 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
 
             var result = ReportController.GetWaterFallData(PlanYear, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportConversion", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+       
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_ReportConversion", result.ViewName);
+            
         }
         #endregion
         //Commented by Rahul Shah on 21/11/2015. Because it is negative test cases
@@ -1614,17 +1072,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
             var result = ReportController.GetWaterFallData(PlanYear, string.Empty) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportConversion", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_ReportConversion", result.ViewName);
         }
         #endregion
 
@@ -1647,17 +1096,8 @@ namespace RevenuePlanner.Test.Controllers
             string invalidQuater = "_InValidIsQuarterly";
             ReportController ReportController = new ReportController();
             var result = ReportController.GetWaterFallData(PlanYear, invalidQuater) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportConversion", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_ReportConversion", result.ViewName);
         }
         #endregion
 
@@ -1681,17 +1121,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
             var result = ReportController.GetWaterFallData(PlanYear, string.Empty) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportConversion", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_ReportConversion", result.ViewName);
         }
         #endregion
 
@@ -1714,18 +1145,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
 
             var result = ReportController.GetTopConversionToPlanByCustomFilter(string.Empty, "Campaign", "", PlanYear, Enums.ViewByAllocated.Quarterly.ToString(), Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName            
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -1748,18 +1169,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
             string _InvalidParentbl = "_Invalid";
             var result = ReportController.GetTopConversionToPlanByCustomFilter(_InvalidParentbl, "Campaign", "", PlanYear, Enums.ViewByAllocated.Quarterly.ToString(), Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -1783,17 +1194,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
             var result = ReportController.GetTopConversionToPlanByCustomFilter() as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -1819,18 +1221,8 @@ namespace RevenuePlanner.Test.Controllers
 
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -1856,18 +1248,8 @@ namespace RevenuePlanner.Test.Controllers
 
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -1893,17 +1275,8 @@ namespace RevenuePlanner.Test.Controllers
 
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -1929,17 +1302,8 @@ namespace RevenuePlanner.Test.Controllers
 
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, "", "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -1976,17 +1340,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -2018,17 +1373,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.GetTopConversionToPlanByCustomFilter(string.Empty, string.Empty, "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -2062,17 +1408,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "", PlanYear, "", Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -2106,17 +1443,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "0", string.Empty, string.Empty, Enums.InspectStage.MQL.ToString(), false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -2153,17 +1481,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "0", PlanYear, InvalidQuater, InvalidCode, false, null, false, null, null, 0) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -2199,17 +1518,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ReportData"] = tacticStageList;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.GetTopConversionToPlanByCustomFilter(StrParentLabel, StrChildLabel, "0", PlanYear, InvalidQuater, string.Empty, false, null, false, null, null, -1) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionToPlan", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionToPlan", result.ViewName);
         }
         #endregion
 
@@ -2249,17 +1559,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.TempData["ConverstionCardList"] = CardSectionListModel;
             //string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0
             var result = ReportController.SearchSortPaginataionConverstion() as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName            
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionCardSection", result.ViewName);
         }
         #endregion
 
@@ -2300,17 +1601,8 @@ namespace RevenuePlanner.Test.Controllers
             string shortBy = Enums.SortByWaterFall.INQ.ToString();
 
             var result = ReportController.SearchSortPaginataionConverstion(0, 0, "", shortBy, "", "", "") as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionCardSection", result.ViewName);
         }
         #endregion
 
@@ -2351,17 +1643,8 @@ namespace RevenuePlanner.Test.Controllers
             string shortBy = Enums.SortByWaterFall.MQL.ToString();
 
             var result = ReportController.SearchSortPaginataionConverstion(0, 0, "", shortBy, "", "", "") as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionCardSection", result.ViewName);
         }
         #endregion
 
@@ -2402,17 +1685,8 @@ namespace RevenuePlanner.Test.Controllers
             string shortBy = Enums.SortByWaterFall.CW.ToString();
 
             var result = ReportController.SearchSortPaginataionConverstion(0, 0, "", shortBy, "", "", "") as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionCardSection", result.ViewName);
         }
         #endregion
 
@@ -2453,18 +1727,9 @@ namespace RevenuePlanner.Test.Controllers
             string shortBy = "_Invalid";
 
             var result = ReportController.SearchSortPaginataionConverstion(0, 0, "", shortBy, "", "", "") as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-        }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionCardSection", result.ViewName);
+         }
         #endregion
 
         #region "SearchSortPaginataionConverstion with Invalid short by and empty search content"
@@ -2504,17 +1769,8 @@ namespace RevenuePlanner.Test.Controllers
             string shortBy = "_Invalid";
 
             var result = ReportController.SearchSortPaginataionConverstion(0, 0, string.Empty, shortBy, "", "", "") as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionCardSection", result.ViewName);
         }
         #endregion
 
@@ -2532,17 +1788,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ReportController ReportController = new ReportController();
             var result = ReportController.LoadReportCardSectionPartial() as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName            
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ReportCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ReportCardSection", result.ViewName);
         }
         #endregion
 
@@ -2560,17 +1807,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ReportController ReportController = new ReportController();
             var result = ReportController.LoadConverstionCardSectionPartial() as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_ConversionCardSection", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_ConversionCardSection", result.ViewName);
         }
         #endregion
 
@@ -2592,17 +1830,9 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
             ReportController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = ReportController.GetCustomReport(null) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_DynamicReport", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_DynamicReport", result.ViewName);
+  
         }
         #endregion
 
@@ -2620,17 +1850,10 @@ namespace RevenuePlanner.Test.Controllers
             ReportController ReportController = new ReportController();
             ReportController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = ReportController.GetCustomReport(string.Empty) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : : " + result.ViewName);
+            Assert.AreEqual("_DynamicReport", result.ViewName);
 
-                Assert.AreEqual("_DynamicReport", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            
         }
         #endregion
 
@@ -2649,17 +1872,8 @@ namespace RevenuePlanner.Test.Controllers
             ReportController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var DashboardId = DataHelper.GetDashboardId();
             var result = ReportController.GetCustomReport(DashboardId) as PartialViewResult;
-            //// PartialViewResult shoud not be null and should match with Partial viewName
-            if (result != null)
-            {
-
-                Assert.AreEqual("_DynamicReport", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Assert.AreEqual("_DynamicReport", result.ViewName);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
         }
         #endregion
 
