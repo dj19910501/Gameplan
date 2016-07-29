@@ -388,6 +388,7 @@ else
                 //data: { TacticId: '@tacticId', lstcustomfieldvalue: a },
                 data: "{'TacticId':'" + ('@tacticId') + "','lstcustomfieldvalue':" + (cusotmfieldValue) + ",'LinkedTacticID':'" + ('@LinkedTacticID') + "'}",
                 success: function (data) {
+                 
                     if (data.Success == true && data.ErrorMessage == null) {
                         var newmediacode = data.MediaCode;
                         var newrowid = 'mediacode.' + data.NewMediaCodeId.toString();
@@ -799,7 +800,7 @@ else
                     //var EntityFinal = EntityTest.slice(1, -1);
                     //EntityFinal = "'" + EntityFinal;                   
                     //ExportToCSVString += Entity[i].replace(EntityTest, EntityFinal) + "\r\n";  
-                    ExportToCSVString += '=' + Entity[i] + "\r\n";  //here "\t" added to leading zero in export to .csv                    
+                    ExportToCSVString +=  Entity[i] + "\r\n";  //here "\t" added to leading zero in export to .csv                    
                 }
                 else {
                     ExportToCSVString = Entity[i] + "\r\n";
