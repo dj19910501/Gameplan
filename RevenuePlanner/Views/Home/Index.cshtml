@@ -7178,16 +7178,16 @@
         }
 
         //// Variable to hold double click event.
-        var eventTaskClick;
+        var eventTaskDoubleClick;
         //// Function to attach event to show inspect model.
         function AttachEventToTactic() {
             //// Detaching double click event.
-            if (eventTaskClick != undefined) {
-                gantt.detachEvent(eventTaskClick);
+            if (eventTaskDoubleClick != undefined) {
+                gantt.detachEvent(eventTaskDoubleClick);
             }
 
             //// Attaching double click event
-            eventTaskClick = gantt.attachEvent("onTaskClick", function (taskId, e) {
+            eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) {
                 scrollstate = gantt.getScrollState();
                 bodyscrollpos = $(window).scrollTop();
 
@@ -7196,15 +7196,15 @@
 
         }
 
-        var eventTaskRowClick;
+        var eventTaskDoubleClickevent;
         function AttachEventToonTaskRowClick() {
             //// Detaching double click event.
-            if (eventTaskRowClick != undefined) {
-                gantt.detachEvent(eventTaskRowClick);
+            if (eventTaskDoubleClickevent != undefined) {
+                gantt.detachEvent(eventTaskDoubleClickevent);
             }
 
             //// Attaching double click event
-            eventTaskRowClick = gantt.attachEvent("onTaskRowClick", function (taskId, trg) {
+            eventTaskDoubleClickevent = gantt.attachEvent("onTaskRowClick", function (taskId, trg) {
                 scrollstate = gantt.getScrollState();
                 bodyscrollpos = $(window).scrollTop();
             });
@@ -7308,7 +7308,6 @@
         function CloseIconClick() {
             $('.close-x-big-icon').click(function () {
                 //Added by Rahul shah to remove all media code honeycomb data on click of close icon for  PL #2371
-
                 RemoveAllMediaCodeData();
                 $("#modal-container-186470").addClass("transition-close");
                 $("#modal-container-186470").removeClass("transition_y");
@@ -8418,7 +8417,7 @@
             }, 500);
         };
 
-        gantt.attachEvent("onTaskClick", function (id, e) {
+        gantt.attachEvent("onTaskDblClick", function (id, e) {
 
             flg = false;
         });

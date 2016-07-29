@@ -911,16 +911,16 @@
     });
 
     //// Variable to hold double click event.
-    var eventTaskClick;
+    var eventTaskDoubleClick;
     //// Function to attach event to show inspect model.
     function AttachEventToTactic() {
         //// Detaching double click event.
-        if (eventTaskClick != undefined) {
-            gantt.detachEvent(eventTaskClick);
+        if (eventTaskDoubleClick != undefined) {
+            gantt.detachEvent(eventTaskDoubleClick);
         }
 
         //// Attaching double click event
-        eventTaskClick = gantt.attachEvent("onTaskClick", function (taskId, e) { ShowSidePanel(taskId, e) });
+        eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowSidePanel(taskId, e) });
     }
 
     //// Modified By Maninder Singh Wadhva PL Ticket#47
