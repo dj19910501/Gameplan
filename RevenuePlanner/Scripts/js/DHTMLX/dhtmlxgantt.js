@@ -3185,7 +3185,7 @@ gantt._render_data = function () {
 
     //End
     // Modified By Nishant Sheth
-    // For Performance issue regarding selected honey comb Date: 29-Jul-2016
+    // For Performance issue regarding selected honey comb Date: 29-Jul-2016 
     var DisplayedItems = $('.honeycombbox-icon-gantt.calender-view-honeycomb');
     if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "" && DisplayedItems != null && ExportSelectedIds.TaskID.length > 0) {
         $.each(DisplayedItems, function () {
