@@ -606,6 +606,10 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
+            if (!string.IsNullOrEmpty(controllerName) && controllerName.ToLower().Contains("measuredashboard"))
+            {
+                return RedirectToAction("MeasureReport", "Report");
+            }
             //Modified By komal Rawal for #2283 Could not login  after session timeout from plan page
             List<BDSService.Menu> ListofControllerMenus = new List<BDSService.Menu>();
             ListofControllerMenus = AppMenus.ToList().Where(am => am.ControllerName != null && am.ControllerName.ToLower().Equals(controllerName)).ToList();
