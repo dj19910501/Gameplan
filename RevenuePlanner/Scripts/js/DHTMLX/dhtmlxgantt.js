@@ -3184,17 +3184,21 @@ gantt._render_data = function () {
     }
 
     //End
-   
-    if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "") {
-        if (ExportSelectedIds.TaskID.length > 0) {
-            for (var i = 0; i < ExportSelectedIds.TaskID.length; i++) {
-                if (ExportSelectedIds.PlanFlag[i] == 'Calender') {
-                    $("div").find("[name1='" + ExportSelectedIds.TaskID[i] + "']").addClass("honeycombbox-icon-gantt-Active");
+    // Modified By Nishant Sheth
+    // For Performance issue regarding selected honey comb Date: 29-Jul-2016
+    var DisplayedItems = $('.honeycombbox-icon-gantt.calender-view-honeycomb');
+    if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "" && DisplayedItems != null && ExportSelectedIds.TaskID.length > 0) {
+        $.each(DisplayedItems, function () {
+            var ExportIndex = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+            if (ExportIndex >= 0) {
+                if (ExportSelectedIds.PlanFlag[ExportIndex] == 'Calender') {
+                    $("div").find("[name1='" + ExportSelectedIds.TaskID[ExportIndex] + "']").addClass("honeycombbox-icon-gantt-Active");
                 }
             }
-        }
+        });
     }
-  
+
+
     if (ExportSelectedIds.TaskID.length == 0) {
         $(".honeycombbox").hide();
     }
@@ -8728,19 +8732,21 @@ gantt.scrollTo = function (left, top) {
                 }
             }
             //End
-
-
-            if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "") {
-                if (ExportSelectedIds.TaskID.length > 0) {
-                    for (var i = 0; i < ExportSelectedIds.TaskID.length; i++) {
-                        if (ExportSelectedIds.PlanFlag[i] == 'Calender') {
-                            $("div").find("[name1='" + ExportSelectedIds.TaskID[i] + "']").addClass("honeycombbox-icon-gantt-Active");
+            // Modified By Nishant Sheth
+            // For Performance issue regarding selected honey comb Date: 29-Jul-2016
+            var DisplayedItems = $('.honeycombbox-icon-gantt.calender-view-honeycomb');
+            if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "" && DisplayedItems != null && ExportSelectedIds.TaskID.length > 0) {
+                $.each(DisplayedItems, function () {
+                    var ExportIndex = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                    if (ExportIndex >= 0) {
+                        if (ExportSelectedIds.PlanFlag[ExportIndex] == 'Calender') {
+                            $("div").find("[name1='" + ExportSelectedIds.TaskID[ExportIndex] + "']").addClass("honeycombbox-icon-gantt-Active");
                         }
                     }
-                }
+                });
             }
 
-        
+
 
             if (this.$grid_data.scrollTop != top) {
                 this.$grid_data.scrollTop = top % gantt.config.row_height;
