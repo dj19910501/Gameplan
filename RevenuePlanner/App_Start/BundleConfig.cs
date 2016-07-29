@@ -17,7 +17,8 @@ namespace RevenuePlanner
 
             bundles.Add(new StyleBundle("~/Content/css/GetCSS").Include(
                  "~/Content/css/font-awesome.css",
-                "~/Content/css/bootstrap.css",
+                //"~/Content/css/bootstrap.css",
+                "~/Content/css/bootstrap_1.css",
                      "~/Content/css/datepicker.css",
                      "~/Content/css/dhtmlxgantt.css",
                      "~/Content/css/summernote.css",
@@ -28,7 +29,8 @@ namespace RevenuePlanner
 
             bundles.Add(new StyleBundle("~/Content/css/GetCSSForLogin").Include(
                "~/Content/css/font-awesome.css",
-              "~/Content/css/bootstrap.css",
+              //"~/Content/css/bootstrap.css",
+              "~/Content/css/bootstrap_1.css",
                    "~/Content/css/summernote.css",
                     "~/Content/css/bootstrap-responsive.min.css",
                        "~/Content/css/style.css",

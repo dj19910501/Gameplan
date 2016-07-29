@@ -2424,7 +2424,8 @@ namespace RevenuePlanner.Controllers
             StringBuilder html = new StringBuilder();
             html.Append("<html>");
             html.Append("<head>");
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/bootstrap.css")));
+            //html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/bootstrap.css")));Rename bootstrap css file - 29-7-2016
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/bootstrap_1.css")));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/bootstrap-responsive.css")));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/style.css")));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/datepicker.css")));

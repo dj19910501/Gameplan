@@ -2409,8 +2409,13 @@ span.link-blue:hover {
     font-family: inherit !important;/*source_sans_proregular ;*//* Edited for #2219 - Bhumika */
     color: #A8A8A8;
     font-size: 15px;
-    margin-left: -20px;
+    margin-left: -18px; /* Changed to solve alignment issue*/
 }
+.unlink-icon, .gantt_tree_indent, 
+.gantt_tree_icon, .gantt_blank,
+.gantt_file  {width:18px}
+.unlink-icon.ROIPackage, .unlink-icon{margin-right:0}
+
 
 .content-panel-tab,
 .nl-form-small {
@@ -10949,11 +10954,12 @@ color: #3e3f37; /* Edited for #2219 - Bhumika */
   line-height: normal;
   vertical-align: top;
 }
+#sidebar .save-filter .btn.btn-blue{max-width:100px}
 .save-filter .btn-link {/* Edited for #2219 - Bhumika */
   color:#3e3f37;
   font-weight: normal;
   margin-left: 15px;
-  margin-top: 3px;
+  margin-top: 6px;
   vertical-align: top;
 }
 .sidebar-preset .load-filter p {
@@ -15813,13 +15819,16 @@ a:focus, a:hover{outline:0 none !important}
     margin-top: -4px;
     height: 38px !important;
 }
-.hm-btn-wrap button.btn-gray{/* Added for #2446 Bhumika */
+/* Added for #2446 Bhumika */
+.hm-btn-wrap button.btn-gray,
+.btn-fill-white {
     background: #fff ;
     color: inherit;
     border: 1px solid #c6c6c6;
+    padding:0 12px;
 }
-    .hm-btn-wrap button.btn-gray:hover {
-        background: #f0f0f0 ;
+.hm-btn-wrap button.btn-gray:hover, .btn-fill-white:hover {
+    background: #f0f0f0 ; color: inherit;
     }
 #divModelOverview .nl-ti-text ul li.nl-ti-input input {
     padding-top:0;
