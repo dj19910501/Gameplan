@@ -34,19 +34,13 @@ namespace RevenuePlanner.Test.Controllers
             int PlanId = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             var result = objLoginController.Index() as ViewResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                var serializedData = new RouteValueDictionary(result.ViewData);
-                var resultvalue = serializedData["ApplicationReleaseVersion"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            var serializedData = new RouteValueDictionary(result.ViewData);
+            var resultvalue = serializedData["ApplicationReleaseVersion"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+        
         }
         #endregion
 
@@ -74,18 +68,11 @@ namespace RevenuePlanner.Test.Controllers
             form.Password = "Test@1234";
             string returnURL = "https://172.30.17.111/gameplan/Home?activeMenu=Home";
             var result = objLoginController.Index(form, returnURL) as ViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                var serializedData = new RouteValueDictionary(result.ViewData);
-                var resultvalue = serializedData["ApplicationReleaseVersion"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            var serializedData = new RouteValueDictionary(result.ViewData);
+            var resultvalue = serializedData["ApplicationReleaseVersion"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
 
         }
         #endregion
@@ -110,15 +97,9 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             Sessions.User.UserId = DataHelper.GetUserId(PlanId);
             var result = objLoginController.LoadSupportPartialOnLogin() as PartialViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);                
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+           
         }
         #endregion
 
@@ -139,15 +120,9 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = objLoginController.ForgotPassword() as ViewResult;
-
-            if (result != null)
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+           
         }
         #endregion
 
@@ -184,22 +159,10 @@ namespace RevenuePlanner.Test.Controllers
                 objPasswordResetRequest.CreatedDate = DateTime.Now;
                 string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
                 var result = objLoginController.ResetPassword(PasswordResetRequestId, false) as ViewResult;
-                if (result != null)
-                {
-                    Assert.IsNotNull(result.Model);
-                    var serializedData = new RouteValueDictionary(result.Model);
-                    var resultvalue = serializedData["UserId"];
-                    Assert.AreEqual(objUser.UserId.ToString(), resultvalue.ToString());
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-                }
-                else
-                {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                }
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
+                var serializedData = new RouteValueDictionary(result.Model);
+                var resultvalue = serializedData["UserId"];
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value resultvalue:  " + resultvalue.ToString());
+                Assert.AreEqual(objUser.UserId.ToString(), resultvalue.ToString());               
             }
         }
         #endregion
@@ -229,20 +192,11 @@ namespace RevenuePlanner.Test.Controllers
             form.NewPassword = "test1234";
             form.ConfirmNewPassword = "test1234";
             var result = objLoginController.ResetPassword(form) as ViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Model);
-                var serializedData = new RouteValueDictionary(result.Model);
-                var resultvalue = serializedData["UserId"];
-                Assert.AreEqual(Sessions.User.UserId.ToString(), resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
-
+            var serializedData = new RouteValueDictionary(result.Model);
+            var resultvalue = serializedData["UserId"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
+            Assert.AreEqual(Sessions.User.UserId.ToString(), resultvalue.ToString());
+         
         }
         #endregion
 
@@ -268,15 +222,9 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.UserId = DataHelper.GetUserId(PlanId);
             string currentPassword = "Test1234";
             var result = objLoginController.CheckCurrentPassword(currentPassword, Sessions.User.UserId.ToString()) as JsonResult;
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            
         }
         #endregion
 
@@ -298,15 +246,8 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = objLoginController.MaintenanceSite() as ViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
         }
         #endregion
     }

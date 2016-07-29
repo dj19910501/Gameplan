@@ -33,18 +33,10 @@ namespace RevenuePlanner.Test.Controllers
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
             var result = objOrganizationController.ViewEditPermission(Guid.Empty.ToString(), Enums.UserPermissionMode.View.ToString()) as ViewResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.AreEqual("ViewEditPermission", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.AreEqual("ViewEditPermission", result.ViewName);
+            
         }
         #endregion
 
@@ -64,18 +56,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
             var result = objOrganizationController.ViewEditPermission(Sessions.User.UserId.ToString(), Enums.UserPermissionMode.View.ToString()) as ViewResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.AreEqual("ViewEditPermission", result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.AreEqual("ViewEditPermission", result.ViewName);
+           
         }
         #endregion
 
@@ -95,18 +78,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
             var result = objOrganizationController.ViewEditPermission(Guid.Empty.ToString(), Enums.UserPermissionMode.Edit.ToString()) as ViewResult;
-
-            if (result == null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
+        
         }
         #endregion
 
@@ -126,18 +100,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
             var result = objOrganizationController.ViewEditPermission(Sessions.User.UserId.ToString(), Enums.UserPermissionMode.Edit.ToString()) as ActionResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNotNull(result);
+           
         }
         #endregion
 
@@ -157,21 +122,11 @@ namespace RevenuePlanner.Test.Controllers
             //// Call save user permission and custom restriction method
             OrganizationController objOrganizationController = new OrganizationController();
             var result = objOrganizationController.SaveUserPermission(string.Empty, Guid.Empty.ToString()) as JsonResult;
-
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Data);
-
-                //// Json result data should contain status property
-                Assert.IsNotNull(result.GetValue("status"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("status"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("status"));
+            Assert.IsNotNull(result.GetValue("status"));
+           
         }
         #endregion
 
@@ -193,20 +148,11 @@ namespace RevenuePlanner.Test.Controllers
             string customRestrictions = DataHelper.GetCustomRestrictionInViewEditForm(Sessions.User.UserId);
             var result = objOrganizationController.SaveUserPermission(customRestrictions, Sessions.User.UserId.ToString()) as JsonResult;
 
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Data);
-
-                //// Json result data should contain status property
-                Assert.IsNotNull(result.GetValue("status"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("status"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("status"));
+            Assert.IsNotNull(result.GetValue("status"));
+           
         }
         #endregion
 

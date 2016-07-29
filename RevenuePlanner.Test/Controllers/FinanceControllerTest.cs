@@ -37,18 +37,9 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call index method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.Index() as PartialViewResult;
-            if (result == null)
-            {
-                
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            var result = objFinanceController.Index() as ActionResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNotNull(result);
 
         }
 
@@ -76,17 +67,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.CreateNewBudget("") as ViewResult;
-            if (result == null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
 
         }
 
@@ -144,17 +126,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail(BudgetId, BudgetDetailName, ParentId, "Yearly", true) as PartialViewResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
 
         }
 
@@ -178,17 +151,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail(null, null, null, "") as JsonResult;
-            if (result == null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Assert.IsNull(result);
 
         }
 
@@ -213,18 +178,11 @@ namespace RevenuePlanner.Test.Controllers
             string ParentId = "1138";
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.SaveNewBudgetDetail(null, BudgetDetailName, ParentId, "", true) as JsonResult;
-            if (result == null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            var result = objFinanceController.SaveNewBudgetDetail(null, BudgetDetailName, ParentId, "", true) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+
+            Assert.IsNull(result);
 
         }
 
@@ -251,17 +209,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail(BudgetID, null, ParentId, "", true) as JsonResult;
-            if (result == null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
 
         }
 
@@ -287,17 +236,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail("", BudgetDetailName, "", null, true) as JsonResult;
-            if (result == null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
 
         }
 
@@ -352,17 +292,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail("", BudgetDetailName, ParentId, "quaterly", true) as JsonResult;
-            if (result == null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
 
         }
 
@@ -389,17 +320,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail(BudgetId, "", ParentId, "", true) as JsonResult;
-            if (result == null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
 
         }
 
@@ -425,18 +347,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.RefreshMainGridData(0, "") as PartialViewResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
         }
         #endregion
 
@@ -456,17 +368,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.RefreshMainGridData(0, "Quaterly") as PartialViewResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.ViewName:  " + result.ViewName);
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Assert.IsNotNull(result.ViewName);
 
         }
         #endregion
@@ -487,17 +391,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.RefreshMainGridData(0, null) as ViewResult;
-            if (result == null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
 
         }
         #endregion
@@ -519,18 +414,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.RefreshMainGridData(0, "Quaterly") as PartialViewResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
         }
         #endregion
 
@@ -550,17 +435,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.RefreshMainGridData(9, "Quaterly") as PartialViewResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
 
         }
         #endregion
@@ -639,19 +515,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetFinanceHeaderValue method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetFinanceHeaderValue() as ViewResult;
-
-            if (result == null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
 
         }
         #endregion
@@ -672,19 +537,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetFinanceHeaderValue method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetFinanceHeaderValue(0, "", "", false) as JsonResult;
-
-            if (result == null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
 
         }
         #endregion
@@ -705,19 +559,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetFinanceHeaderValue method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetFinanceHeaderValue(0, null, null, true) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
 
-            if (result == null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Assert.IsNull(result);
 
         }
         #endregion
@@ -742,17 +586,8 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetFinanceHeaderValue(budgetId, timeFrameOption, isQuarterly, IsMain) as PartialViewResult;
             var modelData = (FinanceModelHeaders)result.Model;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result);
 
         }
         #endregion
@@ -777,20 +612,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetChildBudget method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetChildBudget(budgetId) as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -810,19 +633,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetChildBudget method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetChildBudget() as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
         }
         #endregion
@@ -843,19 +655,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetParentBudget method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetParentBudget() as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);            
 
         }
         #endregion
@@ -876,19 +677,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetParentBudget method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetParentBudget(budgetId) as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
         }
         #endregion
@@ -909,19 +699,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetChildTimeFrame method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetChildTimeFrame() as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
         }
         #endregion
@@ -948,20 +727,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.EditBudgetGridData(budgetId, IsQuaterly, string.Empty) as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            
         }
         #endregion
 
@@ -981,20 +749,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.EditBudgetGridData(0, "", "") as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            
         }
         #endregion
 
@@ -1014,19 +771,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.EditBudgetGridData(0, "", "") as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
         }
         #endregion
@@ -1048,19 +794,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.EditBudgetGridData(budgetId, IsQuaterly, "") as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
 
         }
         #endregion
@@ -1091,20 +827,10 @@ namespace RevenuePlanner.Test.Controllers
             //// Call UpdateBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetGridData(budgetId, IsQuaterly, nValue, oValue, ColumnName, Period, ParentRowId) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+           
         }
 
         #endregion
@@ -1125,19 +851,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call UpdateBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetGridData(0, "", nValue, "", "", "", 0) as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
         }
 
@@ -1166,20 +881,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call UpdateBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetGridData(budgetId, IsQuaterly, "", oValue, ColumnName, Period, ParentRowId) as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data :  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
 
         #endregion
@@ -1207,20 +910,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call UpdateBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetGridData(budgetId, IsQuaterly, nValue, "", ColumnName, Period, ParentRowId) as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            
         }
 
         #endregion
@@ -1248,20 +940,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call UpdateBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetGridData(budgetId, IsQuaterly, nValue, oValue, "", Period, ParentRowId) as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
 
         #endregion
@@ -1282,20 +962,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call UpdateBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetGridData(0, null, null, null, null, null, 0) as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data :  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
 
         #endregion
@@ -1357,20 +1025,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call UpdateBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetGridData(budgetId, IsQuaterly, nValue, null, ColumnName, Period, ParentRowId) as JsonResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
 
         #endregion
@@ -1435,20 +1091,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call UpdateBudgetDetail method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetDetail(budgetId, BudgetDetailId, ParentId, mainTimeFrame, "", OwnerId, BudgetDetailName) as PartialViewResult;
-
-            if (result != null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+            
         }
         #endregion
 
@@ -1468,20 +1113,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call UpdateBudgetDetail method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetDetail("", "", "", "", "") as JsonResult;
-
-            if (result == null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
         }
         #endregion
 
@@ -1501,20 +1134,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call UpdateBudgetDetail method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetDetail(null, null, null, null) as JsonResult;
-
-            if (result == null)
-            {
-
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNull(result);
+            
         }
         #endregion
 
@@ -1546,12 +1168,12 @@ namespace RevenuePlanner.Test.Controllers
 
             List<Budget_DetailAmount> BudgetDetailAmount = db.Budget_DetailAmount.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
             List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = (from Cost in db.Plan_Campaign_Program_Tactic_LineItem_Cost
-                                                                                 //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                     //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
                                                                                  where LineItemids.Contains(Cost.PlanLineItemId)
                                                                                  select Cost).ToList();
 
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in db.Plan_Campaign_Program_Tactic_LineItem_Actual
-                                                                                     //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
+                                                                                         //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
                                                                                      join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
                                                                                      join Tactic in db.Plan_Campaign_Program_Tactic on TacticLineItem.PlanTacticId equals Tactic.PlanTacticId
                                                                                      where LineItemids.Contains(Actual.PlanLineItemId)
@@ -1566,18 +1188,9 @@ namespace RevenuePlanner.Test.Controllers
 
             BudgetAmount obj = new BudgetAmount();
             obj = objFinanceController.GetAmountValue(IsQuaterly, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount, LineItemidBudgetList);
-
-            if (obj != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(obj);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + obj.Budget);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + obj);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value Budget:  " + obj.Budget);
+            Assert.IsNotNull(obj.Budget);
+           
 
         }
         #endregion
@@ -1600,18 +1213,8 @@ namespace RevenuePlanner.Test.Controllers
 
             BudgetAmount obj = new BudgetAmount();
             obj = objFinanceController.GetAmountValue(null, null, null, null, null);
-
-            if (obj != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(obj);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + obj.Budget);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + obj);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value Budget:  " + obj.Budget);
+            Assert.IsNotNull(obj.Budget);
 
         }
         #endregion
@@ -1642,12 +1245,12 @@ namespace RevenuePlanner.Test.Controllers
 
             List<Budget_DetailAmount> BudgetDetailAmount = db.Budget_DetailAmount.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
             List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = (from Cost in db.Plan_Campaign_Program_Tactic_LineItem_Cost
-                                                                                 //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                     //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
                                                                                  where LineItemids.Contains(Cost.PlanLineItemId)
                                                                                  select Cost).ToList();
 
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in db.Plan_Campaign_Program_Tactic_LineItem_Actual
-                                                                                     //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
+                                                                                         //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
                                                                                      join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
                                                                                      join Tactic in db.Plan_Campaign_Program_Tactic on TacticLineItem.PlanTacticId equals Tactic.PlanTacticId
                                                                                      where LineItemids.Contains(Actual.PlanLineItemId)
@@ -1662,18 +1265,8 @@ namespace RevenuePlanner.Test.Controllers
 
             BudgetAmount obj = new BudgetAmount();
             obj = objFinanceController.GetMainGridAmountValue(IsQuaterly, mainTimeFrame, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount, LineItemidBudgetList);
-
-            if (obj != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(obj);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + obj.Budget);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + obj);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value Budget:  " + obj.Budget);
+            Assert.IsNotNull(obj.Budget);
 
         }
         #endregion
@@ -1696,18 +1289,9 @@ namespace RevenuePlanner.Test.Controllers
 
             BudgetAmount obj = new BudgetAmount();
             obj = objFinanceController.GetMainGridAmountValue(true, null, null, null, null, null);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value Budget:  " + obj.Budget);
+            Assert.IsNotNull(obj.Budget);
 
-            if (obj != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(obj);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + obj.Budget);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + obj);
-            }
 
         }
         #endregion
@@ -1728,18 +1312,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.EditPermission(0, "", "") as ViewResult;
-            if (result == null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result :  " + result);
+            Assert.IsNull(result);
         }
         #endregion
 
@@ -1759,19 +1333,10 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
 
-            var result = objFinanceController.Delete(Guid.Empty, 0,null) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-
+            var result = objFinanceController.Delete(Guid.Empty, 0, null) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value  result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+           
         }
         #endregion
 
@@ -1792,18 +1357,8 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             var result = objFinanceController.GetuserRecord(null) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value  result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);            
         }
         #endregion
 
@@ -1824,18 +1379,8 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             var result = objFinanceController.SaveDetail(null, null, null, null) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -1856,18 +1401,8 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             var result = objFinanceController.DrpFilterByBudget(0, null, null) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data); 
         }
         #endregion
 
@@ -1885,20 +1420,11 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
             //// Call CreateNewBudget
-            FinanceController objFinanceController = new FinanceController();
+            FinanceController objFinanceController = new FinanceController();           
 
             var result = objFinanceController.GetColumns(0) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value  result.Data :  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
         }
         #endregion
@@ -1920,18 +1446,9 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             var result = objFinanceController.DeleteBudgetForecastData(null) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            
         }
         #endregion
 
@@ -1952,18 +1469,8 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             var result = objFinanceController.EditBudget(0, null, null);
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNotNull(result);
         }
         #endregion
 
@@ -1984,18 +1491,9 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             var result = objFinanceController.GetParentLineItemList(0) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            
         }
         #endregion
 
@@ -2016,17 +1514,8 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             var result = objFinanceController.GetChildLineItemList(0) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
         }
         #endregion
@@ -2067,23 +1556,16 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Import_Finance_Budget()
         {
-            
+
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             FinanceController controller = new FinanceController();
             int BudgetDetailId = DataHelper.GetBudgetDetailId();
-            Sessions.BudgetDetailId= BudgetDetailId;
+            Sessions.BudgetDetailId = BudgetDetailId;
             var result = controller.ExcelFileUpload() as ActionResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNotNull(result);
+          
         }
         #endregion
 

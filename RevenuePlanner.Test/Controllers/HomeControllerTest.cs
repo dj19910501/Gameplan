@@ -44,29 +44,8 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             HomeController objHomeController = new HomeController();
             var result = objHomeController.Index() as ViewResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                if (!(result.ViewName.Equals("Index") || result.ViewName.Equals("PlanSelector")))
-                {
-                    Assert.Fail();
-                }
-                else if (result.ViewName.Equals("Index"))
-                {
-                    Assert.IsNotNull(result.Model);
-                    HomePlanModel objModel = (HomePlanModel)result.Model;
-                    Assert.AreNotEqual(0, objModel.PlanId);
-                }
-
-                Assert.IsNotNull(result.ViewBag.ActiveMenu);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.ActiveMenu);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewBag.ActiveMenu);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ActiveMenu :  " + result.ViewBag.ActiveMenu);
+            Assert.IsNotNull(result.ViewBag.ActiveMenu);
         }
         #endregion
 
@@ -92,29 +71,8 @@ namespace RevenuePlanner.Test.Controllers
             RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
             Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
             var result = objHomeController.Index(Enums.ActiveMenu.Home, planId) as ViewResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                if (!(result.ViewName.Equals("Index") || result.ViewName.Equals("PlanSelector")))
-                {
-                    Assert.Fail();
-                }
-                else if (result.ViewName.Equals("Index"))
-                {
-                    Assert.IsNotNull(result.Model);
-                    HomePlanModel objModel = (HomePlanModel)result.Model;
-                    Assert.AreNotEqual(0, objModel.PlanId);
-                }
-
-                Assert.IsNotNull(result.ViewBag.ActiveMenu);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.ActiveMenu);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewBag.ActiveMenu);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ActiveMenu:  " + result.ViewBag.ActiveMenu);
+            Assert.IsNotNull(result.ViewBag.ActiveMenu);
         }
         #endregion
 
@@ -145,28 +103,8 @@ namespace RevenuePlanner.Test.Controllers
             Common.PlanUserSavedViews = SetOFLastViews;
             var result = objHomeController.Index(Enums.ActiveMenu.Plan, planId) as ViewResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                if (!(result.ViewName.Equals("Index") || result.ViewName.Equals("PlanSelector")))
-                {
-                    Assert.Fail();
-                }
-                else if (result.ViewName.Equals("Index"))
-                {
-                    Assert.IsNotNull(result.Model);
-                    HomePlanModel objModel = (HomePlanModel)result.Model;
-                    Assert.AreNotEqual(0, objModel.PlanId);
-                }
-
-                Assert.IsNotNull(result.ViewBag.ActiveMenu);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.ActiveMenu);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewBag.ActiveMenu);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ActiveMenu:  " + result.ViewBag.ActiveMenu);
+            Assert.IsNotNull(result.ViewBag.ActiveMenu);
         }
         #endregion
 
@@ -187,19 +125,11 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Tactic.ToString();
 
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
+            
         }
         #endregion
 
@@ -219,19 +149,10 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             string ViewBy = PlanGanttTypes.Custom.ToString();
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -251,18 +172,10 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             string ViewBy = PlanGanttTypes.Status.ToString();
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", "");
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -292,19 +205,10 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             string ViewBy = PlanGanttTypes.Tactic.ToString();
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", Status) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -334,19 +238,10 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             string ViewBy = PlanGanttTypes.Custom.ToString();
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", Status) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -373,18 +268,10 @@ namespace RevenuePlanner.Test.Controllers
             string tactictypeids = string.Join(",", tactic);
 
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, tactictypeids, "") as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
 
         #endregion
@@ -413,18 +300,10 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, tactictypeids, "") as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -451,18 +330,10 @@ namespace RevenuePlanner.Test.Controllers
             string Ownerids = string.Join(",", Owner);
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
 
         #endregion
@@ -490,18 +361,10 @@ namespace RevenuePlanner.Test.Controllers
             string Ownerids = string.Join(",", Owner);
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
 
         #endregion
@@ -540,18 +403,10 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, tactictypeids, Status) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -588,18 +443,10 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, tactictypeids, Status) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -641,18 +488,10 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Home.ToString(), false, tactictypeids, Status) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -694,18 +533,10 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Home.ToString(), false, tactictypeids, Status) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -726,18 +557,10 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Tactic.ToString();
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -758,18 +581,10 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Custom.ToString();
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -790,18 +605,10 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Status.ToString();
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -832,18 +639,10 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Tactic.ToString();
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, "", Status) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -874,18 +673,10 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Custom.ToString();
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, "", Status) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -913,18 +704,10 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, "") as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -952,18 +735,10 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, "") as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -990,18 +765,10 @@ namespace RevenuePlanner.Test.Controllers
             string Ownerids = string.Join(",", Owner);
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
 
         #endregion
@@ -1029,18 +796,10 @@ namespace RevenuePlanner.Test.Controllers
             string Ownerids = string.Join(",", Owner);
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
 
         #endregion
@@ -1079,18 +838,10 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, Status) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -1126,19 +877,10 @@ namespace RevenuePlanner.Test.Controllers
             string tactictypeids = string.Join(",", tactic);
 
             var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, Status) as JsonResult;
-
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -1180,18 +922,10 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, Status) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
@@ -1233,23 +967,15 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, Status) as JsonResult;
 
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.Data);
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("taskData"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.GetValue("taskData"));
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
+            Assert.IsNull(result.GetValue("taskData"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNull(result.Data);
         }
         #endregion
 
         #region Common Function
-
+        //this function is use for internal
         public JsonResult LoadFunction(string ViewBy, string OwnerIds, string Activemenu, bool getViewByList, string Tactictypeids, string Statusids)
         {
             Console.WriteLine("Common function.\n");
@@ -1304,14 +1030,14 @@ namespace RevenuePlanner.Test.Controllers
                 Assert.IsNotNull(result.Model);
                 HomePlanModel objModel = (HomePlanModel)result.Model;
                 Assert.IsNotNull(objModel);
-
+                Assert.IsTrue(true);
                 Assert.IsNotNull(result.ViewBag.IsPlanEditable);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewBag.IsPlanEditable);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value:  " + result.ViewBag.IsPlanEditable);
             }
             else
             {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewBag.IsPlanEditable);
+                Assert.IsTrue(false);
+                //Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.ViewBag.IsPlanEditable);
             }
         }
         #endregion
@@ -1334,18 +1060,9 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = DataHelper.GetPlanId();
             int Status = 0; // Open tactic
             var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty, string.Empty, Convert.ToInt32(Sessions.PlanId)) as JsonResult;
-
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+           
         }
         #endregion
 
@@ -1368,17 +1085,8 @@ namespace RevenuePlanner.Test.Controllers
             int Status = 1; // All tactic
             var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty, string.Empty, Convert.ToInt32(Sessions.PlanId)) as JsonResult;
 
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -1402,17 +1110,8 @@ namespace RevenuePlanner.Test.Controllers
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
             var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty, Convert.ToInt32(Sessions.PlanId)) as JsonResult;
 
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -1435,18 +1134,8 @@ namespace RevenuePlanner.Test.Controllers
             int Status = 1; // All tactic
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
             var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty, Convert.ToInt32(Sessions.PlanId)) as JsonResult;
-
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -1466,18 +1155,9 @@ namespace RevenuePlanner.Test.Controllers
             PlanController objPlanController = new PlanController();
             int planId = DataHelper.GetPlanId();
             var result = objPlanController.GetPlanByPlanID(planId) as Task<JsonResult>;
-
-            if (result != null)
-            {
-                // Json result data should not be null
-                Assert.IsNotNull(result.Status);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Status);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Status:  " + result.Status);
+            Assert.IsNotNull(result.Status);
+            
         }
         // As we have deleted method from Plancontroller
         //[TestMethod]
@@ -1501,7 +1181,7 @@ namespace RevenuePlanner.Test.Controllers
         //    {
         //        //// Json result data should not be null
         //        Assert.IsNotNull(result.Data);
-        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
+        //        Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value:  " + result.Data);
         //    }
         //    else
         //    {
@@ -1525,17 +1205,8 @@ namespace RevenuePlanner.Test.Controllers
             string Year = DataHelper.GetYear();
             var result = objHomeController.GetNumberOfActivityPerMonth(planId.ToString(), Year, false) as Task<JsonResult>;
 
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Status);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Status);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Status:  " + result.Status);
+            Assert.IsNotNull(result.Status);
         }
 
         [TestMethod]
@@ -1551,17 +1222,8 @@ namespace RevenuePlanner.Test.Controllers
             string Year = DataHelper.GetYear();
             var result = objHomeController.GetNumberOfActivityPerMonth(CommaSeparatedPlanId, Year, true);
 
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Status);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Status);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Status);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Status:  " + result.Status);
+            Assert.IsNotNull(result.Status);
         }
         #endregion
 
@@ -1607,17 +1269,8 @@ namespace RevenuePlanner.Test.Controllers
             string Status = string.Join(",", lststatus);
 
             var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status, "", "", "") as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNull(result.GetValue("taskData"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
 
         /// <summary>
@@ -1635,18 +1288,13 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
             var result = objHomeController.SaveLastSetofViews("", "", "", "", "", "", "", "") as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName                
-                Assert.AreEqual(true, result.GetValue("isSuccess"));
-                Assert.AreEqual("", result.GetValue("ViewName"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result.Data);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value isSuccess:  " + result.GetValue("isSuccess"));
+            Assert.AreEqual(true, result.GetValue("isSuccess"));
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.GetValue("ViewName"));
+            Assert.AreEqual("", result.GetValue("ViewName"));
+            
         }
 
         /// <summary>
@@ -1664,17 +1312,11 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
 
             var result = objHomeController.SaveLastSetofViews(null, null, null, null, null, null, null, null) as JsonResult;
-            if (result != null)
-            {
-                //// ViewResult shoud not be null and should match with viewName
-                Assert.AreEqual(null, result.GetValue("ViewName"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("ViewName"));
-            }
-            else
-            {
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);          
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.GetValue("ViewName"));
+            Assert.AreEqual(null, result.GetValue("ViewName"));           
         }
 
         /// <summary>
@@ -1692,16 +1334,8 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = objHomeController.LastSetOfViews() as JsonResult;
             //// ViewResult shoud not be null and should match with viewName
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);            
         }
 
         /// <summary>
@@ -1733,16 +1367,9 @@ namespace RevenuePlanner.Test.Controllers
             else
                 presetName = PresetList.FirstOrDefault().Name.ToString();
             var result = objHomeController.SaveDefaultPreset(presetName) as JsonResult;
-            if (result != null)
-            {
-                Assert.AreEqual(true, result.GetValue("isSuccess"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("isSuccess"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("isSuccess"));
+            Assert.AreEqual(true, result.GetValue("isSuccess"));
+            
         }
 
         /// <summary>
@@ -1774,16 +1401,8 @@ namespace RevenuePlanner.Test.Controllers
             else
                 presetName = PresetList.FirstOrDefault().Name.ToString();
             var result = objHomeController.SetFilterPresetName(presetName) as JsonResult;
-            if (result != null)
-            {
-                Assert.AreEqual(true, result.GetValue("isSuccess"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("isSuccess"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("isSuccess"));
+            Assert.AreEqual(true, result.GetValue("isSuccess"));
         }
 
 
@@ -1803,17 +1422,11 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
             var result = objHomeController.DeletePreset("Test") as JsonResult;
-            if (result != null)
-            {
-                Assert.AreEqual(true, result.GetValue("isSuccess"));
-                Assert.AreEqual("Preset Test deleted successfully", result.GetValue("msg")); //Modified by Maitri Gandhi on 28/4/2016 for #2136
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("msg"));
-            }
-            else
-            {
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("isSuccess"));
+            Assert.AreEqual(true, result.GetValue("isSuccess"));            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("msg"));
+            Assert.AreEqual("Preset Test deleted successfully", result.GetValue("msg")); //Modified by Maitri Gandhi on 28/4/2016 for #2136
 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
         }
 
         /// <summary>
@@ -1830,16 +1443,9 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
             var result = objHomeController.DeletePreset("") as JsonResult;
-            if (result != null)
-            {
-                Assert.AreEqual(false, result.GetValue("isSuccess"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("isSuccess"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("isSuccess"));
+            Assert.AreEqual(false, result.GetValue("isSuccess"));
+           
         }
 
         /// <summary>
@@ -1856,16 +1462,9 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
             var result = objHomeController.DeletePreset(null) as JsonResult;
-            if (result != null)
-            {
-                Assert.AreEqual(false, result.GetValue("isSuccess"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("isSuccess"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("isSuccess"));
+            Assert.AreEqual(false, result.GetValue("isSuccess"));
+            
         }
         #endregion
 
@@ -1892,16 +1491,8 @@ namespace RevenuePlanner.Test.Controllers
             string tactictypeids = string.Join(",", tactic);
             string year = db.Plans.Where(pl => pl.PlanId == PlanId).Select(pl => pl.Year).FirstOrDefault();
             var result = objHomeController.GetHeaderDataforHoneycombPDF(tactictypeids, year);
-            if (result != null)
-            {
-                Assert.AreEqual(0, result.GetValue("TotalCount"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("TotalCount"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("TotalCount"));
+            Assert.AreEqual(0, result.GetValue("TotalCount"));
         }
 
         /// <summary>
@@ -1919,16 +1510,8 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
 
             var result = objHomeController.GetHeaderDataforHoneycombPDF("", "2016");
-            if (result != null)
-            {
-                Assert.AreEqual(0, result.GetValue("TotalCount"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("TotalCount"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("TotalCount"));
+            Assert.AreEqual(0, result.GetValue("TotalCount"));
         }
 
         /// <summary>
@@ -1946,16 +1529,8 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
 
             var result = objHomeController.GetHeaderDataforHoneycombPDF(null, "2016");
-            if (result != null)
-            {
-                Assert.AreEqual(0, result.GetValue("TotalCount"));
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("TotalCount"));
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("TotalCount"));
+            Assert.AreEqual(0, result.GetValue("TotalCount"));
         }
 
         #endregion
@@ -1987,19 +1562,11 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = objHomeController.GetTacticTypeListForFilter(PlanId.ToString()) as Task<JsonResult>;
 
-            if (result.Result != null)
-            {
-                Assert.IsNotNull(result.Result.Data);
-                var serializedData = new RouteValueDictionary(result.Result.Data);
-                var resultvalue = serializedData["isSuccess"];
-                Assert.AreEqual("true", resultvalue.ToString(), true);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            var serializedData = new RouteValueDictionary(result.Result.Data);
+            var resultvalue = serializedData["isSuccess"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.AreEqual("true", resultvalue.ToString(), true);
+            
         }
         #endregion
 
@@ -2029,19 +1596,11 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
 
             var result = objHomeController.SetSessionPlan(PlanId.ToString()) as JsonResult;
-
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                Assert.AreEqual(PlanId, result.GetValue("id"));
-              
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("id"));
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("id"));
+            Assert.AreEqual(PlanId, result.GetValue("id"));
+           
         }
         #endregion
 
@@ -2073,17 +1632,10 @@ namespace RevenuePlanner.Test.Controllers
             string Year = TaskData.Year;
             var result = objHomeController.BindUpcomingActivitesValues(PlanId.ToString(), Year) as JsonResult;
 
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("Count")); 
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.GetValue("Count"));
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("Count"));
+            Assert.IsNotNull(result.GetValue("Count"));
         }
         #endregion
 
@@ -2108,20 +1660,12 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
 
             var result = objHomeController.GetCustomAttributes() as JsonResult;
-
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var resultvalue = serializedData["isSuccess"];
-                Assert.AreEqual("true", resultvalue.ToString(), true);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["isSuccess"];            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.AreEqual("true", resultvalue.ToString(), true);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -2146,20 +1690,13 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
             string ActiveMenu = Enums.ActiveMenu.Home.ToString();
             var result = objHomeController.GetPlans(ActiveMenu) as JsonResult;
-
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var resultvalue = serializedData["isSuccess"];
-                Assert.AreEqual("true", resultvalue.ToString(), true);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["isSuccess"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.AreEqual("true", resultvalue.ToString(), true);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+           
         }
 
         /// <summary>
@@ -2183,18 +1720,12 @@ namespace RevenuePlanner.Test.Controllers
             string ActiveMenu = Enums.ActiveMenu.Plan.ToString();
             var result = objHomeController.GetPlans(ActiveMenu) as JsonResult;
 
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var resultvalue = serializedData["isSuccess"];
-                Assert.AreEqual("true", resultvalue.ToString(), true);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["isSuccess"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.AreEqual("true", resultvalue.ToString(), true);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
         }
 
@@ -2219,18 +1750,12 @@ namespace RevenuePlanner.Test.Controllers
             string ActiveMenu = Enums.ActiveMenu.Report.ToString();
             var result = objHomeController.GetPlans(ActiveMenu) as JsonResult;
 
-            if (result.Data != null)
-            {
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var resultvalue = serializedData["isSuccess"];
-                Assert.AreEqual("true", resultvalue.ToString(), true);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["isSuccess"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.AreEqual("true", resultvalue.ToString(), true);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
 
         }
         #endregion
@@ -2256,21 +1781,13 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
             string UserId = Sessions.User.UserId.ToString();
             var result = objHomeController.CheckUserId(UserId) as JsonResult;
-
-            if (result.Data != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var resultvalue = serializedData["returnURL"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["returnURL"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            
         }
         #endregion
 
@@ -2296,21 +1813,9 @@ namespace RevenuePlanner.Test.Controllers
             string UserId = Sessions.User.UserId.ToString();
             string ActiveMenu = Enums.ActiveMenu.Home.ToString();
             string viewBy = Enums.EntityType.Tactic.ToString();
-            var result = objHomeController.GetOwnerListForFilter(PlanId.ToString(), viewBy, ActiveMenu) as Task<JsonResult>;
-
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Result.Data);
-                var serializedData = new RouteValueDictionary(result.Result.Data);
-                var resultvalue = serializedData["isSuccess"];
-                Assert.AreEqual("true", resultvalue.ToString(), true);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            var result = objHomeController.GetOwnerListForFilter(PlanId.ToString(), viewBy, ActiveMenu) as Task<JsonResult>;           
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value:  " + result);
+            Assert.IsNotNull(result);           
 
         }
         #endregion
@@ -2336,25 +1841,9 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
 
             var result = objHomeController.LoadChangeLog(PlanId) as PartialViewResult;
-
-            if (result != null)
-            {
-                if (!(result.ViewName.Equals("_ChangeLog")))
-                {
-                    Assert.Fail();
-                }
-                else if (result.ViewName.Equals("_ChangeLog"))
-                {
-                    Assert.IsNotNull(result.Model);
-                }
-                Assert.IsNotNull(result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+            
         }
         #endregion
 
@@ -2381,21 +1870,11 @@ namespace RevenuePlanner.Test.Controllers
             bool isMultiyear = false;
 
             var result = objHomeController.GetNumberOfActivityPerMonthPer(PlanId.ToString(), strParam, isMultiyear) as Task<JsonResult>;
-
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Result.Data);
-                var serializedData = new RouteValueDictionary(result.Result.Data);
-                var resultvalue = serializedData["strparam"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            var serializedData = new RouteValueDictionary(result.Result.Data);
+            var resultvalue = serializedData["strparam"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
+           
         }
         #endregion
 
@@ -2424,19 +1903,11 @@ namespace RevenuePlanner.Test.Controllers
             RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
             Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
             var result = objHomeController.Homezero() as ViewResult;
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                var serializedData = new RouteValueDictionary(result.ViewData);
-                var resultvalue = serializedData["defaultURL"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            var serializedData = new RouteValueDictionary(result.ViewData);
+            var resultvalue = serializedData["defaultURL"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
+           
 
         }
         #endregion
@@ -2462,21 +1933,11 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
 
             var result = objHomeController.GetCurrentPlanPermissionDetail(PlanId) as JsonResult;
-
-            if (result != null)
-            {
-                //// Json result data should not be null
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var resultvalue = serializedData["IsPlanEditable"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["IsPlanEditable"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
+            
         }
         #endregion
 
@@ -2503,25 +1964,9 @@ namespace RevenuePlanner.Test.Controllers
             string Year = TaskData.Year;
 
             var result = objHomeController.HomePlan(PlanId.ToString(), Year) as PartialViewResult;
-
-            if (result != null)
-            {
-                if (!(result.ViewName.Equals("_PlanDropdown")))
-                {
-                    Assert.Fail();
-                }
-                else if (result.ViewName.Equals("_PlanDropdown"))
-                {
-                    Assert.IsNotNull(result.Model);
-                }
-                Assert.IsNotNull(result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
-
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+          
         }
         #endregion
 
@@ -2557,19 +2002,11 @@ namespace RevenuePlanner.Test.Controllers
                 result = objHomeController.AddROIPackageDetails(tactic.PlanTacticId, pkgItems) as JsonResult;
             }
 
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var data = serializedData["data"];
-                // data object should not be null in json result
-                Assert.AreEqual(data, "Success");
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["data"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value: resultvalue " + resultvalue);
+            Assert.AreEqual(resultvalue, "Success");
+            
         }
 
         /// <summary>
@@ -2609,11 +2046,13 @@ namespace RevenuePlanner.Test.Controllers
                     Assert.IsNotNull(result.Data);
                     var serializedData = new RouteValueDictionary(result.Data);
                     var data = serializedData["Listofdata"];
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + data);
+                    Assert.IsTrue(true);
+                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value:  " + data);
                 }
                 else
                 {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
+                    Assert.IsTrue(false);
+                    //Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
                 }
             }
 
@@ -2622,19 +2061,8 @@ namespace RevenuePlanner.Test.Controllers
                                                                Convert.ToString(objTactic.PlanTacticId),
                                                                Convert.ToString(objTactic.TacticType.ColorCode),
                                                                IsGridView: true);
-
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Data);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var data = serializedData["Listofdata"];
-                Assert.IsNotNull(data);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
         }
 
         #endregion

@@ -31,15 +31,9 @@ namespace RevenuePlanner.Test.Controllers
             objErrorController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objErrorController);
             objErrorController.Url = MockHelpers.FakeUrlHelper.UrlHelper();           
             var result = objErrorController.Error() as ViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+            
         }
         #endregion
 
@@ -60,15 +54,9 @@ namespace RevenuePlanner.Test.Controllers
             objErrorController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objErrorController);
             objErrorController.Url = MockHelpers.FakeUrlHelper.UrlHelper();           
             var result = objErrorController.ElmahError() as ViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+            
         }
         #endregion
 
@@ -91,15 +79,9 @@ namespace RevenuePlanner.Test.Controllers
             int PlanId = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             var result = objErrorController.PageNotFound() as ViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+           
         }
         #endregion
 

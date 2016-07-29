@@ -37,19 +37,16 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = objBoostController.BestInClass() as ViewResult;
-            Assert.IsNotNull(result.Model);
             List<BestInClassModel> objModelList = (List<BestInClassModel>)result.Model;
             BestInClassModel objModel = objModelList.FirstOrDefault();
             var serializedData = new RouteValueDictionary(objModel);
             var resultvalue = serializedData["StageName"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value: result.Model  " + result.Model);
+            Assert.IsNotNull(result.Model);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value: resultvalue " + resultvalue.ToString());            
             Assert.IsNotNull(resultvalue.ToString());
-            if (result != null)
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value: result.Model  " + result.Model);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value: resultvalue.ToString " + resultvalue.ToString());
-            }          
         }
-        #endregion        
+        #endregion
 
         #region Action to Save BIC
         /// <summary>
@@ -86,23 +83,12 @@ namespace RevenuePlanner.Test.Controllers
             if (objBestinClassModelList != null && objBestinClassModelList.Count > 0)
             {
                 var result = objBoostController.SaveBIC(objBestinClassModelList) as JsonResult;
-                if (result != null)
-                {
-                    Assert.IsNotNull(result.Data);                              
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-                }
-                else
-                {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                }
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Data not found.");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.data:  " + result.Data);
+                Assert.IsNotNull(result.Data);
             }
         }
 
-        #endregion        
+        #endregion
 
         #region Action to show Improvement Tactic Type list.
         /// <summary>
@@ -123,18 +109,11 @@ namespace RevenuePlanner.Test.Controllers
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             var result = objBoostController.Index() as ActionResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result);                   
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
+            Assert.IsNotNull(result);
 
         }
-        #endregion        
+        #endregion
 
         #region Get Improvement Tactic Type list for Boost
         /// <summary>
@@ -155,21 +134,15 @@ namespace RevenuePlanner.Test.Controllers
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             var result = objBoostController.ImprovementTacticList() as JsonResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Data);               
-                var serializedData = new RouteValueDictionary(result.Data);
-                var resultvalue = serializedData["Count"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            var serializedData = new RouteValueDictionary(result.Data);
+            var resultvalue = serializedData["Count"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.IsNotNull(result.Data);
+            Assert.IsNotNull(resultvalue.ToString());
 
         }
-        #endregion        
+        #endregion
 
         #region Get Deatail Improvement Tactic Type for Boost
         /// <summary>
@@ -190,32 +163,20 @@ namespace RevenuePlanner.Test.Controllers
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             int ImprovementTacticTypeId = DataHelper.GetImprovementTacticTypeId(Sessions.User.ClientId);
-            if (ImprovementTacticTypeId > 0)
-            {
-                var result = objBoostController.DetailImprovementTacticData(ImprovementTacticTypeId) as PartialViewResult;
-                if (result != null)
-                {
-                    Assert.IsNotNull(result.ViewName);
-                    var serializedData = new RouteValueDictionary(result.ViewData);
-                    var resultvalue = serializedData["Title"];
-                    var resultvalue1 = serializedData["CanDelete"];
-                    var resultvalue2 = serializedData["IsCreated"];
-                    Assert.IsNotNull(resultvalue.ToString());
-                    Assert.IsNotNull(resultvalue1.ToString());
-                    Assert.IsNotNull(resultvalue2.ToString());
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + " Title: "+ resultvalue.ToString());
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + " CanDelete: " + resultvalue1.ToString());
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + " IsCreated: " + resultvalue2.ToString());
-                }
-                else
-                {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                }
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Improvement Tactic Type not Exist");
-            }
+
+            var result = objBoostController.DetailImprovementTacticData(ImprovementTacticTypeId) as PartialViewResult;
+            Assert.IsNotNull(result.ViewName);
+            var serializedData = new RouteValueDictionary(result.ViewData);
+            var resultvalue = serializedData["Title"];
+            var resultvalue1 = serializedData["CanDelete"];
+            var resultvalue2 = serializedData["IsCreated"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value:  " + " Title: " + resultvalue.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value:  " + " CanDelete: " + resultvalue1.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value:  " + " IsCreated: " + resultvalue2.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
+            Assert.IsNotNull(resultvalue1.ToString());
+            Assert.IsNotNull(resultvalue2.ToString());
+
         }
 
         /// <summary>
@@ -235,27 +196,23 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+
             var result = objBoostController.DetailImprovementTacticData(0) as PartialViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                var serializedData = new RouteValueDictionary(result.ViewData);
-                var resultvalue = serializedData["Title"];
-                var resultvalue1 = serializedData["CanDelete"];
-                var resultvalue2 = serializedData["IsCreated"];
-                Assert.IsNotNull(resultvalue.ToString());
-                Assert.IsNotNull(resultvalue1.ToString());
-                Assert.IsNotNull(resultvalue2.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + " Title: " + resultvalue.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + " CanDelete: " + resultvalue1.ToString());
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + " IsCreated: " + resultvalue2.ToString());
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+
+            Assert.IsNotNull(result.ViewName);
+            var serializedData = new RouteValueDictionary(result.ViewData);
+            var resultvalue = serializedData["Title"];
+            var resultvalue1 = serializedData["CanDelete"];
+            var resultvalue2 = serializedData["IsCreated"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value:  " + " Title: " + resultvalue.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value:  " + " CanDelete: " + resultvalue1.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value:  " + " IsCreated: " + resultvalue2.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
+            Assert.IsNotNull(resultvalue1.ToString());
+            Assert.IsNotNull(resultvalue2.ToString());
+            
         }
-        #endregion        
+        #endregion
 
         #region Save Improvement Tactic Type Details for Boost
         /// <summary>
@@ -275,11 +232,10 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            
+
             ImprovementTacticType ImprovementTacticTypeData = DataHelper.GetImprovementTacticType(Sessions.User.ClientId);
             if (ImprovementTacticTypeData != null)
             {
-                
                 int improvementId = ImprovementTacticTypeData.ImprovementTacticTypeId;
                 string improvementDetails = "[{\"StageId\":\"106\",\"StageType\":\"SV\",\"Value\":\"5\"}]";
                 bool status = ImprovementTacticTypeData.IsDeleted;
@@ -289,19 +245,8 @@ namespace RevenuePlanner.Test.Controllers
                 bool deployToIntegrationStatus = ImprovementTacticTypeData.IsDeployedToIntegration;
                 string UserId = ImprovementTacticTypeData.CreatedBy.ToString();
                 var result = objBoostController.saveImprovementTacticData(improvementId, improvementDetails, status, cost, desc, title, deployToIntegrationStatus, UserId) as JsonResult;
-                if (result != null)
-                {
-                    Assert.IsNotNull(result.Data);                
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-                }
-                else
-                {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                }
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Improvement Tactic Type not Exist");
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
+                Assert.IsNotNull(result.Data);
             }
 
         }
@@ -324,7 +269,7 @@ namespace RevenuePlanner.Test.Controllers
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
             Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
-            
+
             int improvementId = 0;
             string improvementDetails = "[{\"StageId\":\"106\",\"StageType\":\"SV\",\"Value\":\"5\"}]";
             bool status = true;
@@ -332,17 +277,11 @@ namespace RevenuePlanner.Test.Controllers
             string desc = "";
             string title = "New Improvement Tactic Type Test 1234";
             bool deployToIntegrationStatus = false;
-            string UserId = Sessions.User.UserId.ToString() ;
-            var result = objBoostController.saveImprovementTacticData(improvementId, improvementDetails, status, cost, desc, title, deployToIntegrationStatus, UserId) as JsonResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.Data);                
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.Data);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            string UserId = Sessions.User.UserId.ToString();
+            var result = objBoostController.saveImprovementTacticData(improvementId, improvementDetails, status, cost, desc, title, deployToIntegrationStatus, UserId) as JsonResult;            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+            
         }
         #endregion
 
@@ -364,9 +303,9 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            
+
             ImprovementTacticType ImprovementTacticTypeData = DataHelper.GetImprovementTacticType(Sessions.User.ClientId);
-            
+
             if (ImprovementTacticTypeData != null)
             {
                 Sessions.User.UserId = ImprovementTacticTypeData.CreatedBy;
@@ -374,26 +313,15 @@ namespace RevenuePlanner.Test.Controllers
                 bool deployToIntegrationStatus = ImprovementTacticTypeData.IsDeployedToIntegration;
                 string UserId = ImprovementTacticTypeData.CreatedBy.ToString();
                 var result = objBoostController.SaveDeployedToIntegrationStatus(improvementId, deployToIntegrationStatus, UserId) as JsonResult;
-                if (result != null)
-                {
-                    Assert.IsNotNull(result.Data);
-                    var serializedData = new RouteValueDictionary(result.Data);
-                    var resultvalue = serializedData["message"];                   
-                    Assert.IsNotNull(resultvalue.ToString());
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  "+ resultvalue.ToString());
-                    
-                }
-                else
-                {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                }
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Improvement Tactic Type not Exist");
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["message"];
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data :  " + result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
+                Assert.IsNotNull(resultvalue.ToString());
+                Assert.IsNotNull(result.Data);
             }
         }
-        #endregion        
+        #endregion
 
         #region Save Deployed Status for Improvement Tactic Type
         /// <summary>
@@ -421,26 +349,15 @@ namespace RevenuePlanner.Test.Controllers
                 bool deploye = ImprovementTacticTypeData.IsDeployed;
                 string UserId = ImprovementTacticTypeData.CreatedBy.ToString();
                 var result = objBoostController.SaveDeployedToIntegrationStatus(improvementId, deploye, UserId) as JsonResult;
-                if (result != null)
-                {
-                    Assert.IsNotNull(result.Data);
-                    var serializedData = new RouteValueDictionary(result.Data);
-                    var resultvalue = serializedData["message"];
-                    Assert.IsNotNull(resultvalue.ToString());
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());                   
-                }
-                else
-                {
-                    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-                }
+                var serializedData = new RouteValueDictionary(result.Data);
+                var resultvalue = serializedData["message"];                
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.data:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue :  " + resultvalue.ToString());
+                Assert.IsNotNull(resultvalue.ToString());
             }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + "Improvement Tactic Type not Exist");
-            }
-
         }
-        #endregion        
-        
+        #endregion
+
     }
 }

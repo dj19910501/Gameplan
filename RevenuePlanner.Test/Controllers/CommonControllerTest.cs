@@ -31,15 +31,9 @@ namespace RevenuePlanner.Test.Controllers
             objCommonController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCommonController);
             objCommonController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = objCommonController.LoadSupportPartial() as PartialViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);                
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+           
         }
         #endregion
 
@@ -60,15 +54,9 @@ namespace RevenuePlanner.Test.Controllers
             objCommonController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCommonController);
             objCommonController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = objCommonController.LoadNoModelPartial() as PartialViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+            
         }
         #endregion
 
@@ -89,15 +77,9 @@ namespace RevenuePlanner.Test.Controllers
             objCommonController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCommonController);
             objCommonController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var result = objCommonController.LoadSessionWarning() as PartialViewResult;
-            if (result != null)
-            {
-                Assert.IsNotNull(result.ViewName);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.ViewName);
-            }
-            else
-            {
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+           
         }
         #endregion
     }
