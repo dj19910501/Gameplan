@@ -21,6 +21,15 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(Sessions.StartDate))
+                {
+                    Sessions.StartDate = DateTime.Now.AddMonths(6).ToString("MM/dd/yyyy");
+                    Sessions.EndDate = DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy");
+                    if (Convert.ToDateTime(Sessions.StartDate) > Convert.ToDateTime(Sessions.EndDate))
+                    {
+                        Sessions.StartDate = Convert.ToDateTime(Sessions.EndDate).AddMonths(-6).ToString("MM/dd/yyyy");
+                    }
+                }
                 WebClient client = new WebClient();
                 string regularConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
                 string ReportDBConnString = string.Empty;
