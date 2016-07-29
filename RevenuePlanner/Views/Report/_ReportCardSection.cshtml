@@ -141,7 +141,7 @@
         // End By Nishant Sheth
         var Strbundle = "";
         var sb = getStringBuilder();
-        var BtnDetailsText = '';
+        var BtnDetailsText = 'Details';
         //alert(_CardData.length);
         $.each(_CardData, function (key, value) {
             _title = value.title;
@@ -233,7 +233,7 @@
             _ROIPercntgId = roi + percntg + "_" + _fieldId;
 
             // Set the ids for roi package divs/blocks
-            
+
             _CostPackact_projId = costpack + actproj + "_" + _fieldId;
             _CostPackgoalId = costpack + goal + "_" + _fieldId;
             _CostPackPercntgId = costpack + percntg + "_" + _fieldId;
@@ -254,8 +254,7 @@
                 CardParentClass = 'region-content max-card';
                 ChartWidth = '24%';
                 // Add Condtion for if tactic is not with any package then details button not display
-                if(_ROIPackdata==null && _CostPackdata==null)
-                {
+                if (_ROIPackdata == null && _CostPackdata == null) {
                     IsDetails = false;
                 }
             }
@@ -273,14 +272,20 @@
             sb.append('<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>');
             $("#titletext").val(_title).html();
             var _name = htmlEncode(_title);
-            
+
             if (childlabelType == '@Common.RevenueTactic') {
                 if (_ROITitle != null && _ROITitle != '') {
                     _name = htmlEncode(_ROITitle);
                 }
             }
             if (childlabelType != '@Common.RevenueROIPackage') {
-                BtnDetailsText = 'Details';
+                // Add By Nishant Sheth
+                // Desc :: #2376 Observation Re-assigned for set package details text when tactics are connected with ROI package
+                if (childlabelType == '@Common.RevenueTactic') {
+                    BtnDetailsText = 'Package Details';
+                } else {
+                    BtnDetailsText = 'Details';
+                }
                 if (IsDetails) {
                     sb.append('<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + encodeURIComponent(_name) + '","' + String(_revActual_Projected) + '","' + String(_revProjected) + '","' + String(_revGoalYTD) + '","' + String(_revGoalYear) + '","' + String(_revActualPercentage) + '","' + String(_revActualPercentageIsnegative) + '","' + String(_revProjectedPercentage) + '","' + String(_revProjectedPercentageIsnegative) + '")>' + String(BtnDetailsText) + '</button>');  //Modified by Komal Rawal for #2067 special character issue
                 }
@@ -303,8 +308,8 @@
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
             sb.append('</div>');
 
-            
-            if ('@Convert.ToString(Sessions.IsROIPackDisplay).ToLower()' == 'true' && '@Sessions.childlabelType' == '@Common.RevenueTactic') {
+
+            if ('@Convert.ToString(Sessions.IsROIPackDisplay).ToLower()' == 'true' && '@Sessions.childlabelType' == '@Common.RevenueTactic' && IsDetails) { // Modified By Nishant Sheth // #2376 Observation 1 Re-assigned if Tactic is not connected with ROI package then package data will not display
                 sb.append('<div class="dataR">');
                 // Tactic Cost
                 sb.append('<div class="dataR-sub-box">');
@@ -316,7 +321,7 @@
                 // End Tactic Cost
 
                 // ROI Package Cost #2376 // Add By Nishant Sheth
-                
+
                 sb.append('<div class="dataR-sub-box">');
                 sb.append('<span class="title">Package Cost</span>');
                 sb.append('<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _CostPackact_proj + '" id="' + _CostPackact_projId + '">' + _CostPackact_proj + '</span></p>');
@@ -338,7 +343,7 @@
             }
 
 
-            if ('@Convert.ToString(Sessions.IsROIPackDisplay).ToLower()' == 'true' && '@Sessions.childlabelType' == '@Common.RevenueTactic') {
+            if ('@Convert.ToString(Sessions.IsROIPackDisplay).ToLower()' == 'true' && '@Sessions.childlabelType' == '@Common.RevenueTactic' && IsDetails) {// Modified By Nishant Sheth // #2376 Observation 1 Re-assigned if Tactic is not connected with ROI package then package data will not display
                 sb.append('<div class="dataR">');
                 // Tactic ROI
                 sb.append('<div class="dataR-sub-box">');
@@ -370,7 +375,7 @@
                 sb.append('</div>');
             }
 
-            sb.append('<div id="' + _linechartDivId + '_parent" style="height:100%; float:left;width:'+ChartWidth+';">');// Add By Nishant Sheth // Desc :: To resolve console error for card highchart width=-1 errror
+            sb.append('<div id="' + _linechartDivId + '_parent" style="height:100%; float:left;width:' + ChartWidth + ';">');// Add By Nishant Sheth // Desc :: To resolve console error for card highchart width=-1 errror
             sb.append('<div id="' + _linechartDivId + '" style="height:100%;"> ');
             //_cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:419px;float:left;">';
             sb.append('</div>');
