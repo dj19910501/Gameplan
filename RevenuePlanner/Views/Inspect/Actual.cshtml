@@ -260,8 +260,8 @@
                         }
                     }
                     <tr class="height42">
-                        <th id="roiP" class="text-align-right height22 projected padding-bottom9 font3F3F3F border-none">@tacticActual.ROI</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
-                        <th id="roiT" class="border-r font3F3F3F text-align-right addFormatterActualNumber border-none">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                        <th id="roiP" class="text-align-right height22 projected setBudget padding-bottom9 font3F3F3F border-none">@tacticActual.ROI</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                        <th id="roiT" class="border-r font3F3F3F text-align-right setBudget border-none">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                    
                 </tbody>
@@ -342,7 +342,7 @@
                     AssignDefaultValue(); // added by dharmraj, #547
                     fillTotalActualCost();
                     
-
+                    
                     // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
                     $('.setBudget').each(function () {
                         SetBudget("#" + $(this).attr('id'));  // Modified By : Viral Kadiya Internal Review Points 10/29/2014.
@@ -565,7 +565,7 @@
 
             document.getElementById('cP').innerHTML = FormatCurrency(document.getElementById('cP').innerHTML, true);    // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
             document.getElementById('lblTotalCost').innerHTML = FormatCurrency(document.getElementById('lblTotalCost').innerHTML, true);
-
+           
 
             var pcost = $("#hdnCp").val();  // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
             if (pcost != 0 && !isNaN(pcost)) {
@@ -644,7 +644,7 @@
             var pcost = $("#hdnCp").val(); // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
             if (pcost != 0 && !isNaN(pcost)) {
                 var prevenue = $("#hdnRp").val();// Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
-                var roip = (prevenue - pcost) / pcost;
+                var roip = (((prevenue - pcost) / pcost) * 100);// Modified By Nishant Sheth // #2376 Change the formula for ROI Projected
                 $("#roiP").text(FormatCommas(roip.toFixed(2).toString()));
             }
 
@@ -655,6 +655,10 @@
                 $("#roiT").text(FormatCommas(roiT.toFixed(2).toString()));
                 SetPriceValue($("#roiT"));		   // Added by Maitri Gandhi for #1755 on 2/3/2016
             }
+            // Add By Nishant Sheth
+            // To Apply Curenncy format
+            document.getElementById('roiP').innerHTML = FormatCurrency(document.getElementById('roiP').innerHTML, true);
+            document.getElementById('roiT').innerHTML = FormatCurrency(document.getElementById('roiT').innerHTML, true);
         }   
 
 
@@ -735,7 +739,7 @@
             $("#errorMessage").css("display", "none");
             $("#successMessage").css("display", "none");
             $('#tblActual').find('input').each(function () {
-
+                
                 if ($(this).val().trim() != '') {
                     var _isCurrency = $(this).hasClass("currency_dollar");
                     //alert(_isCurrency);

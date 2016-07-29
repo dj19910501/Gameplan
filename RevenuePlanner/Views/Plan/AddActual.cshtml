@@ -2476,10 +2476,10 @@ function fillActualsTable() {
 
         $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">ROI</span>' +
                                 '<span id="border-right" class="table-info-actual-left-wraper">' +
-                                    '<span class="table-info-actual-left truncate" id="ProjectedROI' + _id + '">' +
+                                    '<span class="table-info-actual-left truncate setBudget" id="ProjectedROI' + _id + '">' + // Modified BY Nishant Sheth add class for currency format
                                         _roiProjected.toFixed(2) +
                                     '</span>' +
-                                    '<span class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber " id="ActualROI' + _id + '">' +
+                                    '<span class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActualROI' + _id + '">' +
                                         _roiActual.toFixed(2) +
                                     '</span>' +
                                 '</span>' +

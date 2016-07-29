@@ -2283,7 +2283,7 @@ namespace RevenuePlanner.Controllers
                 var filtercustomfieldoptionid = lstCustomFieldFilter.Where(custmlst => custmlst.CustomFieldId.Equals(CustomTypeId)).Select(custmlst => custmlst.OptionId).ToList();
                 bool isfilteroption = (lstCustomFieldFilter.Where(custmlst => custmlst.CustomFieldId.Equals(CustomTypeId)).Any());
                 var lstCustomFieldTactic = (from customfieldentity in cusomfieldEntity
-                                                //join tactic in lstTactic on customfieldentity.EntityId equals tactic.objPlanTactic.PlanTacticId   //Commenetd by Rahul Shah on 17/11/2015 for PL #1760. Bcz in this condition Campaign and Program data not displyed.
+                                            //join tactic in lstTactic on customfieldentity.EntityId equals tactic.objPlanTactic.PlanTacticId   //Commenetd by Rahul Shah on 17/11/2015 for PL #1760. Bcz in this condition Campaign and Program data not displyed.
                                             join tactic in lstTactic on customfieldentity.EntityId equals (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.PlanProgramId : tactic.PlanTacticId)) //Added by Rahul Shah on 17/11/2015 for PL #1760. It Will Check Campaign And Program Field data 
                                             select new
                                             {
@@ -5135,19 +5135,21 @@ namespace RevenuePlanner.Controllers
             //var objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
             //                                       campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted }).ToList();
             //Modified by Rahul Shah on 14/04/2016 for PL #2110
-            var objPlan_Campaign_Program_Tactic =  Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
-                                                   campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) && 
-                                                   tactic.EndDate > CalendarStartDate && 
-                                                   tactic.StartDate < CalendarEndDate && 
+            var objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
+                                                   campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) &&
+                                                   tactic.EndDate > CalendarStartDate &&
+                                                   tactic.StartDate < CalendarEndDate &&
                                                    tactic.IsDeleted == false).
-                                                   Select(tactic => new { 
-                                                                        PlanTacticId = tactic.PlanTacticId, 
-                                                                        CreatedBy = tactic.CreatedBy, 
-                                                                        TacticTypeId = tactic.TacticTypeId, 
-                                                                        Status = tactic.Status, 
-                                                                        StartDate = tactic.StartDate, 
-                                                                        EndDate = tactic.EndDate, 
-                                                                        isdelete = tactic.IsDeleted }).ToList();
+                                                   Select(tactic => new
+                                                   {
+                                                       PlanTacticId = tactic.PlanTacticId,
+                                                       CreatedBy = tactic.CreatedBy,
+                                                       TacticTypeId = tactic.TacticTypeId,
+                                                       Status = tactic.Status,
+                                                       StartDate = tactic.StartDate,
+                                                       EndDate = tactic.EndDate,
+                                                       isdelete = tactic.IsDeleted
+                                                   }).ToList();
 
             objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
@@ -6674,7 +6676,7 @@ namespace RevenuePlanner.Controllers
                     costProjected = tacticActual.costProjected,
                     costActual = tacticActual.costActual,
                     //// Modified by dharmraj for implement new formula to calculate ROI, #533
-                    roiProjected = tacticActual.costProjected == 0 ? 0 : ((tacticActual.revenueProjected - tacticActual.costProjected) / tacticActual.costProjected),
+                    roiProjected = tacticActual.costProjected == 0 ? 0 : (((tacticActual.revenueProjected - tacticActual.costProjected) / tacticActual.costProjected) * 100),// Modified By Nishant Sheth // #2376 Change the formula for ROI Projected
                     //// Modified by dharmraj for implement new formula to calculate ROI, #533
                     roiActual = tacticActual.costActual == 0 ? 0 : ((tacticActual.revenueActual - tacticActual.costActual) / tacticActual.costActual),
                     individualId = tacticActual.individualId,
@@ -6813,7 +6815,8 @@ namespace RevenuePlanner.Controllers
                 //    Status = Convert.ToString(row["Status"]),
                 //    Title = Convert.ToString(row["Title"])
                 //}).ToList();
-                if (dsPlanCampProgTac == null) {
+                if (dsPlanCampProgTac == null)
+                {
                     dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(PlanId);
                 }
                 List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
@@ -6862,12 +6865,14 @@ namespace RevenuePlanner.Controllers
                 // Add By Nishant Sheth
                 // Get Records from cache memory
                 List<Custom_Plan_Campaign_Program_Tactic> customtacticList = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.CustomTactic.ToString());
-                if (customtacticList == null || customtacticList.Count == 0) {
+                if (customtacticList == null || customtacticList.Count == 0)
+                {
                     customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
                 }
                 objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
                 List<Plan_Campaign_Program_Tactic> tacticList = (List<Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.Tactic.ToString());
-                if (tacticList == null || tacticList.Count == 0) {
+                if (tacticList == null || tacticList.Count == 0)
+                {
                     tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                 }
                 objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
@@ -9235,7 +9240,7 @@ namespace RevenuePlanner.Controllers
                     arrPromoTacticIds.Select(int.Parse).ToList().ForEach(planTacId => planTacAnchorTac.Add(planTacId, AnchorTacticId));
                     Common.UpdateAnchorTacticInCache(planTacAnchorTac);
                 }
-               
+
             }
             catch (Exception ex)
             {
@@ -9453,7 +9458,7 @@ namespace RevenuePlanner.Controllers
 
             var customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
             objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), customtacticList);
-             objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
+            objCache.AddCache(Enums.CacheObject.PlanTacticListforpackageing.ToString(), customtacticList);  //Added by Komal Rawal for #2358 show all tactics in package even if they are not filtered
             // Add By Nishant Sheth
             // Desc :: Set tatcilist for original db/modal format
             var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);

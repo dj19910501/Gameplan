@@ -3477,7 +3477,7 @@ namespace RevenuePlanner.Controllers
             // Modified by dharmraj for implement new formula to calculate ROI, #533
             if (_inspectmodel.Cost > 0)
             {
-                _inspectmodel.ROI = (_inspectmodel.Revenues - _inspectmodel.Cost) / _inspectmodel.Cost;
+                _inspectmodel.ROI = ((_inspectmodel.Revenues - _inspectmodel.Cost) / _inspectmodel.Cost) * 100; // Modified By Nishant Sheth // #2376 Change the formula for ROI Projected
             }
             else
                 _inspectmodel.ROI = 0;
