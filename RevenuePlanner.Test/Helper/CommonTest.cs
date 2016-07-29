@@ -29,8 +29,9 @@ namespace RevenuePlanner.Test.Helper
             HttpContext.Current = DataHelper.SetUserAndPermission();
             Guid clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ClientId;
             string result = controller.TestGenerateCustomName(null, clientId);
+            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result:  " + result);
             Assert.AreEqual(string.Empty, result);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
         }
 
         /// <summary>
@@ -44,8 +45,9 @@ namespace RevenuePlanner.Test.Helper
             Console.WriteLine("To Check Generate custom name with null object and empty GUID.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient();
             string result = controller.TestGenerateCustomName(null, Guid.Empty);
+           
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result:  " + result);
             Assert.AreEqual(string.Empty, result);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
         }
 
         /// <summary>
@@ -63,9 +65,9 @@ namespace RevenuePlanner.Test.Helper
             Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
             objTactic = DataHelper.GetPlanTactic(clientId);
             string result = controller.TestGenerateCustomName(objTactic, clientId);
+            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result:  " + result);
             Assert.IsTrue(string.IsNullOrEmpty(result));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result);
-
         }
 
 
@@ -78,8 +80,9 @@ namespace RevenuePlanner.Test.Helper
             HttpContext.Current = DataHelper.SetUserAndPermission();
             List<int> tacticIds = new List<int>();
             List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(tacticIds, tacticIds, tacticIds);
+            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value CustomFields.Count:  " + CustomFields.Count);
             Assert.AreEqual(0, CustomFields.Count);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + CustomFields.Count);
         }
 
         //[TestMethod] This is a invalid test case List is can be empty but never null.
@@ -105,8 +108,9 @@ namespace RevenuePlanner.Test.Helper
             List<int> campaignIds = new List<int>();
             tacticIds.Add(objTactic.Plan_Campaign_Program.PlanCampaignId);
             List<ViewByModel> CustomFields = RevenuePlanner.Helpers.Common.GetCustomFields(tacticIds, programIds, campaignIds);
+            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value CustomFields.Count:  " + CustomFields.Count);
             Assert.IsNotNull(CustomFields.Count);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + CustomFields.Count);
         }
     }
 }

@@ -854,10 +854,16 @@ else
     });
     //Added by Rahul shah to Select/Deselect all honeycomb on click of checkbox for  PL #2371
     $('#MediaCodeSelectAll').change(function () {
+        var disableMediaCode = 0;
         if ($(this).is(':checked')) {
             $('#MediaCodeGrid').find('tr').find('td').find("div.honeycombbox-icon-gantt").each(function () {
                 if (!$(this).hasClass("honeycombbox-icon-gantt-Active") && !$(this).hasClass("disabled")) {
                     AddRemoveMediaCode(this);
+                } else {
+                    if ($(this).hasClass("disabled")) {
+                        disableMediaCode = disableMediaCode + 1;
+                    }
+
                 }
             });
         }
@@ -866,5 +872,13 @@ else
                 AddRemoveMediaCode(this);
             });
         }
+
+        if (MediaCodeGrid.rowsBuffer.length - (disableMediaCode / 2) != ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length || ExportSelectedIdsMediaCode.MediacodeSelectedRowId.length == 0) {
+            $('#MediaCodeSelectAll').removeAttr('checked');
+        }
+        else {
+            $('#MediaCodeSelectAll').attr('checked', 'checked');
+        }
+
     });
 </script>

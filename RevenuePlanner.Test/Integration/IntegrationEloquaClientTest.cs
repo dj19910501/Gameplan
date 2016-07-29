@@ -172,16 +172,9 @@ namespace RevenuePlanner.Test.Integration
             string elouqaContactListId = "58", eloquaViewId = "10007";
 
             var result = controller.GetEloquaContactList(elouqaContactListId, eloquaViewId, 1);
-            if (result != null)
-            {
-                Assert.AreNotEqual(null, result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.StatusCode);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result.StatusCode:  " + result.StatusCode);
+            Assert.AreNotEqual(null, result);
+            
 
         }
 
@@ -198,17 +191,9 @@ namespace RevenuePlanner.Test.Integration
             string elouqaContactListId = "58", eloquaViewId = "10007";
 
             var result = controller.GetEloquaContactList(elouqaContactListId, eloquaViewId, 1);
-
-            if (result != null)
-            {
-                Assert.AreNotEqual(null, result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.StatusCode);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result.StatusCode:  " + result.StatusCode);
+            Assert.AreNotEqual(null, result);
+          
         }
 
         /// <summary>
@@ -225,16 +210,8 @@ namespace RevenuePlanner.Test.Integration
 
             var result = controller.GetEloquaContactListDetails(elouqaContactListId);
 
-            if (result != null)
-            {
-                Assert.AreNotEqual(null, result);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.StatusCode);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result.StatusCode:  " + result.StatusCode);
+            Assert.AreNotEqual(null, result);
         }
 
         /// <summary>
@@ -250,17 +227,9 @@ namespace RevenuePlanner.Test.Integration
             string elouqaContactListId = "A58";
 
             var result = controller.GetEloquaContactListDetails(elouqaContactListId);
-
-            if (result != null)
-            {
-                Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + result.StatusCode);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + result);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result.StatusCode:  " + result.StatusCode);
+            Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
+           
 
         }
 
@@ -294,8 +263,9 @@ namespace RevenuePlanner.Test.Integration
 
             controller.PutEloquaContactListDetails(contactListDetailModel, elouqaContactListId);
 
-            Assert.IsTrue(true);
+            
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + true);
+            Assert.IsTrue(true);
         }
 
         /// <summary>
@@ -328,8 +298,9 @@ namespace RevenuePlanner.Test.Integration
 
             controller.PutEloquaContactListDetails(contactListDetailModel, elouqaContactListId);
 
-            Assert.IsTrue(true);
+            
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + true);
+            Assert.IsTrue(true);
         }
 
         #endregion
@@ -350,17 +321,9 @@ namespace RevenuePlanner.Test.Integration
 
             DateTime dateTime = controller.ConvertTimestampToDateTime(dateTimeTimestamp);
 
-
-            if (dateTime != null)
-            {
-                Assert.AreNotEqual(null, dateTime);
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + dateTime);
-            }
-            else
-            {
-
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Fail \n The Assert Value:  " + dateTime);
-            }
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value dateTime:  " + dateTime);
+            Assert.AreNotEqual(null, dateTime);
+            
         }
 
         #endregion
@@ -378,8 +341,9 @@ namespace RevenuePlanner.Test.Integration
             List<SyncError> lstSyncError = new List<SyncError>();
             controller.SetTacticMQLs(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, _entityType, out lstSyncError);
 
-            Assert.IsTrue(true);
+            
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + true);
+            Assert.IsTrue(true);
         }
 
         #endregion
