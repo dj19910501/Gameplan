@@ -60,9 +60,11 @@
 <div class="col-sm-9  col-md-9 col-lg-10 main report-main">
     <div id="mainContent" class="col-md-12 content">
         <div class="clearfix report-handing">
+           
             <span class="selectBox" id="ddlMeasureVB">
                 @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewData["ViewBy"], "Value", "Text"), new { @class = "ddlStyleReport hide" })
             </span>
+            <span class="viewby">View by</span>
         </div>
         <div class="report-wrap clearfix">
             @if (Model.DashboardContent.Count > 0)
@@ -126,7 +128,25 @@
     });
 
     function UpdatePlan() {
-        LoadAllReports();
+
+        var StartDate = '';
+        var EndDate = '';
+        $('div[id=reportrange]').each(function () {
+            StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
+            EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
+        });
+        var url = '@Url.Content("~/MeasureDashboard/SetDateRange/")';
+        $.ajax({
+            url: url,
+            data: {
+                StartDate: StartDate,
+                EndDate: EndDate
+            },
+            success: function (response) {
+                LoadAllReports();
+            }
+        });
+
     }
 
     function LoadAllReports() {
@@ -194,7 +214,6 @@
                 data: $.param(params, true),
                 dataType: "json",
                 success: function (data) {
-                    //alert(data);
                     eval(data);
                 },
                 error: function (err) {
@@ -325,11 +344,17 @@ function () {
 
     function getFiscalDateRange() {
         try {
-
             var cbMainDate = function (start, end, label) {
                 console.log(start.toISOString(), end.toISOString(), label);
                 $('div[id=reportrange]').each(function () {
-                    $(this).find('span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+                    @*if ('@Sessions.StartDate' != null && '@Sessions.StartDate' != 'null' && '@Sessions.StartDate' != 'Invalid date' && '@Sessions.StartDate' != '') {
+                        start = '@Sessions.StartDate';
+                        end = '@Sessions.EndDate';
+                        $(this).find('span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+                    }
+                    else {*@
+                        $(this).find('span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+                    //}
                 });
             };
 
@@ -376,20 +401,26 @@ function () {
             //optionSet1.ranges = jQuery.extend(true, {}, optionSet1.ranges, objFiscal);
 
             $('div[id=reportrange]').each(function () {
-                var stdt = $(this).find('span').html().split(' - ')[0];
-                var Eddt = $(this).find('span').html().split(' - ')[1];
-                var Stdate = new Date(stdt),
-                    Eddate = new Date(Eddt),
-                styr = Stdate.getFullYear(),
-                stmonth = Stdate.getMonth() < 9 ? '0' + (Stdate.getMonth() + 1) : (Stdate.getMonth() + 1),
-                stday = Stdate.getDate() < 10 ? '0' + Stdate.getDate() : Stdate.getDate(),
-                edyr = Eddate.getFullYear(),
-                edmonth = Eddate.getMonth() < 9 ? '0' + (Eddate.getMonth() + 1) : (Eddate.getMonth() + 1),
-                edday = Eddate.getDate() < 10 ? '0' + Eddate.getDate() : Eddate.getDate(),
-                FinStDate = stmonth + '/' + stday + '/' + styr;
-                FinEdDate = edmonth + '/' + edday + '/' + edyr;
-                optionSet1.startDate = FinStDate;
-                optionSet1.endDate = FinEdDate;
+                @*if ('@Sessions.StartDate' != null && '@Sessions.StartDate' != 'null' && '@Sessions.StartDate' != 'Invalid date' && '@Sessions.StartDate' != '') {*@
+                optionSet1.startDate = '@Sessions.StartDate';
+                optionSet1.endDate = '@Sessions.EndDate';
+                //}
+                //else {
+                //    var stdt = $(this).find('span').html().split(' - ')[0];
+                //    var Eddt = $(this).find('span').html().split(' - ')[1];
+                //    var Stdate = new Date(stdt),
+                //        Eddate = new Date(Eddt),
+                //    styr = Stdate.getFullYear(),
+                //    stmonth = Stdate.getMonth() < 9 ? '0' + (Stdate.getMonth() + 1) : (Stdate.getMonth() + 1),
+                //    stday = Stdate.getDate() < 10 ? '0' + Stdate.getDate() : Stdate.getDate(),
+                //    edyr = Eddate.getFullYear(),
+                //    edmonth = Eddate.getMonth() < 9 ? '0' + (Eddate.getMonth() + 1) : (Eddate.getMonth() + 1),
+                //    edday = Eddate.getDate() < 10 ? '0' + Eddate.getDate() : Eddate.getDate(),
+                //    FinStDate = stmonth + '/' + stday + '/' + styr;
+                //    FinEdDate = edmonth + '/' + edday + '/' + edyr;
+                //    optionSet1.startDate = FinStDate;
+                //    optionSet1.endDate = FinEdDate;
+                //}
                 $(this).daterangepicker(optionSet1, cbMainDate);
             });
         }

@@ -6728,13 +6728,23 @@ namespace RevenuePlanner.Helpers
                 }
             }
             string result = string.Empty;
-            string url = ApiUrl + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.UserId + "&RoleId=" + Sessions.User.RoleId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+            string url = ApiUrl + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.UserId + "&RoleId=" + Sessions.User.RoleId + "&StartDate=" + Sessions.StartDate + "&EndDate=" + Sessions.EndDate + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
             try
             {
                 ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
                 result = client.DownloadString(url);
                 result = result.Substring(1);
                 result = result.Remove(result.Length - 1);
+
+                if (string.IsNullOrEmpty(Sessions.StartDate))
+                {
+                    Sessions.StartDate = DateTime.Now.AddMonths(6).ToString("MM/dd/yyyy");
+                    Sessions.EndDate = DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy");
+                    if (Convert.ToDateTime(Sessions.StartDate) > Convert.ToDateTime(Sessions.EndDate))
+                    {
+                        Sessions.StartDate = Convert.ToDateTime(Sessions.EndDate).AddMonths(-6).ToString("MM/dd/yyyy");
+                    }
+                }
             }
             catch (Exception ex)
             {

@@ -196,6 +196,8 @@ namespace RevenuePlanner.Helpers
             Sessions.ModelId = 0;
             Sessions.ReportPlanId = 0;
             Sessions.PlanUserSavedViews = null;
+            Sessions.StartDate = null;
+            Sessions.EndDate = null;
         }
 
         /// <summary>
@@ -540,6 +542,37 @@ namespace RevenuePlanner.Helpers
                 HttpContext.Current.Session["IsMediaCodePermission"] = value;
             }
 
+        }
+
+        public static string StartDate
+        {
+            get
+            {
+                if (HttpContext.Current.Session["StartDate"] != null)
+                {
+                    return Convert.ToString(HttpContext.Current.Session["StartDate"]);
+                }
+                return string.Empty;
+            }
+            set
+            {
+                HttpContext.Current.Session["StartDate"] = value;
+            }
+        }
+        public static string EndDate
+        {
+            get
+            {
+                if (HttpContext.Current.Session["EndDate"] != null)
+                {
+                    return Convert.ToString(HttpContext.Current.Session["EndDate"]);
+                }
+                return string.Empty;
+            }
+            set
+            {
+                HttpContext.Current.Session["EndDate"] = value;
+            }
         }
     }
 }

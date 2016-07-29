@@ -138,5 +138,11 @@ namespace RevenuePlanner.Controllers
 
             return View("Index", model);
         }
+        public JsonResult SetDateRange(string StartDate = "01/01/1900", string EndDate = "01/01/2100")
+        {
+            Sessions.StartDate = StartDate;
+            Sessions.EndDate = EndDate;
+            return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
+        }
     }
 }
