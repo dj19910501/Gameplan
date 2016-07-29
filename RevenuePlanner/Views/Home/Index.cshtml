@@ -573,7 +573,7 @@
                                 var IsAssetTactic = $(this).attr('roitactictype');
                                 var AssetTacId = $(this).attr('anchortacticid');
                                 var EntityId = $(this).attr('taskid');
-                                if (IsPackageView && IsAssetTactic == '@Enums.AssetType.Asset' && AssetTacId == EntityId) 
+                                if (IsPackageView && PackageAnchorId == EntityId && IsAssetTactic == '@Enums.AssetType.Asset' && AssetTacId == EntityId) 
                                 {
                                     ShowMessage(true, "@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage", 3000);
                                     $('html,body').scrollTop(0);
@@ -2086,6 +2086,7 @@
         var CalendarId = "liCalender";
 
         var IsPackageView = false;
+        var PackageAnchorId = 0;
         var currentPkgIds = [];
         var filters = {
             parentCustomFieldsIds: [],
@@ -5002,6 +5003,10 @@
                 var rowObject = $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']');
                 var id = $(rowObject).attr('taskid');
                 
+                if(id == $(rowObject).attr('anchortacticid')) {
+                    PackageAnchorId = id;
+                }
+
                 if (IsUpdate==true || rowObject.is(':visible') == false || (id == undefined || id == 'undefined' || id == null || id == "")) {
                     IdsNotinList.push(currentPkgIds[i])
                 }

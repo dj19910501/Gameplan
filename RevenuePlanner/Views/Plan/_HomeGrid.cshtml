@@ -832,7 +832,8 @@
                 var IsAssetTactic = $(item).attr('roitactictype');
                 var AssetTacId = $(item).attr('anchortacticid');
                 var EntityId = $(item).attr('taskid');
-                if (IsPackageView && IsAssetTactic == '@Enums.AssetType.Asset' && AssetTacId == EntityId) {
+
+                if (IsPackageView && PackageAnchorId == EntityId && IsAssetTactic == '@Enums.AssetType.Asset' && AssetTacId == EntityId) {
                     ShowMessage(true, "@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage", 3000);
                     $('html,body').scrollTop(0);
                     return false;
@@ -1268,7 +1269,7 @@
         }
         if (stage == 2) // start edit Shipping column
         {
-            if (nValue != null && nValue.trim() != "") {
+            if (nValue != null && nValue != "") {
 
                 //Added By Komal Rawal to Change the value in array if grid updated
                 var NewValue = htmlDecode(nValue);
