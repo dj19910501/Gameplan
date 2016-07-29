@@ -352,7 +352,8 @@ else {
         }
     }
 
-    $(document).off("click").on("click", '#NewLineItemGrid', function (event) {
+    $(document).on("click", '#NewLineItemGrid', function (event) {
+        event.stopImmediatePropagation();
         event.stopPropagation();
         var returnpara = true;
         // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
@@ -367,6 +368,7 @@ else {
    });
 
     $(document).on("click", '#CloneLineItemGrid', function (event) {
+        event.stopImmediatePropagation();
         event.stopPropagation();
         var activeTab = "Line_Items";
         var returnpara = true;
@@ -777,5 +779,5 @@ else {
         var $checkbox = $(this).find('input[type=checkbox]')
         $checkbox.bootstrapToggle('toggle')
         e.preventDefault()
-    });
+    });    
 </script>
