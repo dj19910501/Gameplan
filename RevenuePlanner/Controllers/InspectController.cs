@@ -3795,6 +3795,13 @@ namespace RevenuePlanner.Controllers
                             }
                             db.SaveChanges();
                         }
+                        else
+                        {
+                            List<int> lstLineItemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(line => line.PlanTacticId == PlanTacticId).Select(al => al.PlanLineItemId).Distinct().ToList();
+                            var prevlineItemActual = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => lstLineItemIds.Contains(al.PlanLineItemId)).ToList();
+                            prevlineItemActual.ForEach(al => db.Entry(al).State = EntityState.Deleted);
+                            db.SaveChanges();
+                        }
                         if (isLineItemForTactic)
                         {
                             tacticactual = tacticactual.Where(ta => ta.StageTitle != Enums.InspectStage.Cost.ToString()).ToList();
