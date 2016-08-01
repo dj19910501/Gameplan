@@ -72,7 +72,8 @@
 
             <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
             @{
-                <label>Asset Type<span class="required-asterisk">*</span></label>
+                //Modified By Komal for #2448 on 01-08-2016
+                <label>Tactic Category<span class="required-asterisk">*</span></label>
 
                 <span class="simpleSelectBox">@Html.DropDownListFor(model => model.AssetType, new SelectList((System.Collections.IEnumerable)ViewBag.BindAssetType, "ID", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
                     <label class="margin-top10">Status</label>
@@ -172,7 +173,7 @@
  <div id="PackageListModal" class="form-inspect-share hide height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div>
         <form>
-            <label style="text-align: center; width: 100%;" class="resubmission_content">Changing the Asset Type to promotion will delete all the associated packages</label>
+            <label style="text-align: center; width: 100%;" class="resubmission_content">Changing the tactic category to promotion will delete all the associated packages</label>
             <div style="color: white !important;margin:0 auto;" class="resubmission_list" id="BindpackageList">
                 <ul ></ul>
             </div>

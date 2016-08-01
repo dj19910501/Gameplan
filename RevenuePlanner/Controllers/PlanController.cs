@@ -13666,7 +13666,7 @@ namespace RevenuePlanner.Controllers
                     headobj.id = "roitactictype";
                     headobj.sort = "str";
                     headobj.width = 150;
-                    headobj.value = "Asset Type";
+                    headobj.value = "Tactic Category"; //Modified By Komal for #2448 on 01-08-2016
                     headobjlist.Add(headobj);
                 }
 

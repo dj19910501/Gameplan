@@ -359,7 +359,7 @@
             }
             var data;
             var Entity = [];
-            var csvHeader = String(",Plan,Campaign,Program,Tactic,Start Date,End Date,Planned Cost,Asset Type,Type,Owner,Target Stage Goal,"+ MQlTitle +",Revenue".split(',')).toString();
+            var csvHeader = String(",Plan,Campaign,Program,Tactic,Start Date,End Date,Planned Cost,Tactic Category,Type,Owner,Target Stage Goal,"+ MQlTitle +",Revenue".split(',')).toString();
             Entity.push(csvHeader + '\n');
             if (ListOfSelectedIds.Id.length > 0) {
                 $.each(ListOfSelectedIds.Id, function () {
