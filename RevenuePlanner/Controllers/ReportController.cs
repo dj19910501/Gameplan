@@ -101,7 +101,17 @@ namespace RevenuePlanner.Controllers
             var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
             Sessions.User.RoleId = RoleId;
             var AppMenus = objBDSServiceClient.GetAllMenu(AppId, Sessions.User.RoleId);
+
+            var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ReportView);
+            var Menuitem = AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Report.ToString().ToUpper());
+            if (Menuitem != null && !isAuthorized)
+            {
+                AppMenus.Remove(Menuitem);
+            }
+
             Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
+
+            Sessions.AppMenus = null;
             if (AppMenus.Where(o => o.Code == "REPORT").Any())
             {
                 Sessions.AppMenus = objBDSServiceClient.GetMeasureMenuforPlan(MeasureAppId);
