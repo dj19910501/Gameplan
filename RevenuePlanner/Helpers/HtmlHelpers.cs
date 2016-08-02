@@ -6788,13 +6788,15 @@ namespace RevenuePlanner.Helpers
                 classname = classname + " dropdown";
             }
             classname = classname + "'";
+            string DashFrom = "Plan";
             string LiId = "Measure_" + o.MenuApplicationId;
             string CusCss = "fa fa-pie-chart";
             if (!string.IsNullOrEmpty(o.CustomCss))
             {
                 CusCss = o.CustomCss;
+                DashFrom = "Measure";
             }
-            MenuStr = MenuStr + "<li class=" + classname + " id=" + LiId + "> <a href=" + hrefLink + "> <span class='" + CusCss + "'></span> <span class='nav-text'> " + Convert.ToString(o.Name).ToUpper() + " </span>";
+            MenuStr = MenuStr + "<li class=" + classname + " id=" + LiId + " DashFrom=" + DashFrom + "> <a href=" + hrefLink + "> <span class='" + CusCss + "'></span> <span class='nav-text'> " + Convert.ToString(o.Name).ToUpper() + " </span>";
             if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
             {
                 MenuStr = MenuStr + "<span class='dd-arrow'><i class='fa fa-caret-down'></i></span>";

@@ -1124,20 +1124,52 @@
             $('#ddlsection').empty();
         }
         else if ('@ActiveReportMenu' == "Overview") {
-            $('.summary').addClass('active');
+            //$('.summary').addClass('active');
+            $('.menu-content li').removeClass('active');
+            setTimeout(function () {
+                $('.summary').each(function () {
+                    if ($(this).attr('DashFrom') == 'Measure') {
+                        $(this).removeClass('active');
+                    }
+                });
+            }, 10);
             LoadYearDropdown();
             GetselectionFilter();
         }
         else if ('@ActiveReportMenu' == "Revenue") {
-            $('.revenue').addClass('active');
+            //$('.revenue').addClass('active');
+            $('.menu-content li').removeClass('active');
+            setTimeout(function () {
+                $('.revenue').each(function () {
+                    if ($(this).attr('DashFrom') == 'Measure') {
+                        $(this).removeClass('active');
+                    }
+                });
+            }, 10);
             RevenueDash();
         }
         else if ('@ActiveReportMenu' == "Waterfall") {
-            $('.waterfall').addClass('active');
+            $('.menu-content li').removeClass('active');
+            setTimeout(function () {
+                $('.waterfall').each(function () {
+                    if ($(this).attr('DashFrom') == 'Measure') {
+                        $(this).removeClass('active');
+                    }
+                });
+            }, 10);
             WaterfallDash();
+
         }
         else if ('@ActiveReportMenu' == "Finance") {
-            $('.finance').addClass('active');
+            //$('.finance').addClass('active');
+            $('.menu-content li').removeClass('active');
+            setTimeout(function () {
+                $('.finance').each(function () {
+                    if ($(this).attr('DashFrom') == 'Measure') {
+                        $(this).removeClass('active');
+                    }
+                });
+            }, 10);
             FinanceDash();
         }
         else if ('@ActiveReportMenu' == "Custom") {

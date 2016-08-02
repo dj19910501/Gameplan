@@ -1124,12 +1124,12 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="MediaCodeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TacticId" Type="int" Nullable="false" />
           <Property Name="MediaCodeValue" Type="varchar(max)" />
-          <Property Name="MediaCode" Type="bigint" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="LastModifiedBy" Type="uniqueidentifier" />
           <Property Name="LastModifiedDate" Type="datetime" />
           <Property Name="IsDeleted" Type="bit" />
+          <Property Name="MediaCode" Type="bigint" />
         </EntityType>
         <EntityType Name="Tactic_MediaCodes_CustomFieldMapping">
           <Key>
@@ -1199,14 +1199,9 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'MRPDev.dbo.User_Permission' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="User_Permission">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="DashboardId" Type="int" />
@@ -1232,12 +1227,12 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
           <Property Name="MediaCodeId" Type="int" Nullable="false" />
           <Property Name="TacticId" Type="int" Nullable="false" />
           <Property Name="MediaCodeValue" Type="varchar(max)" />
-          <Property Name="MediaCode" Type="bigint" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="LastModifiedBy" Type="uniqueidentifier" />
           <Property Name="LastModifiedDate" Type="datetime" />
           <Property Name="IsDeleted" Type="bit" />
+          <Property Name="MediaCode" Type="bigint" />
           <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <Association Name="BudgetID_FK">
@@ -2582,22 +2577,11 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User_Permission" EntityType="Self.User_Permission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AggregationStatus" EntityType="Self.AggregationStatus" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
 [AggregationStatus].[StatusCode] AS [StatusCode]
 FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="User_Permission" EntityType="Self.User_Permission" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-[User_Permission].[Id] AS [Id], 
-[User_Permission].[DashboardId] AS [DashboardId], 
-[User_Permission].[ApplicationActivityId] AS [ApplicationActivityId], 
-[User_Permission].[UserId] AS [UserId], 
-[User_Permission].[CreatedDate] AS [CreatedDate], 
-[User_Permission].[CreatedBy] AS [CreatedBy], 
-[User_Permission].[PermissionType] AS [PermissionType], 
-[User_Permission].[HomePageId] AS [HomePageId]
-FROM [dbo].[User_Permission] AS [User_Permission]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vClientWise_Tactic" EntityType="Self.vClientWise_Tactic" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -2606,12 +2590,12 @@ FROM [dbo].[User_Permission] AS [User_Permission]</DefiningQuery>
 [vClientWise_Tactic].[MediaCodeId] AS [MediaCodeId], 
 [vClientWise_Tactic].[TacticId] AS [TacticId], 
 [vClientWise_Tactic].[MediaCodeValue] AS [MediaCodeValue], 
-[vClientWise_Tactic].[MediaCode] AS [MediaCode], 
 [vClientWise_Tactic].[CreatedBy] AS [CreatedBy], 
 [vClientWise_Tactic].[CreatedDate] AS [CreatedDate], 
 [vClientWise_Tactic].[LastModifiedBy] AS [LastModifiedBy], 
 [vClientWise_Tactic].[LastModifiedDate] AS [LastModifiedDate], 
 [vClientWise_Tactic].[IsDeleted] AS [IsDeleted], 
+[vClientWise_Tactic].[MediaCode] AS [MediaCode], 
 [vClientWise_Tactic].[ClientId] AS [ClientId]
 FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           </EntitySet>

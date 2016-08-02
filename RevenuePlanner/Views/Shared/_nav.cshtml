@@ -74,16 +74,18 @@
                             classname = classname + " dropdown";
                         }
                         string LiId = string.Empty;
+                        string DashFrom = "Plan";
                         if (!string.IsNullOrEmpty(Convert.ToString(o.Description)) && Convert.ToString(o.Description).Contains("javascript:void(0)"))
                         {
                             LiId = "Measure_" + o.MenuApplicationId;
+                            DashFrom = "Measure";
                         }
                         string CustomCSS = "fa fa-pie-chart";
                         if (!string.IsNullOrEmpty(o.CustomCss))
                         {
                             CustomCSS = o.CustomCss;
                         }
-                        <li class="@classname" id="@LiId">
+                        <li class="@classname" id="@LiId" dashfrom="@DashFrom">
                             <a href="@hrefLink">
                                 <span class="@CustomCSS"></span>@*Added by Akashdeep Kadia for Ticket #2275 on 10-June-2016*@
                                 <span class="nav-text">@menuname.ToUpper()</span>
