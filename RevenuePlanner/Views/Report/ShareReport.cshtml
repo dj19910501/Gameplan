@@ -199,18 +199,19 @@
 
             //.nextAll(".portlet-content:first")
             //var filterHTML = $('.revenue-filter').html();
-            var filterHTML = $('.report-heder-tab').parent().html();
+            //Made changes for PL #2458 to resolve share report issue
+            var filterHTML = $('#divMainReportPart').parent().html();
             //var filterHTML = $('#dvRevenueCardSection').html();
             var html  = '';
 
             //html += '<div style="margin-left: 100px;"> ' + $htmlgraph + filterHTML + '</div>';
             html += '<div style="margin-left: 100px;">' + filterHTML + '</div>';
             var $html = $(html);
-
+           
             //revenue-to-plan-graph
-
-            $html.find('div[class="report-heder-tab"]').empty();
-            $html.find('div').removeClass("report-heder-tab");
+            //Made changes for PL #2458 to resolve share report issue
+            //$html.find('div[class="report-heder-tab"]').empty();
+            //$html.find('div').removeClass("report-heder-tab");
             $html.find('#dvConversionCombineChart').css('height','');
             //$html.find("div[id^='dvline_']").css('height','');
             $html.find("button[id^='buttonDtls_']").remove();
@@ -249,7 +250,7 @@
             }
             //alert($html.html());
             html = $html.html();
-            //alert(html);
+            //alert(html);           
             return escape(html);
         }
 
@@ -441,8 +442,8 @@
 
         /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLSummary(){
-            
-            var filterHTML = $('.report-heder-tab').parent().html();
+            //Made changes for PL #2458 to resolve share report issue
+            var filterHTML = $('#divMainReportPart').parent().html()
             var html  = '';
 
             html += '<div style="margin-left: 100px;"></br>' + filterHTML + '</div>';
@@ -457,8 +458,9 @@
 
             // loadChart();
             //$html.find('div[id="RevenueLineChart"]').html();
-            $html.find('div[class="report-heder-tab"]').empty();
-            $html.find('div').removeClass("report-heder-tab");
+            //Made changes for PL #2458 to resolve share report issue
+            //$html.find('div[class="report-heder-tab"]').empty();
+            //$html.find('div').removeClass("report-heder-tab");
             //$html.find('div[class="budgetReportFilter-area clearfix"]').empty();
             //$html.find('div').removeClass("budgetReportFilter-area clearfix");
             $html.find('#AViewDetailReportRevenue').remove();
@@ -489,7 +491,8 @@
             //alert(search);
             //.nextAll(".portlet-content:first")
             //var filterHTML = $('.revenue-filter').html();
-            var filterHTML =   $('.report-heder-tab').parent().html();
+            //Made changes for PL #2458 to resolve share report issue 
+            var filterHTML = $('#divMainReportPart').parent().html();
             //var filterHTML = $('#dvRevenueCardSection').html();
             var html  = '';
 
@@ -499,8 +502,9 @@
 
             //revenue-to-plan-graph
             //$html.find("input#txtSearch").val(search);
-            $html.find('div[class="report-heder-tab"]').empty();
-            $html.find('div').removeClass("report-heder-tab");
+            //Made changes for PL #2458 to resolve share report issue
+            //$html.find('div[class="report-heder-tab"]').empty();
+            //$html.find('div').removeClass("report-heder-tab");
             $html.find('#dvRevenuePlanBarChart').css('height','');
             $html.find("div[id^='dvline_']").css('height','');
             $html.find("button[id^='buttonDtls_']").remove();
