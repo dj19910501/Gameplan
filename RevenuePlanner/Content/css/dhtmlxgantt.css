@@ -378,6 +378,7 @@ This software is covered by DHTMLX Commercial License. Usage without proper lice
 .gantt_tree_content {
     height: 100%;
     display: inline-block;
+    cursor: pointer;
 }
 
 .gantt_tree_icon.gantt_open {
@@ -658,7 +659,7 @@ div.dhx_modal_cover {
     position: absolute;
     white-space: nowrap;
     text-align: center;
-    /*cursor: pointer;*/
+    cursor: pointer;
 }
 
 .gantt_task_progress {

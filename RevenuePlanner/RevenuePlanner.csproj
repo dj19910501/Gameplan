@@ -338,7 +338,6 @@
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_asc.gif" />
     <Content Include="Content\css\fileinput.css" />
     <Content Include="Content\css\jquery.mCustomScrollbar-new.css" />
-    <Content Include="Content\css\style_extended_min_Oct2.css" />
     <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_desc.gif" />
     <Content Include="Content\css\JquryUI\images\ui-bg_glass_85_dfeffc_1x400.png" />
     <Content Include="Content\css\JquryUI\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" />
@@ -364,6 +363,7 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
+    <Content Include="Content\css\style_extended_min_Aug_2.css" />
     <Content Include="Content\css\style_min_Aug_2.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
