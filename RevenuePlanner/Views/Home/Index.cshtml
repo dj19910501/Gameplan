@@ -5003,13 +5003,14 @@
                 var rowObject = $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']');
                 var id = $(rowObject).attr('taskid');
                 
-                if(id == $(rowObject).attr('anchortacticid')) {
+                if(rowObject.is(':visible') == true && id == $(rowObject).attr('anchortacticid')) {
                     PackageAnchorId = id;
                 }
 
                 if (IsUpdate==true || rowObject.is(':visible') == false || (id == undefined || id == 'undefined' || id == null || id == "")) {
                     IdsNotinList.push(currentPkgIds[i])
                 }
+
                 if (currentPkgIds.indexOf(id) >= 0) {
                     $(rowObject).trigger('click');
                 }

@@ -855,6 +855,24 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     rowId = rowId + "_" + "False";
+                }	 
+                //Modified by Komal Rawal for #2346 on 02-08-2016
+                if ((lstChildren != null && lstChildren.Count() > 0) && parentId > 0) // LineItem count will be not set for Most Parent Item & last Child Item.
+                {
+                    var LineItemIds = dataTable
+                                        .Rows
+                                        .Cast<DataRow>()
+                                        .Where(rw => rw.Field<Int32>("ParentId") == id).Select(chld => chld.Field<List<int>>("lstLineItemIds")).ToList();
+
+                    if (lstLineItemIds == null)
+                        lstLineItemIds = new List<int>();
+
+                    LineItemIds.ForEach(lstIds => lstLineItemIds.AddRange(lstIds));
+
+                    row.SetField<List<int>>("lstLineItemIds", lstLineItemIds);
+                    lineItemCount = lstLineItemIds != null ? lstLineItemIds.Distinct().Count() : 0;
+                    row.SetField<Int32>("LineItemCount", lineItemCount); // Update LineItemCount in DataTable.
+
                 }
                 if (_IsBudgetCreate_Edit)
                 {
@@ -862,7 +880,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (Permission == "Edit")
                         {
-                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
                         }
                         else
                         {
@@ -925,7 +943,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (Permission == "Edit")
                         {
-                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
                         }
                         else
                         {
@@ -968,23 +986,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
-                if ((lstChildren != null && lstChildren.Count() > 0) && parentId > 0) // LineItem count will be not set for Most Parent Item & last Child Item.
-                {
-                    var LineItemIds = dataTable
-                                        .Rows
-                                        .Cast<DataRow>()
-                                        .Where(rw => rw.Field<Int32>("ParentId") == id).Select(chld => chld.Field<List<int>>("lstLineItemIds")).ToList();
-
-                    if (lstLineItemIds == null)
-                        lstLineItemIds = new List<int>();
-
-                    LineItemIds.ForEach(lstIds => lstLineItemIds.AddRange(lstIds));
-
-                    row.SetField<List<int>>("lstLineItemIds", lstLineItemIds);
-                    lineItemCount = lstLineItemIds != null ? lstLineItemIds.Distinct().Count() : 0;
-                    row.SetField<Int32>("LineItemCount", lineItemCount); // Update LineItemCount in DataTable.
-
-                }
+                
             }
             else
             {
@@ -1022,7 +1024,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (Permission == "Edit")
                         {
-                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
                             strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
                         }
                         else if (Permission == "None")
@@ -1036,7 +1038,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
                         strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
                     }
                 }
@@ -1044,7 +1046,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (Permission == "Edit")
                     {
-                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "'  LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
                         strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
                     }
                     else if (Permission == "None")
@@ -2709,7 +2711,8 @@ namespace RevenuePlanner.Controllers
                             var LineItemBudhgetListValue = LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList();
                             objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmountValue, PlanDetailAmountValue, ActualDetailAmountValue, LineItemBudhgetListValue);
 
-                            string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? (EditPermission == "Edit" ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "") : "");
+                            string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? (EditPermission == "Edit" ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' LICount='" + PlanLineItemsId.Count() + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "") : "");
+
                             Dictionary<string, object> variables = new Dictionary<string, object>();
 
                             DataRow row = dataTableMain.NewRow();
@@ -2805,7 +2808,7 @@ namespace RevenuePlanner.Controllers
                         var LineItemBudhgetListValue = LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList();
                         objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmountValue, PlanDetailAmountValue, ActualDetailAmountValue, LineItemBudhgetListValue);
 
-                        string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? (EditPermission == "Edit" ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "") : "");
+                        string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? (EditPermission == "Edit" ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' LICount='" + PlanLineItemsId.Count() + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "") : "");
                         Dictionary<string, object> variables = new Dictionary<string, object>();
 
                         DataRow row = dataTableMain.NewRow();
@@ -3148,6 +3151,14 @@ namespace RevenuePlanner.Controllers
 
                         addRow = string.Empty;
                     }
+                    else
+                    {
+                        //Added by Komal Rawal for #2346 on 02-08-2016
+                        if (addRow != string.Empty)
+                        {
+                            addRow = "<div id='dv" + id + "' row-id='" + id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (parentid != 0 ? parentid.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + id + "' row-id='" + id + "' Name='" + HttpUtility.HtmlEncode(name) + "' LICount='" + lineitemcount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                        }
+                    }
                     strLineItemLink = lineitemcount.ToString();
                 }
                 else
@@ -3189,8 +3200,10 @@ namespace RevenuePlanner.Controllers
                     objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = IsTitleEdit });
                 }
                 else
+                {
                     objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = IsTitleEdit });
                 strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id.ToString(), lineitemcount.ToString());
+                }
             }
             ParentData.Add(addRow);
             ParentData.Add(strLineItemLink);

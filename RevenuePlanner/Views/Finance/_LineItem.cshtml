@@ -312,7 +312,14 @@
     var _row_parentId = '';
 
     function CheckboxClick(checkbox) {
+        var LineItemCount = $(checkbox).attr('licount');
+        if (LineItemCount != 0) {
+            $('#LiWarning').css('display', 'block');
 
+        }
+        else {
+            $('#LiWarning').css('display', 'none');
+        }
         RowIDs = {
             IDs: []
         }

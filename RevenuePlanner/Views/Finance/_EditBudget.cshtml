@@ -752,11 +752,20 @@
     var _row_parentId = '';
 
     function CheckboxClick(checkbox) {
-        var controlid = $(checkbox).attr('id')
+        var controlid = $(checkbox).attr('id');
+        var LineItemCount = $(checkbox).attr('licount');
         if (AddNewrow == false & DeletIconID == controlid) {
             return false;
         }
         else {
+            //Modified by Komal Rawal for #2346 on 02-08-2016
+            if (LineItemCount != 0) {
+                $('#LiWarning').css('display', 'block');
+
+            }
+            else {
+                $('#LiWarning').css('display', 'none');
+            }
             RowIDs = {
                 IDs: []
             }
