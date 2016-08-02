@@ -8127,7 +8127,8 @@ namespace RevenuePlanner.Controllers
                             objProjectedTrendModel.Year = tactic.StartDate.Year; // #1910
                             //// Calculate Trend calculation for month that is greater than current ruuning month.
                             //Modified By Komal Rawal for #2125
-                            if (_trendMonth >= tactic.StartMonth && ((_currentYear < tactic.Year) || (tactic.EndMonth > currentMonth && _trendMonth >= currentMonth && _currentYear == tactic.Year)))
+                            // Modified By Nishant Sheth for set >= condtion for Endmonth >= currentmonth #2471
+                            if (_trendMonth >= tactic.StartMonth && ((_currentYear < tactic.Year) || (tactic.EndMonth >= currentMonth && _trendMonth >= currentMonth && _currentYear == tactic.Year)))
                             {
                                 if (tactic.StartDate.Month > currentMonth)
                                 {
@@ -8137,13 +8138,28 @@ namespace RevenuePlanner.Controllers
                                 {
                                     // #2186 Set End month for multi year
                                     int TacticEndMonth = tactic.EndDate.Month;
-                                    int VelocityMonth = 0;
+                                    int TacticEndYear = tactic.EndDate.Year; 
+                                    int VelocityMonth = 0, VelocityYear = 0;
+                                    // Modofied By Nishant Sheth
+                                    // Desc ::  For Manage velocity for single year tactic and multi year tactic #2471.
                                     if (tactic.VeloCity > 0)
                                     {
                                         VelocityMonth = tactic.EndDate.AddDays(tactic.VeloCity).Month;
+                                        VelocityYear = tactic.EndDate.AddDays(tactic.VeloCity).Year;
                                     }
-
-                                    TotalTacticMonths = (tactic.EndMonth + VelocityMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
+                                    else
+                                    {
+                                        VelocityMonth = tactic.EndDate.Month;
+                                        VelocityYear = tactic.EndDate.Year;
+                                    }
+                                    if (VelocityYear > TacticEndYear)
+                                    {
+                                        TotalTacticMonths = (tactic.EndMonth + VelocityMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic where multi year.
+                                    }
+                                    else
+                                    {
+                                        TotalTacticMonths = (VelocityMonth - tactic.StartMonth) + 1; // Get Total Months of Tactic.
+                                    }
                                     _InvolvedTacticMonths = (_trendMonth - tactic.StartMonth) + 1; // Get Involved Tactic month for current Trend Month calculation.
                                     objProjectedTrendModel.TrendValue = (tactic.Value / TotalTacticMonths) * _InvolvedTacticMonths; // Calculate TrendValue.
                                 }
