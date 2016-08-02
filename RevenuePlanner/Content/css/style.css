@@ -12414,7 +12414,9 @@ div.clue-bottom-default .cluetip-arrows {
     font-family: source_sans_proregular;
     font-weight: 400;
 }
-.revenue-graph-info .amountcounterhead{font-size: 48px;} /* #2312 */
+.revenue-graph-info .amountcounterhead{
+    font-size: 48px; 
+    line-height: 60px;} /* #2312 *//* #2458 chnaged to generate PDF */
 .statustexthead.redLabel{color: #e2502d !important;}
 .revenue-graph-info .amountcounter {
     margin-top: 10% 0 0 2%;
@@ -12423,7 +12425,7 @@ div.clue-bottom-default .cluetip-arrows {
 }
 
 .revenue-graph-info .amountcounterhead {
-    margin: 13% 0 0;
+    margin: 10% 0 0; /* #2458 chnaged to generate PDF */
 }
 
 .revenue-financial .amountcounterhead {
