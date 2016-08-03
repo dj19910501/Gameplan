@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Linq;
+using System.Configuration;
 
 
 namespace RevenuePlanner.Test.Controllers
@@ -42,6 +43,29 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(result.ViewName);
         
         }
+        [TestMethod]
+        public void Login_View_With_Error_Message()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To Create Login View.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            LoginController objLoginController = new LoginController();
+            objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
+            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            MockHelpers.MockHelpers.TestTempDataHttpContext tempDataHttpContext = new MockHelpers.MockHelpers.TestTempDataHttpContext();
+            objLoginController.TempData["ErrorMessage"] ="Unit";
+            var result = objLoginController.Index() as ViewResult;
+            var serializedData = new RouteValueDictionary(result.ViewData);
+            var resultvalue = serializedData["ApplicationReleaseVersion"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Assert.IsNotNull(resultvalue.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+
+        }
         #endregion
 
         #region Post Login
@@ -55,17 +79,16 @@ namespace RevenuePlanner.Test.Controllers
         {
             var routes = new RouteCollection();
             Console.WriteLine("To Post Login.\n");
-            MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             LoginController objLoginController = new LoginController();
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            //int PlanId = DataHelper.GetPlanId();
+            //Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             LoginModel form = new LoginModel();
-            form.UserEmail = "test@Hive9.com";
-            form.Password = "Test@1234";
+            form.UserEmail = ConfigurationSettings.AppSettings["Username"].ToString() + "Wrong";
+            form.Password = ConfigurationSettings.AppSettings["Password"].ToString();
             string returnURL = "https://172.30.17.111/gameplan/Home?activeMenu=Home";
             var result = objLoginController.Index(form, returnURL) as ViewResult;
             var serializedData = new RouteValueDictionary(result.ViewData);
@@ -74,6 +97,54 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);
 
+        }
+        [TestMethod]
+        public void Index_Login_With_True_Credintials()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To Post Login.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            LoginController objLoginController = new LoginController();
+            objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
+            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objLoginController.Url = new UrlHelper(
+            new RequestContext(
+            objLoginController.HttpContext, new RouteData()
+            ),
+            routes
+            );
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            LoginModel form = new LoginModel();
+            form.UserEmail = ConfigurationSettings.AppSettings["Username"].ToString();
+            form.Password = ConfigurationSettings.AppSettings["Password"].ToString();
+            string returnURL = string.Empty;// ConfigurationSettings.AppSettings["ReturnUrl"].ToString();//"https://172.30.17.111/gameplan/Home?activeMenu=Home";
+            var result = objLoginController.Index(form, returnURL) as RedirectToRouteResult;
+            Assert.AreEqual("Index", result.RouteValues["Action"]);
+            Assert.AreEqual("Home", result.RouteValues["Controller"]); 
+        }
+        [TestMethod]
+        public void Index_Login_With_Wrong_Password()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To Post Login.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            LoginController objLoginController = new LoginController();
+            objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
+            objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            int PlanId = DataHelper.GetPlanId();
+            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            LoginModel form = new LoginModel();
+            form.UserEmail = ConfigurationSettings.AppSettings["Username"].ToString();
+            form.Password = ConfigurationSettings.AppSettings["Password"].ToString() + "Wrong";
+            string returnURL = string.Empty;//"https://172.30.17.111/gameplan/Home?activeMenu=Home";
+            var result = objLoginController.Index(form, returnURL) as ViewResult;
+            var serializedData = new RouteValueDictionary(result.ViewData);
+            var resultvalue = serializedData["ApplicationReleaseVersion"];
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value resultvalue:  " + resultvalue.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
         }
         #endregion
 
