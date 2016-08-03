@@ -395,9 +395,10 @@
             $("#ddlParentFinanceMain").css("display", "none");
             $("#dvNoData").css('margin-left', '25px');
         }
-        //var txtval = $("#btnMultiselect_ddlParentFinanceMain").find("span").text();
-        //$("#btnMultiselect_ddlParentFinanceMain").find("span").text('');
-        //$("#btnMultiselect_ddlParentFinanceMain").find("span").text(htmlDecode(txtval));
+         
+        //Enable single click to trigger edit - zz
+        myTreeGrid.enableEditEvents(true, false, true);
+
     });
 
 

@@ -1411,6 +1411,7 @@ a {
     /*#table_boost tbody tr{cursor: pointer;}*/
     #table_boost tbody tr td {
         line-height: 26px;
+        cursor: pointer;
     }
 
     #table_boost tbody {

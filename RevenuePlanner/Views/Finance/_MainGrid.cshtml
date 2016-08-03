@@ -275,56 +275,9 @@
             $("#goalwrapper").show();
 
         }
-        //myTreeGrid.attachEvent("onCheck", function (rId, cInd, state) {
 
-
-        //    var val = rId.split('_')[1];
-
-        //    if (state == true) {
-        //        RowIDs.IDs.push(val);
-        //    }
-        //    else {
-        //        var index = RowIDs.IDs.indexOf(val);
-        //        RowIDs.IDs.splice(index, 1);
-        //    }
-        //var ids = [];
-        //    ids = myTreeGrid.getAllSubItems(rId).split(',');
-        //    alert(ids.length);
-        //    alert(ids);
-        //for (var i = 0; i < ids.length; i++)
-        //{
-
-        //    myTreeGrid.cells(ids[i], cInd).setValue(state);
-        //}
-
-        //    var parentid = myTreeGrid.getParentId(rId);
-        //    SetParentCheckbox(parentid, cInd);
-
-        //if (parentid != 0)
-        //{
-        //    var ids1 = [];
-        //    ids1 = myTreeGrid.getAllSubItems(parentid).split(',');
-
-        //    for (var i = 0; i < ids1.length; i++) {
-        //        if (!myTreeGrid.cells(ids1[i], cInd).getValue()) {
-        //            break;
-        //        }
-        //    }
-        //}
-
-        //myTreeGrid.forEachRow(function (rowid) {
-        //    var state = myTreeGrid.cells(rId, cInd).getValue();
-        //    if (state == true)
-        //    {
-        //        RowIDs.IDs.push(rowid.split('_')[1]);
-        //    }
-        //});
-
-
-        // });
-
-
-        //GetFinanceHeaderValue(backBudgetid, true);
+        //Enable single click to trigger edit - zz
+        myTreeGrid.enableEditEvents(true, false, true);
     });
     function CheckboxClick(checkbox) {
         var controlid = $(checkbox).attr('id');

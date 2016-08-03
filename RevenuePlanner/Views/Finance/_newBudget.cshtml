@@ -108,6 +108,10 @@
 
         });
         $("#newGridbox").find('table').css('width', gridWidth);
+
+        //Enable single click to trigger edit - zz
+        newTreeGrid.enableEditEvents(true, false, true);
+
         return true;
     });
 

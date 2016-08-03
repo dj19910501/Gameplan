@@ -7184,20 +7184,26 @@
         }
 
         //// Variable to hold double click event.
-        var eventTaskDoubleClick;
+        var eventTaskClick;
         //// Function to attach event to show inspect model.
         function AttachEventToTactic() {
             //// Detaching double click event.
-            if (eventTaskDoubleClick != undefined) {
-                gantt.detachEvent(eventTaskDoubleClick);
+            if (eventTaskClick != undefined) {
+                gantt.detachEvent(eventTaskClick);
             }
 
-            //// Attaching double click event
-            eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) {
-                scrollstate = gantt.getScrollState();
-                bodyscrollpos = $(window).scrollTop();
+            //// Attaching single click event 
+            eventTaskClick = gantt.attachEvent("onTaskClick", function (taskId, e) {
+                var where = e.target.getAttribute('class');
+                if (where == 'gantt_task_content' || where == 'gantt_tree_content'){
+                    scrollstate = gantt.getScrollState();
+                    bodyscrollpos = $(window).scrollTop();
 
-                ShowModel(taskId, null)
+                    ShowModel(taskId, null);
+                    return true;
+                }else{
+                    return false;
+                }
             });
 
         }
