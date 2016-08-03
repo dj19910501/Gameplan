@@ -15108,7 +15108,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     display: inline-block;
     height: 100%;
     float:left;
-    margin-left: 15px;
+    /*margin-left: 15px;*//* #2479 */
 }
 /*.hive9modules {
     display: inline-block;
@@ -15123,7 +15123,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     padding: 4px 6px 10px;
     text-align: center;
     text-decoration: none;
-    width: 77px;/*75px #2312 */
+    width: 91px;/*75px #2312 */
     line-height: normal;
     vertical-align: middle;
     display: inline-block;
