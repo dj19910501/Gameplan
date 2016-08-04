@@ -186,7 +186,6 @@ else
         AltId: []
     };
     $(document).ready(function () {
-
         $('.nav').addClass('no-bottom-border');
         if (parseInt(@countrows) > 0) {
             BindMediaCodeGrid();
@@ -195,11 +194,9 @@ else
                 MediaCodeGrid.setSizes();
                 SetTooltip();
             });
-
+            //Enable single click to trigger edit - zz
+            MediaCodeGrid.enableEditEvents(true, false, true);
         }
-
-        //Enable single click to trigger edit - zz
-        MediaCodeGrid.enableEditEvents(true, false, true);
     });
 
     var $doc = $(document);
