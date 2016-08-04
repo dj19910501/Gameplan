@@ -462,7 +462,7 @@
             $("#hdn_row_parentId").val(_row_parentId);
             /*End: Get ParentId and BudgetDetailId from RowId */
 
-            var TotalColumn = myTreeGrid.getColumnCount();
+            var TotalColumn = myTreeGrid.getColumnCount() - 1;
             var AddRowString = [];
             // Modified by Rushil Bhuptani on 06/06/2016 for #2247 to resolve the issue of unable to add child item.
             var AddRowColTypes = "ro,tree,ro,ro";
