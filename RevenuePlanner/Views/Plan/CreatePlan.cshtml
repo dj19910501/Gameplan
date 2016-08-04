@@ -485,7 +485,7 @@
         }
 
     });
-
+   
     function LoadPlan() {
         var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
         populateNF(plans, "dropdown-plan-title");
@@ -519,14 +519,19 @@
         var url = '@Url.Content("~/Plan/CreatePlan")';
         window.location = url + '?id=' + Planid + '&IsPlanChange=' + IsPlanChangefromheader;
     }
-
-    $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
+   
+    $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {       
         var element = $(this).parent().parent().next();
 
         $('#AllocatedBy').prev().children('ul').children('li').removeClass("nl-dd-checked");
         $(this).addClass('nl-dd-checked');
 
         if (element.hasClass('calculateBudget')) {
+            //Modified by Rahul Shah for PL #2383
+            if ($(element).attr('datadefault') == "SelectGoalType") {
+                var tValue = $(this).attr('textvalue');
+                $("#GoalType").attr('value', tValue);
+            }            
             if ($("#GoalType").val().toLowerCase() == 'revenue') {
                 $('#revenueSign').show();
                 $('#conjuntionWord').html('and ');
@@ -558,7 +563,7 @@
                 calculateBudget(modelId, goalType, goalValue);
         }
     });
-
+    
     function calculateBudget(_modelId, _goalType, _goalValue) {
         $.ajax({
             type: 'GET',
@@ -580,7 +585,7 @@
         });
     }
 
-    $('#GoalValue').parent().find('.priceValue').blur(function () {
+    $('#GoalValue').parent().find('.priceValue').blur(function () {        
         if (!$(this).parent().hasClass('budget-month') && !$(this).parent().hasClass('budget-quarters')) {
             var modelId = 0;
             var goalType = $("#GoalType").val();
@@ -735,6 +740,17 @@
         var TextValue = $(sender).val();
         if (IsEditable != null && IsEditable != 'undefined' && IsEditable != '' && IsEditable.toLowerCase() == "true") {
             $(sender).attr('value', TextValue);
+        }
+        //Modified by Rahul Shah for PL #2383
+        if ($(sender).parent().parent().parent().next().attr('datadefault') == "GoalValue") {
+            var modelId = 0;
+            var goalType = $("#GoalType").val();
+            var goalValue = $(sender).val();
+
+            if ($('#ModelId').val() != '')
+                modelId = $('#ModelId').val();
+            if (goalType != '' && goalValue != TextValue)
+                calculateBudget(modelId, goalType, goalValue);
         }
     }
 </script>

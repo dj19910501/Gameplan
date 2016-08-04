@@ -123,7 +123,7 @@
 			    if (isLarge) {
 			        ihtml += ' title="' + el.innerHTML + '"';
 			    }
-			    ihtml += ' value="' + ddValue + '" originalValue="' + el.innerHTML + '">' + ddtextValue + '</li>';
+			    ihtml += ' value="' + ddValue + '" originalValue="' + el.innerHTML + '" TextValue="' + ddValue + '">' + ddtextValue + '</li>'; //Modified by Rahul Shah for PL #2383
 
 			} );
 			this.optionsList.innerHTML = ihtml;
