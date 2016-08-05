@@ -21,6 +21,69 @@
     @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
 
+<style>
+    .toggle.NotificationToggle, .toggle-on.NotificationToggle, .toggle-off.NotificationToggle {
+        border-radius: 20px;
+        -webkit-border-radius: 20px;
+        -ms-border-radius: 20px;
+    }
+
+        .toggle.NotificationToggle .toggle-handle {
+            border-radius: 20px;
+            -webkit-border-radius: 20px;
+            -ms-border-radius: 20px;
+        }
+
+    .NotificationToggle .toggle-group {
+        transition: left 0.1s;
+        -webkit-transition: left 0.1s;
+    }
+
+    .toggle.NotificationToggle {
+        min-height: 20px;
+    }
+
+    /* Add to solve Chrome Browser issue of on/off button radius #2296 - Bhumika*/
+    .btn.btn-success, .btn.toggle-off, .btn.toggle-handle, .btn.off {
+        backface-visibility: visible;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+        border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .btn.NotificationToggle {
+        border-style: solid;
+        border-width: 1px;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn.btn-success {
+        background-image: linear-gradient(to bottom, #62c462, #51a351);
+        background-color: #5bb75b;
+    }
+
+    .btn.toggle-off {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+        background-color: #e6e6e6;
+        background-image: none;
+    }
+
+        .btn.toggle-off:hover {
+            color: #333;
+        }
+
+    .btn.toggle-handle {
+        background-color: #f5f5f5;
+        background-image: linear-gradient(to bottom, #fff, #e6e6e6);
+    }
+
+        .btn.toggle-handle:hover, .btn.toggle-handle:focus {
+            background-position: 0 -15px;
+            color: #333;
+            text-decoration: none;
+            transition: background-position 0.1s linear 0s;
+        }
+</style>
 
 <!--success message-->
 <div id="successMessage" class="alert hide alert-success message-position">
@@ -38,14 +101,14 @@
     <h2>My Notifications</h2>
 </div> @*#2312*@
 @*<ul class="nav nav-tabs">
-    <li class="source-sans-proregular">
-        <h2 class="title-header">My Notifications</h2>
-    </li>
-</ul>*@
+        <li class="source-sans-proregular">
+            <h2 class="title-header">My Notifications</h2>
+        </li>
+    </ul>*@
 
 <div class="padding-content cf source-sans-proregular" id="content">
     <div class="row">
-      @Html.Partial("~/Views/User/_myprofile.cshtml")
+        @Html.Partial("~/Views/User/_myprofile.cshtml")
         <div class="span10 content-user-checkbox">
             @if (SMCount > 0)
             {
@@ -62,14 +125,14 @@
                             {
                                 if (item.IsSelected)
                                 {
-                            <input type="checkbox" id="@checkBoxIdSMSel" class="chkclass" value="@item.NotificationId" checked="checked" />@item.NotificationTitle
-                            <br />
+                                    <span> @item.NotificationTitle</span><input id="@checkBoxIdSMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                    <br />
+
                                 }
                                 else
                                 {
-                            
-                            <input type="checkbox" id="@checkBoxIdSM" class="chkclass" value="@item.NotificationId"/>@item.NotificationTitle
-                            <br />
+                                    <span> @item.NotificationTitle</span><input id="@checkBoxIdSM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                    <br />
                                 }
                             }
                         }
@@ -92,25 +155,26 @@
                             {
                                 if (item.IsSelected)
                                 {
-                            <input type="checkbox" id="@checkBoxIdAMSel" class="chkclass" value="@item.NotificationId" checked="checked" />@item.NotificationTitle
-                            <br />  
+                                    <span>@item.NotificationTitle</span><input id="@checkBoxIdAMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                    <br />
                                 }
                                 else
                                 {
-                            <input type="checkbox" id="@checkBoxIdAM" class="chkclass" value="@item.NotificationId" />@item.NotificationTitle
-                            <br />
+                                    <span> @item.NotificationTitle </span>  <input id="@checkBoxIdAM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                    <br />
                                 }
+
                             }
                         }
                     </div>
                 </div>
             }
 
-                <div class="cf inputs-aligned-horizontal">
-                    <div class="container-button">
-                        <input type="submit" value="Save" title="save" id="saveNotifications" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
-                    </div>
+            <div class="cf inputs-aligned-horizontal">
+                <div class="container-button">
+                    <input type="submit" value="Save" title="save" id="saveNotifications" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
                 </div>
+            </div>
         </div>
     </div>
 </div>
