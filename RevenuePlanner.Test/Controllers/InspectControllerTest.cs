@@ -577,21 +577,21 @@ namespace RevenuePlanner.Test.Controllers
             var result = objInspectController.LoadSetupProgramEdit(planProgramId) as PartialViewResult;
             Assert.AreEqual("_EditSetupProgram", result.ViewName);
         }
-        [TestMethod]
-        public void LoadActuals()
-        {
-            Console.WriteLine("To load actuals of tactic.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            //// Call index method
-            InspectController objInspectController = new InspectController();
-            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
-            int tacticId = db.Plan_Campaign_Program_Tactic_Actual.Where(a => a.Plan_Campaign_Program_Tactic.IsDeleted == false).Select(a => a.PlanTacticId).FirstOrDefault();
-            var result = objInspectController.LoadActuals(tacticId) as PartialViewResult;
-            Assert.AreEqual("Actual", result.ViewName);
-        }
+        //[TestMethod]
+        //public void LoadActuals()
+        //{
+        //    Console.WriteLine("To load actuals of tactic.\n");
+        //    MRPEntities db = new MRPEntities();
+        //    //// Set session value
+        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    //// Call index method
+        //    InspectController objInspectController = new InspectController();
+        //    objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+        //    objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+        //    int tacticId = db.Plan_Campaign_Program_Tactic_Actual.Where(a => a.Plan_Campaign_Program_Tactic.IsDeleted == false).Select(a => a.PlanTacticId).FirstOrDefault();
+        //    var result = objInspectController.LoadActuals(tacticId) as PartialViewResult;
+        //    Assert.AreEqual("Actual", result.ViewName);
+        //}
         [TestMethod]
         public void LoadReviewCampaign()
         {
@@ -1642,7 +1642,7 @@ namespace RevenuePlanner.Test.Controllers
         public void LoadEditSetupLineitem()
         {
             var routes = new RouteCollection();
-            Console.WriteLine("To open program view.\n");
+            Console.WriteLine("To open setup line item.\n");
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             InspectController objInspectController = new InspectController();
@@ -1653,6 +1653,20 @@ namespace RevenuePlanner.Test.Controllers
             Assert.AreEqual("_EditSetupLineitem", result.ViewName);
         }
 
+        [TestMethod]
+        public void LoadSetupLineitem()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To open setup line item.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int lineitemid = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted == false).Select(a => a.PlanLineItemId).FirstOrDefault();
+            var result = objInspectController.LoadSetupLineitem(lineitemid) as PartialViewResult;
+            Assert.AreEqual("_SetupLineitem", result.ViewName);
+        }
         #endregion
 
     }
