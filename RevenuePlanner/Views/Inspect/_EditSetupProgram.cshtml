@@ -732,7 +732,7 @@
         _customFieldValues = JSON.stringify(_customFieldValues);
 
         var uId = $(window).attr('name');
-
+        var _planProgramId = $("#hdnPlanProgramId").val();
         $.ajax({
             type: 'POST',
             async: false,
@@ -789,8 +789,9 @@
                         //   loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", activeTab,"@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
 
                         //// if new record save then set Refresh flag to true.
-                        var _planProgramId = $("#hdnPlanProgramId").val();
+                        
                         if (_planProgramId == '' || _planProgramId == null || _planProgramId == '0' || _planProgramId == 'undefined') {
+                            logMixpanelTrack("New Program:" + escape(title)); // log New Program created event to mixpanel. Added by Viral regarding PL ticket #2434.
                             $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
                             if (requestedModule == '@Enums.InspectPopupRequestedModules.Index.ToString()' || requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()') {
                                 RefershPlanHeaderCalc();
@@ -803,6 +804,7 @@
                         else {
                             //RefreshCurrentTab(requestedModule, campaignId, planProgramId, 0);  //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                         }
+
                         returnparameter = true;
                   //  }
                     // Add By Nishant Sheth

@@ -887,6 +887,8 @@
 
         var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         var uId = $(window).attr('name');
+        var isUpdate = $("#PlanCampaignId").val();
+
         $.ajax({
             type: 'POST',
             async: false,
@@ -972,6 +974,12 @@
                             });*@
                         }
                         // End By Nishant Sheth
+
+                        // Added by Viral regarding PL ticket #2434.
+                        if (isUpdate == null || isUpdate == 'undefined' || isUpdate.toString() == "0") {
+                            logMixpanelTrack("New Campaign:" + escape(campaignTitle)); // log New Campaign created event to mixpanel.
+                        }
+                        
                     }
                     else {
                         ShowError(data.msg);
@@ -981,7 +989,6 @@
 
             }
         });
-
         return returnparameter;
     }
 

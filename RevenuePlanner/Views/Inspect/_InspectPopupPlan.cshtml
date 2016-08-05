@@ -421,7 +421,7 @@
                                 @*if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
                                     currentTab = "Budget";
                                 }*@
-
+                                logMixpanelTrack("Copy Plan:" + data.msg);
                                 var planId = data.Id;
                                 var expandplanProgramId = data.expand;
                                 var planCampaignId = "";

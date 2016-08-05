@@ -209,6 +209,7 @@
     var IsViewBy = false;
     var isOpen = false;   
     $("#ddlTabViewBy").change(function () {
+        var ViewBy = $(this).val();
         ExportSelectedIds = {
             TaskID: [],
             Title: [],
@@ -231,7 +232,7 @@
             Id: [],
             Value: []
         };
-
+        logMixpanelTrack("View By: " + ViewBy); // log Calendar View By event to mixpanel.
         IsPackageView = false;
         PreventUnPackageClick = true;
         IsViewBy = true;
@@ -319,7 +320,8 @@
             TempPlanIds = filters.SelectedPlans.toString();
         }
         
-            Currenttime = $('#ddlUpComingActivites').val();
+        Currenttime = $('#ddlUpComingActivites').val();
+        logMixpanelTrack("Time Frame:" + Currenttime); // log Time Frame event to mixpanel.
             isQuater = Currenttime;
             RefreshCurrentTab();
         // Commented By Nishant Sheth
@@ -439,6 +441,7 @@
 
     $('#ExportData').click(function () {
         if ($('#IsGridView').val() == "True") {
+            logMixpanelTrack("Export Gridview data on csv format."); // log Export Gridview data to csv format event to mixpanel.
             return ExportToCsvSp();
         }
         else {

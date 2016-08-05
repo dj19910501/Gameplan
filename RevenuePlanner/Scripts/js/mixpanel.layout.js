@@ -54,3 +54,7 @@ $(window).load(function () {
         mixpanel.track(successText1 + " | Calendar");
     };
 });
+
+function logMixpanelTrack(msg) {
+    mixpanel.track(msg);
+}

@@ -391,6 +391,7 @@
                 //   if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
                 //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
                 $('.toggleStatus').click(function () {
+                    logMixpanelTrack("Show Status Enabled."); // log Show Status event to mixpanel.
                     $(this).hide();
                     $('.toggle-status div').show();
                     showTacticStatus = true;
@@ -428,7 +429,7 @@
                         return false;
                     }
                     CloseClick = false;
-
+                    
                     var entityType = $(this).attr('id').toUpperCase().toString();
                     var task_id = $(this).attr('name1');
                     //gantt.open(task_id);
@@ -5331,7 +5332,7 @@
         });
         //Modified by Komal Rawal  on 14/12/2015 for PL #1782 :- export to csv from honeycomb not working.
         $(".popover-content").live('click', function (e) {
-
+            
             if (ExportToCsv) {
                 CloseClick = false;
             }
@@ -7523,6 +7524,8 @@
         /// Start Script Of Inspect Popup
         /// Modified by Kunal to add  section parameter to open popup campaign, program or tactic wise
         function loadInspectPopup(id, section, tabValue, mode, parentId) {
+            logMixpanelTrack("Open "+ section +" inspection window."); // log Plan, Campaign, Program, Tactic, Line Item inspection window open event to mixpanel.
+
             parentId = typeof parentId !== 'undefined' ? parentId : '0';
             var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
             $("#divPartial").empty();
@@ -9111,7 +9114,7 @@
                                     $("#successMessage").css("display", "block");
                                     $("#spanMessageSuccess").empty();
                                     $("#spanMessageSuccess").text(data.msg);
-
+                                    logMixpanelTrack("Copy Plan:" + data.msg); // log Plan copied event to mixpanel. Added by Viral regarding PL ticket #2434.
                                     window.location = data.redirect;
                                     //  RefreshCurrentTab();
                                     return;
@@ -9120,6 +9123,7 @@
                                     $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html());
                                     return;
                                 }
+                                
                             }
                         }
                     });
@@ -9175,6 +9179,7 @@
                             }
                             isError = false;
                             ShowMessage(isError, data.msg);
+                            logMixpanelTrack("Copy Campaign:" + data.msg); // log Plan copied event to mixpanel. Added by Viral regarding PL ticket #2434.
 
                             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                                 if (CurrentPlanId > 0) {
@@ -9246,6 +9251,7 @@
                             }
                             isError = false;
                             ShowMessage(isError, data.msg);
+                            logMixpanelTrack("Copy Program:" + data.msg); // log Program copied event to mixpanel. Added by Viral regarding PL ticket #2434.
                             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                                 if (CurrentPlanId > 0) {
                                     if ($('#IsGridView').val().toLowerCase() == "true") {
@@ -9326,6 +9332,7 @@
                             }
                             isError = false;
                             ShowMessage(isError, data.msg);
+                            logMixpanelTrack("Copy Tactic:" + data.msg); // log Tactic copied event to mixpanel. Added by Viral regarding PL ticket #2434.
                             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                                 if (CurrentPlanId > 0) {
                                     if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes

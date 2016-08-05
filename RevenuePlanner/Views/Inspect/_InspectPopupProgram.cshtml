@@ -463,7 +463,7 @@
                               var planProgramId = data.Id;
                               var expandplanProgramId = data.expand;
                               var planCampaignId = '@campaignId';
-
+                              logMixpanelTrack("Copy Program:" + data.msg); // log Program copied event to mixpanel. Added by Viral regarding PL ticket #2434.
                               loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
 
                               if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {

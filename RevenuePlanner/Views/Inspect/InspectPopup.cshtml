@@ -267,9 +267,16 @@
     var TabLineItem = "Line_Items";
     var tabtext = "";
     var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Handling add mode of inspect popup
+    var mxpnlTabArrivalTime,mxpnlTabLeaveTime,mxpnlTabName; //Declared global varible to handle that user spent what time to particular inspect tab. PL ticket #2343.
     $(document).ready(
          
       function () {
+
+          // Added by Viral related to PL ticket #2434.
+          var d = new Date();
+          // 'mxpnlTabArrivalTime' variable declared at InspectPopup.cshtml to access & log tab arrival time for all tabs.
+          mxpnlTabArrivalTime = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();    // Store setup tab arrival time.
+
           //Bhumika - #2236 For equal width of li
           var evenWidth = ($("#InspectTab").width() / $("#InspectTab li").length) - 2;
           $("#InspectTab li").css("width", evenWidth);
@@ -314,6 +321,8 @@
             return false;
         }
               //end
+
+              
             
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
@@ -327,11 +336,21 @@
                   //if (activeTab == 'Actuals') {
                   //    displayConfirm('topTabsClick("' + tabtext + '","' + activeTab + '");');
                   //}
+
                   // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
                   var returnpara = true;
                  
                   if (tabtext != activeTab) {
                       returnpara = SaveAllData(activeTab); //Added By Komal Rawal for #1213 to save data to tab click
+                      
+                      // Start: Log Mixpanel- Added by Viral regarding PL ticket #2343.              
+                      var d = new Date();
+                      // 'mxpnlTabLeaveTime' variable declared at InspectPopup.cshtml to access & log tab arrival time for all tabs.
+                      mxpnlTabLeaveTime = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();    // Store setup tab leave time.
+                      mxpnlTabName = activeTab;
+                      LogMixpanelInspectTabTimeSpent();
+                      mxpnlTabArrivalTime = mxpnlTabLeaveTime; // one tab leave time will become arrival time for other.
+                      // End: Log Mixpanel- Added by Viral regarding PL ticket #2343.
                   }
                   if (returnpara) {
                       
@@ -982,7 +1001,7 @@
                         var expandPlanTacticId = data.expand;
                         var planCampaignId = '@campaignId';
                         var planProgramId = '@PlanProgramId';
-
+                        logMixpanelTrack("Copy Tactic:" + data.msg); // log Tactic copied event to mixpanel. Added by Viral regarding PL ticket #2434.
                         loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
 
                         if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
@@ -1322,4 +1341,37 @@
 
 </script>
 
+<script type="text/javascript">
+    // following functions regarding Mixpanel.
+
+    function toSeconds(time_str) {
+        // Extract hours, minutes and seconds
+        var parts = time_str.split(':');
+        // compute  and return total seconds
+        return parts[0] * 3600 + // an hour has 3600 seconds
+        parts[1] * 60 + // a minute has 60 seconds
+        +
+        parts[2]; // seconds
+    }
+
+    function LogMixpanelInspectTabTimeSpent()
+    {
+        var leaveTime = mxpnlTabLeaveTime;
+        var arrivalTime = mxpnlTabArrivalTime;
+        var difference = Math.abs(toSeconds(leaveTime) - toSeconds(arrivalTime));
+       
+        // format time differnece
+        var result = [
+            Math.floor(difference / 3600), // an hour has 3600 seconds
+            Math.floor((difference % 3600) / 60), // a minute has 60 seconds
+            difference % 60
+        ];
+        // 0 padding and concatation
+        result = result.map(function(v) {
+            return v < 10 ? '0' + v : v;
+        }).join(':');
+        logMixpanelTrack(mxpnlTabName +" Tab Spent Time(hh:mm:ss):" + result); // log inpsect tab spent event to mixpanel.
+    }
+</script>
 <script src="@Url.Content("~/Scripts/js/mixpanel.inspect.js")" type="text/javascript"></script>
+

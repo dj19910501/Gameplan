@@ -239,7 +239,7 @@
                             $('#spanMsgSuccess').html(str);
                             $("#errorMessage1").css("display", "none");
                             $("#successMessage1").css("display", "none");
-                                                        
+                            logMixpanelTrack("Link To " + cloneType + " :" + escape(srcEntityTitle)); // log Copy To event to mixpanel. Added by Viral for PL ticket #2434.                            
                             //}
                             $('#copytactic').hide();
                             isDataModified = true;
@@ -294,6 +294,7 @@
                                 $("#spanMsgSuccess").empty();
                                 $("#spanMsgSuccess").text(result.msg);
                             }
+                            logMixpanelTrack("Copy To " + cloneType + " :" + escape(srcEntityTitle)); // log Copy To event to mixpanel. Added by Viral for PL ticket #2434.
                             $('#copytactic').hide();
                             $("#errorMessage1").css("display", "none");
                             $("#successMessage1").css("display", "none");

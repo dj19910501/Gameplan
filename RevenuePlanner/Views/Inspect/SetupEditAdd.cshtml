@@ -532,9 +532,9 @@
     var ddlProgramValue = '';
     var txtTacticValue = '';
     var txtDescriptionValue = '';
-
     $(document).ready(
       function () {
+
           $('#EditForm').removeClass('SpanDisable');
           $('#InspectTab').removeClass('SpanDisable');
           //Datetime Picker Bhumika
@@ -1190,6 +1190,7 @@
         document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
         document.getElementById("Description").value = htmlEncode($('#Description').val());
         var uId = $(window).attr('name');
+        var isUpdate = $("#hdnPlanTacticId").val();
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Inspect/SetupSaveTactic")',
@@ -1222,6 +1223,12 @@
                             var planCampaignId = data.planCampaignId;
                             var planProgramId = data.planProgramId;
                             var requestedModule = $("#hdnRequestedModule").val();
+
+                            // Added by Viral regarding PL ticket #2434.
+                            if (isUpdate == null || isUpdate == 'undefined' || isUpdate == '' || isUpdate.toString() == "0") {
+                                logMixpanelTrack("New Tactic:" + escape($("#hdnPlanTacticTitle").val())); // log New Tactic created event to mixpanel.
+                            }
+
                             // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
                             @* if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
                                 var ChangedTab = "Setup";
@@ -1372,7 +1379,6 @@
                         // End By Nishant Sheth
                     }
                     else {
-
                         ShowError(data.errormsg);
                         $("#divBudgetError").slideUp(30);
                         returnparameter = false;

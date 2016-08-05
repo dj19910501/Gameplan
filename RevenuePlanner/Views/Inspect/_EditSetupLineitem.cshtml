@@ -1092,6 +1092,7 @@
         var uId = $(window).attr('name');
 
         document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
+        var isUpdate = $("#PlanLineItemId").val();
         $.ajax({
             type: 'POST',
             async: false,
@@ -1148,6 +1149,10 @@
                         }
                         returnparameter = true;
                         //}
+                        // Added by Viral regarding PL ticket #2434.
+                        if (isUpdate == null || isUpdate == 'undefined' || isUpdate == '' || isUpdate.toString() == "0") {
+                            logMixpanelTrack("New Line Item:" + escape(lineItemTitle)); // log New Line Item created event to mixpanel.
+                        }
                     }
                     else {
 

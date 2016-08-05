@@ -292,6 +292,7 @@
         $("#button-save").click(function () {
             $("#button-save").attr('disabled', 'disabled');
             var isError = false;
+            var planTitle = '';
             $('.nl-field').each(function () {
                 if ($(this).next().attr('datadefault') == "Title") {
                     var tValue = $(this).children('a').text();
@@ -313,6 +314,7 @@
                         isError = true;
                     }
                     else {
+                        planTitle = tValue;
                         $(this).children('a').removeClass("error-form");
                     }
                 }
@@ -376,6 +378,7 @@
                 $("#GoalValue").val(ReplaceCC($("#GoalValue").val()));
                 $("#txtBudget").val(ReplaceCC($("#txtBudget").val()));
                 var uId = $(window).attr('name');
+                var isUpdate = $('#PlanId').val();
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Plan/SavePlanDefination")',
@@ -393,6 +396,7 @@
                                     //$("#spanMessageError").empty();
                                     //$("#spanMessageError").text(data.imsg);
                                     //   $("#divErrLessBudget").css("display", "none");
+
                                     ShowMessage(isError, data.imsg)
                                     $("#button-save").removeAttr('disabled');
                                     return false;
@@ -402,6 +406,12 @@
                                     $('#divPlanDefinationEnabled').hide();
                                     // $('#divPlanDefinationDisabled').show(); //Commented By komal Rawal for 1903 block displayed on sae of definaion
                                     $('#ModelTitle').html($('#divPlanDefinationEnabled').find('#ModelTitle').html());
+
+                                    // Added by Viral regarding PL ticket #2434.
+                                    if (isUpdate == null || isUpdate == 'undefined' || isUpdate.toString() == "0") {
+                                        logMixpanelTrack("New Plan:" + escape(planTitle)); // log New Plan created event to mixpanel.
+                                    }
+
                                     renderDisablePlanDefinationSection();
                                     var url = data.redirect;
                                     var queryStringArr = [];
@@ -415,6 +425,12 @@
                                     return;
                                 }
                                 else if (data.id == 0) {
+
+                                    // Added by Viral regarding PL ticket #2434.
+                                    if (isUpdate == null || isUpdate == 'undefined' || isUpdate.toString() == "0") {
+                                        logMixpanelTrack("New Plan:" + escape(planTitle)); // log New Plan created event to mixpanel.
+                                    }
+
                                     var url = data.redirect;
                                     var queryStringArr = [];
                                     queryStringArr.push(
@@ -431,7 +447,8 @@
                                     @*$("#errorMessage").css("display", "block");
                                       $("#spanMessageError").empty();
                                       $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");*@
-                                    ShowMessage(isError, "@RevenuePlanner.Helpers.Common.objCached.InvalidError")
+
+                                    ShowMessage(isError, "@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                                     return false;
                                 }
                             }
@@ -485,7 +502,7 @@
         }
 
     });
-   
+
     function LoadPlan() {
         var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
         populateNF(plans, "dropdown-plan-title");
@@ -519,8 +536,8 @@
         var url = '@Url.Content("~/Plan/CreatePlan")';
         window.location = url + '?id=' + Planid + '&IsPlanChange=' + IsPlanChangefromheader;
     }
-   
-    $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {       
+
+    $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
         var element = $(this).parent().parent().next();
 
         $('#AllocatedBy').prev().children('ul').children('li').removeClass("nl-dd-checked");
@@ -531,7 +548,7 @@
             if ($(element).attr('datadefault') == "SelectGoalType") {
                 var tValue = $(this).attr('textvalue');
                 $("#GoalType").attr('value', tValue);
-            }            
+            }
             if ($("#GoalType").val().toLowerCase() == 'revenue') {
                 $('#revenueSign').show();
                 $('#conjuntionWord').html('and ');
@@ -563,7 +580,7 @@
                 calculateBudget(modelId, goalType, goalValue);
         }
     });
-    
+
     function calculateBudget(_modelId, _goalType, _goalValue) {
         $.ajax({
             type: 'GET',
@@ -585,7 +602,7 @@
         });
     }
 
-    $('#GoalValue').parent().find('.priceValue').blur(function () {        
+    $('#GoalValue').parent().find('.priceValue').blur(function () {
         if (!$(this).parent().hasClass('budget-month') && !$(this).parent().hasClass('budget-quarters')) {
             var modelId = 0;
             var goalType = $("#GoalType").val();
